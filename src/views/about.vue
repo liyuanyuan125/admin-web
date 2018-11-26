@@ -47,4 +47,7 @@ export default class Main extends View {
 </script>
 
 <style lang="less" scoped>
+.class-1 {
+  font-size: 12px;
+}
 </style>

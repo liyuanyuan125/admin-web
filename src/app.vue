@@ -180,7 +180,7 @@ export default class App extends View {
   height: 50px;
   line-height: 50px;
   background-color: transparent;
-  &:after {
+  &::after {
     display: none;
   }
   /deep/ .ivu-menu-submenu {
@@ -216,7 +216,7 @@ export default class App extends View {
 
 .sider-menu {
   margin-bottom: 188px;
-  &:after {
+  &::after {
     display: none;
   }
   /deep/ .ivu-menu-submenu {
@@ -234,13 +234,13 @@ export default class App extends View {
       }
     }
   }
-  a {
-    // position: absolute;
-    // top: 0;
-    // left: 0;
-    // width: 100%;
-    // height: 100%;
-  }
+  // a {
+  //   position: absolute;
+  //   top: 0;
+  //   left: 0;
+  //   width: 100%;
+  //   height: 100%;
+  // }
   // span {
   //   display: inline-block;
   //   width: 69px;
@@ -258,16 +258,16 @@ export default class App extends View {
   // }
 }
 
-.sider-menu-off {
-  // span {
-  //   width: 0;
-  //   transition: width .2s ease;
-  // }
-  // i {
-  //   transform: translateX(5px);
-  //   transition: font-size .2s ease .2s, transform .2s ease .2s;
-  //   vertical-align: middle;
-  //   font-size: 22px;
-  // }
-}
+// .sider-menu-off {
+//   span {
+//     width: 0;
+//     transition: width .2s ease;
+//   }
+//   i {
+//     transform: translateX(5px);
+//     transition: font-size .2s ease .2s, transform .2s ease .2s;
+//     vertical-align: middle;
+//     font-size: 22px;
+//   }
+// }
 </style>

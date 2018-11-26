@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
+    "lint": "vue-cli-service lint && yarn lint:css",
+    "lint:css": "stylelint '**/*.vue' --syntax less",
     "test:e2e": "vue-cli-service test:e2e",
     "test:unit": "vue-cli-service test:unit",
     "newcomp": "node --experimental-modules --no-warnings tools/newcomp.mjs",
@@ -43,6 +44,9 @@
     "mkdirp": "^0.5.1",
     "prompt-promise": "^1.0.3",
     "shell-exec": "^1.0.2",
+    "stylelint": "^9.8.0",
+    "stylelint-config-standard": "^18.2.0",
+    "stylelint-processor-arbitrary-tags": "^0.1.0",
     "typescript": "^3.0.0",
     "vue-template-compiler": "^2.5.17"
   },
