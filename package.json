@@ -60,6 +60,7 @@
     ],
     "*.vue": [
       "vue-cli-service lint",
+      "yarn lint:css",
       "git add"
     ]
   }
