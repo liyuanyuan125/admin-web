@@ -3705,7 +3705,7 @@ html-webpack-plugin@^3.2.0:
     toposort "^1.0.0"
     util.promisify "1.0.0"
 
-htmlparser2@^3.9.1, htmlparser2@^3.9.2:
+htmlparser2@^3.9.2:
   version "3.10.0"
   resolved "http://registry.npm.taobao.org/htmlparser2/download/htmlparser2-3.10.0.tgz#5f5e422dcf6119c0d983ed36260ce9ded0bee464"
   dependencies:
@@ -6239,7 +6239,7 @@ q@^1.1.2:
   version "1.5.1"
   resolved "http://registry.npm.taobao.org/q/download/q-1.5.1.tgz#7e32f75b41381291d04611f1bf14109ac00651d7"
 
-qs@6.5.2, qs@^6.5.2, qs@~6.5.1, qs@~6.5.2:
+qs@6.5.2, qs@~6.5.1, qs@~6.5.2:
   version "6.5.2"
   resolved "http://registry.npm.taobao.org/qs/download/qs-6.5.2.tgz#cb3ae806e8740444584ef154ce8ee98d403f3e36"
 
@@ -7232,12 +7232,6 @@ stylelint-processor-arbitrary-tags@^0.1.0:
   dependencies:
     execall "^1.0.0"
     split-lines "^1.1.0"
-
-stylelint-processor-html@^1.0.0:
-  version "1.0.0"
-  resolved "http://registry.npm.taobao.org/stylelint-processor-html/download/stylelint-processor-html-1.0.0.tgz#6892b6b2855a45f0291cd845191d6908130a2918"
-  dependencies:
-    htmlparser2 "^3.9.1"
 
 stylelint@^9.8.0:
   version "9.8.0"

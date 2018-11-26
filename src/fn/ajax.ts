@@ -4,7 +4,6 @@
  */
 
 import axios from 'axios'
-import { stringify } from 'qs'
 import event from './event'
 import { ajaxBaseUrl } from 'env'
 
@@ -86,11 +85,8 @@ export async function get(url: string, data?: object, opts?: object) {
 export async function post(url: string, data?: object, opts?: object) {
   return request(url, {
     method: 'post',
-    headers: {
-      ...headers,
-      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-    },
-    data: stringify(data),
+    headers,
+    data,
     ...opts,
   })
 }

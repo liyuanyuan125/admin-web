@@ -12,13 +12,13 @@ import { get, post } from '@/fn/ajax'
 @Component
 export default class Main extends View {
   async mounted() {
-    // const data = await post('/mock/29230/demo/user_list', {
+    // const { data } = await get('/mock/29230/demo/user_list', {
     //   page: 8,
     //   pageSize: 88,
     //   array: [1,2,3],
     //   object: {
     //     name: 'lip',
-    //     role: [8,9,10]
+    //     role: [8, 9, 10]
     //   }
     // })
     // debugger

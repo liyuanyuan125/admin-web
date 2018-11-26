@@ -19,7 +19,6 @@
     "axios": "^0.18.0",
     "iview": "^3.1.5",
     "lodash": "^4.17.11",
-    "qs": "^6.5.2",
     "vue": "^2.5.17",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.0.0",
