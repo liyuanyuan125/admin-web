@@ -3,8 +3,9 @@ module.exports = {
   extends: 'stylelint-config-standard',
   rules: {
     'block-opening-brace-space-before': 'always',
-    'at-rule-empty-line-before': false,
-    'rule-empty-line-before': false,
-    'number-leading-zero': false,
+    'at-rule-empty-line-before': null,
+    'rule-empty-line-before': null,
+    'number-leading-zero': null,
+    'block-closing-brace-newline-before': null,
   }
 }

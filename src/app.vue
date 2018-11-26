@@ -224,7 +224,7 @@ export default class App extends View {
       padding: 0 !important;
       & > a {
         display: block;
-        padding: 14px 24px 14px 43px;
+        padding: 14px 24px 14px 42px;
         color: @c-text;
       }
     }
