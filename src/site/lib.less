@@ -1,0 +1,31 @@
+/**
+ * less 变量 & 函数库，不要放具体的样式
+ * @author zhangpeng
+ */
+
+@c-base: #2d8cf0;
+@c-text: #515151;
+
+// 不考虑英文单词，全部断开，用于中文环境多的场景下
+.wrap() {
+  word-break: break-all;
+  word-wrap: break-word;     // 用于英文断词
+  white-space: pre;          // CSS 2.0
+  white-space: pre-wrap;     // CSS 2.1
+  white-space: pre-line;     // CSS 3.0
+}
+
+// keep text nowrap
+.nowrap() {
+  word-wrap: nowrap;
+  word-break: keep-all;
+  white-space: nowrap;
+}
+
+// 截取字符串，超出显示 ...
+.cut-text(@max-width: 100%) {
+  max-width: @max-width;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  .nowrap;
+}
