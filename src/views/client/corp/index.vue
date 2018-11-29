@@ -2,7 +2,8 @@
   <div class="page">
     <div class="act-bar flex-box">
       <form class="form flex-1" @submit.prevent="search">
-        <Input :value="query.corpId" placeholder="公司ID" class="input input-corp-id"/>
+        <Input :value="query.corpId" placeholder="公司ID" class="input input-corp-id"
+          @on-enter="ev => query.corpId = ev.target.value" @on-blur="ev => query.corpId = ev.target.value"/>
         <Input :value="query.corpName" placeholder="公司名称" class="input"/>
         <Input :value="query.userAccount" placeholder="用户账号" class="input"/>
         <Select v-model="query.type" placeholder="资源方" clearable>

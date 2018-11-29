@@ -25,7 +25,7 @@ const dateRange = function(year, month, date) {
 
 router.get('/corp-list', async ctx => {
   ctx.body = mockData({
-    'items|10': [{
+    'items|20': [{
       id: tid,
       corpId: tid,
       corpName: title20,
@@ -61,6 +61,29 @@ router.get('/corp-list', async ctx => {
       { id: 1, name: '待审核' },
       { id: 2, name: '已通过' },
       { id: 3, name: '已拒绝' },
+    ],
+  })
+})
+
+router.get('/account-list', async ctx => {
+  ctx.body = mockData({
+    'items|20': [{
+      id: tid,
+      accountId: tid,
+      corpName: title20,
+      type: typeInt(1, 2),
+      resType: typeInt(1, 2),
+      'clientLevel|1': ['A', 'B', 'C'],
+      bizUserId: typeInt(1, 4),
+      createTime: dateRange(),
+      updateTime: dateRange(),
+      status: typeInt(1, 2),
+      aptitudeStatus: typeInt(1, 3),
+    }],
+    totalCount: 888,
+    typeList: [
+      { id: 1, name: '资源方' },
+      { id: 2, name: '广告主' },
     ],
   })
 })
