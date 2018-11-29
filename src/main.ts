@@ -10,12 +10,16 @@ import routers from './routers'
 import locale from 'iview/dist/locale/zh-CN'
 import event from './fn/event'
 import { alert } from './ui/modal'
+import LazyInput from '@/components/LazyInput'
 
 Vue.use(Router)
 
 // 设置星期一为一周开始
 locale.i.datepicker.weekStartDay = '1'
 Vue.use(iView, { locale })
+
+// 全局注册一些常用组件
+Vue.component('LazyInput', LazyInput)
 
 Vue.config.productionTip = false
 
