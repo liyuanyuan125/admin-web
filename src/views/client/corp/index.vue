@@ -230,6 +230,8 @@ export default class Main extends View {
   }
 
   edit(id: number) {
+    const params: any = id > 0 ? { id } : {}
+    this.$router.push({ name: 'client-corp-edit', params })
   }
 
   @Watch('query', { deep: true })
