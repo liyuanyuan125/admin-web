@@ -10,7 +10,7 @@ module.exports = {
     proxy: {
       '/mock/': {
         // target: 'http://yapi.aiads.com/',
-        target: 'http://172.19.65.7:9990/',
+        target: 'http://localhost:9990/',
         changeOrigin: true,
       }
     }
