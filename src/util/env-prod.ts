@@ -5,3 +5,5 @@
  */
 
 export const ajaxBaseUrl = '//api.aiads.com'
+
+export const debug = false

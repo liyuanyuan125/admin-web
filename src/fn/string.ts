@@ -7,7 +7,7 @@
  * @param defVal 失败时的默认值
  */
 export function extract(str: string, regex: RegExp, index = 1, defVal = ''): string {
-    return ((str || '').match(regex) || [])[index] || defVal
+  return ((str || '').match(regex) || [])[index] || defVal
 }
 
 /**
@@ -15,7 +15,7 @@ export function extract(str: string, regex: RegExp, index = 1, defVal = ''): str
  * @param str 要操作的字符串
  */
 export function getSize(str: string) {
-    return str.replace(/[^\x00-\xff]/g, 'ci').length
+  return str.replace(/[^\x00-\xff]/g, 'ci').length
 }
 
 /**
@@ -25,14 +25,14 @@ export function getSize(str: string) {
  * @param tail 可选的结尾，只有截取时才添加
  */
 export function subBytes(str: string, size: number, tail = '...') {
-    const substr = size > 0 && getSize(str) > size
-        ? str.substr(0, size)
-            .replace(/([^\x00-\xff])/g, '\x241 ')  // 双字节字符替换成两个，\x241 => $1
-            .substr(0, size)                       // 截取长度
-            .replace(/[^\x00-\xff]$/, '')          // 去掉临界双字节字符
-            .replace(/([^\x00-\xff]) /g, '\x241')  // 还原
-        : str
-    return substr == str ? substr : substr + tail
+  const substr = size > 0 && getSize(str) > size
+    ? str.substr(0, size)
+      .replace(/([^\x00-\xff])/g, '\x241 ')  // 双字节字符替换成两个，\x241 => $1
+      .substr(0, size)                       // 截取长度
+      .replace(/[^\x00-\xff]$/, '')          // 去掉临界双字节字符
+      .replace(/([^\x00-\xff]) /g, '\x241')  // 还原
+    : str
+  return substr == str ? substr : substr + tail
 }
 
 /**
@@ -41,10 +41,10 @@ export function subBytes(str: string, size: number, tail = '...') {
  * @param suffix 可选后缀
  */
 export function random(prefix = '', suffix = '') {
-    return prefix
-        + Math.random().toString(36).slice(2)
-        + new Date().getTime().toString(36)
-        + suffix
+  return prefix
+    + Math.random().toString(36).slice(2)
+    + new Date().getTime().toString(36)
+    + suffix
 }
 
 /**
@@ -52,7 +52,7 @@ export function random(prefix = '', suffix = '') {
  * @param str 要操作的字符串
  */
 export function camelCase(str: string) {
-    return str.replace(/_(\w)/g, (_, g) => g.toUpperCase())
+  return str.replace(/_(\w)/g, (_, g) => g.toUpperCase())
 }
 
 /**
@@ -60,8 +60,8 @@ export function camelCase(str: string) {
  * @param str 要操作的字符串
  */
 export function pascalCase(str: string) {
-    const newStr = camelCase(str)
-    return newStr.slice(0, 1).toUpperCase() + newStr.slice(1)
+  const newStr = camelCase(str)
+  return newStr.slice(0, 1).toUpperCase() + newStr.slice(1)
 }
 
 /**
@@ -69,5 +69,5 @@ export function pascalCase(str: string) {
  * @param str 要操作的字符串
  */
 export function hyphenCase(str: string) {
-    return str.replace(/_/g, '-').replace(/([A-Z])/g, v => '-' + v.toLowerCase())
+  return str.replace(/_/g, '-').replace(/([A-Z])/g, v => '-' + v.toLowerCase())
 }

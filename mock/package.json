@@ -1,0 +1,12 @@
+{
+  "name": "mock",
+  "version": "1.0.0",
+  "main": "index.mjs",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "koa": "^2.6.2",
+    "koa-router": "^7.4.0",
+    "mockjs": "^1.0.1-beta3"
+  }
+}

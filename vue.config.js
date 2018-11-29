@@ -9,7 +9,8 @@ module.exports = {
     },
     proxy: {
       '/mock/': {
-        target: 'http://yapi.aiads.com/',
+        // target: 'http://yapi.aiads.com/',
+        target: 'http://localhost:9990/',
         changeOrigin: true,
       }
     }
@@ -20,6 +21,7 @@ module.exports = {
       .set('env$', process.env.NODE_ENV === 'production'
         ? resolve('util/env-prod.ts')
         : resolve('util/env-dev.ts'))
+
     config.performance.hints(false)
   }
 }

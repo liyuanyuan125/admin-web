@@ -149,7 +149,6 @@ export default class App extends View {
 
 .site-layout {
   position: relative;
-  height: 100%;
 }
 .site-header {
   position: relative;
@@ -192,26 +191,18 @@ export default class App extends View {
 }
 
 .site-center {
-  height: 100%;
-  min-height: 100%;
+  position: relative;
   background-color: transparent;
 }
 .site-sider {
   position: relative;
-  height: 100%;
-  min-height: 100%;
   background-color: #fff;
-  border-right: 1px solid #dcdee2;
-  overflow: auto;
+  border-right: 1px solid #eee;
 }
 .site-content {
   position: relative;
   padding: 10px;
-  min-height: 100%;
   overflow-x: auto !important;
-  > * {
-    min-height: 100%;
-  }
 }
 
 .sider-menu {

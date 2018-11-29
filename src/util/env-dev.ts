@@ -5,3 +5,5 @@
  */
 
 export const ajaxBaseUrl = ''
+
+export const debug = true

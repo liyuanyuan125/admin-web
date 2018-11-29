@@ -23,7 +23,9 @@
     "new-parens": false,
     "align": [true, "parameters", "members"],
     "arrow-parens": [true, "ban-single-arg-parens"],
-    "no-unused-expression": [true, "allow-fast-null-checks"],
-    "variable-name": [true, "allow-leading-underscore"]
+    "no-unused-expression": false,
+    "variable-name": [true, "allow-leading-underscore"],
+    "no-empty": false,
+    "no-angle-bracket-type-assertion": false
   }
 }

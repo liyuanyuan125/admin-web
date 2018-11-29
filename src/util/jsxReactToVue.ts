@@ -26,6 +26,9 @@ const transformData = (data: any) => {
   for (const key in data) {
     if (isTopLevel[key]) {
       res[key] = data[key]
+    } else if (key === 'v-html') {
+      // 直接支持 v-html
+      (res.domProps || (res.domProps = {})).innerHTML = data[key]
     } else if (
       (hyphenIndex = key.indexOf('-')) > 0 &&         // tslint:disable-line
       isNestable[nestKey = key.slice(0, hyphenIndex)]

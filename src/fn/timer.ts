@@ -8,9 +8,9 @@ type CountDownCallback = (seconds: number) => any
  * @return {Promise} 时间到 resolve，从不 reject
  */
 export function delay(ms: number) {
-    return new Promise((resolve, reject) => {
-        setTimeout(resolve, ms)
-    })
+  return new Promise((resolve, reject) => {
+    setTimeout(resolve, ms)
+  })
 }
 
 /**
@@ -24,8 +24,8 @@ export function delay(ms: number) {
  * @return {Promise} 倒计时结束 resolve，从不 reject
  */
 export async function countDown(seconds: number, tick: CountDownCallback, { span = 1, to = 0 } = {}) {
-    for (; seconds > to; seconds -= span) {
-        tick(seconds)
-        await delay(span * 1000)
-    }
+  for (; seconds > to; seconds -= span) {
+    tick(seconds)
+    await delay(span * 1000)
+  }
 }

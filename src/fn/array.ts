@@ -31,14 +31,14 @@ type ToMapCallback = (v: any) => string
  *        不传，则取 it 本身作为 value
  */
 export function toMap(list: any[], key?: string|ToMapCallback, val?: string|ToMapCallback) {
-    const keyIsFn = typeof key === 'function'
-    const valIsFn = typeof val === 'function'
-    return (list || []).reduce((map, it) => {
-        const k = key ? (keyIsFn ? (key as ToMapCallback)(it) : it[key as string]) : it
-        const v = val ? (valIsFn ? (val as ToMapCallback)(it) : it[val as string]) : it
-        k != null && (map[k] = v)
-        return map
-    }, {})
+  const keyIsFn = typeof key === 'function'
+  const valIsFn = typeof val === 'function'
+  return (list || []).reduce((map, it) => {
+    const k = key ? (keyIsFn ? (key as ToMapCallback)(it) : it[key as string]) : it
+    const v = val ? (valIsFn ? (val as ToMapCallback)(it) : it[val as string]) : it
+    k != null && (map[k] = v)
+    return map
+  }, {})
 }
 
 /**
@@ -49,19 +49,19 @@ export function toMap(list: any[], key?: string|ToMapCallback, val?: string|ToMa
  * @param str 要解析的字符串
  */
 export function parse(str: string|any[], def = []) {
-    if (str instanceof Array) {
-        return str
-    }
+  if (str instanceof Array) {
+    return str
+  }
 
-    const s = typeof str === 'string' ? str.trim() : str
-    if (s != null && s !== '') {
-        try {
-            const a = JSON.parse(s)
-            return a instanceof Array ? a : [ a ]
-        } catch (_) {
-            return typeof s === 'string' ? s.split(',') : def
-        }
+  const s = typeof str === 'string' ? str.trim() : str
+  if (s != null && s !== '') {
+    try {
+      const a = JSON.parse(s)
+      return a instanceof Array ? a : [ a ]
+    } catch (_) {
+      return typeof s === 'string' ? s.split(',') : def
     }
+  }
 
-    return def
+  return def
 }
