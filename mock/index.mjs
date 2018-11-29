@@ -70,7 +70,7 @@ router.get('/account-list', async ctx => {
     'items|20': [{
       id: tid,
       accountId: tid,
-      corpName: title20,
+      accountName: title20,
       type: typeInt(1, 2),
       resType: typeInt(1, 2),
       'clientLevel|1': ['A', 'B', 'C'],
