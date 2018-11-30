@@ -10,17 +10,17 @@ variables:
 before_script:
   - export COMMIT_SHA=${CI_COMMIT_SHA:0:8}
 
-# lint:
-#   image: $REGISTRY_ADDRESS/ai/devops/nodejs/build
-#   stage: lint
-#   only:
-#     - master
-#     - develop
-#     - release
-#   script:
-#     - yarn lint
-#   tags:
-#     - nodejs
+lint:
+  image: $REGISTRY_ADDRESS/ai/devops/nodejs/build
+  stage: lint
+  only:
+    - master
+    - develop
+    - release
+  script:
+    - yarn && yarn lint
+  tags:
+    - nodejs
 
 build:
   image: $REGISTRY_ADDRESS/ai/devops/nodejs/build
@@ -30,9 +30,7 @@ build:
     - develop
     - release
   script:
-    - yarn
-    # - yarn lint
-    - yarn build
+    - yarn && yarn build
   artifacts:
     paths:
       - dist
