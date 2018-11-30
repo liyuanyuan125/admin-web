@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "dev": "yarn fixiview && vue-cli-service serve",
+    "build": "yarn fixiview && vue-cli-service build",
     "lint": "vue-cli-service lint --no-fix && yarn lint:css",
     "lint:css": "stylelint '**/*.vue' --syntax less",
     "test:e2e": "vue-cli-service test:e2e",
@@ -14,7 +14,8 @@
     "newpage": "node --experimental-modules --no-warnings tools/newpage.mjs",
     "newpart": "node --experimental-modules --no-warnings tools/newpart.mjs",
     "newdlg": "node --experimental-modules --no-warnings tools/newdlg.mjs",
-    "uproute": "node --experimental-modules --no-warnings tools/uproute.mjs"
+    "uproute": "node --experimental-modules --no-warnings tools/uproute.mjs",
+    "fixiview": "node --experimental-modules --no-warnings tools/fixiview.mjs"
   },
   "dependencies": {
     "axios": "^0.18.0",
