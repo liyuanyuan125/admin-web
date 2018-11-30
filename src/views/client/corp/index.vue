@@ -2,8 +2,8 @@
   <div class="page">
     <div class="act-bar flex-box">
       <form class="form flex-1" @submit.prevent="search">
-        <LazyInput v-model="query.corpId" placeholder="公司ID" class="input input-corp-id"/>
-        <LazyInput v-model="query.corpName" placeholder="公司名称" class="input"/>
+        <LazyInput v-model="query.id" placeholder="公司ID" class="input input-id"/>
+        <LazyInput v-model="query.name" placeholder="公司名称" class="input"/>
         <LazyInput v-model="query.userAccount" placeholder="用户账号" class="input"/>
         <Select v-model="query.type" placeholder="资源方" clearable>
           <Option v-for="it in typeList" :key="it.id" :value="it.id"
@@ -54,8 +54,8 @@ const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD<br>HH:mm:ss'
 
 const defQuery = {
-  corpId: null,
-  corpName: '',
+  id: null,
+  name: '',
   userAccount: '',
   type: null,
   status: null,
@@ -83,14 +83,16 @@ export default class Main extends View {
 
   bizUserList = []
 
+  clientLevelList = []
+
   aptitudeStatusList = []
 
   columns = [
-    { title: '公司ID', key: 'corpId', width: 90, align: 'center' },
-    { title: '公司名称', key: 'corpName', align: 'center' },
+    { title: '公司ID', key: 'id', width: 90, align: 'center' },
+    { title: '公司名称', key: 'name', align: 'center' },
     { title: '资源方', key: 'isResOwner', width: 80, align: 'center' },
     { title: '资源方类型', key: 'resTypeName', width: 100, align: 'center' },
-    { title: '客户等级', key: 'clientLevel', width: 80, align: 'center' },
+    { title: '客户等级', key: 'clientLevelName', width: 80, align: 'center' },
     { title: '关联商务', key: 'bizUserName', width: 80, align: 'center' },
     {
       title: '创建时间',
@@ -164,6 +166,7 @@ export default class Main extends View {
       resType: makeMap(this.resTypeList),
       status: makeMap(this.statusList),
       bizUser: makeMap(this.bizUserList),
+      clientLevel: makeMap(this.clientLevelList),
       aptitudeStatus: makeMap(this.aptitudeStatusList)
     }
   }
@@ -177,6 +180,7 @@ export default class Main extends View {
         resTypeName: cachedMap.resType[it.resType],
         bizUserName: cachedMap.bizUser[it.bizUserId],
         statusText: cachedMap.status[it.status],
+        clientLevelName: cachedMap.clientLevel[it.clientLevel],
         aptitudeStatusText: cachedMap.aptitudeStatus[it.aptitudeStatus],
       }
     })
@@ -213,6 +217,7 @@ export default class Main extends View {
         resTypeList,
         statusList,
         bizUserList,
+        clientLevelList,
         aptitudeStatusList,
       } }: any = await get('/mock/corp-list', query)
       this.list = list
@@ -221,6 +226,7 @@ export default class Main extends View {
       this.resTypeList = resTypeList
       this.statusList = statusList
       this.bizUserList = bizUserList
+      this.clientLevelList = clientLevelList
       this.aptitudeStatusList = aptitudeStatusList
     } catch (ex) {
       this.handleError(ex)
@@ -235,7 +241,7 @@ export default class Main extends View {
   }
 
   @Watch('query', { deep: true })
-  onQueryChange() {
+  watchQuery() {
     if (this.query.pageIndex == this.oldQuery.pageIndex) {
       this.query.pageIndex = 1
     }
@@ -255,7 +261,7 @@ export default class Main extends View {
     }
   }
 
-  .input-corp-id {
+  .input-id {
     width: 80px;
   }
 }
