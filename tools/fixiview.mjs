@@ -9,4 +9,4 @@ const fpath = 'node_modules/iview/dist/types/iview.components.d.ts'
 const text = fs.readFileSync(fpath, { encoding: 'utf8' })
 const newText = text.replace('TabsPane', 'TabPane')
 
-fs.writeFileSync(fpath, newText)
+newText !== text && fs.writeFileSync(fpath, newText)

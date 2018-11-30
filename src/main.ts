@@ -60,14 +60,14 @@ router.afterEach((to, from) => {
 
 event.on({
   ajax401(ev: any) {
-      ev.handled = true
-      alert('需要登录')
-      // router.push({ name: 'login' })
+    ev.handled = true
+    alert('需要登录')
+    // router.push({ name: 'login' })
   },
 
   ajax403(ev: any) {
-      ev.handled = true
-      alert('权限不足')
+    ev.handled = true
+    alert('权限不足')
   }
 })
 
