@@ -30,6 +30,8 @@ build:
     - develop
     - release
   script:
+    - yarn
+    # - yarn lint
     - yarn build
   artifacts:
     paths:
