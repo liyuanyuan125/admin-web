@@ -1,0 +1,63 @@
+stages:
+  - lint
+  - build
+  - package
+  - deploy
+
+variables:
+  SERVICE_NAME: aiads-iadp-admin-web
+
+before_script:
+  - export COMMIT_SHA=${CI_COMMIT_SHA:0:8}
+
+lint:
+  image: $REGISTRY_ADDRESS/ai/devops/nodejs/build
+  stage: lint
+  only:
+    - master
+    - develop
+    - release
+  script:
+    - yarn lint
+  tags:
+    - nodejs
+
+build:
+  image: $REGISTRY_ADDRESS/ai/devops/nodejs/build
+  stage: build
+  only:
+    - master
+    - develop
+    - release
+  script:
+    - yarn build
+  artifacts:
+    paths:
+      - dist
+      - Dockerfile
+    expire_in: 2 hrs
+  tags:
+    - nodejs
+
+package:
+  image: $REGISTRY_ADDRESS/ai/devops/docker/package:1.0
+  stage: package
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - package
+  tags:
+    - docker
+
+deploy:
+  image: $REGISTRY_ADDRESS/ai/devops/docker/deploy
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  dependencies: []
+  script:
+    - deploy -service $SERVICE_NAME -image $REGISTRY_ADDRESS/ai/$CI_PROJECT_PATH:$COMMIT_SHA
+  environment: aiads-dev
+  tags:
+    - docker
+
