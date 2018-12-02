@@ -49,7 +49,7 @@
             @on-page-size-change="pageSize => query.pageSize = pageSize"/>
         </div>
       </div>
-    </div> 
+    </div>
     <!-- 注册信息 -->
     <div class="res-Group">
       <div class="res-Inps">
@@ -106,7 +106,7 @@
                 </div>
                 <p class="info-red">变更后，原主账号将变成无任何权限的子账号，可在前台系统中由新主账号删除或修改权限</p>
             <!-- </div> -->
-            
+
              <Button type="primary">确认</Button>
              <Button @click="changefalse">取消</Button>
         </div>
@@ -117,7 +117,7 @@
 <script lang="tsx">
 import { Component, Watch } from 'vue-property-decorator'
 import View from '@/util/View'
-import { get } from '@/fn/ajax'
+import { queryItem } from '@/api/account'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
@@ -239,7 +239,7 @@ export default class Main extends View {
     try {
       const { data: {
         items: list,
-      } }: any = await get('/mock/account-detail-list', query)
+      } } = await queryItem(query)
       this.list = list
     } catch (ex) {
       this.handleError(ex)

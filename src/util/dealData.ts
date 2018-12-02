@@ -1,7 +1,6 @@
 /**
  * 提供一组处理数据的工具方法
  */
-import { debug } from 'env'
 
 /**
  * 将数字 0 以及字符串 '0' 作为空串，其他保留原值
@@ -42,7 +41,7 @@ export function delFields(list: any[], fields: string) {
  */
 export function normalizeList(list: any[], idKey: string, nameKey: string) {
   return (list || []).reduce((result, it, index) => {
-    if (debug && index === 0) {
+    if (VAR.env === 'dev' && index === 0) {
       idKey !== 'id' && 'id' in it && console.warn('源列表含有 id 值') // tslint:disable-line
       nameKey !== 'name' && 'name' in it && console.warn('源列表含有 name 值') // tslint:disable-line
     }

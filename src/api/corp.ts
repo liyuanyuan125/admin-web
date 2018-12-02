@@ -1,31 +1,8 @@
-import Koa from 'koa'
-import Router from 'koa-router'
-import Mock from 'mockjs'
+// import { get } from '@/fn/ajax'
+import { mockGet, tid, title20, typeInt, dateRange } from './mock'
 
-const PORT = 9990
-
-const app = new Koa()
-const router = new Router({
-  prefix: '/mock'
-})
-
-const mockData = opts => ({ code: 0, data: Mock.mock(opts), msg: '' })
-
-const typeInt = (min, max) => `@integer(${min}, ${max})`
-const typeTitle = (min, max) => `@ctitle(${min}, ${max})`
-const tid = typeInt(100000, 999999)
-const tids = typeInt(100000000, 999999999)
-const title20 = typeTitle(1, 20)
-
-const dateRange = function(year, month, date) {
-  const end = arguments.length == 3 ? new Date(year, month - 1, date) : new Date()
-  const start = new Date(end)
-  start.setFullYear(end.getFullYear() - 1)
-  return typeInt(start.getTime(), end.getTime())
-}
-
-router.get('/corp-list', async ctx => {
-  ctx.body = mockData({
+export async function queryList(query: any) {
+  return await mockGet(query, {
     'items|20': [{
       id: tid,
       name: title20,
@@ -72,10 +49,10 @@ router.get('/corp-list', async ctx => {
       { id: 3, name: '已拒绝' },
     ],
   })
-})
+}
 
-router.get('/corp', async ctx => {
-  const { id } = ctx.query
+export async function queryItem(query: any) {
+  const { id } = query
   const item = id > 0 ? {
     id,
     name: '长长的公司名',
@@ -134,7 +111,7 @@ router.get('/corp', async ctx => {
     ],
     aptitudeUrl: 'https://dummyimage.com/600x400/000/fff',
   } : {}
-  ctx.body = mockData({
+  return await mockGet(query, {
     item,
     aptitudeTypeList: [
       { id: 1, name: '营业执照' },
@@ -170,97 +147,4 @@ router.get('/corp', async ctx => {
       { id: 1, name: '销售额定比例' },
     ],
   })
-})
-
-// 账号管理界面
-router.get('/account-list', async ctx => {
-  ctx.body = mockData({
-    'items|20': [{
-      id: tid,
-      corpId: tid,
-      corpIds: tids,
-      corpName: title20,
-      type: typeInt(1, 3),
-      'clientLevel|1': ['A', 'B', 'C'],
-      createTime: dateRange(),
-      updateTime: dateRange(),
-      status: typeInt(1, 2),
-    }],
-    totalCount: 888,
-    typeList: [
-      { id: 1, name: '待审核' },
-      { id: 2, name: '审核已通过' },
-      { id: 3, name: '审核未通过' },
-    ],
-    statusList: [
-      { id: 1, name: '已启用' },
-      { id: 2, name: '已停用' },
-    ],
-    company: [
-      { id: 1, name: '老麦', group: '商务一部', title: '商务专员' },
-      { id: 2, name: '老范', group: '商务一部', title: '商务经理' },
-      { id: 3, name: '小旺', group: '商务二部', title: '商务经理' },
-      { id: 4, name: '小赵', group: '商务二部', title: '商务专员' },
-    ],
-  })
-})
-// 账号管理详情界面
-router.get('/account-detail-list', async ctx => {
-  ctx.body = mockData({
-    'items|5': [{
-      id: tid,
-      corpId: tid,
-      corpIds: tids,
-      corpName: title20,
-      'clientLevel|1': ['A', 'B', 'C'],
-      createTime: dateRange(),
-      updateTime: dateRange(),
-    }],
-    totalCount: 888,
-  })
-})
-
-router.get('/area-list', async ctx => {
-  const { id = 0 } = ctx.query
-  const map = {
-    0: [
-      { id: 1, name: '北京市' },
-      { id: 2, name: '河南省' },
-    ],
-    1: [
-      { id: 101, name: '北京市' },
-    ],
-    2: [
-      { id: 201, name: '郑州市' },
-      { id: 202, name: '商丘市' },
-      { id: 203, name: '南阳市' },
-    ],
-    101: [
-      { id: 10101, name: '朝阳区' },
-      { id: 10102, name: '海淀区' },
-      { id: 10103, name: '东城区' },
-    ],
-    201: [
-      { id: 20101, name: '中原区' },
-      { id: 20102, name: '二七区' },
-    ],
-    202: [
-      { id: 20201, name: '梁园区' },
-      { id: 20202, name: '睢阳区' },
-      { id: 20203, name: '宁陵县' },
-    ],
-    203: [
-      { id: 20301, name: '卧龙区' },
-      { id: 20302, name: '邓州市' },
-    ],
-  }
-  ctx.body = mockData({
-    items: map[id] || []
-  })
-})
-
-app.use(router.routes())
-  .use(router.allowedMethods())
-  .listen(PORT, () => {
-    console.log(`-> serve at ${PORT}`)
-  })
+}

@@ -16,7 +16,10 @@ declare module 'iview/dist/locale/zh-CN' {
   export default locale
 }
 
-declare module 'env' {
-  export const ajaxBaseUrl: string
-  export const debug: boolean
+interface VarType {
+  env: string
+  baseUrl: string
+  ajaxBaseUrl: string
 }
+
+declare const VAR: VarType

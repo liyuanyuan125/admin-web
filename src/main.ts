@@ -25,7 +25,7 @@ Vue.config.productionTip = false
 
 const router = new Router({
   mode: 'history',
-  base: process.env.BASE_URL,
+  base: VAR.baseUrl,
   // 手动维护的 router 放在这里，routers 中的是工具自动生成的
   routes: [
     {

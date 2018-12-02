@@ -38,10 +38,10 @@
               </RadioGroup>
               <br>
           </div>
-          <Button class="button2" type="primary" id="btn" @click='toshowtrue'>保存</Button> 
-        </form>   
+          <Button class="button2" type="primary" id="btn" @click='toshowtrue'>保存</Button>
+        </form>
       </div>
-    </div>   
+    </div>
     <!-- 弹窗审核 -->
     <!-- <div class="info" v-if="examine">
         <div class="info-ver">账户审核<Icon class="info-Icon" type="md-close"   @click="examinefalse" size="22"/></div>
@@ -106,7 +106,7 @@
 <script lang="tsx">
 import { Component, Watch } from 'vue-property-decorator'
 import View from '@/util/View'
-import { get } from '@/fn/ajax'
+import { queryList } from '@/api/account'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
@@ -258,7 +258,7 @@ export default class Main extends View {
         typeList,
         company,
         statusList,
-      } }: any = await get('/mock/account-list', query)
+      } } = await queryList(query)
       this.list = list
       this.total = total
       this.typeList = typeList

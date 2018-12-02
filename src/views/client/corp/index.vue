@@ -49,6 +49,7 @@ import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { clean } from '@/fn/object'
+import { queryList } from '@/api/corp'
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD<br>HH:mm:ss'
@@ -219,7 +220,7 @@ export default class Main extends View {
         bizUserList,
         clientLevelList,
         aptitudeStatusList,
-      } }: any = await get('/mock/corp-list', query)
+      } } = await queryList(query)
       this.list = list
       this.total = total
       this.typeList = typeList

@@ -87,7 +87,7 @@
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Watch } from 'vue-property-decorator'
 import View from '@/util/View'
-import { get } from '@/fn/ajax'
+import { queryItem } from '@/api/corp'
 import AreaSelect from '@/components/AreaSelect.vue'
 
 const defItem = {
@@ -167,7 +167,7 @@ export default class Main extends View {
         adTypeList,
         profitUnitList,
         profitTypeList,
-      } }: any = await get('/mock/corp', query)
+      } } = await queryItem(query)
       this.item = { ...defItem, ...item }
       this.aptitudeTypeList = aptitudeTypeList
       this.clientLevelList = clientLevelList

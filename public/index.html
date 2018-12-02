@@ -5,8 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="renderer" content="webkit">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <% var VAR = htmlWebpackPlugin.options.VAR %>
+    <link rel="icon" href="<%=VAR.baseUrl.replace(/\/$/, '')%>/favicon.ico">
     <title>Aiads 广告投放</title>
+    <script>var VAR = <%=JSON.stringify(VAR)%></script>
   </head>
   <body>
     <noscript>

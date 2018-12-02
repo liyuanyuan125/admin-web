@@ -5,17 +5,8 @@
 
 import axios from 'axios'
 import event from './event'
-import { ajaxBaseUrl } from 'env'
 
-interface AjaxResult {
-  code: number
-  data: object
-  msg: string
-}
-
-const headers = {
-  'X-Requested-With': 'axios-ajax',
-}
+const ajaxBaseUrl = VAR.ajaxBaseUrl
 
 const isAbsoluteUrl = (url: string) => /^[a-z][a-z0-9+.-]*:/.test(url)
 
@@ -34,7 +25,7 @@ const perfectData = ({ code, data, msg }: any = {}) => {
   }
 }
 
-const request = async (url: string, opts: object): Promise<AjaxResult> => {
+const request = async (url: string, opts: object) => {
   const isAbs = isAbsoluteUrl(url)
   const finalUrl = isAbs ? url : ajaxBaseUrl + url
 
@@ -73,7 +64,6 @@ const request = async (url: string, opts: object): Promise<AjaxResult> => {
 export async function get(url: string, data?: object, opts?: object) {
   return request(url, {
     method: 'get',
-    headers,
     params: {
       ...data,
       _: Date.now(),
@@ -85,7 +75,22 @@ export async function get(url: string, data?: object, opts?: object) {
 export async function post(url: string, data?: object, opts?: object) {
   return request(url, {
     method: 'post',
-    headers,
+    data,
+    ...opts,
+  })
+}
+
+export async function put(url: string, data?: object, opts?: object) {
+  return request(url, {
+    method: 'put',
+    data,
+    ...opts,
+  })
+}
+
+export async function del(url: string, data?: object, opts?: object) {
+  return request(url, {
+    method: 'delete',
     data,
     ...opts,
   })
