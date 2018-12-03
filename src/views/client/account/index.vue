@@ -18,12 +18,12 @@
           </div>
           <div class="Add-Inp">
               <span>所属公司</span>
-              <Select v-model="model7" style="width:200px">
-                  <OptionGroup label="Hot Cities">
+              <Select style="width:200px">
+                  <OptionGroup label="公司一">
                       <Option v-for="item in company" :value="item.name" :key="item.name">{{ item.name }}</Option>
                   </OptionGroup>
-                  <OptionGroup label="Other Cities">
-                      <Option v-for="item in company" :value="item.name" :key="item.name">{{ item.name }}</Option>
+                  <OptionGroup label="公司二">
+                      <Option v-for="item in company2" :value="item.name" :key="item.name">{{ item.name }}</Option>
                   </OptionGroup>
               </Select>
           </div>
@@ -43,7 +43,7 @@
       </div>
     </div>
     <!-- 弹窗审核 -->
-    <!-- <div class="info" v-if="examine">
+    <div class="info" v-if="examine">
         <div class="info-ver">账户审核<Icon class="info-Icon" type="md-close"   @click="examinefalse" size="22"/></div>
         <div class="info-type">
             <div class="info-type-t">
@@ -62,18 +62,18 @@
              <Button type="primary">确认</Button>
              <Button @click="examinefalse">取消</Button>
         </div>
-    </div> -->
+    </div>
     <!-- <router-link  :to="{ name: 'client-account-detail', params: { id: 1 } }">详情</router-link> -->
   <!-- </div> -->
   <!-- <div class="page"> -->
     <div  v-if="shows">
       <div class="act-bar flex-box">
         <form class="form flex-1" @submit.prevent="search">
-          <LazyInput v-model="query.corpId" placeholder="账号ID" class="input input-corp-id"
-            @on-enter="ev => query.corpId = ev.target.value" @on-blur="ev => query.corpId = ev.target.value"/>
-            <LazyInput v-model="query.corpIds" placeholder="账号" class="input input-corp-id"
-            @on-enter="ev => query.corpIds = ev.target.value" @on-blur="ev => query.corpIds = ev.target.value"/>
-          <LazyInput v-model="query.corpName" placeholder="公司名称" class="input"/>
+          <LazyInput v-model="query.id" placeholder="账号ID" class="input input-corp-id"
+            @on-enter="ev => query.id = ev.target.value" @on-blur="ev => query.id = ev.target.value"/>
+            <LazyInput v-model="query.emailNum" placeholder="账号" class="input input-corp-id"
+            @on-enter="ev => query.emailNum = ev.target.value" @on-blur="ev => query.emailNum = ev.target.value"/>
+          <LazyInput v-model="query.companyName" placeholder="公司名称" class="input"/>
           <DatePicker type="daterange" v-model="query.createTime" placement="bottom-end" placeholder="注册时间" class="input" style="width: 200px"></DatePicker>
           <Select v-model="query.type" placeholder="审核状态" clearable>
             <Option v-for="it in typeList" :key="it.id" :value="it.id"
@@ -117,9 +117,9 @@ const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD<br>HH:mm:ss'
 
 const defQuery = {
-  corpId: null,
-  corpIds: null,
-  corpName: '',
+  id: null,
+  emailnum: null,
+  companyName: '',
   userAccount: '',
   type: null,
   status: null,
@@ -145,10 +145,13 @@ export default class Main extends View {
 
   company = []
 
+  company2 = []
+
+
   columns = [
-    { title: '账号ID', key: 'corpId', align: 'center' },
-    { title: '账号', key: 'corpIds', align: 'center' },
-    { title: '公司名称', key: 'corpName', align: 'center' },
+    { title: '账号ID', key: 'id', align: 'center' },
+    { title: '邮箱账号', key: 'emailNum', align: 'center' },
+    { title: '公司名称', key: 'companyName', align: 'center' },
     {
       title: '注册时间',
       key: 'createTime',
@@ -203,7 +206,7 @@ export default class Main extends View {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         return <div class='row-acts'>
-          <router-link to={{ name: 'client-account-detail', params: { id } }}>重新审核</router-link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <router-link to={{ name: 'client-account-verify', params: { id } }}>重新审核</router-link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <router-link to={{ name: 'client-account-detail', params: { id } }}>详情</router-link>
         </div>
         /* tslint:enable */
@@ -257,12 +260,14 @@ export default class Main extends View {
         totalCount: total,
         typeList,
         company,
+        company2,
         statusList,
       } } = await queryList(query)
       this.list = list
       this.total = total
       this.typeList = typeList
       this.company = company
+      this.company2 = company2
       this.statusList = statusList
     } catch (ex) {
       this.handleError(ex)
@@ -351,64 +356,59 @@ export default class Main extends View {
   background: #fff;
   padding: 5px;
 }
-//   .info{
-//       width:35%;
-//     //   height:30%;
-//       background: #fff;
-//       border:1px solid #ccc;
-//       border-radius: 5px;
-//       position: absolute;
-//       top:20%;
-//       left:20%;
-//       font-size:14px;
-//       z-index:10;
-//   }
-//   .info-ver{
-//       width:100%;
-//       height:43px;
-//       line-height:43px;
-//       padding-left:3%;
-//       border-bottom:1px solid #ccc;
-//     }
-//   .info-ver .info-Icon{
-//       float:right;
-//       margin-right:3%;
-//       font-weight: bold;
-//       // font-size:15px;
-//       margin-top:10px;
-//   }
-//   .info-type{
-//       padding:17px;
-//   }
-//   .info-type-t{
-//       width:100%;
-//       height:50px;
-//       line-height:50px;
-//   }
-//   .info-type-t div{
-//       display:inline-block;
-//       width:50%;
-//   }
-//   .info-type-t div span{
-//       margin-left:10%;
-//   }
-//   .info-type-t .ivu-radio-group{
-//       margin-left:5%;
-//   }
-//   .info-inp{
-//       margin-left:5%;
-//   }
-//   .info-type-inp span{
-//       margin-left:1%;
-//       color:#53A1F3;
-//       cursor:pointer;
-//       text-decoration: underline;
-//   }
-//   .info-type Button{
-//       margin-top:2%;
-//       margin-left:24%;
-//    }
-
-
-
+.info {
+  width: 35%;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  position: absolute;
+  top: 20%;
+  left: 20%;
+  font-size: 14px;
+  z-index: 10;
+}
+.info-ver {
+  width: 100%;
+  height: 43px;
+  line-height: 43px;
+  padding-left: 3%;
+  border-bottom: 1px solid #ccc;
+}
+.info-ver .info-Icon {
+  float: right;
+  margin-right: 3%;
+  font-weight: bold;
+  margin-top: 10px;
+}
+.info-type {
+  padding: 17px;
+}
+.info-type-t {
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+}
+.info-type-t div {
+  display: inline-block;
+  width: 50%;
+}
+.info-type-t div span {
+  margin-left: 10%;
+}
+.info-type-t .ivu-radio-group {
+  margin-left: 5%;
+}
+.info-inp {
+  margin-left: 5%;
+}
+.info-type-inp span {
+  margin-left: 1%;
+  color: #53A1F3;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.info-type Button {
+  margin-top: 2%;
+  margin-left: 24%;
+}
   </style>

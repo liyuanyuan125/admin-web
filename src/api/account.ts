@@ -1,15 +1,17 @@
 // import { get } from '@/fn/ajax'
 import { mockGet, tid, title20, typeInt, dateRange } from './mock'
 
-const tids = typeInt(100000000, 999999999)
+const emailnum = typeInt(10000000000, 99999999999)
+const pnum = typeInt(10000000000, 99999999999)
+
 
 export async function queryList(query: any) {
   return await mockGet(query, {
     'items|20': [{
       id: tid,
-      corpId: tid,
-      corpIds: tids,
-      corpName: title20,
+      // corpId: tid,
+      emailNum: emailnum,
+      companyName: title20,
       type: typeInt(1, 3),
       'clientLevel|1': ['A', 'B', 'C'],
       createTime: dateRange(),
@@ -27,21 +29,27 @@ export async function queryList(query: any) {
       { id: 2, name: '已停用' },
     ],
     company: [
-      { id: 1, name: '老麦', group: '商务一部', title: '商务专员' },
-      { id: 2, name: '老范', group: '商务一部', title: '商务经理' },
-      { id: 3, name: '小旺', group: '商务二部', title: '商务经理' },
-      { id: 4, name: '小赵', group: '商务二部', title: '商务专员' },
+      { id: 1, name: '北京智能广宣1' },
+      { id: 2, name: '北京智能广宣2' },
+      { id: 3, name: '北京智能广宣3' },
+      { id: 4, name: '北京智能广宣4' },
+    ],
+    company2: [
+      { id: 1, name: '北京智能广宣1' },
+      { id: 2, name: '北京智能广宣2' },
+      { id: 3, name: '北京智能广宣3' },
+      { id: 4, name: '北京智能广宣4' },
     ],
   })
 }
 
 export async function queryItem(query: any) {
   return await mockGet(query, {
-    'items|5': [{
+    'detailItems|5': [{
       id: tid,
-      corpId: tid,
-      corpIds: tids,
-      corpName: title20,
+      userId: tid,
+      childPhoneNumber: pnum,
+      childUserName: title20,
       'clientLevel|1': ['A', 'B', 'C'],
       createTime: dateRange(),
       updateTime: dateRange(),
