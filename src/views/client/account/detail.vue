@@ -9,7 +9,7 @@
           <p>用户账号</p>
           <div class="res-num-item change-item">
             <span>admin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;【主账号】</span>
-            <span class="blu1">查看操作日志</span>
+            <span class="blu1" @click="viewlog">查看操作日志</span>
             <span class="blu2" @click="changetrue">变更主账号</span>
             <!-- <span>变更主账号</span> -->
           </div>
@@ -57,7 +57,7 @@
           <p>公司名称</p>
           <div class="res-num-item change-item">
             <span>北京博纳国际有限公司</span>
-            <span>保存为新公司</span>
+            <span  class="blu1" @click="saveCompany(0)">保存为新公司</span>
             <!-- <span>变更主账号</span> -->
           </div>
         </div>
@@ -94,14 +94,14 @@
                 <div>所属公司<span>北京博纳国际有限公司</span></div>
                 <div>新主账号
                   <Select class="sec"  clearable>
+                    <!-- <Option>账号【姓名】</Option>
                     <Option>账号【姓名】</Option>
                     <Option>账号【姓名】</Option>
                     <Option>账号【姓名】</Option>
                     <Option>账号【姓名】</Option>
                     <Option>账号【姓名】</Option>
                     <Option>账号【姓名】</Option>
-                    <Option>账号【姓名】</Option>
-                    <Option>账号【姓名】</Option>
+                    <Option>账号【姓名】</Option> -->
                   </Select><br>
                 </div>
                 <p class="info-red">变更后，原主账号将变成无任何权限的子账号，可在前台系统中由新主账号删除或修改权限</p>
@@ -127,10 +127,10 @@ const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD<br>HH:mm:ss'
 
 const defQuery = {
-  corpId: null,
-  corpIds: null,
-  corpName: '',
-  userAccount: '',
+  id: null,
+  phoneNmber: null,
+  // corpName: '',
+  // userAccount: '',
   type: null,
   status: null,
   pageIndex: 1,
@@ -152,9 +152,9 @@ export default class Main extends View {
   oldQuery: any = null
 
   columns = [
-    { title: '用户账号', key: 'corpId', align: 'center' },
-    { title: '姓名', key: 'corpName', align: 'center' },
-    { title: '手机号', key: 'corpIds', align: 'center' },
+    { title: '用户账号', key: 'userId', align: 'center' },
+    { title: '姓名', key: 'childUserName', align: 'center' },
+    { title: '手机号', key: 'childPhoneNumber', align: 'center' },
     {
       title: '创建时间',
       key: 'createTime',
@@ -187,7 +187,7 @@ export default class Main extends View {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         return <div class='row-acts'>
-          <router-link to={{ name: 'client-account-detail', params: { id } }}>查看操作日志</router-link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <router-link to={{ name: 'client-account-viewlog', params: { id } }}>查看操作日志</router-link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </div>
         /* tslint:enable */
       }
@@ -226,6 +226,15 @@ export default class Main extends View {
     this.query = { ...defQuery, pageSize }
   }
 
+  viewlog() {
+    this.$router.push({ name: 'client-account-viewlog' })
+  }
+
+  saveCompany(id: number) {
+    const params: any = id > 0 ? { id } : {}
+    this.$router.push({ name: 'client-corp-edit', params })
+  }
+
   async doSearch() {
     if (this.loading) {
       return
@@ -238,7 +247,7 @@ export default class Main extends View {
     const query = clean({ ...this.query })
     try {
       const { data: {
-        items: list,
+        detailItems: list,
       } } = await queryItem(query)
       this.list = list
     } catch (ex) {
@@ -246,6 +255,13 @@ export default class Main extends View {
     } finally {
       this.loading = false
     }
+  }
+  @Watch('query', { deep: true })
+  onQueryChange() {
+    if (this.query.pageIndex == this.oldQuery.pageIndex) {
+      this.query.pageIndex = 1
+    }
+    this.doSearch()
   }
 }
 </script>
@@ -374,6 +390,6 @@ export default class Main extends View {
   font-size: 12px;
   line-height: 13px;
   margin-left: 24%;
+  margin-top: 1%;
 }
-
   </style>

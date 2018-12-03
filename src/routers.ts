@@ -29,6 +29,16 @@ export default [
     component: () => import(/* webpackChunkName: "client-account-detail" */ './views/client/account/detail.vue')
   },
   {
+    path: '/client/account/verify/:id?',
+    name: 'client-account-verify',
+    component: () => import(/* webpackChunkName: "client-account-verify" */ './views/client/account/dlgVerify.vue')
+  },
+  {
+    path: '/client/account/viewlog/:id?',
+    name: 'client-account-viewlog',
+    component: () => import(/* webpackChunkName: "client-account-viewlog" */ './views/client/account/viewLog.vue')
+  },
+  {
     path: '/client/account/',
     name: 'client-account',
     component: () => import(/* webpackChunkName: "client-account" */ './views/client/account/index.vue')
