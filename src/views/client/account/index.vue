@@ -401,14 +401,14 @@ export default class Main extends View {
 .info-inp {
   margin-left: 5%;
 }
-.info-type-inp span {
-  margin-left: 1%;
-  color: #53A1F3;
-  cursor: pointer;
-  text-decoration: underline;
-}
-.info-type Button {
-  margin-top: 2%;
-  margin-left: 24%;
-}
+// .info-type-inp span {
+//   margin-left: 1%;
+//   color: #53A1F3;
+//   cursor: pointer;
+//   text-decoration: underline;
+// }
+// .info-type Button {
+//   margin-top: 2%;
+//   margin-left: 24%;
+// }
   </style>

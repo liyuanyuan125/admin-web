@@ -82,7 +82,7 @@ export default class ComponentMain extends View {
   padding-top: 16px;
   background: #fff;
   font-size: 13px;
-  border-bottom:1px #ccc solid ;
+  border-bottom: 1px #ccc solid;
 }
 .res-num {
   width: 100%;
@@ -103,10 +103,10 @@ export default class ComponentMain extends View {
 .res-num-item span {
   margin-left: 4%;
 }
-.log{
-  margin-top:6px;
+.log {
+  margin-top: 6px;
 }
 .logs-item {
-  line-height:30px;
+  line-height: 30px;
 }
 </style>
