@@ -1,3 +1,3 @@
-FROM aicrs.cn/ai/jia.liu/vue-web:b87f8992
+FROM aicrs.cn/ai/devops/vue/run
 
-COPY dist /vue
+COPY dist /usr/share/nginx/html/
