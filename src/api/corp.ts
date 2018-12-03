@@ -55,36 +55,35 @@ export async function queryItem(query: any) {
   const { id } = query
   const item = id > 0 ? {
     id,
-    name: '长长的公司名',
-    shortName: '公司简称',
+    name: '北京智能广宣科技有限公司',
+    shortName: '智能广宣',
 
     aptitudeType: 1,
-    aptitudeNo: '',
+    aptitudeNo: 'GB201810013234',
 
-    provinceId: 1,
-    cityId: 131,
-    districtId: 13188,
-    address: '详细地址',
+    provinceId: 2,
+    cityId: 202,
+    districtId: 20203,
+    address: '春天里888号',
 
-    contactName: '联系人',
+    contactName: '王二小',
     contactPhone: '13888888888',
     contactEmail: 'coco@qq.com',
 
-    clientLevel: 1,
+    clientLevel: 2,
     bizUserId: 1,
 
-    type: 1,
-    resType: 1,
-    adType: 1,
+    typeIdList: [1, 2],
+    subTypeIdList: [101, 201],
 
     cinemaList: [
       {
         id: 1,
         name: '博纳国际影城（常营店）',
-        profitUnit: 1,
-        profitType: 1,
-        profitRate: 1,
-        profitRateList: [
+        unit: 1,
+        type: 1,
+        rate: 1,
+        rateList: [
           { id: 1, name: '1号厅', rate: 0 },
           { id: 2, name: '2号厅', rate: 0 },
           { id: 3, name: '3号厅', rate: 0 },
@@ -96,10 +95,10 @@ export async function queryItem(query: any) {
       {
         id: 2,
         name: '博纳国际影城（通州万达店）',
-        profitUnit: 2,
-        profitType: 1,
-        profitRate: 1,
-        profitRateList: [
+        unit: 2,
+        type: 1,
+        rate: 1,
+        rateList: [
           { id: 1, name: '1号厅', rate: 1 },
           { id: 2, name: '2号厅', rate: 1.5 },
           { id: 3, name: '3号厅', rate: 2 },
@@ -134,11 +133,11 @@ export async function queryItem(query: any) {
     ],
     typeListSubMap: {
       1: [
-        { id: 1, name: '影院' },
-        { id: 2, name: '代理商' },
+        { id: 101, name: '影院' },
+        { id: 102, name: '代理商' },
       ],
       2: [
-        { id: 1, name: '直客' },
+        { id: 201, name: '直客' },
       ],
     },
     profitUnitList: [

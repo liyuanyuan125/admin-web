@@ -1,6 +1,6 @@
-# admin-portal-web
+# admin-web
 
-admin portal 的纯前端工程
+admin 的纯前端工程
 
 ## 工程初始化
 ```
