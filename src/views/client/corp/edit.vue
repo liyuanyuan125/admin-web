@@ -199,7 +199,7 @@ export default class Main extends View {
         label: [it.name, it.group, it.title].join(' | ')
       }))
 
-      const { typeIdList, subTypeIdList } = this.item
+      const { typeIdList = [], subTypeIdList = [] } = this.item
 
       this.typeList = typeList.map((it: any, i: number) => ({
         ...it,
