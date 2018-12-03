@@ -19,8 +19,8 @@
           <Row>
             <Col span="6">
               <Select v-model="item.aptitudeType">
-                <Option v-for="it in aptitudeTypeList" :key="it.id" :value="it.id"
-                  :label="it.name">{{it.name}}</Option>
+                <Option v-for="it in aptitudeTypeList" :key="it.id"
+                  :value="it.id">{{it.name}}</Option>
               </Select>
             </Col>
             <Col span="12">
@@ -65,12 +65,12 @@
         <Col span="5">
           <FormItem label="客户等级" prop="clientLevel">
             <Select v-model="item.clientLevel" clearable>
-              <Option v-for="it in clientLevelList" :key="it.id" :value="it.id"
-                :label="it.name">{{it.name}}</Option>
+              <Option v-for="it in clientLevelList" :key="it.id"
+                :value="it.id">{{it.name}}</Option>
             </Select>
           </FormItem>
         </Col>
-        <Col span="6">
+        <Col span="8">
           <FormItem label="负责商务" prop="bizUserId">
             <Select v-model="item.bizUser" clearable>
               <Option v-for="it in bizUserList" :key="it.id" :value="it.id"
@@ -78,6 +78,21 @@
             </Select>
           </FormItem>
         </Col>
+      </Row>
+
+      <Row class="row-single">
+        <FormItem label="客户类型">
+          <Row>
+            <Col v-for="it in typeList" :key="it.id" span="8">
+              <Checkbox v-model="it.checked">{{it.name}}</Checkbox>
+              <Select v-model="it.subId" :disabled="!it.checked"
+                :required="!it.checked" clearable>
+                <Option v-for="sub in typeListSubMap[it.id]" :key="sub.id"
+                  :value="sub.id">{{sub.name}}</Option>
+              </Select>
+            </Col>
+          </Row>
+        </FormItem>
       </Row>
     </Form>
   </div>
@@ -132,8 +147,7 @@ export default class Main extends View {
   clientLevelList = []
   bizUserList = []
   typeList = []
-  resTypeList = []
-  adTypeList = []
+  typeListSubMap = {}
   profitUnitList = []
   profitTypeList = []
 
@@ -163,8 +177,7 @@ export default class Main extends View {
         clientLevelList,
         bizUserList,
         typeList,
-        resTypeList,
-        adTypeList,
+        typeListSubMap,
         profitUnitList,
         profitTypeList,
       } } = await queryItem(query)
@@ -175,9 +188,8 @@ export default class Main extends View {
         ...it,
         label: [it.name, it.group, it.title].join(' | ')
       }))
-      this.typeList = typeList
-      this.resTypeList = resTypeList
-      this.adTypeList = adTypeList
+      this.typeList = typeList.map((it: any) => ({ ...it, checked: false, subId: 0 }))
+      this.typeListSubMap = typeListSubMap
       this.profitUnitList = profitUnitList
       this.profitTypeList = profitTypeList
 

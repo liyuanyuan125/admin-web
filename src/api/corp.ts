@@ -132,13 +132,15 @@ export async function queryItem(query: any) {
       { id: 1, name: '资源方' },
       { id: 2, name: '广告主' },
     ],
-    resTypeList: [
-      { id: 1, name: '影院' },
-      { id: 2, name: '代理商' },
-    ],
-    adTypeList: [
-      { id: 1, name: '直客' },
-    ],
+    typeListSubMap: {
+      1: [
+        { id: 1, name: '影院' },
+        { id: 2, name: '代理商' },
+      ],
+      2: [
+        { id: 1, name: '直客' },
+      ],
+    },
     profitUnitList: [
       { id: 1, name: '影城' },
       { id: 2, name: '影厅' },
