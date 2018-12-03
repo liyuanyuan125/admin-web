@@ -27,17 +27,18 @@ const perfectData = ({ code, data, msg }: any = {}) => {
 
 const request = async (url: string, opts: object) => {
   const isAbs = isAbsoluteUrl(url)
-  const finalUrl = isAbs ? url : ajaxBaseUrl + url
+
+  const config = {
+    baseURL: isAbs ? '' : ajaxBaseUrl,
+    url,
+    withCredentials: true,
+    ...opts,
+  }
 
   let res: any
 
   try {
-    res = await axios({
-      baseURL: isAbs ? '' : ajaxBaseUrl,
-      url: finalUrl,
-      withCredentials: true,
-      ...opts,
-    })
+    res = await axios(config)
   } catch (ex) {
     if (ex && ex.response) {
       const { status, data: html } = ex.response

@@ -1,6 +1,10 @@
 import Mock from 'mockjs'
 import { get, post, put, del } from '@/fn/ajax'
 
+const ajaxOpts = {
+  baseURL: '//yapi.aiads.com'
+}
+
 const mockData = (mockOpts: any) => {
   if (VAR.env === 'dev') {
     return { code: 0, data: Mock.mock(mockOpts), msg: '' }
@@ -9,22 +13,22 @@ const mockData = (mockOpts: any) => {
 }
 
 export async function mockGet(data: any, mockOpts: any) {
-  await get('/mock/40/demo/femock', data)
+  await get('/mock/40/demo/femock', data, ajaxOpts)
   return mockData(mockOpts)
 }
 
 export async function mockPost(data: any, mockOpts: any) {
-  await post('/mock/40/demo/femock', data)
+  await post('/mock/40/demo/femock', data, ajaxOpts)
   return mockData(mockOpts)
 }
 
 export async function mockPut(data: any, mockOpts: any) {
-  await put('/mock/40/demo/femock', data)
+  await put('/mock/40/demo/femock', data, ajaxOpts)
   return mockData(mockOpts)
 }
 
 export async function mockDel(data: any, mockOpts: any) {
-  await del('/mock/40/demo/femock', data)
+  await del('/mock/40/demo/femock', data, ajaxOpts)
   return mockData(mockOpts)
 }
 

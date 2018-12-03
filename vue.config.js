@@ -11,22 +11,22 @@ module.exports = {
       {
         env: 'dev',
         baseUrl: isDev ? '/' : '//admin.dev.aiads.com',
-        ajaxBaseUrl: '//yapi.aiads.com',
+        ajaxBaseUrl: '//mapi.dev.aiads.com',
       },
       {
         env: 'qas',
         baseUrl: '//admin.qas.aiads.com',
-        ajaxBaseUrl: '//api.qas.aiads.com',
+        ajaxBaseUrl: '//mapi.qas.aiads.com',
       },
       {
         env: 'stg',
         baseUrl: '//admin.stg.aiads.com',
-        ajaxBaseUrl: '//api.stg.aiads.com',
+        ajaxBaseUrl: '//mapi.stg.aiads.com',
       },
       {
         env: 'prd',
         baseUrl: '//admin.aiads.com',
-        ajaxBaseUrl: '//api.aiads.com',
+        ajaxBaseUrl: '//mapi.aiads.com',
       },
     ].forEach(it => {
       const { env } = it
