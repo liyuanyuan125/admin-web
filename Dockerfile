@@ -1,3 +1,3 @@
-FROM nginx:1.15.7-alpine
+FROM aicrs.cn/ai/jia.liu/vue-web
 
-COPY dist /usr/share/nginx/html/
+COPY dist /vue
