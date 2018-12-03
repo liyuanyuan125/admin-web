@@ -19,8 +19,8 @@
           <Row>
             <Col span="6">
               <Select v-model="item.aptitudeType">
-                <Option v-for="it in aptitudeTypeList" :key="it.id" :value="it.id"
-                  :label="it.name">{{it.name}}</Option>
+                <Option v-for="it in aptitudeTypeList" :key="it.id"
+                  :value="it.id">{{it.name}}</Option>
               </Select>
             </Col>
             <Col span="12">
@@ -65,19 +65,43 @@
         <Col span="5">
           <FormItem label="客户等级" prop="clientLevel">
             <Select v-model="item.clientLevel" clearable>
-              <Option v-for="it in clientLevelList" :key="it.id" :value="it.id"
-                :label="it.name">{{it.name}}</Option>
+              <Option v-for="it in clientLevelList" :key="it.id"
+                :value="it.id">{{it.name}}</Option>
             </Select>
           </FormItem>
         </Col>
-        <Col span="6">
+        <Col span="8">
           <FormItem label="负责商务" prop="bizUserId">
-            <Select v-model="item.bizUser" clearable>
+            <Select v-model="item.bizUserId" clearable>
               <Option v-for="it in bizUserList" :key="it.id" :value="it.id"
                 :label="it.label">{{it.label}}</Option>
             </Select>
           </FormItem>
         </Col>
+      </Row>
+
+      <Row class="row-single">
+        <FormItem label="客户类型">
+          <Row>
+            <Col v-for="it in typeList" :key="it.id" span="8">
+              <span class="check-select-group">
+                <Checkbox v-model="it.checked">{{it.name}}</Checkbox>
+                <Select v-model="it.subId" :disabled="!it.checked"
+                  :required="!it.checked" class="flex-1" clearable>
+                  <Option v-for="sub in typeListSubMap[it.id]" :key="sub.id"
+                    :value="sub.id">{{sub.name}}</Option>
+                </Select>
+              </span>
+            </Col>
+          </Row>
+        </FormItem>
+      </Row>
+
+      <Row class="row-single">
+        <FormItem label="关联影院">
+          <PartBindCinema v-model="item.cinemaList" :unitList="profitUnitList"
+            :typeList="profitTypeList" class="part-bind-cinema"/>
+        </FormItem>
       </Row>
     </Form>
   </div>
@@ -89,6 +113,7 @@ import { Component, Watch } from 'vue-property-decorator'
 import View from '@/util/View'
 import { queryItem } from '@/api/corp'
 import AreaSelect from '@/components/AreaSelect.vue'
+import PartBindCinema from './partBindCinema.vue'
 
 const defItem = {
   id: 0,
@@ -111,8 +136,7 @@ const defItem = {
   bizUserId: 0,
 
   type: 0,
-  resType: 0,
-  adType: 0,
+  subTypeIdList: [],
 
   cinemaList: [],
   aptitudeUrl: '',
@@ -120,7 +144,8 @@ const defItem = {
 
 @Component({
   components: {
-    AreaSelect
+    AreaSelect,
+    PartBindCinema,
   }
 })
 export default class Main extends View {
@@ -132,12 +157,11 @@ export default class Main extends View {
   clientLevelList = []
   bizUserList = []
   typeList = []
-  resTypeList = []
-  adTypeList = []
+  typeListSubMap = {}
   profitUnitList = []
   profitTypeList = []
 
-  area = [0, 0, 0]
+  area: any[] = []
 
   nameError = ''
 
@@ -163,8 +187,7 @@ export default class Main extends View {
         clientLevelList,
         bizUserList,
         typeList,
-        resTypeList,
-        adTypeList,
+        typeListSubMap,
         profitUnitList,
         profitTypeList,
       } } = await queryItem(query)
@@ -175,11 +198,22 @@ export default class Main extends View {
         ...it,
         label: [it.name, it.group, it.title].join(' | ')
       }))
-      this.typeList = typeList
-      this.resTypeList = resTypeList
-      this.adTypeList = adTypeList
+
+      const { typeIdList = [], subTypeIdList = [] } = this.item
+
+      this.typeList = typeList.map((it: any, i: number) => ({
+        ...it,
+        checked: typeIdList[i] > 0,
+        subId: subTypeIdList[i] || 0
+      }))
+      this.typeListSubMap = typeListSubMap
+
       this.profitUnitList = profitUnitList
       this.profitTypeList = profitTypeList
+
+      const { provinceId = 0, cityId = 0, districtId = 0 } = this.item
+
+      this.area = [provinceId, cityId, districtId]
 
       // 优化体验
       if (aptitudeTypeList.length === 1) {
@@ -198,6 +232,12 @@ export default class Main extends View {
     this.item.cityId = val[1]
     this.item.districtId = val[2]
   }
+
+  @Watch('typeList', { deep: true })
+  watchTypeList(val: any[]) {
+    this.item.typeIdList = val.map(it => it.checked ? it.id : 0)
+    this.item.subTypeIdList = val.map(it => it.checked ? it.subId || 0 : 0)
+  }
 }
 </script>
 
@@ -212,5 +252,28 @@ export default class Main extends View {
   .ivu-col:last-child {
     padding-right: 22px;
   }
+}
+.check-select-group {
+  display: inline-flex;
+  width: 90%;
+  border: 1px solid #dcdee2;
+  border-radius: 4px;
+  padding-left: 8px;
+  overflow: hidden;
+  /deep/ .ivu-select {
+    .ivu-select-placeholder,
+    .ivu-select-selected-value {
+      position: relative;
+      top: 1px;
+    }
+    .ivu-select-selection {
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+  }
+}
+.part-bind-cinema {
+  width: 660px;
 }
 </style>

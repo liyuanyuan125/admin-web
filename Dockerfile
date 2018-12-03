@@ -1,3 +1,3 @@
-FROM nginx:1.15.7-alpine
+FROM aicrs.cn/ai/devops/vue/run
 
 COPY dist /usr/share/nginx/html/
