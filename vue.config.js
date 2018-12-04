@@ -4,6 +4,23 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const resolve = dir => path.join(__dirname, 'src', dir)
 
 module.exports = {
+  devServer: {
+    headers: {
+      'Access-Control-Allow-Origin': '*'
+    },
+    proxy: {
+      '/': {
+        target: 'http://mapi.dev.aiads.com',
+        changeOrigin: true,
+        bypass(req) {
+          if (req.headers.accept.indexOf('html') !== -1) {
+            return '/index.html'
+          }
+        }
+      }
+    }
+  },
+
   chainWebpack: config => {
     const isDev = process.env.NODE_ENV === 'development'
     // 开发|测试|仿真|生产：aiads-dev|qas|stg|prd
@@ -11,7 +28,7 @@ module.exports = {
       {
         env: 'dev',
         baseUrl: isDev ? '/' : '//admin.dev.aiads.com',
-        ajaxBaseUrl: '//mapi.dev.aiads.com',
+        ajaxBaseUrl: isDev ? '/' : '//mapi.dev.aiads.com',
       },
       {
         env: 'qas',
