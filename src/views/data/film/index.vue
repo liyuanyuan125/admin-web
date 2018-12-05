@@ -89,20 +89,137 @@ export default class Main extends View {
       { title: 'MtimeID', key: 'mtimeId', width: 100, align: 'center' },
       { title: '专资ID', key: 'code', width: 80, align: 'center' },
       {
-        title: '影城名称',
-        key: 'name',
-        width: 90,
+        title: '中国上映时间',
+        key: 'openTime',
+        width: 180,
         align: 'center',
-        render: (hh: any, { row  }: any) => {
+        render: (hh: any, { row : { openTime } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          return <div class='row-acts row-hidden'>
-            <router-link to={{ name: 'data-film-detail', params: { ...row } }} title={row.name}>{row.name}</router-link>
+          const html = moment(openTime).format(timeFormat)
+          return <span v-html={html}></span>
+          /* tslint:enable */
+        }
+      },
+      {
+        title: '今日票房',
+        key: 'todayBo',
+        width: 90,
+        align: 'center',
+        render: (hh: any, { row : { todayBo } }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          const add = toThousands(todayBo)
+          return <span>{add}</span>
+          /* tslint:enable */
+        }
+      },
+      {
+        title: '累计票房',
+        key: 'sumBo',
+        width: 80,
+        align: 'center',
+        render: (hh: any, { row : { sumBo } }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          const sun = toThousands(sumBo)
+          return <span class="row-hidden" title = { sun }>{sun}</span>
+          /* tslint:enable */
+        }
+      },
+      {
+        title: '演员',
+        key: 'performers',
+        width: 80,
+        align: 'center',
+        render: (hh: any, { row : { performers } }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          return <div class="row-hidden" title = { performers }>
+            { performers }
           </div>
           /* tslint:enable */
         }
       },
-   ]
+      {
+        title: '导演',
+        key: 'director',
+        width: 80,
+        align: 'center'
+      },
+      {
+        title: '产地',
+        key: 'fromPlace',
+        width: 80,
+        align: 'center'
+      },
+      {
+        title: '类型',
+        key: 'type',
+        width: 80,
+        align: 'center',
+        render: (hh: any, { row : { type } }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          return <div class="row-hidden">
+            <span title = { type }>{ type }</span>
+          </div>
+          /* tslint:enable */
+        }
+      },
+      {
+        title: '分类',
+        key: 'categoryName',
+        width: 100,
+        align: 'center',
+        render: (hh: any, { row: { id, categoryName, categoryId } }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          const value = {
+              id,
+              key: categoryId,
+              text: categoryName,
+              list: this.categoryList,
+          }
+          return <PartPoptipEdit v-model={value}
+              on-change={this.editStatus.bind(this)}/>
+          /* tslint:enable */
+        }
+      },
+      {
+        title: '控制状态',
+        key: 'controlStatus',
+        width: 80,
+        align: 'center',
+        render: (hh: any, { row: { id, controlStatusString, controlStatus } }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          const value = {
+              id,
+              key: controlStatus,
+              text: controlStatusString,
+              list: this.controlList,
+          }
+          return <PartPoptipEdit v-model={value}
+              on-change={this.editControlStatus.bind(this)}/>
+          /* tslint:enable */
+        }
+      },
+      {
+        title: '操作',
+        key: 'action',
+        width: 80,
+        align: 'center',
+        render: (hh: any, { row }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          return <div class='row-acts'>
+            <a on-click={this.doSearch.bind(this)}>刷新</a>
+          </div>
+          /* tslint:enable */
+        }
+      }
+    ]
   }
 
   get cachedMap() {
