@@ -82,5 +82,10 @@ export default [
     path: '/data/film/',
     name: 'data-film',
     component: () => import(/* webpackChunkName: "data-film" */ './views/data/film/index.vue')
+  },
+  {
+    path: '/data/film/detail',
+    name: 'data-film-detail',
+    component: () => import(/* webpackChunkName: "data-film-detail" */ './views/data/film/detail.vue')
   }
 ] as any[]
