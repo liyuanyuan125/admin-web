@@ -91,15 +91,8 @@ export default class Main extends View {
       {
         title: '影城名称',
         key: 'name',
-        width: 80,
+        width: 90,
         align: 'center',
-        render: (hh: any, { row : { openTime } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          const html = moment(openTime).format(timeFormat)
-          return <span v-html={html}></span>
-          /* tslint:enable */
-        }
       },
       {
         title: '中国上映时间',
