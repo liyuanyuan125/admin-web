@@ -79,7 +79,7 @@ export async function queryItem(query: any) {
     cinemaList: [
       {
         id: 1,
-        name: '博纳国际影城（常营店）',
+        name: '博纳国际影院（常营店）',
         unit: 1,
         type: 1,
         rate: 1,
@@ -94,7 +94,7 @@ export async function queryItem(query: any) {
       },
       {
         id: 2,
-        name: '博纳国际影城（通州万达店）',
+        name: '博纳国际影院（通州万达店）',
         unit: 2,
         type: 1,
         rate: 1,
@@ -141,7 +141,7 @@ export async function queryItem(query: any) {
       ],
     },
     profitUnitList: [
-      { id: 1, name: '影城' },
+      { id: 1, name: '影院' },
       { id: 2, name: '影厅' },
     ],
     profitTypeList: [

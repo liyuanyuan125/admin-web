@@ -1,46 +1,7 @@
-// import { get } from '@/fn/ajax'
-import { mockGet } from './mock'
+import { get } from '@/fn/ajax'
 
 // 刷新浏览器后重置
 const cache: any = {}
-
-const mockAreaList = async (pid = 0) => {
-  const map: any = {
-    0: [
-      { id: 1, name: '北京市' },
-      { id: 2, name: '河南省' },
-    ],
-    1: [
-      { id: 101, name: '北京市' },
-    ],
-    2: [
-      { id: 201, name: '郑州市' },
-      { id: 202, name: '商丘市' },
-      { id: 203, name: '南阳市' },
-    ],
-    101: [
-      { id: 10101, name: '朝阳区' },
-      { id: 10102, name: '海淀区' },
-      { id: 10103, name: '东城区' },
-    ],
-    201: [
-      { id: 20101, name: '中原区' },
-      { id: 20102, name: '二七区' },
-    ],
-    202: [
-      { id: 20201, name: '梁园区' },
-      { id: 20202, name: '睢阳区' },
-      { id: 20203, name: '宁陵县' },
-    ],
-    203: [
-      { id: 20301, name: '卧龙区' },
-      { id: 20302, name: '邓州市' },
-    ],
-  }
-  return await mockGet({ id: pid }, {
-    items: map[pid] || []
-  })
-}
 
 /**
  * 获取子区域列表，带缓存
@@ -52,7 +13,22 @@ export async function getSubList(pid: number = 0) {
     return cacheList
   }
 
-  const { data: { items: list } } = await mockAreaList(pid)
+  const { data } = await get('/basis/districts', { parentIds: pid, pageSize: 888888 })
+  const tlist: any[] = (data.items || []).map((it: any) => {
+    return {
+      ...it,
+      name: (it.nameCn || it.nameEn)
+    }
+  })
+
+  const list = tlist.sort((a, b) => {
+    const tsa = parseInt(a.orderNum, 10)
+    const tsb = parseInt(a.orderNum, 10)
+    const sortA = isNaN(tsa) ? Number.MAX_SAFE_INTEGER : tsa
+    const sortB = isNaN(tsb) ? Number.MAX_SAFE_INTEGER : tsb
+    return sortA - sortB
+  })
+
   cache[pid] = list
 
   return list

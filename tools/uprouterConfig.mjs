@@ -12,4 +12,5 @@ export default {
   'client-account-detail': '/client/account/detail/:id?',
   'client-corp-detail': '/client/corp/detail/:id?',
   'client-corp-edit': '/client/corp/edit/:id?',
+  'data-cinema-hall': '/data/cinema-hall/:id',
 }

@@ -3,6 +3,7 @@ declare module '*.vue' {
   export default Vue
 }
 
+// TODO: 去除这里的声明，改成小写
 declare module 'iview' {
   const iView: any
   export default iView
