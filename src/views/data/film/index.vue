@@ -102,6 +102,19 @@ export default class Main extends View {
         }
       },
       {
+        title: '中国上映时间',
+        key: 'openTime',
+        width: 180,
+        align: 'center',
+        render: (hh: any, { row : { openTime } }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          const html = moment(openTime).format(timeFormat)
+          return <span v-html={html}></span>
+          /* tslint:enable */
+        }
+      },
+      {
         title: '今日票房',
         key: 'todayBo',
         width: 90,
