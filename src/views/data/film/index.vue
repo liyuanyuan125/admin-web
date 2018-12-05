@@ -93,6 +93,13 @@ export default class Main extends View {
         key: 'name',
         width: 90,
         align: 'center',
+        render: (hh: any, { row  }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          return <div class='row-acts'>
+          </div>
+          /* tslint:enable */
+        }
       },
       {
         title: '中国上映时间',
