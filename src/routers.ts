@@ -79,6 +79,11 @@ export default [
     component: () => import(/* webpackChunkName: "data-dict" */ './views/data/dict/index.vue')
   },
   {
+    path: '/data/dict/viewDictionary/:id?',
+    name: 'data-dict-viewDictionary',
+    component: () => import(/* webpackChunkName: "data-dict-viewDictionary" */ './views/data/dict/viewDictionary.vue')
+  },
+  {
     path: '/data/film/',
     name: 'data-film',
     component: () => import(/* webpackChunkName: "data-film" */ './views/data/film/index.vue')
