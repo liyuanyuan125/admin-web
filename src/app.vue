@@ -93,7 +93,7 @@ export default class App extends View {
         },
         {
           name: 'data-cinema',
-          label: '影城管理',
+          label: '影院管理',
         },
         {
           name: 'data-film',
@@ -112,6 +112,7 @@ export default class App extends View {
     'client-account-detail': 'client-account',
     'client-corp-detail': 'client-corp',
     'client-corp-edit': 'client-corp',
+    'data-cinema-hall': 'data-cinema',
   }
 
   get siderOpenNames() {

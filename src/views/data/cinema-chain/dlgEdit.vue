@@ -52,6 +52,7 @@ const dataForm = {
 
 @Component
 export default class ComponentMain extends View {
+  @Prop({ type: Object }) cinemaOnes: any
   showDlg = false
   id = 0
   ruleValidate = {
@@ -80,9 +81,14 @@ export default class ComponentMain extends View {
       const myThis: any = this
       myThis.$refs[dataForms].resetFields()
       if (this.id) {
-        const {data: {
-          items: list
-        }} = await dataFrom({ id })
+        // const {data: {
+        //   items: list
+        // }} = await dataFrom({ id })
+        this.dataForm.name = this.cinemaOnes.name
+        this.dataForm.shortName = this.cinemaOnes.shortName
+        this.dataForm.pinyin = this.cinemaOnes.pinyin
+        this.dataForm.Status = this.cinemaOnes.chainControlStatus + ''
+        this.dataForm.chainControlStatus = this.cinemaOnes.chainControlStatus + ''
       }
     })
   }

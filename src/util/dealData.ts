@@ -53,3 +53,19 @@ export function normalizeList(list: any[], idKey: string, nameKey: string) {
     return result
   }, [])
 }
+
+/**
+ * 格式化数字（每三位加逗号
+ * @param nums 数字
+ */
+
+export function toThousands(nums: any) {
+  let num = (nums || 0).toString()
+  let result = ''
+  while (num.length > 3) {
+      result = ',' + num.slice(-3) + result
+      num = num.slice(0, num.length - 3)
+  }
+  if (num) { result = num + result }
+  return result
+}

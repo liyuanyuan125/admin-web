@@ -20,7 +20,7 @@
         @on-change="page => query.pageIndex = page"
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
-    <DlgEdit  ref="addOrUpdate" @refreshDataList="search" v-if="addOrUpdateVisible" />
+    <DlgEdit  ref="addOrUpdate" :cinemaOnes="editOne"  @refreshDataList="search" v-if="addOrUpdateVisible" />
   </div>
 </template>
 
@@ -55,7 +55,7 @@ export default class Main extends View {
   query = { ...defQuery }
 
   oldQuery: any = null
-
+  editOne: any = null
   loading = false
   addOrUpdateVisible = false
   list = []
@@ -98,11 +98,11 @@ export default class Main extends View {
       key: 'action',
       width: 80,
       align: 'center',
-      render: (hh: any, { row: { id } }: any) => {
+      render: (hh: any, { row }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         return <div class='row-acts'>
-          <a on-click={this.edit.bind(this, id)}>编辑</a>
+          <a on-click={this.edit.bind(this, row.id, row)}>编辑</a>
         </div>
         /* tslint:enable */
       }
@@ -169,8 +169,9 @@ export default class Main extends View {
   }
 
   // 新增 / 修改
-  edit(id: number) {
+  edit(id: number, row: any) {
     this.addOrUpdateVisible = true
+    !!id ? this.editOne = row : this.editOne
     this.$nextTick(() => {
       const myThis: any = this
       myThis.$refs.addOrUpdate.init(id)

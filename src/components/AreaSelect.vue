@@ -1,6 +1,6 @@
 <template>
   <Cascader v-model='inValue' :data='data' :load-data='loadData' :clearable='clearable'
-    placeholder='加载中，请稍等...' class='area-select' :render-format='format'></Cascader>
+    class='area-select' :render-format='format'></Cascader>
 </template>
 
 <script lang="ts">
@@ -8,6 +8,7 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import View from '@/util/View'
 import { getSubList } from '@/api/area'
+import { toast } from '@/ui/modal'
 
 @Component
 export default class ComponentMain extends View {
@@ -27,11 +28,17 @@ export default class ComponentMain extends View {
   data: number[] = []
 
   async getSubList(pid = 0, level = 0) {
-    const list = await getSubList(pid)
+    let list: any[]
+    try {
+      list = await getSubList(pid)
+    } catch (ex) {
+      list = []
+      this.handleError(ex)
+    }
 
     const subLevel = level + 1
 
-    const result = list.map((it: any) => {
+    const tlist = list.map((it: any) => {
       const item: any = {
         value: it.id,
         label: it.name,
@@ -43,6 +50,10 @@ export default class ComponentMain extends View {
       }
       return item
     })
+
+    const result = level > 0
+      ? [{ value: 0, label: '本区域', isFake: true }].concat(tlist)
+      : tlist
 
     return result
   }
@@ -60,10 +71,10 @@ export default class ComponentMain extends View {
   }
 
   format(labels: any[], selectedData: any[]) {
-    // const list = selectedData.map(it => it.label)
-    return labels && labels.length > 0
-      ? labels.join(' / ')
-      : '请选择'
+    const list = selectedData.filter(it => !it.isFake).map(it => it.label)
+    return list.length > 0
+      ? list.join(' / ')
+      : ''
   }
 
   fillList(list: number[]) {
@@ -85,4 +96,7 @@ export default class ComponentMain extends View {
 </script>
 
 <style lang="less" scoped>
+.area-select {
+  display: inline-block;
+}
 </style>
