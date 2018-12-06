@@ -96,7 +96,7 @@ export default class Main extends View {
         render: (hh: any, { row  }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          return <div class='row-acts'>
+          return <div class='row-acts row-hidden'>
           </div>
           /* tslint:enable */
         }
