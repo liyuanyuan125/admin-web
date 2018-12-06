@@ -11,6 +11,24 @@
         </div>
       </div>
     </div>
+    <div class="Inp-Group-res">
+      <div class="Inps-res">
+        <div class="res-num">
+          <p>英文名称</p>
+          <div class="res-num-item change-item">
+            <span>{{detil.name}}</span>
+          </div>
+        </div>
+      </div>
+      <div class="Inps-res">
+        <div class="res-num">
+          <p>电影名称：</p>
+          <div class="res-num-item change-item">
+            <span>{{detil.name}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
