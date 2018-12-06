@@ -7,6 +7,10 @@
  * @return object 新生成的对象
  */
 export function slice(object: any, keys: string|string[]): object {
+  if (object == null) {
+    return {}
+  }
+
   const keyList = keys instanceof Array ? keys : keys.split(',')
   const newo: any = {}
   for (const n in keyList) {
@@ -25,6 +29,10 @@ export function slice(object: any, keys: string|string[]): object {
  * @param cleanList 要清除的值
  */
 export function clean(object: any, cleanList: any[] = [null, undefined, '']) {
+  if (object == null) {
+    return {}
+  }
+
   const newo: any = {}
   for (const key in object) {
     if (object.hasOwnProperty(key)) {

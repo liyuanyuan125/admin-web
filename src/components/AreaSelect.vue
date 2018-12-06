@@ -15,7 +15,7 @@ export default class ComponentMain extends View {
   /**
    * 值本身，可以使用 v-model 进行双向绑定
    */
-  @Prop({ type: Array, default: () => [] }) value!: number[]
+  @Prop({ type: Array, default: () => [] }) value!: string[]
 
   /**
    * 最大级别，取值范围：1 ~ 3，分别对应：省、市、区县
@@ -24,8 +24,8 @@ export default class ComponentMain extends View {
 
   @Prop({ type: Boolean, default: true }) clearable!: boolean
 
-  inValue: number[] = []
-  data: number[] = []
+  inValue: string[] = []
+  data: string[] = []
 
   async getSubList(pid = 0, level = 0) {
     let list: any[]
@@ -52,7 +52,7 @@ export default class ComponentMain extends View {
     })
 
     const result = level > 0
-      ? [{ value: 0, label: '本区域', isFake: true }].concat(tlist)
+      ? [{ value: '0', label: '本区域', isFake: true }].concat(tlist)
       : tlist
 
     return result
@@ -77,18 +77,18 @@ export default class ComponentMain extends View {
       : ''
   }
 
-  fillList(list: number[]) {
-    const zeroList = new Array(this.maxLevel).fill(0)
+  fillList(list: string[]) {
+    const zeroList = new Array(this.maxLevel).fill('0')
     return zeroList.map((it, i) => i in list ? list[i] : it)
   }
 
   @Watch('value')
-  watchValue(val: number[]) {
+  watchValue(val: string[]) {
     this.inValue = val
   }
 
   @Watch('inValue')
-  watchInValue(val: number[]) {
+  watchInValue(val: string[]) {
     const value = val.length < this.maxLevel ? this.fillList(val) : val
     this.$emit('input', value)
   }

@@ -21,7 +21,7 @@
         <Button type="default" @click="reset" class="btn-reset">清空</Button>
       </form>
       <div class="acts">
-        <Button type="success" @click="edit(0)">创建</Button>
+        <Button type="success" icon="md-add-circle" @click="edit(0)">新建影院</Button>
       </div>
     </div>
 
@@ -34,29 +34,37 @@
         @on-change="page => query.pageIndex = page"
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
+
+    <div v-for="(it, i) in helperList" :key="it.id">
+      <DlgEdit v-model="helperList[i]" @done="dlgEditDone" v-if="it.showDlgEdit"/>
+    </div>
   </div>
 </template>
 
 <script lang="tsx">
 import { Component, Watch } from 'vue-property-decorator'
 import View from '@/util/View'
+import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
-import { clean } from '@/fn/object'
+import { slice, clean } from '@/fn/object'
+import { isEqual } from 'lodash'
 import { queryList, updateStatus, updateControlStatus } from '@/api/cinema'
+import { numberify, numberKeys } from '@/fn/typeCast'
 import AreaSelect from '@/components/AreaSelect.vue'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import PartPoptipEdit from './partPoptipEdit.vue'
+import DlgEdit from './dlgEdit.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
 const defQuery = {
-  id: null,
+  id: '',
   name: '',
   chainId: '',
-  provinceId: 0,
-  cityId: 0,
-  countyId: 0,
+  provinceId: '0',
+  cityId: '0',
+  countyId: '0',
   status: 0,
   controlStatus: 0,
   hallDataStatus: 0,
@@ -69,10 +77,11 @@ const defQuery = {
     AreaSelect,
     CinemaChainSelect,
     PartPoptipEdit,
+    DlgEdit,
   }
 })
 export default class Main extends View {
-  query = { ...defQuery }
+  query: any = {}
 
   oldQuery: any = null
 
@@ -85,22 +94,21 @@ export default class Main extends View {
   hallDataStatusList: any[] = []
   gradeList: any[] = []
 
-  area: any[] = [0, 0, 0]
+  area: string[] = ['0', '0', '0']
+
+  // 辅助数据
+  helperList: any[] = []
 
   get columns() {
     return  [
-      { title: '序号', key: 'id', width: 70, align: 'center' },
-      { title: '专资ID', key: 'code', width: 55, align: 'center' },
-      { title: '影院名称', key: 'shortName', width: 70, align: 'center' },
-      { title: '官方名称', key: 'officalName', minWidth: 90, align: 'center' },
-      { title: '院线', key: 'chainName', width: 70, align: 'center' },
-      { title: '省份', key: 'provinceName', width: 70, align: 'center' },
-      { title: '城市', key: 'cityName', width: 70, align: 'center' },
-      { title: '区县', key: 'countyName', width: 70, align: 'center' },
-      { title: '地址', key: 'address', width: 80, align: 'center' },
-      { title: '售票系统', key: 'softwareName', width: 80, align: 'center' },
+      { title: '序号', key: 'id', width: 138, align: 'center' },
+      { title: '专资ID', key: 'code', width: 70, align: 'center' },
+      { title: '影院名称', key: 'shortName', minWidth: 70, align: 'center' },
+      { title: '院线', key: 'chainName', width: 120, align: 'center' },
+      { title: '省份', key: 'provinceName', width: 80, align: 'center' },
+      { title: '城市', key: 'cityName', width: 80, align: 'center' },
+      { title: '区县', key: 'countyName', width: 80, align: 'center' },
       { title: '级别', key: 'gradeName', width: 60, align: 'center' },
-      { title: '邮编', key: 'zipCode', width: 60, align: 'center' },
       {
         title: '营业状态',
         width: 70,
@@ -140,13 +148,14 @@ export default class Main extends View {
       {
         title: '操作',
         key: 'action',
-        width: 66,
+        width: 108,
         align: 'center',
         render: (hh: any, { row: { id } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          return <div class='row-acts'>
+          return <div class="row-acts">
             <router-link to={{ name: 'data-cinema-hall', params: { id } }}>查看影厅</router-link>
+            <a on-click={this.edit.bind(this, id)}>编辑</a>
           </div>
           /* tslint:enable */
         }
@@ -177,7 +186,15 @@ export default class Main extends View {
   }
 
   mounted() {
+    const urlQuery = slice(urlParam(), Object.keys(defQuery))
+    this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
     this.doSearch()
+  }
+
+  updateUrl() {
+    const query = prettyQuery(this.query, defQuery)
+    const url = buildUrl(location.pathname, query)
+    history.replaceState(null, '', url)
   }
 
   search() {
@@ -196,6 +213,8 @@ export default class Main extends View {
 
     this.oldQuery = { ...this.query }
 
+    this.updateUrl()
+
     this.loading = true
     const query = clean({ ...this.query })
     try {
@@ -213,6 +232,10 @@ export default class Main extends View {
       this.controlStatusList = cstatusList
       this.hallDataStatusList = hallDataStatusList
       this.gradeList = gradeList
+      this.helperList = list.map((it: any) => ({
+        id: it.id,
+        showDlgEdit: false,
+      }))
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -220,9 +243,17 @@ export default class Main extends View {
     }
   }
 
-  edit(id: string) {
-    const params: any = id ? { id } : {}
-    this.$router.push({ name: 'client-corp-edit', params })
+  edit(id: string | number) {
+    let item = this.helperList.find(it => it.id == id)
+    if (item == null && id == 0) {
+      item = { id: 0, showDlgEdit: true }
+      this.helperList.push(item)
+    }
+    item && (item.showDlgEdit = true)
+  }
+
+  dlgEditDone() {
+    this.doSearch()
   }
 
   async editStatus({ id, key: newStatus, showLoading }: any) {
@@ -258,11 +289,18 @@ export default class Main extends View {
     if (this.query.pageIndex == this.oldQuery.pageIndex) {
       this.query.pageIndex = 1
     }
+
+    // 更新 area，其实直接更新也行，不会导致死循环，这里判断 isEqual 为了更加优化
+    const area = Object.values(slice(this.query, 'provinceId,cityId,countyId'))
+    if (!isEqual(this.area, area)) {
+      this.area = area
+    }
+
     this.doSearch()
   }
 
   @Watch('area')
-  watchArea(val: number[]) {
+  watchArea(val: string[]) {
     this.query.provinceId = val[0]
     this.query.cityId = val[1]
     this.query.countyId = val[2]
@@ -272,6 +310,10 @@ export default class Main extends View {
 
 <style lang="less" scoped>
 @import '../../../site/lib.less';
+
+.act-bar {
+  margin-top: 5px;
+}
 
 .form {
   .input,
@@ -304,18 +346,8 @@ export default class Main extends View {
       content: '-';
     }
   }
-  /deep/ .poptip-edit {
-    cursor: pointer;
-    .ivu-icon {
-      position: relative;
-      top: -2px;
-      left: 2px;
-      color: @c-base;
-      font-size: 18px;
-    }
-  }
-  /deep/ .poptip-ok {
-    margin-left: 5px;
+  /deep/ .row-acts > a {
+    margin: 0 4px;
   }
 }
 
