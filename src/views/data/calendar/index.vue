@@ -32,10 +32,13 @@ import { get } from '@/fn/ajax'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
-import { clean } from '@/fn/object'
+import { slice, clean } from '@/fn/object'
 import { dataFrom , queryList , dels} from '@/api/calendar'
-
+import { numberify, numberKeys } from '@/fn/typeCast'
+import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import DlgEdit from './dlgEdit.vue'
+
+import {confirm} from '@/ui/modal'
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
@@ -46,6 +49,7 @@ const defQuery = {
   name: '',
   pageIndex: 1,
   pageSize: 20,
+  years: ''
 }
 
 // const dataForm = {
@@ -121,7 +125,15 @@ export default class Main extends View {
   }
 
   mounted() {
+    const urlQuery = slice(urlParam(), Object.keys(defQuery))
+    this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
     this.doSearch()
+  }
+
+  updateUrl() {
+    const query = prettyQuery(this.query, defQuery)
+    const url = buildUrl(location.pathname, query)
+    history.replaceState(null, '', url)
   }
 
   search() {
@@ -139,6 +151,8 @@ export default class Main extends View {
     }
 
     this.oldQuery = { ...this.query }
+
+    this.updateUrl()
 
     this.loading = true
     const query = clean({ ...this.query })
@@ -172,9 +186,13 @@ export default class Main extends View {
   }
 
   async dele(id: number, row: any) {
-    // alert(id)
-    await dels({id})
-    this.doSearch()
+    try {
+      await confirm('确定删除该条数据吗')
+      dels({id})
+      this.doSearch()
+    } catch (ex) {
+      // this.handleError(ex)
+    }
   }
 
   @Watch('query', { deep: true })

@@ -29,7 +29,9 @@ import { queryList , dictqueryList } from '@/api/dict'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
-import { clean } from '@/fn/object'
+import { slice, clean } from '@/fn/object'
+import { numberify, numberKeys } from '@/fn/typeCast'
+import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import dlgViewEdit from './dlgViewEdit.vue'
 
 
@@ -40,6 +42,7 @@ const defQuery = {
   categoryId: '',
   pageIndex: 1,
   pageSize: 20,
+  dictionaryName: ''
 }
 
 
@@ -115,13 +118,23 @@ export default class Main extends View {
   }
 
   mounted() {
+    const urlQuery = slice(urlParam(), Object.keys(defQuery))
+    this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
+
     const { id } = this.$route.params
     this.query.categoryId = id
+
     this.doSearch()
   }
 
   search() {
     this.query.pageIndex = 1
+  }
+
+  updateUrl() {
+    const query = prettyQuery(this.query, defQuery)
+    const url = buildUrl(location.pathname, query)
+    history.replaceState(null, '', url)
   }
 
   reset() {
@@ -135,7 +148,7 @@ export default class Main extends View {
     }
 
     this.oldQuery = { ...this.query }
-
+    this.updateUrl()
     this.loading = true
     const query = clean({ ...this.query })
     try {
