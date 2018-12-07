@@ -2,10 +2,12 @@
   <div class="page">
       <div class="act-bar flex-box">
         <div class="acts">
-          <Button type="success" @click="edit(0)">新建字典分类</Button>
+          <Button class="bth" type="text" @click="goback()">返回字典分类</Button>
+          <LazyInput v-model="query.dictionaryName"  placeholder="词条名称" class="input"/>
+          <Button class="okbth" type="success" @submit.prevent="search">查询</Button>
+          <Button class="addbth" type="success" @click="edit(0)">新建词条</Button>
         </div>
       </div>
-
       <Table :columns="columns" :data="tableData" :loading="loading"
         border stripe disabled-hover size="small" class="table"></Table>
 
@@ -15,75 +17,91 @@
           @on-change="page => query.pageIndex = page"
           @on-page-size-change="pageSize => query.pageSize = pageSize"/>
       </div>
-      <dlgEdit  ref="addOrUpdate" :cinemaOnes="editOne" @refreshDataList="search" v-if="addOrUpdateVisible"></dlgEdit>
+      <dlgViewEdit :cinemaOnes="editOne"  ref="addOrUpdate" @refreshDataList="search" v-if="addOrUpdateVisible"></dlgViewEdit>
   </div>
 </template>
 
 <script lang="tsx">
-// doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Watch } from 'vue-property-decorator'
 import View from '@/util/View'
 import { get } from '@/fn/ajax'
+import { queryList , dictqueryList } from '@/api/dict'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
-import { clean } from '@/fn/object'
-import { queryList , set } from '@/api/dict'
+import { slice, clean } from '@/fn/object'
+import { numberify, numberKeys } from '@/fn/typeCast'
+import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
+import dlgViewEdit from './dlgViewEdit.vue'
 
-import dlgEdit from './dlgEdit.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
+const timeFormat = 'YYYY-MM-DD<br>HH:mm:ss'
 
 const defQuery = {
-  id: null,
-  name: '',
   categoryId: '',
   pageIndex: 1,
   pageSize: 20,
+  dictionaryName: ''
 }
+
 
 @Component({
   components: {
-    dlgEdit
+    dlgViewEdit
   }
 })
 export default class Main extends View {
   query = { ...defQuery }
 
+  loading = false
+  list = []
+  lists = []
+  // names = []
+  addOrUpdateVisible = false
+  total = 0
   oldQuery: any = null
   editOne: any = null
 
-  loading = false
-  addOrUpdateVisible = false
-  list = []
-  total = 0
-  names = []
-  qStatus = []
-
+  cqStatus = []
+  categorys = []
   columns = [
     { title: '序号', key: 'id', align: 'center' },
-    { title: '分类名称', key: 'name', align: 'center', },
+    {
+      title: '字典分类',
+      key: 'categorys',
+      align: 'center',
+    },
+    {
+      title: '词条名称',
+      key: 'name',
+      align: 'center',
+    },
+    { title: '排序', key: 'sortValue', align: 'center' },
     { title: '唯一识别符', key: 'code', align: 'center' },
-    { title: '启用状态', key: 'qStatus', align: 'center' },
+    {
+      title: '启用状态',
+      key: 'cqStatus',
+      align: 'center',
+    },
     {
       title: '操作',
       key: 'action',
       align: 'center',
-      render: (hh: any, { row: { id }, row }: any) => {
+      render: (hh: any, { row }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         return <div class='row-acts'>
-          <router-link to={{ name: 'data-dict-viewDictionary', params: { id } }}>查看字典</router-link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <a on-click={this.edit.bind(this, row.id, row)}>编辑</a>
         </div>
         /* tslint:enable */
       }
     }
   ]
-
   get cachedMap() {
     return {
-      qStatus: this.qStatus,
+      cqStatus: this.cqStatus,
+      categorys: this.cqStatus
     }
   }
 
@@ -92,20 +110,31 @@ export default class Main extends View {
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        qStatus: it.enableStatus == 1 ? '启用' : '停用',
+        cqStatus: it.enableStatus == 1 ? '启用' : '停用',
+        categorys: it.category.name
       }
     })
-    // console.log(list)
     return list
   }
 
   mounted() {
+    const urlQuery = slice(urlParam(), Object.keys(defQuery))
+    this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
+
+    const { id } = this.$route.params
+    this.query.categoryId = id
+
     this.doSearch()
-    // console.log(this.names)
   }
 
   search() {
     this.query.pageIndex = 1
+  }
+
+  updateUrl() {
+    const query = prettyQuery(this.query, defQuery)
+    const url = buildUrl(location.pathname, query)
+    history.replaceState(null, '', url)
   }
 
   reset() {
@@ -119,29 +148,41 @@ export default class Main extends View {
     }
 
     this.oldQuery = { ...this.query }
-
+    this.updateUrl()
     this.loading = true
     const query = clean({ ...this.query })
     try {
       const { data: {
-        items: list,
+        list: list,
         totalCount: total,
-        qStatus
-      } } = await queryList(query)
+        cqStatus,
+        categorys,
+      } } = await dictqueryList(query)
       this.list = list
       this.total = total
-      this.qStatus = qStatus
-      this.names = this.list
+      this.cqStatus = cqStatus
+      this.categorys = categorys
     } catch (ex) {
       this.handleError(ex)
     } finally {
       this.loading = false
     }
-  }
 
-  // 新增 / 修改
+    // try {
+    //   const { data: {
+    //     items: list,
+    //     totalCount: total,
+    //     qStatus
+    //   } } = await queryList(query)
+    //   this.lists = list
+    //   // console.log(this.lists)
+    // } catch (ex) {
+    //   this.handleError(ex)
+    // } finally {
+    //   this.loading = false
+    // }
+  }
   edit(id: number, row: any) {
-    // console.log(id)
     this.addOrUpdateVisible = true
     !!id ? this.editOne = row : this.editOne
     this.$nextTick(() => {
@@ -149,7 +190,9 @@ export default class Main extends View {
       myThis.$refs.addOrUpdate.init(id)
     })
   }
-
+  goback() {
+    this.$router.push({ name: 'data-dict' })
+  }
   @Watch('query', { deep: true })
   watchQuery() {
     if (this.query.pageIndex == this.oldQuery.pageIndex) {
@@ -161,16 +204,21 @@ export default class Main extends View {
 </script>
 
 <style lang="less" scoped>
-.form {
-  .input {
-    margin-right: 8px;
-  }
-  .input-id {
-    width: 180px;
-  }
+.input {
+  width: 180px;
 }
-
-.btn-search,
+.bth {
+  text-decoration: underline;
+}
+.acts {
+  width: 100%;
+}
+.okbth {
+  margin-left: 12px;
+}
+.addbth {
+  float: right;
+}
 .btn-reset {
   margin-left: 8px;
 }
@@ -184,15 +232,9 @@ export default class Main extends View {
   /deep/ .aptitude-status-2 {
     color: #19be6b;
   }
-  /deep/ .ivu-table-cell > span:only-child:empty {
-    &::before {
-      content: '-';
-    }
-  }
 }
-
 .page-wrap {
   margin: 20px 0 18px;
   text-align: center;
 }
-</style>
+  </style>

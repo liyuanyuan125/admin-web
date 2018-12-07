@@ -16,12 +16,21 @@ export default class View extends Vue {
   }
 
   /**
+   * 将错误格式化成字符串
+   * @param ex 错误对象
+   */
+  formatError(ex: any = {}) {
+    const msg = ex.msg || ex.code ? `${ex.code} ${ex.msg}` : String(ex)
+    return msg
+  }
+
+  /**
    * 统一处理 ajax catch 异常
-   * @param ex
+   * @param ex 错误对象
    */
   handleError(ex: any = {}) {
     if (!(ex.code in ignoreCodes)) {
-      const msg = ex.msg || ex.code ? `${ex.code} ${ex.msg}` : String(ex)
+      const msg = this.formatError(ex)
       this.showError(msg)
       ex.handled = true
       // tslint:disable-next-line

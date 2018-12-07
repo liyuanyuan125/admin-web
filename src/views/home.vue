@@ -1,5 +1,7 @@
 <template>
-  <div class="page"></div>
+  <div class="page">
+    <h1>Aiads 广告投放</h1>
+  </div>
 </template>
 
 <script lang="ts">

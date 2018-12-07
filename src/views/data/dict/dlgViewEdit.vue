@@ -1,24 +1,25 @@
 <template>
-  <Modal
+  <Modal 
     v-model='showDlg'
     :transfer='true'
     :width='420'
-    :title="!id ? '新建档期' : '编辑档期'"
+    :title="!id ? '新建词条' : '编辑词条'"
     @on-cancel="cancel('dataForm')" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
-        <FormItem label="名称" prop="name">
+        <FormItem label="词条名称" prop="name">
             <Input v-model="dataForm.name"></Input>
         </FormItem>
-        <FormItem label="年份" prop="year">
-            <Input v-model="dataForm.year"></Input>
+        <FormItem label="唯一识别符" prop="code">
+            <Input v-model="dataForm.code"></Input>
         </FormItem>
-        <FormItem label="开始日期" prop="beginDate">
-            <!-- <Input v-model="dataForm.beginDate" placeholder="日期格式为xx-xx-xx"></Input> -->
-            <Date-picker type="date" v-model="dataForm.beginDate" on-change="selectTime" placeholder="选择日期" style="width: 200px"></Date-picker>
+        <FormItem label="排序" prop="sortValue">
+            <Input v-model="dataForm.sortValue"></Input>
         </FormItem>
-        <FormItem label="结束日期" prop="endDate">
-            <!-- <Input v-model="dataForm.endDate" placeholder="日期格式为xx-xx-xx"></Input> -->
-            <Date-picker type="date" v-model="dataForm.endDate" on-change="selectTime" placeholder="选择日期" style="width: 200px"></Date-picker>
+        <FormItem label="启用状态" prop="enableStatus">
+            <RadioGroup v-model="dataForm.enableStatus">
+                <Radio label="1">启用</Radio>
+                <Radio label="2">停用</Radio>
+            </RadioGroup>
         </FormItem>
     </Form>
     <div  slot="footer" class="dialog-footer">
@@ -31,17 +32,20 @@
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop } from 'vue-property-decorator'
-import { dataFrom , add , set , dels } from '@/api/calendar'
+import { queryList } from '@/api/dict'
+import { dataFrom , add , set} from '@/api/dictCitiao'
+import { clean } from '@/fn/object'
 import { warning , success } from '@/ui/modal'
 import View from '@/util/View'
 
 const dataForm = {
   name: '',
-  year: '',
-  // beginDate: new Date().getTime(),
-  // endDate: new Date().getTime(),
-  beginDate: '',
-  endDate: '',
+  code: '',
+  category: {
+    id: ''
+  },
+  sortValue: '',
+  enableStatus: ''
 }
 
 @Component
@@ -50,25 +54,29 @@ export default class ComponentMain extends View {
 
   showDlg = false
   id = 0
+  lists = []
+  names = []
+  grop = []
+  oldQuery: any = null
+
   ruleValidate = {
+    // categoryName: [
+    //     { required: true, message: '请输入字典分类名称', trigger: 'blur' }
+    // ],
     name: [
-        { required: true, message: '请输入档期名称', trigger: 'blur' }
+        { required: true, message: '请输入分类名称', trigger: 'blur' }
     ],
-    year: [
-        { required: true, message: '请输入年份', trigger: 'blur' }
+    code: [
+        { required: true, message: '请输入识别符', trigger: 'blur' }
     ],
-    beginDate: [
-        { required: true, message: '请输入开始日期' }
-    ],
-    endDate: [
-        { required: true, message: '请输入结束日期' }
-    ],
+    sortValue: [
+        { required: true, message: '请输入排序序号', trigger: 'blur' }
+    ]
   }
   dataForm = { ...dataForm }
   init(id: number) {
     this.showDlg = true
     this.id = id || 0
-    // debugger
     this.$nextTick(async () => {
       const dataForms: string = 'dataForm'
       const myThis: any = this
@@ -78,9 +86,9 @@ export default class ComponentMain extends View {
         //   items: list
         // }} = await dataFrom({ id })
         this.dataForm.name = this.cinemaOnes.name
-        this.dataForm.year = this.cinemaOnes.year
-        this.dataForm.beginDate = this.cinemaOnes.beginDates
-        this.dataForm.endDate = this.cinemaOnes.endDates
+        this.dataForm.code = this.cinemaOnes.code
+        this.dataForm.sortValue = this.cinemaOnes.sortValue
+        this.dataForm.enableStatus = this.cinemaOnes.enableStatus
       }
     })
   }
@@ -93,8 +101,6 @@ export default class ComponentMain extends View {
 
   // 表单提交
   dataFormSubmit(dataForms: any) {
-    this.dataForm.beginDate = String(new Date(this.dataForm.beginDate).getTime())
-    this.dataForm.endDate = String(new Date(this.dataForm.endDate).getTime())
    const myThis: any = this
    myThis.$refs[dataForms].validate(async ( valid: any ) => {
       if (valid) {
@@ -135,6 +141,12 @@ export default class ComponentMain extends View {
       }
     })
   }
+  mounted() {
+    const { id } = this.$route.params
+    this.dataForm.category.id = id
+    // this.dataForm.enableStatus = Number(this.dataForm.enableStatus)
+  }
+
 }
 </script>
 

@@ -161,7 +161,7 @@ export default class Main extends View {
   profitUnitList = []
   profitTypeList = []
 
-  area: any[] = []
+  area: number[] = []
 
   nameError = ''
 
@@ -212,7 +212,6 @@ export default class Main extends View {
       this.profitTypeList = profitTypeList
 
       const { provinceId = 0, cityId = 0, districtId = 0 } = this.item
-
       this.area = [provinceId, cityId, districtId]
 
       // 优化体验

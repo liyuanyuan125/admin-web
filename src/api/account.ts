@@ -6,6 +6,9 @@ const pnum = typeInt(10000000000, 99999999999)
 
 
 export async function queryList(query: any) {
+  // const { data } await get('',query)
+  // return data
+
   return await mockGet(query, {
     'items|20': [{
       id: tid,
