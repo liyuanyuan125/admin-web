@@ -44,13 +44,13 @@
 <script lang="tsx">
 import { Component, Watch } from 'vue-property-decorator'
 import View from '@/util/View'
-import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import { slice, clean } from '@/fn/object'
 import { isEqual } from 'lodash'
 import { queryList, updateStatus, updateControlStatus } from '@/api/cinema'
 import { numberify, numberKeys } from '@/fn/typeCast'
+import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import AreaSelect from '@/components/AreaSelect.vue'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import PartPoptipEdit from './partPoptipEdit.vue'
@@ -59,7 +59,6 @@ import DlgEdit from './dlgEdit.vue'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
 const defQuery = {
-  id: '',
   name: '',
   chainId: '',
   provinceId: '0',
