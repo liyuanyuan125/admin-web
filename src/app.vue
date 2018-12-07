@@ -114,6 +114,7 @@ export default class App extends View {
     'client-corp-edit': 'client-corp',
     'data-cinema-hall': 'data-cinema',
     'data-dict-viewDictionary': 'data-dict',
+    'data-film-detail': 'data-film',
   }
 
   get siderOpenNames() {

@@ -121,7 +121,8 @@ const timeFormat = 'YYYY-MM-DD/HH:mm:ss'
 @Component
 export default class Main extends View {
   id: any = null
-  detil: any = null
+  detil: any = {}
+
   created() {
     if (!sessionStorage.getItem('film-id')) {
       sessionStorage.setItem('film-id', JSON.stringify(this.$route.params))
