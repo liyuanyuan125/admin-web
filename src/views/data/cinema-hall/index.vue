@@ -74,9 +74,9 @@ import DlgEdit from './dlgEdit.vue'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
 const defQuery = {
-  id: null,
+  id: '',
   pageIndex: 1,
-  pageSize: 20,
+  pageSize: 888888,
 }
 
 @Component({
@@ -87,7 +87,7 @@ const defQuery = {
 export default class Main extends View {
   query: any = { ...defQuery }
 
-  oldQuery: any = null
+  oldQuery: any = {}
 
   loading = false
   list: any[] = []
