@@ -1,5 +1,5 @@
 <template>
-  <Modal 
+  <Modal
     v-model='showDlg'
     :transfer='true'
     :width='420'
@@ -93,8 +93,8 @@ export default class ComponentMain extends View {
 
   // 表单提交
   dataFormSubmit(dataForms: any) {
-    this.dataForm.beginDate = new Date(this.dataForm.beginDate).getTime()
-    this.dataForm.endDate = new Date(this.dataForm.endDate).getTime()
+    this.dataForm.beginDate = String(new Date(this.dataForm.beginDate).getTime())
+    this.dataForm.endDate = String(new Date(this.dataForm.endDate).getTime())
    const myThis: any = this
    myThis.$refs[dataForms].validate(async ( valid: any ) => {
       if (valid) {
