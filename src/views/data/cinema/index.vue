@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <div class="act-bar flex-box">
-      <form class="form flex-1" @submit.prevent="search">
+      <form class="form flex-1" @submit.prevent="search" inline>
         <LazyInput v-model="query.name" placeholder="影院名称" class="input"/>
         <CinemaChainSelect v-model="query.chainId" class="select-chain"/>
         <AreaSelect v-model="area" class="select-area"/>

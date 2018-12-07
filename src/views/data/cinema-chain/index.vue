@@ -3,11 +3,11 @@
     <div class="act-bar flex-box">
       <form class="form flex-1" @submit.prevent="search">
         <LazyInput v-model="query.name" placeholder="公司名称" class="input input-id"/>
-        <Button type="primary" @click="search" icon="md-search" class="btn-search">查询</Button>
+        <Button type="default" @click="reset" class="btn-reset">清空</Button>
       </form>
 
       <div class="acts">
-        <Button type="success" @click="edit(0)">创建</Button>
+        <Button type="success" @click="edit(0)">新建地区</Button>
       </div>
     </div>
 
@@ -20,7 +20,7 @@
         @on-change="page => query.pageIndex = page"
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
-    <DlgEdit  ref="addOrUpdate" :cinemaOnes="editOne"  @refreshDataList="search" v-if="addOrUpdateVisible" />
+    <DlgEdit  ref="addOrUpdate" :dlgStatus="chainStatus" :delControlStatus="chainControlStatus" :cinemaOnes="editOne"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" />
   </div>
 </template>
 
@@ -37,7 +37,7 @@ import { queryList } from '@/api/cinemaChain'
 
 import DlgEdit from './dlgEdit.vue'
 
-const makeMap = (list: any[]) => toMap(list, 'id', 'name')
+const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
 const defQuery = {
   id: null,
@@ -111,8 +111,8 @@ export default class Main extends View {
 
   get cachedMap() {
     return {
-      Status: this.chainStatus,
-      ControlStatus: this.chainControlStatus,
+      Status: makeMap(this.chainStatus),
+      ControlStatus: makeMap(this.chainControlStatus),
     }
   }
 
@@ -121,8 +121,8 @@ export default class Main extends View {
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        Status: cachedMap.Status[it.chainStatus][it.chainStatus],
-        ControlStatus: cachedMap.ControlStatus[it.chainControlStatus][it.chainControlStatus],
+        Status: cachedMap.Status[it.chainStatus],
+        ControlStatus: cachedMap.ControlStatus[it.chainControlStatus],
       }
     })
     return list
@@ -166,6 +166,14 @@ export default class Main extends View {
     } finally {
       this.loading = false
     }
+  }
+
+  reloadSearch() {
+    if (this.query.pageIndex != 1) {
+      this.query.pageIndex = 1
+      return
+    }
+    this.doSearch()
   }
 
   // 新增 / 修改

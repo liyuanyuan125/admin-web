@@ -21,7 +21,7 @@
         @on-change="page => query.pageIndex = page"
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
-    <DlgEdit  ref="addOrUpdate" @refreshDataList="search" v-if="addOrUpdateVisible" />
+    <DlgEdit  ref="addOrUpdate" @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" />
   </div>
 </template>
 
@@ -34,10 +34,10 @@ import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { clean } from '@/fn/object'
-import { queryList, updateControlStatus, updateStatus, reda } from '@/api/film'
+import { queryList, updateControlStatus, updateStatus, updateSpecialId, reda } from '@/api/film'
 import { toThousands } from '@/util/dealData'
 import PartPoptipEdit from '../cinema/partPoptipEdit.vue'
-
+import InputEdit from './inputEdit.vue'
 import DlgEdit from './dlgEdit.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
@@ -54,7 +54,8 @@ const defQuery = {
 @Component({
   components: {
     DlgEdit,
-    PartPoptipEdit
+    PartPoptipEdit,
+    InputEdit
   }
 })
 export default class Main extends View {
@@ -87,16 +88,30 @@ export default class Main extends View {
         }
       },
       { title: 'MtimeID', key: 'mtimeId', width: 100, align: 'center' },
-      { title: '专资ID', key: 'code', width: 80, align: 'center' },
+      { title: '专资ID', key: 'specialId', width: 80, align: 'center',
+        render: (hh: any, { row: { id, specialId } }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          const value = {
+              id,
+              text: specialId,
+              value: specialId,
+          }
+          return <InputEdit v-model={value}
+              on-change={this.codeStatus.bind(this)}/>
+          /* tslint:enable */
+        }
+      },
       {
         title: '影城名称',
         key: 'name',
         width: 90,
         align: 'center',
-        render: (hh: any, { row  }: any) => {
+        render: (hh: any, { row: {id, name} }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
           return <div class='row-acts row-hidden'>
+            <router-link to={{ name: 'data-film-detail', params: { id } }} title={ name }>{name}</router-link>
           </div>
           /* tslint:enable */
         }
@@ -267,7 +282,16 @@ export default class Main extends View {
     this.query = { ...defQuery, pageSize }
   }
 
+  reloadSearch() {
+    if (this.query.pageIndex != 1) {
+      this.query.pageIndex = 1
+      return
+    }
+    this.doSearch()
+  }
+
   async editStatus({ id, key: newStatus, showLoading }: any) {
+
     const item = this.list.find(it => it.id == id)
     if (item && item.categoryId != newStatus) {
       try {
@@ -275,6 +299,18 @@ export default class Main extends View {
         await updateStatus(id, newStatus)
         item.categoryId = newStatus
         item.categoryName = this.cachedMap.categoryList[newStatus]
+      } catch (ex) {
+        this.handleError(ex)
+      }
+    }
+  }
+  async codeStatus({ id, value: newStatus, showLoading }: any) {
+    const item = this.list.find(it => it.id == id)
+    if (item && item.categoryId != newStatus) {
+      try {
+        showLoading()
+        await updateSpecialId(id, newStatus)
+        item.specialId = newStatus
       } catch (ex) {
         this.handleError(ex)
       }

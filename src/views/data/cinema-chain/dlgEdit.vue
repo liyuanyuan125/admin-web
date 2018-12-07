@@ -15,8 +15,8 @@
         <FormItem label="拼音" prop="pinyin">
             <Input v-model="dataForm.pinyin"></Input>
         </FormItem>
-        <FormItem label="状态" prop="Status">
-            <RadioGroup v-model="dataForm.Status">
+        <FormItem label="状态" prop="chainStatus">
+            <RadioGroup v-model="dataForm.chainStatus">
                 <Radio label="1">正常</Radio>
                 <Radio label="2">停业</Radio>
             </RadioGroup>
@@ -46,13 +46,15 @@ const dataForm = {
   name: '',
   shortName: '',
   pinyin: '',
-  Status: '',
+  chainStatus: '',
   chainControlStatus: ''
 }
 
 @Component
 export default class ComponentMain extends View {
   @Prop({ type: Object }) cinemaOnes: any
+  @Prop({ type: Object }) dlgStatus: any
+  @Prop({ type: Object }) delControlStatus: any
   showDlg = false
   id = 0
   ruleValidate = {
@@ -65,7 +67,7 @@ export default class ComponentMain extends View {
     pinyin: [
         { required: true, message: '请输入院线拼音', trigger: 'blur' }
     ],
-    Status: [
+    chainStatus: [
         { required: true, message: '请选择院线状态', trigger: 'change' }
     ],
     chainControlStatus: [
@@ -87,7 +89,7 @@ export default class ComponentMain extends View {
         this.dataForm.name = this.cinemaOnes.name
         this.dataForm.shortName = this.cinemaOnes.shortName
         this.dataForm.pinyin = this.cinemaOnes.pinyin
-        this.dataForm.Status = this.cinemaOnes.chainControlStatus + ''
+        this.dataForm.chainStatus = this.cinemaOnes.chainControlStatus + ''
         this.dataForm.chainControlStatus = this.cinemaOnes.chainControlStatus + ''
       }
     })

@@ -46,19 +46,17 @@ export default class ComponentMain extends View {
       this.showDlg = false
       return
     }
-    const res = await syncData (this.dataForm)
-    if ( res && res.code == 0 ) {
-      this.$Message.success({
+    try {
+        const res = await syncData (this.dataForm.mtimeId)
+        this.$Message.success({
         content: `同步成功`,
         onClose: () => {
           this.showDlg = false
           this.$emit('refreshDataList')
         }
       })
-    } else {
-        this.$Message.success({
-        content: `同步失败`
-      })
+    } catch (ex) {
+      this.handleError(ex)
     }
   }
 }

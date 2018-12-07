@@ -19,10 +19,8 @@ export async function add(query: any) {
 }
 
 // 更新院线
-
 export async function set(query: any) {
   const res = await put('/theater/chains', query)
   return res
 }
-
 
