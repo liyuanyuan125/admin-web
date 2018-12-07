@@ -53,6 +53,11 @@
 
     <Table :columns="columns" :data="tableData" :loading="loading"
       border stripe disabled-hover size="small" class="table"></Table>
+
+    <div v-for="(it, i) in helperList" :key="it.id">
+      <DlgEdit v-model="helperList[i]" :cinemaId="query.id"
+        @done="dlgEditDone" v-if="it.showDlgEdit"/>
+    </div>
   </div>
 </template>
 
@@ -62,7 +67,7 @@ import { Component, Watch } from 'vue-property-decorator'
 import View from '@/util/View'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
-import { clean } from '@/fn/object'
+import { clean, slice } from '@/fn/object'
 import { queryItem } from '@/api/cinema'
 import DlgEdit from './dlgEdit.vue'
 
@@ -88,12 +93,23 @@ export default class Main extends View {
   list: any[] = []
   cinema: any = {}
 
-  projectorTypeList: any[] = []
-  placementList: any[] = []
-  projectorResolutionList: any[] = []
-  projectorBrandList: any[] = []
-  businessTypeList: any[] = []
-  controlStatusList: any[] = []
+  enumType: any = {
+    typeList: [],
+    projectorTypeList: [],
+    placementList: [],
+    projectorResolutionList: [],
+    projectorBrandList: [],
+    businessTypeList: [],
+    cstatusList: [],
+  }
+
+  get enumMap() {
+    return Object.keys(this.enumType).reduce((map: any, it) => {
+      const name = it.replace(/List$/, '')
+      map[name || it] = makeMap(this.enumType[it])
+      return map
+    }, {})
+  }
 
   // 辅助数据
   helperList: any[] = []
@@ -102,7 +118,7 @@ export default class Main extends View {
     return  [
       { title: '序号', key: 'id', width: 138, align: 'center' },
       { title: '影厅名称', key: 'name', minWidth: 70, align: 'center' },
-      { title: '影厅类型', key: 'type', width: 65, align: 'center' },
+      { title: '影厅类型', key: 'typeName', width: 65, align: 'center' },
       { title: '座位数', key: 'seats', width: 55, align: 'center' },
       { title: '放映机类型', key: 'projectorTypeName', width: 75, align: 'center' },
       { title: '机位', key: 'placementName', width: 50, align: 'center' },
@@ -129,28 +145,18 @@ export default class Main extends View {
     ]
   }
 
-  get cachedMap() {
-    return {
-      projectorType: makeMap(this.projectorTypeList),
-      placement: makeMap(this.placementList),
-      projectorResolution: makeMap(this.projectorResolutionList),
-      projectorBrand: makeMap(this.projectorBrandList),
-      businessType: makeMap(this.businessTypeList),
-      controlStatus: makeMap(this.controlStatusList),
-    }
-  }
-
   get tableData() {
-    const cachedMap = this.cachedMap
+    const enumMap = this.enumMap
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        projectorTypeName: cachedMap.projectorType[it.projectorType],
-        placementName: cachedMap.placement[it.placement],
-        projectorResolutionName: cachedMap.projectorResolution[it.projectorResolution],
-        projectorBrandName: cachedMap.projectorBrand[it.projectorBrand],
-        businessTypeName: cachedMap.businessType[it.businessType],
-        controlStatusName: cachedMap.controlStatus[it.controlStatus],
+        typeName: enumMap.type[it.type],
+        projectorTypeName: enumMap.projectorType[it.projectorType],
+        placementName: enumMap.placement[it.placement],
+        projectorResolutionName: enumMap.projectorResolution[it.projectorResolution],
+        projectorBrandName: enumMap.projectorBrand[it.projectorBrand],
+        businessTypeName: enumMap.businessType[it.businessType],
+        controlStatusName: enumMap.cstatus[it.controlStatus],
       }
     })
     return list
@@ -172,20 +178,24 @@ export default class Main extends View {
     this.loading = true
     const query = clean({ ...this.query })
     try {
-      const { data: {
-        item,
-        projectorTypeList = [],
-        placementList = [],
-        projectorResolutionList = [],
-        projectorBrandList = [],
-        businessTypeList = [],
-        cstatusList = [],
-        statusList = [],
-        gradeList = [],
-      } } = await queryItem(query)
+      const { data } = await queryItem(query)
 
-      const statusMap = makeMap(statusList)
-      const gradeMap = makeMap(gradeList)
+      const item = data.item || {}
+
+      this.list = item.halls || []
+
+      this.enumType = {
+        ...this.enumType,
+        ...slice(data, Object.keys(this.enumType))
+      }
+
+      this.helperList = this.list.map((it: any) => ({
+        id: it.id,
+        showDlgEdit: false,
+      }))
+
+      const statusMap = makeMap(data.statusList)
+      const gradeMap = makeMap(data.gradeList)
       this.cinema = {
         ...item,
         statusText: statusMap[item.status],
@@ -197,18 +207,6 @@ export default class Main extends View {
           item.address
         ].join(' ').trim()
       }
-
-      this.list = item.halls || []
-      this.projectorTypeList = projectorTypeList
-      this.placementList = placementList
-      this.projectorResolutionList = projectorResolutionList
-      this.projectorBrandList = projectorBrandList
-      this.businessTypeList = businessTypeList
-      this.controlStatusList = cstatusList
-      this.helperList = this.list.map((it: any) => ({
-        id: it.id,
-        showDlgEdit: false,
-      }))
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -280,5 +278,17 @@ export default class Main extends View {
 
 .table {
   margin-top: 16px;
+  /deep/ .ivu-table-cell {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+  /deep/ .ivu-table-cell > span:only-child:empty {
+    &::before {
+      content: '-';
+    }
+  }
+  /deep/ .row-acts > a {
+    margin: 0 4px;
+  }
 }
 </style>

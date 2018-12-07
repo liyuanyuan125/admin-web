@@ -6,15 +6,15 @@
         <CinemaChainSelect v-model="query.chainId" class="select-chain"/>
         <AreaSelect v-model="area" class="select-area"/>
         <Select v-model="query.status" placeholder="营业状态" clearable>
-          <Option v-for="it in statusList" :key="it.key"
+          <Option v-for="it in enumType.statusList" :key="it.key"
             :value="it.key">{{it.text}}</Option>
         </Select>
         <Select v-model="query.controlStatus" placeholder="控制状态" clearable>
-          <Option v-for="it in controlStatusList" :key="it.key"
+          <Option v-for="it in enumType.cstatusList" :key="it.key"
             :value="it.key">{{it.text}}</Option>
         </Select>
         <Select v-model="query.hallDataStatus" placeholder="影厅数据" clearable>
-          <Option v-for="it in hallDataStatusList" :key="it.key"
+          <Option v-for="it in enumType.hallDataStatusList" :key="it.key"
             :value="it.key">{{it.text}}</Option>
         </Select>
         <!-- <Button type="primary" @click="search" icon="md-search" class="btn-search">查询</Button> -->
@@ -89,15 +89,25 @@ export default class Main extends View {
   list: any[] = []
   total = 0
 
-  statusList: any[] = []
-  controlStatusList: any[] = []
-  hallDataStatusList: any[] = []
-  gradeList: any[] = []
-
-  area: string[] = ['0', '0', '0']
+  area: string[] = []
 
   // 辅助数据
   helperList: any[] = []
+
+  enumType: any = {
+    statusList: [],
+    cstatusList: [],
+    hallDataStatusList: [],
+    gradeList: [],
+  }
+
+  get enumMap() {
+    return Object.keys(this.enumType).reduce((map: any, it) => {
+      const name = it.replace(/List$/, '')
+      map[name || it] = makeMap(this.enumType[it])
+      return map
+    }, {})
+  }
 
   get columns() {
     return  [
@@ -120,7 +130,7 @@ export default class Main extends View {
             id,
             key: status,
             text: statusText,
-            list: this.statusList,
+            list: this.enumType.statusList,
           }
           return <PartPoptipEdit v-model={value}
             on-change={this.editStatus.bind(this)}></PartPoptipEdit>
@@ -138,7 +148,7 @@ export default class Main extends View {
             id,
             key: controlStatus,
             text: controlStatusText,
-            list: this.controlStatusList,
+            list: this.enumType.cstatusList,
           }
           return <PartPoptipEdit v-model={value}
             on-change={this.editControlStatus.bind(this)}/>
@@ -163,23 +173,14 @@ export default class Main extends View {
     ]
   }
 
-  get cachedMap() {
-    return {
-      status: makeMap(this.statusList),
-      controlStatus: makeMap(this.controlStatusList),
-      hallData: makeMap(this.hallDataStatusList),
-      grade: makeMap(this.gradeList),
-    }
-  }
-
   get tableData() {
-    const cachedMap = this.cachedMap
+    const enumMap = this.enumMap
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        gradeName: cachedMap.grade[it.grade],
-        statusText: cachedMap.status[it.status],
-        controlStatusText: cachedMap.controlStatus[it.controlStatus],
+        gradeName: enumMap.grade[it.grade],
+        statusText: enumMap.status[it.status],
+        controlStatusText: enumMap.cstatus[it.controlStatus],
       }
     })
     return list
@@ -218,21 +219,17 @@ export default class Main extends View {
     this.loading = true
     const query = clean({ ...this.query })
     try {
-      const { data: {
-        items: list,
-        totalCount: total,
-        statusList = [],
-        cstatusList = [],
-        hallDataStatusList = [],
-        gradeList = [],
-      } } = await queryList(query)
-      this.list = list
-      this.total = total
-      this.statusList = statusList
-      this.controlStatusList = cstatusList
-      this.hallDataStatusList = hallDataStatusList
-      this.gradeList = gradeList
-      this.helperList = list.map((it: any) => ({
+      const { data } = await queryList(query)
+
+      this.list = data.items || []
+      this.total = data.totalCount || 0
+
+      this.enumType = {
+        ...this.enumType,
+        ...slice(data, Object.keys(this.enumType))
+      }
+
+      this.helperList = this.list.map((it: any) => ({
         id: it.id,
         showDlgEdit: false,
       }))

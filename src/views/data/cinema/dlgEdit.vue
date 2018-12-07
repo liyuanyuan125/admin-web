@@ -1,9 +1,9 @@
 <template>
-  <Modal v-model="inValue.showDlgEdit" :transfer="false" :width="680"
+  <Modal v-model="inValue.showDlgEdit" :transfer="false" :width="700"
     :loading="submitLoading" @on-ok="submit">
-    <Form :model="item" :label-width="88" :rules="rules" class="form" ref="form">
+    <Form :model="item" :label-width="78" :rules="rules" class="form" ref="form">
       <Row>
-        <Col span="15">
+        <Col span="16">
           <FormItem label="影城名称" prop="shortName" :error='shortNameError'>
             <Input v-model="item.shortName" placeholder="请输入"/>
           </FormItem>
@@ -16,7 +16,7 @@
       </Row>
 
       <Row>
-        <Col span="15">
+        <Col span="16">
           <FormItem label="官方名称" prop="officalName">
             <Input v-model="item.officalName" placeholder="请输入"/>
           </FormItem>
@@ -32,14 +32,14 @@
       </Row>
 
       <Row>
-        <Col span="15">
+        <Col span="16">
           <FormItem label="院线" prop="chainId">
             <CinemaChainSelect v-model="item.chainId"/>
           </FormItem>
         </Col>
         <Col span="8">
           <FormItem label="影院等级" prop="grade">
-            <Select v-model="item.grade">
+            <Select v-model="item.grade" clearable>
               <Option v-for="it in gradeList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
@@ -53,7 +53,7 @@
             <AreaSelect v-model="area"/>
           </FormItem>
         </Col>
-        <Col span="13">
+        <Col span="14">
           <FormItem class="form-item-address">
             <Input v-model="item.address" placeholder="详细地址"/>
           </FormItem>
@@ -63,13 +63,13 @@
       <Row>
         <Col span="10">
           <FormItem label="售票系统" prop="softwareId">
-            <Select v-model="item.softwareId">
+            <Select v-model="item.softwareId" clearable>
               <Option v-for="it in softwareList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
           </FormItem>
         </Col>
-        <Col span="5">
+        <Col span="6">
           <FormItem label="邮编" prop="zipCode" :label-width="58">
             <Input v-model="item.zipCode" placeholder="请输入"/>
           </FormItem>
@@ -252,8 +252,8 @@ export default class DlgEdit extends View {
 
 <style lang="less" scoped>
 .form {
-  margin-top: 12px;
-  padding-right: 8px;
+  margin-top: 18px;
+  padding-right: 28px;
 }
 .row-address {
   /deep/ .area-select {

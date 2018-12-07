@@ -12,6 +12,7 @@ module.exports = {
       '/': {
         target: 'http://mapi.dev.aiads.com',
         changeOrigin: true,
+        ws: true,
         bypass(req) {
           if (req.headers.accept.indexOf('html') !== -1) {
             return '/index.html'
