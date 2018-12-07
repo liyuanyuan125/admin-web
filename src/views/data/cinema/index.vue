@@ -29,8 +29,8 @@
       border stripe disabled-hover size="small" class="table"></Table>
 
     <div class="page-wrap" v-if="total > 0">
-      <Page :total="total" show-total :page-size="query.pageSize" show-sizer
-        show-elevator :page-size-opts="[10, 20, 50, 100]" :current="query.pageIndex"
+      <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
+        show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
         @on-change="page => query.pageIndex = page"
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
@@ -82,7 +82,7 @@ const defQuery = {
 export default class Main extends View {
   query: any = {}
 
-  oldQuery: any = null
+  oldQuery: any = {}
 
   loading = false
   list: any[] = []
@@ -188,7 +188,6 @@ export default class Main extends View {
   mounted() {
     const urlQuery = slice(urlParam(), Object.keys(defQuery))
     this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
-    this.fetch()
   }
 
   updateUrl() {
