@@ -1,11 +1,10 @@
 <template>
   <div class="page">
-      <div class="act-bar flex-box">
+    <div class="act-bar flex-box">
         <div class="acts">
           <form class="form flex-1" @submit.prevent="search">
-            <Button class="bth" type="text">&lt;</Button>
-            <LazyInput v-model="query.name" placeholder="输入年份" class="input"/>
-            <Button class="bth" type="text" @click="search">&gt;</Button>
+            <LazyInput v-model="query.years" placeholder="输入年份" class="input"/>
+            <Button class="bth" type="success">查询</Button>
             <Button class="okbth" type="success" @click="edit(0)">新建档期</Button>
           </form>
           
@@ -21,47 +20,60 @@
           @on-change="page => query.pageIndex = page"
           @on-page-size-change="pageSize => query.pageSize = pageSize"/>
       </div>
-      <dlgEdit ref="addOrUpdate" @refreshDataList="search" v-if="addOrUpdateVisible"></dlgEdit>
+    <DlgEdit  ref="addOrUpdate" :cinemaOnes="editOne"  @refreshDataList="search" v-if="addOrUpdateVisible" />
   </div>
 </template>
 
 <script lang="tsx">
+// doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Watch } from 'vue-property-decorator'
 import View from '@/util/View'
-import { queryList , dels } from '@/api/calendar'
 import { get } from '@/fn/ajax'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { clean } from '@/fn/object'
-import dlgEdit from './dlgEdit.vue'
+import { dataFrom , queryList , dels} from '@/api/calendar'
 
+import DlgEdit from './dlgEdit.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
+
 const defQuery = {
   id: null,
-  year: '',
   name: '',
   pageIndex: 1,
   pageSize: 20,
 }
 
+// const dataForm = {
+//   name: '',
+//   year: '',
+//   // beginDate: new Date().getTime(),
+//   // endDate: new Date().getTime(),
+//   beginDate: '',
+//   endDate: '',
+// }
 
 @Component({
   components: {
-    dlgEdit
+    DlgEdit
   }
 })
 export default class Main extends View {
-  showDlg = false
   query = { ...defQuery }
+  showDlg = false
+  oldQuery: any = null
+
+  editOne: any = null
   loading = false
   addOrUpdateVisible = false
   list = []
+  lists = []
   total = 0
-  oldQuery: any = null
+
   beginDates = []
   endDates = []
 
@@ -78,17 +90,18 @@ export default class Main extends View {
       title: '操作',
       key: 'action',
       align: 'center',
-      render: (hh: any, { row: { id } }: any) => {
+      render: (hh: any, { row }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         return <div class='row-acts'>
-          <a on-click={this.edit.bind(this, id)}>编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <a on-click={this.dele.bind(this, id)}>删除</a>
+          <a on-click={this.edit.bind(this, row.id, row)}>编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a on-click={this.dele.bind(this, row.id, row)}>删除</a>
         </div>
         /* tslint:enable */
       }
     }
   ]
+
   get cachedMap() {
     return {
     }
@@ -140,6 +153,7 @@ export default class Main extends View {
       this.total = total
       this.beginDates = beginDates
       this.endDates = endDates
+    // debugger
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -147,21 +161,20 @@ export default class Main extends View {
     }
   }
 
-  edit(id: number) {
+  // 新增 / 修改
+  edit(id: number, row: any) {
     this.addOrUpdateVisible = true
+    !!id ? this.editOne = row : this.editOne
     this.$nextTick(() => {
       const myThis: any = this
       myThis.$refs.addOrUpdate.init(id)
     })
   }
-  dele(id: number) {
-    alert(id)
-    // if (id) {
-    //     const {data: {
-    //       items: list
-    //     }} = await dels({ id })
-    //   }
-    // console.log(this.list)
+
+  async dele(id: number, row: any) {
+    // alert(id)
+    await dels({id})
+    this.doSearch()
   }
 
   @Watch('query', { deep: true })
@@ -176,16 +189,11 @@ export default class Main extends View {
 
 <style lang="less" scoped>
 .input {
-  width: 63px;
+  width: 70px;
+  margin-right: 5px;
 }
 .acts {
   width: 100%;
-}
-.bth {
-  font-size: 20px;
-  font-weight: bold;
-  // width:15px;
-  // text-align:center;
 }
 .okbth {
   margin-top: 5px;

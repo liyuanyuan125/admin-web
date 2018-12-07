@@ -3,7 +3,7 @@
       <div class="act-bar flex-box">
         <div class="acts">
           <Button class="bth" type="text" @click="goback()">返回字典分类</Button>
-          <LazyInput v-model="query.name"  placeholder="词条名称" class="input"/>
+          <LazyInput v-model="query.dictionaryName"  placeholder="词条名称" class="input"/>
           <Button class="okbth" type="success" @submit.prevent="search">查询</Button>
           <Button class="addbth" type="success" @click="edit(0)">新建词条</Button>
         </div>
@@ -17,7 +17,7 @@
           @on-change="page => query.pageIndex = page"
           @on-page-size-change="pageSize => query.pageSize = pageSize"/>
       </div>
-      <dlgViewEdit   ref="addOrUpdate" @refreshDataList="search" v-if="addOrUpdateVisible"></dlgViewEdit>
+      <dlgViewEdit :cinemaOnes="editOne"  ref="addOrUpdate" @refreshDataList="search" v-if="addOrUpdateVisible"></dlgViewEdit>
   </div>
 </template>
 
@@ -50,6 +50,7 @@ const defQuery = {
 })
 export default class Main extends View {
   query = { ...defQuery }
+
   loading = false
   list = []
   lists = []
@@ -57,6 +58,8 @@ export default class Main extends View {
   addOrUpdateVisible = false
   total = 0
   oldQuery: any = null
+  editOne: any = null
+
   cqStatus = []
   categorys = []
   columns = [
@@ -82,11 +85,11 @@ export default class Main extends View {
       title: '操作',
       key: 'action',
       align: 'center',
-      render: (hh: any, { row: { id } }: any) => {
+      render: (hh: any, { row }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         return <div class='row-acts'>
-          <a on-click={this.edit.bind(this, id)}>编辑</a>
+          <a on-click={this.edit.bind(this, row.id, row)}>编辑</a>
         </div>
         /* tslint:enable */
       }
@@ -152,23 +155,23 @@ export default class Main extends View {
       this.loading = false
     }
 
-    try {
-      const { data: {
-        items: list,
-        totalCount: total,
-        qStatus
-      } } = await queryList(query)
-      this.lists = list
-      // console.log(this.lists)
-    } catch (ex) {
-      this.handleError(ex)
-    } finally {
-      this.loading = false
-    }
+    // try {
+    //   const { data: {
+    //     items: list,
+    //     totalCount: total,
+    //     qStatus
+    //   } } = await queryList(query)
+    //   this.lists = list
+    //   // console.log(this.lists)
+    // } catch (ex) {
+    //   this.handleError(ex)
+    // } finally {
+    //   this.loading = false
+    // }
   }
-  edit(id: number) {
-    // alert(123)
+  edit(id: number, row: any) {
     this.addOrUpdateVisible = true
+    !!id ? this.editOne = row : this.editOne
     this.$nextTick(() => {
       const myThis: any = this
       myThis.$refs.addOrUpdate.init(id)

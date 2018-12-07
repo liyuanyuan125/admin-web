@@ -14,10 +14,14 @@ export async function add(query: any) {
   return res
 }
 
-// 更新
+export async function dataFrom(query: any) {
+  const res = await get('/basis/dictionary-categories', query)
+  return res
+}
 
+// 编辑
 export async function set(query: any) {
-  const res = await put('/basis/dictionary-categories', query)
+  const res = await put(`/basis/dictionary-categories/${query.id}`, query)
   return res
 }
 
