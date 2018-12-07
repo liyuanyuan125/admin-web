@@ -24,7 +24,7 @@
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop } from 'vue-property-decorator'
 import { dataFrom , add , set} from '@/api/dict'
-import { warning , success } from '@/ui/modal'
+import { warning , success, toast } from '@/ui/modal'
 import View from '@/util/View'
 const defQuery = {
   categoryId: 0,
@@ -87,15 +87,18 @@ export default class ComponentMain extends View {
         const title = !this.id ? '添加' : '编辑'
         try {
            const res = !this.id ? await add (query) : await set (query)
-            if ( res && res.code === 0 ) {
-              this.$Message.success({
-                  content: `${title}成功`,
-                  onClose: () => {
-                    this.showDlg = false
-                    this.$emit('refreshDataList')
-                  }
-              })
-            }
+           toast('操作成功')
+           this.showDlg = false
+           this.$emit('done')
+            // if ( res && res.code === 0 ) {
+            //   this.$Message.success({
+            //       content: `${title}成功`,
+            //       onClose: () => {
+            //         this.showDlg = false
+            //         this.$emit('done')
+            //       }
+            //   })
+            // }
         } catch (ex) {
            this.handleError(ex)
            this.showDlg = false

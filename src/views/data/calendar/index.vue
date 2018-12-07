@@ -15,12 +15,12 @@
         border stripe disabled-hover size="small" class="table"></Table>
 
       <div class="page-wrap" v-if="total > 0">
-        <Page :total="total" show-total :page-size="query.pageSize" show-sizer
-          :page-size-opts="[10, 20, 50, 100]" :current="query.pageIndex"
+        <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
+          show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
           @on-change="page => query.pageIndex = page"
           @on-page-size-change="pageSize => query.pageSize = pageSize"/>
       </div>
-    <DlgEdit  ref="addOrUpdate" :cinemaOnes="editOne"  @refreshDataList="search" v-if="addOrUpdateVisible" />
+    <DlgEdit  ref="addOrUpdate" :cinemaOnes="editOne"  @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/>
   </div>
 </template>
 
@@ -41,7 +41,7 @@ import DlgEdit from './dlgEdit.vue'
 import {confirm} from '@/ui/modal'
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
-const timeFormat = 'YYYY-MM-DD HH:mm:ss'
+const timeFormat = 'YYYY-MM-DD'
 
 
 const defQuery = {
@@ -52,14 +52,6 @@ const defQuery = {
   years: ''
 }
 
-// const dataForm = {
-//   name: '',
-//   year: '',
-//   // beginDate: new Date().getTime(),
-//   // endDate: new Date().getTime(),
-//   beginDate: '',
-//   endDate: '',
-// }
 
 @Component({
   components: {
@@ -69,7 +61,7 @@ const defQuery = {
 export default class Main extends View {
   query = { ...defQuery }
   showDlg = false
-  oldQuery: any = null
+  oldQuery: any = {}
 
   editOne: any = null
   loading = false
@@ -127,7 +119,7 @@ export default class Main extends View {
   mounted() {
     const urlQuery = slice(urlParam(), Object.keys(defQuery))
     this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
-    this.doSearch()
+    // this.doSearch()
   }
 
   updateUrl() {
@@ -183,6 +175,10 @@ export default class Main extends View {
       const myThis: any = this
       myThis.$refs.addOrUpdate.init(id)
     })
+  }
+
+  dlgEditDone() {
+    this.doSearch()
   }
 
   async dele(id: number, row: any) {

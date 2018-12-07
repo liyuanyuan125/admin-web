@@ -16,8 +16,8 @@
             <Input v-model="dataForm.sortValue"></Input>
         </FormItem>
         <FormItem label="启用状态" prop="enableStatus">
-            <RadioGroup v-model="dataForm.enableStatus">
-                <Radio label="1">启用</Radio>
+            <RadioGroup :model="animal" v-model="dataForm.enableStatus" >
+                <Radio label="1" value="启用">启用</Radio>
                 <Radio label="2">停用</Radio>
             </RadioGroup>
         </FormItem>
@@ -35,7 +35,7 @@ import { Component, Prop } from 'vue-property-decorator'
 import { queryList } from '@/api/dict'
 import { dataFrom , add , set} from '@/api/dictCitiao'
 import { clean } from '@/fn/object'
-import { warning , success } from '@/ui/modal'
+import { warning , success, toast } from '@/ui/modal'
 import View from '@/util/View'
 
 const dataForm = {
@@ -51,18 +51,15 @@ const dataForm = {
 @Component
 export default class ComponentMain extends View {
   @Prop({ type: Object }) cinemaOnes: any
-
   showDlg = false
   id = 0
+  animal = '启用'
   lists = []
   names = []
   grop = []
   oldQuery: any = null
 
   ruleValidate = {
-    // categoryName: [
-    //     { required: true, message: '请输入字典分类名称', trigger: 'blur' }
-    // ],
     name: [
         { required: true, message: '请输入分类名称', trigger: 'blur' }
     ],
@@ -70,10 +67,12 @@ export default class ComponentMain extends View {
         { required: true, message: '请输入识别符', trigger: 'blur' }
     ],
     sortValue: [
-        { required: true, message: '请输入排序序号', trigger: 'blur' }
+        { required: true, message: '请输入排序序号' }
     ]
   }
+
   dataForm = { ...dataForm }
+
   init(id: number) {
     this.showDlg = true
     this.id = id || 0
@@ -82,13 +81,10 @@ export default class ComponentMain extends View {
       const myThis: any = this
       myThis.$refs[dataForms].resetFields()
       if (this.id) {
-        // const {data: {
-        //   items: list
-        // }} = await dataFrom({ id })
         this.dataForm.name = this.cinemaOnes.name
         this.dataForm.code = this.cinemaOnes.code
         this.dataForm.sortValue = this.cinemaOnes.sortValue
-        this.dataForm.enableStatus = this.cinemaOnes.enableStatus
+        this.dataForm.enableStatus = this.cinemaOnes.enableStatus + ''
       }
     })
   }
@@ -111,15 +107,9 @@ export default class ComponentMain extends View {
         const title = !this.id ? '添加' : '编辑'
         try {
           const res = !this.id ? await add (query) : await set (query)
-          if ( res && res.code === 0 ) {
-            this.$Message.success({
-                content: `${title}成功`,
-                onClose: () => {
-                  this.showDlg = false
-                  this.$emit('refreshDataList')
-                }
-            })
-          }
+          toast('操作成功')
+          this.showDlg = false
+          this.$emit('done')
         } catch (ex) {
           this.handleError(ex)
           this.showDlg = false
@@ -141,6 +131,7 @@ export default class ComponentMain extends View {
       }
     })
   }
+
   mounted() {
     const { id } = this.$route.params
     this.dataForm.category.id = id

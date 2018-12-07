@@ -12,12 +12,12 @@
         border stripe disabled-hover size="small" class="table"></Table>
 
       <div class="page-wrap" v-if="total > 0">
-        <Page :total="total" show-total :page-size="query.pageSize" show-sizer
-          :page-size-opts="[10, 20, 50, 100]" :current="query.pageIndex"
+        <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
+          show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
           @on-change="page => query.pageIndex = page"
           @on-page-size-change="pageSize => query.pageSize = pageSize"/>
       </div>
-      <dlgViewEdit :cinemaOnes="editOne"  ref="addOrUpdate" @refreshDataList="search" v-if="addOrUpdateVisible"></dlgViewEdit>
+      <dlgViewEdit :cinemaOnes="editOne"  ref="addOrUpdate" @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"></dlgViewEdit>
   </div>
 </template>
 
@@ -60,7 +60,7 @@ export default class Main extends View {
   // names = []
   addOrUpdateVisible = false
   total = 0
-  oldQuery: any = null
+  oldQuery: any = {}
   editOne: any = null
 
   cqStatus = []
@@ -124,7 +124,7 @@ export default class Main extends View {
     const { id } = this.$route.params
     this.query.categoryId = id
 
-    this.doSearch()
+    // this.doSearch()
   }
 
   search() {
@@ -167,20 +167,6 @@ export default class Main extends View {
     } finally {
       this.loading = false
     }
-
-    // try {
-    //   const { data: {
-    //     items: list,
-    //     totalCount: total,
-    //     qStatus
-    //   } } = await queryList(query)
-    //   this.lists = list
-    //   // console.log(this.lists)
-    // } catch (ex) {
-    //   this.handleError(ex)
-    // } finally {
-    //   this.loading = false
-    // }
   }
   edit(id: number, row: any) {
     this.addOrUpdateVisible = true
@@ -190,6 +176,11 @@ export default class Main extends View {
       myThis.$refs.addOrUpdate.init(id)
     })
   }
+
+  dlgEditDone() {
+    this.doSearch()
+  }
+
   goback() {
     this.$router.push({ name: 'data-dict' })
   }
