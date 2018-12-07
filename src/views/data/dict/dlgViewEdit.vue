@@ -16,8 +16,8 @@
             <Input v-model="dataForm.sortValue"></Input>
         </FormItem>
         <FormItem label="启用状态" prop="enableStatus">
-            <RadioGroup :model="animal" v-model="dataForm.enableStatus" >
-                <Radio label="1" value="启用">启用</Radio>
+            <RadioGroup v-model="dataForm.enableStatus" >
+                <Radio label="1" >启用</Radio>
                 <Radio label="2">停用</Radio>
             </RadioGroup>
         </FormItem>
@@ -53,7 +53,6 @@ export default class ComponentMain extends View {
   @Prop({ type: Object }) cinemaOnes: any
   showDlg = false
   id = 0
-  animal = '启用'
   lists = []
   names = []
   grop = []
