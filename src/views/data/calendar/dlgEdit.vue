@@ -13,12 +13,12 @@
             <Input v-model="dataForm.year"></Input>
         </FormItem>
         <FormItem label="开始日期" prop="beginDate">
-            <!-- <Input v-model="dataForm.beginDate"></Input> -->
-            <Date-picker type="date" :value="dataForm.beginDate" on-change="selectTime" placeholder="选择日期" style="width: 200px"></Date-picker>
+            <!-- <Input v-model="dataForm.beginDate" placeholder="日期格式为xx-xx-xx"></Input> -->
+            <Date-picker type="date" v-model="dataForm.beginDate" on-change="selectTime" placeholder="选择日期" style="width: 200px"></Date-picker>
         </FormItem>
         <FormItem label="结束日期" prop="endDate">
-            <!-- <Input v-model="dataForm.endDate"></Input> -->
-            <Date-picker type="date" :value="dataForm.endDate" on-change="selectTime" placeholder="选择日期" style="width: 200px"></Date-picker>
+            <!-- <Input v-model="dataForm.endDate" placeholder="日期格式为xx-xx-xx"></Input> -->
+            <Date-picker type="date" v-model="dataForm.endDate" on-change="selectTime" placeholder="选择日期" style="width: 200px"></Date-picker>
         </FormItem>
     </Form>
     <div  slot="footer" class="dialog-footer">
@@ -31,21 +31,23 @@
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop } from 'vue-property-decorator'
-import { dataFrom , add , set} from '@/api/calendar'
+import { dataFrom , add , set , dels } from '@/api/calendar'
 import { warning , success } from '@/ui/modal'
 import View from '@/util/View'
 
 const dataForm = {
   name: '',
   year: '',
+  // beginDate: new Date().getTime(),
+  // endDate: new Date().getTime(),
   beginDate: '',
   endDate: '',
-  // Status: '',
-  // chainControlStatus: ''
 }
 
 @Component
 export default class ComponentMain extends View {
+  @Prop({ type: Object }) cinemaOnes: any
+
   showDlg = false
   id = 0
   ruleValidate = {
@@ -56,24 +58,29 @@ export default class ComponentMain extends View {
         { required: true, message: '请输入年份', trigger: 'blur' }
     ],
     beginDate: [
-        { message: '请输入开始日期', trigger: 'blur' }
+        { required: true, message: '请输入开始日期' }
     ],
     endDate: [
-        { message: '请输入结束日期', trigger: 'blur' }
-    ]
+        { required: true, message: '请输入结束日期' }
+    ],
   }
   dataForm = { ...dataForm }
   init(id: number) {
     this.showDlg = true
     this.id = id || 0
+    // debugger
     this.$nextTick(async () => {
       const dataForms: string = 'dataForm'
       const myThis: any = this
       myThis.$refs[dataForms].resetFields()
       if (this.id) {
-        const {data: {
-          items: list
-        }} = await dataFrom({ id })
+        // const {data: {
+        //   items: list
+        // }} = await dataFrom({ id })
+        this.dataForm.name = this.cinemaOnes.name
+        this.dataForm.year = this.cinemaOnes.year
+        this.dataForm.beginDate = this.cinemaOnes.beginDates
+        this.dataForm.endDate = this.cinemaOnes.endDates
       }
     })
   }
@@ -86,6 +93,8 @@ export default class ComponentMain extends View {
 
   // 表单提交
   dataFormSubmit(dataForms: any) {
+    this.dataForm.beginDate = new Date(this.dataForm.beginDate).getTime()
+    this.dataForm.endDate = new Date(this.dataForm.endDate).getTime()
    const myThis: any = this
    myThis.$refs[dataForms].validate(async ( valid: any ) => {
       if (valid) {
@@ -94,20 +103,35 @@ export default class ComponentMain extends View {
           ...this.dataForm
         }
         const title = !this.id ? '添加' : '编辑'
-        const res = !this.id ? await add (query) : await set (query)
-        if ( res && res.code === 0 ) {
-          this.$Message.success({
-              content: `${title}成功`,
-              onClose: () => {
-                this.showDlg = false
-                this.$emit('refreshDataList')
-              }
-          })
-        } else {
-          this.$Message.success({
-            content: `${title}失败`
-          })
+        try {
+          const res = !this.id ? await add (query) : await set (query)
+          if ( res && res.code === 0 ) {
+            this.$Message.success({
+                content: `${title}成功`,
+                onClose: () => {
+                  this.showDlg = false
+                  this.$emit('refreshDataList')
+                }
+            })
+          }
+        } catch (ex) {
+          this.handleError(ex)
+          this.showDlg = false
         }
+        // const res = !this.id ? await add (query) : await set (query)
+        // if ( res && res.code === 0 ) {
+        //   this.$Message.success({
+        //       content: `${title}成功`,
+        //       onClose: () => {
+        //         this.showDlg = false
+        //         this.$emit('refreshDataList')
+        //       }
+        //   })
+        // } else {
+        //   this.$Message.success({
+        //     content: `${title}失败`
+        //   })
+        // }
       }
     })
   }

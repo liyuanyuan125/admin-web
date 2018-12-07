@@ -15,7 +15,7 @@
           @on-change="page => query.pageIndex = page"
           @on-page-size-change="pageSize => query.pageSize = pageSize"/>
       </div>
-      <dlgEdit  ref="addOrUpdate" @refreshDataList="search" v-if="addOrUpdateVisible"></dlgEdit>
+      <dlgEdit  ref="addOrUpdate" :cinemaOnes="editOne" @refreshDataList="search" v-if="addOrUpdateVisible"></dlgEdit>
   </div>
 </template>
 
@@ -28,7 +28,7 @@ import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { clean } from '@/fn/object'
-import { queryList } from '@/api/dict'
+import { queryList , set } from '@/api/dict'
 
 import dlgEdit from './dlgEdit.vue'
 
@@ -51,6 +51,7 @@ export default class Main extends View {
   query = { ...defQuery }
 
   oldQuery: any = null
+  editOne: any = null
 
   loading = false
   addOrUpdateVisible = false
@@ -68,12 +69,12 @@ export default class Main extends View {
       title: '操作',
       key: 'action',
       align: 'center',
-      render: (hh: any, { row: { id } }: any) => {
+      render: (hh: any, { row: { id }, row }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         return <div class='row-acts'>
           <router-link to={{ name: 'data-dict-viewDictionary', params: { id } }}>查看字典</router-link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <a on-click={this.edit.bind(this, id)}>编辑</a>
+          <a on-click={this.edit.bind(this, row.id, row)}>编辑</a>
         </div>
         /* tslint:enable */
       }
@@ -139,8 +140,10 @@ export default class Main extends View {
   }
 
   // 新增 / 修改
-  edit(id: number) {
+  edit(id: number, row: any) {
+    // console.log(id)
     this.addOrUpdateVisible = true
+    !!id ? this.editOne = row : this.editOne
     this.$nextTick(() => {
       const myThis: any = this
       myThis.$refs.addOrUpdate.init(id)

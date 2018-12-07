@@ -37,22 +37,20 @@ import { dataFrom , add , set} from '@/api/dictCitiao'
 import { clean } from '@/fn/object'
 import { warning , success } from '@/ui/modal'
 import View from '@/util/View'
-const defQuery = {
-  id: null,
-}
+
 const dataForm = {
   name: '',
   code: '',
   category: {
     id: ''
   },
-  sortValue: 1,
+  sortValue: '',
   enableStatus: ''
 }
 
 @Component
 export default class ComponentMain extends View {
-  query = { ...defQuery }
+  @Prop({ type: Object }) cinemaOnes: any
 
   showDlg = false
   id = 0
@@ -84,9 +82,13 @@ export default class ComponentMain extends View {
       const myThis: any = this
       myThis.$refs[dataForms].resetFields()
       if (this.id) {
-        const {data: {
-          items: list
-        }} = await dataFrom({ id })
+        // const {data: {
+        //   items: list
+        // }} = await dataFrom({ id })
+        this.dataForm.name = this.cinemaOnes.name
+        this.dataForm.code = this.cinemaOnes.code
+        this.dataForm.sortValue = this.cinemaOnes.sortValue
+        this.dataForm.enableStatus = this.cinemaOnes.enableStatus
       }
     })
   }
@@ -107,20 +109,35 @@ export default class ComponentMain extends View {
           ...this.dataForm
         }
         const title = !this.id ? '添加' : '编辑'
-        const res = !this.id ? await add (query) : await set (query)
-        if ( res && res.code === 0 ) {
-          this.$Message.success({
-              content: `${title}成功`,
-              onClose: () => {
-                this.showDlg = false
-                this.$emit('refreshDataList')
-              }
-          })
-        } else {
-          this.$Message.success({
-            content: `${title}失败`
-          })
+        try {
+          const res = !this.id ? await add (query) : await set (query)
+          if ( res && res.code === 0 ) {
+            this.$Message.success({
+                content: `${title}成功`,
+                onClose: () => {
+                  this.showDlg = false
+                  this.$emit('refreshDataList')
+                }
+            })
+          }
+        } catch (ex) {
+          this.handleError(ex)
+          this.showDlg = false
         }
+        // const res = !this.id ? await add (query) : await set (query)
+        // if ( res && res.code === 0 ) {
+        //   this.$Message.success({
+        //       content: `${title}成功`,
+        //       onClose: () => {
+        //         this.showDlg = false
+        //         this.$emit('refreshDataList')
+        //       }
+        //   })
+        // } else {
+        //   this.$Message.success({
+        //     content: `${title}失败`
+        //   })
+        // }
       }
     })
   }
