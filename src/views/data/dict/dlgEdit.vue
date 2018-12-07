@@ -27,7 +27,7 @@ import { dataFrom , add , set} from '@/api/dict'
 import { warning , success } from '@/ui/modal'
 import View from '@/util/View'
 const defQuery = {
-  categoryId: null,
+  categoryId: 0,
 }
 const dataForm = {
   name: '',
