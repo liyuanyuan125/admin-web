@@ -16,8 +16,8 @@
       border stripe disabled-hover size="small" class="table"></Table>
 
     <div class="page-wrap" v-if="total > 0">
-      <Page :total="total" show-total :page-size="query.pageSize" show-sizer
-        :page-size-opts="[10, 20, 50, 100]" :current="query.pageIndex"
+      <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
+        show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
         @on-change="page => query.pageIndex = page"
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
@@ -33,7 +33,9 @@ import { get } from '@/fn/ajax'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
-import { clean } from '@/fn/object'
+import { slice, clean } from '@/fn/object'
+import { numberify, numberKeys } from '@/fn/typeCast'
+import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import { queryList, updateControlStatus, updateStatus, updateSpecialId, reda } from '@/api/film'
 import { toThousands } from '@/util/dealData'
 import PartPoptipEdit from '../cinema/partPoptipEdit.vue'
@@ -61,7 +63,7 @@ const defQuery = {
 export default class Main extends View {
   query = { ...defQuery }
 
-  oldQuery: any = null
+  oldQuery: any = {}
   editOne: any = null
   loading = false
   addOrUpdateVisible = false
@@ -271,11 +273,18 @@ export default class Main extends View {
   }
 
   mounted() {
-    this.doSearch()
+    const urlQuery = slice(urlParam(), Object.keys(defQuery))
+    this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
   }
 
   search() {
     this.query.pageIndex = 1
+  }
+
+  updateUrl() {
+    const query = prettyQuery(this.query, defQuery)
+    const url = buildUrl(location.pathname, query)
+    history.replaceState(null, '', url)
   }
 
   reset() {
@@ -335,6 +344,7 @@ export default class Main extends View {
     if (this.loading) {
       return
     }
+    this.updateUrl()
     this.query.pageIndex = 1
     this.oldQuery = { ...this.query }
     this.loading = true

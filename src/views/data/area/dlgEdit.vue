@@ -135,11 +135,6 @@ export default class ComponentMain extends View {
 .title {
   margin-bottom: 15px;
 }
-.dialog-footer {
-  text-align: center;
-  margin-left: 10px;
-  margin-right: 10px;
-}
 .next-city {
   position: absolute;
   top: 14px;
