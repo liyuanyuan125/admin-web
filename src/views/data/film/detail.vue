@@ -103,7 +103,7 @@
         <dd>{{detil.ticketString}}</dd>
       </dl>
     </div>
-    </div>  
+    </div>
   </div>
 </template>
 
@@ -160,24 +160,24 @@ export default class Main extends View {
 
 <style lang="less" scoped>
 .page {
-  margin: -10px ;
-  background: #ECF0F4
+  margin: -10px;
+  background: #ecf0f4;
 }
-.detail-box{
-  padding: 10px 0px;
+.detail-box {
+  padding: 10px 0;
 }
 .file-detail-header,.file-detail-center {
   background: #fff;
   margin-left: 14px;
   margin-right: 14px;
-  dl{
+  dl {
     padding: 14px 14px;
     display: flex;
     dd {
       margin-left: 30px;
       flex: 1;
       span:not(:last-child)::after {
-        content: ','
+        content: ',';
       }
     }
     dt {

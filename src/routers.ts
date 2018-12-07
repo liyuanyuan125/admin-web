@@ -84,13 +84,18 @@ export default [
     component: () => import(/* webpackChunkName: "data-dict-category" */ './views/data/dict-category/index.vue')
   },
   {
+    path: '/data/film/detail/:id',
+    name: 'data-film-detail',
+    component: () => import(/* webpackChunkName: "data-film-detail" */ './views/data/film/detail.vue')
+  },
+  {
     path: '/data/film/',
     name: 'data-film',
     component: () => import(/* webpackChunkName: "data-film" */ './views/data/film/index.vue')
   },
   {
-    path: '/data/film/detail',
-    name: 'data-film-detail',
-    component: () => import(/* webpackChunkName: "data-film-detail" */ './views/data/film/detail.vue')
+    path: '/data/film/inputEdit',
+    name: 'data-film-inputEdit',
+    component: () => import(/* webpackChunkName: "data-film-inputEdit" */ './views/data/film/inputEdit.vue')
   }
 ] as any[]

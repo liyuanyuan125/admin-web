@@ -13,4 +13,6 @@ export default {
   'client-corp-detail': '/client/corp/detail/:id?',
   'client-corp-edit': '/client/corp/edit/:id?',
   'data-cinema-hall': '/data/cinema-hall/:id',
+  'data-dict-viewDictionary': '/data/dict/viewDictionary/:id?',
+  'data-film-detail': '/data/film/detail/:id',
 }

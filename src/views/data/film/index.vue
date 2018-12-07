@@ -81,14 +81,16 @@ export default class Main extends View {
         render: (hh: any, { row : { id } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          return <div class="row-hidden" title = { id }>
-            { id }
-          </div>
+          return <div class="row-hidden" title={id}>{id}</div>
           /* tslint:enable */
         }
       },
       { title: 'MtimeID', key: 'mtimeId', width: 100, align: 'center' },
-      { title: '专资ID', key: 'specialId', width: 80, align: 'center',
+      {
+        title: '专资ID',
+        key: 'specialId',
+        width: 80,
+        align: 'center',
         render: (hh: any, { row: { id, specialId } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
@@ -97,8 +99,7 @@ export default class Main extends View {
               text: specialId,
               value: specialId,
           }
-          return <InputEdit v-model={value}
-              on-change={this.codeStatus.bind(this)}/>
+          return <InputEdit v-model={value} on-change={this.codeStatus.bind(this)}/>
           /* tslint:enable */
         }
       },
@@ -110,14 +111,14 @@ export default class Main extends View {
         render: (hh: any, { row: {id, name} }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          return <div class='row-acts row-hidden'>
-            <router-link to={{ name: 'data-film-detail', params: { id } }} title={ name }>{name}</router-link>
+          return <div class="row-acts row-hidden">
+            <router-link to={{name: 'data-film-detail', params: { id }}}>{name}</router-link>
           </div>
           /* tslint:enable */
         }
       },
       {
-        title: '中国上映时间',
+        title: '中国上映时间', // tslint:disable-line
         key: 'openTime',
         width: 180,
         align: 'center',
@@ -130,7 +131,7 @@ export default class Main extends View {
         }
       },
       {
-        title: '今日票房',
+        title: '今日票房', // tslint:disable-line
         key: 'todayBo',
         width: 90,
         align: 'center',
@@ -143,7 +144,7 @@ export default class Main extends View {
         }
       },
       {
-        title: '累计票房',
+        title: '累计票房', // tslint:disable-line
         key: 'sumBo',
         width: 80,
         align: 'center',
@@ -156,7 +157,7 @@ export default class Main extends View {
         }
       },
       {
-        title: '演员',
+        title: '演员', // tslint:disable-line
         key: 'performers',
         width: 80,
         align: 'center',
@@ -170,19 +171,19 @@ export default class Main extends View {
         }
       },
       {
-        title: '导演',
+        title: '导演', // tslint:disable-line
         key: 'director',
         width: 80,
         align: 'center'
       },
       {
-        title: '产地',
+        title: '产地', // tslint:disable-line
         key: 'fromPlace',
         width: 80,
         align: 'center'
       },
       {
-        title: '类型',
+        title: '类型', // tslint:disable-line
         key: 'type',
         width: 80,
         align: 'center',
@@ -196,7 +197,7 @@ export default class Main extends View {
         }
       },
       {
-        title: '分类',
+        title: '分类', // tslint:disable-line
         key: 'categoryName',
         width: 100,
         align: 'center',
@@ -215,7 +216,7 @@ export default class Main extends View {
         }
       },
       {
-        title: '控制状态',
+        title: '控制状态', // tslint:disable-line
         key: 'controlStatus',
         width: 80,
         align: 'center',
@@ -234,7 +235,7 @@ export default class Main extends View {
         }
       },
       {
-        title: '操作',
+        title: '操作', // tslint:disable-line
         key: 'action',
         width: 80,
         align: 'center',
