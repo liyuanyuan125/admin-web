@@ -165,10 +165,10 @@ export default class Main extends View {
   mounted() {
     const { id } = this.$route.params
     this.query.id = id
-    this.doSearch()
+    this.fetch()
   }
 
-  async doSearch() {
+  async fetch() {
     if (this.loading) {
       return
     }
@@ -228,7 +228,7 @@ export default class Main extends View {
   }
 
   dlgEditDone() {
-    this.doSearch()
+    this.fetch()
   }
 
   @Watch('query', { deep: true })
@@ -236,7 +236,7 @@ export default class Main extends View {
     if (this.query.pageIndex == this.oldQuery.pageIndex) {
       this.query.pageIndex = 1
     }
-    this.doSearch()
+    this.fetch()
   }
 }
 </script>

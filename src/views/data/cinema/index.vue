@@ -189,7 +189,7 @@ export default class Main extends View {
   mounted() {
     const urlQuery = slice(urlParam(), Object.keys(defQuery))
     this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
-    this.doSearch()
+    this.fetch()
   }
 
   updateUrl() {
@@ -207,7 +207,7 @@ export default class Main extends View {
     this.query = { ...defQuery, pageSize }
   }
 
-  async doSearch() {
+  async fetch() {
     if (this.loading) {
       return
     }
@@ -250,7 +250,7 @@ export default class Main extends View {
   }
 
   dlgEditDone() {
-    this.doSearch()
+    this.fetch()
   }
 
   async editStatus({ id, key: newStatus, showLoading }: any) {
@@ -293,7 +293,7 @@ export default class Main extends View {
       this.area = area
     }
 
-    this.doSearch()
+    this.fetch()
   }
 
   @Watch('area')
