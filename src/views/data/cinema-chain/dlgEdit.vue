@@ -17,14 +17,16 @@
         </FormItem>
         <FormItem label="状态" prop="chainStatus">
             <RadioGroup v-model="dataForm.chainStatus">
-                <Radio label="1">正常</Radio>
-                <Radio label="2">停业</Radio>
+                <Radio v-for="index in dlgStatus" :key="index.key" :label="index.key">
+                  {{index.text}}
+                </Radio>
             </RadioGroup>
         </FormItem>
         <FormItem label="控制状态" prop="chainControlStatus">
             <RadioGroup v-model="dataForm.chainControlStatus">
-                <Radio label="1">已上架</Radio>
-                <Radio label="2">已下架</Radio>
+                <Radio v-for="index in delControlStatus" :key="index.key" :label="index.key">
+                 {{index.text}}
+                </Radio>
             </RadioGroup>
         </FormItem>
     </Form>
@@ -68,10 +70,10 @@ export default class ComponentMain extends View {
         { required: true, message: '请输入院线拼音', trigger: 'blur' }
     ],
     chainStatus: [
-        { required: true, message: '请选择院线状态', trigger: 'change' }
+        { required: true, message: '请选择院线状态', trigger: 'change', type: 'number' }
     ],
     chainControlStatus: [
-        { required: true, message: '请选择院线控制状态', trigger: 'change' }
+        { required: true, message: '请选择院线控制状态', trigger: 'change', type: 'number' }
     ]
   }
   dataForm = { ...dataForm }
@@ -89,8 +91,8 @@ export default class ComponentMain extends View {
         this.dataForm.name = this.cinemaOnes.name
         this.dataForm.shortName = this.cinemaOnes.shortName
         this.dataForm.pinyin = this.cinemaOnes.pinyin
-        this.dataForm.chainStatus = this.cinemaOnes.chainControlStatus + ''
-        this.dataForm.chainControlStatus = this.cinemaOnes.chainControlStatus + ''
+        this.dataForm.chainStatus = this.cinemaOnes.chainControlStatus
+        this.dataForm.chainControlStatus = this.cinemaOnes.chainControlStatus
       }
     })
   }
