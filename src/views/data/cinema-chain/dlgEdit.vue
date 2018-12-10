@@ -6,27 +6,25 @@
     :title="!id ? '新增院线信息' : '编辑院线信息'"
     @on-cancel="cancel('dataForm')" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
-        <FormItem label="名称" prop="name">
-            <Input v-model="dataForm.name"></Input>
-        </FormItem>
-        <FormItem label="简称" prop="shortName">
-            <Input v-model="dataForm.shortName"></Input>
-        </FormItem>
-        <FormItem label="拼音" prop="pinyin">
-            <Input v-model="dataForm.pinyin"></Input>
-        </FormItem>
-        <FormItem label="状态" prop="chainStatus">
-            <RadioGroup v-model="dataForm.chainStatus">
-                <Radio label="1">正常</Radio>
-                <Radio label="2">停业</Radio>
-            </RadioGroup>
-        </FormItem>
-        <FormItem label="控制状态" prop="chainControlStatus">
-            <RadioGroup v-model="dataForm.chainControlStatus">
-                <Radio label="1">已上架</Radio>
-                <Radio label="2">已下架</Radio>
-            </RadioGroup>
-        </FormItem>
+      <FormItem label="名称" prop="name">
+          <Input v-model="dataForm.name"></Input>
+      </FormItem>
+      <FormItem label="简称" prop="shortName">
+          <Input v-model="dataForm.shortName"></Input>
+      </FormItem>
+      <FormItem label="拼音" prop="pinyin">
+          <Input v-model="dataForm.pinyin"></Input>
+      </FormItem>
+      <FormItem label="状态" prop="chainStatus">
+          <RadioGroup v-model="dataForm.chainStatus">
+                <Radio v-for="index in dlgStatus" :label="index.key" :key="index.key">{{index.text}}</Radio>
+          </RadioGroup>
+      </FormItem>
+      <FormItem label="控制状态" prop="chainControlStatus">
+          <RadioGroup v-model="dataForm.chainControlStatus">
+              <Radio v-for="index in delControlStatus" :label="index.key" :key="index.key">{{index.text}}</Radio>
+          </RadioGroup>
+      </FormItem>
     </Form>
     <div  slot="footer" class="dialog-footer">
       <Button @click="cancel('dataForm')">取消</Button>
@@ -68,10 +66,10 @@ export default class ComponentMain extends View {
         { required: true, message: '请输入院线拼音', trigger: 'blur' }
     ],
     chainStatus: [
-        { required: true, message: '请选择院线状态', trigger: 'change' }
+        { required: true, message: '请选择院线状态', trigger: 'change', type: 'number' }
     ],
     chainControlStatus: [
-        { required: true, message: '请选择院线控制状态', trigger: 'change' }
+        { required: true, message: '请选择院线控制状态', trigger: 'change', type: 'number' }
     ]
   }
   dataForm = { ...dataForm }
@@ -89,8 +87,8 @@ export default class ComponentMain extends View {
         this.dataForm.name = this.cinemaOnes.name
         this.dataForm.shortName = this.cinemaOnes.shortName
         this.dataForm.pinyin = this.cinemaOnes.pinyin
-        this.dataForm.chainStatus = this.cinemaOnes.chainControlStatus + ''
-        this.dataForm.chainControlStatus = this.cinemaOnes.chainControlStatus + ''
+        this.dataForm.chainStatus = this.cinemaOnes.chainControlStatus
+        this.dataForm.chainControlStatus = this.cinemaOnes.chainControlStatus
       }
     })
   }
