@@ -60,7 +60,7 @@
       </dl>
       <dl>
         <dt>系统分类</dt>
-        <dd>{{detil.categoryName}}</dd>
+        <dd><PartPoptipEdit v-model="value" @change="change" /></dd>
       </dl>
       <dl>
         <dt>MtimeID</dt>
@@ -104,6 +104,7 @@
       </dl>
     </div>
     </div>
+    <PartPoptipEdit :value="value" @onOk="change"></PartPoptipEdit>
   </div>
 </template>
 
@@ -115,14 +116,22 @@ import PartPoptipEdit from '../cinema/partPoptipEdit.vue'
 import View from '@/util/View'
 import moment from 'moment'
 import { toThousands } from '@/util/dealData'
+import { updateStatus } from '@/api/film'
+import { toMap } from '@/fn/array'
+const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
 const timeFormat = 'YYYY-MM-DD/HH:mm:ss'
 
-@Component
+@Component({
+  components: {
+    PartPoptipEdit
+  }
+})
 export default class Main extends View {
   id: any = null
   detil: any = {}
-
+  value: any = {}
+  categoryList = []
   created() {
     if (!sessionStorage.getItem('film-id')) {
       sessionStorage.setItem('film-id', JSON.stringify(this.$route.params))
@@ -148,13 +157,39 @@ export default class Main extends View {
     try {
        const res = await getIdDetal(this.id)
        this.detil = res.data
+       this.value = {
+          id: this.id.id,
+          key: this.detil.categoryId,
+          text: this.detil.categoryName,
+          list: this.detil.categoryList,
+       }
       } catch (ex) {
         this.handleError(ex)
     }
   }
 
+  get cachedMap() {
+    return {
+      categoryList: makeMap(this.detil.categoryList)
+    }
+  }
+
   goback() {
     this.$router.push({ name: 'data-film' })
+  }
+
+  async change({ id, key: newStatus, showLoading, hideLoading }: any) {
+    if (this.detil && this.detil.categoryId != newStatus) {
+      try {
+        showLoading()
+        await updateStatus(id, newStatus)
+        this.value.text = this.cachedMap.categoryList[newStatus]
+        this.value.key = newStatus
+        hideLoading()
+      } catch (ex) {
+        this.handleError(ex)
+      }
+    }
   }
 }
 </script>
