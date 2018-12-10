@@ -7,24 +7,24 @@
     >
     <p v-if="!!parentsName" class="next-city">上级城市：{{parentsName}}</p>
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="80">
-        <FormItem label="地区名称" prop="nameCn">
-            <Input v-model="dataForm.nameCn" placeholder="请输入"/>
-        </FormItem>
-        <FormItem label="拼音" prop="pinyin">
-            <Input v-model="dataForm.pinyin" placeholder="请输入"/>
-        </FormItem>
-        <FormItem label="简拼" prop="pinyinShort">
-            <Input v-model="dataForm.pinyinShort" placeholder="请输入"/>
-        </FormItem>
-        <FormItem v-if="!parentsName" label="所属区域" prop="areaId">
-          <Select v-model="dataForm.areaId" placeholder="请选择" class="input" style="width: 200px" clearable>
-            <Option v-for="it in areaList" :key="it.key"
-              :value="it.id">{{it.name}}</Option>
-          </Select>
-        </FormItem>
-        <FormItem label="排序" prop="orderNum">
-            <Input style="width:150px" v-model="dataForm.orderNum" placeholder="请输入"/><span class="hiht">数值越小，排序越靠前</span>
-        </FormItem>
+      <FormItem label="地区名称" prop="nameCn">
+        <Input v-model="dataForm.nameCn" placeholder="请输入"/>
+      </FormItem>
+      <FormItem label="拼音" prop="pinyin">
+        <Input v-model="dataForm.pinyin" placeholder="请输入"/>
+      </FormItem>
+      <FormItem label="简拼" prop="pinyinShort">
+        <Input v-model="dataForm.pinyinShort" placeholder="请输入"/>
+      </FormItem>
+      <FormItem v-if="!parentsName" label="所属区域" prop="areaId">
+        <Select v-model="dataForm.areaId" placeholder="请选择" class="input" style="width: 200px" clearable>
+          <Option v-for="it in areaList" :key="it.key"
+            :value="it.id">{{it.name}}</Option>
+        </Select>
+      </FormItem>
+      <FormItem label="排序" prop="orderNum">
+        <Input style="width:150px" v-model="dataForm.orderNum" placeholder="请输入"/><span class="hiht">数值越小，排序越靠前</span>
+      </FormItem>
     </Form>
     <div  slot="footer" class="dialog-footer">
       <Button type="primary" @click="dataFormSubmit('dataForm')">确定</Button>

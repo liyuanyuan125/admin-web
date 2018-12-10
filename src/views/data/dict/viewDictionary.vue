@@ -1,23 +1,23 @@
 <template>
   <div class="page">
-      <div class="act-bar flex-box">
-        <div class="acts">
-          <Button class="bth" type="text" @click="goback()">返回字典分类</Button>
-          <LazyInput v-model="query.dictionaryName"  placeholder="词条名称" class="input"/>
-          <Button class="okbth" type="success" @submit.prevent="search">查询</Button>
-          <Button class="addbth" type="success" @click="edit(0)">新建词条</Button>
-        </div>
+    <div class="act-bar flex-box">
+      <div class="acts">
+        <Button class="bth" type="text" @click="goback()">返回字典分类</Button>
+        <LazyInput v-model="query.dictionaryName"  placeholder="词条名称" class="input"/>
+        <Button class="okbth" type="success" @submit.prevent="search">查询</Button>
+        <Button class="addbth" type="success" @click="edit(0)">新建词条</Button>
       </div>
-      <Table :columns="columns" :data="tableData" :loading="loading"
-        border stripe disabled-hover size="small" class="table"></Table>
+    </div>
+    <Table :columns="columns" :data="tableData" :loading="loading"
+      border stripe disabled-hover size="small" class="table"></Table>
 
-      <div class="page-wrap" v-if="total > 0">
-        <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
-          show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-          @on-change="page => query.pageIndex = page"
-          @on-page-size-change="pageSize => query.pageSize = pageSize"/>
-      </div>
-      <dlgViewEdit :cinemaOnes="editOne"  ref="addOrUpdate" @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"></dlgViewEdit>
+    <div class="page-wrap" v-if="total > 0">
+      <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
+        show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
+        @on-change="page => query.pageIndex = page"
+        @on-page-size-change="pageSize => query.pageSize = pageSize"/>
+    </div>
+    <dlgViewEdit :cinemaOnes="editOne" :status="stas"  ref="addOrUpdate" @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"></dlgViewEdit>
   </div>
 </template>
 
@@ -57,13 +57,14 @@ export default class Main extends View {
   loading = false
   list = []
   lists = []
-  // names = []
   addOrUpdateVisible = false
   total = 0
   oldQuery: any = {}
   editOne: any = null
+  stas: any[] = []
 
   cqStatus = []
+
   categorys = []
   columns = [
     { title: '序号', key: 'id', align: 'center' },
@@ -123,7 +124,6 @@ export default class Main extends View {
 
     const { id } = this.$route.params
     this.query.categoryId = id
-
     // this.doSearch()
   }
 
@@ -162,6 +162,20 @@ export default class Main extends View {
       this.total = total
       this.cqStatus = cqStatus
       this.categorys = categorys
+      this.stas = list
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      this.loading = false
+    }
+    try {
+      const { data: {
+        enableStatusList: list,
+        totalCount: total,
+        cqStatus,
+        categorys,
+      } } = await queryList(query)
+      this.lists = list
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -173,7 +187,7 @@ export default class Main extends View {
     !!id ? this.editOne = row : this.editOne
     this.$nextTick(() => {
       const myThis: any = this
-      myThis.$refs.addOrUpdate.init(id)
+      myThis.$refs.addOrUpdate.init(id, this.lists)
     })
   }
 

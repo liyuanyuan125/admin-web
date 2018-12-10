@@ -32,11 +32,11 @@
       </dl>
       <dl>
         <dt>片长</dt>
-        <dd>{{detil.movieLen}}</dd>
+        <dd>{{detil.length}}</dd>
       </dl>
       <dl>
         <dt>票房</dt>
-        <dd>今日({{todayBo}})/累计({{sumBo}})</dd>
+        <dd>今日({{todayBox}})/累计({{sumBox}})</dd>
       </dl>
       <dl>
         <dt>上映时间</dt>
@@ -44,7 +44,7 @@
       </dl>
       <dl>
         <dt>评分</dt>
-        <dd>{{detil.allRating}}</dd>
+        <dd>{{detil.rating}}</dd>
       </dl>
       <dl>
         <dt>播放次数</dt>
@@ -60,7 +60,7 @@
       </dl>
       <dl>
         <dt>系统分类</dt>
-        <dd>{{detil.categoryName}}</dd>
+        <dd><PartPoptipEdit v-model="value" @change="change" /></dd>
       </dl>
       <dl>
         <dt>MtimeID</dt>
@@ -115,14 +115,22 @@ import PartPoptipEdit from '../cinema/partPoptipEdit.vue'
 import View from '@/util/View'
 import moment from 'moment'
 import { toThousands } from '@/util/dealData'
+import { updateStatus } from '@/api/film'
+import { toMap } from '@/fn/array'
+const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
 const timeFormat = 'YYYY-MM-DD/HH:mm:ss'
 
-@Component
+@Component({
+  components: {
+    PartPoptipEdit
+  }
+})
 export default class Main extends View {
   id: any = null
   detil: any = {}
-
+  value: any = {}
+  categoryList = []
   created() {
     if (!sessionStorage.getItem('film-id')) {
       sessionStorage.setItem('film-id', JSON.stringify(this.$route.params))
@@ -136,25 +144,51 @@ export default class Main extends View {
     return moment(this.detil.openTime).format(timeFormat)
   }
 
-  get todayBo() {
-    return toThousands(this.detil.todayBo)
+  get todayBox() {
+    return toThousands(this.detil.todayBox)
   }
 
-  get sumBo() {
-    return toThousands(this.detil.sumBo)
+  get sumBox() {
+    return toThousands(this.detil.sumBox)
   }
 
   async detils() {
     try {
        const res = await getIdDetal(this.id)
        this.detil = res.data
+       this.value = {
+          id: this.id.id,
+          key: this.detil.categoryCode,
+          text: this.detil.categoryName,
+          list: this.detil.categoryList,
+       }
       } catch (ex) {
         this.handleError(ex)
     }
   }
 
+  get cachedMap() {
+    return {
+      categoryList: makeMap(this.detil.categoryList)
+    }
+  }
+
   goback() {
     this.$router.push({ name: 'data-film' })
+  }
+
+  async change({ id, key: newStatus, showLoading, hideLoading }: any) {
+    if (this.detil && this.detil.categoryCode != newStatus) {
+      try {
+        showLoading()
+        await updateStatus(id, newStatus)
+        this.value.text = this.cachedMap.categoryList[newStatus]
+        this.value.key = newStatus
+        hideLoading()
+      } catch (ex) {
+        this.handleError(ex)
+      }
+    }
   }
 }
 </script>

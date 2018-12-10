@@ -11,7 +11,6 @@
         <Button type="success" @click="edit()">新建影片</Button>
       </div>
     </div>
-
     <Table  :columns="columns" :data="tableData" :loading="loading"
       border stripe disabled-hover size="small" class="table"></Table>
 
@@ -36,12 +35,11 @@ import moment from 'moment'
 import { slice, clean } from '@/fn/object'
 import { numberify, numberKeys } from '@/fn/typeCast'
 import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
-import { queryList, updateControlStatus, updateStatus, updateSpecialId, reda } from '@/api/film'
+import { queryList, updateControlStatus, updateStatus, updateSpecialId, reda, syncData } from '@/api/film'
 import { toThousands } from '@/util/dealData'
 import PartPoptipEdit from '../cinema/partPoptipEdit.vue'
 import InputEdit from './inputEdit.vue'
 import DlgEdit from './dlgEdit.vue'
-
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 const timeFormat = 'YYYY-MM-DD<br>HH:mm:ss'
 
@@ -62,7 +60,7 @@ const defQuery = {
 })
 export default class Main extends View {
   query = { ...defQuery }
-
+  rolads = false
   oldQuery: any = {}
   editOne: any = null
   loading = false
@@ -134,26 +132,26 @@ export default class Main extends View {
       },
       {
         title: '今日票房', // tslint:disable-line
-        key: 'todayBo',
+        key: 'todayBox',
         width: 90,
         align: 'center',
-        render: (hh: any, { row : { todayBo } }: any) => {
+        render: (hh: any, { row : { todayBox } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          const add = toThousands(todayBo)
+          const add = toThousands(todayBox)
           return <span>{add}</span>
           /* tslint:enable */
         }
       },
       {
         title: '累计票房', // tslint:disable-line
-        key: 'sumBo',
+        key: 'sumBox',
         width: 80,
         align: 'center',
-        render: (hh: any, { row : { sumBo } }: any) => {
+        render: (hh: any, { row : { sumBox } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          const sun = toThousands(sumBo)
+          const sun = toThousands(sumBox)
           return <span class="row-hidden" title = { sun }>{sun}</span>
           /* tslint:enable */
         }
@@ -203,12 +201,12 @@ export default class Main extends View {
         key: 'categoryName',
         width: 100,
         align: 'center',
-        render: (hh: any, { row: { id, categoryName, categoryId } }: any) => {
+        render: (hh: any, { row: { id, categoryName, categoryCode } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
           const value = {
               id,
-              key: categoryId,
+              key: categoryCode,
               text: categoryName,
               list: this.categoryList,
           }
@@ -241,11 +239,11 @@ export default class Main extends View {
         key: 'action',
         width: 80,
         align: 'center',
-        render: (hh: any, { row }: any) => {
+        render: (hh: any, { row: { mtimeId } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
           return <div class='row-acts'>
-            <a on-click={this.doSearch.bind(this)}>刷新</a>
+            <a on-click={this.reloads.bind(this, mtimeId)}>刷新</a>
           </div>
           /* tslint:enable */
         }
@@ -266,7 +264,6 @@ export default class Main extends View {
       return {
         ...it,
         category: cachedMap.categoryList[it.categoryName],
-        controlStatus: cachedMap.controlList[it.controlStatusString]
       }
     })
     return list
@@ -292,22 +289,14 @@ export default class Main extends View {
     this.query = { ...defQuery, pageSize }
   }
 
-  reloadSearch() {
-    if (this.query.pageIndex != 1) {
-      this.query.pageIndex = 1
-      return
-    }
-    this.doSearch()
-  }
-
   async editStatus({ id, key: newStatus, showLoading }: any) {
 
     const item = this.list.find(it => it.id == id)
-    if (item && item.categoryId != newStatus) {
+    if (item && item.categoryCode != newStatus) {
       try {
         showLoading()
         await updateStatus(id, newStatus)
-        item.categoryId = newStatus
+        item.categoryCode = newStatus
         item.categoryName = this.cachedMap.categoryList[newStatus]
       } catch (ex) {
         this.handleError(ex)
@@ -316,7 +305,7 @@ export default class Main extends View {
   }
   async codeStatus({ id, value: newStatus, showLoading }: any) {
     const item = this.list.find(it => it.id == id)
-    if (item && item.categoryId != newStatus) {
+    if (item && item.categoryCode != newStatus) {
       try {
         showLoading()
         await updateSpecialId(id, newStatus)
@@ -381,6 +370,26 @@ export default class Main extends View {
       const myThis: any = this
       myThis.$refs.addOrUpdate.init()
     })
+  }
+
+  async reloads(mtimeId: any) {
+    const myThis: any = this
+    try {
+        myThis.$Spin.show()
+        const res = await syncData (mtimeId, 1)
+        this.$Message.success({
+        content: `刷新成功`,
+        })
+        myThis.$Spin.hide()
+        if (this.query.pageIndex != 1) {
+          this.query.pageIndex = 1
+          return
+        }
+        this.doSearch()
+    } catch (ex) {
+      this.handleError(ex)
+      myThis.$Spin.hide()
+    }
   }
 
   @Watch('query', { deep: true })

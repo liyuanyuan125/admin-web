@@ -6,11 +6,14 @@ import 'iview/dist/styles/iview.css'
 import app from './app.vue'
 import Router from 'vue-router'
 import home from './views/home.vue'
+import login from './views/login.vue'
+import MainLayout from './site/MainLayout.vue'
 import routers from './routers'
 import locale from 'iview/dist/locale/zh-CN'
 import event from './fn/event'
 import { alert } from './ui/modal'
 import LazyInput from '@/components/LazyInput'
+import { hasLogin } from './store'
 
 Vue.use(Router)
 
@@ -25,14 +28,24 @@ Vue.config.productionTip = false
 
 const router = new Router({
   mode: 'history',
-  // 手动维护的 router 放在这里，routers 中的是工具自动生成的
+  // 手动维护的 router 放在这里，routers 中的是内部功能页面 router
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: home,
+      path: '/login',
+      name: 'login',
+      component: login,
     },
-  ].concat(routers)
+    {
+      path: '/',
+      name: 'main-layout',
+      component: MainLayout,
+      children: [{
+        path: '/',
+        name: 'home',
+        component: home,
+      }].concat(routers),
+    }
+  ]
 })
 
 iView.LoadingBar.config({
@@ -42,14 +55,13 @@ iView.LoadingBar.config({
 
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start()
-  next()
-  // if (!store.getters.hasLogin && to.name !== 'login') {
-  //   next({ name: 'login' })
+  if (!hasLogin() && to.name !== 'login') {
+    next({ name: 'login' })
   // } else if (!store.getters.canSee(to.name)) {
   //   next({ name: '403' })
-  // } else {
-  //   next()
-  // }
+  } else {
+    next()
+  }
 })
 
 router.afterEach((to, from) => {
@@ -60,8 +72,7 @@ router.afterEach((to, from) => {
 event.on({
   ajax401(ev: any) {
     ev.handled = true
-    alert('需要登录')
-    // router.push({ name: 'login' })
+    router.push({ name: 'login' })
   },
 
   ajax403(ev: any) {

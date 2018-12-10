@@ -15,6 +15,7 @@
       <Button @click="cancel('dataForm')">取消</Button>
       <Button type="primary" @click="dataFormSubmit('dataForm')">确定</Button>
     </div>
+    <Refresh  v-if="rolads" />
   </Modal>
 </template>
 
@@ -23,10 +24,10 @@
 import { Component, Prop } from 'vue-property-decorator'
 import View from '@/util/View'
 import { syncData } from '@/api/film'
-
 @Component
 export default class ComponentMain extends View {
   showDlg = false
+  rolads = false
   dataForm = {
     mtimeId: ''
   }
@@ -46,16 +47,20 @@ export default class ComponentMain extends View {
       this.showDlg = false
       return
     }
+    const myThis: any = this
     try {
-        const res = await syncData (this.dataForm.mtimeId)
-        this.$Message.success({
+      myThis.$Spin.show()
+      const res = await syncData (this.dataForm.mtimeId, 0)
+      this.$Message.success({
         content: `同步成功`,
         onClose: () => {
           this.showDlg = false
           this.$emit('refreshDataList')
         }
       })
+      myThis.$Spin.hide()
     } catch (ex) {
+      myThis.$Spin.hide()
       this.handleError(ex)
     }
   }

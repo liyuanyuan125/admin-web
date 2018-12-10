@@ -1,4 +1,4 @@
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue } from 'vue-property-decorator'
 import { alert } from '@/ui/modal'
 
 const ignoreCodes = { 401: 1, 403: 1 }

@@ -1,34 +1,30 @@
 <template>
-  <Modal 
+  <Modal
     v-model='showDlg'
     :transfer='true'
     :width='420'
     :title="!id ? '新增院线信息' : '编辑院线信息'"
     @on-cancel="cancel('dataForm')" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
-        <FormItem label="名称" prop="name">
-            <Input v-model="dataForm.name"></Input>
-        </FormItem>
-        <FormItem label="简称" prop="shortName">
-            <Input v-model="dataForm.shortName"></Input>
-        </FormItem>
-        <FormItem label="拼音" prop="pinyin">
-            <Input v-model="dataForm.pinyin"></Input>
-        </FormItem>
-        <FormItem label="状态" prop="chainStatus">
-            <RadioGroup v-model="dataForm.chainStatus">
-                <Radio v-for="index in dlgStatus" :key="index.key" :label="index.key">
-                  {{index.text}}
-                </Radio>
-            </RadioGroup>
-        </FormItem>
-        <FormItem label="控制状态" prop="chainControlStatus">
-            <RadioGroup v-model="dataForm.chainControlStatus">
-                <Radio v-for="index in delControlStatus" :key="index.key" :label="index.key">
-                 {{index.text}}
-                </Radio>
-            </RadioGroup>
-        </FormItem>
+      <FormItem label="名称" prop="name">
+          <Input v-model="dataForm.name"></Input>
+      </FormItem>
+      <FormItem label="简称" prop="shortName">
+          <Input v-model="dataForm.shortName"></Input>
+      </FormItem>
+      <FormItem label="拼音" prop="pinyin">
+          <Input v-model="dataForm.pinyin"></Input>
+      </FormItem>
+      <FormItem label="状态" prop="chainStatus">
+          <RadioGroup v-model="dataForm.chainStatus">
+                <Radio v-for="index in dlgStatus" :label="index.key" :key="index.key">{{index.text}}</Radio>
+          </RadioGroup>
+      </FormItem>
+      <FormItem label="控制状态" prop="chainControlStatus">
+          <RadioGroup v-model="dataForm.chainControlStatus">
+              <Radio v-for="index in delControlStatus" :label="index.key" :key="index.key">{{index.text}}</Radio>
+          </RadioGroup>
+      </FormItem>
     </Form>
     <div  slot="footer" class="dialog-footer">
       <Button @click="cancel('dataForm')">取消</Button>

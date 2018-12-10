@@ -6,20 +6,20 @@
     :title="!id ? '新建档期' : '编辑档期'"
     @on-cancel="cancel('dataForm')" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
-        <FormItem label="名称" prop="name">
-            <Input v-model="dataForm.name"></Input>
-        </FormItem>
-        <FormItem label="年份" prop="year">
-            <Input v-model="dataForm.year"></Input>
-        </FormItem>
-        <FormItem label="开始日期" prop="beginDate">
-            <!-- <Input v-model="dataForm.beginDate" placeholder="日期格式为xx-xx-xx"></Input> -->
-            <Date-picker type="date" v-model="dataForm.beginDate" on-change="selectTime" placeholder="选择日期" style="width: 200px"></Date-picker>
-        </FormItem>
-        <FormItem label="结束日期" prop="endDate">
-            <!-- <Input v-model="dataForm.endDate" placeholder="日期格式为xx-xx-xx"></Input> -->
-            <Date-picker type="date" v-model="dataForm.endDate" on-change="selectTime" placeholder="选择日期" style="width: 200px"></Date-picker>
-        </FormItem>
+      <FormItem label="名称" prop="name">
+        <Input v-model="dataForm.name"></Input>
+      </FormItem>
+      <FormItem label="年份" prop="year">
+        <Input v-model="dataForm.year"></Input>
+      </FormItem>
+      <FormItem label="开始日期" prop="beginDate">
+        <!-- <Input v-model="dataForm.beginDate" placeholder="日期格式为xx-xx-xx"></Input> -->
+        <Date-picker type="date" v-model="dataForm.beginDate" on-change="selectTime" placeholder="选择日期" style="width: 200px"></Date-picker>
+      </FormItem>
+      <FormItem label="结束日期" prop="endDate">
+        <!-- <Input v-model="dataForm.endDate" placeholder="日期格式为xx-xx-xx"></Input> -->
+        <Date-picker type="date" v-model="dataForm.endDate" on-change="selectTime" placeholder="选择日期" style="width: 200px"></Date-picker>
+      </FormItem>
     </Form>
     <div  slot="footer" class="dialog-footer">
       <Button @click="cancel('dataForm')">取消</Button>
