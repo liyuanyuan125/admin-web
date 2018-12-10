@@ -1,5 +1,5 @@
 <template>
-  <Modal 
+  <Modal
     v-model='showDlg'
     :transfer='true'
     :width='420'
@@ -67,7 +67,7 @@ export default class ComponentMain extends View {
   showDlg = false
   id = 0
   a = 0
-  lists = []
+  lists: any[] = []
   list: any[] = []
   names = []
   grop = []
