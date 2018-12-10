@@ -5,23 +5,29 @@
     :width='420'
     :title="!id ? '新建词条' : '编辑词条'"
     @on-cancel="cancel('dataForm')" >
-    <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
-        <FormItem label="词条名称" prop="name">
-            <Input v-model="dataForm.name"></Input>
-        </FormItem>
-        <FormItem label="唯一识别符" prop="code">
-            <Input v-model="dataForm.code"></Input>
-        </FormItem>
-        <FormItem label="排序" prop="sortValue">
-            <Input v-model="dataForm.sortValue"></Input>
-        </FormItem>
-        <FormItem label="启用状态" prop="enableStatus">
-            <RadioGroup v-model="dataForm.enableStatus" >
-                <Radio label="1" >启用</Radio>
-                <Radio label="2">停用</Radio>
-            </RadioGroup>
-        </FormItem>
+    <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100" :data="tableData">
+      <FormItem label="词条名称" prop="name">
+        <Input v-model="dataForm.name"></Input>
+      </FormItem>
+      <FormItem label="唯一识别符" prop="code">
+        <Input v-model="dataForm.code"></Input>
+      </FormItem>
+      <FormItem label="排序" prop="sortValue">
+        <Input v-model="dataForm.sortValue"></Input>
+      </FormItem>
+      <FormItem label="启用状态" prop="enableStatus">
+        <RadioGroup v-model="dataForm.enableStatus" >
+          <Radio v-for="it in list" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
+        </RadioGroup>
+      </FormItem>
+      <!-- <FormItem label="启用状态" prop="enableStatus">
+        <RadioGroup v-model="dataForm.enableStatus" >
+          <Radio label="1">启用</Radio>
+          <Radio label="2">停用</Radio>
+        </RadioGroup>
+      </FormItem> -->
     </Form>
+    <!-- {{dataForm}} -->
     <div  slot="footer" class="dialog-footer">
       <Button @click="cancel('dataForm')">取消</Button>
       <Button type="primary" @click="dataFormSubmit('dataForm')">确定</Button>
@@ -31,13 +37,15 @@
 
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
-import { Component, Prop } from 'vue-property-decorator'
+import { Component, Prop , Watch } from 'vue-property-decorator'
 import { queryList } from '@/api/dict'
-import { dataFrom , add , set} from '@/api/dictCitiao'
+import { dataFrom , add , set , dictqueryList } from '@/api/dictCitiao'
 import { clean } from '@/fn/object'
 import { warning , success, toast } from '@/ui/modal'
 import View from '@/util/View'
 
+const defQuery = {
+}
 const dataForm = {
   name: '',
   code: '',
@@ -50,14 +58,19 @@ const dataForm = {
 
 @Component
 export default class ComponentMain extends View {
+  query = { ...defQuery }
+  oldQuery: any = {}
+
   @Prop({ type: Object }) cinemaOnes: any
+  @Prop({ type: Array }) status: any
+
   showDlg = false
   id = 0
+  a = 0
   lists = []
+  list: any[] = []
   names = []
   grop = []
-  oldQuery: any = null
-
   ruleValidate = {
     name: [
         { required: true, message: '请输入分类名称', trigger: 'blur' }
@@ -69,21 +82,23 @@ export default class ComponentMain extends View {
         { required: true, message: '请输入排序序号' }
     ]
   }
-
   dataForm = { ...dataForm }
-
-  init(id: number) {
+  async init(id: number, lists: any) {
+    this.lists = lists
     this.showDlg = true
     this.id = id || 0
     this.$nextTick(async () => {
       const dataForms: string = 'dataForm'
       const myThis: any = this
       myThis.$refs[dataForms].resetFields()
-      if (this.id) {
+      if (this.id != 0) {
         this.dataForm.name = this.cinemaOnes.name
         this.dataForm.code = this.cinemaOnes.code
         this.dataForm.sortValue = this.cinemaOnes.sortValue
-        this.dataForm.enableStatus = this.cinemaOnes.enableStatus + ''
+        this.dataForm.enableStatus = this.cinemaOnes.enableStatus
+      }
+      if (this.id == 0) {
+        this.dataForm.enableStatus = this.lists[0].key
       }
     })
   }
@@ -130,13 +145,41 @@ export default class ComponentMain extends View {
       }
     })
   }
+  get cachedMap() {
+    return {
+    }
+  }
+
+  get tableData() {
+    const cachedMap = this.cachedMap
+    const list = (this.list || []).map((it: any) => {
+      return {
+        ...it,
+      }
+    })
+    return list
+  }
 
   mounted() {
     const { id } = this.$route.params
     this.dataForm.category.id = id
-    // this.dataForm.enableStatus = Number(this.dataForm.enableStatus)
+    this.doSearch()
   }
 
+  async doSearch() {
+    this.oldQuery = { ...this.query }
+    const query = clean({ ...this.query })
+    try {
+      const { data: {
+        enableStatusList: list,
+      } } = await queryList(query)
+      this.list = list
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      // this.loading = false
+    }
+  }
 }
 </script>
 
