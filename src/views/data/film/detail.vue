@@ -32,11 +32,11 @@
       </dl>
       <dl>
         <dt>片长</dt>
-        <dd>{{detil.movieLen}}</dd>
+        <dd>{{detil.length}}</dd>
       </dl>
       <dl>
         <dt>票房</dt>
-        <dd>今日({{todayBo}})/累计({{sumBo}})</dd>
+        <dd>今日({{todayBox}})/累计({{sumBox}})</dd>
       </dl>
       <dl>
         <dt>上映时间</dt>
@@ -44,7 +44,7 @@
       </dl>
       <dl>
         <dt>评分</dt>
-        <dd>{{detil.allRating}}</dd>
+        <dd>{{detil.rating}}</dd>
       </dl>
       <dl>
         <dt>播放次数</dt>
@@ -104,7 +104,6 @@
       </dl>
     </div>
     </div>
-    <PartPoptipEdit :value="value" @onOk="change"></PartPoptipEdit>
   </div>
 </template>
 
@@ -145,12 +144,12 @@ export default class Main extends View {
     return moment(this.detil.openTime).format(timeFormat)
   }
 
-  get todayBo() {
-    return toThousands(this.detil.todayBo)
+  get todayBox() {
+    return toThousands(this.detil.todayBox)
   }
 
-  get sumBo() {
-    return toThousands(this.detil.sumBo)
+  get sumBox() {
+    return toThousands(this.detil.sumBox)
   }
 
   async detils() {
@@ -159,7 +158,7 @@ export default class Main extends View {
        this.detil = res.data
        this.value = {
           id: this.id.id,
-          key: this.detil.categoryId,
+          key: this.detil.categoryCode,
           text: this.detil.categoryName,
           list: this.detil.categoryList,
        }
@@ -179,7 +178,7 @@ export default class Main extends View {
   }
 
   async change({ id, key: newStatus, showLoading, hideLoading }: any) {
-    if (this.detil && this.detil.categoryId != newStatus) {
+    if (this.detil && this.detil.categoryCode != newStatus) {
       try {
         showLoading()
         await updateStatus(id, newStatus)

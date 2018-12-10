@@ -7,8 +7,8 @@ export async function queryList(query: any) {
 }
 
 // 同步
-export async function syncData(query: any) {
-  const res = await get(`/theater/movies/sync/${query}`)
+export async function syncData(query: any, type: number) {
+  const res = await get(`/theater/movies/sync/${query}`, { type })
   return res
 }
 
@@ -23,8 +23,8 @@ export async function reda(query: any) {
  * @param id 要操作的ID
  * @param status 新的分类
  */
-export async function updateStatus(id: string, categoryId: number) {
-  const res = await put(`/theater/movies/${id}`, {  categoryId })
+export async function updateStatus(id: string, categoryCode: number) {
+  const res = await put(`/theater/movies/${id}`, {  categoryCode })
   return res
 }
 
