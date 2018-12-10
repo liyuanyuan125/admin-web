@@ -1,25 +1,24 @@
 <template>
   <div class="page">
     <div class="act-bar flex-box">
-        <div class="acts">
-          <form class="form flex-1" @submit.prevent="search">
-            <LazyInput v-model="query.years" placeholder="输入年份" class="input"/>
-            <Button class="bth" type="success">查询</Button>
-            <Button class="okbth" type="success" @click="edit(0)">新建档期</Button>
-          </form>
-          
-        </div>
+      <div class="acts">
+        <form class="form flex-1" @submit.prevent="search">
+          <LazyInput v-model="query.years" placeholder="输入年份" class="input"/>
+          <Button class="bth" type="success">查询</Button>
+          <Button class="okbth" type="success" @click="edit(0)">新建档期</Button>
+        </form>
       </div>
+    </div>
 
-      <Table :columns="columns" :data="tableData" :loading="loading"
-        border stripe disabled-hover size="small" class="table"></Table>
+    <Table :columns="columns" :data="tableData" :loading="loading"
+      border stripe disabled-hover size="small" class="table"></Table>
 
-      <div class="page-wrap" v-if="total > 0">
-        <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
-          show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-          @on-change="page => query.pageIndex = page"
-          @on-page-size-change="pageSize => query.pageSize = pageSize"/>
-      </div>
+    <div class="page-wrap" v-if="total > 0">
+      <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
+        show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
+        @on-change="page => query.pageIndex = page"
+        @on-page-size-change="pageSize => query.pageSize = pageSize"/>
+    </div>
     <DlgEdit  ref="addOrUpdate" :cinemaOnes="editOne"  @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/>
   </div>
 </template>

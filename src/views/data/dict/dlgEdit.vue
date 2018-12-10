@@ -7,10 +7,10 @@
     @on-cancel="cancel('dataForm')" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
       <FormItem label="分类名称" prop="name">
-          <Input v-model="dataForm.name"></Input>
+        <Input v-model="dataForm.name"></Input>
       </FormItem>
       <FormItem label="唯一识别符" prop="code">
-          <Input v-model="dataForm.code"></Input>
+        <Input v-model="dataForm.code"></Input>
       </FormItem>
     </Form>
     <div  slot="footer" class="dialog-footer">

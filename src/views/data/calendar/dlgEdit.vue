@@ -13,12 +13,12 @@
         <Input v-model="dataForm.year"></Input>
       </FormItem>
       <FormItem label="开始日期" prop="beginDate">
-          <!-- <Input v-model="dataForm.beginDate" placeholder="日期格式为xx-xx-xx"></Input> -->
-          <Date-picker type="date" v-model="dataForm.beginDate" on-change="selectTime" placeholder="选择日期" style="width: 200px"></Date-picker>
+        <!-- <Input v-model="dataForm.beginDate" placeholder="日期格式为xx-xx-xx"></Input> -->
+        <Date-picker type="date" v-model="dataForm.beginDate" on-change="selectTime" placeholder="选择日期" style="width: 200px"></Date-picker>
       </FormItem>
       <FormItem label="结束日期" prop="endDate">
-          <!-- <Input v-model="dataForm.endDate" placeholder="日期格式为xx-xx-xx"></Input> -->
-          <Date-picker type="date" v-model="dataForm.endDate" on-change="selectTime" placeholder="选择日期" style="width: 200px"></Date-picker>
+        <!-- <Input v-model="dataForm.endDate" placeholder="日期格式为xx-xx-xx"></Input> -->
+        <Date-picker type="date" v-model="dataForm.endDate" on-change="selectTime" placeholder="选择日期" style="width: 200px"></Date-picker>
       </FormItem>
     </Form>
     <div  slot="footer" class="dialog-footer">

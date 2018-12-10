@@ -1,22 +1,22 @@
 <template>
   <div class="page">
-      <div class="act-bar flex-box">
-        <div class="acts">
-          <Button type="success" @click="edit(0)">新建字典分类</Button>
-        </div>
+    <div class="act-bar flex-box">
+      <div class="acts">
+        <Button type="success" @click="edit(0)">新建字典分类</Button>
       </div>
+    </div>
 
-      <Table :columns="columns" :data="tableData" :loading="loading"
-        border stripe disabled-hover size="small" class="table"></Table>
+    <Table :columns="columns" :data="tableData" :loading="loading"
+      border stripe disabled-hover size="small" class="table"></Table>
 
-      <div class="page-wrap" v-if="total > 0">
-        <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
-          show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-          @on-change="page => query.pageIndex = page"
-          @on-page-size-change="pageSize => query.pageSize = pageSize"/>
-      </div>
-      <dlgEdit  ref="addOrUpdate" :cinemaOnes="editOne" @refreshDataList="search" v-if="addOrUpdateVisible"
-        @done="dlgEditDone"></dlgEdit>
+    <div class="page-wrap" v-if="total > 0">
+      <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
+        show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
+        @on-change="page => query.pageIndex = page"
+        @on-page-size-change="pageSize => query.pageSize = pageSize"/>
+    </div>
+    <dlgEdit  ref="addOrUpdate" :cinemaOnes="editOne" @refreshDataList="search" v-if="addOrUpdateVisible"
+      @done="dlgEditDone"></dlgEdit>
   </div>
 </template>
 
