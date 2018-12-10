@@ -10,14 +10,14 @@
             <FormItem prop="uname" :error="unameError">
               <Input v-model="form.uname" placeholder="请输入账号">
                 <span slot="prepend">
-                  <Icon :size="16" type="person"></Icon>
+                  <Icon :size="16" type="md-person"></Icon>
                 </span>
               </Input>
             </FormItem>
             <FormItem prop="pwd" :error="pwdError">
               <Input type="password" v-model="form.pwd" placeholder="请输入密码">
                 <span slot="prepend">
-                  <Icon :size="14" type="locked"></Icon>
+                  <Icon :size="14" type="md-lock"></Icon>
                 </span>
               </Input>
             </FormItem>
@@ -116,6 +116,9 @@ export default class Main extends View {
 }
 .form-wrap {
   padding: 10px 0 0;
+  /deep/ .ivu-input-group-prepend {
+    min-width: 32px;
+  }
 }
 
 @media (max-width: 600px) {
