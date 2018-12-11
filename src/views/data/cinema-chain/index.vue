@@ -7,7 +7,7 @@
       </form>
 
       <div class="acts">
-        <Button type="success" @click="edit(0)">新建地区</Button>
+        <Button type="success" @click="edit(0)">新建院线信息</Button>
       </div>
     </div>
 
@@ -66,26 +66,13 @@ export default class Main extends View {
   chainControlStatus = []
 
   columns = [
-    { title: '序号', key: 'id', width: 90, align: 'center' },
-    { title: '名称', key: 'name', width: 200, align: 'center' },
-    { title: '简称', key: 'shortName', width: 140, align: 'center' },
+    { title: '序号', key: 'id', align: 'center' },
+    { title: '名称', key: 'name', align: 'center' },
+    { title: '简称', key: 'shortName', align: 'center' },
     { title: '拼音', key: 'pinyin',  align: 'center' },
     {
       title: '启用状态',
-      key: 'Status',
-      width: 80,
-      align: 'center',
-      render: (hh: any, { row : { ControlStatus , chainControlStatus } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        return <span class={`status-${chainControlStatus}`}>{ControlStatus}</span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '控制状态',
       key: 'chainControlStatus',
-      width: 90,
       align: 'center',
       render: (hh: any, { row : { chainStatus , Status }  }: any) => {
         /* tslint:disable */
@@ -95,9 +82,19 @@ export default class Main extends View {
       }
     },
     {
+      title: '控制状态',
+      key: 'Status',
+      align: 'center',
+      render: (hh: any, { row : { ControlStatus , chainControlStatus } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        return <span class={`status-${chainControlStatus}`}>{ControlStatus}</span>
+        /* tslint:enable */
+      }
+    },
+    {
       title: '操作',
       key: 'action',
-      width: 80,
       align: 'center',
       render: (hh: any, { row }: any) => {
         /* tslint:disable */
