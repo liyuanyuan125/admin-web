@@ -17,8 +17,8 @@
 
       <Row>
         <Col span="16">
-          <FormItem label="官方名称" prop="officalName">
-            <Input v-model="item.officalName" placeholder="请输入"/>
+          <FormItem label="官方名称" prop="officialName">
+            <Input v-model="item.officialName" placeholder="请输入"/>
           </FormItem>
         </Col>
         <Col span="8">
@@ -62,8 +62,8 @@
 
       <Row>
         <Col span="10">
-          <FormItem label="售票系统" prop="softwareId">
-            <Select v-model="item.softwareId" clearable>
+          <FormItem label="售票系统" prop="software">
+            <Select v-model="item.software" clearable>
               <Option v-for="it in softwareList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
@@ -111,7 +111,7 @@ const defItem = {
   id: '',
   shortName: '',
   code: '',
-  officalName: '',
+  officialName: '',
   controlStatus: 0,
   chainId: '',
   grade: '',
@@ -119,7 +119,7 @@ const defItem = {
   cityId: 0,
   countyId: 0,
   address: '',
-  softwareId: '',
+  software: '',
   zipCode: '',
   status: 0,
 }
@@ -164,7 +164,7 @@ export default class DlgEdit extends View {
       code: [
         { required: true, message: '不能为空', trigger: 'blur' }
       ],
-      officalName: [
+      officialName: [
         { required: true, message: '不能为空', trigger: 'blur' }
       ],
       chainId: [
