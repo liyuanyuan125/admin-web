@@ -28,7 +28,7 @@
       <div class="info-line flex-box">
         <div class="flex-1 flex-box">
           <label>官方名称：</label>
-          <em>{{cinema.officalName}}</em>
+          <em>{{cinema.officialName}}</em>
         </div>
         <div class="flex-1 flex-box">
           <label>售票系统：</label>
