@@ -74,7 +74,7 @@ export default class ComponentMain extends View {
   grop = []
   ruleValidate = {
     name: [
-        { required: true, message: '请输入分类名称', trigger: 'blur' }
+        { required: true, message: '请输入词条名称', trigger: 'blur' }
     ],
     code: [
         { required: true, message: '请输入识别符', trigger: 'blur' }
