@@ -88,6 +88,7 @@ export default class ComponentMain extends View {
   }
 
   cancel(dataForms: string) {
+    this.dataForm.beginDate
     this.showDlg = false
     const myThis: any = this
     myThis.$refs[dataForms].resetFields()
