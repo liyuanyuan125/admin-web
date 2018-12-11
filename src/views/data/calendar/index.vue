@@ -107,11 +107,16 @@ export default class Main extends View {
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        beginDates: moment(it.beginDate).format(timeFormat),
-        endDates: moment(it.endDate).format(timeFormat)
+        // beginDates: moment(it.beginDate).format('L'),
+        // endDates: moment(it.endDate).format('L')
+        beginDates: String(it.beginDate).substr(0, 4) +
+        '-' + String(it.beginDate).substr(4, 2) +
+        '-' + String(it.beginDate).substr(6, 7),
+        endDates: String(it.endDate).substr(0, 4) +
+        '-' + String(it.endDate).substr(4, 2) +
+        '-' + String(it.endDate).substr(6, 7)
       }
     })
-    // console.log(list)
     return list
   }
 

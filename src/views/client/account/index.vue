@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <!-- 添加账号页面 -->
-    <div  v-if="!shows">
+    <!-- <div  v-if="!shows">
       <div class="bge">
         <form class="form flex-1" >
           <div class="Add-Inp">
@@ -41,9 +41,9 @@
           <Button class="button2" type="primary" id="btn" @click='toshowtrue'>保存</Button>
         </form>
       </div>
-    </div>
+    </div> -->
     <!-- 弹窗审核 -->
-    <div class="info" v-if="examine">
+    <!-- <div class="info" v-if="examine">
         <div class="info-ver">账户审核<Icon class="info-Icon" type="md-close"   @click="examinefalse" size="22"/></div>
         <div class="info-type">
             <div class="info-type-t">
@@ -62,7 +62,7 @@
              <Button type="primary">确认</Button>
              <Button @click="examinefalse">取消</Button>
         </div>
-    </div>
+    </div> -->
     <!-- <router-link  :to="{ name: 'client-account-detail', params: { id: 1 } }">详情</router-link> -->
   <!-- </div> -->
   <!-- <div class="page"> -->
@@ -100,6 +100,7 @@
           @on-page-size-change="pageSize => query.pageSize = pageSize"/>
       </div>
     </div>
+    <DlgEdit  ref="addOrUpdate"   @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/>
   </div>
 </template>
 
@@ -111,6 +112,7 @@ import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { clean } from '@/fn/object'
+import DlgEdit from './dlgEdit.vue'
 
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
@@ -128,9 +130,17 @@ const defQuery = {
 }
 
 
-@Component
+@Component({
+  components: {
+    DlgEdit
+  }
+})
 export default class Main extends View {
   shows = true
+  showDlg = false
+  addOrUpdateVisible = false
+
+
   examine = false
   query = { ...defQuery }
 
@@ -202,11 +212,12 @@ export default class Main extends View {
       title: '操作',
       key: 'action',
       align: 'center',
-      render: (hh: any, { row: { id } }: any) => {
+      render: (hh: any, { row: { status, statusText, id }, row }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         return <div class='row-acts'>
-          <router-link to={{ name: 'client-account-verify', params: { id } }}>重新审核</router-link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a href ="javascript:;">启用</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a on-click={this.edit.bind(this, row.id, row)}>编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <router-link to={{ name: 'client-account-detail', params: { id } }}>详情</router-link>
         </div>
         /* tslint:enable */
@@ -276,8 +287,18 @@ export default class Main extends View {
     }
   }
 
-  edit(id: number) {
-    this.shows = false
+   // 新增 / 修改
+  edit(id: number, row: any) {
+    this.addOrUpdateVisible = true
+    // !!id ? this.editOne = row : this.editOne
+    this.$nextTick(() => {
+      const myThis: any = this
+      myThis.$refs.addOrUpdate.init(id)
+    })
+  }
+
+  dlgEditDone() {
+    this.doSearch()
   }
   toshowtrue() {
     alert('保存成功')

@@ -33,15 +33,16 @@
 import { Component, Prop } from 'vue-property-decorator'
 import { dataFrom , add , set , dels } from '@/api/calendar'
 import { warning , success, toast } from '@/ui/modal'
+import moment from 'moment'
 import View from '@/util/View'
-
+const timeFormat = 'YYYY-MM-DD'
 const dataForm = {
   name: '',
-  year: '',
+  year: 0,
   // beginDate: new Date().getTime(),
   // endDate: new Date().getTime(),
-  beginDate: '',
-  endDate: '',
+  beginDate: 0,
+  endDate: 0,
 }
 
 @Component
@@ -55,7 +56,7 @@ export default class ComponentMain extends View {
         { required: true, message: '请输入档期名称', trigger: 'blur' }
     ],
     year: [
-        { required: true, message: '请输入年份', trigger: 'blur' }
+        { required: true, message: '请输入年份' }
     ],
     beginDate: [
         { required: true, message: '请输入开始日期' }
@@ -93,8 +94,21 @@ export default class ComponentMain extends View {
 
   // 表单提交
   dataFormSubmit(dataForms: any) {
-    this.dataForm.beginDate = String(new Date(this.dataForm.beginDate).getTime())
-    this.dataForm.endDate = String(new Date(this.dataForm.endDate).getTime())
+    const a = moment(this.dataForm.beginDate).format(timeFormat).split('-')
+    const b = moment(this.dataForm.endDate).format(timeFormat).split('-')
+
+    this.dataForm.beginDate = Number(a[0] + a[1] + a[2])
+    this.dataForm.endDate = Number(b[0] + b[1] + b[2])
+
+    // const a = (this.dataForm.beginDate).split('t')
+    // const b = (this.dataForm.endDate).split('t')
+
+
+    // this.dataForm.beginDate = Number()
+    // this.dataForm.endDate = Number()
+
+    this.dataForm.year = Number(this.dataForm.year)
+
    const myThis: any = this
    myThis.$refs[dataForms].validate(async ( valid: any ) => {
       if (valid) {
@@ -108,16 +122,6 @@ export default class ComponentMain extends View {
           toast('操作成功')
           this.showDlg = false
           this.$emit('done')
-          // if ( res && res.code === 0 ) {
-          //   this.$Message.success({
-          //       content: `${title}成功`,
-          //       onClose: () => {
-          //         this.showDlg = false
-          //         window.location.reload()
-          //         this.$emit('refreshDataList')
-          //       }
-          //   })
-          // }
         } catch (ex) {
           this.handleError(ex)
           this.showDlg = false
