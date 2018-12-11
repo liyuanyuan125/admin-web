@@ -188,8 +188,7 @@ export default class Main extends View {
   async dele(id: number) {
     try {
       await confirm('确定删除该条数据吗')
-      i f(true) {
-        // console.log(123)
+      if (true) {
         dels({id})
         this.doSearch()
       }
