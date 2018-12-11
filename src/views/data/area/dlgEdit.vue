@@ -16,14 +16,14 @@
       <FormItem label="简拼" prop="pinyinShort">
         <Input v-model="dataForm.pinyinShort" placeholder="请输入"/>
       </FormItem>
-      <FormItem v-if="!parentsName" label="所属区域" prop="areaId">
-        <Select v-model="dataForm.areaId" placeholder="请选择" class="input" style="width: 200px" clearable>
+      <FormItem v-if="!parentsName" label="所属区域" prop="areaCode">
+        <Select v-model="dataForm.areaCode" placeholder="请选择" class="input" style="width: 200px" clearable>
           <Option v-for="it in areaList" :key="it.key"
-            :value="it.id">{{it.name}}</Option>
+            :value="it.code">{{it.name}}</Option>
         </Select>
       </FormItem>
-      <FormItem label="排序" prop="orderNum">
-        <Input style="width:150px" v-model="dataForm.orderNum" placeholder="请输入"/><span class="hiht">数值越小，排序越靠前</span>
+      <FormItem label="排序" prop="sort">
+        <Input style="width:150px" v-model="dataForm.sort" placeholder="请输入"/><span class="hiht">数值越小，排序越靠前</span>
       </FormItem>
     </Form>
     <div  slot="footer" class="dialog-footer">
@@ -38,7 +38,7 @@
 import { Component, Prop } from 'vue-property-decorator'
 import View from '@/util/View'
 import { areaAdd, areaSet } from '@/api/dateArea'
-
+import { clean } from '@/fn/object'
 @Component
 export default class ComponentMain extends View {
   showDlg = false
@@ -53,8 +53,8 @@ export default class ComponentMain extends View {
     nameCn: '',
     pinyinShort: '',
     pinyin: '',
-    areaId: '',
-    orderNum: ''
+    areaCode: '',
+    sort: ''
   }
   ruleValidate = {
     nameCn: [
@@ -66,30 +66,31 @@ export default class ComponentMain extends View {
     pinyin: [
         { required: true, message: '请输入地区拼音', trigger: 'blur' }
     ],
-    areaId: [
-        { required: true, message: '请选择所属区域', trigger: 'change' }
+    areaCode: [
+        { required: true, message: '请选择所属区域', trigger: 'change', type: 'string' }
     ],
-    orderNum: []
+    sort: []
   }
   @Prop({ type: Array }) areaSelect: any
-  @Prop({ type: Object }) areaObject: any
-  created() {
-
-  }
-  init(id: any, name: string, areaId: any, editMes: any, parentsAreaId: string) {
+  @Prop() areaObject: any
+  init(id: any, name: string, areaCode: any, editMes: any, parentsareaCode: string) {
     this.setId = id
     this.editMes = editMes
     this.parentsName = name
     this.showDlg = true
-    this.id = parentsAreaId
-    this.parentsName ? this.dataForm.areaId = areaId : ''
+    this.id = parentsareaCode
+    if ( !!this.parentsName ) {
+      this.dataForm.areaCode = areaCode
+    } else {
+      this.dataForm.areaCode = ''
+    }
     this.areaList = this.areaSelect
     if (this.areaObject) {
        this.dataForm.nameCn = this.areaObject.nameCn
        this.dataForm.pinyinShort = this.areaObject.pinyinShort
        this.dataForm.pinyin = this.areaObject.pinyin
-       this.dataForm.areaId = this.areaObject.areaId
-       this.dataForm.orderNum = this.areaObject.orderNum
+       this.dataForm.areaCode = this.areaObject.areaCode
+       this.dataForm.sort = this.areaObject.sort
     }
   }
 
@@ -104,11 +105,23 @@ export default class ComponentMain extends View {
    const myThis: any = this
    myThis.$refs[dataForms].validate(async ( valid: any ) => {
       if (valid) {
-        const setQuery = {
+        const setData: any = {
           parentId: this.id,
           ...this.dataForm
         }
-        const query = !this.parentsName ? this.dataForm : setQuery
+        const setQuery: any = {}
+        for ( const key in setData ) {
+          if (setData.hasOwnProperty(key)) {
+            if (key != 'areaCode') {
+              setQuery[key] = setData[key]
+            }
+          }
+        }
+        const addDate = this.dataForm
+        const query = this.id ? {
+          parentId: this.id,
+          ...addDate
+        } : addDate
         const title = !this.editMes ? '新增' : '编辑'
         try {
           const res = !this.editMes ? await areaAdd (query) : await areaSet ( this.setId , setQuery)

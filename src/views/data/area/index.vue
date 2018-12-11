@@ -3,14 +3,13 @@
     <div class="act-bar flex-box">
       <form class="form flex-1" @submit.prevent="search">
         <LazyInput v-model="query.nameCn" placeholder="地区名称" class="input input-id"/>
-        <Select v-if="!query.parentIds" v-model="query.areaIds" placeholder="所属区域" class="input" style="width: 200px" clearable>
+        <Select v-if="!query.parentIds" v-model="query.areaCodes" placeholder="所属区域" class="input" style="width: 200px" clearable>
           <Option v-for="it in statusList" :key="it.key"
-            :value="it.id">{{it.name}}</Option>
+            :value="it.code">{{it.name}}</Option>
         </Select>
         <Button type="default" @click="reset" class="btn-reset">清空</Button>
         <Button v-if="!!query.parentIds" @click="goBack" class="btn-reset">返回上一级</Button>
       </form>
-
       <div class="acts">
         <Button type="success" @click="edit(query.parentIds)">创建</Button>
       </div>
@@ -45,14 +44,15 @@ import PartPoptipEdit from '../cinema/partPoptipEdit.vue'
 import { confirm } from '@/ui/modal'
 import DlgEdit from './dlgEdit.vue'
 
-const makeMap = (list: any[]) => toMap(list, 'id', 'name')
+const makeMap = (list: any[]) => toMap(list, 'code', 'name')
 
 const defQuery = {
   nameCn: '',
-  areaIds: '',
+  areaCodes: '',
   pageIndex: 1,
   pageSize: 20,
-  parentIds: ''
+  parentIds: '',
+  city: ''
 }
 
 @Component({
@@ -66,25 +66,25 @@ export default class Main extends View {
   oldQuery: any = {}
   editOne: any = null
   loading = false
+  pageIndex: any = []
   addOrUpdateVisible = false
   list: any[] = []
   // 父级县区
-  parentsName = ''
   total = 0
   // 父级所属区域id
-  parentsAreaId = ''
+  parentsareaCode = ''
   statusList: any[] = []
   saveId: any[] = []
   get columns() {
     const colum =  [
       { title: '序号', key: 'id', align: 'center' },
       { title: '地区名称', key: 'nameCn', align: 'center',
-        render: (hh: any, { row: { id, nameCn, areaId, childCount} }: any) => {
+        render: (hh: any, { row: { id, nameCn, areaCode } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          return childCount>0?(<div class='row-acts'>
-            <div><a on-click={this.sonMessage.bind(this, id, nameCn, areaId)}>{nameCn}</a></div>
-          </div>):<div><span>{nameCn}</span></div>
+          return <div class='row-acts'>
+            <div><a on-click={this.sonMessage.bind(this, id, nameCn, areaCode)}>{nameCn}</a></div>
+          </div>
           /* tslint:enable */
         }
       },
@@ -95,18 +95,18 @@ export default class Main extends View {
         key: 'areaName',
         width: 120,
         align: 'center',
-        render: (hh: any, { row : { id , areaId, areaName } }: any) => {
+        render: (hh: any, { row : { id , areaCode, areaName } }: any) => {
           /* tslint:disable */
         const list = this.statusList.map((value) => {
           return {
-            key: value.id,
+            key: value.code,
             text: value.name
           }
         })
         const h = jsxReactToVue(hh)
             const value = {
                 id,
-                key: areaId,
+                key: areaCode,
                 text: areaName,
                 list
             }
@@ -117,7 +117,7 @@ export default class Main extends View {
       },
       {
         title: '排序',
-        key: 'orderNum',
+        key: 'sort',
         width: 90,
         align: 'center'
       },
@@ -147,22 +147,25 @@ export default class Main extends View {
     }
   }
 
-  sonMessage(id: any, nameCn: string, areaId: string) {
+  sonMessage(id: any, nameCn: string, areaCode: string) {
     this.saveId.push(id)
-    this.parentsAreaId = areaId
-    this.query.areaIds = areaId
-    this.parentsName = nameCn
-    this.query.parentIds = this.saveId.join(',')
-    this.doSearch()
+    this.query.nameCn = ''
+    this.query.areaCodes = areaCode
+    this.query.areaCodes = areaCode
+    this.query.city = nameCn
+    this.query.parentIds = id
+    this.pageIndex.push( this.query.pageIndex )
+    this.query.pageIndex = 1
   }
 
   goBack() {
+    this.query.pageIndex = this.pageIndex[this.pageIndex.length - 1]
+    this.query.parentIds = this.saveId[this.saveId.length - 2]
     this.saveId.pop()
-    this.query.parentIds = this.saveId.join(',')
-    !this.query.parentIds ? this.parentsAreaId = '' : ''
-    this.query.areaIds = this.parentsAreaId
-    !this.query.parentIds ? this.parentsName = '' : ''
-    this.doSearch()
+    this.pageIndex.pop()
+    !this.query.parentIds ? this.query.areaCodes = '' : ''
+    this.query.areaCodes = this.query.areaCodes
+    !this.query.parentIds ? this.query.city = '' : ''
   }
 
   get tableData() {
@@ -240,11 +243,29 @@ export default class Main extends View {
     this.updateUrl()
     this.loading = true
     const query = clean({ ...this.query })
+    const setQuery: any = {}
+    if (this.query.parentIds) {
+      for ( const key in query ) {
+        if (query.hasOwnProperty(key)) {
+          if (key != 'areaCodes' && key != 'city') {
+              setQuery[key] = query[key]
+          }
+        }
+      }
+    } else {
+      for ( const key in query ) {
+        if (query.hasOwnProperty(key)) {
+          if (key != 'city') {
+            setQuery[key] = query[key]
+          }
+        }
+      }
+    }
     try {
       const { data: {
         items: list,
         totalCount: total,
-      } } = await queryList(query)
+      } } = await queryList(setQuery)
       this.list = list
       this.total = total
     } catch (ex) {
@@ -256,11 +277,11 @@ export default class Main extends View {
 
   async editStatus({ id, key: newStatus, showLoading }: any) {
     const item = this.list.find(it => it.id == id)
-    if (item && item.areaIds != newStatus) {
+    if (item && item.areaCodes != newStatus) {
       try {
         showLoading()
-        await areaSet(id, {areaId: newStatus, areaName: this.cachedMap.statusList[newStatus]})
-        item.areaId = newStatus
+        await areaSet(id, {areaCode: newStatus, areaName: this.cachedMap.statusList[newStatus]})
+        item.areaCode = newStatus
         item.areaName = this.cachedMap.statusList[newStatus]
       } catch (ex) {
         this.handleError(ex)
@@ -274,7 +295,7 @@ export default class Main extends View {
     !!id ? this.editOne = row : this.editOne = ''
     this.$nextTick(() => {
       const myThis: any = this
-      myThis.$refs.addOrUpdate.init(id, this.parentsName, this.parentsAreaId, editMes, this.query.parentIds)
+      myThis.$refs.addOrUpdate.init(id, this.query.city, this.query.areaCodes, editMes, this.query.parentIds)
     })
   }
 

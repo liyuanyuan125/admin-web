@@ -17,12 +17,12 @@
       </FormItem>
       <FormItem label="状态" prop="chainStatus">
           <RadioGroup v-model="dataForm.chainStatus">
-                <Radio v-for="index in dlgStatus" :label="index.key" :key="index.key">{{index.text}}</Radio>
+                <Radio v-if="index.key!=0" v-for="index in dlgStatus" :label="index.key" :key="index.key">{{index.text}}</Radio>
           </RadioGroup>
       </FormItem>
       <FormItem label="控制状态" prop="chainControlStatus">
           <RadioGroup v-model="dataForm.chainControlStatus">
-              <Radio v-for="index in delControlStatus" :label="index.key" :key="index.key">{{index.text}}</Radio>
+              <Radio v-if="index.key!=0" v-for="index in controlStatus" :label="index.key" :key="index.key">{{index.text}}</Radio>
           </RadioGroup>
       </FormItem>
     </Form>
@@ -44,17 +44,22 @@ const dataForm = {
   name: '',
   shortName: '',
   pinyin: '',
-  chainStatus: '',
-  chainControlStatus: ''
+  chainStatus: 1,
+  chainControlStatus: 1
 }
 
 @Component
 export default class ComponentMain extends View {
   @Prop({ type: Object }) cinemaOnes: any
-  @Prop({ type: Object }) dlgStatus: any
-  @Prop({ type: Object }) delControlStatus: any
+  @Prop({ type: Array }) dlgStatus: any
+  @Prop({ type: Array }) delControlStatus: any
   showDlg = false
   id = 0
+
+  get controlStatus() {
+      return this.delControlStatus
+  }
+
   ruleValidate = {
     name: [
         { required: true, message: '请输入院线名称', trigger: 'blur' }

@@ -40,8 +40,9 @@ import { toThousands } from '@/util/dealData'
 import PartPoptipEdit from '../cinema/partPoptipEdit.vue'
 import InputEdit from './inputEdit.vue'
 import DlgEdit from './dlgEdit.vue'
+import { loading, toast } from '@/ui/modal'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
-const timeFormat = 'YYYY-MM-DD<br>HH:mm:ss'
+const timeFormat = 'YYYY-MM-DD'
 
 const defQuery = {
   id: null,
@@ -104,7 +105,7 @@ export default class Main extends View {
         }
       },
       {
-        title: '影城名称',
+        title: '影片名称',
         key: 'name',
         width: 90,
         align: 'center',
@@ -165,7 +166,7 @@ export default class Main extends View {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
           return <div class="row-hidden" title = { performers }>
-            { performers }
+            { performers.join(',') }
           </div>
           /* tslint:enable */
         }
@@ -191,7 +192,7 @@ export default class Main extends View {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
           return <div class="row-hidden">
-            <span title = { type }>{ type }</span>
+            <span title = { type }>{ type.join(',') }</span>
           </div>
           /* tslint:enable */
         }
@@ -376,7 +377,7 @@ export default class Main extends View {
     const myThis: any = this
     try {
         myThis.$Spin.show()
-        const res = await syncData (mtimeId, 0)
+        const res = await syncData (mtimeId, 1)
         this.$Message.success({
         content: `刷新成功`,
         })
@@ -439,8 +440,4 @@ export default class Main extends View {
   }
 }
 
-.page-wrap {
-  margin: 20px 0 18px;
-  text-align: center;
-}
 </style>
