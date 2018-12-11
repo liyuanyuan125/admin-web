@@ -19,7 +19,7 @@
         @on-change="page => query.pageIndex = page"
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
-    <DlgEdit  ref="addOrUpdate" :cinemaOnes="editOne"  @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/>
+    <DlgEdit  ref="addOrUpdate" :cinemaOnes="editOne"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" @done="dlgEditDone"/>
   </div>
 </template>
 
@@ -136,6 +136,14 @@ export default class Main extends View {
     this.query.pageIndex = 1
   }
 
+  reloadSearch() {
+    if (this.query.pageIndex != 1) {
+      this.query.pageIndex = 1
+      return
+    }
+    this.doSearch()
+  }
+
   reset() {
     const { pageSize } = this.query
     this.query = { ...defQuery, pageSize }
@@ -187,14 +195,24 @@ export default class Main extends View {
 
   async dele(id: number) {
     try {
-      await confirm('确定删除该条数据吗')
-      if (true) {
-        dels({id})
-        this.doSearch()
-      }
+      await confirm('您确定删除当前地区信息吗？')
+      await dels({id})
+      this.$Message.success({
+        content: `删除成功`,
+      })
+      this.reloadSearch()
     } catch (ex) {
-      // this.handleError(ex)
+      this.handleError(ex)
     }
+    // try {
+    //   await confirm('确定删除该条数据吗')
+    //   if (true) {
+    //     dels({id})
+    //     this.doSearch()
+    //   }
+    // } catch (ex) {
+    //   // this.handleError(ex)
+    // }
   }
 
   @Watch('query', { deep: true })
