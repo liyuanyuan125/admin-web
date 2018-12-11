@@ -51,12 +51,12 @@ export default class ComponentMain extends View {
   showDlg = false
   id = 0
   ruleValidate = {
-    name: [
-        { required: true, message: '请输入分类名称', trigger: 'blur' }
-    ],
-    code: [
-        { required: true, message: '请输入识别符', trigger: 'blur' }
-    ]
+    // name: [
+    //     { required: true, message: '请输入分类名称', trigger: 'blur' }
+    // ],
+    // code: [
+    //     { required: true, message: '请输入识别符', trigger: 'blur' }
+    // ]
   }
   dataForm = { ...dataForm }
   init(id: number) {
