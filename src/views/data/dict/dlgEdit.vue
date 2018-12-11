@@ -5,12 +5,17 @@
     :width='420'
     :title="!id ? '新建字典分类' : '编辑字典分类'"
     @on-cancel="cancel('dataForm')" >
-    <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
+    <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100" :data="tableData">
       <FormItem label="分类名称" prop="name">
         <Input v-model="dataForm.name"></Input>
       </FormItem>
       <FormItem label="唯一识别符" prop="code">
         <Input v-model="dataForm.code"></Input>
+      </FormItem>
+      <FormItem label="启用状态" prop="enableStatus">
+        <RadioGroup v-model="dataForm.enableStatus" >
+          <Radio v-for="it in list"  v-if="it.key!=0" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
+        </RadioGroup>
       </FormItem>
     </Form>
     <div  slot="footer" class="dialog-footer">
@@ -23,6 +28,8 @@
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop } from 'vue-property-decorator'
+import { queryList } from '@/api/dict'
+import { clean } from '@/fn/object'
 import { dataFrom , add , set} from '@/api/dict'
 import { warning , success, toast } from '@/ui/modal'
 import View from '@/util/View'
@@ -39,7 +46,8 @@ const dataForm = {
 export default class ComponentMain extends View {
   @Prop({ type: Object }) cinemaOnes: any
   query = { ...defQuery }
-  // oldQuery: any = null
+  oldQuery: any = {}
+  list = []
 
   showDlg = false
   id = 0
@@ -52,7 +60,8 @@ export default class ComponentMain extends View {
     ]
   }
   dataForm = { ...dataForm }
-  init(id: number) {
+  async init(id: number) {
+    // console.log(id)
     this.showDlg = true
     this.id = id || 0
     this.$nextTick(async () => {
@@ -65,6 +74,7 @@ export default class ComponentMain extends View {
         // }} = await dataFrom({ id })
         this.dataForm.name = this.cinemaOnes.name
         this.dataForm.code = this.cinemaOnes.code
+        this.dataForm.enableStatus = this.cinemaOnes.enableStatus
       }
     })
   }
@@ -106,9 +116,40 @@ export default class ComponentMain extends View {
       }
     })
   }
+  get cachedMap() {
+    return {
+    }
+  }
+
+  get tableData() {
+    const cachedMap = this.cachedMap
+    const list = (this.list || []).map((it: any) => {
+      return {
+        ...it,
+      }
+    })
+    // console.log(list)
+    return list
+  }
   mounted() {
     const { id } = this.$route.params
     this.query.categoryId = this.id
+    this.doSearch()
+  }
+  async doSearch() {
+    this.oldQuery = { ...this.query }
+    const query = clean({ ...this.query })
+    try {
+      const { data: {
+        enableStatusList: list,
+      } } = await queryList(query)
+      this.list = list
+      // console.log(this.list)
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      // this.loading = false
+    }
   }
 }
 </script>
