@@ -4,6 +4,7 @@
 
 import tryParseJson from '@/util/tryParseJson'
 import cookie from 'js-cookie'
+import { logout as postLogout } from '@/api/auth'
 
 interface User {
   id: string
@@ -58,6 +59,7 @@ export function logout() {
   cookie.remove(KEY_TOKEN, COOKIE_OPTIONS)
   delete sessionStorage.user
   theUser = null
+  postLogout()
 }
 
 export function setCookie(token: string) {
