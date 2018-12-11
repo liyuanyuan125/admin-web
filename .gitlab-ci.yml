@@ -13,6 +13,10 @@ before_script:
 lint:
   image: $REGISTRY_ADDRESS/ai/devops/nodejs/build
   stage: lint
+  only:
+    - master
+    - testing
+    - release
   script:
     - yarn && yarn lint
   tags:
@@ -21,6 +25,10 @@ lint:
 build:
   image: $REGISTRY_ADDRESS/ai/devops/nodejs/build
   stage: build
+  only:
+    - master
+    - testing
+    - release
   script:
     - yarn && yarn build
   artifacts:
@@ -36,6 +44,10 @@ package:
   stage: package
   variables:
     GIT_STRATEGY: none
+  only:
+    - master
+    - testing
+    - release
   script:
     - package
   tags:
@@ -47,6 +59,10 @@ deploy:
   variables:
     GIT_STRATEGY: none
   dependencies: []
+  only:
+    - master
+    - testing
+    - release
   script:
     - deploy -service $SERVICE_NAME -image $REGISTRY_ADDRESS/ai/$CI_PROJECT_PATH:$COMMIT_SHA
   environment: aiads-dev
