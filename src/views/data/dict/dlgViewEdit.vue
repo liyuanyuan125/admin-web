@@ -17,7 +17,8 @@
       </FormItem>
       <FormItem label="启用状态" prop="enableStatus">
         <RadioGroup v-model="dataForm.enableStatus" >
-          <Radio v-for="it in list" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
+        <!-- {{list}} -->
+          <Radio v-for="it in list" v-if="it.key!=0" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
         </RadioGroup>
       </FormItem>
       <!-- <FormItem label="启用状态" prop="enableStatus">
@@ -98,7 +99,7 @@ export default class ComponentMain extends View {
         this.dataForm.enableStatus = this.cinemaOnes.enableStatus
       }
       if (this.id == 0) {
-        this.dataForm.enableStatus = this.lists[0].key
+        this.dataForm.enableStatus = this.lists[1].key
       }
     })
   }
@@ -157,6 +158,7 @@ export default class ComponentMain extends View {
         ...it,
       }
     })
+    // console.log(list)
     return list
   }
 
@@ -174,6 +176,7 @@ export default class ComponentMain extends View {
         enableStatusList: list,
       } } = await queryList(query)
       this.list = list
+      // console.log(this.list)
     } catch (ex) {
       this.handleError(ex)
     } finally {

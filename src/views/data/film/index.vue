@@ -376,7 +376,7 @@ export default class Main extends View {
     const myThis: any = this
     try {
         myThis.$Spin.show()
-        const res = await syncData (mtimeId, 1)
+        const res = await syncData (mtimeId, 0)
         this.$Message.success({
         content: `刷新成功`,
         })

@@ -50,7 +50,7 @@ export default class ComponentMain extends View {
     const myThis: any = this
     try {
       myThis.$Spin.show()
-      const res = await syncData (this.dataForm.mtimeId, 0)
+      const res = await syncData (this.dataForm.mtimeId, 1)
       this.$Message.success({
         content: `同步成功`,
         onClose: () => {
