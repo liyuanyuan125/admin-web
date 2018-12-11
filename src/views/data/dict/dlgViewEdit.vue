@@ -53,7 +53,7 @@ const dataForm = {
   category: {
     id: ''
   },
-  sortValue: 0,
+  sortValue: null,
   enableStatus: ''
 }
 

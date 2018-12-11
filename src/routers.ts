@@ -27,7 +27,7 @@ export default [
   {
     path: '/client/corp/',
     name: 'client-corp',
-    component: () => import(/* webpackChunkName: "client-corp" */ './views/client/corp/index.vue')
+    component: () => import('./views/client/corp/index.vue')
   },
   {
     path: '/client/corp/detail/:id?',

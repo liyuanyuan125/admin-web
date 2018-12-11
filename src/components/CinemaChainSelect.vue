@@ -1,7 +1,11 @@
 <template>
   <Select v-model="inValue" :placeholder="placeholder" filterable clearable
     class="component">
-    <Option v-for="it in list" :key="it.id" :value="it.id">{{it.name}}</Option>
+    <Option v-for="it in list" :key="it.id" :value="it.id"
+      :label="it.shortName || it.name" class="flex-box">
+      <span class="flex-1">{{it.shortName || it.name}}</span>
+      <i v-if="it.chainControlStatus == 2" class="offline">下架</i>
+    </Option>
   </Select>
 </template>
 
@@ -19,6 +23,16 @@ export default class ComponentMain extends View {
   @Prop({ type: String, default: '' }) value!: string
 
   /**
+   * 控制状态
+   */
+  @Prop({ type: Number, default: 0 }) controlStatus!: number
+
+  /**
+   * 保留 ID，一般配合 controlStatus 使用
+   */
+  @Prop({ type: String, default: '' }) keepId!: string
+
+  /**
    * 提示文字
    */
   @Prop({ type: String, default: '院线，输入文字进行筛选' }) placeholder!: string
@@ -31,8 +45,15 @@ export default class ComponentMain extends View {
 
   async mounted() {
     try {
-      const { data } = await queryList({ pageSize: 888888 })
-      this.list = data.items || []
+      const { data } = await queryList({
+        pageSize: 888888
+      })
+      let list: any[] = data.items || []
+      if (this.controlStatus > 0) {
+        list = list.filter(it => it.chainControlStatus == this.controlStatus ||
+          it.id == this.keepId)
+      }
+      this.list = list
     } catch (ex) {
       this.handleError(ex)
     }
@@ -53,5 +74,9 @@ export default class ComponentMain extends View {
 <style lang="less" scoped>
 .component {
   min-width: 188px;
+}
+.offline {
+  color: #bbb;
+  font-style: normal;
 }
 </style>

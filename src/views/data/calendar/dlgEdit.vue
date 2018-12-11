@@ -14,11 +14,11 @@
       </FormItem>
       <FormItem label="开始日期" prop="beginDate">
         <!-- <Input v-model="dataForm.beginDate" placeholder="日期格式为xx-xx-xx"></Input> -->
-        <Date-picker type="date" v-model="dataForm.beginDate" on-change="selectTime" placeholder="选择日期" style="width: 200px"></Date-picker>
+        <Date-picker type="date" @on-change="handleChange" v-model="dataForm.beginDate" on-change="selectTime" placeholder="选择日期" style="width: 200px"></Date-picker>
       </FormItem>
       <FormItem label="结束日期" prop="endDate">
         <!-- <Input v-model="dataForm.endDate" placeholder="日期格式为xx-xx-xx"></Input> -->
-        <Date-picker type="date" v-model="dataForm.endDate" on-change="selectTime" placeholder="选择日期" style="width: 200px"></Date-picker>
+        <Date-picker type="date" @on-change="handleChange2" v-model="dataForm.endDate" on-change="selectTime" placeholder="选择日期" style="width: 200px"></Date-picker>
       </FormItem>
     </Form>
     <div  slot="footer" class="dialog-footer">
@@ -38,7 +38,7 @@ import View from '@/util/View'
 const timeFormat = 'YYYY-MM-DD'
 const dataForm = {
   name: '',
-  year: 0,
+  year: null,
   // beginDate: new Date().getTime(),
   // endDate: new Date().getTime(),
   beginDate: 0,
@@ -51,6 +51,8 @@ export default class ComponentMain extends View {
   loading = false
   showDlg = false
   id = 0
+  date1 = 0
+  date2 = 0
   ruleValidate = {
     name: [
         { required: true, message: '请输入档期名称', trigger: 'blur' }
@@ -69,7 +71,6 @@ export default class ComponentMain extends View {
   init(id: number) {
     this.showDlg = true
     this.id = id || 0
-    // debugger
     this.$nextTick(async () => {
       const dataForms: string = 'dataForm'
       const myThis: any = this
@@ -99,14 +100,6 @@ export default class ComponentMain extends View {
 
     this.dataForm.beginDate = Number(a[0] + a[1] + a[2])
     this.dataForm.endDate = Number(b[0] + b[1] + b[2])
-
-    // const a = (this.dataForm.beginDate).split('t')
-    // const b = (this.dataForm.endDate).split('t')
-
-
-    // this.dataForm.beginDate = Number()
-    // this.dataForm.endDate = Number()
-
     this.dataForm.year = Number(this.dataForm.year)
 
    const myThis: any = this
@@ -126,22 +119,23 @@ export default class ComponentMain extends View {
           this.handleError(ex)
           this.showDlg = false
         }
-        // const res = !this.id ? await add (query) : await set (query)
-        // if ( res && res.code === 0 ) {
-        //   this.$Message.success({
-        //       content: `${title}成功`,
-        //       onClose: () => {
-        //         this.showDlg = false
-        //         this.$emit('refreshDataList')
-        //       }
-        //   })
-        // } else {
-        //   this.$Message.success({
-        //     content: `${title}失败`
-        //   })
-        // }
       }
     })
+  }
+
+  handleChange(date: any) {
+    const ch1 = moment(date).format(timeFormat).split('-')
+    this.date1 = Number(ch1[0] + ch1[1] + ch1[2])
+  }
+
+  handleChange2(date: any) {
+    const ch2 = moment(date).format(timeFormat).split('-')
+    this.date2 = Number(ch2[0] + ch2[2] + ch2[2])
+    if (this.date2 < this.date1) {
+      alert('结束日期不能低于开始日期')
+      this.dataForm.endDate = 0
+      return
+    }
   }
 }
 </script>

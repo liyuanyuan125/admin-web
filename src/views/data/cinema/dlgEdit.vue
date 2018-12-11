@@ -34,7 +34,8 @@
       <Row>
         <Col span="16">
           <FormItem label="院线" prop="chainId">
-            <CinemaChainSelect v-model="item.chainId"/>
+            <CinemaChainSelect v-model="item.chainId" :controlStatus="1"
+              :keepId="item.chainId"/>
           </FormItem>
         </Col>
         <Col span="8">
