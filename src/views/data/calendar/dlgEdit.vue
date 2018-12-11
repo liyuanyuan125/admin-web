@@ -38,7 +38,7 @@ import View from '@/util/View'
 const timeFormat = 'YYYY-MM-DD'
 const dataForm = {
   name: '',
-  year: null,
+  year: 0,
   // beginDate: new Date().getTime(),
   // endDate: new Date().getTime(),
   beginDate: 0,
