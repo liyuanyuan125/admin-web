@@ -3,40 +3,20 @@
     v-model='showDlg'
     :transfer='true'
     :width='420'
-    :title="!id ? '新建字典分类' : '编辑字典分类'"
+    :title="!id ? '重新关联' : '关联公司'"
     @on-cancel="cancel('dataForm')" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
-      <FormItem label="用户账号" prop="name">
-        <Input v-model="dataForm.name"></Input>
+      <FormItem label="注册账号" prop="name">
+        <Input v-model="dataForm.name" disabled></Input>
       </FormItem>
-      <FormItem label="密码" prop="code">
-        <Input v-model="dataForm.code"></Input>
+      <FormItem label="主账号" prop="code">
+        <Input v-model="dataForm.code" disabled></Input>
       </FormItem>
-      <FormItem label="重复密码" prop="name">
-        <Input v-model="dataForm.name"></Input>
-      </FormItem>
-      <FormItem label="邮箱" prop="name">
-        <Input v-model="dataForm.name"></Input>
-      </FormItem>
-      <FormItem label="所属公司" prop="name">
-        <Select style="width:200px">
-          <!-- <Option v-for="item in cityList" :value="item.value">{{ item.label }}</Option> -->
-          <Option>456465465</Option>
-          <Option>131323313</Option>
-          <Option>789789798</Option>
-        </Select>
-      </FormItem>
-      <FormItem label="角色" prop="enableStatus">
+      <FormItem label="审核意见" prop="enableStatus">
         <RadioGroup v-model="dataForm.enableStatus" >
           <!-- <Radio v-for="it in list" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio> -->
-          <Radio label="超级管理员"></Radio>
-        </RadioGroup>
-      </FormItem>
-      <FormItem label="启用状态" prop="enableStatus">
-        <RadioGroup v-model="dataForm.enableStatus" >
-          <!-- <Radio v-for="it in list" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio> -->
-          <Radio label="启用"></Radio>
-          <Radio label="停用"></Radio>
+          <Radio label="通过"></Radio>
+          <Radio label="拒绝"></Radio>
         </RadioGroup>
       </FormItem>
     </Form>

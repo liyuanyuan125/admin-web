@@ -53,7 +53,7 @@ const dataForm = {
   category: {
     id: ''
   },
-  sortValue: '',
+  sortValue: 0,
   enableStatus: ''
 }
 
@@ -112,6 +112,7 @@ export default class ComponentMain extends View {
 
   // 表单提交
   dataFormSubmit(dataForms: any) {
+   this.dataForm.sortValue = Number(this.dataForm.sortValue)
    const myThis: any = this
    myThis.$refs[dataForms].validate(async ( valid: any ) => {
       if (valid) {

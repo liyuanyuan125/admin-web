@@ -5,37 +5,37 @@
     :width='420'
     :title="!id ? '新建字典分类' : '编辑字典分类'"
     @on-cancel="cancel('dataForm')" >
-    <!-- <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
+    <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
       <FormItem label="用户账号" prop="name">
         <Input v-model="dataForm.name"></Input>
       </FormItem>
-      <FormItem label="密码" prop="code">
-        <Input v-model="dataForm.code"></Input>
+      <FormItem label="密码" prop="password">
+        <Input v-model="dataForm.password"></Input>
       </FormItem>
-      <FormItem label="重复密码" prop="name">
-        <Input v-model="dataForm.name"></Input>
+      <FormItem label="重复密码" prop="passwords">
+        <Input v-model="dataForm.passwords"></Input>
       </FormItem>
-      <FormItem label="邮箱" prop="name">
-        <Input v-model="dataForm.name"></Input>
+      <FormItem label="邮箱" prop="email">
+        <Input v-model="dataForm.email" type="email"></Input>
       </FormItem>
-      <FormItem label="所属公司" prop="name">
-        <Select style="width:200px"> -->
+      <FormItem label="所属公司" prop="company">
+        <Select style="width:200px">
           <!-- <Option v-for="item in cityList" :value="item.value">{{ item.label }}</Option> -->
-          <!-- <Option>456465465</Option>
+          <Option>456465465</Option>
           <Option>131323313</Option>
           <Option>789789798</Option>
         </Select>
       </FormItem>
-      <FormItem label="角色" prop="enableStatus">
-        <RadioGroup v-model="dataForm.enableStatus" > -->
+      <FormItem label="角色" prop="juese">
+        <RadioGroup v-model="dataForm.juese" >
           <!-- <Radio v-for="it in list" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio> -->
-          <!-- <Radio label="超级管理员"></Radio>
+          <Radio label="超级管理员"></Radio>
         </RadioGroup>
       </FormItem>
       <FormItem label="启用状态" prop="enableStatus">
-        <RadioGroup v-model="dataForm.enableStatus" > -->
+        <RadioGroup v-model="dataForm.enableStatus" >
           <!-- <Radio v-for="it in list" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio> -->
-          <!-- <Radio label="启用"></Radio>
+          <Radio label="启用"></Radio>
           <Radio label="停用"></Radio>
         </RadioGroup>
       </FormItem>
@@ -43,7 +43,7 @@
     <div slot="footer" class="dialog-footer">
       <Button @click="cancel('dataForm')">取消</Button>
       <Button type="primary" @click="dataFormSubmit('dataForm')">确定</Button>
-    </div> -->
+    </div>
   </Modal>
 </template>
 
@@ -74,8 +74,23 @@ export default class ComponentMain extends View {
     name: [
         { required: true, message: '请输入分类名称', trigger: 'blur' }
     ],
-    code: [
-        { required: true, message: '请输入识别符', trigger: 'blur' }
+    password: [
+        { required: true, message: '请输入密码' }
+    ],
+    passwords: [
+        { required: true, message: '请重新输入密码' }
+    ],
+    email: [
+        { required: true, message: '请输入邮箱账号' }
+    ],
+    company: [
+        { required: true, message: '请选择所属公司' }
+    ],
+    juese: [
+        { required: true, message: '必选' }
+    ],
+    enableStatus: [
+        { required: true }
     ]
   }
   dataForm = { ...dataForm }
@@ -117,15 +132,6 @@ export default class ComponentMain extends View {
            toast('操作成功')
            this.showDlg = false
            this.$emit('done')
-            // if ( res && res.code === 0 ) {
-            //   this.$Message.success({
-            //       content: `${title}成功`,
-            //       onClose: () => {
-            //         this.showDlg = false
-            //         this.$emit('done')
-            //       }
-            //   })
-            // }
         } catch (ex) {
            this.handleError(ex)
            this.showDlg = false
