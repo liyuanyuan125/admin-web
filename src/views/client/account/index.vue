@@ -1,47 +1,5 @@
 <template>
   <div class="page">
-    <!-- 添加账号页面 -->
-    <!-- <div  v-if="!shows">
-      <div class="bge">
-        <form class="form flex-1" >
-          <div class="Add-Inp">
-              <span>用户账号</span><LazyInput  size="large" style="width: 300px" placeholder="输入账号"/><br>
-          </div>
-          <div class="Add-Inp">
-              <span>密码</span><LazyInput  size="large" style="width: 300px" placeholder="输入密码"/><br>
-          </div>
-          <div class="Add-Inp">
-              <span>重复密码</span><LazyInput  size="large" style="width: 300px" placeholder="再次输入密码"/><br>
-          </div>
-          <div class="Add-Inp">
-              <span>邮箱</span><LazyInput  size="large" style="width: 300px" placeholder="输入邮箱"/><br>
-          </div>
-          <div class="Add-Inp">
-              <span>所属公司</span>
-              <Select style="width:200px">
-                  <OptionGroup label="公司一">
-                      <Option v-for="item in company" :value="item.name" :key="item.name">{{ item.name }}</Option>
-                  </OptionGroup>
-                  <OptionGroup label="公司二">
-                      <Option v-for="item in company2" :value="item.name" :key="item.name">{{ item.name }}</Option>
-                  </OptionGroup>
-              </Select>
-          </div>
-          <div class="Add-Inp">
-              <span>角色</span><Radio label="超级管理员">超级管理员</Radio><br>
-          </div>
-          <div class="Add-Inp">
-              <span>启用状态</span>
-              <RadioGroup>
-              <Radio label="启用"></Radio>
-              <Radio label="停用"></Radio>
-              </RadioGroup>
-              <br>
-          </div>
-          <Button class="button2" type="primary" id="btn" @click='toshowtrue'>保存</Button>
-        </form>
-      </div>
-    </div> -->
     <!-- 弹窗审核 -->
     <!-- <div class="info" v-if="examine">
         <div class="info-ver">账户审核<Icon class="info-Icon" type="md-close"   @click="examinefalse" size="22"/></div>
@@ -101,6 +59,7 @@
       </div>
     </div>
     <DlgEdit  ref="addOrUpdate"   @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/>
+    <dlgVerify  ref="change"   @refreshDataList="search" v-if="changeVisible" @done="dlgEditDone"/>
   </div>
 </template>
 
@@ -113,6 +72,8 @@ import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { clean } from '@/fn/object'
 import DlgEdit from './dlgEdit.vue'
+import dlgVerify from './dlgVerify.vue'
+
 
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
@@ -132,13 +93,15 @@ const defQuery = {
 
 @Component({
   components: {
-    DlgEdit
+    DlgEdit,
+    dlgVerify
   }
 })
 export default class Main extends View {
   shows = true
   showDlg = false
   addOrUpdateVisible = false
+  changeVisible = false
 
 
   examine = false
@@ -217,7 +180,7 @@ export default class Main extends View {
         const h = jsxReactToVue(hh)
         return <div class='row-acts'>
           <a href ="javascript:;">启用</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <a on-click={this.edit.bind(this, row.id, row)}>编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a on-click={this.change.bind(this, row.id, row)}>关联公司</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <router-link to={{ name: 'client-account-detail', params: { id } }}>详情</router-link>
         </div>
         /* tslint:enable */
@@ -287,13 +250,20 @@ export default class Main extends View {
     }
   }
 
-   // 新增 / 修改
+   // 新增
   edit(id: number, row: any) {
     this.addOrUpdateVisible = true
-    // !!id ? this.editOne = row : this.editOne
     this.$nextTick(() => {
       const myThis: any = this
       myThis.$refs.addOrUpdate.init(id)
+    })
+  }
+
+  change(id: number, row: any) {
+    this.changeVisible = true
+    this.$nextTick(() => {
+      const myThis: any = this
+      myThis.$refs.change.init(id)
     })
   }
 
