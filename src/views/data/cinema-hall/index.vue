@@ -1,13 +1,13 @@
 <template>
   <div class="page">
     <header class="header flex-box">
+      <Button icon="md-return-left" @click="back" class="btn-back">返回列表</Button>
       <div class="flex-1">
         <em>{{cinema.shortName}}</em>
         <i>影厅列表</i>
       </div>
       <Button type="success" icon="md-add-circle" class="btn-new"
         @click="edit(0)">新建影厅</Button>
-      <Button icon="md-return-left" @click="goback">返回列表</Button>
     </header>
 
     <div class="info-pane">
@@ -214,7 +214,7 @@ export default class Main extends View {
     }
   }
 
-  goback() {
+  back() {
     this.$router.go(-1)
   }
 
@@ -256,7 +256,7 @@ export default class Main extends View {
     color: @c-base;
   }
 }
-.btn-new {
+.btn-back {
   margin-right: 10px;
 }
 
