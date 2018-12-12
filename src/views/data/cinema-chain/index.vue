@@ -20,7 +20,7 @@
         @on-change="page => query.pageIndex = page"
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
-    <DlgEdit  ref="addOrUpdate" :dlgStatus="chainStatus" :delControlStatus="chainControlStatus" :cinemaOnes="editOne"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" />
+    <DlgEdit  ref="addOrUpdate" :dlgStatus="chainStatus" :delControlStatus="controlStatusList" :cinemaOnes="editOne"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" />
   </div>
 </template>
 
@@ -63,8 +63,7 @@ export default class Main extends View {
   total = 0
 
   chainStatus = []
-  chainControlStatus = []
-
+  controlStatusList = []
   columns = [
     { title: '序号', key: 'id', align: 'center' },
     { title: '名称', key: 'name', align: 'center' },
@@ -72,7 +71,7 @@ export default class Main extends View {
     { title: '拼音', key: 'pinyin',  align: 'center' },
     {
       title: '启用状态',
-      key: 'chainControlStatus',
+      key: 'controlStatusList',
       align: 'center',
       render: (hh: any, { row : { chainStatus , Status }  }: any) => {
         /* tslint:disable */
@@ -85,10 +84,10 @@ export default class Main extends View {
       title: '控制状态',
       key: 'Status',
       align: 'center',
-      render: (hh: any, { row : { ControlStatus , chainControlStatus } }: any) => {
+      render: (hh: any, { row : { controlStatus , controlStatusList } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        return <span class={`status-${chainControlStatus}`}>{ControlStatus}</span>
+        return <span class={`status-${controlStatus}`}>{controlStatusList}</span>
         /* tslint:enable */
       }
     },
@@ -110,7 +109,7 @@ export default class Main extends View {
   get cachedMap() {
     return {
       Status: makeMap(this.chainStatus),
-      ControlStatus: makeMap(this.chainControlStatus),
+      controlStatusList: makeMap(this.controlStatusList),
     }
   }
 
@@ -120,7 +119,7 @@ export default class Main extends View {
       return {
         ...it,
         Status: cachedMap.Status[it.chainStatus],
-        ControlStatus: cachedMap.ControlStatus[it.chainControlStatus],
+        controlStatusList: cachedMap.controlStatusList[it.controlStatus],
       }
     })
     return list
@@ -160,12 +159,12 @@ export default class Main extends View {
         items: list,
         totalCount: total,
         chainStatus,
-        chainControlStatus,
+        controlStatus,
       } } = await queryList(query)
       this.list = list
       this.total = total
       this.chainStatus = chainStatus
-      this.chainControlStatus = chainControlStatus
+      this.controlStatusList = controlStatus
     } catch (ex) {
       this.handleError(ex)
     } finally {
