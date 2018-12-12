@@ -7,7 +7,7 @@
       </form>
 
       <div class="acts">
-        <Button type="success" @click="edit(0)">新建院线信息</Button>
+        <Button type="success" icon="md-add-circle" @click="edit(0)">新建院线信息</Button>
       </div>
     </div>
 

@@ -11,7 +11,7 @@
         <Button v-if="!!query.parentIds" @click="goBack" class="btn-reset">返回上一级</Button>
       </form>
       <div class="acts">
-        <Button type="success" @click="edit(query.parentIds)">创建</Button>
+        <Button type="success" icon="md-add-circle" @click="edit(query.parentIds)">新建地区信息</Button>
       </div>
     </div>
 

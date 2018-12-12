@@ -8,7 +8,7 @@
       </form>
 
       <div class="acts">
-        <Button type="success" @click="edit()">新建影片</Button>
+        <Button type="success" icon="md-add-circle" @click="edit()">新建影片</Button>
       </div>
     </div>
     <Table  :columns="columns" :data="tableData" :loading="loading"
