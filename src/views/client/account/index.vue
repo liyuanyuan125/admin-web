@@ -116,7 +116,7 @@ export default class Main extends View {
 
   statusList = []
 
-  company = []
+  // company = []
 
   company2 = []
 
@@ -233,14 +233,14 @@ export default class Main extends View {
         items: list,
         totalCount: total,
         typeList,
-        company,
+        // company,
         company2,
         statusList,
       } } = await queryList(query)
       this.list = list
       this.total = total
       this.typeList = typeList
-      this.company = company
+      // this.company = company
       this.company2 = company2
       this.statusList = statusList
     } catch (ex) {
@@ -252,10 +252,10 @@ export default class Main extends View {
 
    // 新增
   edit(id: number, row: any) {
-    this.addOrUpdateVisible = true
+    // this.addOrUpdateVisible = true
     this.$nextTick(() => {
       const myThis: any = this
-      myThis.$refs.addOrUpdate.init(id)
+      // myThis.$refs.addOrUpdate.init(id)
     })
   }
 

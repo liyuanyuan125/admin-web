@@ -19,7 +19,7 @@
         @on-change="page => query.pageIndex = page"
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
-    <DlgEdit  ref="addOrUpdate" :cinemaOnes="editOne"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" @done="dlgEditDone"/>
+    <DlgEdit  ref="addOrUpdate" :cinemaOnes="editOne"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" @done="dlgeditdone"/>
   </div>
 </template>
 
@@ -167,7 +167,6 @@ export default class Main extends View {
       this.total = total
       this.beginDates = beginDates
       this.endDates = endDates
-    // debugger
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -185,7 +184,7 @@ export default class Main extends View {
     })
   }
 
-  dlgEditDone() {
+  dlgeditdone() {
     this.doSearch()
   }
 
