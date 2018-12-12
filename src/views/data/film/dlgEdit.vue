@@ -48,7 +48,7 @@ export default class ComponentMain extends View {
       return
     }
     try {
-      (this.$Spin as any).$Spin.show()
+      (this.$Spin as any).show()
       const res = await syncData (this.dataForm.mtimeId, 0)
       this.$Message.success({
         content: `同步成功`,

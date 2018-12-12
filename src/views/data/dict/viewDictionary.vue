@@ -2,7 +2,8 @@
   <div class="page">
     <div class="act-bar flex-box">
       <div class="acts">
-        <Button class="bth" type="text" @click="goback()">返回字典分类</Button>
+        <Button class="bth" icon="md-return-left" @click="goback">返回字典分类</Button>
+        <!-- <Button class="bth" type="text" @click="goback()">返回字典分类</Button> -->
         <LazyInput v-model="query.dictionaryName"  placeholder="词条名称" class="input"/>
         <Button class="okbth" type="success" @submit.prevent="search">查询</Button>
         <Button class="addbth" type="success" @click="edit(0)">新建词条</Button>
@@ -213,7 +214,8 @@ export default class Main extends View {
   width: 180px;
 }
 .bth {
-  text-decoration: underline;
+  // text-decoration: underline;
+  margin-right: 5px;
 }
 .acts {
   width: 100%;
