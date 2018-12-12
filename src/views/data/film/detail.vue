@@ -119,7 +119,7 @@ import { updateStatus } from '@/api/film'
 import { toMap } from '@/fn/array'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
-const timeFormat = 'YYYY-MM-DD/HH:mm:ss'
+const timeFormat = 'YYYY-MM-DD'
 
 @Component({
   components: {

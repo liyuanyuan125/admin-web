@@ -122,7 +122,7 @@ export default class Main extends View {
       {
         title: '中国上映时间', // tslint:disable-line
         key: 'openTime',
-        width: 180,
+        width: 110,
         align: 'center',
         render: (hh: any, { row : { openTime } }: any) => {
           /* tslint:disable */
@@ -317,6 +317,11 @@ export default class Main extends View {
       }
     }
   }
+
+  reloadSearch() {
+    this.doSearch()
+  }
+
   async editControlStatus({ id, key: newStatus, showLoading }: any) {
     const items = this.list.find(it => it.id == id)
     if (items && items.controlStatus != newStatus) {
