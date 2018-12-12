@@ -50,7 +50,7 @@ export default class ComponentMain extends View {
       })
       let list: any[] = data.items || []
       if (this.controlStatus > 0) {
-        list = list.filter(it => it.chainControlStatus == this.controlStatus ||
+        list = list.filter(it => it.controlStatus == this.controlStatus ||
           it.id == this.keepId)
       }
       this.list = list
