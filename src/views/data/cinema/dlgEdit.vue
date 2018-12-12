@@ -39,8 +39,8 @@
           </FormItem>
         </Col>
         <Col span="8">
-          <FormItem label="影院等级" prop="grade">
-            <Select v-model="item.grade" clearable>
+          <FormItem label="影院等级" prop="gradeCode">
+            <Select v-model="item.gradeCode" clearable>
               <Option v-for="it in gradeList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
@@ -115,7 +115,7 @@ const defItem = {
   officialName: '',
   controlStatus: 0,
   chainId: '',
-  grade: '',
+  gradeCode: '',
   provinceId: 0,
   cityId: 0,
   countyId: 0,

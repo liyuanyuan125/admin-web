@@ -199,7 +199,7 @@ export default class Main extends View {
       this.cinema = {
         ...item,
         statusText: statusMap[item.status],
-        gradeName: gradeMap[item.grade],
+        gradeName: gradeMap[item.gradeCode],
         fullAddress: [
           item.provinceName,
           item.cityName,

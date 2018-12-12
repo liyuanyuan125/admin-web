@@ -177,7 +177,7 @@ export default class Main extends View {
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        gradeName: enumMap.grade[it.grade],
+        gradeName: enumMap.grade[it.gradeCode],
         statusText: enumMap.status[it.status],
         controlStatusText: enumMap.cstatus[it.controlStatus],
       }
