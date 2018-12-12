@@ -125,8 +125,8 @@ export default class Main extends View {
       { title: '放映机分辨率', key: 'projectorResolutionName', width: 85, align: 'center' },
       { title: '放映机品牌', key: 'projectorBrandName', width: 80, align: 'center' },
       { title: '放映机型号', key: 'projectorModel', width: 85, align: 'center' },
-      { title: '放映机编号', key: 'projectorNumber', width: 85, align: 'center' },
-      { title: '影厅业务类', key: 'businessTypeName', width: 80, align: 'center' },
+      { title: '放映机编号', key: 'projectorNumber', width: 80, align: 'center' },
+      { title: '影厅业务类型', key: 'businessTypeName', width: 85, align: 'center' },
       { title: '控制状态', key: 'controlStatusName', width: 65, align: 'center' },
       {
         title: '操作',
