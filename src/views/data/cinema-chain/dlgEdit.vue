@@ -81,52 +81,41 @@ export default class ComponentMain extends View {
   init(id: number) {
     this.showDlg = true
     this.id = id || 0
-    this.$nextTick(async () => {
-      const dataForms: string = 'dataForm'
-      const myThis: any = this
-      myThis.$refs[dataForms].resetFields()
-      if (this.id) {
-        // const {data: {
-        //   items: list
-        // }} = await dataFrom({ id })
-        this.dataForm.name = this.cinemaOnes.name
-        this.dataForm.shortName = this.cinemaOnes.shortName
-        this.dataForm.pinyin = this.cinemaOnes.pinyin
-        this.dataForm.chainStatus = this.cinemaOnes.chainControlStatus
-        this.dataForm.chainControlStatus = this.cinemaOnes.chainControlStatus
-      }
-    })
+    if (this.id) {
+      this.dataForm.name = this.cinemaOnes.name
+      this.dataForm.shortName = this.cinemaOnes.shortName
+      this.dataForm.pinyin = this.cinemaOnes.pinyin
+      this.dataForm.chainStatus = this.cinemaOnes.chainStatus
+      this.dataForm.chainControlStatus = this.cinemaOnes.chainControlStatus
+    }
   }
 
   cancel(dataForms: string) {
     this.showDlg = false
-    const myThis: any = this
-    myThis.$refs[dataForms].resetFields()
+    ; (this.$refs[dataForms] as any).resetFields()
   }
 
   // 表单提交
   dataFormSubmit(dataForms: any) {
-   const myThis: any = this
-   myThis.$refs[dataForms].validate(async ( valid: any ) => {
+   (this.$refs[dataForms] as any).validate(async ( valid: any ) => {
       if (valid) {
         const query = !this.id ? this.dataForm : {
           id: this.id,
           ...this.dataForm
         }
         const title = !this.id ? '添加' : '编辑'
-        const res = !this.id ? await add (query) : await set (query)
-        if ( res && res.code === 0 ) {
+        try {
+          !this.id ? await add (query) : await set (query)
           this.$Message.success({
               content: `${title}成功`,
               onClose: () => {
                 this.showDlg = false
                 this.$emit('refreshDataList')
-              }
+                ; (this.$refs[dataForms] as any).resetFields()
+                }
           })
-        } else {
-          this.$Message.success({
-            content: `${title}失败`
-          })
+        } catch (ex) {
+            this.handleError(ex)
         }
       }
     })

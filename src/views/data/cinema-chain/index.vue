@@ -180,10 +180,9 @@ export default class Main extends View {
   // 新增 / 修改
   edit(id: number, row: any) {
     this.addOrUpdateVisible = true
-    !!id ? this.editOne = row : this.editOne
+      !!id ? this.editOne = row : this.editOne
     this.$nextTick(() => {
-      const myThis: any = this
-      myThis.$refs.addOrUpdate.init(id)
+      (this.$refs.addOrUpdate as any).init(id)
     })
   }
 
