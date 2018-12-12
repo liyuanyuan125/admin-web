@@ -174,10 +174,6 @@ export default class Main extends View {
   }
 
   reloadSearch() {
-    if (this.query.pageIndex != 1) {
-      this.query.pageIndex = 1
-      return
-    }
     this.doSearch()
   }
 

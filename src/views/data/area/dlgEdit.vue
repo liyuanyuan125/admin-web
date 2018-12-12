@@ -105,23 +105,35 @@ export default class ComponentMain extends View {
    const myThis: any = this
    myThis.$refs[dataForms].validate(async ( valid: any ) => {
       if (valid) {
+        const sort = Number(this.dataForm.sort)
         const setData: any = {
           parentId: this.id,
-          ...this.dataForm
+          ...this.dataForm,
+          sort
         }
-        const setQuery: any = {}
+        let setQuery: any = {}
+        const delarea: any = {}
         for ( const key in setData ) {
           if (setData.hasOwnProperty(key)) {
             if (key != 'areaCode') {
-              setQuery[key] = setData[key]
+              delarea[key] = setData[key]
             }
           }
         }
+        if (!!this.parentsName) {
+          setQuery = delarea
+        } else {
+          setQuery = setData
+        }
+
         const addDate = this.dataForm
-        const query = this.id ? {
-          parentId: this.id,
-          ...addDate
-        } : addDate
+        const query = !!this.id ? {
+          ...delarea,
+          sort
+        } : {
+          ...addDate,
+          sort
+        }
         const title = !this.editMes ? '新增' : '编辑'
         try {
           const res = !this.editMes ? await areaAdd (query) : await areaSet ( this.setId , setQuery)
