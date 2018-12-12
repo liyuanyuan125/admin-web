@@ -308,6 +308,10 @@ export default class Main extends View {
 </script>
 
 <style lang="less" scoped>
+.act-bar {
+  margin-top: 5px;
+}
+
 .form {
   .input {
     margin-right: 8px;

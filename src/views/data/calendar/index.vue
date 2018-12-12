@@ -5,7 +5,7 @@
         <form class="form flex-1" @submit.prevent="search">
           <LazyInput v-model="query.years" placeholder="输入年份" class="input"/>
           <Button class="bth" type="success">查询</Button>
-          <Button class="okbth" type="success" @click="edit(0)">新建档期</Button>
+          <Button class="okbth" type="success" icon="md-add-circle" @click="edit(0)">新建档期</Button>
         </form>
       </div>
     </div>
