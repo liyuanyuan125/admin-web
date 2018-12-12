@@ -90,7 +90,7 @@ export default class Main extends View {
         const h = jsxReactToVue(hh)
         return <div class='row-acts'>
           <a on-click={this.edit.bind(this, row.id, row)}>编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <a on-click={this.dele.bind(this, row.id)}>删除</a>
+          <a on-click={this.delete.bind(this, row.id)}>删除</a>
         </div>
         /* tslint:enable */
       }
@@ -123,7 +123,7 @@ export default class Main extends View {
   mounted() {
     const urlQuery = slice(urlParam(), Object.keys(defQuery))
     this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
-    this.doSearch()
+    // this.doSearch()
   }
 
   updateUrl() {
@@ -137,10 +137,6 @@ export default class Main extends View {
   }
 
   reloadSearch() {
-    if (this.query.pageIndex != 1) {
-      this.query.pageIndex = 1
-      return
-    }
     this.doSearch()
   }
 
@@ -193,7 +189,7 @@ export default class Main extends View {
     this.doSearch()
   }
 
-  async dele(id: number) {
+  async delete(id: any) {
     try {
       await confirm('您确定删除当前档期信息吗？')
       await dels({id})

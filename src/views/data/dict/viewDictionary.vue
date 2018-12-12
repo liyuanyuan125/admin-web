@@ -81,7 +81,7 @@ export default class Main extends View {
     { title: '排序', key: 'sortValue', align: 'center' },
     { title: '唯一识别符', key: 'code', align: 'center' },
     {
-      title: '启用状态',
+      title: '控制状态',
       key: 'cqStatus',
       align: 'center',
     },
