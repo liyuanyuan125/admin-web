@@ -140,7 +140,7 @@ export default class Main extends View {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         return <div class='row-acts'>
-          <a href ="javascript:;" v-model='{statusText}==停用?启用:停用'>启用</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a href ="javascript:;">{statusText}</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <router-link to={{ name: 'client-account-detail', params: { id } }}>详情</router-link>
         </div>
         /* tslint:enable */
@@ -212,10 +212,10 @@ export default class Main extends View {
 
    // 新增
   edit(id: number, row: any) {
-    // this.addOrUpdateVisible = true
+    this.addOrUpdateVisible = true
     this.$nextTick(() => {
       const myThis: any = this
-      // myThis.$refs.addOrUpdate.init(id)
+      myThis.$refs.addOrUpdate.init(id)
     })
   }
 
@@ -230,10 +230,7 @@ export default class Main extends View {
   dlgEditDone() {
     this.doSearch()
   }
-  toshowtrue() {
-    alert('保存成功')
-    this.shows = true
-  }
+
   @Watch('query', { deep: true })
   onQueryChange() {
     if (this.query.pageIndex == this.oldQuery.pageIndex) {

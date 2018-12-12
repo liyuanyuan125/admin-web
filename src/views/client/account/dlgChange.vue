@@ -3,18 +3,9 @@
     v-model='showDlg'
     :transfer='true'
     :width='420'
-    :title="!id ? '新建' : '编辑'"
+    :title="'变更主账号'"
     @on-cancel="cancel('dataForm')" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
-      <FormItem label="用户账号" prop="name">
-        <Input style="width:240px" v-model="dataForm.name"></Input>
-      </FormItem>
-      <FormItem label="密码" prop="password">
-        <Input style="width:240px" v-model="dataForm.password"></Input>
-      </FormItem>
-      <FormItem label="重复密码" prop="passwords">
-        <Input style="width:240px" v-model="dataForm.passwords"></Input>
-      </FormItem>
       <FormItem label="所属公司" prop="company">
         <Select style="width:240px">
           <!-- <Option v-for="item in cityList" :value="item.value">{{ item.label }}</Option> -->
@@ -23,14 +14,8 @@
           <Option>789789798</Option>
         </Select>
       </FormItem>
-      <FormItem label="启用状态" prop="enableStatus">
-        <RadioGroup v-model="dataForm.enableStatus" >
-          <!-- <Radio v-for="it in list" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio> -->
-          <Radio label="启用"></Radio>
-          <Radio label="停用"></Radio>
-        </RadioGroup>
-      </FormItem>
     </Form>
+    <p class="tip">提示：主账户变更后，原主账户将修改为不具备任何操作权限的子账户，如需删除，请使用新主账户在前台用户管理中进行操作</p>
     <div slot="footer" class="dialog-footer">
       <Button @click="cancel('dataForm')">取消</Button>
       <Button type="primary" @click="dataFormSubmit('dataForm')">确定</Button>
@@ -62,21 +47,6 @@ export default class ComponentMain extends View {
   showDlg = false
   id = 0
   ruleValidate = {
-    name: [
-        { required: true, message: '请输入分类名称', trigger: 'blur' }
-    ],
-    password: [
-        { required: true, message: '请输入密码' }
-    ],
-    passwords: [
-        { required: true, message: '请重新输入密码' }
-    ],
-    company: [
-        { required: true, message: '请选择所属公司' }
-    ],
-    enableStatus: [
-        { required: true }
-    ]
   }
   dataForm = { ...dataForm }
   init(id: number) {
@@ -117,6 +87,15 @@ export default class ComponentMain extends View {
            toast('操作成功')
            this.showDlg = false
            this.$emit('done')
+            // if ( res && res.code === 0 ) {
+            //   this.$Message.success({
+            //       content: `${title}成功`,
+            //       onClose: () => {
+            //         this.showDlg = false
+            //         this.$emit('done')
+            //       }
+            //   })
+            // }
         } catch (ex) {
            this.handleError(ex)
            this.showDlg = false
@@ -132,4 +111,7 @@ export default class ComponentMain extends View {
 </script>
 
 <style lang="less" scoped>
+.tip {
+  color: red;
+}
 </style>
