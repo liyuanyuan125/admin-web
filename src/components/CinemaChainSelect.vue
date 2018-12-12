@@ -1,6 +1,6 @@
 <template>
-  <Select v-model="inValue" :placeholder="placeholder" filterable clearable
-    class="component">
+  <Select v-model="inValue" :placeholder="placeholder" filterable
+    clearable class="component" ref="ui">
     <Option v-for="it in list" :key="it.id" :value="it.id"
       :label="it.shortName || it.name" class="flex-box">
       <span class="flex-1">{{it.shortName || it.name}}</span>
@@ -16,7 +16,7 @@ import View from '@/util/View'
 import { queryList } from '@/api/cinemaChain'
 
 @Component
-export default class ComponentMain extends View {
+export default class CinemaChainSelect extends View {
   /**
    * 值本身，可以使用 v-model 进行双向绑定
    */
@@ -62,6 +62,8 @@ export default class ComponentMain extends View {
   @Watch('value')
   watchValue(val: string) {
     this.inValue = val
+    // 触发 form item 验证
+    ; (this.$refs.ui as any).dispatch('FormItem', 'on-form-change', val)
   }
 
   @Watch('inValue')

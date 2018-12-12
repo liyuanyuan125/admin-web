@@ -51,7 +51,7 @@
       <Row class="row-address">
         <Col span="10">
           <FormItem label="公司地址" prop="area">
-            <AreaSelect v-model="area"/>
+            <AreaSelect v-model="item.area"/>
           </FormItem>
         </Col>
         <Col span="14">
@@ -123,6 +123,9 @@ const defItem = {
   softwareCode: '',
   zipCode: '',
   status: 0,
+
+  // 辅助字段，提交的时候，应该去掉
+  area: [],
 }
 
 @Component({
@@ -153,11 +156,10 @@ export default class DlgEdit extends View {
 
   controlStatusList: Enum[] = []
 
-  area: string[] = []
-
   shortNameError = ''
 
   get rules() {
+    let areaFirstCall = true
     return {
       shortName: [
         { required: true, message: '不能为空', trigger: 'blur' }
@@ -172,20 +174,37 @@ export default class DlgEdit extends View {
         { required: true, message: '不能为空', trigger: 'change' }
       ],
       area: [
-        { required: true, message: '不能为空', trigger: 'change' }
+        {
+          required: true,
+          message: '不能为空',
+          trigger: 'change',
+          type: 'array',
+          validator(rule: any, value: string[], callback: any) {
+            if (areaFirstCall) {
+              areaFirstCall = false
+              return callback()
+            }
+            const strVal = (value || []).join('')
+            strVal === '000' ? callback(new Error('不能为空')) : callback()
+          }
+        }
       ],
     }
+  }
+
+  resetSubmitLoading() {
+    this.submitLoading = false
+    this.$nextTick(() => this.submitLoading = true)
   }
 
   async submit() {
     const valid = await (this.$refs.form as any).validate()
     if (!valid) {
-      this.submitLoading = false
-      this.$nextTick(() => this.submitLoading = true)
-      return
+      return this.resetSubmitLoading()
     }
     try {
       const data = { ...this.item }
+      delete data.area
       const res = data.id ? await updateItem(data) : await addItem(data)
       toast(data.id ? '更新成功' : '创建成功')
       setTimeout(() => {
@@ -193,6 +212,7 @@ export default class DlgEdit extends View {
         this.inValue.showDlgEdit = false
       }, 1888)
     } catch (ex) {
+      this.resetSubmitLoading()
       this.handleError(ex)
     }
   }
@@ -219,7 +239,7 @@ export default class DlgEdit extends View {
       this.controlStatusList = controlStatusList
 
       const { provinceId = '0', cityId = '0', countyId = '0' } = this.item
-      this.area = [provinceId, cityId, countyId]
+      this.item.area = [provinceId, cityId, countyId]
 
       // 默认选中第一个
       if (this.item.status == 0) {
@@ -245,7 +265,7 @@ export default class DlgEdit extends View {
     this.$emit('input', val)
   }
 
-  @Watch('area')
+  @Watch('item.area')
   watchArea(val: string[]) {
     this.item.provinceId = val[0]
     this.item.cityId = val[1]
