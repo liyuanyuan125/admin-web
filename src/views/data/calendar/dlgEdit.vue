@@ -38,7 +38,7 @@ import View from '@/util/View'
 const timeFormat = 'YYYY-MM-DD'
 const dataForm = {
   name: '',
-  year: 0,
+  year: null,
   // beginDate: new Date().getTime(),
   // endDate: new Date().getTime(),
   beginDate: 0,
@@ -67,7 +67,7 @@ export default class ComponentMain extends View {
         { required: true, message: '请输入结束日期' }
     ],
   }
-  dataForm = { ...dataForm }
+  dataForm: any = { ...dataForm }
   init(id: number) {
     this.showDlg = true
     this.id = id || 0
@@ -102,6 +102,7 @@ export default class ComponentMain extends View {
     this.dataForm.beginDate = Number(a[0] + a[1] + a[2])
     this.dataForm.endDate = Number(b[0] + b[1] + b[2])
     this.dataForm.year = Number(this.dataForm.year)
+    // this.dataForm.year = Integer.valueOf(this.dataForm.year)
 
    const myThis: any = this
    myThis.$refs[dataForms].validate(async ( valid: any ) => {
