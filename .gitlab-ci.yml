@@ -14,7 +14,6 @@ lint:
   image: $REGISTRY_ADDRESS/ai/devops/nodejs/build
   stage: lint
   only:
-    - master
     - testing
     - release
   script:
@@ -26,7 +25,6 @@ build:
   image: $REGISTRY_ADDRESS/ai/devops/nodejs/build
   stage: build
   only:
-    - master
     - testing
     - release
   script:
@@ -45,7 +43,6 @@ package:
   variables:
     GIT_STRATEGY: none
   only:
-    - master
     - testing
     - release
   script:
@@ -60,7 +57,6 @@ deploy:
     GIT_STRATEGY: none
   dependencies: []
   only:
-    - master
     - testing
     - release
   script:
