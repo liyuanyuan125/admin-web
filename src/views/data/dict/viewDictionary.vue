@@ -6,7 +6,7 @@
         <!-- <Button class="bth" type="text" @click="goback()">返回字典分类</Button> -->
         <LazyInput v-model="query.dictionaryName"  placeholder="词条名称" class="input"/>
         <Button class="okbth" type="success" @submit.prevent="search">查询</Button>
-        <Button class="addbth" type="success" @click="edit(0)">新建词条</Button>
+        <Button class="addbth" type="success" icon="md-add-circle" @click="edit(0)">新建词条</Button>
       </div>
     </div>
     <Table :columns="columns" :data="tableData" :loading="loading"

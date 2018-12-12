@@ -28,8 +28,8 @@ export async function queryList(query: any) {
       { id: 3, name: '审核未通过' },
     ],
     statusList: [
-      { id: 1, name: '已启用' },
-      { id: 2, name: '已停用' },
+      { id: 1, name: '启用' },
+      { id: 2, name: '停用' },
     ],
     company: [
       { id: 1, name: '北京智能广宣1' },
