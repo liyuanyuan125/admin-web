@@ -3,7 +3,7 @@
     <div class="act-bar flex-box">
       <form class="form flex-1" @submit.prevent="search">
         <LazyInput v-model="query.name" placeholder="影片名称" class="input input-id"/>
-        <DatePicker type="daterange" v-model="query.showTime" placement="bottom-end" placeholder="中国上映时间" class="input" style="width: 200px"></DatePicker>
+        <DatePicker @on-change="dateChange" type="daterange" v-model="showTime" placement="bottom-end" placeholder="中国上映时间" class="input" style="width: 200px"></DatePicker>
         <Button type="default" @click="reset" class="btn-reset">清空</Button>
       </form>
 
@@ -47,9 +47,10 @@ const timeFormat = 'YYYY-MM-DD'
 const defQuery = {
   id: null,
   name: '',
-  showTime: [],
   pageIndex: 1,
   pageSize: 20,
+  startTime: 0,
+  endTime: 0
 }
 
 @Component({
@@ -68,7 +69,7 @@ export default class Main extends View {
   addOrUpdateVisible = false
   list: any[] = []
   total = 0
-
+  showTime: any = []
   categoryList = []
   controlList = []
 
@@ -274,6 +275,9 @@ export default class Main extends View {
   mounted() {
     const urlQuery = slice(urlParam(), Object.keys(defQuery))
     this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
+    // 时间赋值
+    !!this.query.startTime ? this.showTime[0] = moment(this.query.startTime).format(timeFormat) : this.showTime[0] = ''
+    !!this.query.endTime ? this.showTime[1] = moment(this.query.endTime).format(timeFormat) : this.showTime[1] = ''
   }
 
   search() {
@@ -288,9 +292,15 @@ export default class Main extends View {
 
   reset() {
     const { pageSize } = this.query
+    // 时间清空
+    this.showTime = []
     this.query = { ...defQuery, pageSize }
   }
-
+  dateChange(data: any) {
+     // 获取时间戳
+     !!data[0] ? (this.query.startTime = new Date(data[0]).getTime()) : this.query.startTime = 0
+     !!data[1] ? (this.query.endTime = new Date(data[1]).getTime()) : this.query.endTime = 0
+  }
   async editStatus({ id, key: newStatus, showLoading }: any) {
 
     const item = this.list.find(it => it.id == id)
@@ -344,21 +354,22 @@ export default class Main extends View {
     this.query.pageIndex = 1
     this.oldQuery = { ...this.query }
     this.loading = true
-    const startTime = !this.query.showTime[0] ? '' : new Date(this.query.showTime[0]).getTime()
-    const endTime = !this.query.showTime[1] ? '' : new Date(this.query.showTime[1]).getTime()
-    const query = clean({
-      startTime,
-      endTime,
-      ...this.query
-    })
-    delete query.showTime
+    const query: any = {}
+    for (const [key, value] of Object.entries(this.oldQuery)) {
+      if (key != 'startTime' && value != 0) {
+        query[key] = value
+      }
+      if (key != 'endTime' && value != 0) {
+        query[key] = value
+      }
+    }
     try {
       const { data: {
         items: list,
         totalCount: total,
         categoryList = [],
         controlStatusList = [],
-      } } = await queryList(query)
+      } } = await queryList(clean(query))
       this.list = list
       this.total = total
       this.categoryList = categoryList
