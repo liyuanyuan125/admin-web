@@ -109,11 +109,12 @@ export default class Main extends View {
         key: 'name',
         width: 90,
         align: 'center',
-        render: (hh: any, { row: {id, name} }: any) => {
+        render: (hh: any, { row: {id, name, englishName} }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
+          const names = name || englishName
           return <div class="row-acts row-hidden">
-            <router-link to={{name: 'data-film-detail', params: { id }}}>{name}</router-link>
+            <router-link to={{name: 'data-film-detail', params: { id }}}>{names}</router-link>
           </div>
           /* tslint:enable */
         }
@@ -228,7 +229,7 @@ export default class Main extends View {
               id,
               key: controlStatus,
               text: controlStatusString,
-              list: this.controlList,
+              list: this.controlList.slice(1),
           }
           return <PartPoptipEdit v-model={value}
               on-change={this.editControlStatus.bind(this)}/>
@@ -439,5 +440,8 @@ export default class Main extends View {
     }
   }
 }
-
+.page-wrap {
+  margin: 20px 0 18px;
+  text-align: center;
+}
 </style>

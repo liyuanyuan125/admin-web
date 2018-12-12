@@ -51,7 +51,7 @@ const defQuery = {
   areaCodes: '',
   pageIndex: 1,
   pageSize: 20,
-  parentIds: '',
+  parentIds: 0,
   city: ''
 }
 
@@ -69,6 +69,7 @@ export default class Main extends View {
   pageIndex: any = []
   addOrUpdateVisible = false
   list: any[] = []
+  cityArray: any[] = []
   // 父级县区
   total = 0
   // 父级所属区域id
@@ -149,8 +150,8 @@ export default class Main extends View {
 
   sonMessage(id: any, nameCn: string, areaCode: string) {
     this.saveId.push(id)
+    this.cityArray.push(nameCn)
     this.query.nameCn = ''
-    this.query.areaCodes = areaCode
     this.query.areaCodes = areaCode
     this.query.city = nameCn
     this.query.parentIds = id
@@ -160,9 +161,11 @@ export default class Main extends View {
 
   goBack() {
     this.query.pageIndex = this.pageIndex[this.pageIndex.length - 1]
-    this.query.parentIds = this.saveId[this.saveId.length - 2]
+    this.query.parentIds = this.saveId[this.saveId.length - 2] || 0
+    this.query.city = this.cityArray[this.cityArray.length - 2]
     this.saveId.pop()
     this.pageIndex.pop()
+    this.cityArray.pop()
     !this.query.parentIds ? this.query.areaCodes = '' : ''
     this.query.areaCodes = this.query.areaCodes
     !this.query.parentIds ? this.query.city = '' : ''
@@ -206,10 +209,6 @@ export default class Main extends View {
   }
 
   reloadSearch() {
-    if (this.query.pageIndex != 1) {
-      this.query.pageIndex = 1
-      return
-    }
     this.doSearch()
   }
 
