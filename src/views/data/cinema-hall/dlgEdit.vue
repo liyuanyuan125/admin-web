@@ -11,7 +11,7 @@
         <Col span="8">
           <FormItem label="控制状态" prop="controlStatus">
             <Select v-model="item.controlStatus">
-              <Option v-for="it in enumType.cstatusList" :key="it.key"
+              <Option v-for="it in enumType.controlStatusList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
           </FormItem>
@@ -155,7 +155,7 @@ export default class DlgEdit extends View {
     placementList: [],
     projectorResolutionList: [],
     projectorBrandList: [],
-    cstatusList: [],
+    controlStatusList: [],
   }
 
   nameError = ''
@@ -226,7 +226,7 @@ export default class DlgEdit extends View {
 
       // 默认选中第一个
       if (this.item.controlStatus == 0) {
-        this.item.controlStatus = this.enumType.cstatusList[0].key
+        this.item.controlStatus = this.enumType.controlStatusList[0].key
       }
     } catch (ex) {
       this.handleError(ex)

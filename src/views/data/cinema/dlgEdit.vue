@@ -210,13 +210,13 @@ export default class DlgEdit extends View {
         gradeList = [],
         softwareList = [],
         statusList = [],
-        cstatusList = [],
+        controlStatusList = [],
       } } = await queryItem(query)
       this.item = { ...defItem, ...slice(item, Object.keys(defItem)) }
       this.gradeList = gradeList
       this.softwareList = softwareList
       this.statusList = statusList
-      this.controlStatusList = cstatusList
+      this.controlStatusList = controlStatusList
 
       const { provinceId = '0', cityId = '0', countyId = '0' } = this.item
       this.area = [provinceId, cityId, countyId]
@@ -226,7 +226,7 @@ export default class DlgEdit extends View {
         this.item.status = statusList[0].key
       }
       if (this.item.controlStatus == 0) {
-        this.item.controlStatus = cstatusList[0].key
+        this.item.controlStatus = controlStatusList[0].key
       }
     } catch (ex) {
       this.handleError(ex)

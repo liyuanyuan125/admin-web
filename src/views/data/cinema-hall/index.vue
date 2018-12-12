@@ -100,7 +100,7 @@ export default class Main extends View {
     projectorResolutionList: [],
     projectorBrandList: [],
     businessTypeList: [],
-    cstatusList: [],
+    controlStatusList: [],
   }
 
   get enumMap() {
@@ -156,7 +156,7 @@ export default class Main extends View {
         projectorResolutionName: enumMap.projectorResolution[it.projectorResolution],
         projectorBrandName: enumMap.projectorBrand[it.projectorBrand],
         businessTypeName: enumMap.businessType[it.businessType],
-        controlStatusName: enumMap.cstatus[it.controlStatus],
+        controlStatusName: enumMap.controlStatus[it.controlStatus],
       }
     })
     return list
