@@ -53,7 +53,7 @@ const dataForm = {
   category: {
     id: ''
   },
-  sortValue: 0,
+  sortValue: null,
   enableStatus: ''
 }
 
@@ -83,7 +83,7 @@ export default class ComponentMain extends View {
         { required: true, message: '请输入排序序号' }
     ]
   }
-  dataForm = { ...dataForm }
+  dataForm: any = { ...dataForm }
   async init(id: number, lists: any) {
     this.lists = lists
     this.showDlg = true
