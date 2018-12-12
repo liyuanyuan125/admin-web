@@ -198,7 +198,7 @@ export default class Main extends View {
       })
       this.reloadSearch()
     } catch (ex) {
-      this.handleError(ex)
+      // this.handleError(ex)
     }
     // try {
     //   await confirm('确定删除该条数据吗')
