@@ -195,7 +195,7 @@ export default class Main extends View {
 
   async dele(id: number) {
     try {
-      await confirm('您确定删除当前地区信息吗？')
+      await confirm('您确定删除当前档期信息吗？')
       await dels({id})
       this.$Message.success({
         content: `删除成功`,

@@ -115,6 +115,7 @@ export default class ComponentMain extends View {
           const res = !this.id ? await add (query) : await set (query)
           toast('操作成功')
           this.showDlg = false
+          this.dataForm.beginDate = 0
           this.$emit('done')
         } catch (ex) {
           this.handleError(ex)
@@ -125,13 +126,13 @@ export default class ComponentMain extends View {
   }
 
   handleChange(date: any) {
-    const ch1 = moment(date).format(timeFormat).split('-')
-    this.date1 = Number(ch1[0] + ch1[1] + ch1[2])
+    const ch1 = moment(date).format(timeFormat)
+    this.date1 = new Date(ch1).getTime()
   }
 
   handleChange2(date: any) {
-    const ch2 = moment(date).format(timeFormat).split('-')
-    this.date2 = Number(ch2[0] + ch2[2] + ch2[2])
+    const ch2 = moment(date).format(timeFormat)
+    this.date2 = new Date(ch2).getTime()
     if (this.date2 < this.date1) {
       alert('结束日期不能低于开始日期')
       this.dataForm.endDate = 0
