@@ -150,12 +150,12 @@ export default class Main extends View {
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        typeName: enumMap.type[it.type],
-        projectorTypeName: enumMap.projectorType[it.projectorType],
-        placementName: enumMap.placement[it.placement],
-        projectorResolutionName: enumMap.projectorResolution[it.projectorResolution],
-        projectorBrandName: enumMap.projectorBrand[it.projectorBrand],
-        businessTypeName: enumMap.businessType[it.businessType],
+        typeName: enumMap.type[it.typeCode],
+        projectorTypeName: enumMap.projectorType[it.projectorTypeCode],
+        placementName: enumMap.placement[it.placementCode],
+        projectorResolutionName: enumMap.projectorResolution[it.projectorResolutionCode],
+        projectorBrandName: enumMap.projectorBrand[it.projectorBrandCode],
+        businessTypeName: enumMap.businessType[it.businessTypeCode],
         controlStatusName: enumMap.controlStatus[it.controlStatus],
       }
     })

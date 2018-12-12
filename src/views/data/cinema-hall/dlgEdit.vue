@@ -20,8 +20,8 @@
 
       <Row>
         <Col span="8">
-          <FormItem label="影厅类型" prop="type">
-            <Select v-model="item.type">
+          <FormItem label="影厅类型" prop="typeCode">
+            <Select v-model="item.typeCode">
               <Option v-for="it in enumType.typeList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
@@ -33,8 +33,8 @@
           </FormItem>
         </Col>
         <Col span="8">
-          <FormItem label="影厅业务类型" prop="businessType" clearable>
-            <Select v-model="item.businessType">
+          <FormItem label="影厅业务类型" prop="businessTypeCode" clearable>
+            <Select v-model="item.businessTypeCode">
               <Option v-for="it in enumType.businessTypeList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
@@ -44,24 +44,24 @@
 
       <Row>
         <Col span="8">
-          <FormItem label="放映机类型" prop="projectorType">
-            <Select v-model="item.projectorType">
+          <FormItem label="放映机类型" prop="projectorTypeCode">
+            <Select v-model="item.projectorTypeCode">
               <Option v-for="it in enumType.projectorTypeList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
           </FormItem>
         </Col>
         <Col span="8">
-          <FormItem label="机位" prop="placement">
-            <Select v-model="item.placement">
+          <FormItem label="机位" prop="placementCode">
+            <Select v-model="item.placementCode">
               <Option v-for="it in enumType.placementList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
           </FormItem>
         </Col>
         <Col span="8">
-          <FormItem label="放映机分辨率" prop="projectorResolution">
-            <Select v-model="item.projectorResolution">
+          <FormItem label="放映机分辨率" prop="projectorResolutionCode">
+            <Select v-model="item.projectorResolutionCode">
               <Option v-for="it in enumType.projectorResolutionList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
@@ -71,8 +71,8 @@
 
       <Row>
         <Col span="8">
-          <FormItem label="放映机品牌" prop="projectorBrand">
-            <Select v-model="item.projectorBrand">
+          <FormItem label="放映机品牌" prop="projectorBrandCode">
+            <Select v-model="item.projectorBrandCode">
               <Option v-for="it in enumType.projectorBrandList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
@@ -114,14 +114,14 @@ interface Enum {
 const defItem = {
   id: '',
   name: '',
-  type: '',
+  typeCode: '',
   seats: 0,
-  businessType: '',
+  businessTypeCode: '',
 
-  projectorType: '',
-  placement: '',
-  projectorResolution: '',
-  projectorBrand: '',
+  projectorTypeCode: '',
+  placementCode: '',
+  projectorResolutionCode: '',
+  projectorBrandCode: '',
   projectorModel: '',
   projectorNumber: '',
 
@@ -167,7 +167,7 @@ export default class DlgEdit extends View {
       name: [
         { required: true, message: '不能为空', trigger: 'blur' }
       ],
-      type: [
+      typeCode: [
         { required: true, message: '不能为空', trigger: 'blur' }
       ],
       seats: [
