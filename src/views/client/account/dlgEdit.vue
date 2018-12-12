@@ -3,7 +3,7 @@
     v-model='showDlg'
     :transfer='true'
     :width='420'
-    :title="!id ? '新建字典分类' : '编辑字典分类'"
+    :title="!id ? '新建' : '编辑'"
     @on-cancel="cancel('dataForm')" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
       <FormItem label="用户账号" prop="name">
