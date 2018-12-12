@@ -43,8 +43,8 @@ const dataForm = {
   year: null,
   // beginDate: new Date().getTime(),
   // endDate: new Date().getTime(),
-  beginDate: '',
-  endDate: '',
+  beginDate: 0,
+  endDate: 0,
 }
 
 @Component
@@ -90,7 +90,7 @@ export default class ComponentMain extends View {
   }
 
   cancel() {
-    this.dataForm.beginDate
+    // this.dataForm.beginDate
     this.showDlg = false
     ; (this.$refs.dataForm as any).resetFields()
   }
@@ -100,25 +100,33 @@ export default class ComponentMain extends View {
     const a = moment(this.dataForm.beginDate).format(timeFormat).split('-')
     const b = moment(this.dataForm.endDate).format(timeFormat).split('-')
 
-    this.dataForm.beginDate = Number(a[0] + a[1] + a[2])
-    this.dataForm.endDate = Number(b[0] + b[1] + b[2])
-    this.dataForm.year = Number(this.dataForm.year)
+    const beginDate = Number(a[0] + a[1] + a[2])
+    const endDate = Number(b[0] + b[1] + b[2])
+    const year = Number(this.dataForm.year)
     // this.dataForm.year = Integer.valueOf(this.dataForm.year)
 
     const valid = await (this.$refs.dataForm as any).validate()
     if (!valid) {
       return
     }
-    const query = !this.id ? this.dataForm : {
+    const query = !this.id ? {
+      ...this.dataForm,
+      beginDate,
+      endDate,
+      year
+    } : {
       id: this.id,
-      ...this.dataForm
+      ...this.dataForm,
+      beginDate,
+      endDate,
+      year
     }
     const title = !this.id ? '添加' : '编辑'
     try {
       const res = !this.id ? await add (query) : await set (query)
       toast('操作成功')
       this.showDlg = false
-      this.dataForm.beginDate = 0
+      this.dataForm.beginDate = ''
       this.$emit('done')
     } catch (ex) {
       this.handleError(ex)
