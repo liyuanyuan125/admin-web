@@ -47,9 +47,8 @@ export default class ComponentMain extends View {
       this.showDlg = false
       return
     }
-    const myThis: any = this
     try {
-      myThis.$Spin.show()
+      (this.$Spin as any).$Spin.show()
       const res = await syncData (this.dataForm.mtimeId, 1)
       this.$Message.success({
         content: `同步成功`,
@@ -58,10 +57,10 @@ export default class ComponentMain extends View {
           this.$emit('refreshDataList')
         }
       })
-      myThis.$Spin.hide()
+      ; (this.$Spin as any).hide()
       this.dataForm.mtimeId = ''
     } catch (ex) {
-      myThis.$Spin.hide()
+      (this.$Spin as any).hide()
       this.handleError(ex)
     }
   }

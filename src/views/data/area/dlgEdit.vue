@@ -4,6 +4,7 @@
     :transfer='false'
     :width='420'
     :title="!editMes ? '新建地区信息' : '编辑地区信息'"
+    @on-cancel="cancel('dataForm')"
     >
     <p v-if="!!parentsName" class="next-city">上级城市：{{parentsName}}</p>
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="80">
@@ -95,15 +96,13 @@ export default class ComponentMain extends View {
   }
 
   cancel(dataForms: string) {
+    (this.$refs[dataForms] as any).resetFields()
     this.showDlg = false
-    const myThis: any = this
-    myThis.$refs[dataForms].resetFields()
   }
 
   // 表单提交
   dataFormSubmit(dataForms: any) {
-   const myThis: any = this
-   myThis.$refs[dataForms].validate(async ( valid: any ) => {
+    (this.$refs[dataForms] as any).validate(async ( valid: any ) => {
       if (valid) {
         const sort = Number(this.dataForm.sort)
         const setData: any = {
@@ -137,16 +136,14 @@ export default class ComponentMain extends View {
         const title = !this.editMes ? '新增' : '编辑'
         try {
           const res = !this.editMes ? await areaAdd (query) : await areaSet ( this.setId , setQuery)
-          if ( res && res.code === 0 ) {
-            this.$Message.success({
-                content: `${title}成功`,
-                onClose: () => {
-                  this.showDlg = false
-                  myThis.$refs[dataForms].resetFields()
-                  this.$emit('refreshDataList')
-                }
-            })
-          }
+          this.$Message.success({
+              content: `${title}成功`,
+              onClose: () => {
+                this.showDlg = false
+                ; (this.$refs[dataForms] as any).resetFields()
+                this.$emit('refreshDataList')
+              }
+          })
         } catch (ex) {
           this.handleError(ex)
         }

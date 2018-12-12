@@ -293,8 +293,7 @@ export default class Main extends View {
     this.addOrUpdateVisible = true
     !!id ? this.editOne = row : this.editOne = ''
     this.$nextTick(() => {
-      const myThis: any = this
-      myThis.$refs.addOrUpdate.init(id, this.query.city, this.query.areaCodes, editMes, this.query.parentIds)
+      (this.$refs.addOrUpdate as any).init(id, this.query.city, this.query.areaCodes, editMes, this.query.parentIds)
     })
   }
 
