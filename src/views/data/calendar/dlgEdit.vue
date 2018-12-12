@@ -4,7 +4,7 @@
     :transfer='true'
     :width='420'
     :title="!id ? '新建档期' : '编辑档期'"
-    @on-cancel="cancel('dataForm')" >
+    @on-cancel="cancel" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
       <FormItem label="名称" prop="name">
         <Input v-model="dataForm.name"></Input>
@@ -14,16 +14,18 @@
       </FormItem>
       <FormItem label="开始日期" prop="beginDate">
         <!-- <Input v-model="dataForm.beginDate" placeholder="日期格式为xx-xx-xx"></Input> -->
-        <Date-picker type="date" @on-change="handleChange" v-model="dataForm.beginDate" on-change="selectTime" placeholder="选择日期" style="width: 200px"></Date-picker>
+        <Date-picker type="date" @on-change="handleChange" v-model="dataForm.beginDate"
+          on-change="selectTime" placeholder="选择日期" style="width: 200px" v-if="showDlg"></Date-picker>
       </FormItem>
       <FormItem label="结束日期" prop="endDate">
         <!-- <Input v-model="dataForm.endDate" placeholder="日期格式为xx-xx-xx"></Input> -->
-        <Date-picker type="date" @on-change="handleChange2" v-model="dataForm.endDate" on-change="selectTime" placeholder="选择日期" style="width: 200px"></Date-picker>
+        <Date-picker type="date" @on-change="handleChange2" v-model="dataForm.endDate"
+          on-change="selectTime" placeholder="选择日期" style="width: 200px" v-if="showDlg"></Date-picker>
       </FormItem>
     </Form>
-    <div  slot="footer" class="dialog-footer">
-      <Button @click="cancel('dataForm')">取消</Button>
-      <Button type="primary" @click="dataFormSubmit('dataForm')">确定</Button>
+    <div slot="footer" class="dialog-footer">
+      <Button @click="cancel">取消</Button>
+      <Button type="primary" @click="dataFormSubmit">确定</Button>
     </div>
   </Modal>
 </template>
@@ -41,18 +43,20 @@ const dataForm = {
   year: null,
   // beginDate: new Date().getTime(),
   // endDate: new Date().getTime(),
-  beginDate: 0,
-  endDate: 0,
+  beginDate: '',
+  endDate: '',
 }
 
 @Component
 export default class ComponentMain extends View {
   @Prop({ type: Object }) cinemaOnes: any
+
   loading = false
   showDlg = false
   id = 0
   date1 = 0
   date2 = 0
+
   ruleValidate = {
     name: [
         { required: true, message: '请输入档期名称', trigger: 'blur' }
@@ -67,35 +71,32 @@ export default class ComponentMain extends View {
         { required: true, message: '请输入结束日期' }
     ],
   }
+
   dataForm: any = { ...dataForm }
+
   init(id: number) {
     this.showDlg = true
     this.id = id || 0
-    this.$nextTick(async () => {
-      const dataForms: string = 'dataForm'
-      const myThis: any = this
-      myThis.$refs[dataForms].resetFields()
-      if (this.id) {
-        // const {data: {
-        //   items: list
-        // }} = await dataFrom({ id })
-        this.dataForm.name = this.cinemaOnes.name
-        this.dataForm.year = this.cinemaOnes.year
-        this.dataForm.beginDate = this.cinemaOnes.beginDates
-        this.dataForm.endDate = this.cinemaOnes.endDates
-      }
-    })
+    ; (this.$refs.dataForm as any).resetFields()
+    if (this.id) {
+      // const {data: {
+      //   items: list
+      // }} = await dataFrom({ id })
+      this.dataForm.name = this.cinemaOnes.name
+      this.dataForm.year = this.cinemaOnes.year
+      this.dataForm.beginDate = this.cinemaOnes.beginDates
+      this.dataForm.endDate = this.cinemaOnes.endDates
+    }
   }
 
-  cancel(dataForms: string) {
+  cancel() {
     this.dataForm.beginDate
     this.showDlg = false
-    const myThis: any = this
-    myThis.$refs[dataForms].resetFields()
+    ; (this.$refs.dataForm as any).resetFields()
   }
 
   // 表单提交
-  dataFormSubmit(dataForms: any) {
+  async dataFormSubmit(dataForms: any) {
     const a = moment(this.dataForm.beginDate).format(timeFormat).split('-')
     const b = moment(this.dataForm.endDate).format(timeFormat).split('-')
 
@@ -104,26 +105,25 @@ export default class ComponentMain extends View {
     this.dataForm.year = Number(this.dataForm.year)
     // this.dataForm.year = Integer.valueOf(this.dataForm.year)
 
-   const myThis: any = this
-   myThis.$refs[dataForms].validate(async ( valid: any ) => {
-      if (valid) {
-        const query = !this.id ? this.dataForm : {
-          id: this.id,
-          ...this.dataForm
-        }
-        const title = !this.id ? '添加' : '编辑'
-        try {
-          const res = !this.id ? await add (query) : await set (query)
-          toast('操作成功')
-          this.showDlg = false
-          this.dataForm.beginDate = 0
-          this.$emit('done')
-        } catch (ex) {
-          this.handleError(ex)
-          this.showDlg = false
-        }
-      }
-    })
+    const valid = await (this.$refs.dataForm as any).validate()
+    if (!valid) {
+      return
+    }
+    const query = !this.id ? this.dataForm : {
+      id: this.id,
+      ...this.dataForm
+    }
+    const title = !this.id ? '添加' : '编辑'
+    try {
+      const res = !this.id ? await add (query) : await set (query)
+      toast('操作成功')
+      this.showDlg = false
+      this.dataForm.beginDate = 0
+      this.$emit('done')
+    } catch (ex) {
+      this.handleError(ex)
+      this.showDlg = false
+    }
   }
 
   handleChange(date: any) {

@@ -369,20 +369,18 @@ export default class Main extends View {
   edit() {
     this.addOrUpdateVisible = true
     this.$nextTick(() => {
-      const myThis: any = this
-      myThis.$refs.addOrUpdate.init()
+      (this.$refs.addOrUpdate as any).init()
     })
   }
 
   async reloads(mtimeId: any) {
-    const myThis: any = this
     try {
-        myThis.$Spin.show()
+        (this.$Spin as any).show()
         const res = await syncData (mtimeId, 1)
         this.$Message.success({
         content: `刷新成功`,
         })
-        myThis.$Spin.hide()
+        ; (this.$Spin as any).hide()
         if (this.query.pageIndex != 1) {
           this.query.pageIndex = 1
           return
@@ -390,7 +388,7 @@ export default class Main extends View {
         this.doSearch()
     } catch (ex) {
       this.handleError(ex)
-      myThis.$Spin.hide()
+      ; (this.$Spin as any).hide()
     }
   }
 

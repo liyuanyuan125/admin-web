@@ -67,7 +67,7 @@ export default class Main extends View {
     { title: '序号', key: 'id', align: 'center' },
     { title: '分类名称', key: 'name', align: 'center', },
     { title: '唯一识别符', key: 'code', align: 'center' },
-    { title: '启用状态', key: 'qStatus', align: 'center' },
+    { title: '控制状态', key: 'qStatus', align: 'center' },
     {
       title: '操作',
       key: 'action',
