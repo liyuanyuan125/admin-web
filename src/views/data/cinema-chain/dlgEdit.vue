@@ -20,8 +20,8 @@
                 <Radio v-if="index.key!=0" v-for="index in dlgStatus" :label="index.key" :key="index.key">{{index.text}}</Radio>
           </RadioGroup>
       </FormItem>
-      <FormItem label="控制状态" prop="chainControlStatus">
-          <RadioGroup v-model="dataForm.chainControlStatus">
+      <FormItem label="控制状态" prop="controlStatus">
+          <RadioGroup v-model="dataForm.controlStatus">
               <Radio v-if="index.key!=0" v-for="index in controlStatus" :label="index.key" :key="index.key">{{index.text}}</Radio>
           </RadioGroup>
       </FormItem>
@@ -45,7 +45,7 @@ const dataForm = {
   shortName: '',
   pinyin: '',
   chainStatus: 1,
-  chainControlStatus: 1
+  controlStatus: 1
 }
 
 @Component
@@ -73,7 +73,7 @@ export default class ComponentMain extends View {
     chainStatus: [
         { required: true, message: '请选择院线状态', trigger: 'change', type: 'number' }
     ],
-    chainControlStatus: [
+    controlStatus: [
         { required: true, message: '请选择院线控制状态', trigger: 'change', type: 'number' }
     ]
   }
@@ -86,7 +86,7 @@ export default class ComponentMain extends View {
       this.dataForm.shortName = this.cinemaOnes.shortName
       this.dataForm.pinyin = this.cinemaOnes.pinyin
       this.dataForm.chainStatus = this.cinemaOnes.chainStatus
-      this.dataForm.chainControlStatus = this.cinemaOnes.chainControlStatus
+      this.dataForm.controlStatus = this.cinemaOnes.controlStatus
     }
   }
 
