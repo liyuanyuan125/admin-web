@@ -2,7 +2,7 @@
   <div class="page">
     <div class="act-bar flex-box">
       <div class="acts">
-        <Button type="success" @click="edit(0)">新建字典分类</Button>
+        <Button type="success" icon="md-add-circle" @click="edit(0)">新建字典分类</Button>
       </div>
     </div>
 

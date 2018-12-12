@@ -1,29 +1,5 @@
 <template>
   <div class="page">
-    <!-- 弹窗审核 -->
-    <!-- <div class="info" v-if="examine">
-        <div class="info-ver">账户审核<Icon class="info-Icon" type="md-close"   @click="examinefalse" size="22"/></div>
-        <div class="info-type">
-            <div class="info-type-t">
-                <div>注册账号<span>adadadadada</span></div>
-                <div>账号类型<span>主账号</span></div>
-            </div>
-            <div class="info-type-t">审核意见
-                <RadioGroup>
-                    <Radio label="通过"></Radio>
-                    <Radio label="拒绝"></Radio>
-                </RadioGroup>
-            </div>
-            <div class="info-type-t info-type-inp">
-                所属公司<Input class="info-inp" size="large" style="width: 230px"/><Icon type="ios-alert" color="#FF9900" size="24"/><span>保存为新公司</span>
-            </div>
-             <Button type="primary">确认</Button>
-             <Button @click="examinefalse">取消</Button>
-        </div>
-    </div> -->
-    <!-- <router-link  :to="{ name: 'client-account-detail', params: { id: 1 } }">详情</router-link> -->
-  <!-- </div> -->
-  <!-- <div class="page"> -->
     <div  v-if="shows">
       <div class="act-bar flex-box">
         <form class="form flex-1" @submit.prevent="search">
@@ -33,15 +9,11 @@
             @on-enter="ev => query.emailNum = ev.target.value" @on-blur="ev => query.emailNum = ev.target.value"/>
           <LazyInput v-model="query.companyName" placeholder="公司名称" class="input"/>
           <DatePicker type="daterange" v-model="query.createTime" placement="bottom-end" placeholder="注册时间" class="input" style="width: 200px"></DatePicker>
-          <Select v-model="query.type" placeholder="审核状态" clearable>
-            <Option v-for="it in typeList" :key="it.id" :value="it.id"
-              :label="it.name">{{it.name}}</Option>
-          </Select>
           <Select v-model="query.status" placeholder="启用状态" clearable>
             <Option v-for="it in statusList" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
           </Select>
-          <Button type="default" @click="reset" class="btn-reset">清空</Button>
+          <!-- <Button type="default" @click="reset" class="btn-reset">清空</Button> -->
         </form>
         <div class="acts">
           <Button type="success" @click="edit(0)">创建</Button>
@@ -150,18 +122,7 @@ export default class Main extends View {
       }
     },
     {
-      title: '审核状态',
-      key: 'typeName',
-      align: 'center',
-      render: (hh: any, { row: { type, typeName } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        return <span class={`aptitude-status-${type}`}>{typeName}</span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '启用状态',
+      title: '状态',
       key: 'statusText',
       align: 'center',
       render: (hh: any, { row: { status, statusText } }: any) => {
@@ -179,8 +140,7 @@ export default class Main extends View {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         return <div class='row-acts'>
-          <a href ="javascript:;">启用</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <a on-click={this.change.bind(this, row.id, row)}>关联公司</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a href ="javascript:;" v-model='{statusText}==停用?启用:停用'>启用</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <router-link to={{ name: 'client-account-detail', params: { id } }}>详情</router-link>
         </div>
         /* tslint:enable */
