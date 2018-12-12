@@ -50,7 +50,7 @@
 
       <Row class="row-address">
         <Col span="10">
-          <FormItem label="公司地址" required>
+          <FormItem label="公司地址" prop="area">
             <AreaSelect v-model="area"/>
           </FormItem>
         </Col>
@@ -63,8 +63,8 @@
 
       <Row>
         <Col span="10">
-          <FormItem label="售票系统" prop="software">
-            <Select v-model="item.software" clearable>
+          <FormItem label="售票系统" prop="softwareCode">
+            <Select v-model="item.softwareCode" clearable>
               <Option v-for="it in softwareList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
@@ -120,7 +120,7 @@ const defItem = {
   cityId: 0,
   countyId: 0,
   address: '',
-  software: '',
+  softwareCode: '',
   zipCode: '',
   status: 0,
 }
@@ -169,7 +169,10 @@ export default class DlgEdit extends View {
         { required: true, message: '不能为空', trigger: 'blur' }
       ],
       chainId: [
-        { required: true, message: '不能为空', trigger: 'blur' }
+        { required: true, message: '不能为空', trigger: 'change' }
+      ],
+      area: [
+        { required: true, message: '不能为空', trigger: 'change' }
       ],
     }
   }
