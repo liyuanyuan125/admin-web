@@ -23,7 +23,6 @@
           on-change="selectTime" placeholder="选择日期" style="width: 200px" v-if="showDlg"></Date-picker>
       </FormItem>
     </Form>
-    {{cinemaOnes}}
     <div slot="footer" class="dialog-footer">
       <Button @click="cancel">取消</Button>
       <Button type="primary" @click="dataFormSubmit">确定</Button>
