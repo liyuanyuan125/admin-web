@@ -2,10 +2,11 @@
   <div class="page">
     <div class="act-bar flex-box">
       <div class="acts">
-        <Button class="bth" type="text" @click="goback()">返回字典分类</Button>
+        <Button class="bth" icon="md-return-left" @click="goback">返回字典分类</Button>
+        <!-- <Button class="bth" type="text" @click="goback()">返回字典分类</Button> -->
         <LazyInput v-model="query.dictionaryName"  placeholder="词条名称" class="input"/>
         <Button class="okbth" type="success" @submit.prevent="search">查询</Button>
-        <Button class="addbth" type="success" @click="edit(0)">新建词条</Button>
+        <Button class="addbth" type="success" icon="md-add-circle" @click="edit(0)">新建词条</Button>
       </div>
     </div>
     <Table :columns="columns" :data="tableData" :loading="loading"
@@ -81,7 +82,7 @@ export default class Main extends View {
     { title: '排序', key: 'sortValue', align: 'center' },
     { title: '唯一识别符', key: 'code', align: 'center' },
     {
-      title: '启用状态',
+      title: '控制状态',
       key: 'cqStatus',
       align: 'center',
     },
@@ -211,18 +212,23 @@ export default class Main extends View {
 <style lang="less" scoped>
 .input {
   width: 180px;
+  margin-top: 7px;
 }
 .bth {
-  text-decoration: underline;
+  // text-decoration: underline;
+  margin-right: 5px;
+  margin-top: 7px;
 }
 .acts {
   width: 100%;
 }
 .okbth {
   margin-left: 12px;
+  margin-top: 7px;
 }
 .addbth {
   float: right;
+  margin-top: 7px;
 }
 .btn-reset {
   margin-left: 8px;

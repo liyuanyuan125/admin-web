@@ -4,7 +4,7 @@
       <div class="file-detail-header">
       <dl>
         <dt>电影名称:</dt>
-        <dd>{{detil.name}} <Button type="primary" style="float:right" @click="goback">返回</Button> </dd>
+        <dd>{{detil.name}} <Button icon="md-return-left" style="float:right" @click="goback">返回列表</Button> </dd>
       </dl>
     </div>
     <div class="file-detail-center">
@@ -119,7 +119,7 @@ import { updateStatus } from '@/api/film'
 import { toMap } from '@/fn/array'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
-const timeFormat = 'YYYY-MM-DD/HH:mm:ss'
+const timeFormat = 'YYYY-MM-DD'
 
 @Component({
   components: {

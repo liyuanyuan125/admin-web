@@ -4,6 +4,7 @@
     :transfer='false'
     :width='420'
     :title="!editMes ? '新建地区信息' : '编辑地区信息'"
+    @on-cancel="cancel('dataForm')"
     >
     <p v-if="!!parentsName" class="next-city">上级城市：{{parentsName}}</p>
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="80">
@@ -16,14 +17,14 @@
       <FormItem label="简拼" prop="pinyinShort">
         <Input v-model="dataForm.pinyinShort" placeholder="请输入"/>
       </FormItem>
-      <FormItem v-if="!parentsName" label="所属区域" prop="areaId">
-        <Select v-model="dataForm.areaId" placeholder="请选择" class="input" style="width: 200px" clearable>
+      <FormItem v-if="!parentsName" label="所属区域" prop="areaCode">
+        <Select v-model="dataForm.areaCode" placeholder="请选择" class="input" style="width: 200px" clearable>
           <Option v-for="it in areaList" :key="it.key"
-            :value="it.id">{{it.name}}</Option>
+            :value="it.code">{{it.name}}</Option>
         </Select>
       </FormItem>
-      <FormItem label="排序" prop="orderNum">
-        <Input style="width:150px" v-model="dataForm.orderNum" placeholder="请输入"/><span class="hiht">数值越小，排序越靠前</span>
+      <FormItem label="排序" prop="sort">
+        <Input style="width:150px" v-model="dataForm.sort" placeholder="请输入"/><span class="hiht">数值越小，排序越靠前</span>
       </FormItem>
     </Form>
     <div  slot="footer" class="dialog-footer">
@@ -38,7 +39,7 @@
 import { Component, Prop } from 'vue-property-decorator'
 import View from '@/util/View'
 import { areaAdd, areaSet } from '@/api/dateArea'
-
+import { clean } from '@/fn/object'
 @Component
 export default class ComponentMain extends View {
   showDlg = false
@@ -53,8 +54,8 @@ export default class ComponentMain extends View {
     nameCn: '',
     pinyinShort: '',
     pinyin: '',
-    areaId: '',
-    orderNum: ''
+    areaCode: '',
+    sort: ''
   }
   ruleValidate = {
     nameCn: [
@@ -66,62 +67,83 @@ export default class ComponentMain extends View {
     pinyin: [
         { required: true, message: '请输入地区拼音', trigger: 'blur' }
     ],
-    areaId: [
-        { required: true, message: '请选择所属区域', trigger: 'change' }
+    areaCode: [
+        { required: true, message: '请选择所属区域', trigger: 'change', type: 'string' }
     ],
-    orderNum: []
+    sort: []
   }
   @Prop({ type: Array }) areaSelect: any
-  @Prop({ type: Object }) areaObject: any
-  created() {
-
-  }
-  init(id: any, name: string, areaId: any, editMes: any, parentsAreaId: string) {
+  @Prop() areaObject: any
+  init(id: any, name: string, areaCode: any, editMes: any, parentsareaCode: string) {
     this.setId = id
     this.editMes = editMes
     this.parentsName = name
     this.showDlg = true
-    this.id = parentsAreaId
-    this.parentsName ? this.dataForm.areaId = areaId : ''
+    this.id = parentsareaCode
+    if ( !!this.parentsName ) {
+      this.dataForm.areaCode = areaCode
+    } else {
+      this.dataForm.areaCode = ''
+    }
     this.areaList = this.areaSelect
     if (this.areaObject) {
        this.dataForm.nameCn = this.areaObject.nameCn
        this.dataForm.pinyinShort = this.areaObject.pinyinShort
        this.dataForm.pinyin = this.areaObject.pinyin
-       this.dataForm.areaId = this.areaObject.areaId
-       this.dataForm.orderNum = this.areaObject.orderNum
+       this.dataForm.areaCode = this.areaObject.areaCode
+       this.dataForm.sort = this.areaObject.sort
     }
   }
 
   cancel(dataForms: string) {
+    (this.$refs[dataForms] as any).resetFields()
     this.showDlg = false
-    const myThis: any = this
-    myThis.$refs[dataForms].resetFields()
   }
 
   // 表单提交
   dataFormSubmit(dataForms: any) {
-   const myThis: any = this
-   myThis.$refs[dataForms].validate(async ( valid: any ) => {
+    (this.$refs[dataForms] as any).validate(async ( valid: any ) => {
       if (valid) {
-        const setQuery = {
+        const sort = Number(this.dataForm.sort)
+        const setData: any = {
           parentId: this.id,
-          ...this.dataForm
+          ...this.dataForm,
+          sort
         }
-        const query = !this.parentsName ? this.dataForm : setQuery
+        let setQuery: any = {}
+        const delarea: any = {}
+        for ( const key in setData ) {
+          if (setData.hasOwnProperty(key)) {
+            if (key != 'areaCode') {
+              delarea[key] = setData[key]
+            }
+          }
+        }
+        if (!!this.parentsName) {
+          setQuery = delarea
+        } else {
+          setQuery = setData
+        }
+
+        const addDate = this.dataForm
+        const query = !!this.id ? {
+          ...delarea,
+          sort
+        } : {
+          ...addDate,
+          sort
+        }
         const title = !this.editMes ? '新增' : '编辑'
         try {
           const res = !this.editMes ? await areaAdd (query) : await areaSet ( this.setId , setQuery)
-          if ( res && res.code === 0 ) {
-            this.$Message.success({
-                content: `${title}成功`,
-                onClose: () => {
-                  this.showDlg = false
-                  myThis.$refs[dataForms].resetFields()
-                  this.$emit('refreshDataList')
-                }
-            })
-          }
+          this.$Message.success({
+              content: `${title}成功`,
+              onClose: () => {
+                this.showDlg = false
+                ; (this.$refs[dataForms] as any).resetFields()
+                this.$emit('refreshDataList')
+              }
+          })
         } catch (ex) {
           this.handleError(ex)
         }

@@ -7,7 +7,7 @@
       </form>
 
       <div class="acts">
-        <Button type="success" @click="edit(0)">新建地区</Button>
+        <Button type="success" icon="md-add-circle" @click="edit(0)">新建院线信息</Button>
       </div>
     </div>
 
@@ -20,7 +20,7 @@
         @on-change="page => query.pageIndex = page"
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
-    <DlgEdit  ref="addOrUpdate" :dlgStatus="chainStatus" :delControlStatus="chainControlStatus" :cinemaOnes="editOne"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" />
+    <DlgEdit  ref="addOrUpdate" :dlgStatus="chainStatus" :delControlStatus="controlStatusList" :cinemaOnes="editOne"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" />
   </div>
 </template>
 
@@ -63,29 +63,15 @@ export default class Main extends View {
   total = 0
 
   chainStatus = []
-  chainControlStatus = []
-
+  controlStatusList = []
   columns = [
-    { title: '序号', key: 'id', width: 90, align: 'center' },
-    { title: '名称', key: 'name', width: 200, align: 'center' },
-    { title: '简称', key: 'shortName', width: 140, align: 'center' },
+    { title: '序号', key: 'id', align: 'center' },
+    { title: '名称', key: 'name', align: 'center' },
+    { title: '简称', key: 'shortName', align: 'center' },
     { title: '拼音', key: 'pinyin',  align: 'center' },
     {
       title: '启用状态',
-      key: 'Status',
-      width: 80,
-      align: 'center',
-      render: (hh: any, { row : { ControlStatus , chainControlStatus } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        return <span class={`status-${chainControlStatus}`}>{ControlStatus}</span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '控制状态',
-      key: 'chainControlStatus',
-      width: 90,
+      key: 'controlStatusList',
       align: 'center',
       render: (hh: any, { row : { chainStatus , Status }  }: any) => {
         /* tslint:disable */
@@ -95,9 +81,19 @@ export default class Main extends View {
       }
     },
     {
+      title: '控制状态',
+      key: 'Status',
+      align: 'center',
+      render: (hh: any, { row : { controlStatus , controlStatusList } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        return <span class={`status-${controlStatus}`}>{controlStatusList}</span>
+        /* tslint:enable */
+      }
+    },
+    {
       title: '操作',
       key: 'action',
-      width: 80,
       align: 'center',
       render: (hh: any, { row }: any) => {
         /* tslint:disable */
@@ -113,7 +109,7 @@ export default class Main extends View {
   get cachedMap() {
     return {
       Status: makeMap(this.chainStatus),
-      ControlStatus: makeMap(this.chainControlStatus),
+      controlStatusList: makeMap(this.controlStatusList),
     }
   }
 
@@ -123,7 +119,7 @@ export default class Main extends View {
       return {
         ...it,
         Status: cachedMap.Status[it.chainStatus],
-        ControlStatus: cachedMap.ControlStatus[it.chainControlStatus],
+        controlStatusList: cachedMap.controlStatusList[it.controlStatus],
       }
     })
     return list
@@ -163,12 +159,12 @@ export default class Main extends View {
         items: list,
         totalCount: total,
         chainStatus,
-        chainControlStatus,
+        controlStatus,
       } } = await queryList(query)
       this.list = list
       this.total = total
       this.chainStatus = chainStatus
-      this.chainControlStatus = chainControlStatus
+      this.controlStatusList = controlStatus
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -177,20 +173,15 @@ export default class Main extends View {
   }
 
   reloadSearch() {
-    if (this.query.pageIndex != 1) {
-      this.query.pageIndex = 1
-      return
-    }
     this.doSearch()
   }
 
   // 新增 / 修改
   edit(id: number, row: any) {
     this.addOrUpdateVisible = true
-    !!id ? this.editOne = row : this.editOne
+      !!id ? this.editOne = row : this.editOne
     this.$nextTick(() => {
-      const myThis: any = this
-      myThis.$refs.addOrUpdate.init(id)
+      (this.$refs.addOrUpdate as any).init(id)
     })
   }
 
@@ -205,6 +196,10 @@ export default class Main extends View {
 </script>
 
 <style lang="less" scoped>
+.act-bar {
+  margin-top: 5px;
+}
+
 .form {
   .input {
     margin-right: 8px;

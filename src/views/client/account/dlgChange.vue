@@ -3,23 +3,19 @@
     v-model='showDlg'
     :transfer='true'
     :width='420'
-    :title="!id ? '重新关联' : '关联公司'"
+    :title="'变更主账号'"
     @on-cancel="cancel('dataForm')" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
-      <FormItem label="注册账号" prop="name">
-        <Input v-model="dataForm.name" disabled></Input>
-      </FormItem>
-      <FormItem label="主账号" prop="code">
-        <Input v-model="dataForm.code" disabled></Input>
-      </FormItem>
-      <FormItem label="审核意见" prop="enableStatus">
-        <RadioGroup v-model="dataForm.enableStatus" >
-          <!-- <Radio v-for="it in list" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio> -->
-          <Radio label="通过"></Radio>
-          <Radio label="拒绝"></Radio>
-        </RadioGroup>
+      <FormItem label="所属公司" prop="company">
+        <Select style="width:240px">
+          <!-- <Option v-for="item in cityList" :value="item.value">{{ item.label }}</Option> -->
+          <Option>456465465</Option>
+          <Option>131323313</Option>
+          <Option>789789798</Option>
+        </Select>
       </FormItem>
     </Form>
+    <p class="tip">提示：主账户变更后，原主账户将修改为不具备任何操作权限的子账户，如需删除，请使用新主账户在前台用户管理中进行操作</p>
     <div slot="footer" class="dialog-footer">
       <Button @click="cancel('dataForm')">取消</Button>
       <Button type="primary" @click="dataFormSubmit('dataForm')">确定</Button>
@@ -51,12 +47,6 @@ export default class ComponentMain extends View {
   showDlg = false
   id = 0
   ruleValidate = {
-    // name: [
-    //     { required: true, message: '请输入分类名称', trigger: 'blur' }
-    // ],
-    // code: [
-    //     { required: true, message: '请输入识别符', trigger: 'blur' }
-    // ]
   }
   dataForm = { ...dataForm }
   init(id: number) {
@@ -121,4 +111,7 @@ export default class ComponentMain extends View {
 </script>
 
 <style lang="less" scoped>
+.tip {
+  color: red;
+}
 </style>

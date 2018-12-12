@@ -53,7 +53,7 @@ const dataForm = {
   category: {
     id: ''
   },
-  sortValue: '',
+  sortValue: null,
   enableStatus: ''
 }
 
@@ -74,7 +74,7 @@ export default class ComponentMain extends View {
   grop = []
   ruleValidate = {
     name: [
-        { required: true, message: '请输入分类名称', trigger: 'blur' }
+        { required: true, message: '请输入词条名称', trigger: 'blur' }
     ],
     code: [
         { required: true, message: '请输入识别符', trigger: 'blur' }
@@ -83,7 +83,7 @@ export default class ComponentMain extends View {
         { required: true, message: '请输入排序序号' }
     ]
   }
-  dataForm = { ...dataForm }
+  dataForm: any = { ...dataForm }
   async init(id: number, lists: any) {
     this.lists = lists
     this.showDlg = true
@@ -112,6 +112,7 @@ export default class ComponentMain extends View {
 
   // 表单提交
   dataFormSubmit(dataForms: any) {
+   this.dataForm.sortValue = Number(this.dataForm.sortValue)
    const myThis: any = this
    myThis.$refs[dataForms].validate(async ( valid: any ) => {
       if (valid) {

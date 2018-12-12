@@ -17,8 +17,8 @@
 
       <Row>
         <Col span="16">
-          <FormItem label="官方名称" prop="officalName">
-            <Input v-model="item.officalName" placeholder="请输入"/>
+          <FormItem label="官方名称" prop="officialName">
+            <Input v-model="item.officialName" placeholder="请输入"/>
           </FormItem>
         </Col>
         <Col span="8">
@@ -34,12 +34,13 @@
       <Row>
         <Col span="16">
           <FormItem label="院线" prop="chainId">
-            <CinemaChainSelect v-model="item.chainId"/>
+            <CinemaChainSelect v-model="item.chainId" :controlStatus="1"
+              :keepId="item.chainId"/>
           </FormItem>
         </Col>
         <Col span="8">
-          <FormItem label="影院等级" prop="grade">
-            <Select v-model="item.grade" clearable>
+          <FormItem label="影院等级" prop="gradeCode">
+            <Select v-model="item.gradeCode" clearable>
               <Option v-for="it in gradeList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
@@ -49,8 +50,8 @@
 
       <Row class="row-address">
         <Col span="10">
-          <FormItem label="公司地址" required>
-            <AreaSelect v-model="area"/>
+          <FormItem label="公司地址" prop="area">
+            <AreaSelect v-model="item.area"/>
           </FormItem>
         </Col>
         <Col span="14">
@@ -62,8 +63,8 @@
 
       <Row>
         <Col span="10">
-          <FormItem label="售票系统" prop="softwareId">
-            <Select v-model="item.softwareId" clearable>
+          <FormItem label="售票系统" prop="softwareCode">
+            <Select v-model="item.softwareCode" clearable>
               <Option v-for="it in softwareList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
@@ -111,17 +112,20 @@ const defItem = {
   id: '',
   shortName: '',
   code: '',
-  officalName: '',
+  officialName: '',
   controlStatus: 0,
   chainId: '',
-  grade: '',
+  gradeCode: '',
   provinceId: 0,
   cityId: 0,
   countyId: 0,
   address: '',
-  softwareId: '',
+  softwareCode: '',
   zipCode: '',
   status: 0,
+
+  // 辅助字段，提交的时候，应该去掉
+  area: [],
 }
 
 @Component({
@@ -152,11 +156,10 @@ export default class DlgEdit extends View {
 
   controlStatusList: Enum[] = []
 
-  area: string[] = []
-
   shortNameError = ''
 
   get rules() {
+    let areaFirstCall = true
     return {
       shortName: [
         { required: true, message: '不能为空', trigger: 'blur' }
@@ -164,24 +167,44 @@ export default class DlgEdit extends View {
       code: [
         { required: true, message: '不能为空', trigger: 'blur' }
       ],
-      officalName: [
+      officialName: [
         { required: true, message: '不能为空', trigger: 'blur' }
       ],
       chainId: [
-        { required: true, message: '不能为空', trigger: 'blur' }
+        { required: true, message: '不能为空', trigger: 'change' }
+      ],
+      area: [
+        {
+          required: true,
+          message: '不能为空',
+          trigger: 'change',
+          type: 'array',
+          validator(rule: any, value: string[], callback: any) {
+            if (areaFirstCall) {
+              areaFirstCall = false
+              return callback()
+            }
+            const strVal = (value || []).join('')
+            strVal === '000' ? callback(new Error('不能为空')) : callback()
+          }
+        }
       ],
     }
+  }
+
+  resetSubmitLoading() {
+    this.submitLoading = false
+    this.$nextTick(() => this.submitLoading = true)
   }
 
   async submit() {
     const valid = await (this.$refs.form as any).validate()
     if (!valid) {
-      this.submitLoading = false
-      this.$nextTick(() => this.submitLoading = true)
-      return
+      return this.resetSubmitLoading()
     }
     try {
       const data = { ...this.item }
+      delete data.area
       const res = data.id ? await updateItem(data) : await addItem(data)
       toast(data.id ? '更新成功' : '创建成功')
       setTimeout(() => {
@@ -189,6 +212,7 @@ export default class DlgEdit extends View {
         this.inValue.showDlgEdit = false
       }, 1888)
     } catch (ex) {
+      this.resetSubmitLoading()
       this.handleError(ex)
     }
   }
@@ -206,23 +230,23 @@ export default class DlgEdit extends View {
         gradeList = [],
         softwareList = [],
         statusList = [],
-        cstatusList = [],
+        controlStatusList = [],
       } } = await queryItem(query)
       this.item = { ...defItem, ...slice(item, Object.keys(defItem)) }
       this.gradeList = gradeList
       this.softwareList = softwareList
       this.statusList = statusList
-      this.controlStatusList = cstatusList
+      this.controlStatusList = controlStatusList
 
       const { provinceId = '0', cityId = '0', countyId = '0' } = this.item
-      this.area = [provinceId, cityId, countyId]
+      this.item.area = [provinceId, cityId, countyId]
 
       // 默认选中第一个
       if (this.item.status == 0) {
         this.item.status = statusList[0].key
       }
       if (this.item.controlStatus == 0) {
-        this.item.controlStatus = cstatusList[0].key
+        this.item.controlStatus = controlStatusList[0].key
       }
     } catch (ex) {
       this.handleError(ex)
@@ -241,7 +265,7 @@ export default class DlgEdit extends View {
     this.$emit('input', val)
   }
 
-  @Watch('area')
+  @Watch('item.area')
   watchArea(val: string[]) {
     this.item.provinceId = val[0]
     this.item.cityId = val[1]

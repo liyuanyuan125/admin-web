@@ -4,8 +4,8 @@
       <div class="acts">
         <form class="form flex-1" @submit.prevent="search">
           <LazyInput v-model="query.years" placeholder="输入年份" class="input"/>
-          <Button class="bth" type="success">查询</Button>
-          <Button class="okbth" type="success" @click="edit(0)">新建档期</Button>
+          <Button class="btns" type="success" icon="ios-search">查询</Button>
+          <Button class="okbth" type="success" icon="md-add-circle" @click="edit(0)">新建档期</Button>
         </form>
       </div>
     </div>
@@ -19,7 +19,7 @@
         @on-change="page => query.pageIndex = page"
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
-    <DlgEdit  ref="addOrUpdate" :cinemaOnes="editOne"  @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/>
+    <DlgEdit  ref="addOrUpdate" :cinemaOnes="editOne"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" @done="dlgeditdone"/>
   </div>
 </template>
 
@@ -90,7 +90,7 @@ export default class Main extends View {
         const h = jsxReactToVue(hh)
         return <div class='row-acts'>
           <a on-click={this.edit.bind(this, row.id, row)}>编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <a on-click={this.dele.bind(this, row.id, row)}>删除</a>
+          <a on-click={this.delete.bind(this, row.id)}>删除</a>
         </div>
         /* tslint:enable */
       }
@@ -136,6 +136,10 @@ export default class Main extends View {
     this.query.pageIndex = 1
   }
 
+  reloadSearch() {
+    this.doSearch()
+  }
+
   reset() {
     const { pageSize } = this.query
     this.query = { ...defQuery, pageSize }
@@ -163,7 +167,6 @@ export default class Main extends View {
       this.total = total
       this.beginDates = beginDates
       this.endDates = endDates
-    // debugger
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -181,18 +184,30 @@ export default class Main extends View {
     })
   }
 
-  dlgEditDone() {
+  dlgeditdone() {
     this.doSearch()
   }
 
-  async dele(id: number, row: any) {
+  async delete(id: any) {
     try {
-      await confirm('确定删除该条数据吗')
-      dels({id})
-      this.doSearch()
+      await confirm('您确定删除当前档期信息吗？')
+      await dels({id})
+      this.$Message.success({
+        content: `删除成功`,
+      })
+      this.reloadSearch()
     } catch (ex) {
       // this.handleError(ex)
     }
+    // try {
+    //   await confirm('确定删除该条数据吗')
+    //   if (true) {
+    //     dels({id})
+    //     this.doSearch()
+    //   }
+    // } catch (ex) {
+    //   // this.handleError(ex)
+    // }
   }
 
   @Watch('query', { deep: true })
@@ -207,19 +222,25 @@ export default class Main extends View {
 
 <style lang="less" scoped>
 .input {
-  width: 70px;
+  width: 100px;
   margin-right: 5px;
+  margin-top: 7px;
+}
+.btns {
+  width: 80px;
+  margin-right: 5px;
+  margin-top: 7px;
 }
 .acts {
   width: 100%;
 }
 .okbth {
-  margin-top: 5px;
+  margin-top: 8px;
   float: right;
 }
-.btn-reset {
-  margin-left: 8px;
-}
+// .btn-reset {
+//   margin-left: 7px;
+// }
 
 .table {
   margin-top: 16px;

@@ -1,71 +1,5 @@
 <template>
   <div class="page">
-    <!-- 添加账号页面 -->
-    <!-- <div  v-if="!shows">
-      <div class="bge">
-        <form class="form flex-1" >
-          <div class="Add-Inp">
-              <span>用户账号</span><LazyInput  size="large" style="width: 300px" placeholder="输入账号"/><br>
-          </div>
-          <div class="Add-Inp">
-              <span>密码</span><LazyInput  size="large" style="width: 300px" placeholder="输入密码"/><br>
-          </div>
-          <div class="Add-Inp">
-              <span>重复密码</span><LazyInput  size="large" style="width: 300px" placeholder="再次输入密码"/><br>
-          </div>
-          <div class="Add-Inp">
-              <span>邮箱</span><LazyInput  size="large" style="width: 300px" placeholder="输入邮箱"/><br>
-          </div>
-          <div class="Add-Inp">
-              <span>所属公司</span>
-              <Select style="width:200px">
-                  <OptionGroup label="公司一">
-                      <Option v-for="item in company" :value="item.name" :key="item.name">{{ item.name }}</Option>
-                  </OptionGroup>
-                  <OptionGroup label="公司二">
-                      <Option v-for="item in company2" :value="item.name" :key="item.name">{{ item.name }}</Option>
-                  </OptionGroup>
-              </Select>
-          </div>
-          <div class="Add-Inp">
-              <span>角色</span><Radio label="超级管理员">超级管理员</Radio><br>
-          </div>
-          <div class="Add-Inp">
-              <span>启用状态</span>
-              <RadioGroup>
-              <Radio label="启用"></Radio>
-              <Radio label="停用"></Radio>
-              </RadioGroup>
-              <br>
-          </div>
-          <Button class="button2" type="primary" id="btn" @click='toshowtrue'>保存</Button>
-        </form>
-      </div>
-    </div> -->
-    <!-- 弹窗审核 -->
-    <!-- <div class="info" v-if="examine">
-        <div class="info-ver">账户审核<Icon class="info-Icon" type="md-close"   @click="examinefalse" size="22"/></div>
-        <div class="info-type">
-            <div class="info-type-t">
-                <div>注册账号<span>adadadadada</span></div>
-                <div>账号类型<span>主账号</span></div>
-            </div>
-            <div class="info-type-t">审核意见
-                <RadioGroup>
-                    <Radio label="通过"></Radio>
-                    <Radio label="拒绝"></Radio>
-                </RadioGroup>
-            </div>
-            <div class="info-type-t info-type-inp">
-                所属公司<Input class="info-inp" size="large" style="width: 230px"/><Icon type="ios-alert" color="#FF9900" size="24"/><span>保存为新公司</span>
-            </div>
-             <Button type="primary">确认</Button>
-             <Button @click="examinefalse">取消</Button>
-        </div>
-    </div> -->
-    <!-- <router-link  :to="{ name: 'client-account-detail', params: { id: 1 } }">详情</router-link> -->
-  <!-- </div> -->
-  <!-- <div class="page"> -->
     <div  v-if="shows">
       <div class="act-bar flex-box">
         <form class="form flex-1" @submit.prevent="search">
@@ -75,15 +9,11 @@
             @on-enter="ev => query.emailNum = ev.target.value" @on-blur="ev => query.emailNum = ev.target.value"/>
           <LazyInput v-model="query.companyName" placeholder="公司名称" class="input"/>
           <DatePicker type="daterange" v-model="query.createTime" placement="bottom-end" placeholder="注册时间" class="input" style="width: 200px"></DatePicker>
-          <Select v-model="query.type" placeholder="审核状态" clearable>
-            <Option v-for="it in typeList" :key="it.id" :value="it.id"
-              :label="it.name">{{it.name}}</Option>
-          </Select>
           <Select v-model="query.status" placeholder="启用状态" clearable>
             <Option v-for="it in statusList" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
           </Select>
-          <Button type="default" @click="reset" class="btn-reset">清空</Button>
+          <!-- <Button type="default" @click="reset" class="btn-reset">清空</Button> -->
         </form>
         <div class="acts">
           <Button type="success" @click="edit(0)">创建</Button>
@@ -101,6 +31,7 @@
       </div>
     </div>
     <DlgEdit  ref="addOrUpdate"   @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/>
+    <dlgVerify  ref="change"   @refreshDataList="search" v-if="changeVisible" @done="dlgEditDone"/>
   </div>
 </template>
 
@@ -113,6 +44,8 @@ import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { clean } from '@/fn/object'
 import DlgEdit from './dlgEdit.vue'
+import dlgVerify from './dlgVerify.vue'
+
 
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
@@ -132,13 +65,15 @@ const defQuery = {
 
 @Component({
   components: {
-    DlgEdit
+    DlgEdit,
+    dlgVerify
   }
 })
 export default class Main extends View {
   shows = true
   showDlg = false
   addOrUpdateVisible = false
+  changeVisible = false
 
 
   examine = false
@@ -153,7 +88,7 @@ export default class Main extends View {
 
   statusList = []
 
-  company = []
+  // company = []
 
   company2 = []
 
@@ -187,18 +122,7 @@ export default class Main extends View {
       }
     },
     {
-      title: '审核状态',
-      key: 'typeName',
-      align: 'center',
-      render: (hh: any, { row: { type, typeName } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        return <span class={`aptitude-status-${type}`}>{typeName}</span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '启用状态',
+      title: '状态',
       key: 'statusText',
       align: 'center',
       render: (hh: any, { row: { status, statusText } }: any) => {
@@ -216,8 +140,7 @@ export default class Main extends View {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         return <div class='row-acts'>
-          <a href ="javascript:;">启用</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <a on-click={this.edit.bind(this, row.id, row)}>编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a href ="javascript:;">{statusText}</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <router-link to={{ name: 'client-account-detail', params: { id } }}>详情</router-link>
         </div>
         /* tslint:enable */
@@ -270,14 +193,14 @@ export default class Main extends View {
         items: list,
         totalCount: total,
         typeList,
-        company,
+        // company,
         company2,
         statusList,
       } } = await queryList(query)
       this.list = list
       this.total = total
       this.typeList = typeList
-      this.company = company
+      // this.company = company
       this.company2 = company2
       this.statusList = statusList
     } catch (ex) {
@@ -287,23 +210,27 @@ export default class Main extends View {
     }
   }
 
-   // 新增 / 修改
+   // 新增
   edit(id: number, row: any) {
     this.addOrUpdateVisible = true
-    // !!id ? this.editOne = row : this.editOne
     this.$nextTick(() => {
       const myThis: any = this
       myThis.$refs.addOrUpdate.init(id)
     })
   }
 
+  change(id: number, row: any) {
+    this.changeVisible = true
+    this.$nextTick(() => {
+      const myThis: any = this
+      myThis.$refs.change.init(id)
+    })
+  }
+
   dlgEditDone() {
     this.doSearch()
   }
-  toshowtrue() {
-    alert('保存成功')
-    this.shows = true
-  }
+
   @Watch('query', { deep: true })
   onQueryChange() {
     if (this.query.pageIndex == this.oldQuery.pageIndex) {

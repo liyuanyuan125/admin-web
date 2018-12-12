@@ -34,7 +34,7 @@
 <script lang="ts">
 import { Component } from 'vue-property-decorator'
 import View from '@/util/View'
-import { post } from '@/fn/ajax'
+import { login, getUserInfo } from '@/api/auth'
 import event from '@/fn/event'
 import { logout, setUser, setCookie } from '@/store'
 
@@ -67,17 +67,16 @@ export default class Main extends View {
       this.submitLoading = true
       try {
         const pdata = {
-          loginName: this.form.uname,
+          username: this.form.uname,
           password: this.form.pwd,
         }
-        const { data } = await post('http://portal.dev.aiads.com/login_p', pdata)
+        const { data } = await login(pdata)
 
-        // TODO: 先做一个假的用户
-        const user = { id: '', name: this.form.uname }
+        const user = { id: data.userId, name: data.name }
         setUser(user)
 
         // 手动设置 cookie，标记已经登录
-        setCookie(data['X-API-TOKEN'])
+        // setCookie(data['X-API-TOKEN'])
 
         this.$router.push({ name: 'home' })
       } catch (ex) {

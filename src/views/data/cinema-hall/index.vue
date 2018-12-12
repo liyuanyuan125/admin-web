@@ -1,13 +1,13 @@
 <template>
   <div class="page">
     <header class="header flex-box">
+      <Button icon="md-return-left" @click="back" class="btn-back">返回列表</Button>
       <div class="flex-1">
         <em>{{cinema.shortName}}</em>
         <i>影厅列表</i>
       </div>
       <Button type="success" icon="md-add-circle" class="btn-new"
         @click="edit(0)">新建影厅</Button>
-      <Button icon="md-return-left" @click="goback">返回列表</Button>
     </header>
 
     <div class="info-pane">
@@ -28,7 +28,7 @@
       <div class="info-line flex-box">
         <div class="flex-1 flex-box">
           <label>官方名称：</label>
-          <em>{{cinema.officalName}}</em>
+          <em>{{cinema.officialName}}</em>
         </div>
         <div class="flex-1 flex-box">
           <label>售票系统：</label>
@@ -100,7 +100,7 @@ export default class Main extends View {
     projectorResolutionList: [],
     projectorBrandList: [],
     businessTypeList: [],
-    cstatusList: [],
+    controlStatusList: [],
   }
 
   get enumMap() {
@@ -125,8 +125,8 @@ export default class Main extends View {
       { title: '放映机分辨率', key: 'projectorResolutionName', width: 85, align: 'center' },
       { title: '放映机品牌', key: 'projectorBrandName', width: 80, align: 'center' },
       { title: '放映机型号', key: 'projectorModel', width: 85, align: 'center' },
-      { title: '放映机编号', key: 'projectorNumber', width: 85, align: 'center' },
-      { title: '影厅业务类', key: 'businessTypeName', width: 80, align: 'center' },
+      { title: '放映机编号', key: 'projectorNumber', width: 80, align: 'center' },
+      { title: '影厅业务类型', key: 'businessTypeName', width: 85, align: 'center' },
       { title: '控制状态', key: 'controlStatusName', width: 65, align: 'center' },
       {
         title: '操作',
@@ -150,13 +150,13 @@ export default class Main extends View {
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        typeName: enumMap.type[it.type],
-        projectorTypeName: enumMap.projectorType[it.projectorType],
-        placementName: enumMap.placement[it.placement],
-        projectorResolutionName: enumMap.projectorResolution[it.projectorResolution],
-        projectorBrandName: enumMap.projectorBrand[it.projectorBrand],
-        businessTypeName: enumMap.businessType[it.businessType],
-        controlStatusName: enumMap.cstatus[it.controlStatus],
+        typeName: enumMap.type[it.typeCode],
+        projectorTypeName: enumMap.projectorType[it.projectorTypeCode],
+        placementName: enumMap.placement[it.placementCode],
+        projectorResolutionName: enumMap.projectorResolution[it.projectorResolutionCode],
+        projectorBrandName: enumMap.projectorBrand[it.projectorBrandCode],
+        businessTypeName: enumMap.businessType[it.businessTypeCode],
+        controlStatusName: enumMap.controlStatus[it.controlStatus],
       }
     })
     return list
@@ -199,7 +199,7 @@ export default class Main extends View {
       this.cinema = {
         ...item,
         statusText: statusMap[item.status],
-        gradeName: gradeMap[item.grade],
+        gradeName: gradeMap[item.gradeCode],
         fullAddress: [
           item.provinceName,
           item.cityName,
@@ -214,7 +214,7 @@ export default class Main extends View {
     }
   }
 
-  goback() {
+  back() {
     this.$router.go(-1)
   }
 
@@ -256,7 +256,7 @@ export default class Main extends View {
     color: @c-base;
   }
 }
-.btn-new {
+.btn-back {
   margin-right: 10px;
 }
 

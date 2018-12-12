@@ -2,7 +2,7 @@
   <div class="page">
     <div class="act-bar flex-box">
       <div class="acts">
-        <Button type="success" @click="edit(0)">新建字典分类</Button>
+        <Button type="success" icon="md-add-circle" class="addinp" @click="edit(0)">新建字典分类</Button>
       </div>
     </div>
 
@@ -67,7 +67,7 @@ export default class Main extends View {
     { title: '序号', key: 'id', align: 'center' },
     { title: '分类名称', key: 'name', align: 'center', },
     { title: '唯一识别符', key: 'code', align: 'center' },
-    { title: '启用状态', key: 'qStatus', align: 'center' },
+    { title: '控制状态', key: 'qStatus', align: 'center' },
     {
       title: '操作',
       key: 'action',
@@ -185,6 +185,9 @@ export default class Main extends View {
   }
 }
 
+.addinp {
+  margin-top: 7px;
+}
 .btn-search,
 .btn-reset {
   margin-left: 8px;

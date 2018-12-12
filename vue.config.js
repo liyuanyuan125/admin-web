@@ -17,6 +17,14 @@ module.exports = {
           if (req.headers.accept.indexOf('html') !== -1) {
             return '/index.html'
           }
+        },
+        onProxyRes(proxy) {
+          const cookies = proxy.headers['set-cookie']
+          if (cookies) {
+            const newCookies = cookies.map(it =>
+              it.replace(/Domain=[^\s;]+;?/i, 'Domain=localhost;'))
+            proxy.headers['set-cookie'] = newCookies
+          }
         }
       }
     }

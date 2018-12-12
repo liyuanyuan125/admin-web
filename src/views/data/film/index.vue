@@ -3,12 +3,12 @@
     <div class="act-bar flex-box">
       <form class="form flex-1" @submit.prevent="search">
         <LazyInput v-model="query.name" placeholder="影片名称" class="input input-id"/>
-        <DatePicker type="daterange" v-model="query.showTime" placement="bottom-end" placeholder="中国上映时间" class="input" style="width: 200px"></DatePicker>
+        <DatePicker @on-change="dateChange" type="daterange" v-model="showTime" placement="bottom-end" placeholder="中国上映时间" class="input" style="width: 200px"></DatePicker>
         <Button type="default" @click="reset" class="btn-reset">清空</Button>
       </form>
 
       <div class="acts">
-        <Button type="success" @click="edit()">新建影片</Button>
+        <Button type="success" icon="md-add-circle" @click="edit()">新建影片</Button>
       </div>
     </div>
     <Table  :columns="columns" :data="tableData" :loading="loading"
@@ -40,15 +40,17 @@ import { toThousands } from '@/util/dealData'
 import PartPoptipEdit from '../cinema/partPoptipEdit.vue'
 import InputEdit from './inputEdit.vue'
 import DlgEdit from './dlgEdit.vue'
+import { loading, toast } from '@/ui/modal'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
-const timeFormat = 'YYYY-MM-DD<br>HH:mm:ss'
+const timeFormat = 'YYYY-MM-DD'
 
 const defQuery = {
   id: null,
   name: '',
-  showTime: [],
   pageIndex: 1,
   pageSize: 20,
+  startTime: 0,
+  endTime: 0
 }
 
 @Component({
@@ -67,7 +69,7 @@ export default class Main extends View {
   addOrUpdateVisible = false
   list: any[] = []
   total = 0
-
+  showTime: any = []
   categoryList = []
   controlList = []
 
@@ -104,15 +106,16 @@ export default class Main extends View {
         }
       },
       {
-        title: '影城名称',
+        title: '影片名称',
         key: 'name',
         width: 90,
         align: 'center',
-        render: (hh: any, { row: {id, name} }: any) => {
+        render: (hh: any, { row: {id, name, englishName} }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
+          const names = name || englishName
           return <div class="row-acts row-hidden">
-            <router-link to={{name: 'data-film-detail', params: { id }}}>{name}</router-link>
+            <router-link to={{name: 'data-film-detail', params: { id }}}>{names}</router-link>
           </div>
           /* tslint:enable */
         }
@@ -120,7 +123,7 @@ export default class Main extends View {
       {
         title: '中国上映时间', // tslint:disable-line
         key: 'openTime',
-        width: 180,
+        width: 110,
         align: 'center',
         render: (hh: any, { row : { openTime } }: any) => {
           /* tslint:disable */
@@ -165,7 +168,7 @@ export default class Main extends View {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
           return <div class="row-hidden" title = { performers }>
-            { performers }
+            { performers.join(',') }
           </div>
           /* tslint:enable */
         }
@@ -191,7 +194,7 @@ export default class Main extends View {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
           return <div class="row-hidden">
-            <span title = { type }>{ type }</span>
+            <span title = { type }>{ type.join(',') }</span>
           </div>
           /* tslint:enable */
         }
@@ -227,7 +230,7 @@ export default class Main extends View {
               id,
               key: controlStatus,
               text: controlStatusString,
-              list: this.controlList,
+              list: this.controlList.slice(1),
           }
           return <PartPoptipEdit v-model={value}
               on-change={this.editControlStatus.bind(this)}/>
@@ -272,6 +275,9 @@ export default class Main extends View {
   mounted() {
     const urlQuery = slice(urlParam(), Object.keys(defQuery))
     this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
+    // 时间赋值
+    !!this.query.startTime ? this.showTime[0] = moment(this.query.startTime).format(timeFormat) : this.showTime[0] = ''
+    !!this.query.endTime ? this.showTime[1] = moment(this.query.endTime).format(timeFormat) : this.showTime[1] = ''
   }
 
   search() {
@@ -286,9 +292,15 @@ export default class Main extends View {
 
   reset() {
     const { pageSize } = this.query
+    // 时间清空
+    this.showTime = []
     this.query = { ...defQuery, pageSize }
   }
-
+  dateChange(data: any) {
+     // 获取时间戳
+     !!data[0] ? (this.query.startTime = new Date(data[0]).getTime()) : this.query.startTime = 0
+     !!data[1] ? (this.query.endTime = new Date(data[1]).getTime()) : this.query.endTime = 0
+  }
   async editStatus({ id, key: newStatus, showLoading }: any) {
 
     const item = this.list.find(it => it.id == id)
@@ -315,6 +327,11 @@ export default class Main extends View {
       }
     }
   }
+
+  reloadSearch() {
+    this.doSearch()
+  }
+
   async editControlStatus({ id, key: newStatus, showLoading }: any) {
     const items = this.list.find(it => it.id == id)
     if (items && items.controlStatus != newStatus) {
@@ -337,21 +354,22 @@ export default class Main extends View {
     this.query.pageIndex = 1
     this.oldQuery = { ...this.query }
     this.loading = true
-    const startTime = !this.query.showTime[0] ? '' : new Date(this.query.showTime[0]).getTime()
-    const endTime = !this.query.showTime[1] ? '' : new Date(this.query.showTime[1]).getTime()
-    const query = clean({
-      startTime,
-      endTime,
-      ...this.query
-    })
-    delete query.showTime
+    const query: any = {}
+    for (const [key, value] of Object.entries(this.oldQuery)) {
+      if (key != 'startTime' && value != 0) {
+        query[key] = value
+      }
+      if (key != 'endTime' && value != 0) {
+        query[key] = value
+      }
+    }
     try {
       const { data: {
         items: list,
         totalCount: total,
         categoryList = [],
         controlStatusList = [],
-      } } = await queryList(query)
+      } } = await queryList(clean(query))
       this.list = list
       this.total = total
       this.categoryList = categoryList
@@ -367,20 +385,18 @@ export default class Main extends View {
   edit() {
     this.addOrUpdateVisible = true
     this.$nextTick(() => {
-      const myThis: any = this
-      myThis.$refs.addOrUpdate.init()
+      (this.$refs.addOrUpdate as any).init()
     })
   }
 
   async reloads(mtimeId: any) {
-    const myThis: any = this
     try {
-        myThis.$Spin.show()
-        const res = await syncData (mtimeId, 0)
+        (this.$Spin as any).show()
+        const res = await syncData (mtimeId, 1)
         this.$Message.success({
         content: `刷新成功`,
         })
-        myThis.$Spin.hide()
+        ; (this.$Spin as any).hide()
         if (this.query.pageIndex != 1) {
           this.query.pageIndex = 1
           return
@@ -388,7 +404,7 @@ export default class Main extends View {
         this.doSearch()
     } catch (ex) {
       this.handleError(ex)
-      myThis.$Spin.hide()
+      ; (this.$Spin as any).hide()
     }
   }
 
@@ -403,6 +419,10 @@ export default class Main extends View {
 </script>
 
 <style lang="less" scoped>
+.act-bar {
+  margin-top: 5px;
+}
+
 .form {
   .input {
     margin-right: 8px;
@@ -438,7 +458,6 @@ export default class Main extends View {
     }
   }
 }
-
 .page-wrap {
   margin: 20px 0 18px;
   text-align: center;

@@ -3,9 +3,10 @@
     v-model='showDlg'
     :transfer='false'
     :width='420'
-    title='新建影城信息'
+    title='新建影片'
+    @on-cancel="cancel"
     >
-    <p class="title">系统将自动根据您提供的ID号从第三方平台同步影城信息</p>
+    <p class="title">系统将自动根据您提供的ID号从第三方平台同步影片信息</p>
     <Form ref="dataForm" :model="dataForm" label-position="left" :label-width="80">
         <FormItem label="MtimeID">
             <Input v-model="dataForm.mtimeId" placeholder="请输入"/>
@@ -35,10 +36,9 @@ export default class ComponentMain extends View {
     this.showDlg = true
   }
 
-  cancel(dataForms: string) {
+  cancel() {
     this.showDlg = false
-    const myThis: any = this
-    myThis.$refs[dataForms].resetFields()
+    this.dataForm.mtimeId = ''
   }
 
   // 表单提交
@@ -47,20 +47,20 @@ export default class ComponentMain extends View {
       this.showDlg = false
       return
     }
-    const myThis: any = this
     try {
-      myThis.$Spin.show()
-      const res = await syncData (this.dataForm.mtimeId, 1)
+      (this.$Spin as any).show()
+      const res = await syncData (this.dataForm.mtimeId, 0)
       this.$Message.success({
         content: `同步成功`,
         onClose: () => {
           this.showDlg = false
-          this.$emit('refreshDataList')
         }
       })
-      myThis.$Spin.hide()
+      ; (this.$Spin as any).hide()
+      this.dataForm.mtimeId = ''
+      this.$emit('refreshDataList')
     } catch (ex) {
-      myThis.$Spin.hide()
+      (this.$Spin as any).hide()
       this.handleError(ex)
     }
   }

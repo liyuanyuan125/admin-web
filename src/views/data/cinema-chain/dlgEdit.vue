@@ -17,12 +17,12 @@
       </FormItem>
       <FormItem label="状态" prop="chainStatus">
           <RadioGroup v-model="dataForm.chainStatus">
-                <Radio v-for="index in dlgStatus" :label="index.key" :key="index.key">{{index.text}}</Radio>
+                <Radio v-if="index.key!=0" v-for="index in dlgStatus" :label="index.key" :key="index.key">{{index.text}}</Radio>
           </RadioGroup>
       </FormItem>
-      <FormItem label="控制状态" prop="chainControlStatus">
-          <RadioGroup v-model="dataForm.chainControlStatus">
-              <Radio v-for="index in delControlStatus" :label="index.key" :key="index.key">{{index.text}}</Radio>
+      <FormItem label="控制状态" prop="controlStatus">
+          <RadioGroup v-model="dataForm.controlStatus">
+              <Radio v-if="index.key!=0" v-for="index in controlStatus" :label="index.key" :key="index.key">{{index.text}}</Radio>
           </RadioGroup>
       </FormItem>
     </Form>
@@ -44,17 +44,22 @@ const dataForm = {
   name: '',
   shortName: '',
   pinyin: '',
-  chainStatus: '',
-  chainControlStatus: ''
+  chainStatus: 1,
+  controlStatus: 1
 }
 
 @Component
 export default class ComponentMain extends View {
   @Prop({ type: Object }) cinemaOnes: any
-  @Prop({ type: Object }) dlgStatus: any
-  @Prop({ type: Object }) delControlStatus: any
+  @Prop({ type: Array }) dlgStatus: any
+  @Prop({ type: Array }) delControlStatus: any
   showDlg = false
   id = 0
+
+  get controlStatus() {
+      return this.delControlStatus
+  }
+
   ruleValidate = {
     name: [
         { required: true, message: '请输入院线名称', trigger: 'blur' }
@@ -68,7 +73,7 @@ export default class ComponentMain extends View {
     chainStatus: [
         { required: true, message: '请选择院线状态', trigger: 'change', type: 'number' }
     ],
-    chainControlStatus: [
+    controlStatus: [
         { required: true, message: '请选择院线控制状态', trigger: 'change', type: 'number' }
     ]
   }
@@ -76,52 +81,41 @@ export default class ComponentMain extends View {
   init(id: number) {
     this.showDlg = true
     this.id = id || 0
-    this.$nextTick(async () => {
-      const dataForms: string = 'dataForm'
-      const myThis: any = this
-      myThis.$refs[dataForms].resetFields()
-      if (this.id) {
-        // const {data: {
-        //   items: list
-        // }} = await dataFrom({ id })
-        this.dataForm.name = this.cinemaOnes.name
-        this.dataForm.shortName = this.cinemaOnes.shortName
-        this.dataForm.pinyin = this.cinemaOnes.pinyin
-        this.dataForm.chainStatus = this.cinemaOnes.chainControlStatus
-        this.dataForm.chainControlStatus = this.cinemaOnes.chainControlStatus
-      }
-    })
+    if (this.id) {
+      this.dataForm.name = this.cinemaOnes.name
+      this.dataForm.shortName = this.cinemaOnes.shortName
+      this.dataForm.pinyin = this.cinemaOnes.pinyin
+      this.dataForm.chainStatus = this.cinemaOnes.chainStatus
+      this.dataForm.controlStatus = this.cinemaOnes.controlStatus
+    }
   }
 
   cancel(dataForms: string) {
     this.showDlg = false
-    const myThis: any = this
-    myThis.$refs[dataForms].resetFields()
+    ; (this.$refs[dataForms] as any).resetFields()
   }
 
   // 表单提交
   dataFormSubmit(dataForms: any) {
-   const myThis: any = this
-   myThis.$refs[dataForms].validate(async ( valid: any ) => {
+   (this.$refs[dataForms] as any).validate(async ( valid: any ) => {
       if (valid) {
         const query = !this.id ? this.dataForm : {
           id: this.id,
           ...this.dataForm
         }
         const title = !this.id ? '添加' : '编辑'
-        const res = !this.id ? await add (query) : await set (query)
-        if ( res && res.code === 0 ) {
+        try {
+          !this.id ? await add (query) : await set (query)
           this.$Message.success({
               content: `${title}成功`,
               onClose: () => {
                 this.showDlg = false
                 this.$emit('refreshDataList')
-              }
+                ; (this.$refs[dataForms] as any).resetFields()
+                }
           })
-        } else {
-          this.$Message.success({
-            content: `${title}失败`
-          })
+        } catch (ex) {
+            this.handleError(ex)
         }
       }
     })

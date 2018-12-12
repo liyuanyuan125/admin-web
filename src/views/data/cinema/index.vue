@@ -10,7 +10,7 @@
             :value="it.key">{{it.text}}</Option>
         </Select>
         <Select v-model="query.controlStatus" placeholder="控制状态" clearable>
-          <Option v-for="it in enumType.cstatusList" :key="it.key"
+          <Option v-for="it in enumType.controlStatusList" :key="it.key"
             :value="it.key">{{it.text}}</Option>
         </Select>
         <Select v-model="query.hallDataStatus" placeholder="影厅数据" clearable>
@@ -95,7 +95,7 @@ export default class Main extends View {
 
   enumType: any = {
     statusList: [],
-    cstatusList: [],
+    controlStatusList: [],
     hallDataStatusList: [],
     gradeList: [],
   }
@@ -147,7 +147,7 @@ export default class Main extends View {
             id,
             key: controlStatus,
             text: controlStatusText,
-            list: this.enumType.cstatusList,
+            list: this.enumType.controlStatusList,
           }
           return <PartPoptipEdit v-model={value}
             on-change={this.editControlStatus.bind(this)}/>
@@ -177,9 +177,9 @@ export default class Main extends View {
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        gradeName: enumMap.grade[it.grade],
+        gradeName: enumMap.grade[it.gradeCode],
         statusText: enumMap.status[it.status],
-        controlStatusText: enumMap.cstatus[it.controlStatus],
+        controlStatusText: enumMap.controlStatus[it.controlStatus],
       }
     })
     return list
