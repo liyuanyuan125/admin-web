@@ -212,19 +212,23 @@ export default class Main extends View {
 <style lang="less" scoped>
 .input {
   width: 180px;
+  margin-top: 7px;
 }
 .bth {
   // text-decoration: underline;
   margin-right: 5px;
+  margin-top: 7px;
 }
 .acts {
   width: 100%;
 }
 .okbth {
   margin-left: 12px;
+  margin-top: 7px;
 }
 .addbth {
   float: right;
+  margin-top: 7px;
 }
 .btn-reset {
   margin-left: 8px;

@@ -4,7 +4,7 @@
       <div class="acts">
         <form class="form flex-1" @submit.prevent="search">
           <LazyInput v-model="query.years" placeholder="输入年份" class="input"/>
-          <Button class="bth" type="success">查询</Button>
+          <Button class="input" type="success">查询</Button>
           <Button class="okbth" type="success" icon="md-add-circle" @click="edit(0)">新建档期</Button>
         </form>
       </div>
@@ -222,19 +222,23 @@ export default class Main extends View {
 
 <style lang="less" scoped>
 .input {
-  width: 70px;
+  width: 80px;
   margin-right: 5px;
+  margin-top: 7px;
 }
 .acts {
   width: 100%;
 }
+.btns {
+  margin-top: 7px;
+}
 .okbth {
-  margin-top: 5px;
+  margin-top: 8px;
   float: right;
 }
-.btn-reset {
-  margin-left: 8px;
-}
+// .btn-reset {
+//   margin-left: 7px;
+// }
 
 .table {
   margin-top: 16px;
