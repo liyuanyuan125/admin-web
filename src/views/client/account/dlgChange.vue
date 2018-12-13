@@ -6,7 +6,7 @@
     :title="'变更主账号'"
     @on-cancel="cancel('dataForm')" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
-      <FormItem label="所属公司" prop="company">
+      <FormItem label="新主账户" prop="newname">
         <Select style="width:240px">
           <!-- <Option v-for="item in cityList" :value="item.value">{{ item.label }}</Option> -->
           <Option>456465465</Option>
@@ -33,9 +33,7 @@ const defQuery = {
   categoryId: 0,
 }
 const dataForm = {
-  name: '',
-  code: '',
-  enableStatus: 1
+  newname: '',
 }
 
 @Component
@@ -47,6 +45,9 @@ export default class ComponentMain extends View {
   showDlg = false
   id = 0
   ruleValidate = {
+    newname: [
+        { required: true, message: '请选择新主账户' }
+    ],
   }
   dataForm = { ...dataForm }
   init(id: number) {
