@@ -2,6 +2,7 @@
   <!-- <Modal v-model='showDlg' :transfer='false' :width='420'>
   </Modal> -->
   <div class="page">
+    <div class="inps">
       <div class="Inps-res">
         <div class="res-num">
           <p>注册账号</p>
@@ -24,37 +25,42 @@
           </div>
         </div>
       </div>
+    </div>
+      
     <div class="log">
+      <div class="logs">
         <div class="logs-item">
-            <span>2018/11/23</span>
-            <span>10:22:12</span>由
-            <span>老麦 </span>
-            将资质审核状态修改为 “已通过”
+          <span>2018/11/23</span>
+          <span>10:22:12</span>由
+          <span>老麦 </span>
+          将资质审核状态修改为 “已通过”
         </div>
         <div class="logs-item">
-            <span>2018/11/23</span>
-            <span>10:22:12</span>由
-            <span>老麦 </span>
-            将资质审核状态修改为 “已通过”
+          <span>2018/11/23</span>
+          <span>10:22:12</span>由
+          <span>老麦 </span>
+          将资质审核状态修改为 “已通过”
         </div>
         <div class="logs-item">
-            <span>2018/11/23</span>
-            <span>10:22:12</span>由
-            <span>老麦 </span>
-            将资质审核状态修改为 “已通过”
+          <span>2018/11/23</span>
+          <span>10:22:12</span>由
+          <span>老麦 </span>
+          将资质审核状态修改为 “已通过”
         </div>
         <div class="logs-item">
-            <span>2018/11/23</span>
-            <span>10:22:12</span>由
-            <span>老麦 </span>
-            将资质审核状态修改为 “已通过”
+          <span>2018/11/23</span>
+          <span>10:22:12</span>由
+          <span>老麦 </span>
+          将资质审核状态修改为 “已通过”
         </div>
         <div class="logs-item">
-            <span>2018/11/23</span>
-            <span>10:22:12</span>由
-            <span>老麦 </span>
-            将资质审核状态修改为 “已通过”
+          <span>2018/11/23</span>
+          <span>10:22:12</span>由
+          <span>老麦 </span>
+          将资质审核状态修改为 “已通过”
         </div>
+      </div>
+        
 
     </div>
   </div>
@@ -72,13 +78,19 @@ export default class ComponentMain extends View {
 </script>
 
 <style lang="less" scoped>
+.inps {
+  background: #ecf0f4;
+  padding: 14px;
+  padding-top: 19px;
+  margin: -10px -10px 0 -10px;
+}
 .Inps-res {
   width: 100%;
   height: 100%;
-  padding-top: 16px;
+  padding: 16px;
   background: #fff;
   font-size: 13px;
-  border-bottom: 1px #ccc solid;
+  margin-top: -5px;
 }
 .res-num {
   width: 100%;
@@ -100,7 +112,15 @@ export default class ComponentMain extends View {
   margin-left: 4%;
 }
 .log {
-  margin-top: 6px;
+  background: #ecf0f4;
+  padding: 14px;
+  padding-top: 19px;
+  margin: -14px -10px 0 -10px;
+}
+.logs {
+  margin-top: -4px;
+  padding: 16px;
+  background: #fff;
 }
 .logs-item {
   line-height: 30px;

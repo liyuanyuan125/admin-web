@@ -19,7 +19,7 @@
           <div class="res-num-item">
             <span>2018/11/01 12:22:21</span>
             <span class="res-date les">最后登陆时间</span>
-            <span style="margin-left:2%;">2018/11/01 12:22:21</span>
+            <span>2018/11/01 12:22:21</span>
           </div>
         </div>
         <div class="res-num">
@@ -179,7 +179,7 @@ export default class Main extends View {
   }
 
   viewlog() {
-    // this.$router.push({ name: 'client-account-viewlog' })
+    this.$router.push({ name: 'client-account-viewLog' })
   }
 
   viewcompanydetail(id: number) {
@@ -201,7 +201,7 @@ export default class Main extends View {
     const query = clean({ ...this.query })
     try {
       const { data: {
-        detailItems: list,
+        childAccountList: list,
       } } = await queryItem(query)
       this.list = list
     } catch (ex) {
@@ -231,9 +231,11 @@ export default class Main extends View {
 }
 .Inp-Group-res,
 .res-Group {
-  // background: #eee;
-  padding: 10px;
+  background: #ecf0f4;
+  padding: 14px;
+  padding-top: 15px;
   margin: -10px -10px 0 -10px;
+  border-bottom: 1px solid #ccc;
 }
 .res-Group {
   margin-top: -5px;
@@ -242,8 +244,9 @@ export default class Main extends View {
 .res-Inps {
   width: 100%;
   height: 100%;
-  padding-top: 16px;
+  padding-top: 7px;
   font-size: 13px;
+  background: #fff;
 }
 .res-num {
   width: 100%;
@@ -274,9 +277,9 @@ export default class Main extends View {
   cursor: pointer;
 }
 .new-number {
-  // background: #eee;
-  padding: 10px;
-  margin: -10px -10px 0 -10px;
+  background: #ecf0f4;
+  padding: 14px;
+  margin: -14px -10px 0 -10px;
 }
 .new-num {
   width: 100%;

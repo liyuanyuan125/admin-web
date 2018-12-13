@@ -40,7 +40,7 @@
 
 
 
-import { get } from '@/fn/ajax'
+// import { get } from '@/fn/ajax'
 import { mockGet, tid, title20, typeInt, dateRange } from './mock'
 
 const emailnum = typeInt(10000000000, 99999999999)
@@ -90,7 +90,7 @@ export async function queryList(query: any) {
 
 export async function queryItem(query: any) {
   return await mockGet(query, {
-    'detailItems|5': [{
+    'childAccountList|5': [{
       id: tid,
       userId: tid,
       childPhoneNumber: pnum,
