@@ -2,9 +2,8 @@
   <div class="page">
     <div class="act-bar flex-box">
       <form class="form flex-1" @submit.prevent="search">
-        <LazyInput v-model="query.id" placeholder="公司ID" class="input input-id"/>
-        <LazyInput v-model="query.name" placeholder="公司名称" class="input"/>
-        <LazyInput v-model="query.userAccount" placeholder="用户账号" class="input"/>
+        <LazyInput v-model="query.companyId" placeholder="公司ID" class="input input-id"/>
+        <LazyInput v-model="query.shortName" placeholder="公司名称" class="input"/>
         <Select v-model="query.type" placeholder="资源方" clearable>
           <Option v-for="it in typeList" :key="it.id" :value="it.id"
             :label="it.name">{{it.name}}</Option>
@@ -55,9 +54,8 @@ const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD<br>HH:mm:ss'
 
 const defQuery = {
-  id: null,
-  name: '',
-  userAccount: '',
+  companyId: null,
+  shortName: '',
   type: null,
   status: null,
   bizUserId: null,
@@ -89,8 +87,8 @@ export default class Main extends View {
   aptitudeStatusList = []
 
   columns = [
-    { title: '公司ID', key: 'id', width: 90, align: 'center' },
-    { title: '公司名称', key: 'name', align: 'center' },
+    { title: '公司ID', key: 'companyId', width: 90, align: 'center' },
+    { title: '公司名称', key: 'shortName', align: 'center' },
     { title: '资源方', key: 'isResOwner', width: 80, align: 'center' },
     { title: '资源方类型', key: 'resTypeName', width: 100, align: 'center' },
     { title: '客户等级', key: 'clientLevelName', width: 80, align: 'center' },

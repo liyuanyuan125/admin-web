@@ -100,5 +100,6 @@ export default class AreaSelect extends View {
 <style lang="less" scoped>
 .area-select {
   display: inline-block;
+  width: 100%;
 }
 </style>
