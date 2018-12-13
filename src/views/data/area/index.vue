@@ -8,7 +8,7 @@
             :value="it.code">{{it.name}}</Option>
         </Select>
         <Button type="default" @click="reset" class="btn-reset">清空</Button>
-        <Button v-if="!!query.parentIds" @click="goBack" class="btn-reset">返回上一级</Button>
+        <Button v-if="!!query.parentIds" @click="goBack" class="btn-reset" style="margin-left: 8px">返回上一级</Button>
       </form>
       <div class="acts">
         <Button type="success" icon="md-add-circle" @click="edit(query.parentIds)">新建地区信息</Button>
@@ -51,7 +51,7 @@ const defQuery = {
   areaCodes: '',
   pageIndex: 1,
   pageSize: 20,
-  parentIds: 0,
+  parentIds: '0',
   city: ''
 }
 
