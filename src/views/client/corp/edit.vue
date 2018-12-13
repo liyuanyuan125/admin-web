@@ -62,6 +62,11 @@
           </FormItem>
           </Col>
         </Row>
+        <Row class="upload">
+          <Col span="12" style="margin-left: 88px">
+            <Upload />
+          </Col>
+        </Row>
       </Row>
 
       <!-- content -->
@@ -69,7 +74,7 @@
         <FormItem label="审核意见" prop="name" :error='nameError'>
           <Row>
             <Col span="8">
-              <RadioGroup v-model="phone">
+              <RadioGroup v-model="item.clientLevel">
                 <Radio label="apple">
                   <span>通过</span>
                 </Radio>
@@ -83,7 +88,7 @@
         <FormItem label="有效期至" prop="shortName">
           <Row>
             <Col span="8">
-              <DatePicker type="date" placeholder="Select date" style="width: 200px"></DatePicker>
+              <DatePicker type="date" placeholder="选择有效期" style="width: 200px"></DatePicker>
             </Col>
           </Row>
         </FormItem>
@@ -135,7 +140,7 @@
 
         <div class="edit-button">
           <Button type="info" size="large" @click="edit(0)">确定</Button>
-          <Button type="" size="large" @click="edit(0)">返回</Button>
+          <Button size="large" @click="edit(0)">返回</Button>
         </div>
       </Row>
       
@@ -151,7 +156,7 @@ import View from '@/util/View'
 import { queryItem } from '@/api/corp'
 import AreaSelect from '@/components/AreaSelect.vue'
 import PartBindCinema from './partBindCinema.vue'
-
+import Upload from './upload.vue'
 const defItem = {
   id: 0,
   name: '',
@@ -183,6 +188,7 @@ const defItem = {
   components: {
     AreaSelect,
     PartBindCinema,
+    Upload
   }
 })
 export default class Main extends View {
@@ -319,6 +325,9 @@ export default class Main extends View {
       box-shadow: none;
     }
   }
+}
+.upload {
+  margin-bottom: 20px;
 }
 .part-bind-cinema {
   width: 660px;
