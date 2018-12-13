@@ -138,7 +138,7 @@ export default class Main extends View {
         }
       }
     ]
-    !!this.query.parentIds ? colum.splice(4, 1) : colum
+    ; (this.query.parentIds != '0') ? colum.splice(4, 1) : colum
     return colum
   }
 
@@ -194,7 +194,6 @@ export default class Main extends View {
     const url = buildUrl(location.pathname, query)
     history.replaceState(null, '', url)
   }
-
 
   async addArea() {
     try {
