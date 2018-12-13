@@ -223,7 +223,7 @@ export default class Main extends View {
 <style lang="less" scoped>
 .input {
   width: 100px;
-  margin-right: 5px;
+  margin-right: 8px;
   margin-top: 7px;
 }
 .btns {
