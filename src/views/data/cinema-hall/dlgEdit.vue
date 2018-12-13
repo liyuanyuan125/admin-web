@@ -192,10 +192,8 @@ export default class DlgEdit extends View {
         ? await updateItem(this.cinemaId, data)
         : await addItem(this.cinemaId, data)
       toast(data.id ? '更新成功' : '创建成功')
-      setTimeout(() => {
-        this.$emit('done')
-        this.inValue.showDlgEdit = false
-      }, 588)
+      this.$emit('done')
+      this.inValue.showDlgEdit = false
     } catch (ex) {
       const name = `submitError${ex.code}`
       name in this ? (this as any)[name](ex) : this.handleError(ex)
