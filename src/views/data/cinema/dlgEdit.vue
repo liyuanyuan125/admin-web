@@ -24,7 +24,7 @@
         <Col span="8">
           <FormItem label="控制状态" prop="controlStatus">
             <Select v-model="item.controlStatus">
-              <Option v-for="it in controlStatusList" :key="it.key"
+              <Option v-for="it in enumType.controlStatusList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
           </FormItem>
@@ -41,7 +41,7 @@
         <Col span="8">
           <FormItem label="影院等级" prop="gradeCode">
             <Select v-model="item.gradeCode" clearable>
-              <Option v-for="it in gradeList" :key="it.key"
+              <Option v-for="it in enumType.gradeList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
           </FormItem>
@@ -65,7 +65,7 @@
         <Col span="10">
           <FormItem label="售票系统" prop="softwareCode">
             <Select v-model="item.softwareCode" clearable>
-              <Option v-for="it in softwareList" :key="it.key"
+              <Option v-for="it in enumType.softwareList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
           </FormItem>
@@ -78,7 +78,7 @@
         <Col span="8">
           <FormItem label="营业状态" prop="status">
             <Select v-model="item.status">
-              <Option v-for="it in statusList" :key="it.key"
+              <Option v-for="it in enumType.statusList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
           </FormItem>
@@ -148,13 +148,12 @@ export default class DlgEdit extends View {
 
   item: any = {}
 
-  gradeList: Enum[] = []
-
-  softwareList: Enum[] = []
-
-  statusList: Enum[] = []
-
-  controlStatusList: Enum[] = []
+  enumType: any = {
+    gradeList: [],
+    softwareList: [],
+    statusList: [],
+    controlStatusList: [],
+  }
 
   shortNameError = ''
 
@@ -207,10 +206,8 @@ export default class DlgEdit extends View {
       delete data.area
       const res = data.id ? await updateItem(data) : await addItem(data)
       toast(data.id ? '更新成功' : '创建成功')
-      setTimeout(() => {
-        this.$emit('done')
-        this.inValue.showDlgEdit = false
-      }, 1888)
+      this.$emit('done')
+      this.inValue.showDlgEdit = false
     } catch (ex) {
       this.resetSubmitLoading()
       this.handleError(ex)
@@ -225,28 +222,24 @@ export default class DlgEdit extends View {
     this.loading = true
     const query = { id: this.value.id }
     try {
-      const { data: {
-        item = {},
-        gradeList = [],
-        softwareList = [],
-        statusList = [],
-        controlStatusList = [],
-      } } = await queryItem(query)
-      this.item = { ...defItem, ...slice(item, Object.keys(defItem)) }
-      this.gradeList = gradeList
-      this.softwareList = softwareList
-      this.statusList = statusList
-      this.controlStatusList = controlStatusList
+      const { data } = await queryItem(query)
+
+      this.item = { ...defItem, ...slice(data.item, Object.keys(defItem)) }
+
+      this.enumType = {
+        ...this.enumType,
+        ...slice(data, Object.keys(this.enumType))
+      }
 
       const { provinceId = '0', cityId = '0', countyId = '0' } = this.item
       this.item.area = [provinceId, cityId, countyId]
 
       // 默认选中第一个
       if (this.item.status == 0) {
-        this.item.status = statusList[0].key
+        this.item.status = this.enumType.statusList[0].key
       }
       if (this.item.controlStatus == 0) {
-        this.item.controlStatus = controlStatusList[0].key
+        this.item.controlStatus = this.enumType.controlStatusList[0].key
       }
     } catch (ex) {
       this.handleError(ex)
