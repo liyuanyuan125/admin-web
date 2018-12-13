@@ -216,14 +216,14 @@ export default class Main extends View {
 }
 .bth {
   // text-decoration: underline;
-  margin-right: 5px;
+  margin-right: 8px;
   margin-top: 7px;
 }
 .acts {
   width: 100%;
 }
 .okbth {
-  margin-left: 12px;
+  margin-left: 8px;
   margin-top: 7px;
 }
 .addbth {
