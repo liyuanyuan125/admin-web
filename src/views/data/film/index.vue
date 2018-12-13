@@ -432,11 +432,6 @@ export default class Main extends View {
   }
 }
 
-.btn-search,
-.btn-reset {
-  margin-left: 8px;
-}
-
 .table {
   margin-top: 16px;
   /deep/ .status-2,
