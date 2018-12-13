@@ -11,7 +11,7 @@
         <Col span="8">
           <FormItem label="控制状态" prop="controlStatus">
             <Select v-model="item.controlStatus">
-              <Option v-for="it in enumType.cstatusList" :key="it.key"
+              <Option v-for="it in enumType.controlStatusList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
           </FormItem>
@@ -20,8 +20,8 @@
 
       <Row>
         <Col span="8">
-          <FormItem label="影厅类型" prop="type">
-            <Select v-model="item.type">
+          <FormItem label="影厅类型" prop="typeCode">
+            <Select v-model="item.typeCode">
               <Option v-for="it in enumType.typeList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
@@ -33,8 +33,8 @@
           </FormItem>
         </Col>
         <Col span="8">
-          <FormItem label="影厅业务类型" prop="businessType" clearable>
-            <Select v-model="item.businessType">
+          <FormItem label="影厅业务类型" prop="businessTypeCode" clearable>
+            <Select v-model="item.businessTypeCode">
               <Option v-for="it in enumType.businessTypeList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
@@ -44,24 +44,24 @@
 
       <Row>
         <Col span="8">
-          <FormItem label="放映机类型" prop="projectorType">
-            <Select v-model="item.projectorType">
+          <FormItem label="放映机类型" prop="projectorTypeCode">
+            <Select v-model="item.projectorTypeCode">
               <Option v-for="it in enumType.projectorTypeList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
           </FormItem>
         </Col>
         <Col span="8">
-          <FormItem label="机位" prop="placement">
-            <Select v-model="item.placement">
+          <FormItem label="机位" prop="placementCode">
+            <Select v-model="item.placementCode">
               <Option v-for="it in enumType.placementList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
           </FormItem>
         </Col>
         <Col span="8">
-          <FormItem label="放映机分辨率" prop="projectorResolution">
-            <Select v-model="item.projectorResolution">
+          <FormItem label="放映机分辨率" prop="projectorResolutionCode">
+            <Select v-model="item.projectorResolutionCode">
               <Option v-for="it in enumType.projectorResolutionList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
@@ -71,8 +71,8 @@
 
       <Row>
         <Col span="8">
-          <FormItem label="放映机品牌" prop="projectorBrand">
-            <Select v-model="item.projectorBrand">
+          <FormItem label="放映机品牌" prop="projectorBrandCode">
+            <Select v-model="item.projectorBrandCode">
               <Option v-for="it in enumType.projectorBrandList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
@@ -114,14 +114,14 @@ interface Enum {
 const defItem = {
   id: '',
   name: '',
-  type: '',
+  typeCode: '',
   seats: 0,
-  businessType: '',
+  businessTypeCode: '',
 
-  projectorType: '',
-  placement: '',
-  projectorResolution: '',
-  projectorBrand: '',
+  projectorTypeCode: '',
+  placementCode: '',
+  projectorResolutionCode: '',
+  projectorBrandCode: '',
   projectorModel: '',
   projectorNumber: '',
 
@@ -155,7 +155,7 @@ export default class DlgEdit extends View {
     placementList: [],
     projectorResolutionList: [],
     projectorBrandList: [],
-    cstatusList: [],
+    controlStatusList: [],
   }
 
   nameError = ''
@@ -167,7 +167,7 @@ export default class DlgEdit extends View {
       name: [
         { required: true, message: '不能为空', trigger: 'blur' }
       ],
-      type: [
+      typeCode: [
         { required: true, message: '不能为空', trigger: 'blur' }
       ],
       seats: [
@@ -192,10 +192,8 @@ export default class DlgEdit extends View {
         ? await updateItem(this.cinemaId, data)
         : await addItem(this.cinemaId, data)
       toast(data.id ? '更新成功' : '创建成功')
-      setTimeout(() => {
-        this.$emit('done')
-        this.inValue.showDlgEdit = false
-      }, 588)
+      this.$emit('done')
+      this.inValue.showDlgEdit = false
     } catch (ex) {
       const name = `submitError${ex.code}`
       name in this ? (this as any)[name](ex) : this.handleError(ex)
@@ -226,7 +224,7 @@ export default class DlgEdit extends View {
 
       // 默认选中第一个
       if (this.item.controlStatus == 0) {
-        this.item.controlStatus = this.enumType.cstatusList[0].key
+        this.item.controlStatus = this.enumType.controlStatusList[0].key
       }
     } catch (ex) {
       this.handleError(ex)

@@ -1,6 +1,6 @@
 <template>
   <Cascader v-model='inValue' :data='data' :load-data='loadData' :clearable='clearable'
-    class='area-select' :render-format='format'></Cascader>
+    class='area-select' :render-format='format' ref="ui"></Cascader>
 </template>
 
 <script lang="ts">
@@ -11,7 +11,7 @@ import { getSubList } from '@/api/area'
 import { toast } from '@/ui/modal'
 
 @Component
-export default class ComponentMain extends View {
+export default class AreaSelect extends View {
   /**
    * 值本身，可以使用 v-model 进行双向绑定
    */
@@ -72,9 +72,9 @@ export default class ComponentMain extends View {
 
   format(labels: any[], selectedData: any[]) {
     const list = selectedData.filter(it => !it.isFake).map(it => it.label)
-    return list.length > 0
-      ? list.join(' / ')
-      : ''
+    const result = list.length > 0 ? list.join(' / ') : ''
+    const strVal = (this.value || []).join('')
+    return result ? result : (strVal === '' || strVal === '000' ? '' : '数据有问题')
   }
 
   fillList(list: string[]) {
@@ -85,6 +85,8 @@ export default class ComponentMain extends View {
   @Watch('value')
   watchValue(val: string[]) {
     this.inValue = val
+    // 触发 form item 验证
+    ; (this.$refs.ui as any).dispatch('FormItem', 'on-form-change', val)
   }
 
   @Watch('inValue')

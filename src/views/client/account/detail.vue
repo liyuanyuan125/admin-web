@@ -10,28 +10,23 @@
           <div class="res-num-item change-item">
             <span>admin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;【主账号】</span>
             <span class="blu1" @click="viewlog">查看操作日志</span>
-            <span class="blu2" @click="changetrue">变更主账号</span>
+            <span class="blu2" @click="change(0)">变更主账号</span>
             <!-- <span>变更主账号</span> -->
+          </div>
+        </div>
+        <div class="res-num">
+          <p>注册时间时间</p>
+          <div class="res-num-item">
+            <span>2018/11/01 12:22:21</span>
+            <span style="margin-left:8%;" class="res-date">最后登陆时间</span>
+            <span style="margin-left:2%;">2018/11/01 12:22:21</span>
           </div>
         </div>
         <div class="res-num">
           <p>所属公司</p>
           <div class="res-num-item">
             <span>北京博纳国际有限公司</span>
-          </div>
-        </div>
-        <div class="res-num">
-          <p>最后登陆时间</p>
-          <div class="res-num-item">
-            <span>2018/11/01 12:22:21</span>
-            <!-- <span style="margin-left:8%;" class="res-date">注册时间</span>
-            <span style="margin-left:2%;">2018/11/01 12:22:21</span> -->
-          </div>
-        </div>
-        <div class="res-num">
-          <p>注册时间</p>
-          <div class="res-num-item">
-            <span>2018/11/01 12:22:21</span>
+            <span class="blu1" @click="viewcompanydetail(5)">查看公司详情</span>
           </div>
         </div>
       </div>
@@ -50,67 +45,8 @@
         </div>
       </div>
     </div>
-    <!-- 注册信息 -->
-    <div class="res-Group">
-      <div class="res-Inps">
-        <div class="res-num">
-          <p>公司名称</p>
-          <div class="res-num-item change-item">
-            <span>北京博纳国际有限公司</span>
-            <span  class="blu1" @click="saveCompany(0)">保存为新公司</span>
-            <!-- <span>变更主账号</span> -->
-          </div>
-        </div>
-        <div class="res-num">
-          <p>所在地</p>
-          <div class="res-num-item">
-            <span>北京&nbsp;&nbsp; 北京市  朝阳区  亿利生态广场 17层</span>
-          </div>
-        </div>
-        <div class="res-num">
-          <p>联系人</p>
-          <div class="res-num-item">
-            <span>老麦</span>
-            <span style="margin-left:8%;" class="res-date">联系电话</span>
-            <span style="margin-left:2%;">13146015795</span>
-            <span style="margin-left:8%;" class="res-date">邮箱</span>
-            <span style="margin-left:2%;">850506428@qq.com</span>
-          </div>
-        </div>
-        <div class="res-num">
-          <p>资质</p>
-          <div class="res-num-item">
-            <span>营业执照  8839938273774823KDhd</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- 变更主账号信息表 -->
-    <div class="info" v-if="change">
-        <div class="info-ver">变更主账号<Icon class="info-Icon" type="md-close"   @click="changefalse" size="22"/></div>
-        <div class="info-type">
-            <!-- <div class="info-type-t"> -->
-                <div>当前主账号<span>admin</span></div>
-                <div>所属公司<span>北京博纳国际有限公司</span></div>
-                <div>新主账号
-                  <Select class="sec"  clearable>
-                    <!-- <Option>账号【姓名】</Option>
-                    <Option>账号【姓名】</Option>
-                    <Option>账号【姓名】</Option>
-                    <Option>账号【姓名】</Option>
-                    <Option>账号【姓名】</Option>
-                    <Option>账号【姓名】</Option>
-                    <Option>账号【姓名】</Option>
-                    <Option>账号【姓名】</Option> -->
-                  </Select><br>
-                </div>
-                <p class="info-red">变更后，原主账号将变成无任何权限的子账号，可在前台系统中由新主账号删除或修改权限</p>
-            <!-- </div> -->
+    <dlgChange  ref="change"   @refreshDataList="search" v-if="changeVisible" @done="dlgEditDone"/>
 
-             <Button type="primary">确认</Button>
-             <Button @click="changefalse">取消</Button>
-        </div>
-    </div>
   </div>
 </template>
 
@@ -122,6 +58,8 @@ import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { clean } from '@/fn/object'
+import dlgChange from './dlgChange.vue'
+
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD<br>HH:mm:ss'
@@ -137,9 +75,14 @@ const defQuery = {
   pageSize: 20,
 }
 
-@Component
+@Component({
+  components: {
+    dlgChange
+  }
+})
 export default class Main extends View {
-  change = false
+  // change = false
+  changeVisible = false
 
   query = { ...defQuery }
 
@@ -210,11 +153,17 @@ export default class Main extends View {
   mounted() {
     this.doSearch()
   }
-  changetrue() {
-    this.change = true
+  dlgEditDone() {
+    this.doSearch()
   }
-  changefalse() {
-    this.change = false
+
+  change() {
+    this.changeVisible = true
+    const params = this.$route.params
+    this.$nextTick(() => {
+      const myThis: any = this
+      myThis.$refs.change.init(params)
+    })
   }
 
   search() {
@@ -227,12 +176,14 @@ export default class Main extends View {
   }
 
   viewlog() {
-    this.$router.push({ name: 'client-account-viewlog' })
+    // this.$router.push({ name: 'client-account-viewlog' })
   }
 
-  saveCompany(id: number) {
-    const params: any = id > 0 ? { id } : {}
-    this.$router.push({ name: 'client-corp-edit', params })
+  viewcompanydetail(id: number) {
+    const params = this.$route.params
+    // this.dataForm.category.id = id
+    // const params: any = id > 0 ? { id } : {}
+    this.$router.push({ name: 'client-corp-detail', params })
   }
 
   async doSearch() {
@@ -277,7 +228,7 @@ export default class Main extends View {
 }
 .Inp-Group-res,
 .res-Group {
-  background: #eee;
+  // background: #eee;
   padding: 10px;
   margin: -10px -10px 0 -10px;
 }
@@ -289,7 +240,6 @@ export default class Main extends View {
   width: 100%;
   height: 100%;
   padding-top: 16px;
-  background: #fff;
   font-size: 13px;
 }
 .res-num {
@@ -317,7 +267,7 @@ export default class Main extends View {
   cursor: pointer;
 }
 .new-number {
-  background: #eee;
+  // background: #eee;
   padding: 10px;
   margin: -10px -10px 0 -10px;
 }
