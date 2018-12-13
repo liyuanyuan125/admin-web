@@ -4,7 +4,7 @@
       <form class="form flex-1" @submit.prevent="search">
         <LazyInput v-model="query.companyId" placeholder="公司ID" class="input input-id"/>
         <LazyInput v-model="query.shortName" placeholder="公司名称" class="input"/>
-        <Select v-model="query.type" placeholder="资源方" clearable>
+        <Select v-model="query.type" placeholder="客户类型" clearable>
           <Option v-for="it in typeList" :key="it.id" :value="it.id"
             :label="it.name">{{it.name}}</Option>
         </Select>
@@ -12,11 +12,11 @@
           <Option v-for="it in statusList" :key="it.id" :value="it.id"
             :label="it.name">{{it.name}}</Option>
         </Select>
-        <Select v-model="query.bizUserId" placeholder="关联商务" clearable>
+        <Select v-model="query.businessDirector" placeholder="关联商务" clearable>
           <Option v-for="it in bizUserList" :key="it.id" :value="it.id"
             :label="it.name">{{[it.name, it.group, it.title].join(' | ')}}</Option>
         </Select>
-        <Select v-model="query.aptitudeStatus" placeholder="资质状态" clearable>
+        <Select v-model="query.approveStatus" placeholder="审核状态" clearable>
           <Option v-for="it in aptitudeStatusList" :key="it.id" :value="it.id"
             :label="it.name">{{it.name}}</Option>
         </Select>
@@ -58,8 +58,8 @@ const defQuery = {
   shortName: '',
   type: null,
   status: null,
-  bizUserId: null,
-  aptitudeStatus: null,
+  businessDirector: null,
+  approveStatus: null,
   pageIndex: 1,
   pageSize: 20,
 }
@@ -87,16 +87,14 @@ export default class Main extends View {
   aptitudeStatusList = []
 
   columns = [
-    { title: '公司ID', key: 'companyId', width: 90, align: 'center' },
+    { title: '公司ID', key: 'companyId', width: 100, align: 'center' },
     { title: '公司名称', key: 'shortName', align: 'center' },
-    { title: '资源方', key: 'isResOwner', width: 80, align: 'center' },
-    { title: '资源方类型', key: 'resTypeName', width: 100, align: 'center' },
-    { title: '客户等级', key: 'clientLevelName', width: 80, align: 'center' },
-    { title: '关联商务', key: 'bizUserName', width: 80, align: 'center' },
+    { title: '客户等级', key: 'clientLevelName', width: 100, align: 'center' },
+    { title: '关联商务', key: 'businessDirector', width: 100, align: 'center' },
     {
       title: '创建时间',
       key: 'createTime',
-      width: 100,
+      width: 120,
       align: 'center',
       render: (hh: any, { row: { createTime } }: any) => {
         /* tslint:disable */
@@ -109,7 +107,7 @@ export default class Main extends View {
     {
       title: '更新时间',
       key: 'updateTime',
-      width: 100,
+      width: 120,
       align: 'center',
       render: (hh: any, { row: { updateTime } }: any) => {
         /* tslint:disable */
@@ -122,7 +120,7 @@ export default class Main extends View {
     {
       title: '状态',
       key: 'statusText',
-      width: 80,
+      width: 90,
       align: 'center',
       render: (hh: any, { row: { status, statusText } }: any) => {
         /* tslint:disable */
@@ -134,7 +132,7 @@ export default class Main extends View {
     {
       title: '公司资质',
       key: 'aptitudeStatusText',
-      width: 90,
+      width: 100,
       align: 'center',
       render: (hh: any, { row: { aptitudeStatus, aptitudeStatusText } }: any) => {
         /* tslint:disable */
@@ -146,7 +144,7 @@ export default class Main extends View {
     {
       title: '操作',
       key: 'action',
-      width: 80,
+      width: 140,
       align: 'center',
       render: (hh: any, { row: { id } }: any) => {
         /* tslint:disable */

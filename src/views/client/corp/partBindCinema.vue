@@ -4,6 +4,7 @@
     <div class="act-bar">
       <a @click="onAdd">添加关联影院</a>
     </div>
+    <AddCinemaModel ref="addCinemaModel" v-if = "addShow" />
   </div>
 </template>
 
@@ -14,10 +15,14 @@ import View from '@/util/View'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import { confirm } from '@/ui/modal'
-
+import AddCinemaModel from './addCinemaModel.vue'
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 
-@Component
+@Component ({
+  components: {
+    AddCinemaModel
+  }
+})
 export default class ComponentMain extends View {
   /**
    * 值本身，可以使用 v-model 进行双向绑定
@@ -35,7 +40,7 @@ export default class ComponentMain extends View {
   @Prop({ type: Array, required: true }) typeList!: any[]
 
   inValue: any[] = this.value
-
+  addShow =  false
   get cachedMap() {
     return {
       unit: makeMap(this.unitList),
@@ -77,7 +82,10 @@ export default class ComponentMain extends View {
   ]
 
   onAdd() {
-    debugger
+    this.addShow = true
+    this.$nextTick(() => {
+      (this.$refs.addCinemaModel as any).init()
+    })
   }
 
   onSet(id: number) {

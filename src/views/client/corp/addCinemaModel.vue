@@ -2,33 +2,23 @@
   <Modal 
     v-model='showDlg'
     :transfer='false'
-    :width='420'
+    :width='720'
     title="添加关联影院"
     >
     <p class="cinema-header">注：因资源方类型为影院，因此仅能关联一家影院</p>
-    <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="80">
-        <FormItem label="地区名称" prop="nameCn">
-           <FormItem label="客户类型">
-            <Row>
-                <Col v-for="it in typeList" :key="it.id" span="8">
-                <span class="check-select-group">
-                    <Checkbox v-model="it.checked">{{it.name}}</Checkbox>
-                    <Select v-model="it.subId" :disabled="!it.checked"
-                    :required="!it.checked" class="flex-1" clearable>
-                    <Option v-for="sub in typeListSubMap[it.id]" :key="sub.id"
-                        :value="sub.id">{{sub.name}}</Option>
-                    </Select>
-                </span>
-                </Col>
-            </Row>
-        </FormItem>
-        <FormItem>
-            
-        </FormItem>
-    </Form>
+    <Row class="shouDlg-header">
+      <Col span="9">
+        <AreaSelect v-model="area"/>
+      </Col>
+      <Col span="9" offset="1">
+         <Input v-model="value" placeholder="请输入影院名称" />
+      </Col>
+      <Button style="float:right" type="primary" @click="findClick">搜索</Button>
+    </Row>
+     <Table stripe style="border:0" :show-header='false' :loading="loading" :columns="columns" :data="cinemaList"></Table>
     <div  slot="footer" class="dialog-footer">
-      <Button type="primary" @click="dataFormSubmit('dataForm')">关联</Button>
-      <Button @click="cancel('dataForm')">取消</Button>
+      <Button type="primary" @click="dataFormSubmit()">关联</Button>
+      <Button @click="cancel()">取消</Button>
     </div>
   </Modal>
 </template>
@@ -39,6 +29,31 @@ import View from '@/util/View'
 
 @Component
 export default class Main extends View {
+  showDlg: any = false
+  loading = true
+  value = ''
+  area = ''
+  cinemaList: any = []
+  dataForm = {}
+  columns: any = [
+  ]
+  init() {
+    this.showDlg = true
+    this.seach()
+  }
+  seach() {
+
+  }
+  dataFormSubmit() {
+
+  }
+  findClick() {
+
+  }
+  cancel(dataForms: string) {
+    this.value = ''
+    this.showDlg = false
+  }
 }
 </script>
 
@@ -50,5 +65,8 @@ export default class Main extends View {
   font-size: 12px;
   color: #be1a22;
   font-weight: 400;
+}
+/deep/ .ivu-table-wrapper > .ivu-spin-fix {
+  border: 0;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <Form :model='item' :label-width='88' :rules='rules' class='form page' ref='form'>
+  <Form :model='item' :label-width='88' :rules='rules' label-position="left" class='form page' ref='form'>
     <div class="edit-box">
 
       <!-- header -->
@@ -19,12 +19,12 @@
           </Row>
         </FormItem>
         <Row>
-          <FormItem label="公司地址">
+          <FormItem label="客户类型">
             <Row>
               <Col span="8">
                 <AreaSelect v-model="area"/>
               </Col>
-              <Col span="10">
+              <Col span="10" offset="1">
                 <Input v-model="item.address" placeholder="详细地址" class="input-address"/>
               </Col>
             </Row>
@@ -36,12 +36,12 @@
               <Input v-model="item.contactName"/>
             </FormItem>
           </Col>
-          <Col span="6">
+          <Col span="6" offset="1">
             <FormItem label="联系电话" prop="contactPhone">
               <Input v-model="item.contactPhone"/>
             </FormItem>
           </Col>
-          <Col span="7">
+          <Col span="7" offset="1">
             <FormItem label="邮箱" prop="contactEmail">
               <Input v-model="item.contactEmail"/>
             </FormItem>
@@ -56,7 +56,7 @@
               </Select>
             </FormItem>
           </Col>
-          <Col span="6">
+          <Col span="6" offset="1">
           <FormItem label="资质编号">
             <Input v-model="item.aptitudeNo" placeholder="资质编号"/>
           </FormItem>
@@ -99,7 +99,7 @@
               </Select>
             </FormItem>
           </Col>
-          <Col span="8">
+          <Col span="8" offset="1">
             <FormItem label="负责商务" prop="bizUserId">
               <Select v-model="item.bizUserId" clearable>
                 <Option v-for="it in bizUserList" :key="it.id" :value="it.id"
@@ -133,9 +133,9 @@
           </FormItem>
         </Row>
 
-        <div>
-          <Button type="info" @click="edit(0)">确定</Button>
-          <Button type="" @click="edit(0)">返回</Button>
+        <div class="edit-button">
+          <Button type="info" size="large" @click="edit(0)">确定</Button>
+          <Button type="" size="large" @click="edit(0)">返回</Button>
         </div>
       </Row>
       
@@ -285,11 +285,19 @@ export default class Main extends View {
 .edit-box {
   padding: 10px 0;
 }
+.edit-button {
+  text-align: center;
+  margin-bottom: 20px;
+  button {
+    margin-right: 20px;
+  }
+}
+
 .cinema-header, .cinema-content, .cinema-footer {
   margin-left: 14px;
   margin-right: 14px;
   background: #fff;
-  padding: 20px 0 0 0;
+  padding: 20px 0 0 20px;
   margin-bottom: 14px;
 }
 .check-select-group {
