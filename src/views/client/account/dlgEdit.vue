@@ -6,8 +6,8 @@
     :title="!id ? '新建' : '编辑'"
     @on-cancel="cancel('dataForm')" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
-      <FormItem label="用户账号" prop="name">
-        <Input style="width:240px" v-model="dataForm.name"></Input>
+      <FormItem label="用户账号" prop="email">
+        <Input style="width:240px" v-model="dataForm.email"></Input>
       </FormItem>
       <FormItem label="密码" prop="password">
         <Input style="width:240px" v-model="dataForm.password"></Input>
@@ -15,7 +15,7 @@
       <FormItem label="重复密码" prop="passwords">
         <Input style="width:240px" v-model="dataForm.passwords"></Input>
       </FormItem>
-      <FormItem label="所属公司" prop="company">
+      <FormItem label="所属公司" prop="companyId">
         <Select style="width:240px">
           <!-- <Option v-for="item in cityList" :value="item.value">{{ item.label }}</Option> -->
           <Option>456465465</Option>
@@ -23,8 +23,8 @@
           <Option>789789798</Option>
         </Select>
       </FormItem>
-      <FormItem label="启用状态" prop="enableStatus">
-        <RadioGroup v-model="dataForm.enableStatus" >
+      <FormItem label="启用状态" prop="status">
+        <RadioGroup v-model="dataForm.status" >
           <!-- <Radio v-for="it in list" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio> -->
           <Radio label="启用"></Radio>
           <Radio label="停用"></Radio>
@@ -48,9 +48,10 @@ const defQuery = {
   categoryId: 0,
 }
 const dataForm = {
-  name: '',
-  code: '',
-  enableStatus: 1
+  email: '',
+  password: '',
+  companyId: 1,
+  status: 1
 }
 
 @Component
@@ -71,10 +72,10 @@ export default class ComponentMain extends View {
     passwords: [
         { required: true, message: '请重新输入密码' }
     ],
-    company: [
+    companyId: [
         { required: true, message: '请选择所属公司' }
     ],
-    enableStatus: [
+    status: [
         { required: true }
     ]
   }
@@ -90,7 +91,7 @@ export default class ComponentMain extends View {
         // const {data: {
         //   items: list
         // }} = await dataFrom({ id })
-        // this.dataForm.name = this.cinemaOnes.name
+        // this.dataForm.email = this.cinemaOnes.email
         // this.dataForm.code = this.cinemaOnes.code
       }
     })

@@ -92,12 +92,12 @@ export async function queryItem(query: any) {
   return await mockGet(query, {
     'childAccountList|5': [{
       id: tid,
-      userId: tid,
-      childPhoneNumber: pnum,
-      childUserName: title20,
+      // userId: tid,
+      mobile: pnum,
+      name: title20,
       'clientLevel|1': ['A', 'B', 'C'],
       createTime: dateRange(),
-      updateTime: dateRange(),
+      lastLoginTime: dateRange(),
     }],
     totalCount: 888,
   })

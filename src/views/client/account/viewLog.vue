@@ -94,7 +94,6 @@ export default class ComponentMain extends View {
 }
 .res-num {
   width: 100%;
-  height: 60px;
   line-height: 60px;
 }
 .res-num p {

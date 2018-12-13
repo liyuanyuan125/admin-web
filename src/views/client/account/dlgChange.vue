@@ -28,6 +28,8 @@
 import { Component, Prop } from 'vue-property-decorator'
 import { dataFrom , add , set} from '@/api/dict'
 import { warning , success, toast } from '@/ui/modal'
+import { slice, clean } from '@/fn/object'
+
 import View from '@/util/View'
 const defQuery = {
   categoryId: 0,
@@ -41,8 +43,10 @@ export default class ComponentMain extends View {
   // @Prop({ type: Object }) cinemaOnes: any
   query = { ...defQuery }
   // oldQuery: any = null
-
+  list = []
   showDlg = false
+  oldQuery: any = {}
+
   id = 0
   ruleValidate = {
     newname: [
@@ -107,6 +111,39 @@ export default class ComponentMain extends View {
   mounted() {
     const { id } = this.$route.params
     this.query.categoryId = this.id
+  }
+  get cachedMap() {
+    return {
+    }
+  }
+
+  get tableData() {
+    const cachedMap = this.cachedMap
+    const list = (this.list || []).map((it: any) => {
+      return {
+        ...it,
+      }
+    })
+    return list
+  }
+
+  async doSearch() {
+
+    this.oldQuery = { ...this.query }
+
+
+    const query = clean({ ...this.query })
+    // try {
+    //   const { data: {
+    //     data: list,
+    //     // parentAccount: prelist,
+    //   } } = await queryItem(query)
+    //   this.list = list
+    //   // this.prelist = prelist
+    // } catch (ex) {
+    //   this.handleError(ex)
+    // } finally {
+    // }
   }
 }
 </script>

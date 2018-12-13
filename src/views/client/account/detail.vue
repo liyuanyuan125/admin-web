@@ -90,15 +90,15 @@ export default class Main extends View {
   loading = false
 
   list = []
-
+  prelist = []
   total = 0
 
   oldQuery: any = {}
 
   columns = [
-    { title: '用户账号', key: 'userId', align: 'center' },
-    { title: '姓名', key: 'childUserName', align: 'center' },
-    { title: '手机号', key: 'childPhoneNumber', align: 'center' },
+    { title: '用户账号', key: 'id', align: 'center' },
+    { title: '姓名', key: 'name', align: 'center' },
+    { title: '手机号', key: 'mobile', align: 'center' },
     {
       title: '创建时间',
       key: 'createTime',
@@ -113,12 +113,12 @@ export default class Main extends View {
     },
     {
       title: '最后登陆时间',
-      key: 'updateTime',
+      key: 'lastLoginTime',
       align: 'center',
-      render: (hh: any, { row: { updateTime } }: any) => {
+      render: (hh: any, { row: { lastLoginTime } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = moment(updateTime).format(timeFormat)
+        const html = moment(lastLoginTime).format(timeFormat)
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
@@ -202,8 +202,10 @@ export default class Main extends View {
     try {
       const { data: {
         childAccountList: list,
+        parentAccount: prelist,
       } } = await queryItem(query)
       this.list = list
+      this.prelist = prelist
     } catch (ex) {
       this.handleError(ex)
     } finally {

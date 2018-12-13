@@ -156,7 +156,6 @@ export default class Main extends View {
   ]
   get cachedMap() {
     return {
-      // type: makeMap(this.typeList),
       status: makeMap(this.statusList),
     }
   }
@@ -166,7 +165,6 @@ export default class Main extends View {
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        // typeName: cachedMap.type[it.type],
         statusText: cachedMap.status[it.status],
       }
     })
@@ -226,16 +224,10 @@ export default class Main extends View {
       const { data: {
         items: list,
         totalCount: total,
-        // typeList,
-        // company,
-        company2,
         statusList,
       } } = await queryList(query)
       this.list = list
       this.total = total
-      // this.typeList = typeList
-      // this.company = company
-      this.company2 = company2
       this.statusList = statusList
     } catch (ex) {
       this.handleError(ex)
@@ -253,26 +245,17 @@ export default class Main extends View {
     })
   }
   change(id: number, row: any) {
-    // alert('123132132')
     try {
-      confirm('您确定更改当前状态信息吗？')
+      confirm('您确定' + (row.statusText == '启用' ? '停用' : '启用') + '当前状态信息吗？')
       // await dels({id})
-      this.$Message.success({
-        content: `删除成功`,
-      })
-      this.reloadSearch()
+      // this.$Message.success({
+      //   content: `删除成功`,
+      // })
+      // this.reloadSearch()
     } catch (ex) {
       // this.handleError(ex)
     }
   }
-
-  // change(id: number, row: any) {
-  //   this.changeVisible = true
-  //   this.$nextTick(() => {
-  //     const myThis: any = this
-  //     myThis.$refs.change.init(id)
-  //   })
-  // }
 
   dlgEditDone() {
     this.doSearch()
