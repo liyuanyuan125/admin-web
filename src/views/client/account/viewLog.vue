@@ -4,7 +4,7 @@
   <div class="page">
       <div class="Inps-res">
         <div class="res-num">
-          <p>注册账号</p>
+          <p>用户账号</p>
           <div class="res-num-item">
             <span>admin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;【主账号】</span>
           </div>
@@ -12,15 +12,19 @@
         <div class="res-num">
           <p>所属公司</p>
           <div class="res-num-item">
-            <span>北京博纳国际有限公司 【广告主：直客】【资源方：影院】</span>
+            <span>北京博纳国际有限公司</span>
+          </div>
+        </div>
+        <div class="res-num">
+          <p>最后登陆时间</p>
+          <div class="res-num-item">
+            <span>2018/11/01 12:22:21</span>
           </div>
         </div>
         <div class="res-num">
           <p>注册时间</p>
           <div class="res-num-item">
             <span>2018/11/01 12:22:21</span>
-            <span style="margin-left:8%;" class="res-date">最后登陆时间</span>
-            <span style="margin-left:2%;">2018/11/01 12:22:21</span>
           </div>
         </div>
       </div>
@@ -87,8 +91,9 @@ export default class ComponentMain extends View {
 }
 .res-num p {
   display: inline-block;
-  width: 4%;
+  width: 9%;
   text-align: left;
+  margin-left: 2%;
 }
 .res-num-item {
   width: 80%;
@@ -96,7 +101,6 @@ export default class ComponentMain extends View {
   display: inline-block;
 }
 .res-num-item span {
-  display: inline-block;
   margin-left: 4%;
 }
 .log {

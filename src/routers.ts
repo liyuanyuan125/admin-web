@@ -19,7 +19,7 @@ export default [
     component: () => import('./views/client/account/detail.vue')
   },
   {
-    path: '/client/account/viewLog/:id',
+    path: '/client/account/viewLog',
     name: 'client-account-viewLog',
     component: () => import('./views/client/account/viewLog.vue')
   },
