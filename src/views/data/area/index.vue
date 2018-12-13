@@ -3,12 +3,12 @@
     <div class="act-bar flex-box">
       <form class="form flex-1" @submit.prevent="search">
         <LazyInput v-model="query.nameCn" placeholder="地区名称" class="input input-id"/>
-        <Select v-if="!query.parentIds" v-model="query.areaCodes" placeholder="所属区域" class="input" style="width: 200px" clearable>
+        <Select v-if="query.parentIds == 0" v-model="query.areaCodes" placeholder="所属区域" class="input" style="width: 200px" clearable>
           <Option v-for="it in statusList" :key="it.key"
             :value="it.code">{{it.name}}</Option>
         </Select>
         <Button type="default" @click="reset" class="btn-reset">清空</Button>
-        <Button v-if="!!query.parentIds" @click="goBack" class="btn-reset" style="margin-left:8px">返回上一级</Button>
+        <Button v-if="query.parentIds!=0" @click="goBack" class="btn-reset" style="margin-left: 8px">返回上一级</Button>
       </form>
       <div class="acts">
         <Button type="success" icon="md-add-circle" @click="edit(query.parentIds)">新建地区信息</Button>
