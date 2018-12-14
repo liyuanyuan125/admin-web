@@ -4,11 +4,11 @@
       <div class="detail-header">
           <Row>
             <Col span="2"><div>公司名称</div></Col>
-            <Col span="8"><span></span></Col>
+            <Col span="16"><span>{{detail.name}}</span></Col>
           </Row>
           <Row>
             <Col span="2"><div>简称</div></Col>
-            <Col span="8"><span></span></Col>
+            <Col span="8"><span>{{detail}}</span></Col>
           </Row>
           <Row>
             <Col span="2"><div>公司地址</div></Col>
@@ -92,10 +92,14 @@ import Upload from './upload.vue'
 })
 export default class Main extends View {
   detail: any = {}
+  created() {
+    this.load()
+  }
   async load() {
     const query: any = { id: this.$route.params.id || 0 }
     try {
-      await quertItems(query)
+      const res = await quertItems(query)
+      this.detail = res.data.data
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -116,7 +120,7 @@ export default class Main extends View {
   background: #fff;
   margin: 10px;
   padding-left: 14px;
-  /deep/ .ivu-row {
+  /deep/ .ivu-col-span-2 {
     /deep/ div {
       line-height: 50px;
       width: 88px;

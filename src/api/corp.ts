@@ -138,7 +138,33 @@ export async function quertItems(query: number) {
       name: '北京智能广宣科技有限公司',
       shortName: '智能广宣',
       address: '详细地址',
-      contacts: '联系人'
+      contacts: '联系人',
+      contactsTel: 13679986762,
+      email: 'web@163.com',
+      qualificationType: 1,
+      qualificationCode: '123456',
+      approveStatusString: '未通过',
+      validityPeriodDate: 1544778702923,
+      approveUser: '老王',
+      approveTime: 1544778702923,
+      customerLevel: '1级',
+      businessDirectorName: '2',
+      typeList: [
+        {
+          typeName: 'labore ',
+          typeCategoryName: '123'
+        }
+      ],
+      cinemaList: [
+        {
+          cinemaName: 'fugiat'
+        }
+      ],
+      imageList: [
+        {
+          imageUrl: 'https://file.iviewui.com/asd/asd-iview-live2.png'
+        }
+      ]
     }
   })
 }
