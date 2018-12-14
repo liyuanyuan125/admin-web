@@ -3,12 +3,12 @@
     <div class="act-bar flex-box">
       <form class="form flex-1" @submit.prevent="search">
         <LazyInput v-model="query.nameCn" placeholder="地区名称" class="input input-id"/>
-        <Select v-if="!query.parentIds" v-model="query.areaCodes" placeholder="所属区域" class="input" style="width: 200px" clearable>
+        <Select v-if="query.parentIds == 0" v-model="query.areaCodes" placeholder="所属区域" class="input" style="width: 200px" clearable>
           <Option v-for="it in statusList" :key="it.key"
             :value="it.code">{{it.name}}</Option>
         </Select>
         <Button type="default" @click="reset" class="btn-reset">清空</Button>
-        <Button v-if="!!query.parentIds" @click="goBack" class="btn-reset" style="margin-left: 8px">返回上一级</Button>
+        <Button v-if="query.parentIds!=0" @click="goBack" class="btn-reset" style="margin-left: 8px">返回上一级</Button>
       </form>
       <div class="acts">
         <Button type="success" icon="md-add-circle" @click="edit(query.parentIds)">新建地区信息</Button>
@@ -138,7 +138,7 @@ export default class Main extends View {
         }
       }
     ]
-    !!this.query.parentIds ? colum.splice(4, 1) : colum
+    ; (this.query.parentIds != '0') ? colum.splice(4, 1) : colum
     return colum
   }
 
@@ -166,9 +166,9 @@ export default class Main extends View {
     this.saveId.pop()
     this.pageIndex.pop()
     this.cityArray.pop()
-    !this.query.parentIds ? this.query.areaCodes = '' : ''
+    this.query.parentIds == '0' ? this.query.areaCodes = '' : ''
     this.query.areaCodes = this.query.areaCodes
-    !this.query.parentIds ? this.query.city = '' : ''
+    this.query.parentIds == '0' ? this.query.city = '' : ''
   }
 
   get tableData() {
@@ -195,7 +195,6 @@ export default class Main extends View {
     history.replaceState(null, '', url)
   }
 
-
   async addArea() {
     try {
       const { data } = await arealist({})
@@ -214,7 +213,7 @@ export default class Main extends View {
 
   reset() {
     const { pageSize } = this.query
-    if (!this.query.parentIds) {
+    if (this.query.parentIds == '0') {
       this.query = { ...defQuery, pageSize }
     } else {
       this.query.nameCn = ''
@@ -243,7 +242,7 @@ export default class Main extends View {
     this.loading = true
     const query = clean({ ...this.query })
     const setQuery: any = {}
-    if (this.query.parentIds) {
+    if (this.query.parentIds != '0') {
       for ( const key in query ) {
         if (query.hasOwnProperty(key)) {
           if (key != 'areaCodes' && key != 'city') {
@@ -274,7 +273,7 @@ export default class Main extends View {
     }
   }
 
-  async editStatus({ id, key: newStatus, showLoading }: any) {
+  async editStatus({ id, key: newStatus, showLoading, hideLoading }: any) {
     const item = this.list.find(it => it.id == id)
     if (item && item.areaCodes != newStatus) {
       try {
@@ -283,15 +282,16 @@ export default class Main extends View {
         item.areaCode = newStatus
         item.areaName = this.cachedMap.statusList[newStatus]
       } catch (ex) {
+        hideLoading()
         this.handleError(ex)
       }
     }
   }
 
   // 新增 / 修改
-  edit(id: number, row: any, editMes: number) {
+  edit(id: any, row: any, editMes: number) {
     this.addOrUpdateVisible = true
-    !!id ? this.editOne = row : this.editOne = ''
+    id != '0' ? this.editOne = row : this.editOne = ''
     this.$nextTick(() => {
       (this.$refs.addOrUpdate as any).init(id, this.query.city, this.query.areaCodes, editMes, this.query.parentIds)
     })
