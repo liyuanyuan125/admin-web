@@ -131,7 +131,7 @@ export async function queryItem(query: any) {
   })
 }
 
-export async function quertItem(query: number) {
+export async function quertItems(query: number) {
   return await mockGet(query, {
     data: {
       id: tid,

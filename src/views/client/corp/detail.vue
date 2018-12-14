@@ -79,6 +79,7 @@
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component } from 'vue-property-decorator'
 import View from '@/util/View'
+import { quertItems } from '@/api/corp'
 import AreaSelect from '@/components/AreaSelect.vue'
 import PartBindCinema from './partBindCinema.vue'
 import Upload from './upload.vue'
@@ -90,6 +91,16 @@ import Upload from './upload.vue'
   }
 })
 export default class Main extends View {
+  detail: any = {}
+  async load() {
+    const query: any = { id: this.$route.params.id || 0 }
+    try {
+      await quertItems(query)
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+    }
+  }
 }
 </script>
 
