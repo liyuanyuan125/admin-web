@@ -9,24 +9,24 @@
           <p>用户账号</p>
           <div class="res-num-item change-item">
             <span>admin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;【主账号】</span>
-            <span class="blu1 les" @click="viewlog">查看操作日志</span>
+            <span class="blu1" @click="viewlog">查看操作日志</span>
             <span class="blu2" @click="change(0)">变更主账号</span>
             <!-- <span>变更主账号</span> -->
           </div>
         </div>
         <div class="res-num">
-          <p>注册时间</p>
+          <p>注册时间时间</p>
           <div class="res-num-item">
             <span>2018/11/01 12:22:21</span>
-            <span class="res-date les">最后登陆时间</span>
-            <span>2018/11/01 12:22:21</span>
+            <span style="margin-left:8%;" class="res-date">最后登陆时间</span>
+            <span style="margin-left:2%;">2018/11/01 12:22:21</span>
           </div>
         </div>
         <div class="res-num">
           <p>所属公司</p>
           <div class="res-num-item">
             <span>北京博纳国际有限公司</span>
-            <span class="blu1 les" @click="viewcompanydetail(5)">查看公司详情</span>
+            <span class="blu1" @click="viewcompanydetail(5)">查看公司详情</span>
           </div>
         </div>
       </div>
@@ -62,11 +62,10 @@ import dlgChange from './dlgChange.vue'
 
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
-const timeFormat = 'YYYY-MM-DD HH:mm:ss'
+const timeFormat = 'YYYY-MM-DD<br>HH:mm:ss'
 
 const defQuery = {
   id: null,
-  parentAccountId: '',
   phoneNmber: null,
   // corpName: '',
   // userAccount: '',
@@ -93,7 +92,7 @@ export default class Main extends View {
   prelist = []
   total = 0
 
-  oldQuery: any = {}
+  oldQuery: any = null
 
   columns = [
     { title: '用户账号', key: 'id', align: 'center' },
@@ -131,7 +130,7 @@ export default class Main extends View {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         return <div class='row-acts'>
-          <router-link to={{ name: 'client-account-viewLog', params: { id } }}>查看操作日志</router-link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <router-link to={{ name: 'client-account-viewlog', params: { id } }}>查看操作日志</router-link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </div>
         /* tslint:enable */
       }
@@ -152,9 +151,7 @@ export default class Main extends View {
     return list
   }
   mounted() {
-    const { id } = this.$route.params
-    this.query.parentAccountId = id
-    // this.doSearch()
+    this.doSearch()
   }
   dlgEditDone() {
     this.doSearch()
@@ -257,21 +254,17 @@ export default class Main extends View {
 }
 .res-num p {
   display: inline-block;
-  width: 4%;
+  width: 9%;
   text-align: left;
-  margin-left: 0.5%;
+  margin-left: 2%;
 }
 .res-num-item {
   width: 80%;
   height: 100%;
   display: inline-block;
 }
-// .les {
-//   margin-left: 5%;
-// }
 .res-num-item span {
-  display: inline-block;
-  margin-left: 5%;
+  margin-left: 4%;
 }
 .blu1,
 .blu2 {

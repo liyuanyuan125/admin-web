@@ -1,45 +1,3 @@
-
-
-// import { get , post , put } from '@/fn/ajax'
-
-// export async function queryList(query: any) {
-//   const data = await get('/customer/accounts', query)
-//   return data
-// }
-
-
-// // 新建
-// export async function addList(query: any) {
-//   const res = await post('/customer/accounts', query)
-//   return res
-// }
-
-// export async function dataFrom(query: any) {
-//   const res = await get('/customer/accounts', query)
-//   return res
-// }
-
-// // 编辑
-// export async function setList(query: any) {
-//   const res = await put(`/customer/accounts/${query.id}`, query)
-//   return res
-// }
-
-// export async function dictqueryList(query: any) {
-//   const data = await get('/basis/dictionaries', query)
-//   return data
-// }
-
-
-
-
-
-
-
-
-
-
-
 // import { get } from '@/fn/ajax'
 import { mockGet, tid, title20, typeInt, dateRange } from './mock'
 
@@ -55,12 +13,12 @@ export async function queryList(query: any) {
     'items|20': [{
       id: tid,
       // corpId: tid,
-      email: emailnum,
+      emailNum: emailnum,
       companyName: title20,
       type: typeInt(1, 3),
       'clientLevel|1': ['A', 'B', 'C'],
-      beginCreateTime: dateRange(),
-      endCreateTime: dateRange(),
+      createTime: dateRange(),
+      updateTime: dateRange(),
       status: typeInt(1, 2),
     }],
     totalCount: 888,
@@ -79,7 +37,7 @@ export async function queryList(query: any) {
       { id: 3, name: '北京智能广宣3' },
       { id: 4, name: '北京智能广宣4' },
     ],
-    companyName: [
+    company2: [
       { id: 1, name: '北京智能广宣1' },
       { id: 2, name: '北京智能广宣2' },
       { id: 3, name: '北京智能广宣3' },

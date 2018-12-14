@@ -301,7 +301,7 @@ export default class Main extends View {
      !!data[0] ? (this.query.startTime = new Date(data[0]).getTime()) : this.query.startTime = 0
      !!data[1] ? (this.query.endTime = new Date(data[1]).getTime()) : this.query.endTime = 0
   }
-  async editStatus({ id, key: newStatus, showLoading }: any) {
+  async editStatus({ id, key: newStatus, showLoading, hideLoading }: any) {
 
     const item = this.list.find(it => it.id == id)
     if (item && item.categoryCode != newStatus) {
@@ -311,11 +311,12 @@ export default class Main extends View {
         item.categoryCode = newStatus
         item.categoryName = this.cachedMap.categoryList[newStatus]
       } catch (ex) {
+        hideLoading()
         this.handleError(ex)
       }
     }
   }
-  async codeStatus({ id, value: newStatus, showLoading }: any) {
+  async codeStatus({ id, value: newStatus, showLoading, hideLoading }: any) {
     const item = this.list.find(it => it.id == id)
     if (item && item.categoryCode != newStatus) {
       try {
@@ -323,6 +324,7 @@ export default class Main extends View {
         await updateSpecialId(id, newStatus)
         item.specialId = newStatus
       } catch (ex) {
+        hideLoading
         this.handleError(ex)
       }
     }
@@ -332,7 +334,7 @@ export default class Main extends View {
     this.doSearch()
   }
 
-  async editControlStatus({ id, key: newStatus, showLoading }: any) {
+  async editControlStatus({ id, key: newStatus, showLoading, hideLoading }: any) {
     const items = this.list.find(it => it.id == id)
     if (items && items.controlStatus != newStatus) {
       try {
@@ -341,6 +343,7 @@ export default class Main extends View {
         items.controlStatus = newStatus
         items.controlStatusString = this.cachedMap.controlList[items.controlStatus]
       } catch (ex) {
+        hideLoading()
         this.handleError(ex)
       }
     }
