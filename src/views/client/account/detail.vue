@@ -67,7 +67,10 @@ const timeFormat = 'YYYY-MM-DD<br>HH:mm:ss'
 
 const defQuery = {
   id: null,
+<<<<<<< HEAD
   companytId: '',
+=======
+>>>>>>> 739386fbba94b8fa770118a1b9066630457ad817
   phoneNmber: null,
   // corpName: '',
   // userAccount: '',
@@ -153,9 +156,13 @@ export default class Main extends View {
     return list
   }
   mounted() {
+<<<<<<< HEAD
     const { id } = this.$route.params
     this.query.companytId = id
     // this.doSearch()
+=======
+    this.doSearch()
+>>>>>>> 739386fbba94b8fa770118a1b9066630457ad817
   }
   dlgEditDone() {
     this.doSearch()

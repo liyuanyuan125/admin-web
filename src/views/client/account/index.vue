@@ -60,8 +60,11 @@ const defQuery = {
   status: null,
   pageIndex: 1,
   pageSize: 20,
+<<<<<<< HEAD
   beginCreateTime: 0,
   endCreateTime: 0
+=======
+>>>>>>> 739386fbba94b8fa770118a1b9066630457ad817
 }
 
 
@@ -169,6 +172,7 @@ export default class Main extends View {
   }
 
   mounted() {
+<<<<<<< HEAD
     const urlQuery = slice(urlParam(), Object.keys(defQuery))
     this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
     // this.doSearch()
@@ -188,6 +192,9 @@ export default class Main extends View {
      // 获取时间戳
      !!data[0] ? (this.query.beginCreateTime = new Date(data[0]).getTime()) : this.query.beginCreateTime = 0
      !!data[1] ? (this.query.endCreateTime = new Date(data[1]).getTime()) : this.query.endCreateTime = 0
+=======
+    this.doSearch()
+>>>>>>> 739386fbba94b8fa770118a1b9066630457ad817
   }
 
   search() {
@@ -208,6 +215,7 @@ export default class Main extends View {
 
     this.loading = true
     const query = clean({ ...this.query })
+<<<<<<< HEAD
     for (const [key, value] of Object.entries(this.oldQuery)) {
       if (key != 'beginCreateTime' && value != 0) {
         query[key] = value
@@ -216,6 +224,8 @@ export default class Main extends View {
         query[key] = value
       }
     }
+=======
+>>>>>>> 739386fbba94b8fa770118a1b9066630457ad817
     try {
       const { data: {
         items: list,
