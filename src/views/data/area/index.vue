@@ -166,9 +166,9 @@ export default class Main extends View {
     this.saveId.pop()
     this.pageIndex.pop()
     this.cityArray.pop()
-    !this.query.parentIds ? this.query.areaCodes = '' : ''
+    this.query.parentIds == '0' ? this.query.areaCodes = '' : ''
     this.query.areaCodes = this.query.areaCodes
-    !this.query.parentIds ? this.query.city = '' : ''
+    this.query.parentIds == '0' ? this.query.city = '' : ''
   }
 
   get tableData() {
@@ -213,7 +213,7 @@ export default class Main extends View {
 
   reset() {
     const { pageSize } = this.query
-    if (!this.query.parentIds) {
+    if (this.query.parentIds == '0') {
       this.query = { ...defQuery, pageSize }
     } else {
       this.query.nameCn = ''
@@ -242,7 +242,7 @@ export default class Main extends View {
     this.loading = true
     const query = clean({ ...this.query })
     const setQuery: any = {}
-    if (this.query.parentIds) {
+    if (this.query.parentIds != '0') {
       for ( const key in query ) {
         if (query.hasOwnProperty(key)) {
           if (key != 'areaCodes' && key != 'city') {
@@ -288,9 +288,9 @@ export default class Main extends View {
   }
 
   // 新增 / 修改
-  edit(id: number, row: any, editMes: number) {
+  edit(id: any, row: any, editMes: number) {
     this.addOrUpdateVisible = true
-    !!id ? this.editOne = row : this.editOne = ''
+    id != '0' ? this.editOne = row : this.editOne = ''
     this.$nextTick(() => {
       (this.$refs.addOrUpdate as any).init(id, this.query.city, this.query.areaCodes, editMes, this.query.parentIds)
     })
