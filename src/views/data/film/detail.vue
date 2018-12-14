@@ -27,7 +27,7 @@
       <dl>
         <dt>演员</dt>
         <dd>
-          <span v-for="key in detil.performers" :key="key">{{key}}</span>
+          <span class="performers" v-for="key in detil.performers" :key="key">{{key}}</span>
         </dd>
       </dl>
       <dl>
@@ -44,15 +44,15 @@
       </dl>
       <dl>
         <dt>评分</dt>
-        <dd>{{detil.rating}}</dd>
+        <dd>{{detil.rating}}分</dd>
       </dl>
       <dl>
         <dt>播放次数</dt>
-        <dd>{{detil.personCount}}</dd>
+        <dd>{{detil.personCount}}人</dd>
       </dl>
       <dl>
         <dt>影片类型</dt>
-        <dd><span v-for="key in detil.type" :key="key">{{key}}</span></dd>
+        <dd><span class="type" v-for="key in detil.type" :key="key">{{key}}</span></dd>
       </dl>
       <dl>
         <dt>产地</dt>
@@ -221,8 +221,11 @@ export default class Main extends View {
     dd {
       margin-left: 30px;
       flex: 1;
-      span:not(:last-child)::after {
+      .performers:not(:last-child)::after {
         content: ',';
+      }
+      .type:not(:last-child)::after {
+        content: '/';
       }
     }
     dt {
