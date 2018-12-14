@@ -273,7 +273,7 @@ export default class Main extends View {
     }
   }
 
-  async editStatus({ id, key: newStatus, showLoading }: any) {
+  async editStatus({ id, key: newStatus, showLoading, hideLoading }: any) {
     const item = this.list.find(it => it.id == id)
     if (item && item.areaCodes != newStatus) {
       try {
@@ -282,6 +282,7 @@ export default class Main extends View {
         item.areaCode = newStatus
         item.areaName = this.cachedMap.statusList[newStatus]
       } catch (ex) {
+        hideLoading()
         this.handleError(ex)
       }
     }
