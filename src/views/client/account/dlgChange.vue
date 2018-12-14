@@ -57,10 +57,11 @@ export default class ComponentMain extends View {
   init(id: number) {
     this.showDlg = true
     this.id = id || 0
-    this.$nextTick(async () => {
-      const dataForms: string = 'dataForm'
-      const myThis: any = this
-      myThis.$refs[dataForms].resetFields()
+    ; (this.$refs.dataForm as any).resetFields()
+    // this.$nextTick(async () => {
+      // const dataForms: string = 'dataForm'
+      // const myThis: any = this
+      // myThis.$refs[dataForms].resetFields()
       if (this.id) {
         // const {data: {
         //   items: list
@@ -68,13 +69,14 @@ export default class ComponentMain extends View {
         // this.dataForm.name = this.cinemaOnes.name
         // this.dataForm.code = this.cinemaOnes.code
       }
-    })
+    // })
   }
 
   cancel(dataForms: string) {
     this.showDlg = false
-    const myThis: any = this
-    myThis.$refs[dataForms].resetFields()
+    // const myThis: any = this
+    // myThis.$refs[dataForms].resetFields()
+    ; (this.$refs.dataForm as any).resetFields()
   }
 
   // 表单提交

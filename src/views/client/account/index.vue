@@ -18,7 +18,7 @@
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </form>
         <div class="acts">
-          <Button type="success" @click="edit(0)">创建</Button>
+          <Button type="success" icon="md-add-circle" @click="edit(0)">创建</Button>
         </div>
       </div>
 
@@ -64,8 +64,8 @@ const defQuery = {
   status: null,
   pageIndex: 1,
   pageSize: 20,
-  startTime: 0,
-  endTime: 0
+  beginCreateTime: 0,
+  endCreateTime: 0
 }
 
 
@@ -175,8 +175,10 @@ export default class Main extends View {
     const urlQuery = slice(urlParam(), Object.keys(defQuery))
     this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
     // this.doSearch()
-    !!this.query.startTime ? this.showTime[0] = moment(this.query.startTime).format(timeFormat) : this.showTime[0] = ''
-    !!this.query.endTime ? this.showTime[1] = moment(this.query.endTime).format(timeFormat) : this.showTime[1] = ''
+    !!this.query.beginCreateTime ? this.showTime[0] =
+    moment(this.query.beginCreateTime).format(timeFormat) : this.showTime[0] = ''
+    !!this.query.endCreateTime ? this.showTime[1] =
+    moment(this.query.endCreateTime).format(timeFormat) : this.showTime[1] = ''
   }
 
   updateUrl() {
@@ -187,8 +189,8 @@ export default class Main extends View {
 
   dateChange(data: any) {
      // 获取时间戳
-     !!data[0] ? (this.query.startTime = new Date(data[0]).getTime()) : this.query.startTime = 0
-     !!data[1] ? (this.query.endTime = new Date(data[1]).getTime()) : this.query.endTime = 0
+     !!data[0] ? (this.query.beginCreateTime = new Date(data[0]).getTime()) : this.query.beginCreateTime = 0
+     !!data[1] ? (this.query.endCreateTime = new Date(data[1]).getTime()) : this.query.endCreateTime = 0
   }
 
   search() {
@@ -213,10 +215,10 @@ export default class Main extends View {
     this.loading = true
     const query = clean({ ...this.query })
     for (const [key, value] of Object.entries(this.oldQuery)) {
-      if (key != 'startTime' && value != 0) {
+      if (key != 'beginCreateTime' && value != 0) {
         query[key] = value
       }
-      if (key != 'endTime' && value != 0) {
+      if (key != 'endCreateTime' && value != 0) {
         query[key] = value
       }
     }

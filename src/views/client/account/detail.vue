@@ -5,6 +5,7 @@
     <!-- 注册账号 -->
     <div class="Inp-Group-res">
       <div class="Inps-res">
+        <div class="n-main">主账号详情</div>
         <div class="res-num">
           <p>用户账号</p>
           <div class="res-num-item change-item">
@@ -34,7 +35,7 @@
     <!-- 子账号 -->
     <div class="new-number">
       <div class="new-num">
-        <p>子账号</p><br>
+        <div class="n-list">子账号列表</div>
         <Table :columns="columns" :data="tableData"
         border stripe disabled-hover size="small" class="table"></Table>
         <div class="page-wrap" v-if="total > 0">
@@ -66,7 +67,7 @@ const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
 const defQuery = {
   id: null,
-  parentAccountId: '',
+  companytId: '',
   phoneNmber: null,
   // corpName: '',
   // userAccount: '',
@@ -153,7 +154,7 @@ export default class Main extends View {
   }
   mounted() {
     const { id } = this.$route.params
-    this.query.parentAccountId = id
+    this.query.companytId = id
     // this.doSearch()
   }
   dlgEditDone() {
@@ -256,19 +257,19 @@ export default class Main extends View {
   line-height: 60px;
 }
 .res-num p {
-  display: inline-block;
+  display: block;
+  float: left;
   width: 4%;
+  max-height: 60px;
+  overflow: hidden;
   text-align: left;
   margin-left: 0.5%;
 }
 .res-num-item {
+  float: left;
   width: 80%;
-  height: 100%;
-  display: inline-block;
+  max-height: 60px;
 }
-// .les {
-//   margin-left: 5%;
-// }
 .res-num-item span {
   display: inline-block;
   margin-left: 5%;
@@ -290,68 +291,81 @@ export default class Main extends View {
   background: #fff;
   font-size: 13px;
 }
-.info {
-  width: 33%;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  position: absolute;
-  top: 20%;
-  left: 20%;
-  font-size: 14px;
-}
-.info-ver {
-  width: 100%;
-  height: 43px;
-  line-height: 43px;
-  padding-left: 3%;
-  border-bottom: 1px solid #ccc;
-}
-.info-ver .info-Icon {
-  float: right;
-  margin-right: 3%;
+.n-list {
+  margin: -5px 0 8px 0;
+  line-height: 38px;
   font-weight: bold;
-  margin-top: 10px;
+  border-bottom: 2px solid #ecf0f4;
 }
-.info-type {
-  padding: 17px;
-  line-height: 40px;
-  font-size: 14px;
+.n-main {
+  margin: -3px 0 0 8px;
+  line-height: 35px;
+  font-weight: bold;
+  border-bottom: 2px solid #ecf0f4;
 }
-.info-type-inp span {
-  margin-left: 1%;
-  color: #53a1f3;
-  cursor: pointer;
-  text-decoration: underline;
-}
-.info-type div span {
-  margin-left: 10%;
-  color: #aaa;
-}
-.info-type div select {
-  margin-left: 10%;
-  width: 200px;
-  height: 30px;
-  line-height: 30px;
-  color: #999;
-}
-.info-type .ivu-radio-group {
-  margin-left: 5%;
-}
-.info-inp {
-  margin-left: 5%;
-}
-.info-type button {
-  margin-top: 2%;
-  margin-left: 22%;
-}
-.info-type .info-red {
-  width: 255px;
-  color: red;
-  font-weight: normal;
-  font-size: 12px;
-  line-height: 13px;
-  margin-left: 24%;
-  margin-top: 1%;
-}
-  </style>
+// .info {
+//   width: 33%;
+//   background: #fff;
+//   border: 1px solid #ccc;
+//   border-radius: 5px;
+//   position: absolute;
+//   top: 20%;
+//   left: 20%;
+//   font-size: 14px;
+// }
+// .info-ver {
+//   width: 100%;
+//   height: 43px;
+//   line-height: 43px;
+//   padding-left: 3%;
+//   border-bottom: 1px solid #ccc;
+// }
+// .info-ver .info-Icon {
+//   float: right;
+//   margin-right: 3%;
+//   font-weight: bold;
+//   margin-top: 10px;
+// }
+// .info-type {
+//   padding: 17px;
+//   line-height: 40px;
+//   font-size: 14px;
+// }
+// .info-type-inp span {
+//   margin-left: 1%;
+//   color: #53a1f3;
+//   cursor: pointer;
+//   text-decoration: underline;
+// }
+// .info-type div span {
+//   margin-left: 10%;
+//   color: #aaa;
+// }
+// .info-type div select {
+//   margin-left: 10%;
+//   width: 200px;
+//   height: 30px;
+//   line-height: 30px;
+//   color: #999;
+// }
+// .info-type .ivu-radio-group {
+//   margin-left: 5%;
+// }
+// .info-inp {
+//   margin-left: 5%;
+// }
+// .info-type button {
+//   margin-top: 2%;
+//   margin-left: 22%;
+// }
+// .info-type .info-red {
+//   width: 255px;
+//   color: red;
+//   font-weight: normal;
+//   font-size: 12px;
+//   line-height: 13px;
+//   margin-left: 24%;
+//   margin-top: 1%;
+// }
+
+</style>
