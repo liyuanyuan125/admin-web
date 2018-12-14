@@ -48,7 +48,7 @@
       </dl>
       <dl>
         <dt>播放次数</dt>
-        <dd>{{detil.personCount}}人</dd>
+        <dd>{{detil.personCount}}次</dd>
       </dl>
       <dl>
         <dt>影片类型</dt>
