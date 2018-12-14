@@ -2,7 +2,7 @@
   <div class="component">
     <Table :columns="columns" :data="inValue" border disabled-hover size="small"/>
     <div class="act-bar">
-      <a @click="onAdd">添加关联影院</a>
+      <a @click="onAdd" v-if="!type">添加关联影院</a>
     </div>
     <AddCinemaModel ref="addCinemaModel" v-if = "addShow" />
   </div>
@@ -28,6 +28,7 @@ export default class ComponentMain extends View {
    * 值本身，可以使用 v-model 进行双向绑定
    */
   @Prop({ type: Array, default: () => [] }) value!: any[]
+  @Prop() type: any
 
   /**
    * 分润单位列表
@@ -47,30 +48,35 @@ export default class ComponentMain extends View {
       type: makeMap(this.typeList),
     }
   }
-
-  columns = [
-    { title: '影院名称',
-      align: 'center',
-      key: 'name',
-       render: (hh: any, { row: { name } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        return <a>{name}</a>
-        /* tslint:enable */
+  get columns() {
+    const arr = [
+      { title: '影院名称',
+        align: 'center',
+        key: 'name',
+        render: (hh: any, { row: { name } }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          return <a>{name}</a>
+          /* tslint:enable */
+        }
       }
-    },
-    {
-      title: '操作',
-      width: 58,
-      align: 'center',
-      render: (hh: any, { row: { id } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        return <a on-click={this.onDel.bind(this, id)}>删除</a>
-        /* tslint:enable */
-      }
-    },
-  ]
+    ]
+    const add: any = [
+       {
+          title: '操作',
+          width: 58,
+          align: 'center',
+          render: (hh: any, { row: { id } }: any) => {
+            /* tslint:disable */
+            const h = jsxReactToVue(hh)
+            return <a on-click={this.onDel.bind(this, id)}>删除</a>
+            /* tslint:enable */
+          }
+        }
+    ]
+    const column = this.type == 1 ? arr : arr.concat( add )
+    return column
+  }
 
   onAdd() {
     this.addShow = true
