@@ -9,6 +9,12 @@
       <FormItem label="用户账号" prop="email">
         <!-- <Input style="width:240px" v-model="dataForm.email"></Input> -->
       </FormItem>
+      <FormItem label="姓名" prop="name">
+        <!-- <Input style="width:240px" v-model="dataForm.email"></Input> -->
+      </FormItem>
+      <FormItem label="手机号" prop="mobile">
+        <!-- <Input style="width:240px" v-model="dataForm.email"></Input> -->
+      </FormItem>
       <FormItem label="密码" prop="password">
         <!-- <Input style="width:240px" v-model="dataForm.password"></Input> -->
       </FormItem>
@@ -48,6 +54,8 @@ const defQuery = {
 const dataForm = {
   email: '',
   password: '',
+  name: '',
+  mobile: '',
   companyId: 1,
   status: 1
 }

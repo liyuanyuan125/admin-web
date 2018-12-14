@@ -30,6 +30,7 @@
             <span class="blu1 les" @click="viewcompanydetail(5)">查看公司详情</span>
           </div>
         </div>
+        {{prelist}}
       </div>
     </div>
     <!-- 子账号 -->

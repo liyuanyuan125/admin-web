@@ -146,8 +146,9 @@ export default class Main extends View {
       render: (hh: any, { row: { status, statusText, id }, row }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
+        const sta = status == 1 ? '停用' : '启用'
         return <div class='row-acts'>
-          <a on-click={this.change.bind(this, row.id, row)}>{statusText}</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a on-click={this.change.bind(this, row.id, row)}>{sta}</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <router-link to={{ name: 'client-account-detail', params: { id } }}>详情</router-link>
         </div>
         /* tslint:enable */

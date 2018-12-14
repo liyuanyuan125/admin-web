@@ -99,6 +99,15 @@ export async function queryItem(query: any) {
       createTime: dateRange(),
       lastLoginTime: dateRange(),
     }],
+    'parentAccount|5': [{
+      id: tid,
+      // userId: tid,
+      mobile: pnum,
+      name: title20,
+      'clientLevel|1': ['A', 'B', 'C'],
+      createTime: dateRange(),
+      lastLoginTime: dateRange(),
+    }],
     totalCount: 888,
   })
 }
