@@ -68,11 +68,17 @@
       </dl>
       <dl>
         <dt>主图</dt>
-        <dd><img width="150px" :src="detil.mainPicUrl" /></dd>
+        <dd><ImgModel v-if="show" :uploadList = "detil.mainPicUrl" :type = 1 /></dd>
       </dl>
       <dl>
         <dt>剧情照片</dt>
-        <dd><img v-for="key in detil.plotPicUrl" :key="key" :src="key" width="150px" style="margin-right:20px" /></dd>
+        <dd>
+          <div>
+            <div>
+              <ImgModel v-if="show" :uploadList = "detil.plotPicUrl" :type = 2 />
+            </div>
+          </div>
+        </dd>
       </dl>
       <dl>
         <dt>3D</dt>
@@ -117,13 +123,15 @@ import moment from 'moment'
 import { toThousands } from '@/util/dealData'
 import { updateStatus } from '@/api/film'
 import { toMap } from '@/fn/array'
+import ImgModel from './imgModel.vue'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
 const timeFormat = 'YYYY-MM-DD'
 
 @Component({
   components: {
-    PartPoptipEdit
+    PartPoptipEdit,
+    ImgModel
   }
 })
 export default class Main extends View {
@@ -131,6 +139,7 @@ export default class Main extends View {
   detil: any = {}
   value: any = {}
   categoryList = []
+  show = false
   created() {
     if (!sessionStorage.getItem('film-id')) {
       sessionStorage.setItem('film-id', JSON.stringify(this.$route.params))
@@ -162,6 +171,7 @@ export default class Main extends View {
           text: this.detil.categoryName,
           list: this.detil.categoryList,
        }
+       this.show = true
       } catch (ex) {
         this.handleError(ex)
     }
