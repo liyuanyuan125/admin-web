@@ -5,18 +5,20 @@
         <form class="form flex-1" @submit.prevent="search">
           <LazyInput v-model="query.id" placeholder="账号ID" class="input input-corp-id"
             @on-enter="ev => query.id = ev.target.value" @on-blur="ev => query.id = ev.target.value"/>
-            <LazyInput v-model="query.emailNum" placeholder="账号" class="input input-corp-id"
-            @on-enter="ev => query.emailNum = ev.target.value" @on-blur="ev => query.emailNum = ev.target.value"/>
+            <LazyInput type="email" v-model="query.email" placeholder="账号" class="input input-corp-id"
+            @on-enter="ev => query.email = ev.target.value" @on-blur="ev => query.email = ev.target.value"/>
           <LazyInput v-model="query.companyName" placeholder="公司名称" class="input"/>
-          <DatePicker type="daterange" v-model="query.createTime" placement="bottom-end" placeholder="注册时间" class="input" style="width: 200px"></DatePicker>
+          <DatePicker type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="注册时间" class="input" style="width: 200px"></DatePicker>
+          <!-- <Date-picker type="date" v-model="query.createTime" placeholder="注册时间" on-change="selectTime" class="input" style="width: 200px"></Date-picker> -->
+          <!-- <Date-picker type="date" v-model="query.UpdateTime" placeholder="更新时间" on-change="selectTime"  class="input" style="width: 200px"></Date-picker>           -->
           <Select v-model="query.status" placeholder="启用状态" clearable>
             <Option v-for="it in statusList" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
           </Select>
-          <!-- <Button type="default" @click="reset" class="btn-reset">清空</Button> -->
+          <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </form>
         <div class="acts">
-          <Button type="success" @click="edit(0)">创建</Button>
+          <Button type="success" icon="md-add-circle" @click="edit(0)">创建</Button>
         </div>
       </div>
 
@@ -24,8 +26,8 @@
         border stripe disabled-hover size="small" class="table"></Table>
 
       <div class="page-wrap" v-if="total > 0">
-        <Page :total="total" show-total :page-size="query.pageSize" show-sizer
-          :page-size-opts="[10, 20, 50, 100]" :current="query.pageIndex"
+        <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
+          show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
           @on-change="page => query.pageIndex = page"
           @on-page-size-change="pageSize => query.pageSize = pageSize"/>
       </div>
@@ -38,28 +40,32 @@
 <script lang="tsx">
 import { Component, Watch } from 'vue-property-decorator'
 import View from '@/util/View'
+import { get } from '@/fn/ajax'
 import { queryList } from '@/api/account'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
-import { clean } from '@/fn/object'
+import { slice, clean } from '@/fn/object'
+import { numberify, numberKeys } from '@/fn/typeCast'
+import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import DlgEdit from './dlgEdit.vue'
 import dlgVerify from './dlgVerify.vue'
 
+import {confirm} from '@/ui/modal'
 
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
-const timeFormat = 'YYYY-MM-DD<br>HH:mm:ss'
+const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
 const defQuery = {
   id: null,
-  emailnum: null,
+  email: null,
   companyName: '',
-  userAccount: '',
-  type: null,
   status: null,
   pageIndex: 1,
   pageSize: 20,
+  beginCreateTime: 0,
+  endCreateTime: 0
 }
 
 
@@ -82,8 +88,9 @@ export default class Main extends View {
   loading = false
   list = []
   total = 0
-  oldQuery: any = null
+  oldQuery: any = {}
   typeList = []
+  showTime: any = []
 
 
   statusList = []
@@ -95,11 +102,11 @@ export default class Main extends View {
 
   columns = [
     { title: '账号ID', key: 'id', align: 'center' },
-    { title: '邮箱账号', key: 'emailNum', align: 'center' },
-    { title: '公司名称', key: 'companyName', align: 'center' },
+    { title: '邮箱账号', key: 'email', align: 'center' },
+    { title: '公司名称', width: 400, key: 'companyName', align: 'center' },
     {
       title: '注册时间',
-      key: 'createTime',
+      key: 'beginCreateTime',
       align: 'center',
       render: (hh: any, { row: { createTime } }: any) => {
         /* tslint:disable */
@@ -111,7 +118,7 @@ export default class Main extends View {
     },
     {
       title: '更新时间',
-      key: 'updateTime',
+      key: 'endCreateTime',
       align: 'center',
       render: (hh: any, { row: { updateTime } }: any) => {
         /* tslint:disable */
@@ -140,7 +147,7 @@ export default class Main extends View {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         return <div class='row-acts'>
-          <a href ="javascript:;">{statusText}</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a on-click={this.change.bind(this, row.id, row)}>{statusText}</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <router-link to={{ name: 'client-account-detail', params: { id } }}>详情</router-link>
         </div>
         /* tslint:enable */
@@ -149,7 +156,6 @@ export default class Main extends View {
   ]
   get cachedMap() {
     return {
-      type: makeMap(this.typeList),
       status: makeMap(this.statusList),
     }
   }
@@ -159,7 +165,6 @@ export default class Main extends View {
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        typeName: cachedMap.type[it.type],
         statusText: cachedMap.status[it.status],
       }
     })
@@ -167,16 +172,37 @@ export default class Main extends View {
   }
 
   mounted() {
-    this.doSearch()
+    const urlQuery = slice(urlParam(), Object.keys(defQuery))
+    this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
+    // this.doSearch()
+    !!this.query.beginCreateTime ? this.showTime[0] =
+    moment(this.query.beginCreateTime).format(timeFormat) : this.showTime[0] = ''
+    !!this.query.endCreateTime ? this.showTime[1] =
+    moment(this.query.endCreateTime).format(timeFormat) : this.showTime[1] = ''
+  }
+
+  updateUrl() {
+    const query = prettyQuery(this.query, defQuery)
+    const url = buildUrl(location.pathname, query)
+    history.replaceState(null, '', url)
+  }
+
+  dateChange(data: any) {
+     // 获取时间戳
+     !!data[0] ? (this.query.beginCreateTime = new Date(data[0]).getTime()) : this.query.beginCreateTime = 0
+     !!data[1] ? (this.query.endCreateTime = new Date(data[1]).getTime()) : this.query.endCreateTime = 0
   }
 
   search() {
     this.query.pageIndex = 1
   }
-
+  reloadSearch() {
+    this.doSearch()
+  }
   reset() {
     const { pageSize } = this.query
     this.query = { ...defQuery, pageSize }
+    this.showTime = []
   }
 
   async doSearch() {
@@ -185,23 +211,25 @@ export default class Main extends View {
     }
 
     this.oldQuery = { ...this.query }
-
+    this.updateUrl()
     this.loading = true
     const query = clean({ ...this.query })
+    for (const [key, value] of Object.entries(this.oldQuery)) {
+      if (key != 'beginCreateTime' && value != 0) {
+        query[key] = value
+      }
+      if (key != 'endCreateTime' && value != 0) {
+        query[key] = value
+      }
+    }
     try {
       const { data: {
         items: list,
         totalCount: total,
-        typeList,
-        // company,
-        company2,
         statusList,
       } } = await queryList(query)
       this.list = list
       this.total = total
-      this.typeList = typeList
-      // this.company = company
-      this.company2 = company2
       this.statusList = statusList
     } catch (ex) {
       this.handleError(ex)
@@ -218,13 +246,17 @@ export default class Main extends View {
       myThis.$refs.addOrUpdate.init(id)
     })
   }
-
   change(id: number, row: any) {
-    this.changeVisible = true
-    this.$nextTick(() => {
-      const myThis: any = this
-      myThis.$refs.change.init(id)
-    })
+    try {
+      confirm('您确定' + (row.statusText == '启用' ? '停用' : '启用') + '当前状态信息吗？')
+      // await dels({id})
+      // this.$Message.success({
+      //   content: `删除成功`,
+      // })
+      // this.reloadSearch()
+    } catch (ex) {
+      // this.handleError(ex)
+    }
   }
 
   dlgEditDone() {
@@ -232,7 +264,7 @@ export default class Main extends View {
   }
 
   @Watch('query', { deep: true })
-  onQueryChange() {
+  watchQuery() {
     if (this.query.pageIndex == this.oldQuery.pageIndex) {
       this.query.pageIndex = 1
     }
