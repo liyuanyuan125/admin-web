@@ -27,7 +27,7 @@
       <dl>
         <dt>演员</dt>
         <dd>
-          <span v-for="key in detil.performers" :key="key">{{key}}</span>
+          <span class="performers" v-for="key in detil.performers" :key="key">{{key}}</span>
         </dd>
       </dl>
       <dl>
@@ -44,15 +44,15 @@
       </dl>
       <dl>
         <dt>评分</dt>
-        <dd>{{detil.rating}}</dd>
+        <dd>{{detil.rating}}分</dd>
       </dl>
       <dl>
-        <dt>播放次数</dt>
-        <dd>{{detil.personCount}}</dd>
+        <dt>参演人数</dt>
+        <dd>{{detil.personCount}}人</dd>
       </dl>
       <dl>
         <dt>影片类型</dt>
-        <dd><span v-for="key in detil.type" :key="key">{{key}}</span></dd>
+        <dd><span class="type" v-for="key in detil.type" :key="key">{{key}}</span></dd>
       </dl>
       <dl>
         <dt>产地</dt>
@@ -68,11 +68,17 @@
       </dl>
       <dl>
         <dt>主图</dt>
-        <dd><img width="150px" :src="detil.mainPicUrl" /></dd>
+        <dd><ImgModel v-if="show" :uploadList = "detil.mainPicUrl" :type = 1 /></dd>
       </dl>
       <dl>
         <dt>剧情照片</dt>
-        <dd><img v-for="key in detil.plotPicUrl" :key="key" :src="key" width="150px" style="margin-right:20px" /></dd>
+        <dd>
+          <div>
+            <div>
+              <ImgModel v-if="show" :uploadList = "detil.plotPicUrl" :type = 2 />
+            </div>
+          </div>
+        </dd>
       </dl>
       <dl>
         <dt>3D</dt>
@@ -117,13 +123,15 @@ import moment from 'moment'
 import { toThousands } from '@/util/dealData'
 import { updateStatus } from '@/api/film'
 import { toMap } from '@/fn/array'
+import ImgModel from './imgModel.vue'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
-const timeFormat = 'YYYY-MM-DD'
+const timeFormat = 'YYYY/MM/DD'
 
 @Component({
   components: {
-    PartPoptipEdit
+    PartPoptipEdit,
+    ImgModel
   }
 })
 export default class Main extends View {
@@ -131,6 +139,7 @@ export default class Main extends View {
   detil: any = {}
   value: any = {}
   categoryList = []
+  show = false
   created() {
     if (!sessionStorage.getItem('film-id')) {
       sessionStorage.setItem('film-id', JSON.stringify(this.$route.params))
@@ -162,6 +171,7 @@ export default class Main extends View {
           text: this.detil.categoryName,
           list: this.detil.categoryList,
        }
+       this.show = true
       } catch (ex) {
         this.handleError(ex)
     }
@@ -211,8 +221,14 @@ export default class Main extends View {
     dd {
       margin-left: 30px;
       flex: 1;
-      span:not(:last-child)::after {
+      .performers {
+        margin-left: 4px;
+      }
+      .performers:not(:last-child)::after {
         content: ',';
+      }
+      .type:not(:last-child)::after {
+        content: '/';
       }
     }
     dt {
