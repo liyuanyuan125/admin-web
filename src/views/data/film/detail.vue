@@ -47,8 +47,8 @@
         <dd>{{detil.rating}}分</dd>
       </dl>
       <dl>
-        <dt>播放次数</dt>
-        <dd>{{detil.personCount}}次</dd>
+        <dt>参演人数</dt>
+        <dd>{{detil.personCount}}人</dd>
       </dl>
       <dl>
         <dt>影片类型</dt>
@@ -126,7 +126,7 @@ import { toMap } from '@/fn/array'
 import ImgModel from './imgModel.vue'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
-const timeFormat = 'YYYY-MM-DD'
+const timeFormat = 'YYYY/MM/DD'
 
 @Component({
   components: {
@@ -221,6 +221,9 @@ export default class Main extends View {
     dd {
       margin-left: 30px;
       flex: 1;
+      .performers {
+        margin-left: 4px;
+      }
       .performers:not(:last-child)::after {
         content: ',';
       }
