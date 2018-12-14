@@ -196,6 +196,7 @@ export default class Main extends View {
         this.value.key = newStatus
         hideLoading()
       } catch (ex) {
+        hideLoading()
         this.handleError(ex)
       }
     }
