@@ -126,7 +126,7 @@ export default class ComponentMain extends View {
         }
 
         const addDate = this.dataForm
-        const query = this.id == '0' ? {
+        const query = this.id != '0' ? {
           ...delarea,
           sort
         } : {
