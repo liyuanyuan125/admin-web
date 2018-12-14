@@ -33,17 +33,17 @@
          <Row>
           <Col span="5">
             <FormItem label="联系人" prop="contactName">
-              <Input v-model="item.contactName"/>
+              <Input v-model="item.contact"/>
             </FormItem>
           </Col>
           <Col span="6" offset="1">
             <FormItem label="联系电话" prop="contactPhone">
-              <Input v-model="item.contactPhone"/>
+              <Input v-model="item.contactTel"/>
             </FormItem>
           </Col>
           <Col span="7" offset="1">
             <FormItem label="邮箱" prop="contactEmail">
-              <Input v-model="item.contactEmail"/>
+              <Input v-model="item.email"/>
             </FormItem>
           </Col>
         </Row>
@@ -170,12 +170,12 @@ const defItem = {
   districtId: 0,
   address: '',
 
-  contactName: '',
-  contactPhone: '',
+  contact: '',
+  contactTel: '',
   contactEmail: '',
 
   clientLevel: 0,
-  bizUserId: 0,
+  email: 0,
 
   type: 0,
   subTypeIdList: [],

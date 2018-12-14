@@ -49,22 +49,13 @@ export default class ComponentMain extends View {
   }
 
   columns = [
-    { title: '影院名称', key: 'name', align: 'left' },
-    {
-      title: '销售分润方案',
-      width: 258,
-      align: 'left',
-      render: (hh: any, { row: { id, unit, type, rate } }: any) => {
+    { title: '影院名称',
+      align: 'center',
+      key: 'name',
+       render: (hh: any, { row: { name } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        return <div class='flex-box'>
-          <div class='flex-1'>
-            {this.cachedMap.unit[unit]} &nbsp;
-            {this.cachedMap.type[type]} &nbsp;
-            {unit === 1 ? `✖️${rate} %` : '自定义'}
-          </div>
-          <a on-click={this.onSet.bind(this, id)}>设置</a>
-        </div>
+        return <a>{name}</a>
         /* tslint:enable */
       }
     },

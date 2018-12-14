@@ -6,47 +6,27 @@ export async function queryList(query: any) {
     'items|20': [{
       id: tid,
       name: title20,
-      type: typeInt(1, 2),
-      resType: typeInt(1, 2),
-      clientLevel: 1,
-      bizUserId: typeInt(1, 4),
-      createTime: dateRange(),
-      updateTime: dateRange(),
-      status: typeInt(1, 2),
-      aptitudeStatus: typeInt(1, 3),
+      typeString: typeInt(1, 2),
+      customerLevel: 1,
+      businessDirectorName: typeInt(1, 4),
+      createTimeTemp: dateRange(),
+      modifyTimeTemp: dateRange(),
+      statusString: typeInt(1, 2),
+      approveStatusString: typeInt(1, 3),
     }],
     totalCount: 888,
     typeList: [
-      { id: 1, name: '资源方' },
-      { id: 2, name: '广告主' },
-    ],
-    resTypeList: [
-      { id: 1, name: '影院' },
-      { id: 2, name: '代理商' },
-    ],
-    adTypeList: [
-      { id: 1, name: '直客' },
+      { key: 1, text: '资源方' },
+      { key: 2, text: '广告主' },
     ],
     statusList: [
-      { id: 1, name: '已启用' },
-      { id: 2, name: '已停用' },
+      { key: 1, text: '已启用' },
+      { key: 2, text: '已停用' },
     ],
-    bizUserList: [
-      { id: 1, name: '老麦', group: '商务一部', title: '商务专员' },
-      { id: 2, name: '老范', group: '商务一部', title: '商务经理' },
-      { id: 3, name: '小旺', group: '商务二部', title: '商务经理' },
-      { id: 4, name: '小赵', group: '商务二部', title: '商务专员' },
-    ],
-    clientLevelList: [
-      { id: 1, name: 'A' },
-      { id: 2, name: 'B' },
-      { id: 3, name: 'C' },
-      { id: 4, name: 'D' },
-    ],
-    aptitudeStatusList: [
-      { id: 1, name: '待审核' },
-      { id: 2, name: '已通过' },
-      { id: 3, name: '已拒绝' },
+    approveStatusList: [
+      { key: 1, text: '待审核' },
+      { key: 2, text: '已通过' },
+      { key: 3, text: '已拒绝' },
     ],
   })
 }
@@ -58,21 +38,22 @@ export async function queryItem(query: any) {
     name: '北京智能广宣科技有限公司',
     shortName: '智能广宣',
 
-    aptitudeType: 1,
-    aptitudeNo: 'GB201810013234',
+    qualificationType: 1,
+    qualificationCode: 'GB201810013234',
 
-    provinceId: 2,
+    proviceId: 2,
     cityId: 202,
+    countyId: 124,
     districtId: 20203,
-    address: '春天里888号',
+    addressDetail: '春天里888号',
 
-    contactName: '王二小',
-    contactPhone: '13888888888',
-    contactEmail: 'coco@qq.com',
-
-    clientLevel: 2,
-    bizUserId: 1,
-
+    contact: '王二小',
+    contactTel: '13888888888',
+    email: 'coco@qq.com',
+    validityPeriodDate: '12345678909876',
+    levelCode: 2,
+    businessDirector: 1,
+    images: [],
     typeIdList: [1, 2],
     subTypeIdList: [101, 201],
 
@@ -147,5 +128,17 @@ export async function queryItem(query: any) {
     profitTypeList: [
       { id: 1, name: '销售额定比例' },
     ],
+  })
+}
+
+export async function quertItem(query: number) {
+  return await mockGet(query, {
+    data: {
+      id: tid,
+      name: '北京智能广宣科技有限公司',
+      shortName: '智能广宣',
+      address: '详细地址',
+      contacts: '联系人'
+    }
   })
 }
