@@ -25,12 +25,7 @@ export default class CinemaChainSelect extends View {
   /**
    * 控制状态
    */
-  @Prop({ type: Number, default: 0 }) controlStatus!: number
-
-  /**
-   * 保留 ID，一般配合 controlStatus 使用
-   */
-  @Prop({ type: String, default: '' }) keepId!: string
+  @Prop({ type: Number, default: 1 }) controlStatus!: number
 
   /**
    * 提示文字
@@ -50,8 +45,7 @@ export default class CinemaChainSelect extends View {
       })
       let list: any[] = data.items || []
       if (this.controlStatus > 0) {
-        list = list.filter(it => it.controlStatus == this.controlStatus ||
-          it.id == this.keepId)
+        list = list.filter(it => it.controlStatus == this.controlStatus)
       }
       this.list = list
     } catch (ex) {
