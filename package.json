@@ -9,7 +9,8 @@
     "lint:css": "stylelint '**/*.vue' --syntax less",
     "test:e2e": "vue-cli-service test:e2e",
     "test:unit": "vue-cli-service test:unit",
-    "fixiview": "node --experimental-modules --no-warnings tools/fixiview.mjs"
+    "fixiview": "node --experimental-modules --no-warnings tools/fixiview.mjs",
+    "testing": "sh tools/testing.sh"
   },
   "dependencies": {
     "axios": "^0.18.0",
