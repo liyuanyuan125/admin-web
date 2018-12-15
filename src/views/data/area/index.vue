@@ -273,17 +273,17 @@ export default class Main extends View {
     }
   }
 
-  async editStatus({ id, value, loading, reset }: any) {
+  async editStatus({ id, value, showLoading, hideLoading }: any) {
     const item = this.list.find(it => it.id == id)
     try {
-      loading()
+      showLoading()
       await areaSet(id, {areaCode: value})
       item.areaCode = value
       item.areaName = this.cachedMap.statusList[value]
     } catch (ex) {
       this.handleError(ex)
     } finally {
-      reset()
+      hideLoading()
     }
   }
 

@@ -306,16 +306,16 @@ export default class Main extends View {
      !!data[1] ? (this.query.endTime = new Date(data[1]).getTime()) : this.query.endTime = 0
   }
 
-  async editSpecialId({ id, value, loading, reset }: any) {
+  async editSpecialId({ id, value, showLoading, hideLoading }: any) {
     const item = this.list.find(it => it.id == id)
     try {
-      loading()
+      showLoading()
       await updateSpecialId(id, value)
       item.specialId = value
     } catch (ex) {
       this.handleError(ex)
     } finally {
-      reset()
+      hideLoading()
     }
   }
 
@@ -323,29 +323,29 @@ export default class Main extends View {
     this.doSearch()
   }
 
-  async editCategory({ id, value, loading, reset }: any) {
+  async editCategory({ id, value, showLoading, hideLoading }: any) {
     const item = this.list.find(it => it.id == id)
     try {
-      loading()
+      showLoading()
       await updateStatus(id, value)
       item.categoryCode = value
     } catch (ex) {
       this.handleError(ex)
     } finally {
-      reset()
+      hideLoading()
     }
   }
 
-  async editControlStatus({ id, value, loading, reset }: any) {
+  async editControlStatus({ id, value, showLoading, hideLoading }: any) {
     const item = this.list.find(it => it.id == id)
     try {
-      loading()
+      showLoading()
       await updateControlStatus(id, value)
       item.controlStatus = value
     } catch (ex) {
       this.handleError(ex)
     } finally {
-      reset()
+      hideLoading()
     }
   }
 
