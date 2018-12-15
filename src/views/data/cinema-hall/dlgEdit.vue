@@ -100,15 +100,21 @@ import View from '@/util/View'
 import { queryItem, addItem, updateItem } from '@/api/cinemaHall'
 import { slice } from '@/fn/object'
 import { toast } from '@/ui/modal'
+import { filterItemInList, filterListByControlStatus } from '@/util/dealData'
 
 interface Value {
   id: string
   showDlgEdit: boolean
 }
 
-interface Enum {
-  key: number
+interface KeyTextControlStatus {
+  key: string | number
   text: string
+  controlStatus: number
+}
+
+interface KeyTextControlStatusMap {
+  [key: string]: KeyTextControlStatus[]
 }
 
 const defItem = {
@@ -148,7 +154,7 @@ export default class DlgEdit extends View {
 
   item: any = {}
 
-  enumType: any = {
+  enumType: KeyTextControlStatusMap = {
     typeList: [],
     businessTypeList: [],
     projectorTypeList: [],
@@ -215,12 +221,22 @@ export default class DlgEdit extends View {
     try {
       const { data } = await queryItem(query)
 
-      this.item = { ...defItem, ...slice(data.item, Object.keys(defItem)) }
-
-      this.enumType = {
+      this.enumType = filterListByControlStatus({
         ...this.enumType,
         ...slice(data, Object.keys(this.enumType))
-      }
+      })
+
+      this.item = filterItemInList({
+        ...defItem,
+        ...slice(data.item, Object.keys(defItem))
+      }, {
+        typeCode: this.enumType.typeList,
+        businessTypeCode: this.enumType.businessTypeList,
+        projectorTypeCode: this.enumType.projectorTypeList,
+        placementCode: this.enumType.placementList,
+        projectorResolutionCode: this.enumType.projectorResolutionList,
+        projectorBrandCode: this.enumType.projectorBrandList,
+      }, defItem)
 
       // 默认选中第一个
       if (this.item.controlStatus == 0) {

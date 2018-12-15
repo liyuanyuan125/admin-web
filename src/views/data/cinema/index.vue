@@ -35,8 +35,8 @@
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
 
-    <div v-for="(it, i) in helperList" :key="it.id">
-      <DlgEdit v-model="helperList[i]" @done="dlgEditDone" v-if="it.showDlgEdit"/>
+    <div v-for="(it, i) in dlgEditList" :key="it.id">
+      <DlgEdit v-model="dlgEditList[i]" @done="dlgEditDone" v-if="it.showDlgEdit"/>
     </div>
   </div>
 </template>
@@ -53,10 +53,10 @@ import { numberify, numberKeys } from '@/fn/typeCast'
 import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import AreaSelect from '@/components/AreaSelect.vue'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
-import PartPoptipEdit from './partPoptipEdit.vue'
+import PoptipSelect from '@/components/PoptipSelect.vue'
 import DlgEdit from './dlgEdit.vue'
 
-const makeMap = (list: any[]) => toMap(list, 'key', 'text')
+const makeMap = (list: any[]) => toMap(list, 'key')
 
 const defQuery = {
   name: '',
@@ -75,7 +75,7 @@ const defQuery = {
   components: {
     AreaSelect,
     CinemaChainSelect,
-    PartPoptipEdit,
+    PoptipSelect,
     DlgEdit,
   }
 })
@@ -90,8 +90,8 @@ export default class Main extends View {
 
   area: string[] = []
 
-  // 辅助数据
-  helperList: any[] = []
+  // 编辑对话框列表
+  dlgEditList: any[] = []
 
   enumType: any = {
     statusList: [],
@@ -113,11 +113,42 @@ export default class Main extends View {
       { title: '序号', key: 'id', width: 138, align: 'center' },
       { title: '专资ID', key: 'code', width: 70, align: 'center' },
       { title: '影院名称', key: 'shortName', minWidth: 70, align: 'center' },
-      { title: '院线', key: 'chainName', width: 120, align: 'center' },
+      {
+        title: '院线',
+        key: 'chainName',
+        width: 120,
+        align: 'center',
+        render: (hh: any, { row: { chainControlStatus, chainName } }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          return chainControlStatus == 1
+            ? <span>{chainName}</span>
+            : <tooltip content="已下架" placement="top">
+              <span class="deprecated">{chainName}</span>
+            </tooltip>
+          /* tslint:enable */
+        }
+      },
       { title: '省份', key: 'provinceName', width: 80, align: 'center' },
       { title: '城市', key: 'cityName', width: 80, align: 'center' },
       { title: '区县', key: 'countyName', width: 80, align: 'center' },
-      { title: '级别', key: 'gradeName', width: 60, align: 'center' },
+      {
+        title: '级别',
+        key: 'gradeName',
+        width: 60,
+        align: 'center',
+        render: (hh: any, { row: { gradeCode, gradeName } }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          const gradeItem = this.enumMap.grade[gradeCode]
+          return gradeItem == null || gradeItem.controlStatus == 1
+            ? <span>{gradeName}</span>
+            : <tooltip content="已下架" placement="top">
+              <span class="deprecated">{gradeName}</span>
+            </tooltip>
+          /* tslint:enable */
+        }
+      },
       {
         title: '营业状态',
         width: 70,
@@ -127,12 +158,12 @@ export default class Main extends View {
           const h = jsxReactToVue(hh)
           const value = {
             id,
-            key: status,
             text: statusText,
+            value: status,
             list: this.enumType.statusList,
           }
-          return <PartPoptipEdit v-model={value}
-            on-change={this.editStatus.bind(this)}></PartPoptipEdit>
+          return <PoptipSelect v-model={value}
+            on-change={this.editStatus.bind(this)}/>
           /* tslint:enable */
         }
       },
@@ -145,11 +176,11 @@ export default class Main extends View {
           const h = jsxReactToVue(hh)
           const value = {
             id,
-            key: controlStatus,
             text: controlStatusText,
+            value: controlStatus,
             list: this.enumType.controlStatusList,
           }
-          return <PartPoptipEdit v-model={value}
+          return <PoptipSelect v-model={value}
             on-change={this.editControlStatus.bind(this)}/>
           /* tslint:enable */
         }
@@ -177,9 +208,9 @@ export default class Main extends View {
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        gradeName: enumMap.grade[it.gradeCode],
-        statusText: enumMap.status[it.status],
-        controlStatusText: enumMap.controlStatus[it.controlStatus],
+        gradeName: (enumMap.grade[it.gradeCode] || {}).text,
+        statusText: (enumMap.status[it.status] || {}).text,
+        controlStatusText: (enumMap.controlStatus[it.controlStatus] || {}).text,
       }
     })
     return list
@@ -227,7 +258,7 @@ export default class Main extends View {
         ...slice(data, Object.keys(this.enumType))
       }
 
-      this.helperList = this.list.map((it: any) => ({
+      this.dlgEditList = this.list.map((it: any) => ({
         id: it.id,
         showDlgEdit: false,
       }))
@@ -239,10 +270,10 @@ export default class Main extends View {
   }
 
   edit(id: string | number) {
-    let item = this.helperList.find(it => it.id == id)
+    let item = this.dlgEditList.find(it => it.id == id)
     if (item == null && id == 0) {
       item = { id: 0, showDlgEdit: true }
-      this.helperList.push(item)
+      this.dlgEditList.push(item)
     }
     item && (item.showDlgEdit = true)
   }
@@ -251,31 +282,29 @@ export default class Main extends View {
     this.fetch()
   }
 
-  async editStatus({ id, key: newStatus, showLoading }: any) {
+  async editStatus({ id, value, loading, reset }: any) {
     const item = this.list.find(it => it.id == id)
-
-    if (item && item.status != newStatus) {
-      try {
-        showLoading()
-        await updateStatus(id, newStatus)
-        item.status = newStatus
-      } catch (ex) {
-        this.handleError(ex)
-      }
+    try {
+      loading()
+      await updateStatus(id, value)
+      item.status = value
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      reset()
     }
   }
 
-  async editControlStatus({ id, key: newStatus, showLoading }: any) {
+  async editControlStatus({ id, value, loading, reset }: any) {
     const item = this.list.find(it => it.id == id)
-
-    if (item && item.controlStatus != newStatus) {
-      try {
-        showLoading()
-        await updateControlStatus(id, newStatus)
-        item.controlStatus = newStatus
-      } catch (ex) {
-        this.handleError(ex)
-      }
+    try {
+      loading()
+      await updateControlStatus(id, value)
+      item.controlStatus = value
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      reset()
     }
   }
 
@@ -343,6 +372,9 @@ export default class Main extends View {
   }
   /deep/ .row-acts > a {
     margin: 0 4px;
+  }
+  /deep/ .deprecated {
+    color: #ed4014;
   }
 }
 
