@@ -69,10 +69,10 @@ export default class PoptipInput extends View {
       this.$emit('change', {
         id,
         value,
-        loading: () => {
+        showLoading: () => {
           this.loading = true
         },
-        reset: () => {
+        hideLoading: () => {
           this.loading = false
         }
       })

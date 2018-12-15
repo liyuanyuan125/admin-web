@@ -282,29 +282,29 @@ export default class Main extends View {
     this.fetch()
   }
 
-  async editStatus({ id, value, loading, reset }: any) {
+  async editStatus({ id, value, showLoading, hideLoading }: any) {
     const item = this.list.find(it => it.id == id)
     try {
-      loading()
+      showLoading()
       await updateStatus(id, value)
       item.status = value
     } catch (ex) {
       this.handleError(ex)
     } finally {
-      reset()
+      hideLoading()
     }
   }
 
-  async editControlStatus({ id, value, loading, reset }: any) {
+  async editControlStatus({ id, value, showLoading, hideLoading }: any) {
     const item = this.list.find(it => it.id == id)
     try {
-      loading()
+      showLoading()
       await updateControlStatus(id, value)
       item.controlStatus = value
     } catch (ex) {
       this.handleError(ex)
     } finally {
-      reset()
+      hideLoading()
     }
   }
 

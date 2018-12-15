@@ -188,16 +188,16 @@ export default class Main extends View {
     this.$router.push({ name: 'data-film' })
   }
 
-  async change({ id, value, loading, reset }: any) {
+  async change({ id, value, showLoading, hideLoading }: any) {
     try {
-      loading()
+      showLoading()
       await updateStatus(id, value)
       this.value.value = value
       this.value.text = this.cachedMap.categoryList[value]
     } catch (ex) {
       this.handleError(ex)
     } finally {
-      reset()
+      hideLoading()
     }
   }
 }
