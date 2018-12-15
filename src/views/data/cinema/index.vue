@@ -53,7 +53,7 @@ import { numberify, numberKeys } from '@/fn/typeCast'
 import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import AreaSelect from '@/components/AreaSelect.vue'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
-import PartPoptipEdit from './partPoptipEdit.vue'
+import PoptipSelect from '@/components/PoptipSelect.vue'
 import DlgEdit from './dlgEdit.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'key')
@@ -75,7 +75,7 @@ const defQuery = {
   components: {
     AreaSelect,
     CinemaChainSelect,
-    PartPoptipEdit,
+    PoptipSelect,
     DlgEdit,
   }
 })
@@ -158,12 +158,12 @@ export default class Main extends View {
           const h = jsxReactToVue(hh)
           const value = {
             id,
-            key: status,
             text: statusText,
+            value: status,
             list: this.enumType.statusList,
           }
-          return <PartPoptipEdit v-model={value}
-            on-change={this.editStatus.bind(this)}></PartPoptipEdit>
+          return <PoptipSelect v-model={value}
+            on-change={this.editStatus.bind(this)}/>
           /* tslint:enable */
         }
       },
@@ -176,11 +176,11 @@ export default class Main extends View {
           const h = jsxReactToVue(hh)
           const value = {
             id,
-            key: controlStatus,
             text: controlStatusText,
+            value: controlStatus,
             list: this.enumType.controlStatusList,
           }
-          return <PartPoptipEdit v-model={value}
+          return <PoptipSelect v-model={value}
             on-change={this.editControlStatus.bind(this)}/>
           /* tslint:enable */
         }
@@ -282,31 +282,29 @@ export default class Main extends View {
     this.fetch()
   }
 
-  async editStatus({ id, key: newStatus, showLoading }: any) {
+  async editStatus({ id, value, loading, reset }: any) {
     const item = this.list.find(it => it.id == id)
-
-    if (item && item.status != newStatus) {
-      try {
-        showLoading()
-        await updateStatus(id, newStatus)
-        item.status = newStatus
-      } catch (ex) {
-        this.handleError(ex)
-      }
+    try {
+      loading()
+      await updateStatus(id, value)
+      item.status = value
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      reset()
     }
   }
 
-  async editControlStatus({ id, key: newStatus, showLoading }: any) {
+  async editControlStatus({ id, value, loading, reset }: any) {
     const item = this.list.find(it => it.id == id)
-
-    if (item && item.controlStatus != newStatus) {
-      try {
-        showLoading()
-        await updateControlStatus(id, newStatus)
-        item.controlStatus = newStatus
-      } catch (ex) {
-        this.handleError(ex)
-      }
+    try {
+      loading()
+      await updateControlStatus(id, value)
+      item.controlStatus = value
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      reset()
     }
   }
 
