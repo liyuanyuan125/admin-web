@@ -243,7 +243,7 @@ export default class DlgEdit extends View {
       }, defItem)
 
       // 清除非法的 chainId
-      if (this.item.chainControlStatus != 1) {
+      if (data.item.chainControlStatus != 1) {
         this.item.chainId = ''
       }
 

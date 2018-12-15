@@ -112,22 +112,23 @@ export default class Main extends View {
     return  [
       { title: '序号', key: 'id', width: 138, align: 'center' },
       { title: '专资ID', key: 'code', width: 70, align: 'center' },
+      { title: '影院名称', key: 'shortName', minWidth: 70, align: 'center' },
       {
-        title: '影院名称',
-        minWidth: 70,
+        title: '院线',
+        key: 'chainName',
+        width: 120,
         align: 'center',
-        render: (hh: any, { row: { chainControlStatus, shortName } }: any) => {
+        render: (hh: any, { row: { chainControlStatus, chainName } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
           return chainControlStatus == 1
-            ? <span>{shortName}</span>
+            ? <span>{chainName}</span>
             : <tooltip content="已下架" placement="top">
-              <span class="deprecated">{shortName}</span>
+              <span class="deprecated">{chainName}</span>
             </tooltip>
           /* tslint:enable */
         }
       },
-      { title: '院线', key: 'chainName', width: 120, align: 'center' },
       { title: '省份', key: 'provinceName', width: 80, align: 'center' },
       { title: '城市', key: 'cityName', width: 80, align: 'center' },
       { title: '区县', key: 'countyName', width: 80, align: 'center' },
