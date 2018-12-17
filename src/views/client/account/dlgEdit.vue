@@ -7,32 +7,31 @@
     @on-cancel="cancel('dataForm')" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
       <FormItem label="用户账号" prop="email">
-        <!-- <Input style="width:240px" v-model="dataForm.email"></Input> -->
+        <Input style="width:240px" v-model="dataForm.email"></Input>
       </FormItem>
       <FormItem label="姓名" prop="name">
-        <!-- <Input style="width:240px" v-model="dataForm.email"></Input> -->
+        <Input style="width:240px" v-model="dataForm.name"></Input>
       </FormItem>
       <FormItem label="手机号" prop="mobile">
-        <!-- <Input style="width:240px" v-model="dataForm.email"></Input> -->
+        <Input style="width:240px" v-model="dataForm.mobile"></Input>
       </FormItem>
       <FormItem label="密码" prop="password">
-        <!-- <Input style="width:240px" v-model="dataForm.password"></Input> -->
+        <Input style="width:240px" v-model="dataForm.password"></Input>
       </FormItem>
       <FormItem label="重复密码" prop="passwords">
-        <!-- <Input style="width:240px" v-model="dataForm.passwords"></Input> -->
+        <Input style="width:240px" v-model="dataForm.passwords"></Input>
       </FormItem>
-      <!-- <FormItem label="所属公司" prop="companyId">
+      <FormItem label="所属公司" prop="companyId">
         <Select style="width:240px">
-          <Option>456465465</Option>
-          <Option>131323313</Option>
-          <Option>789789798</Option>
+          <Option v-for="it in companys" :value="123123" :label="123123">123123</Option>
         </Select>
-      </FormItem> -->
+      </FormItem>
       <FormItem label="启用状态" prop="status">
-        <!-- <RadioGroup v-model="dataForm.status" > -->
+        <RadioGroup v-model="dataForm.status" >
           <!-- <Radio label="启用"></Radio>
-          <Radio label="停用"></Radio>
-        </RadioGroup> -->
+          <Radio label="停用"></Radio> -->
+          <Radio v-for="it in list"  v-if="it.key!=0" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
+        </RadioGroup>
       </FormItem>
     </Form>
     <div slot="footer" class="dialog-footer">
@@ -45,7 +44,8 @@
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop } from 'vue-property-decorator'
-import { dataFrom , add , set} from '@/api/dict'
+import { queryItem , queryList , dataFrom , addList , companysList } from '@/api/account'
+import { clean } from '@/fn/object'
 import { warning , success, toast } from '@/ui/modal'
 import View from '@/util/View'
 const defQuery = {
@@ -56,7 +56,7 @@ const dataForm = {
   password: '',
   name: '',
   mobile: '',
-  companyId: 1,
+  companyId: '123132132',
   status: 1
 }
 
@@ -64,10 +64,13 @@ const dataForm = {
 export default class ComponentMain extends View {
   // @Prop({ type: Object }) cinemaOnes: any
   query = { ...defQuery }
-  // oldQuery: any = null
+  oldQuery: any = {}
 
   showDlg = false
   id = 0
+  list = []
+  companys = []
+
   ruleValidate = {
     name: [
         { required: true, message: '请输入分类名称', trigger: 'blur' }
@@ -78,36 +81,29 @@ export default class ComponentMain extends View {
     passwords: [
         { required: true, message: '请重新输入密码' }
     ],
-    companyId: [
-        { required: true, message: '请选择所属公司' }
+    mobile: [
+        { required: true, message: '请输入手机号码' }
     ],
+    // companyId: [
+    //     { required: true, message: '请选择所属公司' }
+    // ],
     status: [
         { required: true }
     ]
   }
+
   dataForm = { ...dataForm }
+
   init(id: number) {
     this.showDlg = true
     this.id = id || 0
     ; (this.$refs.dataForm as any).resetFields()
-    // this.$nextTick(async () => {
-      // const dataForms: string = 'dataForm'
-      // const myThis: any = this
-      // myThis.$refs[dataForms].resetFields()
-      if (this.id) {
-        // const {data: {
-        //   items: list
-        // }} = await dataFrom({ id })
-        // this.dataForm.email = this.cinemaOnes.email
-        // this.dataForm.code = this.cinemaOnes.code
-      }
-    // })
+    if (this.id) {
+    }
   }
 
   cancel(dataForms: string) {
     this.showDlg = false
-    // const myThis: any = this
-    // myThis.$refs[dataForms].resetFields()
     ; (this.$refs.dataForm as any).resetFields()
   }
 
@@ -120,9 +116,9 @@ export default class ComponentMain extends View {
           id: this.id,
           ...this.dataForm
         }
-        const title = !this.id ? '添加' : '编辑'
+        const title = '添加'
         try {
-           const res = !this.id ? await add (query) : await set (query)
+           const res =  await addList (query)
            toast('操作成功')
            this.showDlg = false
            this.$emit('done')
@@ -133,9 +129,49 @@ export default class ComponentMain extends View {
       }
     })
   }
+
+  get cachedMap() {
+    return {
+    }
+  }
+
+  get tableData() {
+    const cachedMap = this.cachedMap
+    const list = (this.list || []).map((it: any) => {
+      return {
+        ...it,
+      }
+    })
+    // console.log(list)
+    return list
+  }
+
   mounted() {
     const { id } = this.$route.params
     this.query.categoryId = this.id
+    this.doSearch()
+  }
+
+  async doSearch() {
+    this.oldQuery = { ...this.query }
+    const query = clean({ ...this.query })
+    try {
+      const { data: {
+        statusList: list,
+        // items: companys
+      } } = await queryList(query)
+      const { data: {
+        // statusList: list,
+        items: companys
+      } } = await companysList(query)
+      this.list = list
+      this.companys = companys
+      // console.log(companys)
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      // this.loading = false
+    }
   }
 }
 </script>

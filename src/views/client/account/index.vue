@@ -5,7 +5,7 @@
         <form class="form flex-1" @submit.prevent="search">
           <LazyInput v-model="query.id" placeholder="账号ID" class="input input-corp-id"
             @on-enter="ev => query.id = ev.target.value" @on-blur="ev => query.id = ev.target.value"/>
-            <LazyInput type="email" v-model="query.email" placeholder="账号" class="input input-corp-id"
+          <LazyInput type="email" v-model="query.email" placeholder="账号" class="input input-corp-id"
             @on-enter="ev => query.email = ev.target.value" @on-blur="ev => query.email = ev.target.value"/>
           <LazyInput v-model="query.companyName" placeholder="公司名称" class="input"/>
           <DatePicker type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="注册时间" class="input" style="width: 200px"></DatePicker>
@@ -41,7 +41,7 @@
 import { Component, Watch } from 'vue-property-decorator'
 import View from '@/util/View'
 import { get } from '@/fn/ajax'
-import { queryList } from '@/api/account'
+import { queryList , setList} from '@/api/account'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
@@ -157,7 +157,7 @@ export default class Main extends View {
   ]
   get cachedMap() {
     return {
-      status: makeMap(this.statusList),
+      status: this.statusList,
     }
   }
 
@@ -166,7 +166,7 @@ export default class Main extends View {
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        statusText: cachedMap.status[it.status],
+        statusText: it.status == 1 ? '启用' : '停用',
       }
     })
     return list
@@ -227,11 +227,12 @@ export default class Main extends View {
       const { data: {
         items: list,
         totalCount: total,
-        statusList,
+        statusList: statusList,
       } } = await queryList(query)
       this.list = list
       this.total = total
       this.statusList = statusList
+      // console.log
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -247,10 +248,11 @@ export default class Main extends View {
       myThis.$refs.addOrUpdate.init(id)
     })
   }
+  // 修改状态
   change(id: number, row: any) {
     try {
       confirm('您确定' + (row.statusText == '启用' ? '停用' : '启用') + '当前状态信息吗？')
-      // await dels({id})
+      // await setList({id})
       // this.$Message.success({
       //   content: `删除成功`,
       // })
