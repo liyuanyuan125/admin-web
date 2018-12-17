@@ -1,10 +1,18 @@
 type Handler = (...args: any[]) => any
 
-export default class EventClass {
-  _eventMap: any = {}
+interface EventMap {
+  [key: string]: Handler[]
+}
 
-  on(name: string|object, handler?: Handler) {
-    const map = typeof name === 'string' ? { [name]: handler } : name
+interface HandlerMap {
+  [key: string]: Handler
+}
+
+export default class EventClass {
+  private _eventMap: EventMap = {}
+
+  on(name: string | HandlerMap, handler?: Handler) {
+    const map = typeof name === 'string' ? { [name]: handler! } : name
     Object.entries(map).forEach(([key, val]) => {
       (this._eventMap[key] || (this._eventMap[key] = [])).push(val)
     })
@@ -12,7 +20,7 @@ export default class EventClass {
   }
 
   off(name: string, handler?: Handler) {
-    const list: Handler[] = this._eventMap[name] || []
+    const list = this._eventMap[name] || []
     if (handler != null) {
       const index = list.indexOf(handler)
       index > -1 && list.splice(index, 1)
@@ -23,7 +31,7 @@ export default class EventClass {
   }
 
   emit(name: string, ...args: any[]) {
-    (this._eventMap[name] || []).some((handler: Handler) => {
+    (this._eventMap[name] || []).some(handler => {
       return handler.apply(this, args) === false
     })
     return this
