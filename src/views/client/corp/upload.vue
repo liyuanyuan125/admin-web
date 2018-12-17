@@ -20,7 +20,7 @@
           </div>
       </div>
     </div>
-    <div v-if="!types">
+    <div v-if="!types" style="display: inline-block">
       <Upload
         ref="upload"
         :show-upload-list="false"
@@ -112,7 +112,7 @@ export default class ComponentMain extends View {
 <style lang="less" scoped>
 .upload-box {
   background: #ecf0f4;
-  padding-left: 8px;
+  padding: 8px;
 }
 .upload-list {
   display: inline-block;
@@ -126,7 +126,7 @@ export default class ComponentMain extends View {
   background: #fff;
   position: relative;
   box-shadow: 0 1px 1px rgba(0, 0, 0, .2);
-  margin: 8px 8px 8px 0;
+  margin-right: 8px;
 }
 .upload-list img {
   width: 100%;
@@ -144,6 +144,7 @@ export default class ComponentMain extends View {
 .upload-list:hover .upload-list-cover {
   display: block;
 }
+
 .upload-list-cover i {
   color: #fff;
   font-size: 20px;

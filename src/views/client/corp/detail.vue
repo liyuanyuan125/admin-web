@@ -53,25 +53,23 @@
         </Row>
         <Row>
           <Col span="2"><div>客户类型</div></Col>
-          <Col span="6">
+          <Col span="4">
             <div class="typeBox">
                广告主
               <div class="right">直播</div>
             </div>
           </Col>
-          <Col span="6" offset="2">
+          <Col span="4" offset="2">
             <div class="typeBox">
               广告主
               <div class="right">直播</div>
             </div>
           </Col>
         </Row>
-        <Row>
+        <Row class="cinema-button">
           <Col span="2"><div>关联影院</div></Col>
-          <Col span="10">
-            <span>
+          <Col span="12">
               <PartBindCinema type="1" /> 
-            </span>
           </Col>
         </Row>
       </Row>
@@ -148,6 +146,10 @@ export default class Main extends View {
   /deep/ span {
     display: inline-block;
     line-height: 50px;
+    color: #999;
+  }
+  /deep/ .cinema-button {
+    margin-bottom: 20px;
   }
 }
 .check-select-group {

@@ -49,6 +49,7 @@ import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { clean } from '@/fn/object'
 import { queryList } from '@/api/corp'
+import { confirm } from '@/ui/modal'
 
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
@@ -145,8 +146,9 @@ export default class Main extends View {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         const edit = statusString == 1 ? '编辑' : '审核'
+        const status = statusString == 1 ? '启用' : '停用'
         return <div class='row-acts'>
-          <router-link class="operation" to={{ name: 'client-corp-detail', params: { id } }}>删除</router-link>
+          <a class="operation" on-click={this.editStatus.bind(this, id, status)} to={{ name: 'client-corp-detail', params: { id } }}>{status}</a>
           <router-link class="operation" to={{ name: 'client-corp-edit', params: { id } }}>{edit}</router-link>
           <router-link class="operation" to={{ name: 'client-corp-detail', params: { id } }}>详情</router-link>
         </div>
@@ -225,6 +227,16 @@ export default class Main extends View {
   edit(id: number) {
     const params: any = id > 0 ? { id } : {}
     this.$router.push({ name: 'client-corp-edit', params })
+  }
+
+  async editStatus(id: number, status: number) {
+    const statu = status == 1 ? '启用' : '停用'
+    try {
+      await confirm(`确定要${statu}该项吗？`)
+    } catch (ex) {
+      this.handleError(ex)
+    }
+
   }
 
   @Watch('query', { deep: true })

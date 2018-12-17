@@ -64,7 +64,7 @@ export default class ComponentMain extends View {
     const add: any = [
        {
           title: '操作',
-          width: 58,
+          width: 70,
           align: 'center',
           render: (hh: any, { row: { id } }: any) => {
             /* tslint:disable */
