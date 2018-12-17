@@ -41,7 +41,7 @@ import { numberify, numberKeys } from '@/fn/typeCast'
 import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import { queryList, arealist, areaSet, dels } from '@/api/dateArea'
 import PoptipSelect from '@/components/PoptipSelect.vue'
-import { confirm } from '@/ui/modal'
+import { confirm, toast } from '@/ui/modal'
 import DlgEdit from './dlgEdit.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'code', 'name')
@@ -224,12 +224,12 @@ export default class Main extends View {
     await confirm('您确定删除当前地区信息吗？')
     try {
       await dels(id)
-      this.$Message.success({
-        content: `删除成功`,
-      })
+      toast(`删除成功`)
       this.reloadSearch()
     } catch (ex) {
-      this.handleError(ex)
+      setTimeout(() => {
+        this.handleError(ex)
+      }, 500)
     }
   }
 
