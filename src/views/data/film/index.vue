@@ -37,8 +37,8 @@ import { numberify, numberKeys } from '@/fn/typeCast'
 import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import { queryList, updateControlStatus, updateStatus, updateSpecialId, reda, syncData } from '@/api/film'
 import { toThousands } from '@/util/dealData'
-import PartPoptipEdit from '../cinema/partPoptipEdit.vue'
-import InputEdit from './inputEdit.vue'
+import PoptipSelect from '@/components/PoptipSelect.vue'
+import PoptipInput from '@/components/PoptipInput.vue'
 import DlgEdit from './dlgEdit.vue'
 import { loading, toast } from '@/ui/modal'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
@@ -56,8 +56,8 @@ const defQuery = {
 @Component({
   components: {
     DlgEdit,
-    PartPoptipEdit,
-    InputEdit
+    PoptipSelect,
+    PoptipInput
   }
 })
 export default class Main extends View {
@@ -97,11 +97,12 @@ export default class Main extends View {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
           const value = {
-              id,
-              text: specialId,
-              value: specialId,
+            id,
+            text: specialId,
+            value: specialId,
           }
-          return <InputEdit v-model={value} on-change={this.codeStatus.bind(this)}/>
+          return <PoptipInput v-model={value}
+            on-change={this.editSpecialId.bind(this)}/>
           /* tslint:enable */
         }
       },
@@ -208,13 +209,13 @@ export default class Main extends View {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
           const value = {
-              id,
-              key: categoryCode,
-              text: categoryName,
-              list: this.categoryList,
+            id,
+            text: categoryName,
+            value: categoryCode,
+            list: this.categoryList,
           }
-          return <PartPoptipEdit v-model={value}
-              on-change={this.editStatus.bind(this)}/>
+          return <PoptipSelect v-model={value}
+            on-change={this.editCategory.bind(this)}/>
           /* tslint:enable */
         }
       },
@@ -228,11 +229,11 @@ export default class Main extends View {
           const h = jsxReactToVue(hh)
           const value = {
               id,
-              key: controlStatus,
               text: controlStatusString,
+              value: controlStatus,
               list: this.controlList.slice(1),
           }
-          return <PartPoptipEdit v-model={value}
+          return <PoptipSelect v-model={value}
               on-change={this.editControlStatus.bind(this)}/>
           /* tslint:enable */
         }
@@ -266,7 +267,9 @@ export default class Main extends View {
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        category: cachedMap.categoryList[it.categoryName],
+        // category: cachedMap.categoryList[it.categoryName],
+        categoryName: cachedMap.categoryList[it.categoryCode],
+        controlStatusString: cachedMap.controlList[it.controlStatus],
       }
     })
     return list
@@ -296,37 +299,23 @@ export default class Main extends View {
     this.showTime = []
     this.query = { ...defQuery, pageSize }
   }
+
   dateChange(data: any) {
      // 获取时间戳
      !!data[0] ? (this.query.startTime = new Date(data[0]).getTime()) : this.query.startTime = 0
      !!data[1] ? (this.query.endTime = new Date(data[1]).getTime()) : this.query.endTime = 0
   }
-  async editStatus({ id, key: newStatus, showLoading, hideLoading }: any) {
 
+  async editSpecialId({ id, value, showLoading, hideLoading }: any) {
     const item = this.list.find(it => it.id == id)
-    if (item && item.categoryCode != newStatus) {
-      try {
-        showLoading()
-        await updateStatus(id, newStatus)
-        item.categoryCode = newStatus
-        item.categoryName = this.cachedMap.categoryList[newStatus]
-      } catch (ex) {
-        hideLoading()
-        this.handleError(ex)
-      }
-    }
-  }
-  async codeStatus({ id, value: newStatus, showLoading, hideLoading }: any) {
-    const item = this.list.find(it => it.id == id)
-    if (item && item.categoryCode != newStatus) {
-      try {
-        showLoading()
-        await updateSpecialId(id, newStatus)
-        item.specialId = newStatus
-      } catch (ex) {
-        hideLoading
-        this.handleError(ex)
-      }
+    try {
+      showLoading()
+      await updateSpecialId(id, value)
+      item.specialId = value
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      hideLoading()
     }
   }
 
@@ -334,18 +323,29 @@ export default class Main extends View {
     this.doSearch()
   }
 
-  async editControlStatus({ id, key: newStatus, showLoading, hideLoading }: any) {
-    const items = this.list.find(it => it.id == id)
-    if (items && items.controlStatus != newStatus) {
-      try {
-        showLoading()
-        await updateControlStatus(id, newStatus)
-        items.controlStatus = newStatus
-        items.controlStatusString = this.cachedMap.controlList[items.controlStatus]
-      } catch (ex) {
-        hideLoading()
-        this.handleError(ex)
-      }
+  async editCategory({ id, value, showLoading, hideLoading }: any) {
+    const item = this.list.find(it => it.id == id)
+    try {
+      showLoading()
+      await updateStatus(id, value)
+      item.categoryCode = value
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      hideLoading()
+    }
+  }
+
+  async editControlStatus({ id, value, showLoading, hideLoading }: any) {
+    const item = this.list.find(it => it.id == id)
+    try {
+      showLoading()
+      await updateControlStatus(id, value)
+      item.controlStatus = value
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      hideLoading()
     }
   }
 

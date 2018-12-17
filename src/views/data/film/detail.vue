@@ -60,7 +60,7 @@
       </dl>
       <dl>
         <dt>系统分类</dt>
-        <dd><PartPoptipEdit v-model="value" @change="change" /></dd>
+        <dd><PoptipSelect v-model="value" @change="change" /></dd>
       </dl>
       <dl>
         <dt>MtimeID</dt>
@@ -117,7 +117,7 @@
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component } from 'vue-property-decorator'
 import { getIdDetal } from '@/api/film'
-import PartPoptipEdit from '../cinema/partPoptipEdit.vue'
+import PoptipSelect from '@/components/PoptipSelect.vue'
 import View from '@/util/View'
 import moment from 'moment'
 import { toThousands } from '@/util/dealData'
@@ -130,7 +130,7 @@ const timeFormat = 'YYYY/MM/DD'
 
 @Component({
   components: {
-    PartPoptipEdit,
+    PoptipSelect,
     ImgModel
   }
 })
@@ -140,6 +140,7 @@ export default class Main extends View {
   value: any = {}
   categoryList = []
   show = false
+
   created() {
     if (!sessionStorage.getItem('film-id')) {
       sessionStorage.setItem('film-id', JSON.stringify(this.$route.params))
@@ -163,17 +164,17 @@ export default class Main extends View {
 
   async detils() {
     try {
-       const res = await getIdDetal(this.id)
-       this.detil = res.data
-       this.value = {
-          id: this.id.id,
-          key: this.detil.categoryCode,
-          text: this.detil.categoryName,
-          list: this.detil.categoryList,
-       }
-       this.show = true
-      } catch (ex) {
-        this.handleError(ex)
+      const res = await getIdDetal(this.id)
+      this.detil = res.data
+      this.value = {
+        id: this.id.id,
+        text: this.detil.categoryName,
+        value: this.detil.categoryCode,
+        list: this.detil.categoryList,
+      }
+      this.show = true
+    } catch (ex) {
+      this.handleError(ex)
     }
   }
 
@@ -187,18 +188,16 @@ export default class Main extends View {
     this.$router.push({ name: 'data-film' })
   }
 
-  async change({ id, key: newStatus, showLoading, hideLoading }: any) {
-    if (this.detil && this.detil.categoryCode != newStatus) {
-      try {
-        showLoading()
-        await updateStatus(id, newStatus)
-        this.value.text = this.cachedMap.categoryList[newStatus]
-        this.value.key = newStatus
-        hideLoading()
-      } catch (ex) {
-        hideLoading()
-        this.handleError(ex)
-      }
+  async change({ id, value, showLoading, hideLoading }: any) {
+    try {
+      showLoading()
+      await updateStatus(id, value)
+      this.value.value = value
+      this.value.text = this.cachedMap.categoryList[value]
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      hideLoading()
     }
   }
 }

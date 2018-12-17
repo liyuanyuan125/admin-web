@@ -55,11 +55,12 @@
 <script lang="tsx">
 import { Component, Watch } from 'vue-property-decorator'
 import View from '@/util/View'
+import { get } from '@/fn/ajax'
 import { queryItem } from '@/api/account'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
-import { clean } from '@/fn/object'
+import { slice , clean } from '@/fn/object'
 import dlgChange from './dlgChange.vue'
 
 
@@ -67,7 +68,7 @@ const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
 const defQuery = {
-  id: null,
+  id: '',
   companytId: '',
   phoneNmber: null,
   // corpName: '',
@@ -154,9 +155,10 @@ export default class Main extends View {
     return list
   }
   mounted() {
-    const { id } = this.$route.params
-    this.query.companytId = id
-    // this.doSearch()
+    // const { id } = this.$route.params
+    // this.query.id = id
+    // console.log(id)
+    this.doSearch()
   }
   dlgEditDone() {
     this.doSearch()
@@ -192,26 +194,26 @@ export default class Main extends View {
   }
 
   async doSearch() {
-    if (this.loading) {
-      return
-    }
+    // if (this.loading) {
+    //   return
+    // }
 
     this.oldQuery = { ...this.query }
 
-    this.loading = true
+    // this.loading = true
 
     const query = clean({ ...this.query })
     try {
       const { data: {
-        childAccountList: list,
-        parentAccount: prelist,
-      } } = await queryItem(query)
+        items: list,
+        items: prelist,
+      } } = await queryItem(this.$route.params.id)
       this.list = list
       this.prelist = prelist
     } catch (ex) {
       this.handleError(ex)
     } finally {
-      this.loading = false
+      // this.loading = false
     }
   }
   @Watch('query', { deep: true })

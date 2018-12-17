@@ -9,10 +9,13 @@
     "lint:css": "stylelint '**/*.vue' --syntax less",
     "test:e2e": "vue-cli-service test:e2e",
     "test:unit": "vue-cli-service test:unit",
-    "fixiview": "node --experimental-modules --no-warnings tools/fixiview.mjs"
+    "fixiview": "node --experimental-modules --no-warnings tools/fixiview.mjs",
+    "testing": "sh tools/testing.sh"
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "deep-extend": "^0.6.0",
+    "exif-js": "^2.3.0",
     "iview": "^3.1.5",
     "js-cookie": "^2.2.0",
     "lodash": "^4.17.11",
@@ -25,6 +28,7 @@
   },
   "devDependencies": {
     "@types/chai": "^4.1.0",
+    "@types/deep-extend": "^0.4.31",
     "@types/js-cookie": "^2.2.0",
     "@types/mocha": "^5.2.4",
     "@types/mockjs": "^1.0.2",
