@@ -6,29 +6,33 @@
     :title="!id ? '新建' : '编辑'"
     @on-cancel="cancel('dataForm')" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
-      <FormItem label="用户账号" prop="name">
-        <Input style="width:240px" v-model="dataForm.name"></Input>
+      <FormItem label="用户账号" prop="email">
+        <!-- <Input style="width:240px" v-model="dataForm.email"></Input> -->
+      </FormItem>
+      <FormItem label="姓名" prop="name">
+        <!-- <Input style="width:240px" v-model="dataForm.email"></Input> -->
+      </FormItem>
+      <FormItem label="手机号" prop="mobile">
+        <!-- <Input style="width:240px" v-model="dataForm.email"></Input> -->
       </FormItem>
       <FormItem label="密码" prop="password">
-        <Input style="width:240px" v-model="dataForm.password"></Input>
+        <!-- <Input style="width:240px" v-model="dataForm.password"></Input> -->
       </FormItem>
       <FormItem label="重复密码" prop="passwords">
-        <Input style="width:240px" v-model="dataForm.passwords"></Input>
+        <!-- <Input style="width:240px" v-model="dataForm.passwords"></Input> -->
       </FormItem>
-      <FormItem label="所属公司" prop="company">
+      <!-- <FormItem label="所属公司" prop="companyId">
         <Select style="width:240px">
-          <!-- <Option v-for="item in cityList" :value="item.value">{{ item.label }}</Option> -->
           <Option>456465465</Option>
           <Option>131323313</Option>
           <Option>789789798</Option>
         </Select>
-      </FormItem>
-      <FormItem label="启用状态" prop="enableStatus">
-        <RadioGroup v-model="dataForm.enableStatus" >
-          <!-- <Radio v-for="it in list" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio> -->
-          <Radio label="启用"></Radio>
+      </FormItem> -->
+      <FormItem label="启用状态" prop="status">
+        <!-- <RadioGroup v-model="dataForm.status" > -->
+          <!-- <Radio label="启用"></Radio>
           <Radio label="停用"></Radio>
-        </RadioGroup>
+        </RadioGroup> -->
       </FormItem>
     </Form>
     <div slot="footer" class="dialog-footer">
@@ -48,9 +52,12 @@ const defQuery = {
   categoryId: 0,
 }
 const dataForm = {
+  email: '',
+  password: '',
   name: '',
-  code: '',
-  enableStatus: 1
+  mobile: '',
+  companyId: 1,
+  status: 1
 }
 
 @Component
@@ -71,10 +78,10 @@ export default class ComponentMain extends View {
     passwords: [
         { required: true, message: '请重新输入密码' }
     ],
-    company: [
+    companyId: [
         { required: true, message: '请选择所属公司' }
     ],
-    enableStatus: [
+    status: [
         { required: true }
     ]
   }
@@ -82,24 +89,26 @@ export default class ComponentMain extends View {
   init(id: number) {
     this.showDlg = true
     this.id = id || 0
-    this.$nextTick(async () => {
-      const dataForms: string = 'dataForm'
-      const myThis: any = this
-      myThis.$refs[dataForms].resetFields()
+    ; (this.$refs.dataForm as any).resetFields()
+    // this.$nextTick(async () => {
+      // const dataForms: string = 'dataForm'
+      // const myThis: any = this
+      // myThis.$refs[dataForms].resetFields()
       if (this.id) {
         // const {data: {
         //   items: list
         // }} = await dataFrom({ id })
-        // this.dataForm.name = this.cinemaOnes.name
+        // this.dataForm.email = this.cinemaOnes.email
         // this.dataForm.code = this.cinemaOnes.code
       }
-    })
+    // })
   }
 
   cancel(dataForms: string) {
     this.showDlg = false
-    const myThis: any = this
-    myThis.$refs[dataForms].resetFields()
+    // const myThis: any = this
+    // myThis.$refs[dataForms].resetFields()
+    ; (this.$refs.dataForm as any).resetFields()
   }
 
   // 表单提交

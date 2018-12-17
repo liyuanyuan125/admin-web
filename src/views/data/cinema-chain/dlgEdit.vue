@@ -1,5 +1,5 @@
 <template>
-  <Modal 
+  <Modal
     v-model='showDlg'
     :transfer='true'
     :width='420'
