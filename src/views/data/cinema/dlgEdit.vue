@@ -121,9 +121,9 @@ const defItem: any = {
   controlStatus: 0,
   chainId: '',
   gradeCode: '',
-  provinceId: 0,
-  cityId: 0,
-  countyId: 0,
+  provinceId: '0',
+  cityId: '0',
+  countyId: '0',
   address: '',
   softwareCode: '',
   zipCode: '',
@@ -243,8 +243,8 @@ export default class DlgEdit extends View {
       }, defItem)
 
       // 清除非法的 chainId
-      if (data.item.chainControlStatus != 1) {
-        this.item.chainId = ''
+      if (data.item && data.item.chainControlStatus != 1) {
+        this.item.chainId = defItem.chainId
       }
 
       const { provinceId = '0', cityId = '0', countyId = '0' } = this.item
