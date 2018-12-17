@@ -28,7 +28,7 @@ export default class Main extends View {
       begin: () => {
         // 开始上传，执行开始动作，比如显示 loading 之类的
       },
-      progress: (e: ProgressEvent) {
+      progress: (e: ProgressEvent) => {
         const { loaded, total } = e
         const percent = Math.floor(loaded * 100 / total)
         // loaded 是已上传的字节数，total 是总字节数，percent 是计算出来的百分比
