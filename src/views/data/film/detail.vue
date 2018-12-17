@@ -135,7 +135,7 @@ const timeFormat = 'YYYY/MM/DD'
   }
 })
 export default class Main extends View {
-  id: any = null
+  nextId: any = null
   detil: any = {}
   value: any = {}
   categoryList = []
@@ -146,7 +146,7 @@ export default class Main extends View {
       sessionStorage.setItem('film-id', JSON.stringify(this.$route.params))
     }
     const id: any = sessionStorage.getItem('film-id')
-    this.id = this.$route.params.id ? this.$route.params : JSON.parse(id)
+    this.nextId = this.$route.params.id ? this.$route.params : JSON.parse(id)
     this.detils()
   }
 
@@ -164,10 +164,10 @@ export default class Main extends View {
 
   async detils() {
     try {
-      const res = await getIdDetal(this.id)
+      const res = await getIdDetal(this.nextId)
       this.detil = res.data
       this.value = {
-        id: this.id.id,
+        id: this.nextId.id,
         text: this.detil.categoryName,
         value: this.detil.categoryCode,
         list: this.detil.categoryList,
@@ -185,7 +185,7 @@ export default class Main extends View {
   }
 
   goback() {
-    this.$router.push({ name: 'data-film' })
+    this.$router.go(-1)
   }
 
   async change({ id, value, showLoading, hideLoading }: any) {

@@ -48,8 +48,8 @@ export async function updateControlStatus(id: string, controlStatus: number) {
   return res
 }
 
-export async function getIdDetal(id: any) {
-  const res = await get(`/theater/movies/${id.id}`)
+export async function getIdDetal(nextId: any) {
+  const res = await get(`/theater/movies/${nextId.id}`)
   return res
 }
 

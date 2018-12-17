@@ -1,5 +1,7 @@
 <template>
-  <div class="page">about</div>
+  <div class="page">
+    <input type="file" @change="onChange">
+  </div>
 </template>
 
 <script lang="ts">
@@ -7,41 +9,18 @@ import { Component } from 'vue-property-decorator'
 import View from '@/util/View'
 import event from '@/fn/event'
 
-import { get, post } from '@/fn/ajax'
+import Uploader, { ImageType, UploaderOptions } from '@/util/Uploader'
 
 @Component
 export default class Main extends View {
-  async mounted() {
-    // const { data } = await get('/mock/29230/demo/user_list', {
-    //   page: 8,
-    //   pageSize: 88,
-    //   array: [1,2,3],
-    //   object: {
-    //     name: 'lip',
-    //     role: [8, 9, 10]
-    //   }
-    // })
-    // debugger
-
-    // event.on('ajax800', (ex) => {
-    //   debugger
-    // })
-
-    try {
-      const { data } = await get('/mock/40/demo/error')
-      debugger
-    } catch (ex) {
-      const { code, msg } = ex
-      ; ((this as any)[`ajax${code}`] || this.handleError).call(this, ex)
-    }
-  }
-
-  ajax900100(ex: any) {
-    // do something
-  }
-
-  ajax900200(ex: any) {
-    // do something
+  onChange(ev: Event) {
+    const files = (ev.target as HTMLInputElement).files!
+    const uploader = new Uploader({
+      imageCompress: {
+        keepTypes: [ ImageType.gif, ImageType.png ]
+      }
+    } as UploaderOptions)
+    uploader.upload(files[0])
   }
 }
 </script>
