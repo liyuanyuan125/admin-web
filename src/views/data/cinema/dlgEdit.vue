@@ -34,8 +34,7 @@
       <Row>
         <Col span="16">
           <FormItem label="院线" prop="chainId">
-            <CinemaChainSelect v-model="item.chainId" :controlStatus="1"
-              :keepId="item.chainId"/>
+            <CinemaChainSelect v-model="item.chainId"/>
           </FormItem>
         </Col>
         <Col span="8">
@@ -97,18 +96,24 @@ import AreaSelect from '@/components/AreaSelect.vue'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import { slice } from '@/fn/object'
 import { toast } from '@/ui/modal'
+import { filterItemInList, filterListByControlStatus } from '@/util/dealData'
 
 interface Value {
   id: string
   showDlgEdit: boolean
 }
 
-interface Enum {
-  key: number
+interface KeyTextControlStatus {
+  key: string | number
   text: string
+  controlStatus: number
 }
 
-const defItem = {
+interface KeyTextControlStatusMap {
+  [key: string]: KeyTextControlStatus[]
+}
+
+const defItem: any = {
   id: '',
   shortName: '',
   code: '',
@@ -148,7 +153,7 @@ export default class DlgEdit extends View {
 
   item: any = {}
 
-  enumType: any = {
+  enumType: KeyTextControlStatusMap = {
     gradeList: [],
     softwareList: [],
     statusList: [],
@@ -224,11 +229,22 @@ export default class DlgEdit extends View {
     try {
       const { data } = await queryItem(query)
 
-      this.item = { ...defItem, ...slice(data.item, Object.keys(defItem)) }
-
-      this.enumType = {
+      this.enumType = filterListByControlStatus({
         ...this.enumType,
         ...slice(data, Object.keys(this.enumType))
+      })
+
+      this.item = filterItemInList({
+        ...defItem,
+        ...slice(data.item, Object.keys(defItem))
+      }, {
+        gradeCode: this.enumType.gradeList,
+        softwareCode: this.enumType.softwareList,
+      }, defItem)
+
+      // 清除非法的 chainId
+      if (data.item.chainControlStatus != 1) {
+        this.item.chainId = ''
       }
 
       const { provinceId = '0', cityId = '0', countyId = '0' } = this.item

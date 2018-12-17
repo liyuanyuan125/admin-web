@@ -1,5 +1,5 @@
 <template>
-  <Poptip v-model="show" v-if="!loading">
+  <Poptip v-model="show" @on-popper-show="onShow" v-if="!loading">
     <span class="edit">
       {{inValue.text}}
       <icon type="ios-create-outline"/>
@@ -25,11 +25,6 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import View from '@/util/View'
 
-interface Item {
-  key: number
-  text: string
-}
-
 interface Value {
   id: string
   text: any
@@ -37,47 +32,57 @@ interface Value {
 }
 
 @Component
-export default class PartPoptipEdit extends View {
+export default class PoptipInput extends View {
   /**
    * 值本身，可以使用 v-model 进行双向绑定
    */
   @Prop({ type: Object, default: () => {} }) value!: Value
 
-  inValue: Value = this.value
+  inValue: Value = {} as Value
 
   show = false
 
   loading = false
 
-  @Watch('value')
-  watchValue(val: Value) {
-    this.inValue = val
+  @Watch('value', { deep: true })
+  watchValue() {
+    this.syncValue()
   }
 
-  @Watch('inValue', { deep: true })
-  watchInValue(val: Value) {
-    this.$emit('input', val)
+  mounted() {
+    this.syncValue()
+  }
+
+  onShow() {
+    this.syncValue()
+  }
+
+  syncValue() {
+    this.inValue = { ...this.value }
   }
 
   onOk() {
     this.show = false
     const { id, value } = this.inValue
-    this.$emit('change', {
-      id,
-      value,
-      showLoading: () => {
-        this.loading = true
-      },
-      hideLoading: () => {
-        this.loading = false
-      }
-    })
+    const { value: oldValue } = this.value
+    if (value != oldValue) {
+      this.$emit('change', {
+        id,
+        value,
+        showLoading: () => {
+          this.loading = true
+        },
+        hideLoading: () => {
+          this.loading = false
+        }
+      })
+    }
   }
 }
 </script>
 
 <style lang="less" scoped>
-@import '../../../site/lib.less';
+@import '../site/lib.less';
 
 .edit {
   cursor: pointer;

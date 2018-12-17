@@ -1,110 +1,152 @@
 <template>
-  <div class="page">
-    <Form :model='item' :label-width='88' :rules='rules' class='form' ref='form'>
-      <Row>
-        <Col span="10">
-          <FormItem label="公司名称" prop="name" :error='nameError'>
-            <Input v-model="item.name" placeholder="请填写公司全称，与营业执照保持一致"/>
-          </FormItem>
-        </Col>
-        <Col span="8">
-          <FormItem label="简称" prop="shortName">
-            <Input v-model="item.shortName"/>
-          </FormItem>
-        </Col>
-      </Row>
+  <Form :model='item' :label-width='88' :rules='rules' label-position="left" class='form page' ref='form'>
+    <div class="edit-box">
 
-      <Row class="row-single">
-        <FormItem label="资质">
+      <!-- header -->
+      <Row class="cinema-header">
+        <FormItem label="公司名称" prop="name" :error='nameError'>
           <Row>
-            <Col span="6">
+            <Col span="10">
+              <Input v-model="item.name" placeholder="请填写公司全称，与营业执照保持一致"/>
+            </Col>
+          </Row>
+        </FormItem>
+        <FormItem label="简称" prop="shortName">
+          <Row>
+            <Col span="8">
+              <Input v-model="item.shortName"/>
+            </Col>
+          </Row>
+        </FormItem>
+        <Row>
+          <FormItem label="客户类型">
+            <Row>
+              <Col span="8">
+                <AreaSelect v-model="area"/>
+              </Col>
+              <Col span="10" offset="1">
+                <Input v-model="item.address" placeholder="详细地址" class="input-address"/>
+              </Col>
+            </Row>
+          </FormItem>
+        </Row>
+         <Row>
+          <Col span="5">
+            <FormItem label="联系人" prop="contactName">
+              <Input v-model="item.contact"/>
+            </FormItem>
+          </Col>
+          <Col span="6" offset="1">
+            <FormItem label="联系电话" prop="contactPhone">
+              <Input v-model="item.contactTel"/>
+            </FormItem>
+          </Col>
+          <Col span="7" offset="1">
+            <FormItem label="邮箱" prop="contactEmail">
+              <Input v-model="item.email"/>
+            </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col span="5">
+            <FormItem label="资质">
               <Select v-model="item.aptitudeType">
                 <Option v-for="it in aptitudeTypeList" :key="it.id"
                   :value="it.id">{{it.name}}</Option>
               </Select>
-            </Col>
-            <Col span="12">
-              <Input v-model="item.aptitudeNo" placeholder="资质编号"/>
-            </Col>
-          </Row>
-        </FormItem>
+            </FormItem>
+          </Col>
+          <Col span="6" offset="1">
+          <FormItem label="资质编号">
+            <Input v-model="item.aptitudeNo" placeholder="资质编号"/>
+          </FormItem>
+          </Col>
+        </Row>
+        <Row class="upload">
+          <Col span="12" style="margin-left: 88px">
+            <Upload />
+          </Col>
+        </Row>
       </Row>
 
-      <Row class="row-single">
-        <FormItem label="公司地址">
+      <!-- content -->
+      <Row class="cinema-content">
+        <FormItem label="审核意见" prop="name" :error='nameError'>
           <Row>
-            <Col span="6">
-              <AreaSelect v-model="area"/>
-            </Col>
-            <Col span="12">
-              <Input v-model="item.address" placeholder="详细地址" class="input-address"/>
+            <Col span="8">
+              <RadioGroup v-model="item.clientLevel">
+                <Radio label="apple">
+                  <span>通过</span>
+                </Radio>
+                <Radio label="android">
+                  <span>未通过</span>
+                </Radio>
+              </RadioGroup>
             </Col>
           </Row>
         </FormItem>
-      </Row>
-
-      <Row>
-        <Col span="5">
-          <FormItem label="联系人" prop="contactName">
-            <Input v-model="item.contactName"/>
-          </FormItem>
-        </Col>
-        <Col span="6">
-          <FormItem label="联系电话" prop="contactPhone">
-            <Input v-model="item.contactPhone"/>
-          </FormItem>
-        </Col>
-        <Col span="7">
-          <FormItem label="邮箱" prop="contactEmail">
-            <Input v-model="item.contactEmail"/>
-          </FormItem>
-        </Col>
-      </Row>
-
-      <Row>
-        <Col span="5">
-          <FormItem label="客户等级" prop="clientLevel">
-            <Select v-model="item.clientLevel" clearable>
-              <Option v-for="it in clientLevelList" :key="it.id"
-                :value="it.id">{{it.name}}</Option>
-            </Select>
-          </FormItem>
-        </Col>
-        <Col span="8">
-          <FormItem label="负责商务" prop="bizUserId">
-            <Select v-model="item.bizUserId" clearable>
-              <Option v-for="it in bizUserList" :key="it.id" :value="it.id"
-                :label="it.label">{{it.label}}</Option>
-            </Select>
-          </FormItem>
-        </Col>
-      </Row>
-
-      <Row class="row-single">
-        <FormItem label="客户类型">
+        <FormItem label="有效期至" prop="shortName">
           <Row>
-            <Col v-for="it in typeList" :key="it.id" span="8">
-              <span class="check-select-group">
-                <Checkbox v-model="it.checked">{{it.name}}</Checkbox>
-                <Select v-model="it.subId" :disabled="!it.checked"
-                  :required="!it.checked" class="flex-1" clearable>
-                  <Option v-for="sub in typeListSubMap[it.id]" :key="sub.id"
-                    :value="sub.id">{{sub.name}}</Option>
-                </Select>
-              </span>
+            <Col span="8">
+              <DatePicker type="date" placeholder="选择有效期" style="width: 200px"></DatePicker>
             </Col>
           </Row>
         </FormItem>
       </Row>
+      <!-- footer -->
+      <Row class="cinema-footer">
+        <Row>
+          <Col span="5">
+            <FormItem label="客户等级" prop="clientLevel">
+              <Select v-model="item.clientLevel" clearable>
+                <Option v-for="it in clientLevelList" :key="it.id"
+                  :value="it.id">{{it.name}}</Option>
+              </Select>
+            </FormItem>
+          </Col>
+          <Col span="8" offset="1">
+            <FormItem label="负责商务" prop="bizUserId">
+              <Select v-model="item.bizUserId" clearable>
+                <Option v-for="it in bizUserList" :key="it.id" :value="it.id"
+                  :label="it.label">{{it.label}}</Option>
+              </Select>
+            </FormItem>
+          </Col>
+        </Row>
 
-      <Row class="row-single">
-        <FormItem label="关联影院">
-          <PartBindCinema v-model="item.cinemaList" :unitList="profitUnitList"
-            :typeList="profitTypeList" class="part-bind-cinema"/>
-        </FormItem>
+        <Row>
+          <FormItem label="客户类型">
+            <Row>
+              <Col v-for="it in typeList" :key="it.id" span="8">
+                <span class="check-select-group">
+                  <Checkbox v-model="it.checked">{{it.name}}</Checkbox>
+                  <Select v-model="it.subId" :disabled="!it.checked"
+                    :required="!it.checked" class="flex-1" clearable>
+                    <Option v-for="sub in typeListSubMap[it.id]" :key="sub.id"
+                      :value="sub.id">{{sub.name}}</Option>
+                  </Select>
+                </span>
+              </Col>
+            </Row>
+          </FormItem>
+        </Row>
+
+        <Row>
+          <FormItem label="关联影院">
+            <PartBindCinema v-model="item.cinemaList" :unitList="profitUnitList"
+              :typeList="profitTypeList" class="part-bind-cinema"/>
+          </FormItem>
+        </Row>
+
+        <div class="edit-button">
+          <Button type="info" size="large" @click="edit(0)">确定</Button>
+          <Button size="large" @click="edit(0)">返回</Button>
+        </div>
       </Row>
-    </Form>
-  </div>
+      
+    </div>
+    
+  </Form>
 </template>
 
 <script lang="ts">
@@ -114,7 +156,7 @@ import View from '@/util/View'
 import { queryItem } from '@/api/corp'
 import AreaSelect from '@/components/AreaSelect.vue'
 import PartBindCinema from './partBindCinema.vue'
-
+import Upload from './upload.vue'
 const defItem = {
   id: 0,
   name: '',
@@ -128,12 +170,12 @@ const defItem = {
   districtId: 0,
   address: '',
 
-  contactName: '',
-  contactPhone: '',
+  contact: '',
+  contactTel: '',
   contactEmail: '',
 
   clientLevel: 0,
-  bizUserId: 0,
+  email: 0,
 
   type: 0,
   subTypeIdList: [],
@@ -146,6 +188,7 @@ const defItem = {
   components: {
     AreaSelect,
     PartBindCinema,
+    Upload
   }
 })
 export default class Main extends View {
@@ -241,16 +284,27 @@ export default class Main extends View {
 </script>
 
 <style lang="less" scoped>
-.form {
-  margin-top: 10px;
+.page {
+  margin: -10px -10px;
+  background: #ecf0f4;
 }
-.row-single {
-  .ivu-col:first-child {
-    padding-right: 8px;
+.edit-box {
+  padding: 10px 0;
+}
+.edit-button {
+  text-align: center;
+  margin-bottom: 20px;
+  button {
+    margin-right: 20px;
   }
-  .ivu-col:last-child {
-    padding-right: 22px;
-  }
+}
+
+.cinema-header, .cinema-content, .cinema-footer {
+  margin-left: 14px;
+  margin-right: 14px;
+  background: #fff;
+  padding: 20px 0 0 20px;
+  margin-bottom: 14px;
 }
 .check-select-group {
   display: inline-flex;
@@ -271,6 +325,9 @@ export default class Main extends View {
       box-shadow: none;
     }
   }
+}
+.upload {
+  margin-bottom: 20px;
 }
 .part-bind-cinema {
   width: 660px;

@@ -40,7 +40,7 @@ import { slice, clean } from '@/fn/object'
 import { numberify, numberKeys } from '@/fn/typeCast'
 import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import { queryList, arealist, areaSet, dels } from '@/api/dateArea'
-import PartPoptipEdit from '../cinema/partPoptipEdit.vue'
+import PoptipSelect from '@/components/PoptipSelect.vue'
 import { confirm } from '@/ui/modal'
 import DlgEdit from './dlgEdit.vue'
 
@@ -58,7 +58,7 @@ const defQuery = {
 @Component({
   components: {
     DlgEdit,
-    PartPoptipEdit
+    PoptipSelect
   }
 })
 export default class Main extends View {
@@ -98,21 +98,21 @@ export default class Main extends View {
         align: 'center',
         render: (hh: any, { row : { id , areaCode, areaName } }: any) => {
           /* tslint:disable */
-        const list = this.statusList.map((value) => {
-          return {
-            key: value.code,
-            text: value.name
-          }
-        })
-        const h = jsxReactToVue(hh)
-            const value = {
-                id,
-                key: areaCode,
-                text: areaName,
-                list
+          const list = this.statusList.map((value) => {
+            return {
+              key: value.code,
+              text: value.name
             }
-            return <PartPoptipEdit v-model={value}
-                on-change={this.editStatus.bind(this)}/>
+          })
+          const h = jsxReactToVue(hh)
+          const value = {
+            id,
+            text: areaName,
+            value: areaCode,
+            list
+          }
+          return <PoptipSelect v-model={value}
+            on-change={this.editStatus.bind(this)}/>
           /* tslint:enable */
         }
       },
@@ -273,18 +273,17 @@ export default class Main extends View {
     }
   }
 
-  async editStatus({ id, key: newStatus, showLoading, hideLoading }: any) {
+  async editStatus({ id, value, showLoading, hideLoading }: any) {
     const item = this.list.find(it => it.id == id)
-    if (item && item.areaCodes != newStatus) {
-      try {
-        showLoading()
-        await areaSet(id, {areaCode: newStatus, areaName: this.cachedMap.statusList[newStatus]})
-        item.areaCode = newStatus
-        item.areaName = this.cachedMap.statusList[newStatus]
-      } catch (ex) {
-        hideLoading()
-        this.handleError(ex)
-      }
+    try {
+      showLoading()
+      await areaSet(id, {areaCode: value})
+      item.areaCode = value
+      item.areaName = this.cachedMap.statusList[value]
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      hideLoading()
     }
   }
 

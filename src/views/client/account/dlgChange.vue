@@ -28,6 +28,8 @@
 import { Component, Prop } from 'vue-property-decorator'
 import { dataFrom , add , set} from '@/api/dict'
 import { warning , success, toast } from '@/ui/modal'
+import { slice, clean } from '@/fn/object'
+
 import View from '@/util/View'
 const defQuery = {
   categoryId: 0,
@@ -43,8 +45,10 @@ export default class ComponentMain extends View {
   // @Prop({ type: Object }) cinemaOnes: any
   query = { ...defQuery }
   // oldQuery: any = null
-
+  list = []
   showDlg = false
+  oldQuery: any = {}
+
   id = 0
   ruleValidate = {
   }
@@ -52,10 +56,11 @@ export default class ComponentMain extends View {
   init(id: number) {
     this.showDlg = true
     this.id = id || 0
-    this.$nextTick(async () => {
-      const dataForms: string = 'dataForm'
-      const myThis: any = this
-      myThis.$refs[dataForms].resetFields()
+    ; (this.$refs.dataForm as any).resetFields()
+    // this.$nextTick(async () => {
+      // const dataForms: string = 'dataForm'
+      // const myThis: any = this
+      // myThis.$refs[dataForms].resetFields()
       if (this.id) {
         // const {data: {
         //   items: list
@@ -63,13 +68,14 @@ export default class ComponentMain extends View {
         // this.dataForm.name = this.cinemaOnes.name
         // this.dataForm.code = this.cinemaOnes.code
       }
-    })
+    // })
   }
 
   cancel(dataForms: string) {
     this.showDlg = false
-    const myThis: any = this
-    myThis.$refs[dataForms].resetFields()
+    // const myThis: any = this
+    // myThis.$refs[dataForms].resetFields()
+    ; (this.$refs.dataForm as any).resetFields()
   }
 
   // 表单提交
@@ -106,6 +112,39 @@ export default class ComponentMain extends View {
   mounted() {
     const { id } = this.$route.params
     this.query.categoryId = this.id
+  }
+  get cachedMap() {
+    return {
+    }
+  }
+
+  get tableData() {
+    const cachedMap = this.cachedMap
+    const list = (this.list || []).map((it: any) => {
+      return {
+        ...it,
+      }
+    })
+    return list
+  }
+
+  async doSearch() {
+
+    this.oldQuery = { ...this.query }
+
+
+    const query = clean({ ...this.query })
+    // try {
+    //   const { data: {
+    //     data: list,
+    //     // parentAccount: prelist,
+    //   } } = await queryItem(query)
+    //   this.list = list
+    //   // this.prelist = prelist
+    // } catch (ex) {
+    //   this.handleError(ex)
+    // } finally {
+    // }
   }
 }
 </script>
