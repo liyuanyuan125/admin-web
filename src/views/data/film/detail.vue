@@ -188,18 +188,6 @@ export default class Main extends View {
     this.$router.push({ name: 'data-film' })
   }
 
-<<<<<<< HEAD
-  async change({ id, value, showLoading, hideLoading }: any) {
-    try {
-      showLoading()
-      await updateStatus(id, value)
-      this.value.value = value
-      this.value.text = this.cachedMap.categoryList[value]
-    } catch (ex) {
-      this.handleError(ex)
-    } finally {
-      hideLoading()
-=======
   async change({ id, key: newStatus, showLoading, hideLoading }: any) {
     if (this.detil && this.detil.categoryCode != newStatus) {
       try {
@@ -212,7 +200,6 @@ export default class Main extends View {
         hideLoading()
         this.handleError(ex)
       }
->>>>>>> 1.1
     }
   }
 }
