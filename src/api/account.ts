@@ -1,3 +1,45 @@
+
+
+// import { get , post , put } from '@/fn/ajax'
+
+// export async function queryList(query: any) {
+//   const data = await get('/customer/accounts', query)
+//   return data
+// }
+
+
+// // 新建
+// export async function addList(query: any) {
+//   const res = await post('/customer/accounts', query)
+//   return res
+// }
+
+// export async function dataFrom(query: any) {
+//   const res = await get('/customer/accounts', query)
+//   return res
+// }
+
+// // 编辑
+// export async function setList(query: any) {
+//   const res = await put(`/customer/accounts/${query.id}`, query)
+//   return res
+// }
+
+// export async function dictqueryList(query: any) {
+//   const data = await get('/basis/dictionaries', query)
+//   return data
+// }
+
+
+
+
+
+
+
+
+
+
+
 // import { get } from '@/fn/ajax'
 import { mockGet, tid, title20, typeInt, dateRange } from './mock'
 
@@ -13,12 +55,12 @@ export async function queryList(query: any) {
     'items|20': [{
       id: tid,
       // corpId: tid,
-      emailNum: emailnum,
+      email: emailnum,
       companyName: title20,
       type: typeInt(1, 3),
       'clientLevel|1': ['A', 'B', 'C'],
-      createTime: dateRange(),
-      updateTime: dateRange(),
+      beginCreateTime: dateRange(),
+      endCreateTime: dateRange(),
       status: typeInt(1, 2),
     }],
     totalCount: 888,
@@ -37,7 +79,7 @@ export async function queryList(query: any) {
       { id: 3, name: '北京智能广宣3' },
       { id: 4, name: '北京智能广宣4' },
     ],
-    company2: [
+    companyName: [
       { id: 1, name: '北京智能广宣1' },
       { id: 2, name: '北京智能广宣2' },
       { id: 3, name: '北京智能广宣3' },
@@ -48,14 +90,23 @@ export async function queryList(query: any) {
 
 export async function queryItem(query: any) {
   return await mockGet(query, {
-    'detailItems|5': [{
+    'childAccountList|5': [{
       id: tid,
-      userId: tid,
-      childPhoneNumber: pnum,
-      childUserName: title20,
+      // userId: tid,
+      mobile: pnum,
+      name: title20,
       'clientLevel|1': ['A', 'B', 'C'],
       createTime: dateRange(),
-      updateTime: dateRange(),
+      lastLoginTime: dateRange(),
+    }],
+    'parentAccount|5': [{
+      id: tid,
+      // userId: tid,
+      mobile: pnum,
+      name: title20,
+      'clientLevel|1': ['A', 'B', 'C'],
+      createTime: dateRange(),
+      lastLoginTime: dateRange(),
     }],
     totalCount: 888,
   })
