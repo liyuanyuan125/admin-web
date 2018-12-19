@@ -3,22 +3,24 @@
     <div  v-if="shows">
       <div class="act-bar flex-box">
         <form class="form flex-1" @submit.prevent="search">
-          <LazyInput v-model="query.id" placeholder="账号ID" class="input input-corp-id"
+          <!-- <LazyInput v-model="query.id" placeholder="账号ID" class="input input-corp-id"
             @on-enter="ev => query.id = ev.target.value" @on-blur="ev => query.id = ev.target.value"/>
           <LazyInput type="email" v-model="query.email" placeholder="账号" class="input input-corp-id"
-            @on-enter="ev => query.email = ev.target.value" @on-blur="ev => query.email = ev.target.value"/>
+            @on-enter="ev => query.email = ev.target.value" @on-blur="ev => query.email = ev.target.value"/> -->
+          <LazyInput v-model="query.id" placeholder="账号ID" class="input"/>
+          <LazyInput v-model="query.email" placeholder="邮箱账号" class="input"/>
           <LazyInput v-model="query.companyName" placeholder="公司名称" class="input"/>
           <DatePicker type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="注册时间" class="input" style="width: 200px"></DatePicker>
           <!-- <Date-picker type="date" v-model="query.createTime" placeholder="注册时间" on-change="selectTime" class="input" style="width: 200px"></Date-picker> -->
           <!-- <Date-picker type="date" v-model="query.UpdateTime" placeholder="更新时间" on-change="selectTime"  class="input" style="width: 200px"></Date-picker>           -->
           <Select v-model="query.status" placeholder="启用状态" clearable>
-            <Option v-for="it in statusList" :key="it.id" :value="it.id"
-              :label="it.name">{{it.name}}</Option>
+            <Option v-for="it in statusList" :key="it.key" :value="it.key"
+              :label="it.text == '是' ? '启用' : '停用'">{{it.text == '是' ? '启用' : '停用'}}</Option>
           </Select>
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </form>
         <div class="acts">
-          <Button type="success" icon="md-add-circle" @click="edit(0)">创建</Button>
+          <Button type="success" icon="md-add-circle" @click="edit(0)">新建</Button>
         </div>
       </div>
 
@@ -51,21 +53,24 @@ import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import DlgEdit from './dlgEdit.vue'
 import dlgVerify from './dlgVerify.vue'
 
-import {confirm} from '@/ui/modal'
+import {confirm , warning , success, toast } from '@/ui/modal'
 
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
 const defQuery = {
-  id: null,
-  email: null,
+  id: '',
+  email: '',
   companyName: '',
   status: null,
   pageIndex: 1,
   pageSize: 20,
   beginCreateTime: 0,
   endCreateTime: 0
+}
+const dataForm = {
+  status: 1
 }
 
 
@@ -232,7 +237,6 @@ export default class Main extends View {
       this.list = list
       this.total = total
       this.statusList = statusList
-      // console.log
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -249,16 +253,18 @@ export default class Main extends View {
     })
   }
   // 修改状态
-  change(id: number, row: any) {
+  async change(id: number, row: any) {
     try {
-      confirm('您确定' + (row.statusText == '启用' ? '停用' : '启用') + '当前状态信息吗？')
-      // await setList({id})
-      // this.$Message.success({
-      //   content: `删除成功`,
-      // })
-      // this.reloadSearch()
+      await confirm('您确定' + (row.statusText == '启用' ? '停用' : '启用') + '当前状态信息吗？')
+      await setList ({
+        id,
+        status: row.status == 1 ? 2 : 1
+      })
+      this.$Message.success({
+        content: `更改成功`,
+      })
+      this.reloadSearch()
     } catch (ex) {
-      // this.handleError(ex)
     }
   }
 
@@ -295,17 +301,6 @@ export default class Main extends View {
 .btn-search,
 .btn-reset {
   margin-left: 8px;
-}
-
-.table {
-  margin-top: 16px;
-  /deep/ .status-2,
-  /deep/ .aptitude-status-3 {
-    color: #ed4014;
-  }
-  /deep/ .aptitude-status-2 {
-    color: #19be6b;
-  }
 }
 .page-wrap {
   margin: 20px 0 18px;
@@ -383,6 +378,21 @@ export default class Main extends View {
 }
 .info-inp {
   margin-left: 5%;
+}
+.table {
+  margin-top: 16px;
+  /deep/ .status-2,
+  /deep/ .aptitude-status-3 {
+    color: #ed4014;
+  }
+  /deep/ .aptitude-status-2 {
+    color: #19be6b;
+  }
+  /deep/ .ivu-table-cell > span:only-child:empty {
+    &::before {
+      content: '-';
+    }
+  }
 }
 // .info-type-inp span {
 //   margin-left: 1%;
