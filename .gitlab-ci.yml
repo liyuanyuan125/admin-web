@@ -7,11 +7,8 @@ stages:
 variables:
   SERVICE_NAME: aiads-iadp-admin-web
 
-before_script:
-  - export COMMIT_SHA=${CI_COMMIT_SHA:0:8}
-
 lint:
-  image: $REGISTRY_ADDRESS/ai/devops/nodejs/build
+  image: $REGISTRY_ADDRESS/devops/nodejs/build
   stage: lint
   only:
     - testing
@@ -22,7 +19,7 @@ lint:
     - nodejs
 
 build:
-  image: $REGISTRY_ADDRESS/ai/devops/nodejs/build
+  image: $REGISTRY_ADDRESS/devops/nodejs/build
   stage: build
   only:
     - testing
@@ -38,7 +35,7 @@ build:
     - nodejs
 
 package:
-  image: $REGISTRY_ADDRESS/ai/devops/docker/package:1.0
+  image: $REGISTRY_ADDRESS/devops/docker/package
   stage: package
   variables:
     GIT_STRATEGY: none
@@ -51,7 +48,7 @@ package:
     - docker
 
 deploy:
-  image: $REGISTRY_ADDRESS/ai/devops/docker/deploy
+  image: $REGISTRY_ADDRESS/devops/docker/deploy
   stage: deploy
   variables:
     GIT_STRATEGY: none
@@ -60,7 +57,7 @@ deploy:
     - testing
     - release
   script:
-    - deploy -service $SERVICE_NAME -image $REGISTRY_ADDRESS/ai/$CI_PROJECT_PATH:$COMMIT_SHA
+    - deploy -service $SERVICE_NAME
   environment: aiads-dev
   tags:
     - docker
