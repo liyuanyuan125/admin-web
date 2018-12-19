@@ -43,7 +43,7 @@
             </FormItem>
           </Col>
           <Col span="7" offset="1">
-            <FormItem label="邮箱" prop="contactEmail">
+            <FormItem label="邮箱" prop="email">
               <Input v-model="item.email"/>
             </FormItem>
           </Col>
@@ -51,20 +51,20 @@
         <Row>
           <Col span="5">
             <FormItem label="资质">
-              <Select v-model="item.aptitudeType">
+              <Select v-model="item.qualificationType">
                 <Option value="营业执照">营业执照</Option>
               </Select>
             </FormItem>
           </Col>
           <Col span="6" offset="1">
           <FormItem label="资质编号">
-            <Input v-model="item.aptitudeNo" placeholder="资质编号"/>
+            <Input v-model="item.qualificationCode" placeholder="资质编号"/>
           </FormItem>
           </Col>
         </Row>
         <Row class="upload">
           <Col span="12" style="margin-left: 88px">
-            <Upload />
+            <Upload @imglist=imgarray />
           </Col>
         </Row>
       </Row>
@@ -85,27 +85,31 @@
             </Col>
           </Row>
         </FormItem>
-        <Row v-if="item.approveStatus==1">
+        <div class="124" v-if="item.approveStatus==1">
+           <Row>
           <Col span="8">
-            <FormItem label="有效期至" prop="validityPeriodDate" :show-message="item.approveStatus==1">
+            <FormItem label="有效期至" prop="validityPeriodDate" :show-message="shows">
               <DatePicker type="date" v-model="item.validityPeriodDate" placeholder="选择有效期" style="width: 200px"></DatePicker>
             </FormItem>
           </Col>
         </Row>
-        <Row v-else>
+        </div>
+        <div class="123" v-else>
+        <Row>
           <Col span="8">
           <FormItem label="拒绝原因" prop="refusedReason" :show-message="item.approveStatus==2">
             <Input v-model="item.refusedReason" placeholder="拒绝原因"/>
           </FormItem>
           </Col>
         </Row>
+        </div>
        </Row>
       <!-- footer -->
       <Row class="cinema-footer">
         <Row>
           <Col span="5">
             <FormItem label="客户等级" prop="clientLevel">
-              <Select v-model="item.levelList" clearable>
+              <Select v-model="item.levelCode" clearable>
                 {{levelList}}
                 <Option v-for="it in levelList" :key="it.key"
                   :value="it.key">{{it.text}}</Option>
@@ -114,7 +118,7 @@
           </Col>
           <Col span="8" offset="1">
             <FormItem label="负责商务" prop="bizUserId">
-              <Select v-model="item.bizUserId" clearable>
+              <Select v-model="item.businessDirector" clearable>
                 <Option v-for="it in bizUserList" :key="it.id" :value="it.id"
                   :label="it.label">{{it.label}}</Option>
               </Select>
@@ -179,21 +183,22 @@ const defItem = {
 
   provinceId: 0,
   cityId: 0,
-  districtId: 0,
+  countyId: 0,
   addressDetail: '',
 
   contact: '',
   contactTel: '',
-  contactEmail: '',
 
-  clientLevel: 0,
-  email: 0,
+  email: '',
 
+  qualificationType: '',
+  qualificationCode: '',
+  images: [],
   type: 0,
-  subTypeIdList: [],
-
+  refusedReason: '',
+  levelCode: '',
+  businessDirector: '',
   cinemas: [],
-  aptitudeUrl: '',
 
   approveStatus: 1,
   validityPeriodDate: ''
@@ -212,7 +217,7 @@ export default class Main extends View {
   loading = false
 
   item: any = {...defItem}
-
+  shows = true
   levelList = []
   customerTypeList = []
   bizUserList = []
@@ -226,7 +231,7 @@ export default class Main extends View {
   nameError = ''
 
   get rules() {
-    let rule: any = {
+    const rule: any = {
       name: [
         { required: true, message: '请填写公司名称', trigger: 'blur' }
       ],
@@ -244,22 +249,23 @@ export default class Main extends View {
       ],
       cinemas: [
         { required: true, message: '请选择关联影院', trigger: 'change'}
-      ]
-    }
-    if (this.item.approveStatus == 1) {
-      rule = {
-        ...rule,
-        validityPeriodDate: [
+      ],
+      levelCode: [
+        { required: true, message: '请选择客户等级', trigger: 'change'}
+      ],
+      validityPeriodDate: [
           { required: true, message: '请填写用户的资质到期日期', trigger: 'change', type: 'date'}
-        ]
-      }
-    } else {
-       rule = {
-        ...rule,
-        refusedReason: [
+      ],
+      refusedReason: [
          { required: true, message: '请填写拒绝原因', trigger: 'blur'}
-        ]
-      }
+      ],
+      email: [
+         {
+           pattern: /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((.[a-zA-Z0-9_-]{2,3}){1,2})$/,
+           message: '请填写拒绝原因',
+           trigger: 'blur'
+         }
+      ],
     }
     return rule
   }
@@ -325,8 +331,8 @@ export default class Main extends View {
       // this.profitUnitList = profitUnitList
       // this.profitTypeList = profitTypeList
 
-      // const { provinceId = 0, cityId = 0, districtId = 0 } = this.item
-      // this.area = [provinceId, cityId, districtId]
+      // const { provinceId = 0, cityId = 0, countyId = 0 } = this.item
+      // this.area = [provinceId, cityId, countyId]
 
       // // 优化体验
       // if (aptitudeTypeList.length === 1) {
@@ -349,13 +355,36 @@ export default class Main extends View {
   watchArea(val: number[]) {
     this.item.provinceId = val[0]
     this.item.cityId = val[1]
-    this.item.districtId = val[2]
+    this.item.countyId = val[2]
+  }
+
+  imgarray(val: any) {
+    this.item.images = val.map((item: any) => {
+      return item.imageUrl
+    })
   }
 
   @Watch('typeList', { deep: true })
   watchTypeList(val: any[]) {
     this.item.typeIdList = val.map(it => it.checked ? it.id : 0)
     this.item.subTypeIdList = val.map(it => it.checked ? it.subId || 0 : 0)
+  }
+  @Watch('item', { deep: true })
+  watchitem(val: any) {
+    const form = 'dataForms'
+    if (val.approveStatus == 2) {
+      (this.$refs[form] as any).fields.forEach((e: any) => {
+        if (e.prop == 'validityPeriodDate') {
+          e.resetField()
+        }
+      })
+    } else {
+      (this.$refs[form] as any).fields.forEach((e: any) => {
+        if (e.prop == 'refusedReason') {
+          e.resetField()
+        }
+      })
+    }
   }
 }
 </script>

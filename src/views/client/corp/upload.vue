@@ -34,7 +34,7 @@
     </div>
 
     <Modal title="View Image" v-model="visible">
-      <img :src="'https://o5wwk8baw.qnssl.com/' + imgName + '/large'" v-if="visible" style="width: 100%">
+      <img :src="imgName" v-if="visible" style="width: 100%">
     </Modal>
   </div>
 </template>
@@ -82,16 +82,6 @@ export default class ComponentMain extends View {
       title: 'Exceeding file size limit',
       desc: 'File  ' + file.name + ' is too large, no more than 2M.'
     })
-  }
-
-  handleBeforeUpload() {
-    // const check = this.uploadList.length < 5;
-    // if (!check) {
-    //   this.$Notice.warning({
-    //       title: 'Up to five pictures can be uploaded.'
-    //   })
-    // }
-    // return check
   }
 
   onChange(ev: Event) {
@@ -148,6 +138,7 @@ export default class ComponentMain extends View {
           status: 'finished'
         }
         this.$set(this.uploadlist, this.uploadlist.length - 1, imgObject)
+        this.$emit('imglist', imgObject)
         // 结束上传，无论成功还是失败，都会执行，执行清理工作，比如取消显示 loading
       }
     })

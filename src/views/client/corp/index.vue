@@ -34,8 +34,8 @@
       border stripe disabled-hover size="small" class="table"></Table>
 
     <div class="page-wrap" v-if="total > 0">
-      <Page :total="total" show-total :page-size="query.pageSize" show-sizer
-        :page-size-opts="[10, 20, 50, 100]" :current="query.pageIndex"
+      <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
+        show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
         @on-change="page => query.pageIndex = page"
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
@@ -49,9 +49,11 @@ import { get } from '@/fn/ajax'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
-import { clean } from '@/fn/object'
-import { queryList } from '@/api/corpReal'
+import { slice, clean } from '@/fn/object'
+import { queryList, statusId } from '@/api/corpReal'
 import { confirm } from '@/ui/modal'
+import { numberify, numberKeys } from '@/fn/typeCast'
+import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 const timeFormat = 'YYYY/MM/DD HH:mm:ss'
@@ -71,7 +73,7 @@ const defQuery = {
 export default class Main extends View {
   query = { ...defQuery }
 
-  oldQuery: any = null
+  oldQuery: any = {}
   defaulitState: any = null
   loading = false
   list = []
@@ -82,7 +84,7 @@ export default class Main extends View {
   resTypeList = []
   // 资质审核状态列表
   statusList = []
-
+  levelList = []
   aptitudeStatusList = []
 
   columns = [
@@ -105,7 +107,20 @@ export default class Main extends View {
         /* tslint:enable */
       }
     },
-    { title: '客户等级', key: 'levelCode', align: 'center' },
+    { title: '客户等级',
+      key: 'levelCode',
+      align: 'center',
+      render: (hh: any, { row: { status, statusText, levelCode, levelText } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        return status == 1
+            ? <span>{levelText}</span>
+            : <tooltip content="已禁用" placement="top">
+              <span class="deprecated">{levelText}</span>
+            </tooltip>
+        /* tslint:enable */
+      }
+    },
     { title: '关联商务', key: 'businessDirectorName', align: 'center' },
     {
       title: '创建时间',
@@ -175,11 +190,22 @@ export default class Main extends View {
     }
   ]
 
+  mounted() {
+    const urlQuery = slice(urlParam(), Object.keys(defQuery))
+    this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
+  }
+
+  updateUrl() {
+    const query = prettyQuery(this.query, defQuery)
+    const url = buildUrl(location.pathname, query)
+    history.replaceState(null, '', url)
+  }
+
   typeListFormt(value: any) {
     const typeArray: any = []
-    const typeObject: any = {}
     if ( !!value ) {
       value.forEach((i: any) => {
+        const typeObject: any = {}
         this.customerTypeList.forEach((val: any) => {
           if (i.typeCode == val.typeCode) {
             typeObject.oneText = val.typeName
@@ -219,6 +245,7 @@ export default class Main extends View {
     return {
       resType: makeMap(this.resTypeList),
       status: makeMap(this.statusList),
+      levelList: makeMap(this.levelList),
       aptitudeStatus: makeMap(this.aptitudeStatusList)
     }
   }
@@ -230,14 +257,11 @@ export default class Main extends View {
         ...it,
         resTypeName: cachedMap.resType[it.typeString],
         statusText: cachedMap.status[it.status],
+        levelText: cachedMap.resType[it.levelCode],
         aptitudeStatusText: cachedMap.aptitudeStatus[it.approveStatus],
       }
     })
     return list
-  }
-
-  mounted() {
-    this.doSearch()
   }
 
   search() {
@@ -255,7 +279,7 @@ export default class Main extends View {
     }
 
     this.oldQuery = { ...this.query }
-
+    this.updateUrl()
     this.loading = true
     const query = clean({ ...this.query })
     try {
@@ -265,10 +289,12 @@ export default class Main extends View {
         customerTypeList,
         resTypeList,
         statusList,
+        levelList,
         approveStatusList,
       } } = await queryList(query)
       this.list = list
       this.total = total
+      this.levelList = levelList
       this.customerTypeList = customerTypeList
       this.resTypeList = resTypeList
       this.statusList = statusList.slice(1)
@@ -289,8 +315,12 @@ export default class Main extends View {
     const statu = status == 1 ? '启用' : '停用'
     try {
       await confirm(`确定要${statu}该项吗？`)
+      await statusId({id})
+      this.doSearch()
     } catch (ex) {
-      this.handleError(ex)
+      setTimeout(() => {
+        this.handleError(ex)
+      }, 500)
     }
 
   }
@@ -344,6 +374,9 @@ export default class Main extends View {
     .operation {
       margin-right: 6px;
     }
+  }
+  /deep/ .deprecated {
+    color: #ed4014;
   }
 }
 

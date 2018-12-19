@@ -24,9 +24,9 @@
             <CheckboxGroup  v-model="form.check">
               <div class="check" v-for="item in items" :key="item.id">
                 <tooltip content="已下架" v-if="item.controlStatus != 1" placement="right">
-                  <Checkbox :label="item.id">{{item.shortName}}}</Checkbox>
+                  <Checkbox :label="item.id" style="color: red">{{item.shortName}}}</Checkbox>
                 </tooltip>
-                <Checkbox v-else :label="item.id">{{item.shortName}}}</Checkbox>
+                <Checkbox v-else :label="item.id">{{item.shortName}}</Checkbox>
               </div>
             </CheckboxGroup >
           </FormItem>

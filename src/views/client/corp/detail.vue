@@ -75,7 +75,7 @@
           <Col span="2"><div>主账号</div></Col>
           <Col span="4">
           <span>{{detail.mainAccountName}}</span>
-          <Button type="primary" v-if="!detail.mainAccountName" @click="addMainName" class="btn-add">创建主账号</Button>
+          <a type="primary" v-if="!detail.mainAccountName" @click="addMainName" class="btn-add">创建主账号</a>
           </Col>
         </Row>
         <Row>
@@ -171,9 +171,9 @@ export default class Main extends View {
 
   typeListFormt(value: any) {
     const typeArray: any = []
-    const typeObject: any = {}
     if ( !!value ) {
       value.forEach((i: any) => {
+        const typeObject: any = {}
         this.customerTypeList.forEach((val: any) => {
           if (i.typeCode == val.typeCode) {
             typeObject.oneText = val.typeName
@@ -231,6 +231,12 @@ export default class Main extends View {
 .detail-box {
   padding: 10px 0;
 }
+.detail-number {
+  /deep/ .btn-add {
+    margin-left: 8px;
+    height: 30px;
+  }
+}
 .detail-header, .detail-content, .detail-footer, .detail-number, .detail-check {
   background: #fff;
   margin: 10px;
@@ -241,12 +247,12 @@ export default class Main extends View {
       width: 88px;
     }
   }
-  /deep/ span {
+  span {
     display: inline-block;
     line-height: 50px;
     color: #999;
   }
-  /deep/ span:only-child:empty {
+  span:only-child:empty {
     &::before {
       content: '暂无';
     }
