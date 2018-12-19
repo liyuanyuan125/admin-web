@@ -1,36 +1,31 @@
 <template>
   <!-- <Modal v-model='showDlg' :transfer='false' :width='420'>
   </Modal> -->
-  <div class="page">
+  <div class="page"  :data="tableData">
     <div class="inps">
-      <div class="Inps-res">
+      <div class="Inps-res" v-if='nus'>
         <div class="res-num">
-          <p>用户账号</p>
+          <p>注册账号</p>
           <div class="res-num-item">
-            <span>admin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;【主账号】</span>
+            <span>{{email}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;【{{nus}}】</span>
           </div>
         </div>
         <div class="res-num">
           <p>所属公司</p>
           <div class="res-num-item">
-            <span>北京博纳国际有限公司</span>
-          </div>
-        </div>
-        <div class="res-num">
-          <p>最后登陆时间</p>
-          <div class="res-num-item">
-            <span>2018/11/01 12:22:21</span>
+            <span>{{companyName}} 【广告主：直客】【资源方：影院】</span>
           </div>
         </div>
         <div class="res-num">
           <p>注册时间</p>
           <div class="res-num-item">
-            <span>2018/11/01 12:22:21</span>
+            <span>{{createTime}}</span>
+            <span style="margin-left:8%;" class="res-date">最后登陆时间</span>
+            <span style="margin-left:2%;">{{lastLoginTime}}</span>
           </div>
         </div>
       </div>
     </div>
-      
     <div class="log">
       <div class="logs">
         <div class="logs-item">
@@ -74,10 +69,85 @@
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop } from 'vue-property-decorator'
 import View from '@/util/View'
+import { get } from '@/fn/ajax'
+import { queryList , queryItem , companysList } from '@/api/account'
+import jsxReactToVue from '@/util/jsxReactToVue'
+import { toMap } from '@/fn/array'
+import moment from 'moment'
+import { slice , clean } from '@/fn/object'
+
+const makeMap = (list: any[]) => toMap(list, 'id', 'name')
+const timeFormat = 'YYYY-MM-DD HH:mm:ss'
+
+const defQuery = {
+  id: '',
+}
 
 @Component
-export default class ComponentMain extends View {
+export default class Main extends View {
   showDlg = false
+  createTime: any = ''
+  lastLoginTime: any = ''
+  companyName: any = ''
+  email: any = ''
+  nus: any = ''
+  ids: any = ''
+  query = { ...defQuery }
+  oldQuery: any = {}
+  prelist: any = []
+  list: any = []
+  maincreateTime: any = ''
+  mainlastLoginTime: any = ''
+  // ids: any = ''
+
+
+  get cachedMap() {
+    return {
+    }
+  }
+
+  get tableData() {
+    const cachedMap = this.cachedMap
+    const list = (this.list || []).map((it: any) => {
+      return {
+        ...it,
+      }
+    })
+    return list
+  }
+  mounted() {
+    const {nus , id , createTime , lastLoginTime , companyName , email } = this.$route.query
+    this.createTime = moment(createTime).format(timeFormat)
+    this.lastLoginTime = moment(lastLoginTime).format(timeFormat)
+    this.companyName = companyName
+    this.email = email
+    this.nus = nus == '主账号' ? '主账号' : '子账号'
+    this.ids = id
+
+    this.doSearch()
+  }
+
+
+  async doSearch() {
+    this.oldQuery = { ...this.query }
+
+    const query = clean({ ...this.query })
+    try {
+      // const { data: {
+      //   items: prelist,
+      // } } = await queryList(query)
+      // this.prelist = prelist
+      // 获取公司信息
+      const { data: {
+        items: list,
+      } } = await companysList(query)
+      this.list = list
+    } catch (ex) {
+      // this.handleError(ex)
+    } finally {
+    }
+  }
+
 }
 </script>
 
@@ -101,17 +171,22 @@ export default class ComponentMain extends View {
   line-height: 60px;
 }
 .res-num p {
-  display: inline-block;
-  width: 9%;
+  display: block;
+  float: left;
+  width: 4%;
+  max-height: 60px;
+  overflow: hidden;
   text-align: left;
-  margin-left: 2%;
+  margin-left: 0.5%;
 }
+
 .res-num-item {
   width: 80%;
   height: 100%;
   display: inline-block;
 }
 .res-num-item span {
+  display: inline-block;
   margin-left: 4%;
 }
 .log {

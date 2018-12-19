@@ -22,15 +22,15 @@
         <Input style="width:240px" v-model="dataForm.passwords"></Input>
       </FormItem>
       <FormItem label="所属公司" prop="companyId">
-        <Select style="width:240px">
-          <Option v-for="it in companys" :value="123123" :label="123123">123123</Option>
+        <Select style="width:240px" v-model="dataForm.companyId">
+          <Option v-for="it in companys" :key="it.id" :value="it.id">{{it.name}}</Option>
         </Select>
       </FormItem>
       <FormItem label="启用状态" prop="status">
         <RadioGroup v-model="dataForm.status" >
           <!-- <Radio label="启用"></Radio>
           <Radio label="停用"></Radio> -->
-          <Radio v-for="it in list"  v-if="it.key!=0" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
+          <Radio v-for="it in list" v-if="it.key!=0" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
         </RadioGroup>
       </FormItem>
     </Form>
@@ -45,7 +45,7 @@
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop } from 'vue-property-decorator'
 import { queryItem , queryList , dataFrom , addList , companysList } from '@/api/account'
-import { clean } from '@/fn/object'
+import { slice, clean } from '@/fn/object'
 import { warning , success, toast } from '@/ui/modal'
 import View from '@/util/View'
 const defQuery = {
@@ -56,7 +56,7 @@ const dataForm = {
   password: '',
   name: '',
   mobile: '',
-  companyId: '123132132',
+  companyId: '',
   status: 1
 }
 
@@ -166,7 +166,6 @@ export default class ComponentMain extends View {
       } } = await companysList(query)
       this.list = list
       this.companys = companys
-      // console.log(companys)
     } catch (ex) {
       this.handleError(ex)
     } finally {
