@@ -4,14 +4,16 @@
       <form class="form flex-1" @submit.prevent="search">
         <LazyInput v-model="query.companyId" placeholder="公司ID" class="input input-id"/>
         <LazyInput v-model="query.shortName" placeholder="公司名称" class="input"/>
-        <Select v-model="query.type" placeholder="客户类型" clearable>
-          <Option v-for="it in typeList" :key="it.key" :value="it.key"
-            :label="it.text">{{it.text}}</Option>
+        <Select v-model="query.typeCode" placeholder="客户类型" clearable>
+          <Option v-for="it in customerTypeList" :key="it.typeCode" :value="it.typeCode"
+            :label="it.typeName">{{it.typeName}}</Option>
         </Select>
+        <!-- <Cascader style="width:150px" class="type-select" :data="customerTypeList" v-model="query.type" placeholder="客户类型"></Cascader> -->
         <Select v-model="query.status" placeholder="状态" clearable>
           <Option v-for="it in statusList" :key="it.key" :value="it.key"
             :label="it.text">{{it.text}}</Option>
         </Select>
+        <!-- 接口暂未完成 -->
         <!-- <Select v-model="query.businessDirector" placeholder="关联商务" clearable>
           <Option v-for="it in bizUserList" :key="it.id" :value="it.id"
             :label="it.text">{{[it.name, it.group, it.title].join(' | ')}}</Option>
@@ -48,19 +50,19 @@ import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { clean } from '@/fn/object'
-import { queryList } from '@/api/corp'
+import { queryList } from '@/api/corpReal'
 import { confirm } from '@/ui/modal'
 
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
-const timeFormat = 'YYYY-MM-DD HH:mm:ss'
+const timeFormat = 'YYYY/MM/DD HH:mm:ss'
 
 const defQuery = {
   companyId: null,
   shortName: '',
-  type: null,
-  status: 0,
-  businessDirector: 0,
-  approveStatus: 0,
+  typeCode: null,
+  status: null,
+  businessDirector: null,
+  approveStatus: null,
   pageIndex: 1,
   pageSize: 20,
 }
@@ -70,12 +72,12 @@ export default class Main extends View {
   query = { ...defQuery }
 
   oldQuery: any = null
-
+  defaulitState: any = null
   loading = false
   list = []
   total = 0
   // 业务类型列表
-  typeList = []
+  customerTypeList = []
   // 启用状态列表
   resTypeList = []
   // 资质审核状态列表
@@ -86,8 +88,24 @@ export default class Main extends View {
   columns = [
     { title: '公司ID', key: 'id', align: 'center' },
     { title: '公司名称', key: 'name', width: 200 , align: 'center' },
-    { title: '客户类型', key: 'customerLevel', align: 'center' },
-    { title: '客户等级', key: 'customerLevel', align: 'center' },
+    { title: '客户类型',
+      key: 'customerTypeList',
+      align: 'center',
+      render: (hh: any, { row: { types } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        const customerString: any = this.typeListFormt(types)
+        return !!customerString ? (customerString.map((val: any) => {
+          if (!!val.twoText) {
+            return <div>{val.oneText}<span>({val.twoText})</span></div>
+          } else {
+            return <div v-html={val.oneText}></div>
+          }
+        })) : ''
+        /* tslint:enable */
+      }
+    },
+    { title: '客户等级', key: 'levelCode', align: 'center' },
     { title: '关联商务', key: 'businessDirectorName', align: 'center' },
     {
       title: '创建时间',
@@ -119,10 +137,10 @@ export default class Main extends View {
       title: '状态',
       key: 'statusString',
       align: 'center',
-      render: (hh: any, { row: { statusString, statusText } }: any) => {
+      render: (hh: any, { row: { status, statusText } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        return <span class={`status-${statusString}`}>{statusText}</span>
+        return <span class={`status-${status}`}>{statusText}</span>
         /* tslint:enable */
       }
     },
@@ -130,10 +148,10 @@ export default class Main extends View {
       title: '审核状态',
       key: 'approveStatusString',
       align: 'center',
-      render: (hh: any, { row: { approveStatusString, aptitudeStatusText } }: any) => {
+      render: (hh: any, { row: { approveStatus, aptitudeStatusText } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        return <span class={`aptitude-status-${approveStatusString}`}>{aptitudeStatusText}</span>
+        return <span class={`aptitude-status-${approveStatus}`}>{aptitudeStatusText}</span>
         /* tslint:enable */
       }
     },
@@ -142,13 +160,13 @@ export default class Main extends View {
       key: 'action',
       width: 120,
       align: 'center',
-      render: (hh: any, { row: { id, statusString } }: any) => {
+      render: (hh: any, { row: { id, status } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const edit = statusString == 1 ? '编辑' : '审核'
-        const status = statusString == 1 ? '启用' : '停用'
+        const edit = status == 1 ? '编辑' : '审核'
+        const statusText = status == 1 ? '启用' : '停用'
         return <div class='row-acts'>
-          <a class="operation" on-click={this.editStatus.bind(this, id, status)} to={{ name: 'client-corp-detail', params: { id } }}>{status}</a>
+          <a class="operation" on-click={this.editStatus.bind(this, id, status)} to={{ name: 'client-corp-detail', params: { id } }}>{statusText}</a>
           <router-link class="operation" to={{ name: 'client-corp-edit', params: { id } }}>{edit}</router-link>
           <router-link class="operation" to={{ name: 'client-corp-detail', params: { id } }}>详情</router-link>
         </div>
@@ -157,9 +175,48 @@ export default class Main extends View {
     }
   ]
 
+  typeListFormt(value: any) {
+    const typeArray: any = []
+    const typeObject: any = {}
+    if ( !!value ) {
+      value.forEach((i: any) => {
+        this.customerTypeList.forEach((val: any) => {
+          if (i.typeCode == val.typeCode) {
+            typeObject.oneText = val.typeName
+          }
+          if ( !!i.typeCategoryCode ) {
+            val.typeCategoryList.forEach((chlVal: any) => {
+              if ( i.typeCategoryCode == chlVal.typeCode ) {
+                typeObject.twoText = chlVal.typeName
+              }
+            })
+          }
+        })
+        typeArray.push(typeObject)
+      })
+    }
+    return typeArray
+    // let brr: any= []
+    // let typeArray: any = null
+    // value.forEach( (val: any, i: any) => {
+    //   if (val.typeCategoryList) {
+    //     typeArray = {
+    //       label: val.typeName,
+    //       value: val.typeCode,
+    //       children: this.typeListFormt(val.typeCategoryList)
+    //     }
+    //   } else {
+    //     typeArray = {
+    //       label: val.typeName,
+    //       value: val.typeCode
+    //     }
+    //   }
+    //   brr.push(typeArray)
+    // })
+    // return brr
+  }
   get cachedMap() {
     return {
-      type: makeMap(this.typeList),
       resType: makeMap(this.resTypeList),
       status: makeMap(this.statusList),
       aptitudeStatus: makeMap(this.aptitudeStatusList)
@@ -171,10 +228,9 @@ export default class Main extends View {
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        isResOwner: it.type == 1 ? '是' : '-',
         resTypeName: cachedMap.resType[it.typeString],
-        statusText: cachedMap.status[it.statusString],
-        aptitudeStatusText: cachedMap.aptitudeStatus[it.approveStatusString],
+        statusText: cachedMap.status[it.status],
+        aptitudeStatusText: cachedMap.aptitudeStatus[it.approveStatus],
       }
     })
     return list
@@ -206,17 +262,17 @@ export default class Main extends View {
       const { data: {
         items: list,
         totalCount: total,
-        typeList,
+        customerTypeList,
         resTypeList,
         statusList,
         approveStatusList,
       } } = await queryList(query)
       this.list = list
       this.total = total
-      this.typeList = typeList
+      this.customerTypeList = customerTypeList
       this.resTypeList = resTypeList
-      this.statusList = statusList
-      this.aptitudeStatusList = approveStatusList
+      this.statusList = statusList.slice(1)
+      this.aptitudeStatusList = approveStatusList.slice(1)
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -262,6 +318,11 @@ export default class Main extends View {
 
   .input-id {
     width: 80px;
+  }
+  .type-select {
+    display: inline-block;
+    width: 100%;
+    margin-left: 8px;
   }
 }
 

@@ -12,11 +12,20 @@ export async function queryList(query: any = {}) {
 }
 
 /**
+ * 关联商务，查询列表
+ * @param query 查询条件，参见接口文档
+ */
+export async function directorList(query: any = {}) {
+    const res = await get('/customer/companys', query)
+    return res
+}
+
+/**
  * 根据Id，查询公司详情
  * @param query 查询条件，参见接口文档
  */
 export async function queryId(query: any = {}) {
-    const res = await get('/customer/companys', query)
+    const res = await get(`/customer/companys/${query.id}`)
     return res
 }
 
@@ -28,6 +37,15 @@ export async function statusId(query: any = {}) {
     const res = await put('/customer/company/status/', query)
     return res
 }
+
+/**
+ * 新建公司 初始条件
+ */
+export async function addSeach() {
+    const res = await get('/customer/companys/view')
+    return res
+}
+
 
 /**
  * 新建公司
@@ -46,3 +64,10 @@ export async function setQuery(id: number, query: any = {}) {
     const res = await post(`/customer/company/${id}`, query)
     return res
 }
+
+// 公司查询
+export async function companyList(query: any) {
+    const res = await get('/basis/districts', query)
+    return res
+}
+

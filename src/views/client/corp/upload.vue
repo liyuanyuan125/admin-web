@@ -1,11 +1,12 @@
 <template>
   <div class="upload-box">
+    <slot></slot>
     <div class="upload-list" v-for="item in uploadlist" :key="item.name">
       <div v-if="!types">
         <template v-if="item.status === 'finished'">
           <img :src="item.imageUrl">
           <div class="upload-list-cover">
-            <Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>
+            <Icon type="ios-eye-outline" @click.native="handleView(item.imageUrl)"></Icon>
             <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
           </div>
         </template>
@@ -13,33 +14,23 @@
           <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
         </template>
       </div>
-      <div v-else  v-for="item in uploadlist" :key="item.name">
+      <div v-else  v-for="item in uploadlist" :key="item.imageUrl">
          <img :src="item.imageUrl">
           <div class="upload-list-cover">
-            <Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>
+            <Icon type="ios-eye-outline" @click.native="handleView(item.imageUrl)"></Icon>
           </div>
       </div>
     </div>
     <div v-if="!types" style="display: inline-block">
-      <Upload
-        ref="upload"
-        :show-upload-list="false"
-        :default-file-list="defaultList"
-        :on-success="handleSuccess"
-        :format="['jpg','jpeg','png']"
-        :max-size="2048"
-        :on-format-error="handleFormatError"
-        :on-exceeded-size="handleMaxSize"
-        :before-upload="handleBeforeUpload"
-        multiple
-        type="drag"
-        action="//jsonplaceholder.typicode.com/posts/"
-        style="display: inline-block;width: 78px;">
-        <div style="width: 78px;height:78px;line-height: 78px;">
-          <p></p>
-          <p>上传</p>
+      <div class="ivu-upload" style="display: inline-block;width: 78px;">
+        <div class="ivu-upload ivu-upload-drag">
+          <input ref="uploadReset" type="file" multiple id="uplaod" @change="onChange" class="ivu-upload-input">
+          <label for="uplaod" style="width: 78px;height:78px;line-height: 78px;">
+            <p></p>
+            <p>上传</p>
+          </label>
         </div>
-      </Upload> 
+      </div>
     </div>
 
     <Modal title="View Image" v-model="visible">
@@ -52,51 +43,47 @@
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop } from 'vue-property-decorator'
 import View from '@/util/View'
+import event from '@/fn/event'
+
+import Uploader, { ImageType, UploaderOptions } from '@/util/Uploader'
 
 @Component
 export default class ComponentMain extends View {
-  @Prop({ type: Array, default: () => [] }) uploadList!: any[]
+  @Prop({ type: Array, default: () => [] }) uploadListArray!: any[]
   @Prop({}) types: any
   uploadlist: any = []
   defaultList = [
   ]
   imgName = ''
+  format = ['jpg', 'jpeg', 'png', 'gif']
   visible = false
   created() {
-    this.uploadlist = this.uploadList
+    this.uploadlist = this.uploadListArray
   }
-  mounted() {
-    this.upload()
-  }
-  upload() {
-    if (!this.types) {
-      this.uploadlist = (this.$refs.upload as any).fileList
-    }
-  }
-  handleView(name: any) {
-    this.imgName = name
+
+  handleView(imageUrl: any) {
+    this.imgName = imageUrl
     this.visible = true
   }
+
   handleRemove(file: any) {
-    const fileList  = (this.$refs.upload as any).fileList
-    ; (this.$refs.upload as any).fileList.splice(fileList.indexOf(file), 1)
+    this.uploadlist.splice(this.uploadlist.indexOf(file), 1)
   }
-  handleSuccess(res: any, file: any) {
-    file.imageUrl = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar'
-    file.name = '7eb99afb9d5f317c912f08b5212fd69a'
-  }
+
   handleFormatError(file: any) {
     this.$Notice.warning({
-      title: 'The file format is incorrect',
-      desc: 'File format of ' + file.name + ' is incorrect, please select jpg or png.'
+      title: '文件格式不正确',
+      desc:  `${file.name}文件格式不是jpg,jpeg,png, gif`
     })
   }
+
   handleMaxSize(file: any) {
     this.$Notice.warning({
       title: 'Exceeding file size limit',
       desc: 'File  ' + file.name + ' is too large, no more than 2M.'
     })
   }
+
   handleBeforeUpload() {
     // const check = this.uploadList.length < 5;
     // if (!check) {
@@ -105,6 +92,82 @@ export default class ComponentMain extends View {
     //   })
     // }
     // return check
+  }
+
+  onChange(ev: Event) {
+    const files = (ev.target as HTMLInputElement).files!
+    const uploader = new Uploader({
+      imageCompress: {
+        keepTypes: [ ImageType.gif, ImageType.png ]
+      }
+    } as UploaderOptions)
+    let imgObject: any = null
+    uploader.on({
+      thumb: ({ thumb }) => {
+        // 已经生成预览图的时候触发，只有上传的是图片的时候，才有这个事件
+        // thumb 是图片预览地址，可以直接绑定到 img 的 src 上实现预览
+      },
+      begin: () => {
+        // 开始上传，执行开始动作，比如显示 loading 之类的
+        imgObject = {
+          showProgress: true,
+        }
+      },
+      progress: (e: ProgressEvent) => {
+        const { loaded, total } = e
+        const percent = Math.floor(loaded * 100 / total)
+        imgObject = {
+          size: total,
+          percentage: percent,
+          ...imgObject
+        }
+        this.uploadlist.push({...imgObject})
+        // loaded 是已上传的字节数，total 是总字节数，percent 是计算出来的百分比
+      },
+      done: data => {
+        const url = data[0].url
+        const fileId = data[0].fileId
+        imgObject = {
+          imageUrl: url,
+          fileId,
+          ...imgObject
+        }
+        this.$set(this.uploadlist, this.uploadlist.length - 1, imgObject)
+        // 上传成功，url 是上传后的地址，图片预览需要这个值
+        // fileId 是文件 ID，一般后端需要这个值
+      },
+      fail: ex => {
+        // ex 是与 ajax 组件相同的错误对象
+        this.uploadlist.pop()
+        this.handleError(ex)
+      },
+      end: () => {
+        imgObject = {
+          ...imgObject,
+          showProgress: false,
+          status: 'finished'
+        }
+        this.$set(this.uploadlist, this.uploadlist.length - 1, imgObject)
+        // 结束上传，无论成功还是失败，都会执行，执行清理工作，比如取消显示 loading
+      }
+    })
+    const uploadArray = Array.from(files)
+
+    if (uploadArray.length === 0) {
+      return
+    }
+    Array.from(files).forEach(i => {
+      if (this.format.length) {
+        const fileFormat = (i as any).name.split('.').pop().toLocaleLowerCase()
+        const checked = this.format.some(item => item.toLocaleLowerCase() === fileFormat)
+        if (!checked) {
+            this.handleFormatError(i)
+            return false
+        }
+      }
+      uploader.upload(i)
+    })
+    ; (this.$refs.uploadReset as any).value = null
   }
 }
 </script>
