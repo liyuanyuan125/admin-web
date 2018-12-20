@@ -33,7 +33,7 @@
               <Icon :type="menu.icon"/>{{menu.label}}
             </template>
             <MenuItem v-for="sub in menu.subList" :key="sub.name" :name="sub.name">
-              <router-link :to="{ name: sub.name }">{{sub.label}}</router-link>
+              <router-link :to="{name: sub.name}">{{sub.label}}</router-link>
             </MenuItem>
           </Submenu>
         </Menu>

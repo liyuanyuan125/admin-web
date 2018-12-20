@@ -16,7 +16,7 @@ export async function queryItem(query: any = {}) {
  * @param cinemaId 所属影院ID
  * @param data 数据，参见接口文档
  */
-export async function addItem(cinemaId: string, data: any = {}) {
+export async function addItem(cinemaId: number, data: any = {}) {
   const url = `/theater/cinemas/${cinemaId}/halls`
   const res = await post(url, data)
   return res
@@ -27,7 +27,7 @@ export async function addItem(cinemaId: string, data: any = {}) {
  * @param cinemaId 所属影院ID
  * @param data 数据，参见接口文档
  */
-export async function updateItem(cinemaId: string, data: any = {}) {
+export async function updateItem(cinemaId: number, data: any = {}) {
   const url = `/theater/cinemas/${cinemaId}/halls/${data.id}`
   const res = await put(url, data)
   return res
