@@ -4,8 +4,9 @@
     <!-- <div class="work-Title"><span class="workT">工作台</span> > 客户管理 > 账号管理 > 账号详情</div> -->
     <!-- 注册账号 -->
     <div class="Inp-Group-res">
+      <Button class="bth" icon="md-return-left" @click="goback">返回列表</Button>
+      <div class="n-main">主账号详情</div>
       <div class="Inps-res">
-        <div class="n-main">主账号详情</div>
         <div class="res-num">
           <p>用户账号</p>
           <div class="res-num-item change-item">
@@ -197,6 +198,10 @@ export default class Main extends View {
     // this.$router.push({ name: 'client-corp-detail', params })
   }
 
+  goback() {
+    this.$router.go(-1)
+  }
+
   async doSearch() {
     if (this.loading) {
       return
@@ -241,11 +246,10 @@ export default class Main extends View {
 }
 .Inp-Group-res,
 .res-Group {
-  background: #ecf0f4;
-  padding: 14px;
+  // background: #ecf0f4;
+  padding: 10px;
   padding-top: 15px;
   margin: -10px -10px 0 -10px;
-  border-bottom: 1px solid #ccc;
 }
 .res-Group {
   margin-top: -5px;
@@ -257,6 +261,7 @@ export default class Main extends View {
   padding-top: 7px;
   font-size: 13px;
   background: #fff;
+  border: 1px solid #dcdee2;
 }
 .res-num {
   width: 100%;
@@ -287,9 +292,9 @@ export default class Main extends View {
   cursor: pointer;
 }
 .new-number {
-  background: #ecf0f4;
-  padding: 14px;
-  margin: -14px -10px 0 -10px;
+  // background: #ecf0f4;
+  padding: 2px;
+  margin: 1px -10px 0 -10px;
 }
 .new-num {
   width: 100%;
@@ -299,16 +304,19 @@ export default class Main extends View {
   font-size: 13px;
 }
 .n-list {
-  margin: -5px 0 8px 0;
+  margin: -5px 0 8px 5px;
   line-height: 38px;
-  font-weight: bold;
-  border-bottom: 2px solid #ecf0f4;
+  font-size: 16px;
+  color: #2d8cf0;
+  // border-bottom: 2px solid #ecf0f4;
 }
 .n-main {
-  margin: -3px 0 0 8px;
+  display: inline-block;
+  margin: 0 0 5px 5px;
   line-height: 35px;
-  font-weight: bold;
-  border-bottom: 2px solid #ecf0f4;
+  font-size: 16px;
+  color: #2d8cf0;
+  // border-bottom: 2px solid #ecf0f4;
 }
 .table {
   /deep/ .ivu-table-cell > span:only-child:empty {

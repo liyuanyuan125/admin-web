@@ -1,6 +1,8 @@
 <template>
   <div class="page"  :data="tableData">
     <div class="inps">
+      <Button class="bth" icon="md-return-left" @click="goback">返回列表详情</Button>
+      <div class="n-main">{{nus}}详情</div>
       <div class="Inps-res" v-if='nus'>
         <div class="res-num">
           <p>注册账号</p>
@@ -30,6 +32,7 @@
       </div>
     </div>
     <div class="log">
+      <div class="n-main">{{nus}}操作日志</div>
       <div class="logs">
         <div class="logs-item">
           <span>2018/11/23</span>
@@ -133,6 +136,9 @@ export default class Main extends View {
     this.doSearch()
   }
 
+  goback() {
+    this.$router.go(-1)
+  }
 
   async doSearch() {
     this.oldQuery = { ...this.query }
@@ -157,18 +163,18 @@ export default class Main extends View {
 
 <style lang="less" scoped>
 .inps {
-  background: #ecf0f4;
-  padding: 14px;
+  // background: #ecf0f4;
+  padding: 10px;
   padding-top: 19px;
   margin: -10px -10px 0 -10px;
 }
 .Inps-res {
   width: 100%;
   height: 100%;
-  padding: 16px;
   background: #fff;
   font-size: 13px;
   margin-top: -5px;
+  border: 1px solid #dcdee2;
 }
 .res-num {
   width: 100%;
@@ -208,8 +214,8 @@ export default class Main extends View {
   font-style: normal;
 }
 .log {
-  background: #ecf0f4;
-  padding: 14px;
+  // background: #ecf0f4;
+  padding: 10px;
   padding-top: 19px;
   margin: -14px -10px 0 -10px;
 }
@@ -217,8 +223,17 @@ export default class Main extends View {
   margin-top: -4px;
   padding: 16px;
   background: #fff;
+  border: 1px solid #dcdee2;
 }
 .logs-item {
   line-height: 30px;
+}
+.n-main {
+  display: inline-block;
+  margin: -5px 0 8px 5px;
+  line-height: 38px;
+  font-size: 16px;
+  color: #2d8cf0;
+  // border-bottom: 2px solid #ecf0f4;
 }
 </style>
