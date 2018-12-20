@@ -33,7 +33,7 @@
           </FormItem>
         </Col>
         <Col span="8">
-          <FormItem label="影厅业务类型" prop="businessTypeCode" clearable>
+          <FormItem label="影厅业务类型" prop="businessTypeCode">
             <Select v-model="item.businessTypeCode">
               <Option v-for="it in enumType.businessTypeList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
@@ -174,7 +174,7 @@ export default class DlgEdit extends View {
         { required: true, message: '不能为空', trigger: 'blur' }
       ],
       typeCode: [
-        { required: true, message: '不能为空', trigger: 'blur' }
+        { required: true, message: '不能为空', trigger: 'change' }
       ],
       seats: [
         { required: true, message: '不能为空', trigger: 'blur', type: 'integer' }

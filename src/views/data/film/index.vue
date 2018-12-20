@@ -26,9 +26,9 @@
 
 <script lang="tsx">
 // doc: https://github.com/kaorun343/vue-property-decorator
-import { Component, Watch } from 'vue-property-decorator'
+import { Component, Watch, Mixins } from 'vue-property-decorator'
 import View from '@/util/View'
-import { get } from '@/fn/ajax'
+import UrlManager from '@/util/UrlManager'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
@@ -44,15 +44,6 @@ import { loading, toast } from '@/ui/modal'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 const timeFormat = 'YYYY-MM-DD'
 
-const defQuery = {
-  id: null,
-  name: '',
-  pageIndex: 1,
-  pageSize: 20,
-  startTime: 0,
-  endTime: 0
-}
-
 @Component({
   components: {
     DlgEdit,
@@ -60,10 +51,21 @@ const defQuery = {
     PoptipInput
   }
 })
-export default class Main extends View {
-  query = { ...defQuery }
-  rolads = false
+export default class Main extends Mixins(View, UrlManager) {
+  defQuery = {
+    id: null,
+    name: '',
+    pageIndex: 1,
+    pageSize: 20,
+    startTime: 0,
+    endTime: 0
+  }
+
+  query: any = {}
+
   oldQuery: any = {}
+
+  rolads = false
   editOne: any = null
   loading = false
   addOrUpdateVisible = false
@@ -276,8 +278,7 @@ export default class Main extends View {
   }
 
   mounted() {
-    const urlQuery = slice(urlParam(), Object.keys(defQuery))
-    this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
+    this.updateQueryByParam()
     // 时间赋值
     !!this.query.startTime ? this.showTime[0] = moment(this.query.startTime).format(timeFormat) : this.showTime[0] = ''
     !!this.query.endTime ? this.showTime[1] = moment(this.query.endTime).format(timeFormat) : this.showTime[1] = ''
@@ -287,17 +288,10 @@ export default class Main extends View {
     this.query.pageIndex = 1
   }
 
-  updateUrl() {
-    const query = prettyQuery(this.query, defQuery)
-    const url = buildUrl(location.pathname, query)
-    history.replaceState(null, '', url)
-  }
-
   reset() {
-    const { pageSize } = this.query
     // 时间清空
     this.showTime = []
-    this.query = { ...defQuery, pageSize }
+    this.resetQuery()
   }
 
   dateChange(data: any) {
