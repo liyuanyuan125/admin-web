@@ -10,6 +10,8 @@ import View from '@/util/View'
 import { getSubList } from '@/api/area'
 import { toast } from '@/ui/modal'
 
+const isZero = (list: number[] | null) => (list || []).every(it => it === 0)
+
 @Component
 export default class AreaSelect extends View {
   /**
@@ -25,6 +27,7 @@ export default class AreaSelect extends View {
   @Prop({ type: Boolean, default: true }) clearable!: boolean
 
   inValue: number[] = []
+
   data: any[] = []
 
   async getSubList(pid = 0, level = 0) {
@@ -52,7 +55,7 @@ export default class AreaSelect extends View {
     })
 
     const result = level > 0
-      ? [{ value: '0', label: '本区域', isFake: true }].concat(tlist)
+      ? [{ value: 0, label: '本区域', isFake: true }].concat(tlist)
       : tlist
 
     return result
@@ -73,8 +76,13 @@ export default class AreaSelect extends View {
   format(labels: any[], selectedData: any[]) {
     const list = selectedData.filter(it => !it.isFake).map(it => it.label)
     const result = list.length > 0 ? list.join(' / ') : ''
-    const strVal = (this.value || []).join('')
-    return result ? result : (strVal === '' || strVal === '000' ? '' : '数据有问题')
+    const allZero = isZero(this.value)
+    // fix 选择清除不干净的 bug
+    if (allZero && result !== '') {
+      const ui = this.$refs.ui as any
+      typeof ui.clearSelect === 'function' && ui.clearSelect()
+    }
+    return allZero ? '' : result
   }
 
   fillList(list: number[]) {

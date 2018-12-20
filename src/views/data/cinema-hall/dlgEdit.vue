@@ -144,7 +144,7 @@ export default class DlgEdit extends View {
   /**
    * 影院 ID
    */
-  @Prop({ type: String, default: '', required: true }) cinemaId!: string
+  @Prop({ type: Number, default: 0, required: true }) cinemaId!: number
 
   inValue: Value = this.value
 

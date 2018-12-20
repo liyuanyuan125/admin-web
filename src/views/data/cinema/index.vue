@@ -88,7 +88,7 @@ export default class Main extends View {
   list: any[] = []
   total = 0
 
-  area: string[] = []
+  area: number[] = []
 
   // 编辑对话框列表
   dlgEditList: any[] = []
@@ -110,7 +110,7 @@ export default class Main extends View {
 
   get columns() {
     return  [
-      { title: '序号', key: 'id', width: 138, align: 'center' },
+      { title: '序号', key: 'id', width: 70, align: 'center' },
       { title: '专资ID', key: 'code', width: 70, align: 'center' },
       { title: '影院名称', key: 'shortName', minWidth: 70, align: 'center' },
       {
@@ -332,7 +332,7 @@ export default class Main extends View {
   }
 
   @Watch('area')
-  watchArea(val: string[]) {
+  watchArea(val: number[]) {
     this.query.provinceId = val[0]
     this.query.cityId = val[1]
     this.query.countyId = val[2]
