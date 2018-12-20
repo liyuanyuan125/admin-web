@@ -99,7 +99,7 @@ import { toast } from '@/ui/modal'
 import { filterItemInList, filterListByControlStatus } from '@/util/dealData'
 
 interface Value {
-  id: string
+  id: number
   showDlgEdit: boolean
 }
 
@@ -114,16 +114,16 @@ interface KeyTextControlStatusMap {
 }
 
 const defItem: any = {
-  id: '',
+  id: 0,
   shortName: '',
   code: '',
   officialName: '',
   controlStatus: 0,
-  chainId: '',
+  chainId: 0,
   gradeCode: '',
-  provinceId: '0',
-  cityId: '0',
-  countyId: '0',
+  provinceId: 0,
+  cityId: 0,
+  countyId: 0,
   address: '',
   softwareCode: '',
   zipCode: '',
@@ -175,7 +175,7 @@ export default class DlgEdit extends View {
         { required: true, message: '不能为空', trigger: 'blur' }
       ],
       chainId: [
-        { required: true, message: '不能为空', trigger: 'change' }
+        { required: true, type: 'number', min: 1, message: '不能为空', trigger: 'change' }
       ],
       area: [
         {
@@ -183,13 +183,13 @@ export default class DlgEdit extends View {
           message: '不能为空',
           trigger: 'change',
           type: 'array',
-          validator(rule: any, value: string[], callback: any) {
+          validator(rule: any, value: number[], callback: any) {
             if (areaFirstCall) {
               areaFirstCall = false
               return callback()
             }
             const strVal = (value || []).join('')
-            strVal === '000' ? callback(new Error('不能为空')) : callback()
+            ; /^0*$/.test(strVal) ? callback(new Error('不能为空')) : callback()
           }
         }
       ],
@@ -247,7 +247,7 @@ export default class DlgEdit extends View {
         this.item.chainId = defItem.chainId
       }
 
-      const { provinceId = '0', cityId = '0', countyId = '0' } = this.item
+      const { provinceId = 0, cityId = 0, countyId = 0 } = this.item
       this.item.area = [provinceId, cityId, countyId]
 
       // 默认选中第一个
@@ -275,7 +275,7 @@ export default class DlgEdit extends View {
   }
 
   @Watch('item.area')
-  watchArea(val: string[]) {
+  watchArea(val: number[]) {
     this.item.provinceId = val[0]
     this.item.cityId = val[1]
     this.item.countyId = val[2]

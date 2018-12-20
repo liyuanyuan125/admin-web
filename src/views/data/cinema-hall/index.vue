@@ -74,7 +74,7 @@ import DlgEdit from './dlgEdit.vue'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
 const defQuery = {
-  id: '',
+  id: 0,
   pageIndex: 1,
   pageSize: 888888,
 }
@@ -116,7 +116,7 @@ export default class Main extends View {
 
   get columns() {
     return  [
-      { title: '序号', key: 'id', width: 138, align: 'center' },
+      { title: '序号', key: 'id', width: 70, align: 'center' },
       { title: '影厅名称', key: 'name', minWidth: 70, align: 'center' },
       { title: '影厅类型', key: 'typeName', width: 65, align: 'center' },
       { title: '座位数', key: 'seats', width: 55, align: 'center' },
@@ -164,7 +164,7 @@ export default class Main extends View {
 
   mounted() {
     const { id } = this.$route.params
-    this.query.id = id
+    this.query.id = parseInt(id, 10) || 0
     this.fetch()
   }
 

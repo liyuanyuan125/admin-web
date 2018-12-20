@@ -43,8 +43,8 @@ const dataForm = {
   year: null,
   // beginDate: new Date().getTime(),
   // endDate: new Date().getTime(),
-  beginDate: 0,
-  endDate: 0,
+  beginDate: '',
+  endDate: '',
 }
 
 @Component
@@ -59,16 +59,16 @@ export default class ComponentMain extends View {
 
   ruleValidate = {
     name: [
-        { required: true, message: '请输入档期名称', trigger: 'blur' }
+      { required: true, message: '请输入档期名称', trigger: 'blur' }
     ],
     year: [
-        { required: true, message: '请输入年份' }
+      { required: true, message: '请输入年份' }
     ],
     beginDate: [
-        { required: true, message: '请输入开始日期' }
+      { required: true, message: '请输入开始日期' }
     ],
     endDate: [
-        { required: true, message: '请输入结束日期' }
+      { required: true, message: '请输入结束日期' }
     ],
   }
 
