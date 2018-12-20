@@ -64,7 +64,7 @@
         </Row>
         <Row class="upload">
           <Col span="12" style="margin-left: 88px">
-            <Upload @imglist=imgarray />
+            <Upload v-if="loadingShow" :uploadListArray='imgList' @imglist=imgarray /> 
           </Col>
         </Row>
       </Row>
@@ -108,7 +108,7 @@
       <Row class="cinema-footer">
         <Row>
           <Col span="5">
-            <FormItem label="客户等级" prop="clientLevel">
+            <FormItem label="客户等级" prop="levelCode">
               <Select v-model="item.levelCode" clearable>
                 {{levelList}}
                 <Option v-for="it in levelList" :key="it.key"
@@ -170,6 +170,7 @@ import AreaSelect from '@/components/AreaSelect.vue'
 import PartBindCinema from './partBindCinema.vue'
 import Upload from './upload.vue'
 import { toMap } from '@/fn/array'
+import { slice } from '@/fn/object'
 
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
@@ -215,7 +216,7 @@ const defItem = {
 export default class Main extends View {
 
   loading = false
-
+  loadingShow = false
   item: any = {...defItem}
   shows = true
   levelList = []
@@ -248,7 +249,7 @@ export default class Main extends View {
         { required: true, message: '请选择审核状态', trigger: 'blur', type: 'number' }
       ],
       cinemas: [
-        { required: true, message: '请选择关联影院', trigger: 'change'}
+        { required: true, message: '请选择关联影院', type: 'array', trigger: 'change'}
       ],
       levelCode: [
         { required: true, message: '请选择客户等级', trigger: 'change'}
@@ -268,6 +269,14 @@ export default class Main extends View {
       ],
     }
     return rule
+  }
+
+  get imgList() {
+    return this.item.images.map((item: string) => {
+      return {
+        imageUrl: item
+      }
+    })
   }
 
   mounted() {
@@ -290,16 +299,20 @@ export default class Main extends View {
     this.loading = true
     const query = { id: this.$route.params.id || 0 }
     try {
-      if ( !!query ) {
+      if ( !query.id ) {
         const {
           data: {
             levelList,
             customerTypeList
           }
         } = await addSeach()
+        this.loadingShow = true
         this.levelList = levelList
         this.customerTypeList = customerTypeList
       } else {
+        const res = await queryId(query)
+        this.item = slice(res.data, Object.keys(this.item))
+        this.loadingShow = true
       }
       // const { data: {
       //   item,

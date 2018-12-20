@@ -26,7 +26,7 @@
         <div class="ivu-upload ivu-upload-drag">
           <input ref="uploadReset" type="file" multiple id="uplaod" @change="onChange" class="ivu-upload-input">
           <label for="uplaod" style="width: 78px;height:78px;line-height: 78px;">
-            <p></p>
+            <p>+</p>
             <p>上传</p>
           </label>
         </div>
@@ -168,6 +168,7 @@ export default class ComponentMain extends View {
   background: #ecf0f4;
   padding: 8px;
 }
+
 .upload-list {
   display: inline-block;
   width: 80px;
@@ -182,10 +183,12 @@ export default class ComponentMain extends View {
   box-shadow: 0 1px 1px rgba(0, 0, 0, .2);
   margin-right: 8px;
 }
+
 .upload-list img {
   width: 100%;
   height: 100%;
 }
+
 .upload-list-cover {
   display: none;
   position: absolute;
@@ -195,6 +198,7 @@ export default class ComponentMain extends View {
   right: 0;
   background: rgba(0, 0, 0, .6);
 }
+
 .upload-list:hover .upload-list-cover {
   display: block;
 }
@@ -204,5 +208,13 @@ export default class ComponentMain extends View {
   font-size: 20px;
   cursor: pointer;
   margin: 0 2px;
+}
+
+.ivu-upload {
+  p:first-child {
+    position: absolute;
+    top: -10px;
+    right: 34px;
+  }
 }
 </style>

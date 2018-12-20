@@ -19,14 +19,27 @@
     </Row>
     <div class="cinema-box">
       <div>
+        <Row v-if="dataLoading">
+          <Col class="demo-spin-col" span="22">
+            <Spin fix>
+              <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
+              <div>Loading</div>
+            </Spin>
+          </Col>
+        </Row>
         <Form ref="radioCinema" :model="form">
           <FormItem>
             <CheckboxGroup  v-model="form.check">
-              <div class="check" v-for="item in items" :key="item.id">
-                <tooltip content="已下架" v-if="item.controlStatus != 1" placement="right">
-                  <Checkbox :label="item.id" style="color: red">{{item.shortName}}}</Checkbox>
-                </tooltip>
-                <Checkbox v-else :label="item.id">{{item.shortName}}</Checkbox>
+              <div v-if="items.length>0">
+                <div class="check" v-for="item in items" :key="item.id">
+                  <tooltip content="已下架" v-if="item.controlStatus != 1" placement="right">
+                    <Checkbox :label="item.id" style="color: red">{{item.shortName}}}</Checkbox>
+                  </tooltip>
+                  <Checkbox v-else :label="item.id">{{item.shortName}}</Checkbox>
+                </div>
+              </div>
+              <div v-else class="text-center">
+                暂无数据
               </div>
             </CheckboxGroup >
           </FormItem>
@@ -61,6 +74,7 @@ export default class Main extends View {
   form: any = {
     check: []
   }
+  dataLoading: boolean = true
   showDlg: any = false
   loading = true
   value = ''
@@ -86,6 +100,7 @@ export default class Main extends View {
   }
 
   async seach() {
+    this.dataLoading = true
     const query: any = {
       chainId: this.chainId,
       name: this.value,
@@ -94,6 +109,7 @@ export default class Main extends View {
     }
     const res = await queryList(clean({...query}))
     this.items = res.data.items
+    this.dataLoading = false
   }
 
   async done() {
@@ -157,5 +173,27 @@ export default class Main extends View {
   /deep/ .check:nth-child(4n) {
     background: #f0faff;
   }
+}
+.demo-spin-icon-load {
+  animation: ani-demo-spin 1s linear infinite;
+}
+@keyframes ani-demo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.demo-spin-col {
+  height: 300px;
+  position: relative;
+}
+.text-center {
+  text-align: center;
+  line-height: 200px;
 }
 </style>

@@ -7,7 +7,7 @@ import { get, post, put } from '@/fn/ajax'
  * @param query 查询条件，参见接口文档
  */
 export async function queryList(query: any = {}) {
-    const res = await get('/customer/companys', query)
+    const res = await get('/customer/companies', query)
     return res
 }
 
@@ -16,7 +16,7 @@ export async function queryList(query: any = {}) {
  * @param query 查询条件，参见接口文档
  */
 export async function directorList(query: any = {}) {
-    const res = await get('/customer/companys', query)
+    const res = await get('/customer/companies', query)
     return res
 }
 
@@ -25,7 +25,7 @@ export async function directorList(query: any = {}) {
  * @param query 查询条件，参见接口文档
  */
 export async function queryId(query: any = {}) {
-    const res = await get(`/customer/companys/${query.id}`)
+    const res = await get(`/customer/companies/${query.id}`)
     return res
 }
 
@@ -42,7 +42,7 @@ export async function statusId(query: any = {}) {
  * 新建公司 初始条件
  */
 export async function addSeach() {
-    const res = await get('/customer/companys/view')
+    const res = await get('/customer/companies/view')
     return res
 }
 

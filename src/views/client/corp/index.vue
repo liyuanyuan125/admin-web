@@ -59,12 +59,12 @@ const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 const timeFormat = 'YYYY/MM/DD HH:mm:ss'
 
 const defQuery = {
-  companyId: null,
+  companyId: '',
   shortName: '',
-  typeCode: null,
-  status: null,
+  typeCode: '',
+  status: 0,
   businessDirector: null,
-  approveStatus: null,
+  approveStatus: 0,
   pageIndex: 1,
   pageSize: 20,
 }

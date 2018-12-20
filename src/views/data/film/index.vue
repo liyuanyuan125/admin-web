@@ -354,7 +354,6 @@ export default class Main extends View {
       return
     }
     this.updateUrl()
-    this.query.pageIndex = 1
     this.oldQuery = { ...this.query }
     this.loading = true
     const query: any = {}
