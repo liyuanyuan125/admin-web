@@ -23,7 +23,6 @@
           <Button type="success" icon="md-add-circle" @click="edit(0)">新建</Button>
         </div>
       </div>
-
       <Table :columns="columns" :data="tableData" :loading="loading"
         border stripe disabled-hover size="small" class="table"></Table>
 
@@ -35,7 +34,7 @@
       </div>
     </div>
     <DlgEdit  ref="addOrUpdate"   @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/>
-    <dlgVerify  ref="change"   @refreshDataList="search" v-if="changeVisible" @done="dlgEditDone"/>
+    <!-- <dlgVerify  ref="change"   @refreshDataList="search" v-if="changeVisible" @done="dlgEditDone"/> -->
   </div>
 </template>
 
@@ -51,7 +50,7 @@ import { slice, clean } from '@/fn/object'
 import { numberify, numberKeys } from '@/fn/typeCast'
 import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import DlgEdit from './dlgEdit.vue'
-import dlgVerify from './dlgVerify.vue'
+// import dlgVerify from './dlgVerify.vue'
 
 import {confirm , warning , success, toast } from '@/ui/modal'
 
@@ -77,7 +76,7 @@ const dataForm = {
 @Component({
   components: {
     DlgEdit,
-    dlgVerify
+    // dlgVerify
   }
 })
 export default class Main extends View {
@@ -195,8 +194,8 @@ export default class Main extends View {
 
   dateChange(data: any) {
      // 获取时间戳
-     !!data[0] ? (this.query.beginCreateTime = new Date(data[0]).getTime()) : this.query.beginCreateTime = 0
-     !!data[1] ? (this.query.endCreateTime = new Date(data[1]).getTime()) : this.query.endCreateTime = 0
+     !!data[0] ? (this.query.beginCreateTime = new Date(data[0]).getTime() - 28800000) : this.query.beginCreateTime = 0
+     !!data[1] ? (this.query.endCreateTime = new Date(data[1]).getTime() + 57600000) : this.query.endCreateTime = 0
   }
 
   search() {

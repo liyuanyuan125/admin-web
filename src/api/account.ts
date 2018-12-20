@@ -32,13 +32,13 @@ export async function setList(query: any) {
 }
 // 获取公司详情
 export async function companysList(query: any) {
-  const data = await get('/customer/companys', query)
+  const data = await get('/customer/companies', query)
   return data
 }
 
-// 修改主账号状态
+// 变更主账号
 export async function setchangeList(query: any) {
-  const res = await put(`/customer/accounts/companyMainAccount`, query)
+  const res = await put(`/customer/accounts/set-main-account`, query)
   return res
 }
 

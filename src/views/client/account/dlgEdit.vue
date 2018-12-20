@@ -166,6 +166,7 @@ export default class ComponentMain extends View {
       } } = await companysList(query)
       this.list = list
       this.companys = companys
+      // console.log(this.companys)
     } catch (ex) {
       this.handleError(ex)
     } finally {

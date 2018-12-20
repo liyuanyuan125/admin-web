@@ -11,7 +11,7 @@
           <div class="res-num-item change-item">
             <span>{{list.email}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;【主账号】</span>
             <!-- <s class="blu1 les" @click="viewlog(2)">查看操作日志</span> -->
-            <router-link :to="{path:'/client/account/viewLog/'+ list.id +'',query: {nus: '主账号' , id: list.id , createTime: list.createTime , lastLoginTime: list.lastLoginTime , companyName: list.companyName , email: list.email} , params: {id: list.id}}" tag="span" class="blu1 les">查看操作日志</router-link>
+            <router-link :to="{path:'/client/account/viewLog/'+ list.id , query: {nus: '主账号' , companyId: list.companyId , id: list.id , createTime: list.createTime , lastLoginTime: list.lastLoginTime , companyName: list.companyName , email: list.email}}" tag="span" class="blu1 les">查看操作日志</router-link>
             <span class="blu2" @click="change(0)">变更主账号</span>
             <!-- <span>变更主账号</span> -->
           </div>
@@ -28,7 +28,8 @@
           <p>所属公司</p>
           <div class="res-num-item">
             <span>{{list.companyName}}</span>
-            <span class="blu1 les" @click="viewcompanydetail(5)">查看公司详情</span>
+            <!-- <span class="blu1 les" @click="viewcompanydetail(5)">查看公司详情</span> -->
+            <router-link :to="{path:'/client/corp/detail/'+ list.companyId}" tag="span" class="blu1 les">查看公司详情</router-link>
           </div>
         </div>
       </div>
@@ -129,11 +130,11 @@ export default class Main extends View {
       title: '操作',
       key: 'action',
       align: 'center',
-      render: (hh: any, { row: { id , createTime , lastLoginTime , companyName , email} }: any) => {
+      render: (hh: any, { row: { id , createTime , lastLoginTime , companyName , email , companyId} }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         return <div class='row-acts'>
-          <router-link to={{ name: 'client-account-viewLog', query:{id , createTime , lastLoginTime , companyName , email }, params: { id } }}>查看操作日志</router-link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <router-link to={{ name: 'client-account-viewLog', query:{id , createTime , lastLoginTime , companyName , email , companyId }, params: { id } }}>查看操作日志</router-link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </div>
         /* tslint:enable */
       }
@@ -189,10 +190,11 @@ export default class Main extends View {
   }
   //  查看公司详情
   viewcompanydetail(id: number) {
-    const params = this.$route.params
-    // this.dataForm.category.id = id
-    // const params: any = id > 0 ? { id } : {}
-    this.$router.push({ name: 'client-corp-detail', params })
+    // console.log(this.list.companyId)
+    // const params = this.list.companyId
+    // // // this.dataForm.category.id = id
+    // // // const params: any = id > 0 ? { id } : {}
+    // this.$router.push({ name: 'client-corp-detail', params })
   }
 
   async doSearch() {

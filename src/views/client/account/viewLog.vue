@@ -1,6 +1,4 @@
 <template>
-  <!-- <Modal v-model='showDlg' :transfer='false' :width='420'>
-  </Modal> -->
   <div class="page"  :data="tableData">
     <div class="inps">
       <div class="Inps-res" v-if='nus'>
@@ -12,8 +10,13 @@
         </div>
         <div class="res-num">
           <p>所属公司</p>
-          <div class="res-num-item">
-            <span>{{companyName}} 【广告主：直客】【资源方：影院】</span>
+          <span class="coms">{{companyName}}</span>
+          <div class="res-num-item" v-for="it in list" v-if="it.id==companyId">
+            <div class="item-lis" v-for="ity in it.types">
+              <span v-for="its in customerTypeList" v-if="its.typeCode==ity.typeCode">
+                <em v-for="itname in its.typeCategoryList" v-if="itname.typeCode==ity.typeCategoryCode">【{{its.typeName}}：{{itname.typeName}}】</em>
+              </span>
+            </div>
           </div>
         </div>
         <div class="res-num">
@@ -92,13 +95,14 @@ export default class Main extends View {
   email: any = ''
   nus: any = ''
   ids: any = ''
+  companyId: any = ''
   query = { ...defQuery }
   oldQuery: any = {}
   prelist: any = []
   list: any = []
+  customerTypeList: any = []
   maincreateTime: any = ''
   mainlastLoginTime: any = ''
-  // ids: any = ''
 
 
   get cachedMap() {
@@ -115,14 +119,16 @@ export default class Main extends View {
     })
     return list
   }
+
   mounted() {
-    const {nus , id , createTime , lastLoginTime , companyName , email } = this.$route.query
+    const {nus , id , createTime , lastLoginTime , companyName , email , companyId } = this.$route.query
     this.createTime = moment(createTime).format(timeFormat)
     this.lastLoginTime = moment(lastLoginTime).format(timeFormat)
     this.companyName = companyName
     this.email = email
     this.nus = nus == '主账号' ? '主账号' : '子账号'
     this.ids = id
+    this.companyId = companyId
 
     this.doSearch()
   }
@@ -133,15 +139,13 @@ export default class Main extends View {
 
     const query = clean({ ...this.query })
     try {
-      // const { data: {
-      //   items: prelist,
-      // } } = await queryList(query)
-      // this.prelist = prelist
       // 获取公司信息
       const { data: {
         items: list,
+        customerTypeList: customerTypeList
       } } = await companysList(query)
       this.list = list
+      this.customerTypeList = customerTypeList
     } catch (ex) {
       // this.handleError(ex)
     } finally {
@@ -179,15 +183,29 @@ export default class Main extends View {
   text-align: left;
   margin-left: 0.5%;
 }
-
 .res-num-item {
   width: 80%;
   height: 100%;
   display: inline-block;
 }
+.coms {
+  margin-left: 3%;
+}
+.res-num-item .item-lis {
+  display: inline-block;
+  width: 11%;
+}
 .res-num-item span {
   display: inline-block;
   margin-left: 4%;
+}
+.res-num-item .item-lis span {
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+.res-num-item .item-lis span em {
+  font-style: normal;
 }
 .log {
   background: #ecf0f4;
