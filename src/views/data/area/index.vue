@@ -30,15 +30,13 @@
 
 <script lang="tsx">
 // doc: https://github.com/kaorun343/vue-property-decorator
-import { Component, Watch } from 'vue-property-decorator'
+import { Component, Watch, Mixins } from 'vue-property-decorator'
 import View from '@/util/View'
-import { get } from '@/fn/ajax'
+import UrlManager from '@/util/UrlManager'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
-import { numberify, numberKeys } from '@/fn/typeCast'
-import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import { queryList, arealist, areaSet, dels } from '@/api/dateArea'
 import PoptipSelect from '@/components/PoptipSelect.vue'
 import { confirm, toast } from '@/ui/modal'
@@ -46,25 +44,28 @@ import DlgEdit from './dlgEdit.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'code', 'name')
 
-const defQuery = {
-  nameCn: '',
-  areaCodes: '',
-  pageIndex: 1,
-  pageSize: 20,
-  parentIds: '0',
-  city: ''
-}
-
 @Component({
   components: {
     DlgEdit,
     PoptipSelect
   }
 })
-export default class Main extends View {
-  query = { ...defQuery }
+export default class Main extends Mixins(View, UrlManager) {
+  defQuery = {
+    nameCn: '',
+    areaCodes: '',
+    pageIndex: 1,
+    pageSize: 20,
+    parentIds: '0',
+    city: ''
+  }
+
+  query: any = {}
+
   oldQuery: any = {}
+
   editOne: any = null
+
   loading = false
   pageIndex: any = []
   addOrUpdateVisible = false
@@ -76,6 +77,7 @@ export default class Main extends View {
   parentsareaCode = ''
   statusList: any[] = []
   saveId: any[] = []
+
   get columns() {
     const colum =  [
       { title: '序号', key: 'id', align: 'center' },
@@ -184,15 +186,9 @@ export default class Main extends View {
   created() {
     this.addArea()
   }
-  mounted() {
-    const urlQuery = slice(urlParam(), Object.keys(defQuery))
-    this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
-  }
 
-  updateUrl() {
-    const query = prettyQuery(this.query, defQuery)
-    const url = buildUrl(location.pathname, query)
-    history.replaceState(null, '', url)
+  mounted() {
+    this.updateQueryByParam()
   }
 
   async addArea() {
@@ -212,9 +208,8 @@ export default class Main extends View {
   }
 
   reset() {
-    const { pageSize } = this.query
     if (this.query.parentIds == '0') {
-      this.query = { ...defQuery, pageSize }
+      this.resetQuery()
     } else {
       this.query.nameCn = ''
     }

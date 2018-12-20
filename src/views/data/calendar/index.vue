@@ -25,9 +25,9 @@
 
 <script lang="tsx">
 // doc: https://github.com/kaorun343/vue-property-decorator
-import { Component, Watch } from 'vue-property-decorator'
+import { Component, Watch, Mixins } from 'vue-property-decorator'
 import View from '@/util/View'
-import { get } from '@/fn/ajax'
+import UrlManager from '@/util/UrlManager'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
@@ -36,31 +36,30 @@ import { dataFrom , queryList , dels} from '@/api/calendar'
 import { numberify, numberKeys } from '@/fn/typeCast'
 import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import DlgEdit from './dlgEdit.vue'
-
-import {confirm} from '@/ui/modal'
+import { confirm } from '@/ui/modal'
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD'
-
-
-const defQuery = {
-  id: null,
-  name: '',
-  pageIndex: 1,
-  pageSize: 20,
-  years: ''
-}
-
 
 @Component({
   components: {
     DlgEdit
   }
 })
-export default class Main extends View {
-  query = { ...defQuery }
-  showDlg = false
+export default class Main extends Mixins(View, UrlManager) {
+  defQuery = {
+    id: null,
+    name: '',
+    pageIndex: 1,
+    pageSize: 20,
+    years: ''
+  }
+
+  query: any = {}
+
   oldQuery: any = {}
+
+  showDlg = false
 
   editOne: any = null
   loading = false
@@ -121,15 +120,7 @@ export default class Main extends View {
   }
 
   mounted() {
-    const urlQuery = slice(urlParam(), Object.keys(defQuery))
-    this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
-    // this.doSearch()
-  }
-
-  updateUrl() {
-    const query = prettyQuery(this.query, defQuery)
-    const url = buildUrl(location.pathname, query)
-    history.replaceState(null, '', url)
+    this.updateQueryByParam()
   }
 
   search() {
@@ -138,11 +129,6 @@ export default class Main extends View {
 
   reloadSearch() {
     this.doSearch()
-  }
-
-  reset() {
-    const { pageSize } = this.query
-    this.query = { ...defQuery, pageSize }
   }
 
   async doSearch() {
@@ -197,17 +183,8 @@ export default class Main extends View {
       })
       this.reloadSearch()
     } catch (ex) {
-      // this.handleError(ex)
+      this.handleError(ex)
     }
-    // try {
-    //   await confirm('确定删除该条数据吗')
-    //   if (true) {
-    //     dels({id})
-    //     this.doSearch()
-    //   }
-    // } catch (ex) {
-    //   // this.handleError(ex)
-    // }
   }
 
   @Watch('query', { deep: true })
