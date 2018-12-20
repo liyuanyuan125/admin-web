@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <div class="act-bar flex-box">
-      <form class="form flex-1" @submit.prevent="search" inline>
+      <form class="form flex-1" @submit.prevent="search">
         <LazyInput v-model="query.name" placeholder="影院名称" class="input"/>
         <CinemaChainSelect v-model="query.chainId" class="select-chain"/>
         <AreaSelect v-model="area" class="select-area"/>
@@ -17,8 +17,7 @@
           <Option v-for="it in enumType.hallDataStatusList" :key="it.key"
             :value="it.key">{{it.text}}</Option>
         </Select>
-        <!-- <Button type="primary" @click="search" icon="md-search" class="btn-search">查询</Button> -->
-        <Button type="default" @click="reset" class="btn-reset">清空</Button>
+        <Button type="default" @click="resetQuery" class="btn-reset">清空</Button>
       </form>
       <div class="acts">
         <Button type="success" icon="md-add-circle" @click="edit(0)">新建影院</Button>
@@ -42,34 +41,20 @@
 </template>
 
 <script lang="tsx">
-import { Component, Watch } from 'vue-property-decorator'
+import { Component, Watch, Mixins } from 'vue-property-decorator'
 import View from '@/util/View'
+import UrlManager from '@/util/UrlManager'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import { slice, clean } from '@/fn/object'
 import { isEqual } from 'lodash'
 import { queryList, updateStatus, updateControlStatus } from '@/api/cinema'
-import { numberify, numberKeys } from '@/fn/typeCast'
-import { prettyQuery, urlParam } from '@/fn/url'
 import AreaSelect from '@/components/AreaSelect.vue'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import PoptipSelect from '@/components/PoptipSelect.vue'
 import DlgEdit from './dlgEdit.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'key')
-
-const defQuery = {
-  name: '',
-  chainId: 0,
-  provinceId: 0,
-  cityId: 0,
-  countyId: 0,
-  status: 0,
-  controlStatus: 0,
-  hallDataStatus: 0,
-  pageIndex: 1,
-  pageSize: 20,
-}
 
 @Component({
   components: {
@@ -79,7 +64,20 @@ const defQuery = {
     DlgEdit,
   }
 })
-export default class Main extends View {
+export default class Main extends Mixins(View, UrlManager) {
+  defQuery = {
+    name: '',
+    chainId: 0,
+    provinceId: 0,
+    cityId: 0,
+    countyId: 0,
+    status: 0,
+    controlStatus: 0,
+    hallDataStatus: 0,
+    pageIndex: 1,
+    pageSize: 20,
+  }
+
   query: any = {}
 
   oldQuery: any = {}
@@ -217,31 +215,7 @@ export default class Main extends View {
   }
 
   mounted() {
-    this.updateQuery(urlParam())
-  }
-
-  beforeRouteUpdate(to: any, from: any, next: any) {
-    next()
-    this.updateQuery(to.query)
-  }
-
-  updateQuery(query: any) {
-    const urlQuery = slice(query, Object.keys(defQuery))
-    this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
-  }
-
-  updateUrl() {
-    const query = prettyQuery(this.query, defQuery)
-    this.$router.replace({ query })
-  }
-
-  search() {
-    this.query.pageIndex = 1
-  }
-
-  reset() {
-    const { pageSize } = this.query
-    this.query = { ...defQuery, pageSize }
+    this.updateQueryByParam()
   }
 
   async fetch() {
