@@ -20,7 +20,7 @@ export default class CinemaChainSelect extends View {
   /**
    * 值本身，可以使用 v-model 进行双向绑定
    */
-  @Prop({ type: String, default: '' }) value!: string
+  @Prop({ type: Number, default: 0 }) value!: number
 
   /**
    * 控制状态
@@ -34,7 +34,7 @@ export default class CinemaChainSelect extends View {
 
   @Prop({ type: Boolean, default: true }) clearable!: boolean
 
-  inValue: string = this.value
+  inValue: number = this.value
 
   list: any[] = []
 
@@ -54,14 +54,14 @@ export default class CinemaChainSelect extends View {
   }
 
   @Watch('value')
-  watchValue(val: string) {
+  watchValue(val: number) {
     this.inValue = val
     // 触发 form item 验证
     ; (this.$refs.ui as any).dispatch('FormItem', 'on-form-change', val)
   }
 
   @Watch('inValue')
-  watchInValue(val: string) {
+  watchInValue(val: number) {
     this.$emit('input', val)
   }
 }

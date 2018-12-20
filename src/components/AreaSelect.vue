@@ -15,7 +15,7 @@ export default class AreaSelect extends View {
   /**
    * 值本身，可以使用 v-model 进行双向绑定
    */
-  @Prop({ type: Array, default: () => [] }) value!: string[]
+  @Prop({ type: Array, default: () => [] }) value!: number[]
 
   /**
    * 最大级别，取值范围：1 ~ 3，分别对应：省、市、区县
@@ -24,8 +24,8 @@ export default class AreaSelect extends View {
 
   @Prop({ type: Boolean, default: true }) clearable!: boolean
 
-  inValue: string[] = []
-  data: string[] = []
+  inValue: number[] = []
+  data: any[] = []
 
   async getSubList(pid = 0, level = 0) {
     let list: any[]
@@ -77,20 +77,20 @@ export default class AreaSelect extends View {
     return result ? result : (strVal === '' || strVal === '000' ? '' : '数据有问题')
   }
 
-  fillList(list: string[]) {
-    const zeroList = new Array(this.maxLevel).fill('0')
+  fillList(list: number[]) {
+    const zeroList: number[] = new Array(this.maxLevel).fill(0)
     return zeroList.map((it, i) => i in list ? list[i] : it)
   }
 
   @Watch('value')
-  watchValue(val: string[]) {
+  watchValue(val: number[]) {
     this.inValue = val
     // 触发 form item 验证
     ; (this.$refs.ui as any).dispatch('FormItem', 'on-form-change', val)
   }
 
   @Watch('inValue')
-  watchInValue(val: string[]) {
+  watchInValue(val: number[]) {
     const value = val.length < this.maxLevel ? this.fillList(val) : val
     this.$emit('input', value)
   }
