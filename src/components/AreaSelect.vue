@@ -7,10 +7,10 @@
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import View from '@/util/View'
-import { getSubList } from '@/api/area'
+import { getSubList, isValidArea } from '@/api/area'
 import { toast } from '@/ui/modal'
 
-const isZero = (list: number[] | null) => (list || []).every(it => it === 0)
+const isAllZero = (list: number[] | null) => (list || []).every(it => it === 0)
 
 @Component
 export default class AreaSelect extends View {
@@ -65,6 +65,14 @@ export default class AreaSelect extends View {
     this.data = await this.getSubList()
   }
 
+  async checkValid(ids: number[]) {
+    if (isAllZero(ids)) {
+      return true
+    }
+    const isValid = await isValidArea(ids)
+    return isValid
+  }
+
   async loadData(item: any, callback: any) {
     item.loading = true
     const list = await this.getSubList(item.value, item.level)
@@ -76,7 +84,7 @@ export default class AreaSelect extends View {
   format(labels: any[], selectedData: any[]) {
     const list = selectedData.filter(it => !it.isFake).map(it => it.label)
     const result = list.length > 0 ? list.join(' / ') : ''
-    const allZero = isZero(this.value)
+    const allZero = isAllZero(this.value)
     // fix 选择清除不干净的 bug
     if (allZero && result !== '') {
       const ui = this.$refs.ui as any
@@ -91,10 +99,13 @@ export default class AreaSelect extends View {
   }
 
   @Watch('value')
-  watchValue(val: number[]) {
-    this.inValue = val
+  async watchValue(val: number[]) {
+    // 检查传入的 value 值，是否合法，不合法直接清空
+    const isValid = await this.checkValid(val)
+    const value = isValid ? val : []
+    this.inValue = value
     // 触发 form item 验证
-    ; (this.$refs.ui as any).dispatch('FormItem', 'on-form-change', val)
+    isValid && (this.$refs.ui as any).dispatch('FormItem', 'on-form-change', value)
   }
 
   @Watch('inValue')
