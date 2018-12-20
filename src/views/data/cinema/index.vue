@@ -50,7 +50,7 @@ import { slice, clean } from '@/fn/object'
 import { isEqual } from 'lodash'
 import { queryList, updateStatus, updateControlStatus } from '@/api/cinema'
 import { numberify, numberKeys } from '@/fn/typeCast'
-import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
+import { prettyQuery, urlParam } from '@/fn/url'
 import AreaSelect from '@/components/AreaSelect.vue'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import PoptipSelect from '@/components/PoptipSelect.vue'
@@ -60,10 +60,10 @@ const makeMap = (list: any[]) => toMap(list, 'key')
 
 const defQuery = {
   name: '',
-  chainId: '',
-  provinceId: '0',
-  cityId: '0',
-  countyId: '0',
+  chainId: 0,
+  provinceId: 0,
+  cityId: 0,
+  countyId: 0,
   status: 0,
   controlStatus: 0,
   hallDataStatus: 0,
@@ -217,14 +217,22 @@ export default class Main extends View {
   }
 
   mounted() {
-    const urlQuery = slice(urlParam(), Object.keys(defQuery))
+    this.updateQuery(urlParam())
+  }
+
+  beforeRouteUpdate(to: any, from: any, next: any) {
+    next()
+    this.updateQuery(to.query)
+  }
+
+  updateQuery(query: any) {
+    const urlQuery = slice(query, Object.keys(defQuery))
     this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
   }
 
   updateUrl() {
     const query = prettyQuery(this.query, defQuery)
-    const url = buildUrl(location.pathname, query)
-    history.replaceState(null, '', url)
+    this.$router.replace({ query })
   }
 
   search() {
