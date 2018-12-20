@@ -24,7 +24,7 @@
         @on-change="page => query.pageIndex = page"
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
-    <DlgEdit  ref="addOrUpdate" :areaSelect="statusList" :areaObject="editOne"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" />
+    <DlgEdit ref="addOrUpdate" :areaSelect="statusList" :areaObject="editOne"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" />
   </div>
 </template>
 
