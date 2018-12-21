@@ -95,6 +95,8 @@ export default class Main extends View {
       this.form.check = val.map((item: any) => {
         return item.id
       })
+    } else {
+      this.form.check = []
     }
     this.showDlg = true
     this.seach()

@@ -43,8 +43,9 @@
 </template>
 
 <script lang="tsx">
-import { Component, Watch } from 'vue-property-decorator'
+import { Component, Watch, Mixins } from 'vue-property-decorator'
 import View from '@/util/View'
+import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
@@ -53,25 +54,25 @@ import { slice, clean } from '@/fn/object'
 import { queryList, statusId } from '@/api/corpReal'
 import { confirm } from '@/ui/modal'
 import { numberify, numberKeys } from '@/fn/typeCast'
-import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 const timeFormat = 'YYYY/MM/DD HH:mm:ss'
 
-const defQuery = {
-  companyId: '',
-  shortName: '',
-  typeCode: '',
-  status: 0,
-  businessDirector: null,
-  approveStatus: 0,
-  pageIndex: 1,
-  pageSize: 20,
-}
+
 
 @Component
-export default class Main extends View {
-  query = { ...defQuery }
+export default class Main extends Mixins(View, UrlManager) {
+  defQuery = {
+    companyId: '',
+    shortName: '',
+    typeCode: '',
+    status: 0,
+    businessDirector: null,
+    approveStatus: 0,
+    pageIndex: 1,
+    pageSize: 20,
+  }
+  query = { }
 
   oldQuery: any = {}
   defaulitState: any = null
@@ -191,14 +192,11 @@ export default class Main extends View {
   ]
 
   mounted() {
-    const urlQuery = slice(urlParam(), Object.keys(defQuery))
-    this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
+    this.updateQueryByParam()
   }
 
-  updateUrl() {
-    const query = prettyQuery(this.query, defQuery)
-    const url = buildUrl(location.pathname, query)
-    history.replaceState(null, '', url)
+  reset() {
+    this.resetQuery()
   }
 
   typeListFormt(value: any) {
@@ -264,15 +262,6 @@ export default class Main extends View {
     return list
   }
 
-  search() {
-    this.query.pageIndex = 1
-  }
-
-  reset() {
-    const { pageSize } = this.query
-    this.query = { ...defQuery, pageSize }
-  }
-
   async doSearch() {
     if (this.loading) {
       return
@@ -326,13 +315,13 @@ export default class Main extends View {
 
   }
 
-  @Watch('query', { deep: true })
-  watchQuery() {
-    if (this.query.pageIndex == this.oldQuery.pageIndex) {
-      this.query.pageIndex = 1
-    }
-    this.doSearch()
-  }
+  // @Watch('query', { deep: true })
+  // watchQuery() {
+  //   if (this.query.pageIndex == this.oldQuery.pageIndex) {
+  //     this.query.pageIndex = 1
+  //   }
+  //   this.doSearch()
+  // }
 }
 </script>
 

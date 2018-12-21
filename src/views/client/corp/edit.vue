@@ -10,7 +10,6 @@
     </header>
     <div class="edit-box">
       <!-- header -->
-      {{item.typearr}}
       <Row class="cinema-header">
         <FormItem label="公司名称" prop="name">
           <Row>
