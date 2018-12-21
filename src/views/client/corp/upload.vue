@@ -68,6 +68,7 @@ export default class ComponentMain extends View {
 
   handleRemove(file: any) {
     this.uploadlist.splice(this.uploadlist.indexOf(file), 1)
+    this.$emit('imglist', this.uploadlist)
   }
 
   handleFormatError(file: any) {

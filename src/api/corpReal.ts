@@ -61,7 +61,7 @@ export async function addQuery(query: any = {}) {
  * @param query 添加条件，参见接口文档
  */
 export async function setQuery(id: number, query: any = {}) {
-    const res = await post(`/customer/company/${id}`, query)
+    const res = await put(`/customer/companies/${id}`, query)
     return res
 }
 

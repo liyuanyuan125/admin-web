@@ -58,14 +58,15 @@
         </Row>
         <Row>
           <Col span="5">
-            <FormItem label="资质">
-              <Select v-model="item.qualificationType">
-                <Option value="营业执照">营业执照</Option>
+            <FormItem label="资质" prop="qualificationType">
+              <Select v-model="item.qualificationType" clearable>
+                <Option v-for="it in qualificationTypeList" :key="it.key"
+                  :value="it.key">{{it.text}}</Option>
               </Select>
             </FormItem>
           </Col>
           <Col span="6" offset="1">
-          <FormItem label="资质编号">
+          <FormItem label="资质编号" prop="qualificationCode">
             <Input v-model="item.qualificationCode" placeholder="资质编号"/>
           </FormItem>
           </Col>
@@ -168,13 +169,15 @@
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Watch } from 'vue-property-decorator'
 import View from '@/util/View'
-import { queryId, addSeach, addQuery } from '@/api/corpReal'
+import { queryId, addSeach, addQuery, setQuery } from '@/api/corpReal'
 import AreaSelect from '@/components/AreaSelect.vue'
 import PartBindCinema from './partBindCinema.vue'
 import Upload from './upload.vue'
 import { toMap } from '@/fn/array'
 import { slice, clean } from '@/fn/object'
+import moment from 'moment'
 
+const timeFormat = 'YYYY-MM-DD'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
 const defItem = {
@@ -233,6 +236,7 @@ export default class Main extends View {
   customerTypeList = []
   bizUserList = []
   typeList = []
+  qualificationTypeList = []
   typeListSubMap = {}
   profitUnitList = []
   profitTypeList = []
@@ -304,6 +308,12 @@ export default class Main extends View {
       ],
       'typearr[1]': [
         { validator: validateType2 }
+      ],
+      qualificationType: [
+        { required: true, message: '请选择资质', type: 'boolean', trigger: 'change'},
+      ],
+      qualificationCode: [
+        { required: true, message: '请输入资质编号', type: 'boolean', trigger: 'blur'}
       ]
     }
     return rule
@@ -365,12 +375,14 @@ export default class Main extends View {
   get cachedMap() {
     return {
       levelList: makeMap(this.levelList),
+      qualificationTypeList: makeMap(this.qualificationTypeList)
     }
   }
 
   get formatArr() {
     const cachedMap = this.cachedMap
     return {
+      qualificationType: cachedMap.qualificationTypeList[this.item.qualificationType],
       levelText: cachedMap.levelList[this.item.levelCode],
     }
   }
@@ -387,11 +399,13 @@ export default class Main extends View {
         const {
           data: {
             levelList,
-            customerTypeList
+            customerTypeList,
+            qualificationTypeList
           }
         } = await addSeach()
         this.loadingShow = true
         this.levelList = levelList
+        this.qualificationTypeList = qualificationTypeList
         this.customerTypeList = customerTypeList
         this.title = '新建公司'
       } else {
@@ -420,7 +434,9 @@ export default class Main extends View {
           cinemas,
           approveStatus,
           validityPeriodDate,
-          status
+          qualificationTypeList,
+          status,
+          cinemaList
           }
         } = await queryId(query)
         this.item.name = name
@@ -428,12 +444,15 @@ export default class Main extends View {
         this.item.aptitudeType = aptitudeType
         this.item.aptitudeNo = aptitudeNo
         this.item.addressDetail = addressDetail
+        this.item.qualificationCode = qualificationCode
         this.item.contact = contact
         this.item.contactTel = contactTel
         this.item.email = email
+        this.item.levelCode = levelCode
+        this.qualificationTypeList = qualificationTypeList
         this.item.qualificationType = qualificationType
         this.item.images = images || []
-        // this.item.types = types
+        this.item.cinemasList = cinemaList
         if (types.length == 1) {
           if (customerTypeList[0].typeCode == types[0].typeCode) {
             this.item.types[0] = types[0]
@@ -473,33 +492,40 @@ export default class Main extends View {
   edit(dataForms: string) {
     (this.$refs[dataForms] as any).validate(async ( valid: any ) => {
     if (valid) {
-      const route = this.$route.params.id || 0
+      if (this.cinematype == 1 && this.item.cinemas.length > 1) {
+        this.handleError('因资源方类型为影院，因此仅能关联一家影院')
+        return
+      }
+      const route: any = this.$route.params.id || 0
       let times: any = ''
-      if ( route == '0') {
-        !this.item.validityPeriodDate ? times = '' : times = new Date(this.item.validityPeriodDate).getTime()
-        const oldQuery = {
-          ...this.item,
-          validityPeriodDate: times,
-          provinceId: Number(this.item.provinceId),
-          cityId: Number(this.item.cityId),
-          countyId: Number(this.item.countyId),
-        }
-        const query = clean(oldQuery)
-        const array = Object.keys(query).slice(2)
-        const newqQuery = slice(query, array)
-        const a = {
+      const timesfomat = moment(this.item.validityPeriodDate).format(timeFormat).split('-')
+      times = Number(timesfomat[0] + timesfomat[1] + timesfomat[2])
+      !this.item.validityPeriodDate ? times = '' : times
+      const oldQuery = {
+        ...this.item,
+        validityPeriodDate: times,
+        provinceId: Number(this.item.provinceId),
+        cityId: Number(this.item.cityId),
+        countyId: Number(this.item.countyId),
+      }
+      const query = clean(oldQuery)
+      const array = Object.keys(query).slice(2)
+      const newqQuery = slice(query, array)
+      const a = {
+        ...newqQuery,
+        cinemas: this.cinemas
+      }
+      try {
+        route == 0 ? await addQuery({
           ...newqQuery,
           cinemas: this.cinemas
-        }
-        try {
-          await addQuery({
-            ...newqQuery,
-            cinemas: this.cinemas
-          })
-          this.$router.go(-1)
-        } catch (ex) {
-          this.handleError(ex)
-        }
+        }) : await setQuery(route, {
+          ...newqQuery,
+          cinemas: this.cinemas
+        })
+        this.$router.go(-1)
+      } catch (ex) {
+        this.handleError(ex)
       }
     }
     })
@@ -513,7 +539,7 @@ export default class Main extends View {
 
   imgarray(val: any) {
     this.item.images = val.map((item: any) => {
-      return item.imageUrl
+      return item.fileId
     })
   }
 
