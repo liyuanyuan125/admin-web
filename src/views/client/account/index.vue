@@ -39,16 +39,17 @@
 </template>
 
 <script lang="tsx">
-import { Component, Watch } from 'vue-property-decorator'
+import { Component, Watch , Mixins } from 'vue-property-decorator'
 import View from '@/util/View'
+import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
 import { queryList , setList} from '@/api/account'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
-import { numberify, numberKeys } from '@/fn/typeCast'
-import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
+// import { numberify, numberKeys } from '@/fn/typeCast'
+// import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import DlgEdit from './dlgEdit.vue'
 // import dlgVerify from './dlgVerify.vue'
 
@@ -79,7 +80,19 @@ const dataForm = {
     // dlgVerify
   }
 })
-export default class Main extends View {
+// export default class Main extends View {
+export default class Main extends Mixins(View, UrlManager) {
+  defQuery = {
+    id: '',
+    email: '',
+    companyName: '',
+    status: null,
+    pageIndex: 1,
+    pageSize: 20,
+    beginCreateTime: 0,
+    endCreateTime: 0
+  }
+  query: any = {}
   shows = true
   showDlg = false
   addOrUpdateVisible = false
@@ -87,7 +100,7 @@ export default class Main extends View {
 
 
   examine = false
-  query = { ...defQuery }
+  // query = { ...defQuery }
 
   loading = false
   list = []
@@ -177,20 +190,22 @@ export default class Main extends View {
   }
 
   mounted() {
-    const urlQuery = slice(urlParam(), Object.keys(defQuery))
-    this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
+    // const urlQuery = slice(urlParam(), Object.keys(defQuery))
+    // this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
     // this.doSearch()
+    this.updateQueryByParam()
+
     !!this.query.beginCreateTime ? this.showTime[0] =
     moment(this.query.beginCreateTime).format(timeFormat) : this.showTime[0] = ''
     !!this.query.endCreateTime ? this.showTime[1] =
     moment(this.query.endCreateTime).format(timeFormat) : this.showTime[1] = ''
   }
 
-  updateUrl() {
-    const query = prettyQuery(this.query, defQuery)
-    const url = buildUrl(location.pathname, query)
-    history.replaceState(null, '', url)
-  }
+  // updateUrl() {
+  //   const query = prettyQuery(this.query, defQuery)
+  //   const url = buildUrl(location.pathname, query)
+  //   history.replaceState(null, '', url)
+  // }
 
   dateChange(data: any) {
      // 获取时间戳
@@ -205,8 +220,9 @@ export default class Main extends View {
     this.doSearch()
   }
   reset() {
-    const { pageSize } = this.query
-    this.query = { ...defQuery, pageSize }
+    // const { pageSize } = this.query
+    // this.query = { ...defQuery, pageSize }
+    this.resetQuery()
     this.showTime = []
   }
 
