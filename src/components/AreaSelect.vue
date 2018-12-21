@@ -9,7 +9,7 @@ import { Component, Prop, Watch } from 'vue-property-decorator'
 import View from '@/util/View'
 import { getSubList, isValidArea } from '@/api/area'
 import { toast } from '@/ui/modal'
-
+import { queryList } from '@/api/dateArea'
 const isAllZero = (list: number[] | null) => (list || []).every(it => it === 0)
 
 @Component
