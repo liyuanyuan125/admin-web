@@ -42,4 +42,8 @@ export async function setchangeList(query: any) {
   return res
 }
 
-
+//  查看日志
+export async function loglist(query: any) {
+  const data = await get(`/customer/accounts/${query}/log`)
+  return data
+}

@@ -34,39 +34,13 @@
     <div class="log">
       <div class="n-main">{{nus}}操作日志</div>
       <div class="logs">
-        <div class="logs-item">
-          <span>2018/11/23</span>
-          <span>10:22:12</span>由
-          <span>老麦 </span>
-          将资质审核状态修改为 “已通过”
-        </div>
-        <div class="logs-item">
-          <span>2018/11/23</span>
-          <span>10:22:12</span>由
-          <span>老麦 </span>
-          将资质审核状态修改为 “已通过”
-        </div>
-        <div class="logs-item">
-          <span>2018/11/23</span>
-          <span>10:22:12</span>由
-          <span>老麦 </span>
-          将资质审核状态修改为 “已通过”
-        </div>
-        <div class="logs-item">
-          <span>2018/11/23</span>
-          <span>10:22:12</span>由
-          <span>老麦 </span>
-          将资质审核状态修改为 “已通过”
-        </div>
-        <div class="logs-item">
-          <span>2018/11/23</span>
-          <span>10:22:12</span>由
-          <span>老麦 </span>
-          将资质审核状态修改为 “已通过”
+        <div class="logs-item" v-for="(it,index) in datalog">
+
+          <span>{{it.createTime}}   </span>由
+          <span>{{it.operatorName}}   </span>
+          {{it.operateDesc}}
         </div>
       </div>
-        
-
     </div>
   </div>
 </template>
@@ -76,7 +50,7 @@
 import { Component, Prop } from 'vue-property-decorator'
 import View from '@/util/View'
 import { get } from '@/fn/ajax'
-import { queryList , queryItem , companysList } from '@/api/account'
+import { queryList , queryItem , companysList , loglist } from '@/api/account'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
@@ -107,6 +81,8 @@ export default class Main extends View {
   maincreateTime: any = ''
   mainlastLoginTime: any = ''
 
+  datalog: any = []
+  datalogcreatetime: any = []
 
   get cachedMap() {
     return {
@@ -134,6 +110,7 @@ export default class Main extends View {
     this.companyId = companyId
 
     this.doSearch()
+
   }
 
   goback() {
@@ -152,6 +129,16 @@ export default class Main extends View {
       } } = await companysList(query)
       this.list = list
       this.customerTypeList = customerTypeList
+
+      // 查看日志
+      // console.log(this.$route.params.id)
+      const { data } = await loglist(this.$route.params.id)
+       this.datalog = data.map((item: any) => {
+        return {
+          ...item,
+          createTime: moment(item.createTime).format(timeFormat)
+        }
+      })
     } catch (ex) {
       // this.handleError(ex)
     } finally {

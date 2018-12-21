@@ -15,10 +15,10 @@
       <FormItem label="手机号" prop="mobile">
         <Input style="width:240px" v-model="dataForm.mobile"></Input>
       </FormItem>
-      <FormItem label="密码" prop="password">
+      <FormItem label="密码" prop="password" type="password">
         <Input style="width:240px" v-model="dataForm.password"></Input>
       </FormItem>
-      <FormItem label="重复密码" prop="passwords">
+      <FormItem label="重复密码" prop="passwords" type="password">
         <Input style="width:240px" v-model="dataForm.passwords"></Input>
       </FormItem>
       <FormItem label="所属公司" prop="companyId">
