@@ -313,9 +313,10 @@ export default class Main extends View {
 
   async editStatus(id: number, status: number) {
     const statu = status == 1 ? '启用' : '停用'
+    const statusType = status == 1 ? 2 : 1
     try {
       await confirm(`确定要${statu}该项吗？`)
-      await statusId({id})
+      await statusId(id, { status: statusType})
       this.doSearch()
     } catch (ex) {
       setTimeout(() => {

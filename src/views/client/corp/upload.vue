@@ -138,7 +138,7 @@ export default class ComponentMain extends View {
           status: 'finished'
         }
         this.$set(this.uploadlist, this.uploadlist.length - 1, imgObject)
-        this.$emit('imglist', imgObject)
+        this.$emit('imglist', this.uploadlist)
         // 结束上传，无论成功还是失败，都会执行，执行清理工作，比如取消显示 loading
       }
     })

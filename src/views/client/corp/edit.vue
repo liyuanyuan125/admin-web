@@ -1,9 +1,17 @@
 <template>
   <Form  :model='item' :label-width='88' :rules='rules' label-position="left" class='form page' ref='dataForms'>
+    <header class="header flex-box">
+      <Button icon="md-return-left" @click="back" class="btn-back">返回列表</Button>
+      <div class="flex-1">
+        <em>{{title}}</em>
+      </div>
+      <!-- <Button type="success" icon="md-add-circle" class="btn-new"
+        @click="edit(0)">新建影厅</Button> -->
+    </header>
     <div class="edit-box">
       <!-- header -->
       <Row class="cinema-header">
-        <FormItem label="公司名称" prop="name" :error='nameError'>
+        <FormItem label="公司名称" prop="name">
           <Row>
             <Col span="10">
               <Input v-model="item.name" placeholder="请填写公司全称，与营业执照保持一致"/>
@@ -33,7 +41,7 @@
         </Row>
          <Row>
           <Col span="5">
-            <FormItem label="联系人" prop="contactName">
+            <FormItem label="联系人" >
               <Input v-model="item.contact"/>
             </FormItem>
           </Col>
@@ -71,7 +79,7 @@
 
       <!-- content -->
       <Row class="cinema-content">
-        <FormItem label="审核意见" prop="approveStatus" :error='nameError'>
+        <FormItem label="审核意见" prop="approveStatus">
           <Row>
             <Col span="8">
               <RadioGroup v-model="item.approveStatus">
@@ -110,7 +118,6 @@
           <Col span="5">
             <FormItem label="客户等级" prop="levelCode">
               <Select v-model="item.levelCode" clearable>
-                {{levelList}}
                 <Option v-for="it in levelList" :key="it.key"
                   :value="it.key">{{it.text}}</Option>
               </Select>
@@ -125,31 +132,28 @@
             </FormItem>
           </Col>
         </Row>
-
         <Row>
-          <FormItem label="客户类型" prop="shortName">
-            <Row>
-              <Col v-for="it in customerTypeList" :key="it.id" span="8">
+          <Row v-if="loadingShow">
+            <Col v-for="(it, index) in customerTypeList" :key="index" span="8">
+              <FormItem :label="index == 0 ? '客户类型' : ''" :prop="'typearr['+ index + ']'">
                 <span class="check-select-group">
-                  <Checkbox v-model="it.checked">{{it.typeName}}</Checkbox>
-                  <Select v-model="it.customerTypeList" :disabled="!it.checked"
-                    :required="!it.checked" class="flex-1" clearable>
+                  <div @click="typeCode(it.typeCode,index)"><Checkbox v-model="item.typearr[index]" :label="it.typeName">{{it.typeName}}</Checkbox></div>
+                  <Select v-model="item.types[index].typeCategoryCode" :disabled="!item.types[index].typeCode"
+                     class="flex-1" clearable>
                     <Option v-for="sub in it.typeCategoryList" :key="sub.typeCode"
                       :value="sub.typeCode">{{sub.typeName}}</Option>
                   </Select>
                 </span>
-              </Col>
-            </Row>
-          </FormItem>
+              </FormItem>
+            </Col>
+          </Row>
         </Row>
-
         <Row>
-          <FormItem label="关联影院" prop="cinemas">
-            <PartBindCinema v-model="item.cinemas" :unitList="profitUnitList"
-              :typeList="profitTypeList" class="part-bind-cinema"/>
+          <FormItem label="关联影院" prop="cinemasList">
+            <PartBindCinema v-if="loadingShow" v-model="item.cinemasList" :unitList="profitUnitList"
+               :incinematype='cinematype' class="part-bind-cinema"/>
           </FormItem>
         </Row>
-
         <div class="edit-button">
           <Button type="info" size="large" @click="edit('dataForms')">确定</Button>
           <Button size="large" @click="edit(0)">返回</Button>
@@ -165,17 +169,18 @@
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Watch } from 'vue-property-decorator'
 import View from '@/util/View'
-import { queryId, queryList, addSeach } from '@/api/corpReal'
+import { queryId, queryList, addSeach, addQuery } from '@/api/corpReal'
 import AreaSelect from '@/components/AreaSelect.vue'
 import PartBindCinema from './partBindCinema.vue'
 import Upload from './upload.vue'
 import { toMap } from '@/fn/array'
-import { slice } from '@/fn/object'
+import { slice, clean } from '@/fn/object'
 
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
 const defItem = {
-  id: 0,
+  typearr: [false, false],
+  cinemasList: [],
   name: '',
   shortName: '',
 
@@ -195,12 +200,18 @@ const defItem = {
   qualificationType: '',
   qualificationCode: '',
   images: [],
-  type: 0,
+  types: [{
+    typeCode: '',
+    typeCategoryCode: ''
+  },
+  {
+    typeCode: '',
+    typeCategoryCode: ''
+  }],
   refusedReason: '',
   levelCode: '',
-  businessDirector: '',
+  businessDirector: '1',
   cinemas: [],
-
   approveStatus: 1,
   validityPeriodDate: ''
 }
@@ -214,11 +225,12 @@ const defItem = {
 })
 
 export default class Main extends View {
-
+  title = ''
   loading = false
   loadingShow = false
   item: any = {...defItem}
   shows = true
+  b: any = {}
   levelList = []
   customerTypeList = []
   bizUserList = []
@@ -226,12 +238,33 @@ export default class Main extends View {
   typeListSubMap = {}
   profitUnitList = []
   profitTypeList = []
-
   area: number[] = []
-
-  nameError = ''
-
+  typerule = [
+        {  message: '请选择客户等级', trigger: 'change'}
+      ]
   get rules() {
+    const validateType1 = ( rule1: any, value: any, callback: any) => {
+      if (value == false) {
+        callback(new Error('请选择一级类型'))
+      } else {
+        if (!this.item.types[0].typeCategoryCode) {
+          callback(new Error('请选择二级类型'))
+        } else {
+          callback()
+        }
+      }
+    }
+    const validateType2 = ( rules: any, value: any, callback: any) => {
+      if (value == false) {
+        callback()
+      } else {
+        if (!this.item.types[1].typeCategoryCode) {
+          callback(new Error('请选择二级类型'))
+        } else {
+          callback()
+        }
+      }
+    }
     const rule: any = {
       name: [
         { required: true, message: '请填写公司名称', trigger: 'blur' }
@@ -248,7 +281,7 @@ export default class Main extends View {
       approveStatus: [
         { required: true, message: '请选择审核状态', trigger: 'blur', type: 'number' }
       ],
-      cinemas: [
+      cinemasList: [
         { required: true, message: '请选择关联影院', type: 'array', trigger: 'change'}
       ],
       levelCode: [
@@ -263,24 +296,60 @@ export default class Main extends View {
       email: [
          {
            pattern: /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((.[a-zA-Z0-9_-]{2,3}){1,2})$/,
-           message: '请填写拒绝原因',
+           message: '邮箱格式错误',
            trigger: 'blur'
          }
       ],
+      'typearr[0]': [
+        { required: true, message: '请选择一级客户', type: 'boolean', trigger: 'change'},
+        { validator: validateType1 }
+      ],
+      'typearr[1]': [
+        { validator: validateType2 }
+      ]
     }
     return rule
   }
 
-  get imgList() {
-    return this.item.images.map((item: string) => {
-      return {
-        imageUrl: item
-      }
-    })
+  typeCode(val: any, index: any) {
+    if (!this.item.typearr[index]) {
+      this.item.types[index].typeCode = val
+    } else {
+      this.item.types[index].typeCode = ''
+      this.item.types[index].typeCategoryCode = ''
+    }
   }
 
-  mounted() {
-    this.load()
+  get cinematype() {
+    if (this.item.types[1].typeCategoryCode == 'cinema') {
+      return 1
+    } else {
+      return 0
+    }
+  }
+  get cinemas() {
+    if (this.item.cinemasList.length > 0) {
+      const cinemas = this.item.cinemasList.map((val: any) => {
+        return val.id
+      })
+      return cinemas
+    } else {
+      return []
+    }
+  }
+
+  get imgList() {
+    if ( this.item.images.length > 0 ) {
+      return this.item.images.map((item: string) => {
+        return {
+          imageUrl: item,
+          status: 'finished'
+        }
+      })
+    } else {
+      return []
+    }
+
   }
 
   get cachedMap() {
@@ -295,6 +364,11 @@ export default class Main extends View {
       levelText: cachedMap.levelList[this.item.levelCode],
     }
   }
+
+  mounted() {
+    this.load()
+  }
+
   async load() {
     this.loading = true
     const query = { id: this.$route.params.id || 0 }
@@ -309,60 +383,98 @@ export default class Main extends View {
         this.loadingShow = true
         this.levelList = levelList
         this.customerTypeList = customerTypeList
+        this.title = '新建公司'
       } else {
-        const res = await queryId(query)
-        this.item = slice(res.data, Object.keys(this.item))
+        const {
+          data: {
+          customerTypeList,
+          levelList,
+          name,
+          shortName,
+          aptitudeType,
+          aptitudeNo,
+          provinceId,
+          cityId,
+          countyId,
+          addressDetail,
+          contact,
+          contactTel,
+          email,
+          qualificationType,
+          qualificationCode,
+          images,
+          types,
+          refusedReason,
+          levelCode,
+          businessDirector,
+          cinemas,
+          approveStatus,
+          validityPeriodDate,
+          status
+          }
+        } = await queryId(query)
+        this.item.name = name
+        this.item.shortName = shortName
+        this.item.aptitudeType = aptitudeType
+        this.item.aptitudeNo = aptitudeNo
+        this.item.addressDetail = addressDetail
+        this.item.contact = contact
+        this.item.contactTel = contactTel
+        this.item.email = email
+        this.item.qualificationType = qualificationType
+        this.item.images = images || []
+        this.item.types = types
+        types.forEach((val: any, index: any) => {
+          if (!!val.typeCode) {
+            this.item.typearr[index] = true
+          }
+        })
+        this.item.refusedReason = refusedReason
+        this.item.businessDirector = businessDirector
+        this.item.cinemas = cinemas || []
+        this.item.approveStatus = approveStatus
+        this.customerTypeList = customerTypeList
+        this.item.validityPeriodDate = validityPeriodDate
+        this.levelList = levelList
+        this.area = [provinceId || 0, cityId || 0, countyId || 0]
         this.loadingShow = true
+        status == 1 ? this.title = '编辑公司' : this.title = '新建公司'
       }
-      // const { data: {
-      //   item,
-      //   aptitudeTypeList,
-      //   clientLevelList,
-      //   bizUserList,
-      //   typeList,
-      //   typeListSubMap,
-      //   profitUnitList,
-      //   profitTypeList,
-      // } } = await queryId(query)
-      // this.item = { ...defItem, ...item }
-      // this.aptitudeTypeList = aptitudeTypeList
-      // this.clientLevelList = clientLevelList
-      // this.bizUserList = bizUserList.map((it: any) => ({
-      //   ...it,
-      //   label: [it.name, it.group, it.title].join(' | ')
-      // }))
-
-      // const { typeIdList = [], subTypeIdList = [] } = this.item
-
-      // this.typeList = typeList.map((it: any, i: number) => ({
-      //   ...it,
-      //   checked: typeIdList[i] > 0,
-      //   subId: subTypeIdList[i] || 0
-      // }))
-      // this.typeListSubMap = typeListSubMap
-
-      // this.profitUnitList = profitUnitList
-      // this.profitTypeList = profitTypeList
-
-      // const { provinceId = 0, cityId = 0, countyId = 0 } = this.item
-      // this.area = [provinceId, cityId, countyId]
-
-      // // 优化体验
-      // if (aptitudeTypeList.length === 1) {
-      //   this.item.aptitudeType = aptitudeTypeList[0].id
-      // }
     } catch (ex) {
       this.handleError(ex)
     } finally {
       this.loading = false
     }
   }
-  edit(dataForms: string) {
-     (this.$refs[dataForms] as any).validate(async ( valid: any ) => {
-      if (valid) {
 
+  back() {
+    this.$router.go(-1)
+  }
+
+  edit(dataForms: string) {
+    (this.$refs[dataForms] as any).validate(async ( valid: any ) => {
+    if (valid) {
+      const route = this.$route.params.id || 0
+      let times: any = ''
+      if ( route == '0') {
+        !this.item.validityPeriodDate ? times = '' : times = new Date(this.item.validityPeriodDate).getTime()
+        const oldQuery = {
+          ...this.item,
+          validityPeriodDate: times,
+          provinceId: Number(this.item.provinceId),
+          cityId: Number(this.item.cityId),
+          countyId: Number(this.item.countyId),
+        }
+        const query = clean(oldQuery)
+        const array = Object.keys(query).slice(2)
+        const newqQuery = slice(query, array)
+        await addQuery({
+          ...newqQuery,
+          cinemas: this.cinemas
+        })
       }
-     })
+    }
+    })
   }
   @Watch('area')
   watchArea(val: number[]) {
@@ -403,13 +515,26 @@ export default class Main extends View {
 </script>
 
 <style lang="less" scoped>
-.page {
-  margin: -10px -10px;
-  background: #ecf0f4;
+@import '../../../site/lib.less';
+
+.header {
+  margin-top: 5px;
+  margin-bottom: 10px;
+  line-height: 30px;
+  em, i {
+    font-style: normal;
+    margin-right: 6px;
+  }
+  em {
+    font-size: 16px;
+    color: @c-base;
+  }
 }
-.edit-box {
-  padding: 10px 0;
+
+.btn-back {
+  margin-right: 10px;
 }
+
 .edit-button {
   text-align: center;
   margin-bottom: 20px;
@@ -419,10 +544,9 @@ export default class Main extends View {
 }
 
 .cinema-header, .cinema-content, .cinema-footer {
-  margin-left: 14px;
-  margin-right: 14px;
+  border: 1px solid #dcdee2;
   background: #fff;
-  padding: 20px 0 0 20px;
+  padding: 18px 0 0 18px;
   margin-bottom: 14px;
 }
 .check-select-group {

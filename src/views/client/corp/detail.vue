@@ -1,5 +1,13 @@
 <template>
   <div class="page">
+    <header class="header flex-box">
+      <Button icon="md-return-left" @click="back" class="btn-back">返回列表</Button>
+      <div class="flex-1">
+        <em>公司详情</em>
+      </div>
+      <Button type="success" icon="md-add-circle" class="btn-new"
+        @click="goSet()">编辑公司</Button>
+    </header>
     <div class="detail-box">
       <div class="detail-header">
           <Row>
@@ -91,9 +99,6 @@
           </div>
         </Row>
       </Row>
-    </div>
-    <div class="detail-edit">
-      <Button type="primary" @click="goSet()" class="btn-set">编辑</Button>
     </div>
   </div>
 </template>
@@ -224,12 +229,20 @@ export default class Main extends View {
 </script>
 
 <style lang="less" scoped>
-.page {
-  margin: -10px -10px;
-  background: #ecf0f4;
-}
-.detail-box {
-  padding: 10px 0;
+@import '../../../site/lib.less';
+
+.header {
+  margin-top: 5px;
+  margin-bottom: 10px;
+  line-height: 30px;
+  em, i {
+    font-style: normal;
+    margin-right: 6px;
+  }
+  em {
+    font-size: 16px;
+    color: @c-base;
+  }
 }
 .detail-number {
   /deep/ .btn-add {
@@ -237,9 +250,14 @@ export default class Main extends View {
     height: 30px;
   }
 }
-.detail-header, .detail-content, .detail-footer, .detail-number, .detail-check {
-  background: #fff;
-  margin: 10px;
+
+.btn-back {
+  margin-right: 10px;
+}
+
+.detail-header, .detail-content, .detail-footer, .detail-number {
+  margin-bottom: 10px;
+  border: 1px solid #dcdee2;
   padding-left: 14px;
   /deep/ .ivu-col-span-2 {
     /deep/ div {
@@ -250,7 +268,7 @@ export default class Main extends View {
   span {
     display: inline-block;
     line-height: 50px;
-    color: #999;
+    color: #19be6b;
   }
   span:only-child:empty {
     &::before {
@@ -285,7 +303,7 @@ export default class Main extends View {
   padding-bottom: 40px;
   /deep/ .uplaod-slot {
     margin-bottom: 10px;
-    color: #999;
+    color: #19be6b;
   }
 }
 .detail-edit {
@@ -303,6 +321,7 @@ export default class Main extends View {
   height: 40px;
   line-height: 40px;
   background: #ecf0f4;
+  color: #19be6b;
   border-radius: 5px;
   margin-top: 10px;
   margin-bottom: 20px;
@@ -312,6 +331,7 @@ export default class Main extends View {
     right: 10px;
     height: 20px;
     width: 80px;
+    color: #19be6b;
     padding-left: 5px;
     line-height: 20px;
     background: #dcdee2;
