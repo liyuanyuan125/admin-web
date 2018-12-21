@@ -4,14 +4,16 @@
       <form class="form flex-1" @submit.prevent="search">
         <LazyInput v-model="query.companyId" placeholder="公司ID" class="input input-id"/>
         <LazyInput v-model="query.shortName" placeholder="公司名称" class="input"/>
-        <Select v-model="query.type" placeholder="客户类型" clearable>
-          <Option v-for="it in typeList" :key="it.key" :value="it.key"
-            :label="it.text">{{it.text}}</Option>
+        <Select v-model="query.typeCode" placeholder="客户类型" clearable>
+          <Option v-for="it in customerTypeList" :key="it.typeCode" :value="it.typeCode"
+            :label="it.typeName">{{it.typeName}}</Option>
         </Select>
+        <!-- <Cascader style="width:150px" class="type-select" :data="customerTypeList" v-model="query.type" placeholder="客户类型"></Cascader> -->
         <Select v-model="query.status" placeholder="状态" clearable>
           <Option v-for="it in statusList" :key="it.key" :value="it.key"
             :label="it.text">{{it.text}}</Option>
         </Select>
+        <!-- 接口暂未完成 -->
         <!-- <Select v-model="query.businessDirector" placeholder="关联商务" clearable>
           <Option v-for="it in bizUserList" :key="it.id" :value="it.id"
             :label="it.text">{{[it.name, it.group, it.title].join(' | ')}}</Option>
@@ -32,8 +34,8 @@
       border stripe disabled-hover size="small" class="table"></Table>
 
     <div class="page-wrap" v-if="total > 0">
-      <Page :total="total" show-total :page-size="query.pageSize" show-sizer
-        :page-size-opts="[10, 20, 50, 100]" :current="query.pageIndex"
+      <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
+        show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
         @on-change="page => query.pageIndex = page"
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
@@ -41,52 +43,85 @@
 </template>
 
 <script lang="tsx">
-import { Component, Watch } from 'vue-property-decorator'
+import { Component, Watch, Mixins } from 'vue-property-decorator'
 import View from '@/util/View'
+import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
-import { clean } from '@/fn/object'
-import { queryList } from '@/api/corp'
+import { slice, clean } from '@/fn/object'
+import { queryList, statusId } from '@/api/corpReal'
+import { confirm } from '@/ui/modal'
+import { numberify, numberKeys } from '@/fn/typeCast'
 
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
-const timeFormat = 'YYYY-MM-DD HH:mm:ss'
+const timeFormat = 'YYYY/MM/DD HH:mm:ss'
 
-const defQuery = {
-  companyId: null,
-  shortName: '',
-  type: null,
-  status: 0,
-  businessDirector: 0,
-  approveStatus: 0,
-  pageIndex: 1,
-  pageSize: 20,
-}
+
 
 @Component
-export default class Main extends View {
-  query = { ...defQuery }
+export default class Main extends Mixins(View, UrlManager) {
+  defQuery = {
+    companyId: '',
+    shortName: '',
+    typeCode: '',
+    status: 0,
+    businessDirector: null,
+    approveStatus: 0,
+    pageIndex: 1,
+    pageSize: 20,
+  }
+  query = { }
 
-  oldQuery: any = null
-
+  oldQuery: any = {}
+  defaulitState: any = null
   loading = false
   list = []
   total = 0
   // 业务类型列表
-  typeList = []
+  customerTypeList = []
   // 启用状态列表
   resTypeList = []
   // 资质审核状态列表
   statusList = []
-
+  levelList = []
   aptitudeStatusList = []
 
   columns = [
     { title: '公司ID', key: 'id', align: 'center' },
     { title: '公司名称', key: 'name', width: 200 , align: 'center' },
-    { title: '客户类型', key: 'customerLevel', align: 'center' },
-    { title: '客户等级', key: 'customerLevel', align: 'center' },
+    { title: '客户类型',
+      key: 'customerTypeList',
+      align: 'center',
+      render: (hh: any, { row: { types } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        const customerString: any = this.typeListFormt(types)
+        return !!customerString ? (customerString.map((val: any) => {
+          if (!!val.twoText) {
+            return <div>{val.oneText}<span>({val.twoText})</span></div>
+          } else {
+            return <div v-html={val.oneText}></div>
+          }
+        })) : ''
+        /* tslint:enable */
+      }
+    },
+    { title: '客户等级',
+      key: 'levelCode',
+      align: 'center',
+      render: (hh: any, { row: { status, statusText, levelCode, levelText } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        return status == 1
+            ? <span>{levelText}</span>
+            : <tooltip content="已停用" placement="top">
+              <span class="deprecated">{levelText}</span>
+            </tooltip>
+        /* tslint:enable */
+      }
+    },
     { title: '关联商务', key: 'businessDirectorName', align: 'center' },
     {
       title: '创建时间',
@@ -118,10 +153,10 @@ export default class Main extends View {
       title: '状态',
       key: 'statusString',
       align: 'center',
-      render: (hh: any, { row: { statusString, statusText } }: any) => {
+      render: (hh: any, { row: { status, statusText } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        return <span class={`status-${statusString}`}>{statusText}</span>
+        return <span class={`status-${status}`}>{statusText}</span>
         /* tslint:enable */
       }
     },
@@ -129,10 +164,10 @@ export default class Main extends View {
       title: '审核状态',
       key: 'approveStatusString',
       align: 'center',
-      render: (hh: any, { row: { approveStatusString, aptitudeStatusText } }: any) => {
+      render: (hh: any, { row: { approveStatus, aptitudeStatusText } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        return <span class={`aptitude-status-${approveStatusString}`}>{aptitudeStatusText}</span>
+        return <span class={`aptitude-status-${approveStatus}`}>{aptitudeStatusText}</span>
         /* tslint:enable */
       }
     },
@@ -141,12 +176,13 @@ export default class Main extends View {
       key: 'action',
       width: 120,
       align: 'center',
-      render: (hh: any, { row: { id, statusString } }: any) => {
+      render: (hh: any, { row: { id, status } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const edit = statusString == 1 ? '编辑' : '审核'
+        const edit = status == 1 ? '编辑' : '审核'
+        const statusText = status == 1 ? '启用' : '停用'
         return <div class='row-acts'>
-          <router-link class="operation" to={{ name: 'client-corp-detail', params: { id } }}>删除</router-link>
+          <a class="operation" on-click={this.editStatus.bind(this, id, status)} to={{ name: 'client-corp-detail', params: { id } }}>{statusText}</a>
           <router-link class="operation" to={{ name: 'client-corp-edit', params: { id } }}>{edit}</router-link>
           <router-link class="operation" to={{ name: 'client-corp-detail', params: { id } }}>详情</router-link>
         </div>
@@ -155,11 +191,59 @@ export default class Main extends View {
     }
   ]
 
+  mounted() {
+    this.updateQueryByParam()
+  }
+
+  reset() {
+    this.resetQuery()
+  }
+
+  typeListFormt(value: any) {
+    const typeArray: any = []
+    if ( !!value ) {
+      value.forEach((i: any) => {
+        const typeObject: any = {}
+        this.customerTypeList.forEach((val: any) => {
+          if (i.typeCode == val.typeCode) {
+            typeObject.oneText = val.typeName
+          }
+          if ( !!i.typeCategoryCode ) {
+            val.typeCategoryList.forEach((chlVal: any) => {
+              if ( i.typeCategoryCode == chlVal.typeCode ) {
+                typeObject.twoText = chlVal.typeName
+              }
+            })
+          }
+        })
+        typeArray.push(typeObject)
+      })
+    }
+    return typeArray
+    // let brr: any= []
+    // let typeArray: any = null
+    // value.forEach( (val: any, i: any) => {
+    //   if (val.typeCategoryList) {
+    //     typeArray = {
+    //       label: val.typeName,
+    //       value: val.typeCode,
+    //       children: this.typeListFormt(val.typeCategoryList)
+    //     }
+    //   } else {
+    //     typeArray = {
+    //       label: val.typeName,
+    //       value: val.typeCode
+    //     }
+    //   }
+    //   brr.push(typeArray)
+    // })
+    // return brr
+  }
   get cachedMap() {
     return {
-      type: makeMap(this.typeList),
       resType: makeMap(this.resTypeList),
       status: makeMap(this.statusList),
+      levelList: makeMap(this.levelList),
       aptitudeStatus: makeMap(this.aptitudeStatusList)
     }
   }
@@ -169,26 +253,13 @@ export default class Main extends View {
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        isResOwner: it.type == 1 ? '是' : '-',
         resTypeName: cachedMap.resType[it.typeString],
-        statusText: cachedMap.status[it.statusString],
-        aptitudeStatusText: cachedMap.aptitudeStatus[it.approveStatusString],
+        statusText: cachedMap.status[it.status],
+        levelText: cachedMap.levelList[it.levelCode],
+        aptitudeStatusText: cachedMap.aptitudeStatus[it.approveStatus],
       }
     })
     return list
-  }
-
-  mounted() {
-    this.doSearch()
-  }
-
-  search() {
-    this.query.pageIndex = 1
-  }
-
-  reset() {
-    const { pageSize } = this.query
-    this.query = { ...defQuery, pageSize }
   }
 
   async doSearch() {
@@ -197,24 +268,26 @@ export default class Main extends View {
     }
 
     this.oldQuery = { ...this.query }
-
+    this.updateUrl()
     this.loading = true
     const query = clean({ ...this.query })
     try {
       const { data: {
         items: list,
         totalCount: total,
-        typeList,
+        customerTypeList,
         resTypeList,
         statusList,
+        levelList,
         approveStatusList,
       } } = await queryList(query)
       this.list = list
       this.total = total
-      this.typeList = typeList
+      this.levelList = levelList
+      this.customerTypeList = customerTypeList
       this.resTypeList = resTypeList
-      this.statusList = statusList
-      this.aptitudeStatusList = approveStatusList
+      this.statusList = statusList.slice(1)
+      this.aptitudeStatusList = approveStatusList.slice(1)
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -227,13 +300,28 @@ export default class Main extends View {
     this.$router.push({ name: 'client-corp-edit', params })
   }
 
-  @Watch('query', { deep: true })
-  watchQuery() {
-    if (this.query.pageIndex == this.oldQuery.pageIndex) {
-      this.query.pageIndex = 1
+  async editStatus(id: number, status: number) {
+    const statu = status == 1 ? '启用' : '停用'
+    const statusType = status == 1 ? 2 : 1
+    try {
+      await confirm(`确定要${statu}该项吗？`)
+      await statusId(id, { status: statusType})
+      this.doSearch()
+    } catch (ex) {
+      setTimeout(() => {
+        this.handleError(ex)
+      }, 500)
     }
-    this.doSearch()
+
   }
+
+  // @Watch('query', { deep: true })
+  // watchQuery() {
+  //   if (this.query.pageIndex == this.oldQuery.pageIndex) {
+  //     this.query.pageIndex = 1
+  //   }
+  //   this.doSearch()
+  // }
 }
 </script>
 
@@ -250,6 +338,11 @@ export default class Main extends View {
 
   .input-id {
     width: 80px;
+  }
+  .type-select {
+    display: inline-block;
+    width: 100%;
+    margin-left: 8px;
   }
 }
 
@@ -271,6 +364,9 @@ export default class Main extends View {
     .operation {
       margin-right: 6px;
     }
+  }
+  /deep/ .deprecated {
+    color: #ed4014;
   }
 }
 

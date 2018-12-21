@@ -9,7 +9,7 @@ import { Component, Prop, Watch } from 'vue-property-decorator'
 import View from '@/util/View'
 import { getSubList, isValidArea } from '@/api/area'
 import { toast } from '@/ui/modal'
-
+import { queryList } from '@/api/dateArea'
 const isAllZero = (list: number[] | null) => (list || []).every(it => it === 0)
 
 @Component
@@ -33,18 +33,18 @@ export default class AreaSelect extends View {
   async getSubList(pid = 0, level = 0) {
     let list: any[]
     try {
-      list = await getSubList(pid)
+      const res = await queryList({parentIds: pid, pageSize: 10000})
+      list = res.data.items
     } catch (ex) {
       list = []
       this.handleError(ex)
     }
-
     const subLevel = level + 1
 
     const tlist = list.map((it: any) => {
       const item: any = {
         value: it.id,
-        label: it.name,
+        label: it.nameCn,
         level: subLevel,
       }
       if (subLevel < this.maxLevel) {
