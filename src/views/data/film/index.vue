@@ -196,8 +196,9 @@ export default class Main extends Mixins(View, UrlManager) {
         render: (hh: any, { row : { type } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
+          const typeName = type ? type.join(',') : ''
           return <div class="row-hidden">
-            <span title = { type }>{ type.join(',') }</span>
+            <span title = { type }>{ typeName }</span>
           </div>
           /* tslint:enable */
         }
