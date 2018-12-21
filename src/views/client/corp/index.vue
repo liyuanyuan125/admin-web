@@ -72,7 +72,7 @@ export default class Main extends Mixins(View, UrlManager) {
     pageIndex: 1,
     pageSize: 20,
   }
-  query = { }
+  query: any = {}
 
   oldQuery: any = {}
   defaulitState: any = null
@@ -315,13 +315,13 @@ export default class Main extends Mixins(View, UrlManager) {
 
   }
 
-  // @Watch('query', { deep: true })
-  // watchQuery() {
-  //   if (this.query.pageIndex == this.oldQuery.pageIndex) {
-  //     this.query.pageIndex = 1
-  //   }
-  //   this.doSearch()
-  // }
+  @Watch('query', { deep: true })
+  watchQuery() {
+    if (this.query.pageIndex == this.oldQuery.pageIndex) {
+      this.query.pageIndex = 1
+    }
+    this.doSearch()
+  }
 }
 </script>
 
