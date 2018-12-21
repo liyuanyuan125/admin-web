@@ -115,7 +115,7 @@ export default class Main extends View {
         const h = jsxReactToVue(hh)
         return status == 1
             ? <span>{levelText}</span>
-            : <tooltip content="已禁用" placement="top">
+            : <tooltip content="已停用" placement="top">
               <span class="deprecated">{levelText}</span>
             </tooltip>
         /* tslint:enable */
@@ -257,7 +257,7 @@ export default class Main extends View {
         ...it,
         resTypeName: cachedMap.resType[it.typeString],
         statusText: cachedMap.status[it.status],
-        levelText: cachedMap.resType[it.levelCode],
+        levelText: cachedMap.levelList[it.levelCode],
         aptitudeStatusText: cachedMap.aptitudeStatus[it.approveStatus],
       }
     })

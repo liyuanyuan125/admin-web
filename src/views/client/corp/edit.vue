@@ -10,6 +10,7 @@
     </header>
     <div class="edit-box">
       <!-- header -->
+      {{item.typearr}}
       <Row class="cinema-header">
         <FormItem label="公司名称" prop="name">
           <Row>
@@ -133,12 +134,12 @@
           </Col>
         </Row>
         <Row>
-          <Row v-if="loadingShow">
+          <Row>
             <Col v-for="(it, index) in customerTypeList" :key="index" span="8">
               <FormItem :label="index == 0 ? '客户类型' : ''" :prop="'typearr['+ index + ']'">
                 <span class="check-select-group">
                   <div @click="typeCode(it.typeCode,index)"><Checkbox v-model="item.typearr[index]" :label="it.typeName">{{it.typeName}}</Checkbox></div>
-                  <Select v-model="item.types[index].typeCategoryCode" :disabled="!item.types[index].typeCode"
+                  <Select v-model="item.types[index].typeCategoryCode" :disabled="!item.typearr[index]"
                      class="flex-1" clearable>
                     <Option v-for="sub in it.typeCategoryList" :key="sub.typeCode"
                       :value="sub.typeCode">{{sub.typeName}}</Option>
@@ -156,7 +157,6 @@
         </Row>
         <div class="edit-button">
           <Button type="info" size="large" @click="edit('dataForms')">确定</Button>
-          <Button size="large" @click="edit(0)">返回</Button>
         </div>
       </Row>
       
@@ -184,7 +184,6 @@ const defItem = {
   name: '',
   shortName: '',
 
-  aptitudeType: 0,
   aptitudeNo: '',
 
   provinceId: 0,
@@ -210,7 +209,7 @@ const defItem = {
   }],
   refusedReason: '',
   levelCode: '',
-  businessDirector: '1',
+  businessDirector: 1,
   cinemas: [],
   approveStatus: 1,
   validityPeriodDate: ''
@@ -311,6 +310,18 @@ export default class Main extends View {
     return rule
   }
 
+  created() {
+    if (this.$route.params) {
+      this.item.typearr = [false, false]
+      this.item.types = this.item.types.map((val: any) => {
+        return {
+          typeCode: '',
+          typeCategoryCode: ''
+        }
+      })
+    }
+  }
+
   typeCode(val: any, index: any) {
     if (!this.item.typearr[index]) {
       this.item.types[index].typeCode = val
@@ -330,7 +341,7 @@ export default class Main extends View {
   get cinemas() {
     if (this.item.cinemasList.length > 0) {
       const cinemas = this.item.cinemasList.map((val: any) => {
-        return val.id
+        return val.id * 1
       })
       return cinemas
     } else {
@@ -423,12 +434,21 @@ export default class Main extends View {
         this.item.email = email
         this.item.qualificationType = qualificationType
         this.item.images = images || []
-        this.item.types = types
-        types.forEach((val: any, index: any) => {
-          if (!!val.typeCode) {
-            this.item.typearr[index] = true
+        // this.item.types = types
+        if (types.length == 1) {
+          if (customerTypeList[0].typeCode == types[0].typeCode) {
+            this.item.types[0] = types[0]
+            this.item.typearr[0] = true
+          } else {
+            this.item.types[1] = types[1]
+            this.item.typearr[0] = true
           }
-        })
+        } else {
+          this.item.types = types.sort((a: any, b: any) => {
+             return a.typeCode > b.typeCode ? 1 : -1
+          })
+          this.item.typearr = [true, true]
+        }
         this.item.refusedReason = refusedReason
         this.item.businessDirector = businessDirector
         this.item.cinemas = cinemas || []
@@ -438,7 +458,7 @@ export default class Main extends View {
         this.levelList = levelList
         this.area = [provinceId || 0, cityId || 0, countyId || 0]
         this.loadingShow = true
-        status == 1 ? this.title = '编辑公司' : this.title = '新建公司'
+        status == 1 ? this.title = '编辑公司' : this.title = '审核公司'
       }
     } catch (ex) {
       this.handleError(ex)
@@ -468,10 +488,19 @@ export default class Main extends View {
         const query = clean(oldQuery)
         const array = Object.keys(query).slice(2)
         const newqQuery = slice(query, array)
-        await addQuery({
+        const a = {
           ...newqQuery,
           cinemas: this.cinemas
-        })
+        }
+        try {
+          await addQuery({
+            ...newqQuery,
+            cinemas: this.cinemas
+          })
+          this.$router.go(-1)
+        } catch (ex) {
+          this.handleError(ex)
+        }
       }
     }
     })

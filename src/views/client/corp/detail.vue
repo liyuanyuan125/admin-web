@@ -83,7 +83,7 @@
           <Col span="2"><div>主账号</div></Col>
           <Col span="4">
           <span>{{detail.mainAccountName}}</span>
-          <a type="primary" v-if="!detail.mainAccountName" @click="addMainName" class="btn-add">创建主账号</a>
+          <a v-if="detail.mainAccountName" @click="edit" class="btn-add">[创建主账号]</a>
           </Col>
         </Row>
         <Row>
@@ -100,6 +100,7 @@
         </Row>
       </Row>
     </div>
+    <DlgEdit ref="addOrUpdate" @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/>
   </div>
 </template>
 
@@ -111,6 +112,7 @@ import View from '@/util/View'
 import { queryId } from '@/api/corpReal'
 import AreaSelect from '@/components/AreaSelect.vue'
 import PartBindCinema from './partBindCinema.vue'
+import DlgEdit from '../account/dlgEdit.vue'
 import Upload from './upload.vue'
 import { toMap } from '@/fn/array'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
@@ -121,12 +123,14 @@ const timeFormat = 'YYYY/MM/DD'
   components: {
     AreaSelect,
     PartBindCinema,
-    Upload
+    Upload,
+    DlgEdit
   }
 })
 export default class Main extends View {
   detail: any = {}
   loading = false
+  addOrUpdateVisible = false
   approveStatusList: any = []
   customerTypeList: any = []
   logList: any = []
@@ -174,6 +178,12 @@ export default class Main extends View {
     return imgList
   }
 
+  dlgEditDone(email: any) {
+    this.detail.mainAccountName = email
+  }
+
+  search() {
+  }
   typeListFormt(value: any) {
     const typeArray: any = []
     if ( !!value ) {
@@ -218,12 +228,22 @@ export default class Main extends View {
     } finally {
     }
   }
+    // 新增
+  edit() {
+    this.addOrUpdateVisible = true
+    this.$nextTick(() => {
+      const myThis: any = this
+      myThis.$refs.addOrUpdate.init()
+    })
+  }
+
+  back() {
+    this.$router.go(-1)
+  }
+
   goSet() {
     const id = this.$route.params.id
     this.$router.replace({ name: 'client-corp-edit', params: { id }} )
-  }
-  addMainName() {
-
   }
 }
 </script>
@@ -254,7 +274,12 @@ export default class Main extends View {
 .btn-back {
   margin-right: 10px;
 }
-
+.detail-check {
+  margin-bottom: 10px;
+  border: 1px solid #dcdee2;
+  padding: 10px;
+  padding-left: 14px;
+}
 .detail-header, .detail-content, .detail-footer, .detail-number {
   margin-bottom: 10px;
   border: 1px solid #dcdee2;

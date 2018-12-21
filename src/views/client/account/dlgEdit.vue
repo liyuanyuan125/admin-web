@@ -121,7 +121,7 @@ export default class ComponentMain extends View {
            const res =  await addList (query)
            toast('操作成功')
            this.showDlg = false
-           this.$emit('done')
+           this.$emit('done', this.dataForm.email)
         } catch (ex) {
            this.handleError(ex)
            this.showDlg = false
