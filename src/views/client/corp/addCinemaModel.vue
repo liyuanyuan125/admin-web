@@ -29,7 +29,7 @@
         </Row>
         <Form ref="radioCinema" :model="form">
           <FormItem>
-            <CheckboxGroup  v-model="form.check">
+            <CheckboxGroup v-model="form.check">
               <div v-if="items.length>0">
                 <div class="check" v-for="item in items" :key="item.id">
                   <tooltip content="已下架" v-if="item.controlStatus != 1" placement="right">
@@ -70,7 +70,7 @@ import { isEqual } from 'lodash'
 })
 export default class Main extends View {
   @Prop({ type: Array, default: () => [] }) addData!: any[]
-
+  @Prop() cinemaend: any
   form: any = {
     check: []
   }
@@ -90,7 +90,14 @@ export default class Main extends View {
     cityId: '0',
     countyId: '0'
   }
-  init() {
+  init(val: any) {
+    if ( val.length > 0 ) {
+      this.form.check = val.map((item: any) => {
+        return item.id
+      })
+    } else {
+      this.form.check = []
+    }
     this.showDlg = true
     this.seach()
   }
@@ -100,7 +107,6 @@ export default class Main extends View {
   }
 
   async seach() {
-    this.dataLoading = true
     const query: any = {
       chainId: this.chainId,
       name: this.value,
@@ -119,10 +125,14 @@ export default class Main extends View {
         if (this.form.check.indexOf(item.id) > -1) {
           checkCinema.push({
             id: item.id,
-            shortName: item.shortName
+            cinemaName: item.shortName
           })
         }
       })
+    }
+    if (this.cinemaend == 1 && checkCinema.length > 1) {
+      this.handleError('因资源方类型为影院，因此仅能关联一家影院')
+      return
     }
     this.$emit('done', checkCinema)
     this.showDlg = false

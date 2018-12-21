@@ -43,8 +43,9 @@
 </template>
 
 <script lang="tsx">
-import { Component, Watch } from 'vue-property-decorator'
+import { Component, Watch, Mixins } from 'vue-property-decorator'
 import View from '@/util/View'
+import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
@@ -53,25 +54,25 @@ import { slice, clean } from '@/fn/object'
 import { queryList, statusId } from '@/api/corpReal'
 import { confirm } from '@/ui/modal'
 import { numberify, numberKeys } from '@/fn/typeCast'
-import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 const timeFormat = 'YYYY/MM/DD HH:mm:ss'
 
-const defQuery = {
-  companyId: '',
-  shortName: '',
-  typeCode: '',
-  status: 0,
-  businessDirector: null,
-  approveStatus: 0,
-  pageIndex: 1,
-  pageSize: 20,
-}
+
 
 @Component
-export default class Main extends View {
-  query = { ...defQuery }
+export default class Main extends Mixins(View, UrlManager) {
+  defQuery = {
+    companyId: '',
+    shortName: '',
+    typeCode: '',
+    status: 0,
+    businessDirector: null,
+    approveStatus: 0,
+    pageIndex: 1,
+    pageSize: 20,
+  }
+  query = { }
 
   oldQuery: any = {}
   defaulitState: any = null
@@ -115,7 +116,7 @@ export default class Main extends View {
         const h = jsxReactToVue(hh)
         return status == 1
             ? <span>{levelText}</span>
-            : <tooltip content="已禁用" placement="top">
+            : <tooltip content="已停用" placement="top">
               <span class="deprecated">{levelText}</span>
             </tooltip>
         /* tslint:enable */
@@ -191,14 +192,11 @@ export default class Main extends View {
   ]
 
   mounted() {
-    const urlQuery = slice(urlParam(), Object.keys(defQuery))
-    this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
+    this.updateQueryByParam()
   }
 
-  updateUrl() {
-    const query = prettyQuery(this.query, defQuery)
-    const url = buildUrl(location.pathname, query)
-    history.replaceState(null, '', url)
+  reset() {
+    this.resetQuery()
   }
 
   typeListFormt(value: any) {
@@ -257,20 +255,11 @@ export default class Main extends View {
         ...it,
         resTypeName: cachedMap.resType[it.typeString],
         statusText: cachedMap.status[it.status],
-        levelText: cachedMap.resType[it.levelCode],
+        levelText: cachedMap.levelList[it.levelCode],
         aptitudeStatusText: cachedMap.aptitudeStatus[it.approveStatus],
       }
     })
     return list
-  }
-
-  search() {
-    this.query.pageIndex = 1
-  }
-
-  reset() {
-    const { pageSize } = this.query
-    this.query = { ...defQuery, pageSize }
   }
 
   async doSearch() {
@@ -313,9 +302,10 @@ export default class Main extends View {
 
   async editStatus(id: number, status: number) {
     const statu = status == 1 ? '启用' : '停用'
+    const statusType = status == 1 ? 2 : 1
     try {
       await confirm(`确定要${statu}该项吗？`)
-      await statusId({id})
+      await statusId(id, { status: statusType})
       this.doSearch()
     } catch (ex) {
       setTimeout(() => {
@@ -325,13 +315,13 @@ export default class Main extends View {
 
   }
 
-  @Watch('query', { deep: true })
-  watchQuery() {
-    if (this.query.pageIndex == this.oldQuery.pageIndex) {
-      this.query.pageIndex = 1
-    }
-    this.doSearch()
-  }
+  // @Watch('query', { deep: true })
+  // watchQuery() {
+  //   if (this.query.pageIndex == this.oldQuery.pageIndex) {
+  //     this.query.pageIndex = 1
+  //   }
+  //   this.doSearch()
+  // }
 }
 </script>
 

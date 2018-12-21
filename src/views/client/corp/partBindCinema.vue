@@ -4,7 +4,7 @@
     <div class="act-bar">
       <a @click="onAdd" v-if="!type">添加关联影院</a>
     </div>
-    <AddCinemaModel ref="addCinemaModel" :addData="inValue" @done="columndata"  v-if = "addShow" />
+    <AddCinemaModel ref="addCinemaModel" :cinemaend = "incinematype" :addData="inValue" @done="columndata"  v-if = "addShow" />
   </div>
 </template>
 
@@ -35,30 +35,23 @@ export default class ComponentMain extends View {
   /**
    * 分润单位列表
    */
-  @Prop({ type: Array }) unitList!: any[]
 
   /**
-   * 分润方式列表
+   * 是否为影院
    */
-  @Prop({ type: Array }) typeList!: any[]
+  @Prop() incinematype: any
 
   inValue: any[] = this.value
   addShow =  false
-  get cachedMap() {
-    return {
-      unit: makeMap(this.unitList),
-      type: makeMap(this.typeList),
-    }
-  }
   get columns() {
     const arr = [
       { title: '影院名称',
         align: 'center',
         key: 'shortName',
-        render: (hh: any, { row: { shortName } }: any) => {
+        render: (hh: any, { row: { cinemaName } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          return <a>{shortName}</a>
+          return <a>{cinemaName}</a>
           /* tslint:enable */
         }
       }
@@ -83,7 +76,7 @@ export default class ComponentMain extends View {
   onAdd() {
     this.addShow = true
     this.$nextTick(() => {
-      (this.$refs.addCinemaModel as any).init()
+      (this.$refs.addCinemaModel as any).init(this.inValue)
     })
   }
 

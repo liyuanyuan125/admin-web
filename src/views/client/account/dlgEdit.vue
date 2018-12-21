@@ -6,7 +6,7 @@
     :title="!id ? '新建' : '编辑'"
     @on-cancel="cancel('dataForm')" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
-      <FormItem label="用户账号" prop="email">
+      <FormItem label="用户邮箱账号" prop="email">
         <Input style="width:240px" v-model="dataForm.email"></Input>
       </FormItem>
       <FormItem label="姓名" prop="name">
@@ -15,11 +15,11 @@
       <FormItem label="手机号" prop="mobile">
         <Input style="width:240px" v-model="dataForm.mobile"></Input>
       </FormItem>
-      <FormItem label="密码" prop="password" type="password">
-        <Input style="width:240px" v-model="dataForm.password"></Input>
+      <FormItem label="密码" prop="password" >
+        <Input style="width:240px" type="password" v-model="dataForm.password"></Input>
       </FormItem>
-      <FormItem label="重复密码" prop="passwords" type="password">
-        <Input style="width:240px" v-model="dataForm.passwords"></Input>
+      <FormItem label="重复密码" prop="passwords" >
+        <Input style="width:240px" type="password" v-model="dataForm.passwords" ></Input>
       </FormItem>
       <FormItem label="所属公司" prop="companyId">
         <Select style="width:240px" v-model="dataForm.companyId">
@@ -54,6 +54,7 @@ const defQuery = {
 const dataForm = {
   email: '',
   password: '',
+  passwords: '',
   name: '',
   mobile: '',
   companyId: '',
@@ -71,26 +72,52 @@ export default class ComponentMain extends View {
   list = []
   companys = []
 
-  ruleValidate = {
-    name: [
-        { required: true, message: '请输入分类名称', trigger: 'blur' }
-    ],
-    password: [
-        { required: true, message: '请输入密码' }
-    ],
-    passwords: [
-        { required: true, message: '请重新输入密码' }
-    ],
-    mobile: [
-        { required: true, message: '请输入手机号码' }
-    ],
-    // companyId: [
-    //     { required: true, message: '请选择所属公司' }
-    // ],
-    status: [
-        { required: true }
-    ]
+  get ruleValidate() {
+  const password = (rule: any, value: any, callback: any) => {
+      if (value === '') {
+        callback(new Error('请重新输入密码'))
+      } else {
+        if (this.dataForm.passwords !== this.dataForm.password) {
+           callback(new Error('密码不匹配，请重新输入'))
+        }
+        callback()
+      }
+    }
+    const rules = {
+      email: [
+        { required: true, message: '请输入邮箱账号', trigger: 'blur' },
+        {
+          pattern: /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((.[a-zA-Z0-9_-]{2,3}){1,2})$/,
+          message: '请输入正确的邮箱格式',
+          trigger: 'blur'
+        }
+      ],
+      name: [
+          { required: true, message: '请输入姓名', trigger: 'blur' }
+      ],
+      password: [
+          { required: true, message: '请输入密码', trigger: 'blur' }
+      ],
+      passwords: [
+          { required: true, message: '请重新输入密码', trigger: 'blur' },
+          { validator: password }
+      ],
+      mobile: [
+          { required: true, message: '请输入手机号码', trigger: 'blur' },
+          { pattern: /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/,
+            message: '请输入正确的手机号码', trigger: 'blur'
+          }
+      ],
+      // companyId: [
+      //     { required: true, message: '请选择所属公司' }
+      // ],
+      status: [
+          { required: true }
+      ]
+    }
+    return rules
   }
+
 
   dataForm = { ...dataForm }
 
@@ -121,7 +148,7 @@ export default class ComponentMain extends View {
            const res =  await addList (query)
            toast('操作成功')
            this.showDlg = false
-           this.$emit('done')
+           this.$emit('done', this.dataForm.email)
         } catch (ex) {
            this.handleError(ex)
            this.showDlg = false
@@ -129,6 +156,8 @@ export default class ComponentMain extends View {
       }
     })
   }
+
+
 
   get cachedMap() {
     return {

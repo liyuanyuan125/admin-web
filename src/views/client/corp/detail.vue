@@ -1,5 +1,13 @@
 <template>
   <div class="page">
+    <header class="header flex-box">
+      <Button icon="md-return-left" @click="back" class="btn-back">返回列表</Button>
+      <div class="flex-1">
+        <em>公司详情</em>
+      </div>
+      <Button type="success" icon="md-add-circle" class="btn-new"
+        @click="goSet()">编辑公司</Button>
+    </header>
     <div class="detail-box">
       <div class="detail-header">
           <Row>
@@ -75,7 +83,7 @@
           <Col span="2"><div>主账号</div></Col>
           <Col span="4">
           <span>{{detail.mainAccountName}}</span>
-          <a type="primary" v-if="!detail.mainAccountName" @click="addMainName" class="btn-add">创建主账号</a>
+          <a v-if="detail.mainAccountName" @click="edit" class="btn-add">[创建主账号]</a>
           </Col>
         </Row>
         <Row>
@@ -92,9 +100,7 @@
         </Row>
       </Row>
     </div>
-    <div class="detail-edit">
-      <Button type="primary" @click="goSet()" class="btn-set">编辑</Button>
-    </div>
+    <DlgEdit ref="addOrUpdate" @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/>
   </div>
 </template>
 
@@ -106,6 +112,7 @@ import View from '@/util/View'
 import { queryId } from '@/api/corpReal'
 import AreaSelect from '@/components/AreaSelect.vue'
 import PartBindCinema from './partBindCinema.vue'
+import DlgEdit from '../account/dlgEdit.vue'
 import Upload from './upload.vue'
 import { toMap } from '@/fn/array'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
@@ -116,12 +123,14 @@ const timeFormat = 'YYYY/MM/DD'
   components: {
     AreaSelect,
     PartBindCinema,
-    Upload
+    Upload,
+    DlgEdit
   }
 })
 export default class Main extends View {
   detail: any = {}
   loading = false
+  addOrUpdateVisible = false
   approveStatusList: any = []
   customerTypeList: any = []
   logList: any = []
@@ -169,6 +178,12 @@ export default class Main extends View {
     return imgList
   }
 
+  dlgEditDone(email: any) {
+    this.detail.mainAccountName = email
+  }
+
+  search() {
+  }
   typeListFormt(value: any) {
     const typeArray: any = []
     if ( !!value ) {
@@ -213,23 +228,41 @@ export default class Main extends View {
     } finally {
     }
   }
+    // 新增
+  edit() {
+    this.addOrUpdateVisible = true
+    this.$nextTick(() => {
+      const myThis: any = this
+      myThis.$refs.addOrUpdate.init()
+    })
+  }
+
+  back() {
+    this.$router.go(-1)
+  }
+
   goSet() {
     const id = this.$route.params.id
     this.$router.replace({ name: 'client-corp-edit', params: { id }} )
-  }
-  addMainName() {
-
   }
 }
 </script>
 
 <style lang="less" scoped>
-.page {
-  margin: -10px -10px;
-  background: #ecf0f4;
-}
-.detail-box {
-  padding: 10px 0;
+@import '../../../site/lib.less';
+
+.header {
+  margin-top: 5px;
+  margin-bottom: 10px;
+  line-height: 30px;
+  em, i {
+    font-style: normal;
+    margin-right: 6px;
+  }
+  em {
+    font-size: 16px;
+    color: @c-base;
+  }
 }
 .detail-number {
   /deep/ .btn-add {
@@ -237,9 +270,19 @@ export default class Main extends View {
     height: 30px;
   }
 }
-.detail-header, .detail-content, .detail-footer, .detail-number, .detail-check {
-  background: #fff;
-  margin: 10px;
+
+.btn-back {
+  margin-right: 10px;
+}
+.detail-check {
+  margin-bottom: 10px;
+  border: 1px solid #dcdee2;
+  padding: 10px;
+  padding-left: 14px;
+}
+.detail-header, .detail-content, .detail-footer, .detail-number {
+  margin-bottom: 10px;
+  border: 1px solid #dcdee2;
   padding-left: 14px;
   /deep/ .ivu-col-span-2 {
     /deep/ div {
@@ -250,7 +293,7 @@ export default class Main extends View {
   span {
     display: inline-block;
     line-height: 50px;
-    color: #999;
+    color: #19be6b;
   }
   span:only-child:empty {
     &::before {
@@ -285,7 +328,7 @@ export default class Main extends View {
   padding-bottom: 40px;
   /deep/ .uplaod-slot {
     margin-bottom: 10px;
-    color: #999;
+    color: #19be6b;
   }
 }
 .detail-edit {
@@ -303,6 +346,7 @@ export default class Main extends View {
   height: 40px;
   line-height: 40px;
   background: #ecf0f4;
+  color: #19be6b;
   border-radius: 5px;
   margin-top: 10px;
   margin-bottom: 20px;
@@ -312,6 +356,7 @@ export default class Main extends View {
     right: 10px;
     height: 20px;
     width: 80px;
+    color: #19be6b;
     padding-left: 5px;
     line-height: 20px;
     background: #dcdee2;

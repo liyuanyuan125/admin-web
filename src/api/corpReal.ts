@@ -33,8 +33,8 @@ export async function queryId(query: any = {}) {
  * 根据Id，启用停用
  * @param query 停运Id，参见接口文档
  */
-export async function statusId(query: any = {}) {
-    const res = await put('/customer/company/status/', query)
+export async function statusId(id: any, query: any = {}) {
+    const res = await put(`/customer/companies/status/${id}`, query)
     return res
 }
 
@@ -52,7 +52,7 @@ export async function addSeach() {
  * @param query 添加条件，参见接口文档
  */
 export async function addQuery(query: any = {}) {
-    const res = await post('/customer/company', query)
+    const res = await post('/customer/companies', query)
     return res
 }
 
