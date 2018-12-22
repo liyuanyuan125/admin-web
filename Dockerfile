@@ -1,3 +1,3 @@
-FROM aicrs.cn/ai/devops/vue/run
+FROM aicrs.cn/devops/vue/run
 
 COPY dist /usr/share/nginx/html/
