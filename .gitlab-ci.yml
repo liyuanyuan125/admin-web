@@ -5,7 +5,7 @@ stages:
   - deploy
 
 variables:
-  SERVICE_NAME: aiads-iadp-admin-web
+  SERVICE_NAME: iadp-admin-web
 
 lint:
   image: $REGISTRY_ADDRESS/devops/nodejs/build
