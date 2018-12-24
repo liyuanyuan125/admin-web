@@ -483,7 +483,7 @@ export default class Main extends View {
         this.item.refusedReason = refusedReason
         this.item.businessDirector = businessDirector
         this.item.cinemas = cinemas || []
-        this.imageList = imageList
+        this.imageList = imageList || []
         this.item.approveStatus = approveStatus
         this.customerTypeList = customerTypeList
         this.item.validityPeriodDate = validityPeriodDate
