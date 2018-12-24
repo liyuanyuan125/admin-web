@@ -57,7 +57,7 @@ const dataForm = {
   passwords: '',
   name: '',
   mobile: '',
-  companyId: '',
+  companyId: null,
   status: 1
 }
 
