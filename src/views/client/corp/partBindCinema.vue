@@ -4,7 +4,7 @@
     <div class="act-bar">
       <a @click="onAdd" v-if="!type">添加关联影院</a>
     </div>
-    <AddCinemaModel ref="addCinemaModel" v-if = "addShow" />
+    <AddCinemaModel ref="addCinemaModel" :cinemaend = "incinematype" :addData="inValue" @done="columndata"  v-if="!type" />
   </div>
 </template>
 
@@ -28,35 +28,30 @@ export default class ComponentMain extends View {
    * 值本身，可以使用 v-model 进行双向绑定
    */
   @Prop({ type: Array, default: () => [] }) value!: any[]
+
+  // 判断新增和添加
   @Prop() type: any
 
   /**
    * 分润单位列表
    */
-  @Prop({ type: Array, required: true }) unitList!: any[]
 
   /**
-   * 分润方式列表
+   * 是否为影院
    */
-  @Prop({ type: Array, required: true }) typeList!: any[]
+  @Prop() incinematype: any
 
   inValue: any[] = this.value
   addShow =  false
-  get cachedMap() {
-    return {
-      unit: makeMap(this.unitList),
-      type: makeMap(this.typeList),
-    }
-  }
   get columns() {
     const arr = [
       { title: '影院名称',
         align: 'center',
-        key: 'name',
-        render: (hh: any, { row: { name } }: any) => {
+        key: 'shortName',
+        render: (hh: any, { row: { cinemaName } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          return <a>{name}</a>
+          return <a>{cinemaName}</a>
           /* tslint:enable */
         }
       }
@@ -64,7 +59,7 @@ export default class ComponentMain extends View {
     const add: any = [
        {
           title: '操作',
-          width: 58,
+          width: 70,
           align: 'center',
           render: (hh: any, { row: { id } }: any) => {
             /* tslint:disable */
@@ -81,8 +76,12 @@ export default class ComponentMain extends View {
   onAdd() {
     this.addShow = true
     this.$nextTick(() => {
-      (this.$refs.addCinemaModel as any).init()
+      (this.$refs.addCinemaModel as any).init(this.inValue)
     })
+  }
+
+  columndata(val: any) {
+    this.inValue = val
   }
 
   onSet(id: number) {

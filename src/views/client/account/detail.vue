@@ -1,16 +1,18 @@
 <template>
-  <div class="page">
+  <div class="page" :data="tableData">
     <!-- 菜单 -->
     <!-- <div class="work-Title"><span class="workT">工作台</span> > 客户管理 > 账号管理 > 账号详情</div> -->
     <!-- 注册账号 -->
     <div class="Inp-Group-res">
+      <Button class="bth" icon="md-return-left" @click="goback">返回列表</Button>
+      <div class="n-main">主账号详情</div>
       <div class="Inps-res">
-        <div class="n-main">主账号详情</div>
         <div class="res-num">
           <p>用户账号</p>
           <div class="res-num-item change-item">
-            <span>admin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;【主账号】</span>
-            <span class="blu1 les" @click="viewlog">查看操作日志</span>
+            <span>{{list.email}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;【主账号】</span>
+            <!-- <s class="blu1 les" @click="viewlog(2)">查看操作日志</span> -->
+            <router-link :to="{path:'/client/account/viewLog/'+ list.id , query: {nus: '主账号' , companyId: list.companyId , id: list.id , createTime: list.createTime , lastLoginTime: list.lastLoginTime , companyName: list.companyName , email: list.email}}" tag="span" class="blu1 les">查看操作日志</router-link>
             <span class="blu2" @click="change(0)">变更主账号</span>
             <!-- <span>变更主账号</span> -->
           </div>
@@ -18,19 +20,19 @@
         <div class="res-num">
           <p>注册时间</p>
           <div class="res-num-item">
-            <span>2018/11/01 12:22:21</span>
+            <span>{{createTime}}</span>
             <span class="res-date les">最后登陆时间</span>
-            <span>2018/11/01 12:22:21</span>
+            <span>{{lastLoginTime}}</span>
           </div>
         </div>
         <div class="res-num">
           <p>所属公司</p>
           <div class="res-num-item">
-            <span>北京博纳国际有限公司</span>
-            <span class="blu1 les" @click="viewcompanydetail(5)">查看公司详情</span>
+            <span>{{list.companyName}}</span>
+            <!-- <span class="blu1 les" @click="viewcompanydetail(5)">查看公司详情</span> -->
+            <router-link :to="{path:'/client/corp/detail/'+ list.companyId}" tag="span" class="blu1 les">查看公司详情</router-link>
           </div>
         </div>
-        {{prelist}}
       </div>
     </div>
     <!-- 子账号 -->
@@ -47,7 +49,7 @@
         </div>
       </div>
     </div>
-    <dlgChange  ref="change"   @refreshDataList="search" v-if="changeVisible" @done="dlgEditDone"/>
+    <dlgChange  ref="change" :prelist="prelist"  @refreshDataList="search" v-if="changeVisible" @done="dlgEditDone"/>
 
   </div>
 </template>
@@ -55,11 +57,12 @@
 <script lang="tsx">
 import { Component, Watch } from 'vue-property-decorator'
 import View from '@/util/View'
+import { get } from '@/fn/ajax'
 import { queryItem } from '@/api/account'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
-import { clean } from '@/fn/object'
+import { slice , clean } from '@/fn/object'
 import dlgChange from './dlgChange.vue'
 
 
@@ -67,11 +70,9 @@ const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
 const defQuery = {
-  id: null,
+  id: '',
   companytId: '',
   phoneNmber: null,
-  // corpName: '',
-  // userAccount: '',
   type: null,
   status: null,
   pageIndex: 1,
@@ -88,14 +89,15 @@ export default class Main extends View {
   changeVisible = false
 
   query = { ...defQuery }
+  oldQuery: any = {}
 
   loading = false
-
-  list = []
-  prelist = []
+  createTime = ''
+  lastLoginTime = ''
+  list: any = []
+  prelist: any = []
   total = 0
-
-  oldQuery: any = {}
+  ids = ''
 
   columns = [
     { title: '用户账号', key: 'id', align: 'center' },
@@ -129,11 +131,11 @@ export default class Main extends View {
       title: '操作',
       key: 'action',
       align: 'center',
-      render: (hh: any, { row: { id } }: any) => {
+      render: (hh: any, { row: { id , createTime , lastLoginTime , companyName , email , companyId} }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         return <div class='row-acts'>
-          <router-link to={{ name: 'client-account-viewLog', params: { id } }}>查看操作日志</router-link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <router-link to={{ name: 'client-account-viewLog', query:{id , createTime , lastLoginTime , companyName , email , companyId }, params: { id } }}>查看操作日志</router-link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </div>
         /* tslint:enable */
       }
@@ -146,18 +148,21 @@ export default class Main extends View {
 
   get tableData() {
     const cachedMap = this.cachedMap
-    const list = (this.list || []).map((it: any) => {
+    const prelist = (this.prelist || []).map((it: any) => {
       return {
         ...it,
       }
     })
-    return list
+    return prelist
   }
   mounted() {
     const { id } = this.$route.params
-    this.query.companytId = id
-    // this.doSearch()
+    this.ids = id
+    this.doSearch()
+    this.createTime = moment(this.list.createTime).format(timeFormat)
+    this.lastLoginTime = moment(this.list.lastLoginTime).format(timeFormat)
   }
+
   dlgEditDone() {
     this.doSearch()
   }
@@ -179,16 +184,22 @@ export default class Main extends View {
     const { pageSize } = this.query
     this.query = { ...defQuery, pageSize }
   }
-
-  viewlog() {
-    this.$router.push({ name: 'client-account-viewLog' })
+  //  查看日志
+  viewlog(id: number) {
+    const params = this.$route.params
+    this.$router.push({ name: 'client-account-viewLog', params })
+  }
+  //  查看公司详情
+  viewcompanydetail(id: number) {
+    // console.log(this.list.companyId)
+    // const params = this.list.companyId
+    // // // this.dataForm.category.id = id
+    // // // const params: any = id > 0 ? { id } : {}
+    // this.$router.push({ name: 'client-corp-detail', params })
   }
 
-  viewcompanydetail(id: number) {
-    const params = this.$route.params
-    // this.dataForm.category.id = id
-    // const params: any = id > 0 ? { id } : {}
-    this.$router.push({ name: 'client-corp-detail', params })
+  goback() {
+    this.$router.go(-1)
   }
 
   async doSearch() {
@@ -203,13 +214,13 @@ export default class Main extends View {
     const query = clean({ ...this.query })
     try {
       const { data: {
-        childAccountList: list,
-        parentAccount: prelist,
-      } } = await queryItem(query)
+        parentAccount: list,
+        childAccountList: prelist,
+      } } = await queryItem(this.$route.params.id)
       this.list = list
       this.prelist = prelist
     } catch (ex) {
-      this.handleError(ex)
+      // this.handleError(ex)
     } finally {
       this.loading = false
     }
@@ -235,11 +246,10 @@ export default class Main extends View {
 }
 .Inp-Group-res,
 .res-Group {
-  background: #ecf0f4;
-  padding: 14px;
+  // background: #ecf0f4;
+  padding: 10px;
   padding-top: 15px;
   margin: -10px -10px 0 -10px;
-  border-bottom: 1px solid #ccc;
 }
 .res-Group {
   margin-top: -5px;
@@ -251,6 +261,7 @@ export default class Main extends View {
   padding-top: 7px;
   font-size: 13px;
   background: #fff;
+  border: 1px solid #dcdee2;
 }
 .res-num {
   width: 100%;
@@ -281,9 +292,9 @@ export default class Main extends View {
   cursor: pointer;
 }
 .new-number {
-  background: #ecf0f4;
-  padding: 14px;
-  margin: -14px -10px 0 -10px;
+  // background: #ecf0f4;
+  padding: 2px;
+  margin: 1px -10px 0 -10px;
 }
 .new-num {
   width: 100%;
@@ -293,80 +304,25 @@ export default class Main extends View {
   font-size: 13px;
 }
 .n-list {
-  margin: -5px 0 8px 0;
+  margin: -5px 0 8px 5px;
   line-height: 38px;
-  font-weight: bold;
-  border-bottom: 2px solid #ecf0f4;
+  font-size: 16px;
+  color: #2d8cf0;
+  // border-bottom: 2px solid #ecf0f4;
 }
 .n-main {
-  margin: -3px 0 0 8px;
+  display: inline-block;
+  margin: 0 0 5px 5px;
   line-height: 35px;
-  font-weight: bold;
-  border-bottom: 2px solid #ecf0f4;
+  font-size: 16px;
+  color: #2d8cf0;
+  // border-bottom: 2px solid #ecf0f4;
 }
-// .info {
-//   width: 33%;
-//   background: #fff;
-//   border: 1px solid #ccc;
-//   border-radius: 5px;
-//   position: absolute;
-//   top: 20%;
-//   left: 20%;
-//   font-size: 14px;
-// }
-// .info-ver {
-//   width: 100%;
-//   height: 43px;
-//   line-height: 43px;
-//   padding-left: 3%;
-//   border-bottom: 1px solid #ccc;
-// }
-// .info-ver .info-Icon {
-//   float: right;
-//   margin-right: 3%;
-//   font-weight: bold;
-//   margin-top: 10px;
-// }
-// .info-type {
-//   padding: 17px;
-//   line-height: 40px;
-//   font-size: 14px;
-// }
-// .info-type-inp span {
-//   margin-left: 1%;
-//   color: #53a1f3;
-//   cursor: pointer;
-//   text-decoration: underline;
-// }
-// .info-type div span {
-//   margin-left: 10%;
-//   color: #aaa;
-// }
-// .info-type div select {
-//   margin-left: 10%;
-//   width: 200px;
-//   height: 30px;
-//   line-height: 30px;
-//   color: #999;
-// }
-// .info-type .ivu-radio-group {
-//   margin-left: 5%;
-// }
-// .info-inp {
-//   margin-left: 5%;
-// }
-// .info-type button {
-//   margin-top: 2%;
-//   margin-left: 22%;
-// }
-// .info-type .info-red {
-//   width: 255px;
-//   color: red;
-//   font-weight: normal;
-//   font-size: 12px;
-//   line-height: 13px;
-//   margin-left: 24%;
-//   margin-top: 1%;
-// }
-
+.table {
+  /deep/ .ivu-table-cell > span:only-child:empty {
+    &::before {
+      content: '-';
+    }
+  }
+}
 </style>
