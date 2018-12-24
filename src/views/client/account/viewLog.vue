@@ -12,11 +12,14 @@
         </div>
         <div class="res-num">
           <p>所属公司</p>
-          <span class="coms">{{companyName}}</span>
-          <div class="res-num-item" v-for="it in list" v-if="it.id==companyId">
-            <div class="item-lis" v-for="ity in it.types">
-              <span v-for="its in customerTypeList" v-if="its.typeCode==ity.typeCode">
-                <em v-for="itname in its.typeCategoryList" v-if="itname.typeCode==ity.typeCategoryCode">【{{its.typeName}}：{{itname.typeName}}】</em>
+          <!-- <span class="coms">{{companyName}}</span> -->
+          <tooltip style="margin-left: 3%;height:60px;" :content="companyName" placement="top">
+              <span class="deprecated">{{companyName}}</span>
+            </tooltip>
+          <div class="res-num-item" v-for="it in list" v-if="it.id==companyId" :key="it.id">
+            <div class="item-lis" v-for="ity in it.types" :key="ity.typeCode">
+              <span v-for="its in customerTypeList" v-if="its.typeCode==ity.typeCode" :key='its.typeCode'>
+                <em v-for="itname in its.typeCategoryList" v-if="itname.typeCode==ity.typeCategoryCode" :key='itname.typeCode'>【{{its.typeName}}：{{itname.typeName}}】</em>
               </span>
             </div>
           </div>
@@ -164,29 +167,44 @@ export default class Main extends View {
   border: 1px solid #dcdee2;
 }
 .res-num {
+  display: flex;
   width: 100%;
   line-height: 60px;
 }
 .res-num p {
+  flex-direction: column-reverse;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
   display: block;
   float: left;
-  width: 4%;
   max-height: 60px;
-  overflow: hidden;
   text-align: left;
   margin-left: 0.5%;
+  // white-space: nowrap;
+  // text-overflow: ellipsis;
 }
 .res-num-item {
+  display: flex;
   width: 80%;
   height: 100%;
-  display: inline-block;
+  // display: inline-block;
 }
-.coms {
-  margin-left: 3%;
+.deprecated {
+  // flex-direction: column-reverse;
+  // flex-wrap: nowrap;
+  // justify-content: flex-start;
+  display: inline-block;
+  width: 80%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .res-num-item .item-lis {
+  flex-direction: column-reverse;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
   display: inline-block;
-  width: 11%;
+  // width: 11%;
 }
 .res-num-item span {
   display: inline-block;
