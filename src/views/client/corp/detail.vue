@@ -33,7 +33,7 @@
           <Row class="upload">
             <Col span="2"><div>资质</div></Col>
             <Col span="8">
-            <Upload v-if='loading' types='1' :uploadListArray = 'format.imgList'>
+            <Upload v-if='loading' types='1' :uploadListArray='format.imgList'>
               <div class="uplaod-slot">{{detail.qualificationType}} {{detail.qualificationCode}}</div>
             </Upload>
             </Col>
@@ -63,7 +63,7 @@
         <Row>
           <Col span="2"><div>客户类型</div></Col>
           <div v-for="item in format.typeFormat" :key="item.oneText">
-            <Col span="4">
+            <Col span="4" style="margin-right: 20px">
               <div class="typeBox">
                 {{item.oneText}}
                 <div class="right">{{item.twoText}}</div>
@@ -83,7 +83,7 @@
           <Col span="2"><div>主账号</div></Col>
           <Col span="4">
           <span>{{detail.mainAccountName}}</span>
-          <a v-if="detail.mainAccountName" @click="edit" class="btn-add">[创建主账号]</a>
+          <a v-if="!detail.mainAccountName" @click="edit" class="btn-add">[创建主账号]</a>
           </Col>
         </Row>
         <Row>
@@ -267,7 +267,7 @@ export default class Main extends View {
 .detail-number {
   /deep/ .btn-add {
     margin-left: 8px;
-    height: 30px;
+    line-height: 50px;
   }
 }
 
