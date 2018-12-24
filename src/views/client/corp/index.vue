@@ -13,11 +13,10 @@
           <Option v-for="it in statusList" :key="it.key" :value="it.key"
             :label="it.text">{{it.text}}</Option>
         </Select>
-        <!-- 接口暂未完成 -->
-        <!-- <Select v-model="query.businessDirector" placeholder="关联商务" clearable>
-          <Option v-for="it in bizUserList" :key="it.id" :value="it.id"
-            :label="it.text">{{[it.name, it.group, it.title].join(' | ')}}</Option>
-        </Select> -->
+        <Select v-model="query.businessDirector" placeholder="关联商务" clearable>
+          <Option v-for="it in businessDirector" :key="it.id" :value="it.id"
+            :label="it.userName">{{ it.userName }}</Option>
+        </Select>
         <Select v-model="query.approveStatus" placeholder="审核状态" clearable>
           <Option v-for="it in aptitudeStatusList" :key="it.key" :value="it.key"
             :label="it.text">{{it.text}}</Option>
@@ -51,7 +50,7 @@ import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
-import { queryList, statusId } from '@/api/corpReal'
+import { queryList, statusId, directorList } from '@/api/corpReal'
 import { confirm } from '@/ui/modal'
 import { numberify, numberKeys } from '@/fn/typeCast'
 
@@ -87,12 +86,14 @@ export default class Main extends Mixins(View, UrlManager) {
   statusList = []
   levelList = []
   aptitudeStatusList = []
-
+  // 关联商务
+  businessDirector = []
   columns = [
     { title: '公司ID', key: 'id', align: 'center' },
-    { title: '公司名称', key: 'name', width: 200 , align: 'center' },
+    { title: '公司名称', key: 'name', width: 120 , align: 'center' },
     { title: '客户类型',
       key: 'customerTypeList',
+      width: 160,
       align: 'center',
       render: (hh: any, { row: { types } }: any) => {
         /* tslint:disable */
@@ -197,6 +198,19 @@ export default class Main extends Mixins(View, UrlManager) {
 
   reset() {
     this.resetQuery()
+  }
+
+  created() {
+    this.business()
+  }
+
+  async business() {
+    try {
+      const res = await directorList()
+      this.businessDirector = res.data.items
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
 
   typeListFormt(value: any) {
@@ -367,6 +381,11 @@ export default class Main extends Mixins(View, UrlManager) {
   }
   /deep/ .deprecated {
     color: #ed4014;
+  }
+  /deep/ span:only-child:empty {
+    &::before {
+      content: '-';
+    }
   }
 }
 

@@ -1,7 +1,7 @@
 <template>
   <Form  :model='item' :label-width='88' :rules='rules' label-position="left" class='form page' ref='dataForms'>
     <header class="header flex-box">
-      <Button icon="md-return-left" @click="back" class="btn-back">返回列表</Button>
+      <Button icon="md-return-left" @click="back" class="btn-back">返回上一级</Button>
       <div class="flex-1">
         <em>{{title}}</em>
       </div>
@@ -127,8 +127,8 @@
           <Col span="8" offset="1">
             <FormItem label="负责商务" prop="bizUserId">
               <Select v-model="item.businessDirector" clearable>
-                <Option v-for="it in bizUserList" :key="it.id" :value="it.id"
-                  :label="it.label">{{it.label}}</Option>
+                <Option v-for="it in businessDirector" :key="it.id" :value="it.id"
+                  :label="it.userName">{{it.userName}}</Option>
               </Select>
             </FormItem>
           </Col>
@@ -169,7 +169,7 @@
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Watch } from 'vue-property-decorator'
 import View from '@/util/View'
-import { queryId, addSeach, addQuery, setQuery } from '@/api/corpReal'
+import { queryId, addSeach, addQuery, setQuery, directorList } from '@/api/corpReal'
 import AreaSelect from '@/components/AreaSelect.vue'
 import PartBindCinema from './partBindCinema.vue'
 import Upload from './upload.vue'
@@ -211,7 +211,7 @@ const defItem = {
   }],
   refusedReason: '',
   levelCode: '',
-  businessDirector: 1,
+  businessDirector: '',
   cinemas: [],
   approveStatus: 1,
   validityPeriodDate: ''
@@ -241,9 +241,8 @@ export default class Main extends View {
   profitUnitList = []
   profitTypeList = []
   area: number[] = []
-  typerule = [
-        {  message: '请选择客户等级', trigger: 'change'}
-      ]
+  businessDirector = []
+
   get rules() {
     const validateType1 = ( rule1: any, value: any, callback: any) => {
       if (value == false) {
@@ -310,10 +309,10 @@ export default class Main extends View {
         { validator: validateType2 }
       ],
       qualificationType: [
-        { required: true, message: '请选择资质', type: 'boolean', trigger: 'change'},
+        { required: true, message: '请选择资质', trigger: 'change'},
       ],
       qualificationCode: [
-        { required: true, message: '请输入资质编号', type: 'boolean', trigger: 'blur'}
+        { required: true, message: '请输入资质编号', trigger: 'blur'}
       ]
     }
     return rule
@@ -328,6 +327,16 @@ export default class Main extends View {
           typeCategoryCode: ''
         }
       })
+    }
+    this.business()
+  }
+
+  async business() {
+    try {
+      const res = await directorList()
+      this.businessDirector = res.data.items
+    } catch (ex) {
+      this.handleError(ex)
     }
   }
 
@@ -347,6 +356,7 @@ export default class Main extends View {
       return 0
     }
   }
+
   get cinemas() {
     if (this.item.cinemasList.length > 0) {
       const cinemas = this.item.cinemasList.map((val: any) => {
@@ -492,8 +502,8 @@ export default class Main extends View {
   edit(dataForms: string) {
     (this.$refs[dataForms] as any).validate(async ( valid: any ) => {
     if (valid) {
-      if (this.cinematype == 1 && this.item.cinemas.length > 1) {
-        this.handleError('因资源方类型为影院，因此仅能关联一家影院')
+      if (this.cinematype == 1 && this.cinemas.length > 1) {
+        this.showError('因资源方类型为影院，因此仅能关联一家影院')
         return
       }
       const route: any = this.$route.params.id || 0
@@ -530,6 +540,7 @@ export default class Main extends View {
     }
     })
   }
+
   @Watch('area')
   watchArea(val: number[]) {
     this.item.provinceId = val[0]
@@ -548,6 +559,7 @@ export default class Main extends View {
     this.item.typeIdList = val.map(it => it.checked ? it.id : 0)
     this.item.subTypeIdList = val.map(it => it.checked ? it.subId || 0 : 0)
   }
+
   @Watch('item', { deep: true })
   watchitem(val: any) {
     const form = 'dataForms'

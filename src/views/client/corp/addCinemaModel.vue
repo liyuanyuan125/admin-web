@@ -131,7 +131,7 @@ export default class Main extends View {
       })
     }
     if (this.cinemaend == 1 && checkCinema.length > 1) {
-      this.handleError('因资源方类型为影院，因此仅能关联一家影院')
+      this.showError('因资源方类型为影院，因此仅能关联一家影院')
       return
     }
     this.$emit('done', checkCinema)
