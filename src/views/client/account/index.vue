@@ -59,16 +59,16 @@ import {confirm , warning , success, toast } from '@/ui/modal'
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
-const defQuery = {
-  id: '',
-  email: '',
-  companyName: '',
-  status: null,
-  pageIndex: 1,
-  pageSize: 20,
-  beginCreateTime: 0,
-  endCreateTime: 0
-}
+// const defQuery = {
+//   id: '',
+//   email: '',
+//   companyName: '',
+//   status: null,
+//   pageIndex: 1,
+//   pageSize: 20,
+//   beginCreateTime: 0,
+//   endCreateTime: 0
+// }
 const dataForm = {
   status: 1
 }
@@ -123,7 +123,7 @@ export default class Main extends Mixins(View, UrlManager) {
     { title: '公司名称', width: 400, key: 'companyName', align: 'center' },
     {
       title: '注册时间',
-      key: 'beginCreateTime',
+      key: 'createTime',
       align: 'center',
       render: (hh: any, { row: { createTime } }: any) => {
         /* tslint:disable */
@@ -135,12 +135,12 @@ export default class Main extends Mixins(View, UrlManager) {
     },
     {
       title: '更新时间',
-      key: 'endCreateTime',
+      key: 'modifyTime',
       align: 'center',
-      render: (hh: any, { row: { updateTime } }: any) => {
+      render: (hh: any, { row: { modifyTime } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = moment(updateTime).format(timeFormat)
+        const html = moment(modifyTime).format(timeFormat)
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
@@ -234,7 +234,8 @@ export default class Main extends Mixins(View, UrlManager) {
     this.oldQuery = { ...this.query }
     this.updateUrl()
     this.loading = true
-    const query = clean({ ...this.query })
+    // const query = clean({ ...this.query })
+    const query: any = {}
     for (const [key, value] of Object.entries(this.oldQuery)) {
       if (key != 'beginCreateTime' && value != 0) {
         query[key] = value
