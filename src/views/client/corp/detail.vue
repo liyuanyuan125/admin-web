@@ -156,24 +156,18 @@ export default class Main extends View {
       typeFormat: this.typeListFormt(this.detail.types),
       approveTime: moment(this.detail.approveTime).format(timeFormatDate),
       validityPeriodDate: moment(this.detail.validityPeriodDate).format(timeFormat),
-      imgList: this.imgFormat(this.detail.images),
+      imgList: this.imgFormat(this.detail.imageList),
     }
   }
 
   imgFormat(val: any) {
     const imgList: any = []
     if (!!val) {
-      if ( typeof val == 'string') {
+      val.forEach((value: any) => {
         imgList.push({
-          imageUrl: val
+          imageUrl: value.url
         })
-      } else {
-        val.forEach((value: any) => {
-          imgList.push({
-            imageUrl: value
-          })
-        })
-      }
+      })
     }
     return imgList
   }
@@ -211,6 +205,7 @@ export default class Main extends View {
     try {
       const res = await queryId(query)
       this.detail = res.data
+      this.detail.cinemaList = res.data.cinemaList || []
       this.approveStatusList = res.data.approveStatusList
       this.customerTypeList = res.data.customerTypeList
       this.levelList = res.data.levelList
@@ -232,8 +227,7 @@ export default class Main extends View {
   edit() {
     this.addOrUpdateVisible = true
     this.$nextTick(() => {
-      const myThis: any = this
-      myThis.$refs.addOrUpdate.init()
+      (this.$refs.addOrUpdate as any).init()
     })
   }
 

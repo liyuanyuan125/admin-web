@@ -1,7 +1,7 @@
 <template>
   <Form  :model='item' :label-width='88' :rules='rules' label-position="left" class='form page' ref='dataForms'>
     <header class="header flex-box">
-      <Button icon="md-return-left" @click="back" class="btn-back">返回上一级</Button>
+      <Button icon="md-return-left" @click="back" class="btn-back">返回上一页</Button>
       <div class="flex-1">
         <em>{{title}}</em>
       </div>
@@ -242,6 +242,7 @@ export default class Main extends View {
   profitTypeList = []
   area: number[] = []
   businessDirector = []
+  imageList = []
 
   get rules() {
     const validateType1 = ( rule1: any, value: any, callback: any) => {
@@ -369,10 +370,11 @@ export default class Main extends View {
   }
 
   get imgList() {
-    if ( this.item.images.length > 0 ) {
-      return this.item.images.map((item: string) => {
+    if ( this.imageList.length > 0 ) {
+      return this.imageList.map((item: any) => {
         return {
-          imageUrl: item,
+          imageUrl: item.url,
+          fileId: item.fileId,
           status: 'finished'
         }
       })
@@ -446,6 +448,7 @@ export default class Main extends View {
           validityPeriodDate,
           qualificationTypeList,
           status,
+          imageList,
           cinemaList
           }
         } = await queryId(query)
@@ -462,7 +465,7 @@ export default class Main extends View {
         this.qualificationTypeList = qualificationTypeList
         this.item.qualificationType = qualificationType
         this.item.images = images || []
-        this.item.cinemasList = cinemaList
+        this.item.cinemasList = cinemaList || []
         if (types.length == 1) {
           if (customerTypeList[0].typeCode == types[0].typeCode) {
             this.item.types[0] = types[0]
@@ -480,6 +483,7 @@ export default class Main extends View {
         this.item.refusedReason = refusedReason
         this.item.businessDirector = businessDirector
         this.item.cinemas = cinemas || []
+        this.imageList = imageList
         this.item.approveStatus = approveStatus
         this.customerTypeList = customerTypeList
         this.item.validityPeriodDate = validityPeriodDate
