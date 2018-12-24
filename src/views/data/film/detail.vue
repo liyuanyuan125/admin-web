@@ -1,10 +1,16 @@
 <template>
   <div class="page">
+    <header class="header flex-box">
+      <Button icon="md-return-left" @click="back" class="btn-back">返回列表</Button>
+      <div class="flex-1">
+        <em style="margin-left:5px">影片详情</em>
+      </div>
+    </header>
     <div class="detail-box">
       <div class="file-detail-header">
       <dl>
-        <dt style="line-height: 32px">电影名称:</dt>
-        <dd style="line-height: 32px">{{detil.name}} <Button icon="md-return-left" style="float:right" @click="goback">返回列表</Button> </dd>
+        <dt>电影名称:</dt>
+        <dd>{{detil.name}}</dd>
       </dl>
     </div>
     <div class="file-detail-center">
@@ -184,7 +190,7 @@ export default class Main extends View {
     }
   }
 
-  goback() {
+  back() {
     this.$router.go(-1)
   }
 
@@ -204,19 +210,38 @@ export default class Main extends View {
 </script>
 
 <style lang="less" scoped>
-.page {
-  margin: -10px;
-  background: #ecf0f4;
+@import '../../../site/lib.less';
+
+.header {
+  margin-top: 5px;
+  margin-bottom: 10px;
+  line-height: 30px;
+  em, i {
+    font-style: normal;
+    margin-right: 6px;
+  }
+  em {
+    font-size: 16px;
+    color: @c-base;
+  }
 }
+.detail-number {
+  /deep/ .btn-add {
+    margin-left: 8px;
+    line-height: 50px;
+  }
+}
+
 .detail-box {
-  padding: 10px 0;
+  padding-top: 10px;
+  border: 1px solid #dcdee2;
 }
 .file-detail-header,.file-detail-center {
   background: #fff;
   margin-left: 14px;
   margin-right: 14px;
   dl {
-    padding: 14px 14px;
+    padding: 10px 14px;
     display: flex;
     dd {
       margin-left: 30px;
