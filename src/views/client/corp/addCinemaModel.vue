@@ -79,16 +79,16 @@ export default class Main extends View {
   loading = true
   value = ''
   area: number[] = []
-  chainId = ''
+  chainId: number = 0
   cinemaList: any = []
   dataForm = {}
   columns: any = [
   ]
   items: any = []
   query: any = {
-    provinceId: '0',
-    cityId: '0',
-    countyId: '0'
+    provinceId: 0,
+    cityId: 0,
+    countyId: 0
   }
   init(val: any) {
     if ( val.length > 0 ) {
@@ -131,7 +131,7 @@ export default class Main extends View {
       })
     }
     if (this.cinemaend == 1 && checkCinema.length > 1) {
-      this.handleError('因资源方类型为影院，因此仅能关联一家影院')
+      this.showError('因资源方类型为影院，因此仅能关联一家影院')
       return
     }
     this.$emit('done', checkCinema)
@@ -140,7 +140,7 @@ export default class Main extends View {
 
   @Watch('area')
 
-  watchArea(val: string[]) {
+  watchArea(val: number[]) {
     this.query.provinceId = val[0]
     this.query.cityId = val[1]
     this.query.countyId = val[2]
@@ -149,7 +149,7 @@ export default class Main extends View {
   cancel(dataForms: string) {
     this.value = ''
     this.area = []
-    this.chainId = ''
+    this.chainId = 0
     this.showDlg = false
   }
 }

@@ -15,8 +15,8 @@ export async function queryList(query: any = {}) {
  * 关联商务，查询列表
  * @param query 查询条件，参见接口文档
  */
-export async function directorList(query: any = {}) {
-    const res = await get('/customer/companies', query)
+export async function directorList() {
+    const res = await get('/auth/users')
     return res
 }
 
@@ -61,7 +61,7 @@ export async function addQuery(query: any = {}) {
  * @param query 添加条件，参见接口文档
  */
 export async function setQuery(id: number, query: any = {}) {
-    const res = await post(`/customer/company/${id}`, query)
+    const res = await put(`/customer/companies/${id}`, query)
     return res
 }
 
