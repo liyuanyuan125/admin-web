@@ -8,5 +8,6 @@ module.exports = {
     'number-leading-zero': null,
     'block-closing-brace-newline-before': null,
     'selector-list-comma-newline-after': null,
+    'no-descending-specificity': null,
   }
 }
