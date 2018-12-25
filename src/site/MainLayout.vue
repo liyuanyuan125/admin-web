@@ -69,10 +69,6 @@ export default class App extends ViewBase {
           name: 'client-corp',
           label: '公司管理',
         },
-        {
-          name: 'client-verify',
-          label: '资质审核',
-        },
       ]
     },
     {
