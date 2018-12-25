@@ -43,7 +43,7 @@
 
 <script lang="tsx">
 import { Component, Watch, Mixins } from 'vue-property-decorator'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
 import jsxReactToVue from '@/util/jsxReactToVue'
@@ -60,7 +60,7 @@ const timeFormat = 'YYYY/MM/DD HH:mm:ss'
 
 
 @Component
-export default class Main extends Mixins(View, UrlManager) {
+export default class Main extends Mixins(ViewBase, UrlManager) {
   defQuery = {
     companyId: '',
     shortName: '',

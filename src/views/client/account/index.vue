@@ -40,7 +40,7 @@
 
 <script lang="tsx">
 import { Component, Watch , Mixins } from 'vue-property-decorator'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
 import { queryList , setList} from '@/api/account'
@@ -80,8 +80,8 @@ const dataForm = {
     // dlgVerify
   }
 })
-// export default class Main extends View {
-export default class Main extends Mixins(View, UrlManager) {
+// export default class Main extends ViewBase {
+export default class Main extends Mixins(ViewBase, UrlManager) {
   defQuery = {
     id: '',
     email: '',

@@ -6,13 +6,13 @@
 
 <script lang="ts">
 import { Component } from 'vue-property-decorator'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 import event from '@/fn/event'
 
 import Uploader, { ImageType, UploaderOptions } from '@/util/Uploader'
 
 @Component
-export default class Main extends View {
+export default class Main extends ViewBase {
   onChange(ev: Event) {
     const files = (ev.target as HTMLInputElement).files!
     const uploader = new Uploader({

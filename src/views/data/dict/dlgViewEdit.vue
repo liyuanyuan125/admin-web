@@ -43,7 +43,7 @@ import { queryList } from '@/api/dict'
 import { dataFrom , add , set , dictqueryList } from '@/api/dictCitiao'
 import { clean } from '@/fn/object'
 import { warning , success, toast } from '@/ui/modal'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 
 const defQuery = {
 }
@@ -58,7 +58,7 @@ const dataForm = {
 }
 
 @Component
-export default class ComponentMain extends View {
+export default class ComponentMain extends ViewBase {
   query = { ...defQuery }
   oldQuery: any = {}
 

@@ -36,7 +36,7 @@ import { Component, Prop } from 'vue-property-decorator'
 import { dataFrom , add , set , dels } from '@/api/calendar'
 import { warning , success, toast } from '@/ui/modal'
 import moment from 'moment'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 const timeFormat = 'YYYY-MM-DD'
 const dataForm = {
   name: '',
@@ -48,7 +48,7 @@ const dataForm = {
 }
 
 @Component
-export default class ComponentMain extends View {
+export default class ComponentMain extends ViewBase {
   @Prop({ type: Object }) cinemaOnes: any
 
   loading = false

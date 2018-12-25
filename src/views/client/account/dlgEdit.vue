@@ -47,7 +47,7 @@ import { Component, Prop } from 'vue-property-decorator'
 import { queryItem , queryList , dataFrom , addList , companysList } from '@/api/account'
 import { slice, clean } from '@/fn/object'
 import { warning , success, toast } from '@/ui/modal'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 const defQuery = {
   categoryId: 0,
 }
@@ -62,7 +62,7 @@ const dataForm = {
 }
 
 @Component
-export default class ComponentMain extends View {
+export default class ComponentMain extends ViewBase {
   // @Prop({ type: Object }) cinemaOnes: any
   query = { ...defQuery }
   oldQuery: any = {}

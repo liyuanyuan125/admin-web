@@ -73,7 +73,8 @@
         </Row>
         <Row class="upload">
           <Col span="12" style="margin-left: 88px">
-            <Upload v-if="loadingShow" :uploadListArray='imgList' @imglist=imgarray /> 
+            <Upload v-model="imageList" multiple :maxCount="3" accept="image/*"
+              v-if="loadingShow"/>
           </Col>
         </Row>
       </Row>
@@ -159,20 +160,20 @@
           <Button type="info" size="large" @click="edit('dataForms')">确定</Button>
         </div>
       </Row>
-      
+
     </div>
-    
+
   </Form>
 </template>
 
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Watch } from 'vue-property-decorator'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 import { queryId, addSeach, addQuery, setQuery, directorList } from '@/api/corpReal'
 import AreaSelect from '@/components/AreaSelect.vue'
+import Upload from '@/components/Upload.vue'
 import PartBindCinema from './partBindCinema.vue'
-import Upload from './upload.vue'
 import { toMap } from '@/fn/array'
 import { slice, clean } from '@/fn/object'
 import moment from 'moment'
@@ -225,7 +226,7 @@ const defItem = {
   }
 })
 
-export default class Main extends View {
+export default class Main extends ViewBase {
   title = ''
   loading = false
   loadingShow = false
@@ -369,21 +370,6 @@ export default class Main extends View {
     }
   }
 
-  get imgList() {
-    if ( this.imageList.length > 0 ) {
-      return this.imageList.map((item: any) => {
-        return {
-          imageUrl: item.url,
-          fileId: item.fileId,
-          status: 'finished'
-        }
-      })
-    } else {
-      return []
-    }
-
-  }
-
   get cachedMap() {
     return {
       levelList: makeMap(this.levelList),
@@ -423,33 +409,33 @@ export default class Main extends View {
       } else {
         const {
           data: {
-          customerTypeList,
-          levelList,
-          name,
-          shortName,
-          aptitudeType,
-          aptitudeNo,
-          provinceId,
-          cityId,
-          countyId,
-          addressDetail,
-          contact,
-          contactTel,
-          email,
-          qualificationType,
-          qualificationCode,
-          images,
-          types,
-          refusedReason,
-          levelCode,
-          businessDirector,
-          cinemas,
-          approveStatus,
-          validityPeriodDate,
-          qualificationTypeList,
-          status,
-          imageList,
-          cinemaList
+            customerTypeList,
+            levelList,
+            name,
+            shortName,
+            aptitudeType,
+            aptitudeNo,
+            provinceId,
+            cityId,
+            countyId,
+            addressDetail,
+            contact,
+            contactTel,
+            email,
+            qualificationType,
+            qualificationCode,
+            images,
+            types,
+            refusedReason,
+            levelCode,
+            businessDirector,
+            cinemas,
+            approveStatus,
+            validityPeriodDate,
+            qualificationTypeList,
+            status,
+            imageList,
+            cinemaList
           }
         } = await queryId(query)
         this.item.name = name
@@ -552,10 +538,9 @@ export default class Main extends View {
     this.item.countyId = val[2]
   }
 
-  imgarray(val: any) {
-    this.item.images = val.map((item: any) => {
-      return item.fileId
-    })
+  @Watch('imageList', { deep: true })
+  watchImageList(val: any[]) {
+    this.item.images = val.map(it => it.fileId)
   }
 
   @Watch('typeList', { deep: true })
