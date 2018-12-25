@@ -56,7 +56,7 @@
 
 <script lang="tsx">
 import { Component, Watch } from 'vue-property-decorator'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 import { get } from '@/fn/ajax'
 import { queryItem } from '@/api/account'
 import jsxReactToVue from '@/util/jsxReactToVue'
@@ -84,7 +84,7 @@ const defQuery = {
     dlgChange
   }
 })
-export default class Main extends View {
+export default class Main extends ViewBase {
   // change = false
   changeVisible = false
 

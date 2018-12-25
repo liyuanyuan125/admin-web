@@ -27,7 +27,7 @@ import { queryItem , queryList , dataFrom , addList , companysList , setchangeLi
 import { warning , success, toast } from '@/ui/modal'
 import { slice, clean } from '@/fn/object'
 
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 const defQuery = {
   // categoryId: 0,
 }
@@ -37,7 +37,7 @@ const dataForm = {
 }
 
 @Component
-export default class ComponentMain extends View {
+export default class ComponentMain extends ViewBase {
   @Prop({ type: Array }) prelist: any
   // @Prop({ type: String }) mainid: any
   query = { ...defQuery }

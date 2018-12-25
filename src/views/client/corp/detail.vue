@@ -108,7 +108,7 @@
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component } from 'vue-property-decorator'
 import moment from 'moment'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 import { queryId } from '@/api/corpReal'
 import AreaSelect from '@/components/AreaSelect.vue'
 import PartBindCinema from './partBindCinema.vue'
@@ -127,7 +127,7 @@ const timeFormat = 'YYYY/MM/DD'
     DlgEdit
   }
 })
-export default class Main extends View {
+export default class Main extends ViewBase {
   detail: any = {}
   loading = false
   addOrUpdateVisible = false

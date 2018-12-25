@@ -37,11 +37,11 @@
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop } from 'vue-property-decorator'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 import { areaAdd, areaSet } from '@/api/dateArea'
 import { clean } from '@/fn/object'
 @Component
-export default class ComponentMain extends View {
+export default class ComponentMain extends ViewBase {
   showDlg = false
   areaList: any[] = []
   // 父级ID

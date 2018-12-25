@@ -55,7 +55,7 @@
 
 <script lang="ts">
 import { Component, Watch, Prop } from 'vue-property-decorator'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 import AreaSelect from '@/components/AreaSelect.vue'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import { slice, clean } from '@/fn/object'
@@ -68,7 +68,7 @@ import { isEqual } from 'lodash'
     CinemaChainSelect
   }
 })
-export default class Main extends View {
+export default class Main extends ViewBase {
   @Prop({ type: Array, default: () => [] }) addData!: any[]
   @Prop() cinemaend: any
   form: any = {

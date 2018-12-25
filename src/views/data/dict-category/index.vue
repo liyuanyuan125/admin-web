@@ -5,10 +5,10 @@
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component } from 'vue-property-decorator'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 
 @Component
-export default class Main extends View {
+export default class Main extends ViewBase {
 }
 </script>
 

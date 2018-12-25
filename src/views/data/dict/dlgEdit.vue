@@ -32,7 +32,7 @@ import { queryList } from '@/api/dict'
 import { clean } from '@/fn/object'
 import { dataFrom , add , set} from '@/api/dict'
 import { warning , success, toast } from '@/ui/modal'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 const defQuery = {
   categoryId: 0,
 }
@@ -43,7 +43,7 @@ const dataForm = {
 }
 
 @Component
-export default class ComponentMain extends View {
+export default class ComponentMain extends ViewBase {
   @Prop({ type: Object }) cinemaOnes: any
   query = { ...defQuery }
   oldQuery: any = {}

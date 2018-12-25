@@ -42,7 +42,7 @@
 
 <script lang="tsx">
 import { Component, Watch, Mixins } from 'vue-property-decorator'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
@@ -64,7 +64,7 @@ const makeMap = (list: any[]) => toMap(list, 'key')
     DlgEdit,
   }
 })
-export default class Main extends Mixins(View, UrlManager) {
+export default class Main extends Mixins(ViewBase, UrlManager) {
   defQuery = {
     name: '',
     chainId: 0,

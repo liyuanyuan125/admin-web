@@ -118,7 +118,7 @@
 import { Component } from 'vue-property-decorator'
 import { getIdDetal } from '@/api/film'
 import PoptipSelect from '@/components/PoptipSelect.vue'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 import moment from 'moment'
 import { toThousands } from '@/util/dealData'
 import { updateStatus } from '@/api/film'
@@ -134,7 +134,7 @@ const timeFormat = 'YYYY/MM/DD'
     ImgModel
   }
 })
-export default class Main extends View {
+export default class Main extends ViewBase {
   nextId: any = null
   detil: any = {}
   value: any = {}

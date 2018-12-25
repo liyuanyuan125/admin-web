@@ -6,14 +6,14 @@
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop, Watch } from 'vue-property-decorator'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 import { getSubList, isValidArea } from '@/api/area'
 import { toast } from '@/ui/modal'
 import { queryList } from '@/api/dateArea'
 const isAllZero = (list: number[] | null) => (list || []).every(it => it === 0)
 
 @Component
-export default class AreaSelect extends View {
+export default class AreaSelect extends ViewBase {
   /**
    * 值本身，可以使用 v-model 进行双向绑定
    */

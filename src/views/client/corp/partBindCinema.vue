@@ -11,7 +11,7 @@
 <script lang="tsx">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop, Watch } from 'vue-property-decorator'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import { confirm } from '@/ui/modal'
@@ -23,7 +23,7 @@ const makeMap = (list: any[]) => toMap(list, 'id', 'name')
     AddCinemaModel
   }
 })
-export default class ComponentMain extends View {
+export default class ComponentMain extends ViewBase {
   /**
    * 值本身，可以使用 v-model 进行双向绑定
    */
