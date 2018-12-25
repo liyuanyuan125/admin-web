@@ -33,9 +33,12 @@
           <Row class="upload">
             <Col span="2"><div>资质</div></Col>
             <Col span="8">
-            <Upload v-if='loading' types='1' :uploadListArray='format.imgList'>
-              <div class="uplaod-slot">{{detail.qualificationType}} {{detail.qualificationCode}}</div>
-            </Upload>
+              <div class="upload-wrap">
+                <div class="upload-info">
+                  {{detail.qualificationType}} {{detail.qualificationCode}}
+                </div>
+                <Upload v-model='detail.imageList' readonly v-if='loading'/>
+              </div>
             </Col>
           </Row>
       </div>
@@ -74,7 +77,7 @@
         <Row class="cinema-button">
           <Col span="2"><div>关联影院</div></Col>
           <Col span="12">
-              <PartBindCinema type="1" :value="detail.cinemaList" /> 
+              <PartBindCinema type="1" :value="detail.cinemaList" />
           </Col>
         </Row>
       </Row>
@@ -93,7 +96,7 @@
       </Row>
       <Row class="detail-check">
         <Row>
-          <div v-for="item in logList" :key="item.createTime">
+          <div v-for="(item, i) in logList" :key="i">
             <span>{{item.createTime}}</span>
             <span>由{{item.userName}}{{item.description}}</span>
           </div>
@@ -113,7 +116,7 @@ import { queryId } from '@/api/corpReal'
 import AreaSelect from '@/components/AreaSelect.vue'
 import PartBindCinema from './partBindCinema.vue'
 import DlgEdit from '../account/dlgEdit.vue'
-import Upload from './upload.vue'
+import Upload from '@/components/Upload.vue'
 import { toMap } from '@/fn/array'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 const timeFormatDate = 'YYYY/MM/DD HH:mm:ss'
@@ -156,20 +159,7 @@ export default class Main extends ViewBase {
       typeFormat: this.typeListFormt(this.detail.types),
       approveTime: moment(this.detail.approveTime).format(timeFormatDate),
       validityPeriodDate: moment(this.detail.validityPeriodDate).format(timeFormat),
-      imgList: this.imgFormat(this.detail.imageList),
     }
-  }
-
-  imgFormat(val: any) {
-    const imgList: any = []
-    if (!!val) {
-      val.forEach((value: any) => {
-        imgList.push({
-          imageUrl: value.url
-        })
-      })
-    }
-    return imgList
   }
 
   dlgEditDone(email: any) {
@@ -355,5 +345,13 @@ export default class Main extends ViewBase {
     line-height: 20px;
     background: #dcdee2;
   }
+}
+.upload-wrap {
+  background-color: #ecf0f4;
+}
+.upload-info {
+  font-size: 16px;
+  line-height: 18px;
+  padding: 8px 0 0 8px;
 }
 </style>

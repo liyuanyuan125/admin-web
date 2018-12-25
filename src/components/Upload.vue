@@ -1,11 +1,13 @@
 <template>
-  <div class="upload-box">
+  <div :class="['upload-box', readonly ? 'upload-box-readonly' : '']">
     <ul class="upload-list">
       <li v-for="(it, i) in inValue" :key="it.uqid" class="upload-item">
         <img :src="it.url" v-if="it.url">
         <div class="action-cover" v-if="it.status == 'done'">
-          <Icon type="ios-eye-outline" @click.native="onView(it.url)"/>
-          <Icon type="ios-trash-outline" @click.native="onDel(i)"/>
+          <Icon type="ios-eye-outline" @click.native="onView(it.url)"
+            class="action-view"/>
+          <Icon type="ios-trash-outline" @click.native="onDel(i)"
+            class="action-del" v-if="!readonly"/>
         </div>
         <div class="loading-cover" v-else-if="it.status == 'loading'">
           <TinyLoading/>
@@ -14,7 +16,7 @@
           <Progress :percent="it.percent" status="success" hide-info/>
         </div>
       </li>
-      <li v-if="canAdd" class="upload-item upload-add">
+      <li class="upload-item upload-add" v-if="!readonly && canAdd">
         <label class="upload-add-in">
           <Icon type="ios-camera" size="20"/>
           <span>上传</span>
@@ -110,6 +112,11 @@ export default class Upload extends ViewBase {
    * 上传文件的最大个数，默认 1 个
    */
   @Prop({ type: Number, default: 1 }) maxCount!: number
+
+  /**
+   * 是否为只读
+   */
+  @Prop({ type: Boolean, default: false }) readonly!: boolean
 
   inValue: UploadItem[] = []
 
@@ -296,5 +303,17 @@ export default class Upload extends ViewBase {
 }
 .viewer-image {
   width: 100%;
+}
+.upload-box-readonly {
+  .action-view {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 </style>
