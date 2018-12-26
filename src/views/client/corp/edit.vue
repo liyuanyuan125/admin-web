@@ -88,7 +88,7 @@
                 <Radio :label=1>
                   <span>通过</span>
                 </Radio>
-                <Radio :label=2>
+                <Radio :label=3>
                   <span>未通过</span>
                 </Radio>
               </RadioGroup>
@@ -98,7 +98,7 @@
         <div class="124" v-if="item.approveStatus==1">
            <Row>
           <Col span="8">
-            <FormItem label="有效期至" prop="validityPeriodDate" :show-message="shows">
+            <FormItem label="有效期至" prop="validityPeriodDate">
               <DatePicker type="date" v-model="item.validityPeriodDate" placeholder="选择有效期" style="width: 200px"></DatePicker>
             </FormItem>
           </Col>
@@ -107,7 +107,7 @@
         <div class="123" v-else>
         <Row>
           <Col span="8">
-          <FormItem label="拒绝原因" prop="refusedReason" :show-message="item.approveStatus==2">
+          <FormItem label="拒绝原因" prop="refusedReason">
             <Input v-model="item.refusedReason" placeholder="拒绝原因"/>
           </FormItem>
           </Col>
@@ -128,7 +128,7 @@
           <Col span="8" offset="1">
             <FormItem label="负责商务" prop="bizUserId">
               <Select v-model="item.businessDirector" clearable>
-                <Option v-for="it in businessDirector" :key="it.id" :value="it.id"
+                <Option v-if="it.status!=2" v-for="it in businessDirector" :key="it.id" :value="it.id"
                   :label="it.userName">{{it.userName}}</Option>
               </Select>
             </FormItem>
@@ -150,7 +150,7 @@
             </Col>
           </Row>
         </Row>
-        <Row>
+        <Row v-if="item.typearr[1]">
           <FormItem label="关联影院" prop="cinemasList">
             <PartBindCinema v-if="loadingShow" v-model="item.cinemasList" :unitList="profitUnitList"
                :incinematype='cinematype' class="part-bind-cinema"/>
@@ -199,7 +199,7 @@ const defItem = {
 
   email: '',
 
-  qualificationType: '',
+  qualificationType: 'BL',
   qualificationCode: '',
   images: [],
   types: [{
@@ -294,7 +294,8 @@ export default class Main extends ViewBase {
           { required: true, message: '请填写用户的资质到期日期', trigger: 'change', type: 'date'}
       ],
       refusedReason: [
-         { required: true, message: '请填写拒绝原因', trigger: 'blur'}
+         { required: true, message: '请填写拒绝原因', trigger: 'blur'},
+         { max: 30, message: '拒绝原因不得超过30个字', trigger: 'change'},
       ],
       email: [
          {
@@ -552,13 +553,13 @@ export default class Main extends ViewBase {
   @Watch('item', { deep: true })
   watchitem(val: any) {
     const form = 'dataForms'
-    if (val.approveStatus == 2) {
+    if (val.approveStatus == 3) {
       (this.$refs[form] as any).fields.forEach((e: any) => {
         if (e.prop == 'validityPeriodDate') {
           e.resetField()
         }
       })
-    } else {
+    } else if (val.approveStatus == 1) {
       (this.$refs[form] as any).fields.forEach((e: any) => {
         if (e.prop == 'refusedReason') {
           e.resetField()

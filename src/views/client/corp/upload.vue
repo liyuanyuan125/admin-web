@@ -78,13 +78,6 @@ export default class ComponentMain extends ViewBase {
     })
   }
 
-  handleMaxSize(file: any) {
-    this.$Notice.warning({
-      title: 'Exceeding file size limit',
-      desc: 'File  ' + file.name + ' is too large, no more than 2M.'
-    })
-  }
-
   onChange(ev: Event) {
     const files = (ev.target as HTMLInputElement).files!
     const uploader = new Uploader({
