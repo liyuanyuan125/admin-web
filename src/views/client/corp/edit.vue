@@ -126,9 +126,9 @@
             </FormItem>
           </Col>
           <Col span="8" offset="1">
-            <FormItem label="负责商务" prop="bizUserId">
+            <FormItem label="负责商务" prop="businessDirector">
               <Select v-model="item.businessDirector" clearable>
-                <Option v-if="it.status!=2" v-for="it in businessDirector" :key="it.id" :value="it.id"
+                <Option v-if="it.status!=2" v-for="it in businessDirector" :key="it.id" :value="it.userName"
                   :label="it.userName">{{it.userName}}</Option>
               </Select>
             </FormItem>
@@ -247,13 +247,17 @@ export default class Main extends ViewBase {
 
   get rules() {
     const validateType1 = ( rule1: any, value: any, callback: any) => {
-      if (value == false) {
-        callback(new Error('请选择一级类型'))
+      if (this.item.typearr[1]) {
+
       } else {
-        if (!this.item.types[0].typeCategoryCode) {
-          callback(new Error('请选择二级类型'))
+        if (value == false) {
+          callback(new Error('请选择一种客户类型'))
         } else {
-          callback()
+          if (!this.item.types[0].typeCategoryCode) {
+            callback(new Error('请选择二级类型'))
+          } else {
+            callback()
+          }
         }
       }
     }
@@ -305,7 +309,6 @@ export default class Main extends ViewBase {
          }
       ],
       'typearr[0]': [
-        { required: true, message: '请选择一级客户', type: 'boolean', trigger: 'change'},
         { validator: validateType1 }
       ],
       'typearr[1]': [
@@ -316,6 +319,9 @@ export default class Main extends ViewBase {
       ],
       qualificationCode: [
         { required: true, message: '请输入资质编号', trigger: 'blur'}
+      ],
+      businessDirector: [
+        { required: true, message: '请选择关联商务', trigger: 'blur'}
       ]
     }
     return rule
@@ -512,17 +518,19 @@ export default class Main extends ViewBase {
       const query = clean(oldQuery)
       const array = Object.keys(query).slice(2)
       const newqQuery = slice(query, array)
-      const a = {
-        ...newqQuery,
-        cinemas: this.cinemas
-      }
+      const types: any = []
+      this.item.types.forEach((it: any) => {
+        it.typeCode && types.push(it)
+      })
       try {
         route == 0 ? await addQuery({
           ...newqQuery,
-          cinemas: this.cinemas
+          cinemas: this.cinemas,
+          types
         }) : await setQuery(route, {
           ...newqQuery,
-          cinemas: this.cinemas
+          cinemas: this.cinemas,
+          types
         })
         this.$router.go(-1)
       } catch (ex) {
