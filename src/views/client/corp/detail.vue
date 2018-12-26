@@ -35,7 +35,7 @@
             <Col span="8">
               <div class="upload-wrap">
                 <div class="upload-info">
-                  {{detail.qualificationType}} {{detail.qualificationCode}}
+                  {{detail.qualificationTypeList[0].text}} {{detail.qualificationCode}}
                 </div>
                 <Upload v-model='detail.imageList' readonly v-if='loading'/>
               </div>
@@ -98,7 +98,7 @@
         <Row>
           <div v-for="(item, i) in logList" :key="i">
             <span>{{item.createTime}}</span>
-            <span>由{{item.userName}}{{item.description}}</span>
+            <span>由{{item.email}}<b style="margin: 0 5px">[{{item.userName}}]</b>{{item.description}}</span>
           </div>
         </Row>
       </Row>
@@ -277,7 +277,7 @@ export default class Main extends ViewBase {
   span {
     display: inline-block;
     line-height: 50px;
-    color: #19be6b;
+    color: #717975;
   }
   span:only-child:empty {
     &::before {
@@ -330,7 +330,7 @@ export default class Main extends ViewBase {
   height: 40px;
   line-height: 40px;
   background: #ecf0f4;
-  color: #19be6b;
+  color: #717975;
   border-radius: 5px;
   margin-top: 10px;
   margin-bottom: 20px;
@@ -340,7 +340,7 @@ export default class Main extends ViewBase {
     right: 10px;
     height: 20px;
     width: 80px;
-    color: #19be6b;
+    color: #717975;
     padding-left: 5px;
     line-height: 20px;
     background: #dcdee2;
@@ -353,5 +353,6 @@ export default class Main extends ViewBase {
   font-size: 16px;
   line-height: 18px;
   padding: 8px 0 0 8px;
+  margin-bottom: 10px;
 }
 </style>

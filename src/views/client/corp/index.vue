@@ -14,11 +14,11 @@
             :label="it.text">{{it.text}}</Option>
         </Select>
         <Select v-model="query.businessDirector" placeholder="关联商务" clearable>
-          <Option v-for="it in businessDirector" :key="it.id" :value="it.id"
+          <Option v-if="it.status!=2" v-for="it in businessDirector" :key="it.id" :value="it.id"
             :label="it.userName">{{ it.userName }}</Option>
         </Select>
         <Select v-model="query.approveStatus" placeholder="审核状态" clearable>
-          <Option v-for="it in aptitudeStatusList" :key="it.key" :value="it.key"
+          <Option v-for="it in aptitudeStatusList"  :key="it.key" :value="it.key"
             :label="it.text">{{it.text}}</Option>
         </Select>
         <!-- <Button type="primary" @click="search" icon="md-search" class="btn-search">查询</Button> -->
@@ -89,11 +89,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   // 关联商务
   businessDirector = []
   columns = [
-    { title: '公司ID', key: 'id', align: 'center' },
+    { title: '公司ID', key: 'id', width: 80 , align: 'center' },
     { title: '公司名称', key: 'name', width: 120 , align: 'center' },
     { title: '客户类型',
       key: 'customerTypeList',
-      width: 160,
+      width: 140,
       align: 'center',
       render: (hh: any, { row: { types } }: any) => {
         /* tslint:disable */
@@ -111,6 +111,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     },
     { title: '客户等级',
       key: 'levelCode',
+      width: 60,
       align: 'center',
       render: (hh: any, { row: { status, statusText, levelCode, levelText } }: any) => {
         /* tslint:disable */
@@ -118,7 +119,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         return status == 1
             ? <span>{levelText}</span>
             : <tooltip content="已停用" placement="top">
-              <span class="deprecated">{levelText}</span>
+              <span>{levelText}</span>
             </tooltip>
         /* tslint:enable */
       }
@@ -129,10 +130,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       key: 'createTimeTemp',
       width: 160 ,
       align: 'center',
-      render: (hh: any, { row: { createTimeTemp } }: any) => {
+      render: (hh: any, { row: { createTime } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = moment(createTimeTemp).format(timeFormat)
+        const html = moment(createTime).format(timeFormat)
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
@@ -142,10 +143,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       key: 'modifyTimeTemp',
       width: 160 ,
       align: 'center',
-      render: (hh: any, { row: { modifyTimeTemp } }: any) => {
+      render: (hh: any, { row: { modifyTime } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = moment(modifyTimeTemp).format(timeFormat)
+        const html = moment(modifyTime).format(timeFormat)
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
@@ -154,6 +155,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       title: '状态',
       key: 'statusString',
       align: 'center',
+      width: 80 ,
       render: (hh: any, { row: { status, statusText } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
@@ -165,6 +167,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       title: '审核状态',
       key: 'approveStatusString',
       align: 'center',
+      width: 100 ,
       render: (hh: any, { row: { approveStatus, aptitudeStatusText } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
@@ -175,13 +178,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     {
       title: '操作',
       key: 'action',
-      width: 120,
       align: 'center',
       render: (hh: any, { row: { id, status } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         const edit = status == 1 ? '编辑' : '审核'
-        const statusText = status == 1 ? '启用' : '停用'
+        const statusText = status == 1 ? '停用' : '启用'
         return <div class='row-acts'>
           <a class="operation" on-click={this.editStatus.bind(this, id, status)} to={{ name: 'client-corp-detail', params: { id } }}>{statusText}</a>
           <router-link class="operation" to={{ name: 'client-corp-edit', params: { id } }}>{edit}</router-link>
@@ -315,16 +317,16 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
 
   async editStatus(id: number, status: number) {
-    const statu = status == 1 ? '启用' : '停用'
+    const statu = status == 1 ? '停用' : '启用'
     const statusType = status == 1 ? 2 : 1
+    await confirm(`确定要${statu}该项吗？`)
     try {
-      await confirm(`确定要${statu}该项吗？`)
       await statusId(id, { status: statusType})
       this.doSearch()
     } catch (ex) {
       setTimeout(() => {
         this.handleError(ex)
-      }, 500)
+      }, 1000)
     }
 
   }
