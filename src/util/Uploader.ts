@@ -199,9 +199,6 @@ export default class Uploader extends EventClass {
     return post(postUrl, form, {
       onUploadProgress: (ev: ProgressEvent) => {
         this.emit('progress', ev)
-      },
-      headers: {
-        'Content-Type': 'multipart/form-data'
       }
     })
   }
