@@ -179,10 +179,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       title: '操作',
       key: 'action',
       align: 'center',
-      render: (hh: any, { row: { id, status } }: any) => {
+      render: (hh: any, { row: { id, status, approveStatus } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const edit = status == 1 ? '编辑' : '审核'
+        const edit = approveStatus == 1 ? '审核' : '编辑'
         const statusText = status == 1 ? '停用' : '启用'
         return <div class='row-acts'>
           <a class="operation" on-click={this.editStatus.bind(this, id, status)} to={{ name: 'client-corp-detail', params: { id } }}>{statusText}</a>
