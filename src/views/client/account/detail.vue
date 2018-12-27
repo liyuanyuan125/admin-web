@@ -4,7 +4,7 @@
     <!-- <div class="work-Title"><span class="workT">工作台</span> > 客户管理 > 账号管理 > 账号详情</div> -->
     <!-- 注册账号 -->
     <div class="Inp-Group-res">
-      <Button class="bth" icon="md-return-left" @click="goback">返回列表</Button>
+      <Button class="bth" icon="md-return-left" @click="goback">返回上一页</Button>
       <div class="n-main">主账号详情</div>
       <div class="Inps-res">
         <div class="res-num">
@@ -264,23 +264,25 @@ export default class Main extends ViewBase {
   border: 1px solid #dcdee2;
 }
 .res-num {
+  display: flex;
   width: 100%;
-  height: 60px;
   line-height: 60px;
 }
 .res-num p {
+  flex-direction: column-reverse;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
   display: block;
   float: left;
-  width: 4%;
   max-height: 60px;
-  overflow: hidden;
   text-align: left;
   margin-left: 0.5%;
 }
 .res-num-item {
-  float: left;
+  display: flex;
   width: 80%;
-  max-height: 60px;
+  height: 100%;
+  // max-height: 60px;
 }
 .res-num-item span {
   display: inline-block;

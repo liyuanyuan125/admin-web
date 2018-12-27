@@ -1,7 +1,7 @@
 <template>
   <div class="page"  :data="tableData">
     <div class="inps">
-      <Button class="bth" icon="md-return-left" @click="goback">返回列表详情</Button>
+      <Button class="bth" icon="md-return-left" @click="goback">返回上一页</Button>
       <div class="n-main">{{nus}}详情</div>
       <div class="Inps-res" v-if='nus'>
         <div class="res-num">
