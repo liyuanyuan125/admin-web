@@ -31,12 +31,13 @@
           <FormItem>
             <CheckboxGroup v-model="form.check">
               <div v-if="items.length>0">
-                <div class="check" v-for="item in items" :key="item.id">
+                <div v-for="(item, index) in items" :key="index" class="check">
                   <tooltip content="已下架" v-if="item.controlStatus != 1" placement="right">
-                    <Checkbox :label="item.id" style="color: red">{{item.shortName}}}</Checkbox>
+                    <Checkbox :label="item.id" style="color: red">{{item.shortName}}</Checkbox>
                   </tooltip>
                   <Checkbox v-else :label="item.id">{{item.shortName}}</Checkbox>
                 </div>
+                <div v-if="items.length%4 == 3" class="check"></div>
               </div>
               <div v-else class="text-center">
                 暂无数据
