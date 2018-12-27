@@ -89,7 +89,7 @@
           <span v-if="!!detail.mainAccountName">{{detail.mainAccountName}}
             <router-link class="operation" :to="{ name: 'client-account-detail', params: { id: detail.id }}">[管理]</router-link>
           </span>
-          <a v-if="detail.status!=2&&!detail.mainAccountName" @click="edit" class="btn-add">[创建主账号]</a>
+          <a v-if="!detail.mainAccountName" @click="edit" class="btn-add">[创建主账号]</a>
           </Col>
         </Row>
         <Row>
@@ -228,7 +228,9 @@ export default class Main extends ViewBase {
   edit() {
     this.addOrUpdateVisible = true
     this.$nextTick(() => {
-      (this.$refs.addOrUpdate as any).init(this.detail.id)
+      let id = ''
+      this.detail.status == 2 ? id = '' : id = this.detail.id
+      ; (this.$refs.addOrUpdate as any).init(id)
     })
   }
 
