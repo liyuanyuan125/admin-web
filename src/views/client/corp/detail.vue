@@ -51,7 +51,8 @@
         </Row>
         <Row>
           <Col span="2"><div>审核人</div></Col>
-          <Col span="4"><span>{{detail.approveUser}}</span></Col>
+          <Col span="4"><span v-if="detail.approveStatus != 1">{{detail.approveUser}}</span>
+          <span v-else></span></Col>
           <Col span="2"><div>审核时间</div></Col>
           <Col span="4"><span>{{format.approveTime}}</span></Col>
         </Row>
@@ -159,7 +160,8 @@ export default class Main extends ViewBase {
       statusText: cachedMap.statusList[this.detail.status],
       levelText: cachedMap.levelList[this.detail.levelCode],
       typeFormat: this.typeListFormt(this.detail.types),
-      approveTime: this.detail.approveTime ? moment(this.detail.approveTime).format(timeFormatDate) : '',
+      approveTime: this.detail.approveTime ?
+      moment(this.detail.approveTime + 8 * 3600 * 1000).format(timeFormatDate) : '',
       validityPeriodDate: this.detail.validityPeriodDate ?
        moment(this.detail.validityPeriodDate).format(timeFormat) : '',
     }
@@ -211,7 +213,7 @@ export default class Main extends ViewBase {
       const logList = res.data.logList.map((item: any) => {
         return {
           ...item,
-          createTime: moment(item.createTime).format(timeFormatDate)
+          createTime: moment(item.createTime + 8 * 3600 * 1000).format(timeFormatDate)
         }
       })
       this.logList = logList.slice(0, 20)
