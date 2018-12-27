@@ -73,7 +73,8 @@
         </Row>
         <Row class="upload">
           <Col span="12" style="margin-left: 88px">
-            <Upload v-if="loadingShow" :uploadListArray='imgList' @imglist=imgarray /> 
+            <Upload v-model="imageList" multiple :maxCount="3" accept="image/*"
+              v-if="loadingShow"/>
           </Col>
         </Row>
       </Row>
@@ -87,7 +88,7 @@
                 <Radio :label=1>
                   <span>通过</span>
                 </Radio>
-                <Radio :label=2>
+                <Radio :label=3>
                   <span>未通过</span>
                 </Radio>
               </RadioGroup>
@@ -97,7 +98,7 @@
         <div class="124" v-if="item.approveStatus==1">
            <Row>
           <Col span="8">
-            <FormItem label="有效期至" prop="validityPeriodDate" :show-message="shows">
+            <FormItem label="有效期至" prop="validityPeriodDate">
               <DatePicker type="date" v-model="item.validityPeriodDate" placeholder="选择有效期" style="width: 200px"></DatePicker>
             </FormItem>
           </Col>
@@ -106,7 +107,7 @@
         <div class="123" v-else>
         <Row>
           <Col span="8">
-          <FormItem label="拒绝原因" prop="refusedReason" :show-message="item.approveStatus==2">
+          <FormItem label="拒绝原因" prop="refusedReason">
             <Input v-model="item.refusedReason" placeholder="拒绝原因"/>
           </FormItem>
           </Col>
@@ -125,9 +126,9 @@
             </FormItem>
           </Col>
           <Col span="8" offset="1">
-            <FormItem label="负责商务" prop="bizUserId">
+            <FormItem label="负责商务" prop="businessDirector">
               <Select v-model="item.businessDirector" clearable>
-                <Option v-for="it in businessDirector" :key="it.id" :value="it.id"
+                <Option v-if="it.status!=2" v-for="it in businessDirector" :key="it.id" :value="it.userName"
                   :label="it.userName">{{it.userName}}</Option>
               </Select>
             </FormItem>
@@ -149,7 +150,7 @@
             </Col>
           </Row>
         </Row>
-        <Row>
+        <Row v-if="item.typearr[1]">
           <FormItem label="关联影院" prop="cinemasList">
             <PartBindCinema v-if="loadingShow" v-model="item.cinemasList" :unitList="profitUnitList"
                :incinematype='cinematype' class="part-bind-cinema"/>
@@ -159,20 +160,20 @@
           <Button type="info" size="large" @click="edit('dataForms')">确定</Button>
         </div>
       </Row>
-      
+
     </div>
-    
+
   </Form>
 </template>
 
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Watch } from 'vue-property-decorator'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 import { queryId, addSeach, addQuery, setQuery, directorList } from '@/api/corpReal'
 import AreaSelect from '@/components/AreaSelect.vue'
+import Upload from '@/components/Upload.vue'
 import PartBindCinema from './partBindCinema.vue'
-import Upload from './upload.vue'
 import { toMap } from '@/fn/array'
 import { slice, clean } from '@/fn/object'
 import moment from 'moment'
@@ -198,7 +199,7 @@ const defItem = {
 
   email: '',
 
-  qualificationType: '',
+  qualificationType: 'BL',
   qualificationCode: '',
   images: [],
   types: [{
@@ -225,7 +226,7 @@ const defItem = {
   }
 })
 
-export default class Main extends View {
+export default class Main extends ViewBase {
   title = ''
   loading = false
   loadingShow = false
@@ -246,13 +247,17 @@ export default class Main extends View {
 
   get rules() {
     const validateType1 = ( rule1: any, value: any, callback: any) => {
-      if (value == false) {
-        callback(new Error('请选择一级类型'))
+      if (this.item.typearr[1]) {
+
       } else {
-        if (!this.item.types[0].typeCategoryCode) {
-          callback(new Error('请选择二级类型'))
+        if (value == false) {
+          callback(new Error('请选择一种客户类型'))
         } else {
-          callback()
+          if (!this.item.types[0].typeCategoryCode) {
+            callback(new Error('请选择二级类型'))
+          } else {
+            callback()
+          }
         }
       }
     }
@@ -293,7 +298,8 @@ export default class Main extends View {
           { required: true, message: '请填写用户的资质到期日期', trigger: 'change', type: 'date'}
       ],
       refusedReason: [
-         { required: true, message: '请填写拒绝原因', trigger: 'blur'}
+         { required: true, message: '请填写拒绝原因', trigger: 'blur'},
+         { max: 30, message: '拒绝原因不得超过30个字', trigger: 'change'},
       ],
       email: [
          {
@@ -303,7 +309,6 @@ export default class Main extends View {
          }
       ],
       'typearr[0]': [
-        { required: true, message: '请选择一级客户', type: 'boolean', trigger: 'change'},
         { validator: validateType1 }
       ],
       'typearr[1]': [
@@ -314,6 +319,9 @@ export default class Main extends View {
       ],
       qualificationCode: [
         { required: true, message: '请输入资质编号', trigger: 'blur'}
+      ],
+      businessDirector: [
+        { required: true, message: '请选择关联商务', trigger: 'blur'}
       ]
     }
     return rule
@@ -369,21 +377,6 @@ export default class Main extends View {
     }
   }
 
-  get imgList() {
-    if ( this.imageList.length > 0 ) {
-      return this.imageList.map((item: any) => {
-        return {
-          imageUrl: item.url,
-          fileId: item.fileId,
-          status: 'finished'
-        }
-      })
-    } else {
-      return []
-    }
-
-  }
-
   get cachedMap() {
     return {
       levelList: makeMap(this.levelList),
@@ -423,33 +416,33 @@ export default class Main extends View {
       } else {
         const {
           data: {
-          customerTypeList,
-          levelList,
-          name,
-          shortName,
-          aptitudeType,
-          aptitudeNo,
-          provinceId,
-          cityId,
-          countyId,
-          addressDetail,
-          contact,
-          contactTel,
-          email,
-          qualificationType,
-          qualificationCode,
-          images,
-          types,
-          refusedReason,
-          levelCode,
-          businessDirector,
-          cinemas,
-          approveStatus,
-          validityPeriodDate,
-          qualificationTypeList,
-          status,
-          imageList,
-          cinemaList
+            customerTypeList,
+            levelList,
+            name,
+            shortName,
+            aptitudeType,
+            aptitudeNo,
+            provinceId,
+            cityId,
+            countyId,
+            addressDetail,
+            contact,
+            contactTel,
+            email,
+            qualificationType,
+            qualificationCode,
+            images,
+            types,
+            refusedReason,
+            levelCode,
+            businessDirector,
+            cinemas,
+            approveStatus,
+            validityPeriodDate,
+            qualificationTypeList,
+            status,
+            imageList,
+            cinemaList
           }
         } = await queryId(query)
         this.item.name = name
@@ -525,17 +518,19 @@ export default class Main extends View {
       const query = clean(oldQuery)
       const array = Object.keys(query).slice(2)
       const newqQuery = slice(query, array)
-      const a = {
-        ...newqQuery,
-        cinemas: this.cinemas
-      }
+      const types: any = []
+      this.item.types.forEach((it: any) => {
+        it.typeCode && types.push(it)
+      })
       try {
         route == 0 ? await addQuery({
           ...newqQuery,
-          cinemas: this.cinemas
+          cinemas: this.cinemas,
+          types
         }) : await setQuery(route, {
           ...newqQuery,
-          cinemas: this.cinemas
+          cinemas: this.cinemas,
+          types
         })
         this.$router.go(-1)
       } catch (ex) {
@@ -552,10 +547,9 @@ export default class Main extends View {
     this.item.countyId = val[2]
   }
 
-  imgarray(val: any) {
-    this.item.images = val.map((item: any) => {
-      return item.fileId
-    })
+  @Watch('imageList', { deep: true })
+  watchImageList(val: any[]) {
+    this.item.images = val.map(it => it.fileId)
   }
 
   @Watch('typeList', { deep: true })
@@ -567,13 +561,13 @@ export default class Main extends View {
   @Watch('item', { deep: true })
   watchitem(val: any) {
     const form = 'dataForms'
-    if (val.approveStatus == 2) {
+    if (val.approveStatus == 3) {
       (this.$refs[form] as any).fields.forEach((e: any) => {
         if (e.prop == 'validityPeriodDate') {
           e.resetField()
         }
       })
-    } else {
+    } else if (val.approveStatus == 1) {
       (this.$refs[form] as any).fields.forEach((e: any) => {
         if (e.prop == 'refusedReason') {
           e.resetField()

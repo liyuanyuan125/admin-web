@@ -42,13 +42,13 @@
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop } from 'vue-property-decorator'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 import event from '@/fn/event'
 
 import Uploader, { ImageType, UploaderOptions } from '@/util/Uploader'
 
 @Component
-export default class ComponentMain extends View {
+export default class ComponentMain extends ViewBase {
   @Prop({ type: Array, default: () => [] }) uploadListArray!: any[]
   @Prop({}) types: any
   uploadlist: any = []
@@ -75,13 +75,6 @@ export default class ComponentMain extends View {
     this.$Notice.warning({
       title: '文件格式不正确',
       desc:  `${file.name}文件格式不是jpg,jpeg,png, gif`
-    })
-  }
-
-  handleMaxSize(file: any) {
-    this.$Notice.warning({
-      title: 'Exceeding file size limit',
-      desc: 'File  ' + file.name + ' is too large, no more than 2M.'
     })
   }
 

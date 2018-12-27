@@ -33,9 +33,12 @@
           <Row class="upload">
             <Col span="2"><div>资质</div></Col>
             <Col span="8">
-            <Upload v-if='loading' types='1' :uploadListArray='format.imgList'>
-              <div class="uplaod-slot">{{detail.qualificationType}} {{detail.qualificationCode}}</div>
-            </Upload>
+              <div class="upload-wrap">
+                <div class="upload-info">
+                  {{detail.qualificationTypeList[0].text}} {{detail.qualificationCode}}
+                </div>
+                <Upload v-model='detail.imageList' readonly v-if='loading'/>
+              </div>
             </Col>
           </Row>
       </div>
@@ -74,7 +77,7 @@
         <Row class="cinema-button">
           <Col span="2"><div>关联影院</div></Col>
           <Col span="12">
-              <PartBindCinema type="1" :value="detail.cinemaList" /> 
+              <PartBindCinema type="1" :value="detail.cinemaList" />
           </Col>
         </Row>
       </Row>
@@ -93,9 +96,9 @@
       </Row>
       <Row class="detail-check">
         <Row>
-          <div v-for="item in logList" :key="item.createTime">
+          <div v-for="(item, i) in logList" :key="i">
             <span>{{item.createTime}}</span>
-            <span>由{{item.userName}}{{item.description}}</span>
+            <span>由{{item.email}}<b style="margin: 0 5px">[{{item.userName}}]</b>{{item.description}}</span>
           </div>
         </Row>
       </Row>
@@ -108,12 +111,12 @@
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component } from 'vue-property-decorator'
 import moment from 'moment'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 import { queryId } from '@/api/corpReal'
 import AreaSelect from '@/components/AreaSelect.vue'
 import PartBindCinema from './partBindCinema.vue'
 import DlgEdit from '../account/dlgEdit.vue'
-import Upload from './upload.vue'
+import Upload from '@/components/Upload.vue'
 import { toMap } from '@/fn/array'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 const timeFormatDate = 'YYYY/MM/DD HH:mm:ss'
@@ -127,7 +130,7 @@ const timeFormat = 'YYYY/MM/DD'
     DlgEdit
   }
 })
-export default class Main extends View {
+export default class Main extends ViewBase {
   detail: any = {}
   loading = false
   addOrUpdateVisible = false
@@ -156,20 +159,7 @@ export default class Main extends View {
       typeFormat: this.typeListFormt(this.detail.types),
       approveTime: moment(this.detail.approveTime).format(timeFormatDate),
       validityPeriodDate: moment(this.detail.validityPeriodDate).format(timeFormat),
-      imgList: this.imgFormat(this.detail.imageList),
     }
-  }
-
-  imgFormat(val: any) {
-    const imgList: any = []
-    if (!!val) {
-      val.forEach((value: any) => {
-        imgList.push({
-          imageUrl: value.url
-        })
-      })
-    }
-    return imgList
   }
 
   dlgEditDone(email: any) {
@@ -287,7 +277,7 @@ export default class Main extends View {
   span {
     display: inline-block;
     line-height: 50px;
-    color: #19be6b;
+    color: #717975;
   }
   span:only-child:empty {
     &::before {
@@ -340,7 +330,7 @@ export default class Main extends View {
   height: 40px;
   line-height: 40px;
   background: #ecf0f4;
-  color: #19be6b;
+  color: #717975;
   border-radius: 5px;
   margin-top: 10px;
   margin-bottom: 20px;
@@ -350,10 +340,19 @@ export default class Main extends View {
     right: 10px;
     height: 20px;
     width: 80px;
-    color: #19be6b;
+    color: #717975;
     padding-left: 5px;
     line-height: 20px;
     background: #dcdee2;
   }
+}
+.upload-wrap {
+  background-color: #ecf0f4;
+}
+.upload-info {
+  font-size: 16px;
+  line-height: 18px;
+  padding: 8px 0 0 8px;
+  margin-bottom: 10px;
 }
 </style>

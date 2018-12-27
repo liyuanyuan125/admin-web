@@ -178,8 +178,8 @@ export default class Uploader extends EventClass {
 
     try {
       this.emit('begin')
-      const { data } = await this.postFile(item)
-      this.emit('done', data)
+      const { data: { items = [] } = {} } = await this.postFile(item)
+      this.emit('done', items[0] || {})
     } catch (ex) {
       this.emit('fail', ex)
     } finally {

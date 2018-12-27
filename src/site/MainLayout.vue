@@ -48,11 +48,11 @@
 
 <script lang="ts">
 import { Component } from 'vue-property-decorator'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 import { logout } from '@/store'
 
 @Component
-export default class App extends View {
+export default class App extends ViewBase {
   isOff = false
 
   siderMenuList = [
@@ -68,10 +68,6 @@ export default class App extends View {
         {
           name: 'client-corp',
           label: '公司管理',
-        },
-        {
-          name: 'client-verify',
-          label: '资质审核',
         },
       ]
     },

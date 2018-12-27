@@ -51,7 +51,7 @@
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop } from 'vue-property-decorator'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 import { get } from '@/fn/ajax'
 import { queryList , queryItem , companysList , loglist } from '@/api/account'
 import jsxReactToVue from '@/util/jsxReactToVue'
@@ -67,7 +67,7 @@ const defQuery = {
 }
 
 @Component
-export default class Main extends View {
+export default class Main extends ViewBase {
   showDlg = false
   createTime: any = ''
   lastLoginTime: any = ''

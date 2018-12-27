@@ -96,7 +96,7 @@
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop, Watch } from 'vue-property-decorator'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 import { queryItem, addItem, updateItem } from '@/api/cinemaHall'
 import { slice } from '@/fn/object'
 import { toast } from '@/ui/modal'
@@ -135,7 +135,7 @@ const defItem = {
 }
 
 @Component
-export default class DlgEdit extends View {
+export default class DlgEdit extends ViewBase {
   /**
    * 值本身，可以使用 v-model 进行双向绑定
    */

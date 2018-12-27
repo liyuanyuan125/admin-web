@@ -40,11 +40,6 @@ export default [
   },
 
   {
-    path: '/client/verify/',
-    name: 'client-verify',
-    component: () => import('./views/client/verify/index.vue')
-  },
-  {
     path: '/data/area/',
     name: 'data-area',
     component: () => import('./views/data/area/index.vue')
