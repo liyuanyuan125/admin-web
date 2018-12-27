@@ -127,9 +127,9 @@
           </Col>
           <Col span="8" offset="1">
             <FormItem label="负责商务" prop="businessDirector">
-              <Select v-model="item.businessDirector" clearable>
+              <Select v-model="item.businessDirector" filterable clearable>
                 <Option v-if="it.status!=2" v-for="it in businessDirector" :key="it.id" :value="it.userName"
-                  :label="it.userName">{{it.userName}}</Option>
+                  :label="it.email+'['+it.userName+']'">{{ it.email}}<b style="margin-left:5px">[{{it.userName}}]</b></Option>
               </Select>
             </FormItem>
           </Col>
@@ -483,7 +483,7 @@ export default class Main extends ViewBase {
         this.levelList = levelList
         this.area = [provinceId || 0, cityId || 0, countyId || 0]
         this.loadingShow = true
-        status == 1 ? this.title = '编辑公司' : this.title = '审核公司'
+        approveStatus == 1 ? this.title = '审核公司' : this.title = '编辑公司'
       }
     } catch (ex) {
       this.handleError(ex)

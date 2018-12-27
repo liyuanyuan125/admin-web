@@ -13,9 +13,9 @@
           <Option v-for="it in statusList" :key="it.key" :value="it.key"
             :label="it.text">{{it.text}}</Option>
         </Select>
-        <Select v-model="query.businessDirector" placeholder="关联商务" clearable>
+        <Select v-model="query.businessDirector" placeholder="关联商务" style="width:200px" filterable clearable>
           <Option v-if="it.status!=2" v-for="it in businessDirector" :key="it.id" :value="it.id"
-            :label="it.userName">{{ it.userName }}</Option>
+            :label="it.email+'  ['+it.userName+']'">{{ it.email}}<b style="margin-left:5px">[{{it.userName}}]</b></Option>
         </Select>
         <Select v-model="query.approveStatus" placeholder="审核状态" clearable>
           <Option v-for="it in aptitudeStatusList"  :key="it.key" :value="it.key"
@@ -93,7 +93,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     { title: '公司名称', key: 'name', width: 120 , align: 'center' },
     { title: '客户类型',
       key: 'customerTypeList',
-      width: 140,
+      width: 100,
       align: 'center',
       render: (hh: any, { row: { types } }: any) => {
         /* tslint:disable */
@@ -124,7 +124,14 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         /* tslint:enable */
       }
     },
-    { title: '关联商务', key: 'businessDirectorName', align: 'center' },
+    { title: '关联商务', key: 'businessDirectorName', width: 170, align: 'center',
+      render: (hh: any, { row: { email, businessDirectorName } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        return <span class='datetime'>{email}<p style="font-weight:bold">[{businessDirectorName}]</p></span>
+        /* tslint:enable */
+      }
+    },
     {
       title: '创建时间',
       key: 'createTimeTemp',
