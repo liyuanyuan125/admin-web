@@ -61,7 +61,7 @@
             <Col span="2"><div>客户等级</div></Col>
             <Col span="4"><span>{{format.levelText}}级</span></Col>
             <Col span="2"><div>负责商务</div></Col>
-            <Col span="6"><span>{{detail.email}}<b style="margin-left:5px">[{{detail.businessDirectorName}}]</b></span></Col>
+            <Col span="6"><span>{{detail.businessDirectorEmail}}<b style="margin-left:5px">[{{detail.businessDirectorName}}]</b></span></Col>
         </Row>
         <Row>
           <Col span="2"><div>客户类型</div></Col>
@@ -85,7 +85,9 @@
         <Row>
           <Col span="2"><div>主账号</div></Col>
           <Col span="4">
-          <span>{{detail.mainAccountName}}</span>
+          <span v-if="!!detail.mainAccountName">{{detail.mainAccountName}}
+            <router-link class="operation" :to="{ name: 'client-account-detail', params: { id: detail.id }}">[管理]</router-link>
+          </span>
           <a v-if="detail.status!=2&&!detail.mainAccountName" @click="edit" class="btn-add">[创建主账号]</a>
           </Col>
         </Row>
