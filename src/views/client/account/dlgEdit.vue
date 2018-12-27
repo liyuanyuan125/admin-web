@@ -23,7 +23,7 @@
       </FormItem>
       <FormItem label="所属公司" prop="companyId">
         <Select style="width:240px" v-model="dataForm.companyId">
-          <Option v-for="it in companys" v-if='it.status==2' :key="it.id" :value="it.id">{{it.name}}</Option>
+          <Option v-for="it in companys" v-if='it.status==1' :key="it.id" :value="it.id">{{it.name}}</Option>
         </Select>
       </FormItem>
       <FormItem label="启用状态" prop="status">
@@ -127,10 +127,12 @@ export default class ComponentMain extends ViewBase {
   dataForm = { ...dataForm }
 
   init(id: number) {
+
     this.showDlg = true
     this.id = id || 0
     ; (this.$refs.dataForm as any).resetFields()
     if (this.id) {
+      (this.dataForm.companyId as any) = id
     }
   }
 

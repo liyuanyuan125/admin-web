@@ -35,7 +35,7 @@
             <Col span="8">
               <div class="upload-wrap">
                 <div class="upload-info">
-                  {{detail.qualificationTypeList[0].text}} {{detail.qualificationCode}}
+                  {{qualifica}} {{detail.qualificationCode}}
                 </div>
                 <Upload v-model='detail.imageList' readonly v-if='loading'/>
               </div>
@@ -61,7 +61,7 @@
             <Col span="2"><div>客户等级</div></Col>
             <Col span="4"><span>{{format.levelText}}级</span></Col>
             <Col span="2"><div>负责商务</div></Col>
-            <Col span="4"><span>{{detail.email}}<b style="margin-left:5px">[{{detail.businessDirectorName}}]</b></span></Col>
+            <Col span="6"><span>{{detail.email}}<b style="margin-left:5px">[{{detail.businessDirectorName}}]</b></span></Col>
         </Row>
         <Row>
           <Col span="2"><div>客户类型</div></Col>
@@ -86,7 +86,7 @@
           <Col span="2"><div>主账号</div></Col>
           <Col span="4">
           <span>{{detail.mainAccountName}}</span>
-          <a v-if="!detail.mainAccountName" @click="edit" class="btn-add">[创建主账号]</a>
+          <a v-if="detail.status!=2&&!detail.mainAccountName" @click="edit" class="btn-add">[创建主账号]</a>
           </Col>
         </Row>
         <Row>
@@ -157,11 +157,17 @@ export default class Main extends ViewBase {
       statusText: cachedMap.statusList[this.detail.status],
       levelText: cachedMap.levelList[this.detail.levelCode],
       typeFormat: this.typeListFormt(this.detail.types),
-      approveTime: moment(this.detail.approveTime).format(timeFormatDate),
-      validityPeriodDate: moment(this.detail.validityPeriodDate).format(timeFormat),
+      approveTime: this.detail.approveTime ? moment(this.detail.approveTime).format(timeFormatDate) : '',
+      validityPeriodDate: this.detail.validityPeriodDate ?
+       moment(this.detail.validityPeriodDate).format(timeFormat) : '',
     }
   }
 
+  get qualifica() {
+    if (this.detail.qualificationTypeList) {
+       return (this.detail.qualificationTypeList[0] as any).text
+    }
+  }
   dlgEditDone(email: any) {
     this.detail.mainAccountName = email
   }
@@ -200,12 +206,13 @@ export default class Main extends ViewBase {
       this.customerTypeList = res.data.customerTypeList
       this.levelList = res.data.levelList
       this.statusList = res.data.statusList.slice(1)
-      this.logList = res.data.logList.map((item: any) => {
+      const logList = res.data.logList.map((item: any) => {
         return {
           ...item,
           createTime: moment(item.createTime).format(timeFormatDate)
         }
       })
+      this.logList = logList.slice(0, 20)
       this.approveStatusList = res.data.approveStatusList.slice(1)
       this.loading = true
     } catch (ex) {
@@ -217,7 +224,7 @@ export default class Main extends ViewBase {
   edit() {
     this.addOrUpdateVisible = true
     this.$nextTick(() => {
-      (this.$refs.addOrUpdate as any).init()
+      (this.$refs.addOrUpdate as any).init(this.detail.id)
     })
   }
 

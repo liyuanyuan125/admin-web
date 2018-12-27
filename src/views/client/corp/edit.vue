@@ -78,7 +78,6 @@
           </Col>
         </Row>
       </Row>
-
       <!-- content -->
       <Row class="cinema-content">
         <FormItem label="审核意见" prop="approveStatus">
@@ -99,7 +98,7 @@
            <Row>
           <Col span="8">
             <FormItem label="有效期至" prop="validityPeriodDate">
-              <DatePicker type="date" v-model="item.validityPeriodDate" placeholder="选择有效期" style="width: 200px"></DatePicker>
+              <DatePicker :options="options1" type="date" v-model="item.validityPeriodDate" placeholder="选择有效期" style="width: 200px"></DatePicker>
             </FormItem>
           </Col>
         </Row>
@@ -128,7 +127,7 @@
           <Col span="8" offset="1">
             <FormItem label="负责商务" prop="businessDirector">
               <Select v-model="item.businessDirector" filterable clearable>
-                <Option v-if="it.status!=2" v-for="it in businessDirector" :key="it.id" :value="it.userName"
+                <Option v-if="it.status!=2" v-for="it in businessDirector" :key="it.id" :value="it.id"
                   :label="it.email+'['+it.userName+']'">{{ it.email}}<b style="margin-left:5px">[{{it.userName}}]</b></Option>
               </Select>
             </FormItem>
@@ -244,6 +243,11 @@ export default class Main extends ViewBase {
   area: number[] = []
   businessDirector = []
   imageList = []
+  options1 = {
+    disabledDate(date: any) {
+      return date && date.valueOf() < Date.now() - 86400000
+    }
+  }
 
   get rules() {
     const validateType1 = ( rule1: any, value: any, callback: any) => {
