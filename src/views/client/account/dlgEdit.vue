@@ -23,7 +23,7 @@
       </FormItem>
       <FormItem label="所属公司" prop="companyId">
         <Select style="width:240px" v-model="dataForm.companyId">
-          <Option v-for="it in companys" :key="it.id" :value="it.id">{{it.name}}</Option>
+          <Option v-for="it in companys" v-if='it.status==2' :key="it.id" :value="it.id">{{it.name}}</Option>
         </Select>
       </FormItem>
       <FormItem label="启用状态" prop="status">
@@ -96,7 +96,12 @@ export default class ComponentMain extends View {
           { required: true, message: '请输入姓名', trigger: 'blur' }
       ],
       password: [
-          { required: true, message: '请输入密码', trigger: 'blur' }
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          {
+            pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$/,
+            message: '请输入同时包含数字、字母且长度要在8-16位之间的密码',
+            trigger: 'blur'
+          }
       ],
       passwords: [
           { required: true, message: '请重新输入密码', trigger: 'blur' },
@@ -108,9 +113,9 @@ export default class ComponentMain extends View {
             message: '请输入正确的手机号码', trigger: 'blur'
           }
       ],
-      // companyId: [
-      //     { required: true, message: '请选择所属公司' }
-      // ],
+      companyId: [
+          { required: true, message: '请选择所属公司' }
+      ],
       status: [
           { required: true }
       ]
@@ -195,7 +200,6 @@ export default class ComponentMain extends View {
       } } = await companysList(query)
       this.list = list
       this.companys = companys
-      // console.log(this.companys)
     } catch (ex) {
       this.handleError(ex)
     } finally {
