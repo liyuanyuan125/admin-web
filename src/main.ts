@@ -8,7 +8,7 @@ import Router from 'vue-router'
 import home from './views/home.vue'
 import login from './views/login.vue'
 import MainLayout from './site/MainLayout.vue'
-import routers from './routers'
+import routes from './routes'
 import locale from 'iview/dist/locale/zh-CN'
 import event from './fn/event'
 import { alert } from './ui/modal'
@@ -43,7 +43,7 @@ const router = new Router({
         path: '/',
         name: 'home',
         component: home,
-      }].concat(routers),
+      }].concat(routes),
     }
   ]
 })
