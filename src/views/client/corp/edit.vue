@@ -323,6 +323,9 @@ export default class Main extends ViewBase {
       ],
       qualificationCode: [
         { required: true, message: '请输入资质编号', trigger: 'blur'}
+      ],
+      businessDirector: [
+        { required: true, message: '请选择负责商务', trigger: 'blur', type: 'number' }
       ]
     }
     return rule
