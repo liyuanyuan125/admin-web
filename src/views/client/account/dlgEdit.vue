@@ -132,6 +132,7 @@ export default class ComponentMain extends ViewBase {
     this.id = id || 0
     ; (this.$refs.dataForm as any).resetFields()
     if (this.id) {
+      (this.dataForm.companyId as any) = id
     }
   }
 
