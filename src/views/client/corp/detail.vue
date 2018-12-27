@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <header class="header flex-box">
-      <Button icon="md-return-left" @click="back" class="btn-back">返回列表</Button>
+      <Button icon="md-return-left" @click="back" class="btn-back">返回上一页</Button>
       <div class="flex-1">
         <em>公司详情</em>
       </div>
@@ -36,6 +36,9 @@
               <div class="upload-wrap">
                 <div class="upload-info">
                   {{qualifica}} {{detail.qualificationCode}}
+                </div>
+                <div v-if="showimg" class="show-img">
+                  <img src="~@/assets/imgerror.png"/>
                 </div>
                 <Upload v-model='detail.imageList' readonly v-if='loading'/>
               </div>
@@ -142,6 +145,7 @@ export default class Main extends ViewBase {
   logList: any = []
   levelList: any = []
   statusList: any = []
+  showimg = true
   created() {
     this.load()
   }
@@ -163,8 +167,16 @@ export default class Main extends ViewBase {
       approveTime: this.detail.approveTime ?
       moment(this.detail.approveTime + 8 * 3600 * 1000).format(timeFormatDate) : '',
       validityPeriodDate: this.detail.validityPeriodDate ?
-       moment(this.detail.validityPeriodDate).format(timeFormat) : '',
+      this.formatValid(this.detail.validityPeriodDate) : '',
     }
+  }
+
+  formatValid(data: any) {
+    const datas = (data + '').split(',')
+    const a = datas[0].slice(0, 4)
+    const b = datas[0].slice(4, 6)
+    const c = datas[0].slice(6)
+    return `${a}/${b}/${c}`
   }
 
   get qualifica() {
@@ -202,6 +214,7 @@ export default class Main extends ViewBase {
   }
   async load() {
     const query: any = { id: this.$route.params.id || 0 }
+    ; (this.$Spin as any).show()
     try {
       const res = await queryId(query)
       this.detail = res.data
@@ -218,8 +231,13 @@ export default class Main extends ViewBase {
       })
       this.logList = logList.slice(0, 20)
       this.approveStatusList = res.data.approveStatusList.slice(1)
+      if (res.data.imageList != null) {
+        this.detail.imageList.length > 0 ? this.showimg = false : ''
+      }
       this.loading = true
+      ; (this.$Spin as any).hide()
     } catch (ex) {
+      (this.$Spin as any).hide()
       this.handleError(ex)
     } finally {
     }
@@ -352,9 +370,9 @@ export default class Main extends ViewBase {
     top: 10px;
     right: 10px;
     height: 20px;
-    width: 80px;
+    width: 50px;
+    text-align: center;
     color: #717975;
-    padding-left: 5px;
     line-height: 20px;
     background: #dcdee2;
   }
@@ -363,9 +381,17 @@ export default class Main extends ViewBase {
   background-color: #ecf0f4;
 }
 .upload-info {
-  font-size: 16px;
   line-height: 18px;
-  padding: 8px 0 0 8px;
+  padding: 16px 0 0 8px;
   margin-bottom: 10px;
+}
+.show-img {
+  width: 120px;
+  height: 80px;
+  margin: 10px;
+  img {
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>

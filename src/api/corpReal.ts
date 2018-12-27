@@ -34,7 +34,7 @@ export async function queryId(query: any = {}) {
  * @param query 停运Id，参见接口文档
  */
 export async function statusId(id: any, query: any = {}) {
-    const res = await put(`/customer/companies/status/${id}`, query)
+    const res = await put(`/customer/companies/${id}/status`, query)
     return res
 }
 
