@@ -6,7 +6,7 @@
     "dev": "yarn fixiview && vue-cli-service serve",
     "build": "yarn fixiview && vue-cli-service build",
     "lint": "vue-cli-service lint --no-fix && yarn lint:css",
-    "lint:css": "stylelint '**/*.vue' --syntax less",
+    "lint:css": "stylelint \"**/*.vue\" --syntax less",
     "test:e2e": "vue-cli-service test:e2e",
     "test:unit": "vue-cli-service test:unit",
     "fixiview": "node --experimental-modules --no-warnings tools/fixiview.mjs",

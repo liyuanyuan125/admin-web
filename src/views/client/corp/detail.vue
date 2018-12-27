@@ -61,7 +61,7 @@
             <Col span="2"><div>客户等级</div></Col>
             <Col span="4"><span>{{format.levelText}}级</span></Col>
             <Col span="2"><div>负责商务</div></Col>
-            <Col span="4"><span>{{detail.businessDirector}}</span></Col>
+            <Col span="4"><span>{{detail.email}}<b style="margin-left:5px">[{{detail.businessDirectorName}}]</b></span></Col>
         </Row>
         <Row>
           <Col span="2"><div>客户类型</div></Col>
