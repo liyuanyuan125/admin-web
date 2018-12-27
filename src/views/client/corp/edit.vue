@@ -252,7 +252,7 @@ export default class Main extends ViewBase {
   get rules() {
     const validateType1 = ( rule1: any, value: any, callback: any) => {
       if (this.item.typearr[1]) {
-
+        callback()
       } else {
         if (value == false) {
           callback(new Error('请选择一种客户类型'))
@@ -323,9 +323,6 @@ export default class Main extends ViewBase {
       ],
       qualificationCode: [
         { required: true, message: '请输入资质编号', trigger: 'blur'}
-      ],
-      businessDirector: [
-        { required: true, message: '请选择关联商务', trigger: 'blur'}
       ]
     }
     return rule
@@ -529,11 +526,11 @@ export default class Main extends ViewBase {
       try {
         route == 0 ? await addQuery({
           ...newqQuery,
-          cinemas: this.cinemas,
+          cinemas: this.item.typearr[1] ? this.cinemas : [],
           types
         }) : await setQuery(route, {
           ...newqQuery,
-          cinemas: this.cinemas,
+          cinemas: this.item.typearr[1] ? this.cinemas : [],
           types
         })
         this.$router.go(-1)
