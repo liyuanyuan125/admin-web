@@ -21,7 +21,7 @@
           <p>注册时间</p>
           <div class="res-num-item">
             <span>{{createTime}}</span>
-            <span class="res-date les">最后登陆时间</span>
+            <span class="res-date les">最后登录时间</span>
             <span>{{lastLoginTime}}</span>
           </div>
         </div>
