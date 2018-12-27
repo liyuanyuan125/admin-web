@@ -37,7 +37,7 @@
                   </tooltip>
                   <Checkbox v-else :label="item.id">{{item.shortName}}</Checkbox>
                 </div>
-                <div v-if="items.length%4 == 3" class="check"></div>
+                <div v-if="(items.length%4) == 3" class="check">&nbsp;</div>
               </div>
               <div v-else class="text-center">
                 暂无数据
@@ -152,6 +152,7 @@ export default class Main extends ViewBase {
     this.area = []
     this.chainId = 0
     this.showDlg = false
+    this.seach()
   }
 }
 </script>
@@ -159,10 +160,10 @@ export default class Main extends ViewBase {
 <style lang="less" scoped>
 .cinema-header {
   position: absolute;
-  top: 14px;
+  top: 15px;
   left: 120px;
   font-size: 12px;
-  color: #be1a22;
+  color: red;
   font-weight: 400;
 }
 /deep/ .ivu-table-wrapper > .ivu-spin-fix {
