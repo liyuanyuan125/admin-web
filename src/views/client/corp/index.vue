@@ -404,9 +404,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       margin-right: 6px;
     }
   }
-  /deep/ .deprecated {
-    color: #ed4014;
-  }
   /deep/ span:only-child:empty {
     &::before {
       content: '-';

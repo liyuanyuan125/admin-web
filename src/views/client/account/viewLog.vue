@@ -14,8 +14,8 @@
           <p>所属公司</p>
           <!-- <span class="coms">{{companyName}}</span> -->
           <tooltip style="margin-left: 3%;height:60px;" :content="companyName" placement="top">
-              <span class="deprecated">{{companyName}}</span>
-            </tooltip>
+            <span class="company-name">{{companyName}}</span>
+          </tooltip>
           <div class="res-num-item" v-for="it in list" v-if="it.id==companyId" :key="it.id">
             <div class="item-lis" v-for="ity in it.types" :key="ity.typeCode">
               <span v-for="its in customerTypeList" v-if="its.typeCode==ity.typeCode" :key='its.typeCode'>
@@ -189,7 +189,7 @@ export default class Main extends ViewBase {
   height: 100%;
   // display: inline-block;
 }
-.deprecated {
+.company-name {
   // flex-direction: column-reverse;
   // flex-wrap: nowrap;
   // justify-content: flex-start;

@@ -355,9 +355,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   /deep/ .row-acts > a {
     margin: 0 4px;
   }
-  /deep/ .deprecated {
-    color: #ed4014;
-  }
 }
 
 .page-wrap {

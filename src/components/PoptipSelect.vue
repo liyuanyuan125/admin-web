@@ -1,7 +1,7 @@
 <template>
   <Poptip v-model="show" @on-popper-show="onShow" v-if="!loading">
     <span class="edit">
-      {{inValue.text}}
+      <span :class="{ deprecated: isDeprecated }">{{inValue.text}}</span>
       <icon type="ios-create-outline"/>
     </span>
     <div slot="content">
@@ -54,6 +54,14 @@ export default class PoptipSelect extends ViewBase {
   show = false
 
   loading = false
+
+  // 是否是废弃的
+  get isDeprecated() {
+    // inValue 里的 list 是过滤过的，若查找不到，则说明是废弃的
+    const { value, list = [] } = this.inValue
+    const found = list.find(it => it.key == value)
+    return found == null
+  }
 
   @Watch('value', { deep: true })
   watchValue() {
