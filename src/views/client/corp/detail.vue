@@ -49,8 +49,8 @@
         <Row>
           <Col span="2"><div>审核意见</div></Col>
           <Col span="4"><span>{{format.approveText}}</span></Col>
-          <Col span="2"><div>有效期至</div></Col>
-          <Col span="4"><span>{{format.validityPeriodDate}}</span></Col>
+          <Col span="2" v-if="detail.approveStatus !=3"><div>有效期至</div></Col>
+          <Col span="4" v-if="detail.approveStatus !=3"><span >{{format.validityPeriodDate}}</span></Col>
         </Row>
         <Row>
           <Col span="2"><div>审核人</div></Col>
@@ -95,16 +95,16 @@
       <Row class="detail-number">
         <Row>
           <Col span="2"><div>主账号</div></Col>
-          <Col span="4">
+          <Col span="8">
           <span v-if="!!detail.mainAccountName">{{detail.mainAccountName}}
-            <router-link class="operation" :to="{ name: 'client-account-detail', params: { id: detail.id }}">[管理]</router-link>
+            <router-link class="operation" :to="{ name: 'client-account-detail', params: { id: detail.mainAccountId }}">[管理]</router-link>
           </span>
           <a v-if="!detail.mainAccountName" @click="edit" class="btn-add">[创建主账号]</a>
           </Col>
         </Row>
         <Row>
           <Col span="2"><div>子账号</div></Col>
-          <Col span="4"><span v-for="index in detail.accountList" :key="index" style="margin-right:">{{index}}</span></Col>
+          <Col span="8"><span v-for="index in detail.accountList" :key="index" style="margin-right:">{{index}}</span></Col>
         </Row>
       </Row>
       <Row class="detail-check">
