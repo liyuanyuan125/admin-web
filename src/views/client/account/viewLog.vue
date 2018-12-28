@@ -194,7 +194,6 @@ export default class Main extends ViewBase {
   // flex-wrap: nowrap;
   // justify-content: flex-start;
   display: inline-block;
-  width: 80%;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
