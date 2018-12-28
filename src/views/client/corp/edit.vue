@@ -117,7 +117,7 @@
           <Col span="5">
             <FormItem label="客户等级" prop="levelCode">
               <Select v-model="item.levelCode" clearable>
-                <Option v-for="it in levelList" :key="it.key"
+                <Option v-if="it.controlStatus == 1" v-for="it in levelList" :key="it.key"
                   :value="it.key">{{it.text}}</Option>
               </Select>
             </FormItem>
@@ -139,7 +139,7 @@
                 <div @click="typeCode(it.typeCode,index)"><Checkbox v-model="item.typearr[index]" :label="it.typeName">{{it.typeName}}</Checkbox></div>
                 <Select v-model="item.types[index].typeCategoryCode" :disabled="!item.typearr[index]"
                     class="flex-1" clearable>
-                  <Option v-for="sub in it.typeCategoryList" :key="sub.typeCode"
+                  <Option v-if="sub.controlStatus == 1" v-for="sub in it.typeCategoryList" :key="sub.typeCode"
                     :value="sub.typeCode">{{sub.typeName}}</Option>
                 </Select>
               </span>
@@ -282,7 +282,7 @@ export default class Main extends ViewBase {
         { required: true, message: '请填写公司简称', trigger: 'blur' }
       ],
       provinceId: [
-        { required: true, pattern: /^(?!0\d)[1-9]\d+/, message: '请选择公司地址', trigger: 'change' }
+        { required: true, pattern: /^[1-9][0-9]*$/, message: '请选择公司地址', trigger: 'change' }
       ],
       addressDetail: [
         { required: true, message: '请填写公司详细地址', trigger: 'blur' }
