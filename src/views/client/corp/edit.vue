@@ -488,7 +488,7 @@ export default class Main extends ViewBase {
         this.imageList = imageList || []
         this.item.approveStatus = approveStatus
         this.customerTypeList = customerTypeList
-        this.item.validityPeriodDate = new Date(this.formatValid(validityPeriodDate))
+        this.item.validityPeriodDate = validityPeriodDate ? new Date(this.formatValid(validityPeriodDate)) : ''
         this.levelList = levelList
         this.area = [provinceId || 0, cityId || 0, countyId || 0]
         this.loadingShow = true
