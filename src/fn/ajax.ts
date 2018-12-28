@@ -42,7 +42,7 @@ const request = async (url: string, opts: object) => {
   } catch (ex) {
     if (ex && ex.response) {
       const { status, data: html } = ex.response
-      throw emit({ code: 888, data: { html }, msg: `http 错误：${status}` })
+      throw emit({ code: status, data: { html }, msg: 'HTTP 错误' })
     } else {
       throw emit({ code: 810, data: { ex }, msg: '未知错误' })
     }
