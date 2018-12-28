@@ -49,8 +49,8 @@
         <Row>
           <Col span="2"><div>审核意见</div></Col>
           <Col span="4"><span>{{format.approveText}}</span></Col>
-          <Col span="2"><div>有效期至</div></Col>
-          <Col span="4"><span>{{format.validityPeriodDate}}</span></Col>
+          <Col span="2" v-if="detail.approveStatus !=3"><div>有效期至</div></Col>
+          <Col span="4" v-if="detail.approveStatus !=3"><span >{{format.validityPeriodDate}}</span></Col>
         </Row>
         <Row>
           <Col span="2"><div>审核人</div></Col>
