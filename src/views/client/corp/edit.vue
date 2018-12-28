@@ -92,7 +92,7 @@
             </Col>
           </Row>
         </FormItem>
-        <div class="124" v-if="item.approveStatus==1">
+        <div class="124" v-if="item.approveStatus==2">
            <Row>
           <Col span="8">
             <FormItem label="有效期至" prop="validityPeriodDate">
@@ -211,7 +211,7 @@ const defItem = {
   levelCode: '',
   businessDirector: '',
   cinemas: [],
-  approveStatus: 1,
+  approveStatus: 2,
   validityPeriodDate: ''
 }
 
@@ -488,7 +488,7 @@ export default class Main extends ViewBase {
         this.imageList = imageList || []
         this.item.approveStatus = approveStatus
         this.customerTypeList = customerTypeList
-        this.item.validityPeriodDate = validityPeriodDate
+        this.item.validityPeriodDate = new Date(this.formatValid(validityPeriodDate))
         this.levelList = levelList
         this.area = [provinceId || 0, cityId || 0, countyId || 0]
         this.loadingShow = true
@@ -501,6 +501,14 @@ export default class Main extends ViewBase {
     } finally {
       this.loading = false
     }
+  }
+
+  formatValid(data: any) {
+    const datas = (data + '').split(',')
+    const a = datas[0].slice(0, 4)
+    const b = datas[0].slice(4, 6)
+    const c = datas[0].slice(6)
+    return `${a}/${b}/${c}`
   }
 
   back() {

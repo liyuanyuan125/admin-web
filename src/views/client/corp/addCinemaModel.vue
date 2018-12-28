@@ -114,9 +114,14 @@ export default class Main extends ViewBase {
       ...this.query,
       pageSize: 10000
     }
-    const res = await queryList(clean({...query}))
-    this.items = res.data.items
-    this.dataLoading = false
+    try {
+      const res = await queryList(clean({...query}))
+      this.items = res.data.items
+      this.dataLoading = false
+    } catch (ex) {
+      this.dataLoading = false
+      this.handleError(ex)
+    }
   }
 
   async done() {

@@ -5,7 +5,7 @@
         <LazyInput v-model="query.companyId" placeholder="公司ID" class="input input-id"/>
         <LazyInput v-model="query.shortName" placeholder="公司名称" class="input"/>
         <Select v-model="query.typeCode" placeholder="客户类型" clearable>
-          <Option v-for="it in customerTypeList" :key="it.typeCode" :value="it.typeCode"
+          <Option v-if="it.controlStatus==1" v-for="it in customerTypeList" :key="it.typeCode" :value="it.typeCode"
             :label="it.typeName">{{it.typeName}}</Option>
         </Select>
         <!-- <Cascader style="width:150px" class="type-select" :data="customerTypeList" v-model="query.type" placeholder="客户类型"></Cascader> -->

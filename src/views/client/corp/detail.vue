@@ -378,11 +378,12 @@ export default class Main extends ViewBase {
 }
 .upload-wrap {
   background-color: #ecf0f4;
+  padding-bottom: 8px;
 }
 .upload-info {
   line-height: 18px;
   padding: 16px 0 0 8px;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 .show-img {
   width: 120px;
