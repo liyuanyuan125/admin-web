@@ -140,4 +140,20 @@ export default class PoptipSelect extends ViewBase {
     transform: rotate(360deg);
   }
 }
+
+.deprecated {
+  position: relative;
+  user-select: none;
+  &:hover {
+    color: transparent;
+    &::before {
+      position: absolute;
+      left: 0;
+      top: -2px;
+      width: 100%;
+      content: '已下架';
+      color: #888;
+    }
+  }
+}
 </style>
