@@ -82,7 +82,7 @@
           <Row>
             <Col span="8">
               <RadioGroup v-model="item.approveStatus">
-                <Radio :label=1>
+                <Radio :label=2>
                   <span>通过</span>
                 </Radio>
                 <Radio :label=3>
@@ -415,6 +415,11 @@ export default class Main extends ViewBase {
         this.levelList = levelList
         this.qualificationTypeList = qualificationTypeList
         this.customerTypeList = customerTypeList
+        this.item.types[0] = {
+          typeCode: 'advert',
+          typeCategoryCode: 'zhike'
+        }
+        this.item.typearr[0] = true
         this.title = '新建公司'
         ; (this.$Spin as any).hide()
       } else {
