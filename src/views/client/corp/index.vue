@@ -5,7 +5,7 @@
         <LazyInput v-model="query.companyId" placeholder="公司ID" class="input input-id"/>
         <LazyInput v-model="query.shortName" placeholder="公司名称" class="input"/>
         <Select v-model="query.typeCode" placeholder="客户类型" clearable>
-          <Option v-for="it in customerTypeList" :key="it.typeCode" :value="it.typeCode"
+          <Option v-if="it.controlStatus==1" v-for="it in customerTypeList" :key="it.typeCode" :value="it.typeCode"
             :label="it.typeName">{{it.typeName}}</Option>
         </Select>
         <!-- <Cascader style="width:150px" class="type-select" :data="customerTypeList" v-model="query.type" placeholder="客户类型"></Cascader> -->
@@ -140,7 +140,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       render: (hh: any, { row: { createTime } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = moment(createTime).format(timeFormat)
+        const html = createTime ? moment(createTime).format(timeFormat) : ''
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
@@ -153,7 +153,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       render: (hh: any, { row: { modifyTime } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = moment(modifyTime).format(timeFormat)
+        const html = modifyTime ? moment(modifyTime).format(timeFormat) : ''
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }

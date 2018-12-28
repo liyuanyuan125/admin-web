@@ -5,8 +5,6 @@
       <div class="flex-1">
         <em>{{title}}</em>
       </div>
-      <!-- <Button type="success" icon="md-add-circle" class="btn-new"
-        @click="edit(0)">新建影厅</Button> -->
     </header>
     <div class="edit-box">
       <!-- header -->
@@ -84,7 +82,7 @@
           <Row>
             <Col span="8">
               <RadioGroup v-model="item.approveStatus">
-                <Radio :label=1>
+                <Radio :label=2>
                   <span>通过</span>
                 </Radio>
                 <Radio :label=3>
@@ -94,7 +92,7 @@
             </Col>
           </Row>
         </FormItem>
-        <div class="124" v-if="item.approveStatus==1">
+        <div class="124" v-if="item.approveStatus==2">
            <Row>
           <Col span="8">
             <FormItem label="有效期至" prop="validityPeriodDate">
@@ -134,20 +132,20 @@
           </Col>
         </Row>
         <Row>
-          <Row>
-            <Col v-for="(it, index) in customerTypeList" :key="index" span="8">
-              <FormItem :label="index == 0 ? '客户类型' : ''" :prop="'typearr['+ index + ']'">
-                <span class="check-select-group">
-                  <div @click="typeCode(it.typeCode,index)"><Checkbox v-model="item.typearr[index]" :label="it.typeName">{{it.typeName}}</Checkbox></div>
-                  <Select v-model="item.types[index].typeCategoryCode" :disabled="!item.typearr[index]"
-                     class="flex-1" clearable>
-                    <Option v-for="sub in it.typeCategoryList" :key="sub.typeCode"
-                      :value="sub.typeCode">{{sub.typeName}}</Option>
-                  </Select>
-                </span>
-              </FormItem>
-            </Col>
-          </Row>
+        <Row>
+          <Col v-for="(it, index) in customerTypeList" :key="index" span="8">
+            <FormItem :label="index == 0 ? '客户类型' : ''" :prop="'typearr['+ index + ']'">
+              <span class="check-select-group">
+                <div @click="typeCode(it.typeCode,index)"><Checkbox v-model="item.typearr[index]" :label="it.typeName">{{it.typeName}}</Checkbox></div>
+                <Select v-model="item.types[index].typeCategoryCode" :disabled="!item.typearr[index]"
+                    class="flex-1" clearable>
+                  <Option v-for="sub in it.typeCategoryList" :key="sub.typeCode"
+                    :value="sub.typeCode">{{sub.typeName}}</Option>
+                </Select>
+              </span>
+            </FormItem>
+          </Col>
+        </Row>
         </Row>
         <Row v-if="item.typearr[1]">
           <FormItem label="关联影院" prop="cinemasList">
@@ -213,7 +211,7 @@ const defItem = {
   levelCode: '',
   businessDirector: '',
   cinemas: [],
-  approveStatus: 1,
+  approveStatus: 2,
   validityPeriodDate: ''
 }
 
@@ -402,6 +400,7 @@ export default class Main extends ViewBase {
 
   async load() {
     this.loading = true
+    ; (this.$Spin as any).show()
     const query = { id: this.$route.params.id || 0 }
     try {
       if ( !query.id ) {
@@ -416,7 +415,13 @@ export default class Main extends ViewBase {
         this.levelList = levelList
         this.qualificationTypeList = qualificationTypeList
         this.customerTypeList = customerTypeList
+        this.item.types[0] = {
+          typeCode: 'advert',
+          typeCategoryCode: 'zhike'
+        }
+        this.item.typearr[0] = true
         this.title = '新建公司'
+        ; (this.$Spin as any).hide()
       } else {
         const {
           data: {
@@ -468,8 +473,8 @@ export default class Main extends ViewBase {
             this.item.types[0] = types[0]
             this.item.typearr[0] = true
           } else {
-            this.item.types[1] = types[1]
-            this.item.typearr[0] = true
+            this.item.types[1] = types[0]
+            this.item.typearr[1] = true
           }
         } else {
           this.item.types = types.sort((a: any, b: any) => {
@@ -483,17 +488,27 @@ export default class Main extends ViewBase {
         this.imageList = imageList || []
         this.item.approveStatus = approveStatus
         this.customerTypeList = customerTypeList
-        this.item.validityPeriodDate = validityPeriodDate
+        this.item.validityPeriodDate = validityPeriodDate ? new Date(this.formatValid(validityPeriodDate)) : ''
         this.levelList = levelList
         this.area = [provinceId || 0, cityId || 0, countyId || 0]
         this.loadingShow = true
         approveStatus == 1 ? this.title = '审核公司' : this.title = '编辑公司'
+        ; (this.$Spin as any).hide()
       }
     } catch (ex) {
+      (this.$Spin as any).hide()
       this.handleError(ex)
     } finally {
       this.loading = false
     }
+  }
+
+  formatValid(data: any) {
+    const datas = (data + '').split(',')
+    const a = datas[0].slice(0, 4)
+    const b = datas[0].slice(4, 6)
+    const c = datas[0].slice(6)
+    return `${a}/${b}/${c}`
   }
 
   back() {
