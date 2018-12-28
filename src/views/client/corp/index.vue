@@ -140,7 +140,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       render: (hh: any, { row: { createTime } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = createTime ? moment(createTime).format(timeFormat) : ''
+        const html = createTime ? moment(createTime + 8 * 3600 * 1000).format(timeFormat) : ''
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
@@ -153,7 +153,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       render: (hh: any, { row: { modifyTime } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = modifyTime ? moment(modifyTime).format(timeFormat) : ''
+        const html = modifyTime ? moment(modifyTime + 8 * 3600 * 1000).format(timeFormat) : ''
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
