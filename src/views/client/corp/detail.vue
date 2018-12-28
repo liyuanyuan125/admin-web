@@ -62,7 +62,12 @@
       <Row class="detail-footer">
         <Row>
             <Col span="2"><div>客户等级</div></Col>
-            <Col span="4"><span>{{format.levelText}}级</span></Col>
+            <Col span="4">
+              <tooltip v-if="format.levelStaus == 2" content="已下架" placement="top">
+                <span :class="format.levelStaus == 2 ? 'red' : ''">{{format.levelText}}级</span>
+              </tooltip>
+              <span v-else>{{format.levelText}}级</span>
+            </Col>
             <Col span="2"><div>负责商务</div></Col>
             <Col span="6"><span>{{detail.businessDirectorEmail}}<b style="margin-left:5px">[{{detail.businessDirectorName}}]</b></span></Col>
         </Row>
@@ -72,7 +77,10 @@
             <Col span="4" style="margin-right: 20px">
               <div class="typeBox">
                 {{item.oneText}}
-                <div class="right">{{item.twoText}}</div>
+                <tooltip class="right" v-if="format.userType[item.two] == 2" content="已下架" placement="top">
+                  <div :class="format.userType[item.two] == 2 ? 'red' : ''">{{item.twoText}}</div>
+                </tooltip>
+                <div class="right" v-else>{{item.twoText}}</div>
               </div>
             </Col>
           </div>
@@ -124,6 +132,9 @@ import DlgEdit from '../account/dlgEdit.vue'
 import Upload from '@/components/Upload.vue'
 import { toMap } from '@/fn/array'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
+const typeMap = (list: any[]) => toMap(list, 'typeCode', 'controlStatus')
+const conMap = (list: any[]) => toMap(list, 'key', 'controlStatus')
+
 const timeFormatDate = 'YYYY/MM/DD HH:mm:ss'
 const timeFormat = 'YYYY/MM/DD'
 
@@ -152,7 +163,8 @@ export default class Main extends ViewBase {
     return {
       approveList: makeMap(this.approveStatusList),
       statusList: makeMap(this.statusList),
-      levelList: makeMap(this.levelList)
+      levelList: makeMap(this.levelList),
+      levelStaus: conMap(this.levelList),
     }
   }
 
@@ -164,9 +176,11 @@ export default class Main extends ViewBase {
       levelText: cachedMap.levelList[this.detail.levelCode],
       typeFormat: this.typeListFormt(this.detail.types),
       approveTime: this.detail.approveTime ?
-      moment(this.detail.approveTime + 8 * 3600 * 1000).format(timeFormatDate) : '',
+      moment(this.detail.approveTime).format(timeFormatDate) : '',
       validityPeriodDate: this.detail.validityPeriodDate ?
       this.formatValid(this.detail.validityPeriodDate) : '',
+      levelStaus: cachedMap.levelStaus[this.detail.levelCode],
+      userType: this.formatCinema(this.detail.customerTypeList)
     }
   }
 
@@ -178,6 +192,12 @@ export default class Main extends ViewBase {
     return `${a}/${b}/${c}`
   }
 
+  formatCinema(data: any) {
+    const cinemChildren = data && data.map((item: any) => {
+      return item.typeCategoryList
+    }).flat()
+    return typeMap(cinemChildren)
+  }
   get qualifica() {
     if (this.detail.qualificationTypeList) {
        return (this.detail.qualificationTypeList[0] as any).text
@@ -202,6 +222,7 @@ export default class Main extends ViewBase {
             val.typeCategoryList.forEach((chlVal: any) => {
               if ( i.typeCategoryCode == chlVal.typeCode ) {
                 typeObject.twoText = chlVal.typeName
+                typeObject.two = chlVal.typeCode
               }
             })
           }
@@ -225,7 +246,7 @@ export default class Main extends ViewBase {
       const logList = res.data.logList.map((item: any) => {
         return {
           ...item,
-          createTime: moment(item.createTime + 8 * 3600 * 1000).format(timeFormatDate)
+          createTime: moment(item.createTime).format(timeFormatDate)
         }
       })
       this.logList = logList.slice(0, 20)
@@ -234,7 +255,9 @@ export default class Main extends ViewBase {
         this.detail.imageList.length > 0 ? this.showimg = false : ''
       }
       this.loading = true
-      ; (this.$Spin as any).hide()
+      setTimeout(() => {
+        (this.$Spin as any).hide()
+      }, 1000)
     } catch (ex) {
       (this.$Spin as any).hide()
       this.handleError(ex)
@@ -299,10 +322,13 @@ export default class Main extends ViewBase {
   border: 1px solid #dcdee2;
   padding-left: 14px;
   /deep/ .ivu-col-span-2 {
-    /deep/ div {
+    div {
       line-height: 50px;
       width: 88px;
     }
+  }
+  .red {
+    color: red;
   }
   span {
     display: inline-block;
@@ -375,14 +401,18 @@ export default class Main extends ViewBase {
     line-height: 20px;
     background: #dcdee2;
   }
+  .red {
+    color: red;
+  }
 }
 .upload-wrap {
   background-color: #ecf0f4;
-  padding-bottom: 8px;
+  padding-bottom: 6px;
+  margin-top: 6px;
 }
 .upload-info {
   line-height: 18px;
-  padding: 16px 0 0 8px;
+  padding: 10px 0 0 8px;
   margin-bottom: 6px;
 }
 .show-img {
