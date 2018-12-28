@@ -104,23 +104,52 @@ export default class App extends ViewBase {
     },
   ]
 
-  // 映射某些页面到 sider 菜单
-  siderActiveMap: any = {
-    'client-account-detail': 'client-account',
-    'client-corp-detail': 'client-corp',
-    'client-corp-edit': 'client-corp',
-    'data-cinema-hall': 'data-cinema',
-    'data-dict-viewDictionary': 'data-dict',
-    'data-film-detail': 'data-film',
+  get siderOpenNames() {
+    const activeName = this.siderActiveName
+    const item = this.siderMenuList.find(it => {
+      const exists = (it.subList || [{ name: it.name }]).some(t => t.name === activeName)
+      return exists
+    })
+    return item != null ? [ item.name ] : []
   }
 
-  get siderOpenNames() {
-    return this.siderMenuList.map(it => it.name)
+  // 获取导航中全部可点击的页面 name
+  get siderMenuNameMap() {
+    const result = this.siderMenuList.reduce((map: any, it) => {
+      const names = it.subList != null
+        ? it.subList.map(t => t.name)
+        : [ it.name ]
+      names.forEach(name => map[name] = 1)
+      return map
+    }, {})
+    return result
+  }
+
+  // 映射某些页面到 sider 菜单
+  siderActiveMap: any = {
+    // 'from-page-name': 'nav-name',
   }
 
   get siderActiveName() {
     const { name } = this.$route
-    return this.siderActiveMap[name as string] || name
+
+    if (name == null) {
+      return
+    }
+
+    // 若 name 在导航中，直接返回
+    if (name in this.siderMenuNameMap) {
+      return name
+    }
+
+    // 否则去掉最后的 -tail，再次判断
+    const remain = name.replace(/-\w+$/, '')
+    if (remain in this.siderMenuNameMap) {
+      return remain
+    }
+
+    // 最后的手段：硬编码映射关系
+    return this.siderActiveMap[name]
   }
 
   toggleSider() {

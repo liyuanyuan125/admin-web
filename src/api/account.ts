@@ -32,7 +32,7 @@ export async function setList(query: any) {
 }
 // 获取公司详情
 export async function companysList(query: any) {
-  const data = await get('/customer/companies', query)
+  const data = await get('/customer/companies', {pageSize: 10000})
   return data
 }
 

@@ -5,7 +5,7 @@
         <LazyInput v-model="query.companyId" placeholder="公司ID" class="input input-id"/>
         <LazyInput v-model="query.shortName" placeholder="公司名称" class="input"/>
         <Select v-model="query.typeCode" placeholder="客户类型" clearable>
-          <Option v-if="it.controlStatus==1" v-for="it in customerTypeList" :key="it.typeCode" :value="it.typeCode"
+          <Option v-for="it in customerTypeList" :key="it.typeCode" :value="it.typeCode"
             :label="it.typeName">{{it.typeName}}</Option>
         </Select>
         <!-- <Cascader style="width:150px" class="type-select" :data="customerTypeList" v-model="query.type" placeholder="客户类型"></Cascader> -->
@@ -55,9 +55,9 @@ import { confirm } from '@/ui/modal'
 import { numberify, numberKeys } from '@/fn/typeCast'
 
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
+const conMap = (list: any[]) => toMap(list, 'key', 'controlStatus')
 const timeFormat = 'YYYY/MM/DD HH:mm:ss'
-
-
+const typeMap = (list: any[]) => toMap(list, 'typeCode', 'controlStatus')
 
 @Component
 export default class Main extends Mixins(ViewBase, UrlManager) {
@@ -95,13 +95,18 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       key: 'customerTypeList',
       width: 140,
       align: 'center',
-      render: (hh: any, { row: { types } }: any) => {
+      render: (hh: any, { row: { types, userType } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         const customerString: any = this.typeListFormt(types)
         return !!customerString ? (customerString.map((val: any) => {
           if (!!val.twoText) {
-            return <div>{val.oneText}<span>({val.twoText})</span></div>
+            const red = (userType as any)[val.two] == 1 ? 1 : 2
+            return red == 1
+            ? <div>{val.oneText}<span class={`status-${red}`}>({val.twoText})</span></div>
+            : <tooltip content="已下架" placement="top">
+              <div>{val.oneText}<span class={`status-${red}`}>({val.twoText})</span></div>
+            </tooltip>
           } else {
             return <div v-html={val.oneText}></div>
           }
@@ -113,13 +118,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       key: 'levelCode',
       width: 70,
       align: 'center',
-      render: (hh: any, { row: { status, statusText, levelCode, levelText } }: any) => {
+      render: (hh: any, { row: { levelStaus, status, statusText, levelCode, levelText } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        return status == 1
-            ? <span>{levelText}</span>
-            : <tooltip content="已停用" placement="top">
-              <span>{levelText}</span>
+        return levelStaus == 1
+            ? <span class={`status-${levelStaus}`}>{levelText}</span>
+            : <tooltip content="已下架" placement="top">
+              <span class={`status-${levelStaus}`}>{levelText}</span>
             </tooltip>
         /* tslint:enable */
       }
@@ -139,7 +144,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       render: (hh: any, { row: { createTime } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = createTime ? moment(createTime + 8 * 3600 * 1000).format(timeFormat) : ''
+        const html = createTime ? moment(createTime).format(timeFormat) : ''
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
@@ -151,7 +156,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       render: (hh: any, { row: { modifyTime } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = modifyTime ? moment(modifyTime + 8 * 3600 * 1000).format(timeFormat) : ''
+        const html = modifyTime ? moment(modifyTime).format(timeFormat) : ''
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
@@ -221,6 +226,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 
+  formatCinema(data: any) {
+    const cinemChildren = data && data.map((item: any) => {
+      return item.typeCategoryList
+    }).flat()
+    return typeMap(cinemChildren)
+  }
+
   typeListFormt(value: any) {
     const typeArray: any = []
     if ( !!value ) {
@@ -234,6 +246,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
             val.typeCategoryList.forEach((chlVal: any) => {
               if ( i.typeCategoryCode == chlVal.typeCode ) {
                 typeObject.twoText = chlVal.typeName
+                typeObject.two = chlVal.typeCode
               }
             })
           }
@@ -266,7 +279,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       resType: makeMap(this.resTypeList),
       status: makeMap(this.statusList),
       levelList: makeMap(this.levelList),
-      aptitudeStatus: makeMap(this.aptitudeStatusList)
+      aptitudeStatus: makeMap(this.aptitudeStatusList),
+      levelStaus: conMap(this.levelList),
     }
   }
 
@@ -279,6 +293,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         statusText: cachedMap.status[it.status],
         levelText: cachedMap.levelList[it.levelCode],
         aptitudeStatusText: cachedMap.aptitudeStatus[it.approveStatus],
+        levelStaus: cachedMap.levelStaus[it.levelCode],
+        userType: this.formatCinema(this.customerTypeList)
       }
     })
     return list
@@ -386,9 +402,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     .operation {
       margin-right: 6px;
     }
-  }
-  /deep/ .deprecated {
-    color: #ed4014;
   }
   /deep/ span:only-child:empty {
     &::before {
