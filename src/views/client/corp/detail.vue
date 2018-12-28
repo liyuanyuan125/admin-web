@@ -54,8 +54,7 @@
         </Row>
         <Row>
           <Col span="2"><div>审核人</div></Col>
-          <Col span="4"><span v-if="detail.approveStatus != 1">{{detail.approveUser}}</span>
-          <span v-else></span></Col>
+          <Col span="4"><span>{{detail.approveUserName}}</span></Col>
           <Col span="2"><div>审核时间</div></Col>
           <Col span="4"><span>{{format.approveTime}}</span></Col>
         </Row>
