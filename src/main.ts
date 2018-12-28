@@ -28,7 +28,7 @@ Vue.config.productionTip = false
 
 const router = new Router({
   mode: 'history',
-  // 手动维护的 router 放在这里，routers 中的是内部功能页面 router
+  // 非 MainLayout 页面放在这里，MainLayout 页面放在 routes 里
   routes: [
     {
       path: '/login',
