@@ -89,11 +89,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   // 关联商务
   businessDirector = []
   columns = [
-    { title: '公司ID', key: 'id', width: 80 , align: 'center' },
-    { title: '公司名称', key: 'name', width: 120 , align: 'center' },
+    { title: '公司ID', key: 'id', width: 80, align: 'center' },
+    { title: '公司名称', key: 'name', align: 'center' },
     { title: '客户类型',
       key: 'customerTypeList',
-      width: 100,
+      width: 140,
       align: 'center',
       render: (hh: any, { row: { types, userType } }: any) => {
         /* tslint:disable */
@@ -116,7 +116,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     },
     { title: '客户等级',
       key: 'levelCode',
-      width: 60,
+      width: 70,
       align: 'center',
       render: (hh: any, { row: { levelStaus, status, statusText, levelCode, levelText } }: any) => {
         /* tslint:disable */
@@ -129,7 +129,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         /* tslint:enable */
       }
     },
-    { title: '关联商务', key: 'businessDirectorName', width: 170, align: 'center',
+    { title: '关联商务', key: 'businessDirectorName', align: 'center',
       render: (hh: any, { row: { businessDirectorEmail, businessDirectorName } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
@@ -140,7 +140,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     {
       title: '创建时间',
       key: 'createTimeTemp',
-      width: 160 ,
       align: 'center',
       render: (hh: any, { row: { createTime } }: any) => {
         /* tslint:disable */
@@ -153,7 +152,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     {
       title: '更新时间',
       key: 'modifyTimeTemp',
-      width: 160 ,
       align: 'center',
       render: (hh: any, { row: { modifyTime } }: any) => {
         /* tslint:disable */
@@ -166,8 +164,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     {
       title: '状态',
       key: 'statusString',
+      width: 80,
       align: 'center',
-      width: 80 ,
       render: (hh: any, { row: { status, statusText } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
@@ -178,8 +176,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     {
       title: '审核状态',
       key: 'approveStatusString',
+      width: 80,
       align: 'center',
-      width: 100 ,
       render: (hh: any, { row: { approveStatus, aptitudeStatusText } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
@@ -190,6 +188,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     {
       title: '操作',
       key: 'action',
+      width: 120,
       align: 'center',
       render: (hh: any, { row: { id, status, approveStatus } }: any) => {
         /* tslint:disable */
