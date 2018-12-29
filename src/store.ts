@@ -62,6 +62,7 @@ export function logout() {
   postLogout()
 }
 
-export function setCookie(token: string) {
-  cookie.set(KEY_TOKEN, token, COOKIE_OPTIONS)
-}
+/**
+ * 当前应用 ID
+ */
+export const appId = 2

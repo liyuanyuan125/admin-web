@@ -36,7 +36,7 @@ import { Component } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { login, getUserInfo } from '@/api/auth'
 import event from '@/fn/event'
-import { logout, setUser, setCookie } from '@/store'
+import { logout, setUser, appId } from '@/store'
 
 @Component
 export default class Main extends ViewBase {
@@ -69,14 +69,12 @@ export default class Main extends ViewBase {
         const pdata = {
           username: this.form.uname,
           password: this.form.pwd,
+          appId,
         }
         const { data } = await login(pdata)
 
         const user = { id: data.userId, name: data.name }
         setUser(user)
-
-        // 手动设置 cookie，标记已经登录
-        // setCookie(data['X-API-TOKEN'])
 
         this.$router.push({ name: 'home' })
       } catch (ex) {
