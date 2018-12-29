@@ -45,12 +45,12 @@
             </CheckboxGroup >
           </FormItem>
         </Form>
-        <div class="page-wrap" v-if="totalPage > 0">
+        <!-- <div class="page-wrap" v-if="totalPage > 0">
           <Page :total="totalPage" :current="pageIndex" :page-size="pageSize"
             show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
             @on-change="sizeChangeHandle"
             @on-page-size-change="currentChangeHandle"/>
-        </div>
+        </div> -->
       </div>
     </div>
     <div  slot="footer" class="dialog-footer">
@@ -121,8 +121,7 @@ export default class Main extends ViewBase {
       chainId: this.chainId,
       name: this.value,
       ...this.query,
-      pageSize: this.pageSize,
-      pageIndex: this.pageIndex
+      pageSize: 10000,
     }
     try {
       const res = await queryList(clean({...query}))
@@ -154,18 +153,18 @@ export default class Main extends ViewBase {
     this.showDlg = false
   }
 
-  // 每页数
-  sizeChangeHandle(val: any) {
-    this.pageSize = val
-    this.pageIndex = 1
-    this.seach()
-  }
+  // // 每页数
+  // sizeChangeHandle(val: any) {
+  //   this.pageSize = val
+  //   this.pageIndex = 1
+  //   this.seach()
+  // }
 
-  // 当前页
-  currentChangeHandle(val: any) {
-    this.pageIndex = val
-    this.seach()
-  }
+  // // 当前页
+  // currentChangeHandle(val: any) {
+  //   this.pageIndex = val
+  //   this.seach()
+  // }
 
   @Watch('area')
 
