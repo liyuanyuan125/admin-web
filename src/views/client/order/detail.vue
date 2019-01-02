@@ -5,40 +5,35 @@
     <!-- 注册账号 -->
     <div class="Inp-Group-res">
       <Button class="bth" icon="md-return-left" @click="goback">返回上一页</Button>
-      <div class="n-main">主账号详情</div>
       <div class="Inps-res">
         <div class="res-num">
-          <p>用户账号</p>
+          <p>变更编号</p>
           <div class="res-num-item change-item">
-            <span>{{list.email}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;【主账号】</span>
-            <!-- <s class="blu1 les" @click="viewlog(2)">查看操作日志</span> -->
-            <router-link :to="{path:'/client/account/viewLog/'+ list.id, query: {nus: '主账号', companyId: list.companyId, id: list.id, createTime: list.createTime, lastLoginTime: list.lastLoginTime, companyName: list.companyName, email: list.email, name: list.name, mobile: list.mobile}}" tag="span" class="blu1 les">查看操作日志</router-link>
-            <span class="blu2" @click="change(0)">变更主账号</span>
-            <!-- <span>变更主账号</span> -->
+            <span>{{list.email}}</span>
           </div>
         </div>
         <div class="res-num">
-          <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;姓名</p>
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;申请人</p>
           <div class="res-num-item">
-            <span class='item1'>{{list.name}}</span>
-            <span class="res-date les">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;手机号</span>
+            <span>{{list.name}}</span>
+            <span class="res-date les">申请时间</span>
             <span>{{list.mobile}}</span>
           </div>
         </div>
         <div class="res-num">
-          <p>注册时间</p>
+          <p>联系人</p>
           <div class="res-num-item">
-            <span class='item1'>{{createTime}}</span>
-            <span class="res-date les">最后登录时间</span>
+            <span>{{createTime}}</span>
+            <span class="res-date les">联系电话</span>
             <span>{{lastLoginTime}}</span>
           </div>
         </div>
         <div class="res-num">
-          <p>所属公司</p>
+          <p>公司简称</p>
           <div class="res-num-item">
-            <span>{{list.companyName}}</span>
-            <!-- <span class="blu1 les" @click="viewcompanydetail(5)">查看公司详情</span> -->
-            <router-link :to="{path:'/client/corp/detail/'+ list.companyId}" tag="span" class="blu1 les">查看公司详情</router-link>
+            <span>{{createTime}}</span>
+            <span class="res-date les">公司地址</span>
+            <span>{{lastLoginTime}}</span>
           </div>
         </div>
       </div>
@@ -57,7 +52,7 @@
         </div>
       </div>
     </div>
-    <dlgChange  ref="change" :prelist="prelist"  @refreshDataList="search" v-if="changeVisible" @done="dlgEditDone"/>
+    <!-- <dlgChange  ref="change" :prelist="prelist"  @refreshDataList="search" v-if="changeVisible" @done="dlgEditDone"/> -->
 
   </div>
 </template>
@@ -71,7 +66,7 @@ import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice , clean } from '@/fn/object'
-import dlgChange from './dlgChange.vue'
+// import dlgChange from './dlgChange.vue'
 
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
@@ -89,7 +84,7 @@ const defQuery = {
 
 @Component({
   components: {
-    dlgChange
+    // dlgChange
   }
 })
 export default class Main extends ViewBase {
@@ -295,9 +290,6 @@ export default class Main extends ViewBase {
 .res-num-item span {
   display: inline-block;
   margin-left: 5%;
-}
-.item1 {
-  width: 12%;
 }
 .blu1,
 .blu2 {

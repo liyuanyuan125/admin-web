@@ -14,7 +14,7 @@
           <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;姓名</p>
           <div class="res-num-item">
             <span>{{name}}</span>
-            <span style="margin-left:8%;" class="res-date">手机号码</span>
+            <span style="margin-left:8%;" class="res-date">手机号</span>
             <span style="margin-left:2%;">{{mobile}}</span>
           </div>
         </div>
