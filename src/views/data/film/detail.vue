@@ -1,10 +1,16 @@
 <template>
   <div class="page">
+    <header class="header flex-box">
+      <Button icon="md-return-left" @click="back" class="btn-back">返回列表</Button>
+      <div class="flex-1">
+        <em style="margin-left:5px">影片详情</em>
+      </div>
+    </header>
     <div class="detail-box">
       <div class="file-detail-header">
       <dl>
         <dt>电影名称:</dt>
-        <dd>{{detil.name}} <Button icon="md-return-left" style="float:right" @click="goback">返回列表</Button> </dd>
+        <dd>{{detil.name}}</dd>
       </dl>
     </div>
     <div class="file-detail-center">
@@ -27,7 +33,7 @@
       <dl>
         <dt>演员</dt>
         <dd>
-          <span v-for="key in detil.performers" :key="key">{{key}}</span>
+          <span class="performers" v-for="key in detil.performers" :key="key">{{key}}</span>
         </dd>
       </dl>
       <dl>
@@ -44,15 +50,15 @@
       </dl>
       <dl>
         <dt>评分</dt>
-        <dd>{{detil.rating}}</dd>
+        <dd>{{detil.rating}}分</dd>
       </dl>
       <dl>
-        <dt>播放次数</dt>
-        <dd>{{detil.personCount}}</dd>
+        <dt>参演人数</dt>
+        <dd>{{detil.personCount}}人</dd>
       </dl>
       <dl>
         <dt>影片类型</dt>
-        <dd><span v-for="key in detil.type" :key="key">{{key}}</span></dd>
+        <dd><span class="type" v-for="key in detil.type" :key="key">{{key}}</span></dd>
       </dl>
       <dl>
         <dt>产地</dt>
@@ -60,7 +66,7 @@
       </dl>
       <dl>
         <dt>系统分类</dt>
-        <dd><PartPoptipEdit v-model="value" @change="change" /></dd>
+        <dd><PoptipSelect v-model="value" @change="change" /></dd>
       </dl>
       <dl>
         <dt>MtimeID</dt>
@@ -68,11 +74,17 @@
       </dl>
       <dl>
         <dt>主图</dt>
-        <dd><img width="150px" :src="detil.mainPicUrl" /></dd>
+        <dd><ImgModel v-if="show" :uploadList = "detil.mainPicUrl" :type = 1 /></dd>
       </dl>
       <dl>
         <dt>剧情照片</dt>
-        <dd><img v-for="key in detil.plotPicUrl" :key="key" :src="key" width="150px" style="margin-right:20px" /></dd>
+        <dd>
+          <div>
+            <div>
+              <ImgModel v-if="show" :uploadList = "detil.plotPicUrl" :type = 2 />
+            </div>
+          </div>
+        </dd>
       </dl>
       <dl>
         <dt>3D</dt>
@@ -111,32 +123,36 @@
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component } from 'vue-property-decorator'
 import { getIdDetal } from '@/api/film'
-import PartPoptipEdit from '../cinema/partPoptipEdit.vue'
-import View from '@/util/View'
+import PoptipSelect from '@/components/PoptipSelect.vue'
+import ViewBase from '@/util/ViewBase'
 import moment from 'moment'
 import { toThousands } from '@/util/dealData'
 import { updateStatus } from '@/api/film'
 import { toMap } from '@/fn/array'
+import ImgModel from './imgModel.vue'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
-const timeFormat = 'YYYY-MM-DD'
+const timeFormat = 'YYYY/MM/DD'
 
 @Component({
   components: {
-    PartPoptipEdit
+    PoptipSelect,
+    ImgModel
   }
 })
-export default class Main extends View {
-  id: any = null
+export default class Main extends ViewBase {
+  nextId: any = null
   detil: any = {}
   value: any = {}
   categoryList = []
+  show = false
+
   created() {
     if (!sessionStorage.getItem('film-id')) {
       sessionStorage.setItem('film-id', JSON.stringify(this.$route.params))
     }
     const id: any = sessionStorage.getItem('film-id')
-    this.id = this.$route.params.id ? this.$route.params : JSON.parse(id)
+    this.nextId = this.$route.params.id ? this.$route.params : JSON.parse(id)
     this.detils()
   }
 
@@ -154,16 +170,17 @@ export default class Main extends View {
 
   async detils() {
     try {
-       const res = await getIdDetal(this.id)
-       this.detil = res.data
-       this.value = {
-          id: this.id.id,
-          key: this.detil.categoryCode,
-          text: this.detil.categoryName,
-          list: this.detil.categoryList,
-       }
-      } catch (ex) {
-        this.handleError(ex)
+      const res = await getIdDetal(this.nextId)
+      this.detil = res.data
+      this.value = {
+        id: this.nextId.id,
+        text: this.detil.categoryName,
+        value: this.detil.categoryCode,
+        list: this.detil.categoryList,
+      }
+      this.show = true
+    } catch (ex) {
+      this.handleError(ex)
     }
   }
 
@@ -173,46 +190,70 @@ export default class Main extends View {
     }
   }
 
-  goback() {
-    this.$router.push({ name: 'data-film' })
+  back() {
+    this.$router.go(-1)
   }
 
-  async change({ id, key: newStatus, showLoading, hideLoading }: any) {
-    if (this.detil && this.detil.categoryCode != newStatus) {
-      try {
-        showLoading()
-        await updateStatus(id, newStatus)
-        this.value.text = this.cachedMap.categoryList[newStatus]
-        this.value.key = newStatus
-        hideLoading()
-      } catch (ex) {
-        this.handleError(ex)
-      }
+  async change({ id, value, showLoading, hideLoading }: any) {
+    try {
+      showLoading()
+      await updateStatus(id, value)
+      this.value.value = value
+      this.value.text = this.cachedMap.categoryList[value]
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      hideLoading()
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-.page {
-  margin: -10px;
-  background: #ecf0f4;
+@import '../../../site/lib.less';
+
+.header {
+  margin-top: 5px;
+  margin-bottom: 10px;
+  line-height: 30px;
+  em, i {
+    font-style: normal;
+    margin-right: 6px;
+  }
+  em {
+    font-size: 16px;
+    color: @c-base;
+  }
 }
+.detail-number {
+  /deep/ .btn-add {
+    margin-left: 8px;
+    line-height: 50px;
+  }
+}
+
 .detail-box {
-  padding: 10px 0;
+  padding-top: 10px;
+  border: 1px solid #dcdee2;
 }
 .file-detail-header,.file-detail-center {
   background: #fff;
   margin-left: 14px;
   margin-right: 14px;
   dl {
-    padding: 14px 14px;
+    padding: 10px 14px;
     display: flex;
     dd {
       margin-left: 30px;
       flex: 1;
-      span:not(:last-child)::after {
+      .performers {
+        margin-left: 4px;
+      }
+      .performers:not(:last-child)::after {
         content: ',';
+      }
+      .type:not(:last-child)::after {
+        content: '/';
       }
     }
     dt {

@@ -3,12 +3,12 @@
     <div class="act-bar flex-box">
       <form class="form flex-1" @submit.prevent="search">
         <LazyInput v-model="query.nameCn" placeholder="地区名称" class="input input-id"/>
-        <Select v-if="!query.parentIds" v-model="query.areaCodes" placeholder="所属区域" class="input" style="width: 200px" clearable>
+        <Select v-if="query.parentIds == 0" v-model="query.areaCodes" placeholder="所属区域" class="input" style="width: 200px" clearable>
           <Option v-for="it in statusList" :key="it.key"
             :value="it.code">{{it.name}}</Option>
         </Select>
         <Button type="default" @click="reset" class="btn-reset">清空</Button>
-        <Button v-if="!!query.parentIds" @click="goBack" class="btn-reset">返回上一级</Button>
+        <Button v-if="query.parentIds!=0" @click="goBack" class="btn-reset" style="margin-left: 8px">返回上一级</Button>
       </form>
       <div class="acts">
         <Button type="success" icon="md-add-circle" @click="edit(query.parentIds)">新建地区信息</Button>
@@ -24,47 +24,48 @@
         @on-change="page => query.pageIndex = page"
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
-    <DlgEdit  ref="addOrUpdate" :areaSelect="statusList" :areaObject="editOne"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" />
+    <DlgEdit ref="addOrUpdate" :areaSelect="statusList" :areaObject="editOne"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" />
   </div>
 </template>
 
 <script lang="tsx">
 // doc: https://github.com/kaorun343/vue-property-decorator
-import { Component, Watch } from 'vue-property-decorator'
-import View from '@/util/View'
-import { get } from '@/fn/ajax'
+import { Component, Watch, Mixins } from 'vue-property-decorator'
+import ViewBase from '@/util/ViewBase'
+import UrlManager from '@/util/UrlManager'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
-import { numberify, numberKeys } from '@/fn/typeCast'
-import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import { queryList, arealist, areaSet, dels } from '@/api/dateArea'
-import PartPoptipEdit from '../cinema/partPoptipEdit.vue'
-import { confirm } from '@/ui/modal'
+import PoptipSelect from '@/components/PoptipSelect.vue'
+import { confirm, toast } from '@/ui/modal'
 import DlgEdit from './dlgEdit.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'code', 'name')
 
-const defQuery = {
-  nameCn: '',
-  areaCodes: '',
-  pageIndex: 1,
-  pageSize: 20,
-  parentIds: 0,
-  city: ''
-}
-
 @Component({
   components: {
     DlgEdit,
-    PartPoptipEdit
+    PoptipSelect
   }
 })
-export default class Main extends View {
-  query = { ...defQuery }
+export default class Main extends Mixins(ViewBase, UrlManager) {
+  defQuery = {
+    nameCn: '',
+    areaCodes: '',
+    pageIndex: 1,
+    pageSize: 20,
+    parentIds: '0',
+    city: ''
+  }
+
+  query: any = {}
+
   oldQuery: any = {}
+
   editOne: any = null
+
   loading = false
   pageIndex: any = []
   addOrUpdateVisible = false
@@ -76,6 +77,7 @@ export default class Main extends View {
   parentsareaCode = ''
   statusList: any[] = []
   saveId: any[] = []
+
   get columns() {
     const colum =  [
       { title: '序号', key: 'id', align: 'center' },
@@ -98,21 +100,21 @@ export default class Main extends View {
         align: 'center',
         render: (hh: any, { row : { id , areaCode, areaName } }: any) => {
           /* tslint:disable */
-        const list = this.statusList.map((value) => {
-          return {
-            key: value.code,
-            text: value.name
-          }
-        })
-        const h = jsxReactToVue(hh)
-            const value = {
-                id,
-                key: areaCode,
-                text: areaName,
-                list
+          const list = this.statusList.map((value) => {
+            return {
+              key: value.code,
+              text: value.name
             }
-            return <PartPoptipEdit v-model={value}
-                on-change={this.editStatus.bind(this)}/>
+          })
+          const h = jsxReactToVue(hh)
+          const value = {
+            id,
+            text: areaName,
+            value: areaCode,
+            list
+          }
+          return <PoptipSelect v-model={value}
+            on-change={this.editStatus.bind(this)}/>
           /* tslint:enable */
         }
       },
@@ -138,7 +140,7 @@ export default class Main extends View {
         }
       }
     ]
-    !!this.query.parentIds ? colum.splice(4, 1) : colum
+    ; (this.query.parentIds != '0') ? colum.splice(4, 1) : colum
     return colum
   }
 
@@ -166,9 +168,9 @@ export default class Main extends View {
     this.saveId.pop()
     this.pageIndex.pop()
     this.cityArray.pop()
-    !this.query.parentIds ? this.query.areaCodes = '' : ''
+    this.query.parentIds == '0' ? this.query.areaCodes = '' : ''
     this.query.areaCodes = this.query.areaCodes
-    !this.query.parentIds ? this.query.city = '' : ''
+    this.query.parentIds == '0' ? this.query.city = '' : ''
   }
 
   get tableData() {
@@ -184,17 +186,10 @@ export default class Main extends View {
   created() {
     this.addArea()
   }
+
   mounted() {
-    const urlQuery = slice(urlParam(), Object.keys(defQuery))
-    this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
+    this.updateQueryByParam()
   }
-
-  updateUrl() {
-    const query = prettyQuery(this.query, defQuery)
-    const url = buildUrl(location.pathname, query)
-    history.replaceState(null, '', url)
-  }
-
 
   async addArea() {
     try {
@@ -213,24 +208,23 @@ export default class Main extends View {
   }
 
   reset() {
-    const { pageSize } = this.query
-    if (!this.query.parentIds) {
-      this.query = { ...defQuery, pageSize }
+    if (this.query.parentIds == '0') {
+      this.resetQuery()
     } else {
       this.query.nameCn = ''
     }
   }
 
   async delete(id: any) {
+    await confirm('您确定删除当前地区信息吗？')
     try {
-      await confirm('您确定删除当前地区信息吗？')
       await dels(id)
-      this.$Message.success({
-        content: `删除成功`,
-      })
+      toast(`删除成功`)
       this.reloadSearch()
     } catch (ex) {
-      this.handleError(ex)
+      setTimeout(() => {
+        this.handleError(ex)
+      }, 500)
     }
   }
 
@@ -243,7 +237,7 @@ export default class Main extends View {
     this.loading = true
     const query = clean({ ...this.query })
     const setQuery: any = {}
-    if (this.query.parentIds) {
+    if (this.query.parentIds != '0') {
       for ( const key in query ) {
         if (query.hasOwnProperty(key)) {
           if (key != 'areaCodes' && key != 'city') {
@@ -274,24 +268,24 @@ export default class Main extends View {
     }
   }
 
-  async editStatus({ id, key: newStatus, showLoading }: any) {
+  async editStatus({ id, value, showLoading, hideLoading }: any) {
     const item = this.list.find(it => it.id == id)
-    if (item && item.areaCodes != newStatus) {
-      try {
-        showLoading()
-        await areaSet(id, {areaCode: newStatus, areaName: this.cachedMap.statusList[newStatus]})
-        item.areaCode = newStatus
-        item.areaName = this.cachedMap.statusList[newStatus]
-      } catch (ex) {
-        this.handleError(ex)
-      }
+    try {
+      showLoading()
+      await areaSet(id, {areaCode: value})
+      item.areaCode = value
+      item.areaName = this.cachedMap.statusList[value]
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      hideLoading()
     }
   }
 
   // 新增 / 修改
-  edit(id: number, row: any, editMes: number) {
+  edit(id: any, row: any, editMes: number) {
     this.addOrUpdateVisible = true
-    !!id ? this.editOne = row : this.editOne = ''
+    id != '0' ? this.editOne = row : this.editOne = ''
     this.$nextTick(() => {
       (this.$refs.addOrUpdate as any).init(id, this.query.city, this.query.areaCodes, editMes, this.query.parentIds)
     })
@@ -319,11 +313,6 @@ export default class Main extends View {
   .input-id {
     width: 180px;
   }
-}
-
-.btn-search,
-.btn-reset {
-  margin-left: 8px;
 }
 
 .table {

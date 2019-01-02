@@ -8,7 +8,7 @@ import Router from 'vue-router'
 import home from './views/home.vue'
 import login from './views/login.vue'
 import MainLayout from './site/MainLayout.vue'
-import routers from './routers'
+import routes from './routes'
 import locale from 'iview/dist/locale/zh-CN'
 import event from './fn/event'
 import { alert } from './ui/modal'
@@ -28,7 +28,7 @@ Vue.config.productionTip = false
 
 const router = new Router({
   mode: 'history',
-  // 手动维护的 router 放在这里，routers 中的是内部功能页面 router
+  // 非 MainLayout 页面放在这里，MainLayout 页面放在 routes 里
   routes: [
     {
       path: '/login',
@@ -43,7 +43,7 @@ const router = new Router({
         path: '/',
         name: 'home',
         component: home,
-      }].concat(routers),
+      }].concat(routes),
     }
   ]
 })

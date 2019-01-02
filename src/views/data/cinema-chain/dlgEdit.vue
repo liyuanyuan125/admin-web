@@ -1,5 +1,5 @@
 <template>
-  <Modal 
+  <Modal
     v-model='showDlg'
     :transfer='true'
     :width='420'
@@ -38,7 +38,7 @@
 import { Component, Prop } from 'vue-property-decorator'
 import { dataFrom , add , set} from '@/api/cinemaChain'
 import { warning , success } from '@/ui/modal'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 
 const dataForm = {
   name: '',
@@ -49,7 +49,7 @@ const dataForm = {
 }
 
 @Component
-export default class ComponentMain extends View {
+export default class ComponentMain extends ViewBase {
   @Prop({ type: Object }) cinemaOnes: any
   @Prop({ type: Array }) dlgStatus: any
   @Prop({ type: Array }) delControlStatus: any

@@ -54,8 +54,8 @@
     <Table :columns="columns" :data="tableData" :loading="loading"
       border stripe disabled-hover size="small" class="table"></Table>
 
-    <div v-for="(it, i) in helperList" :key="it.id">
-      <DlgEdit v-model="helperList[i]" :cinemaId="query.id"
+    <div v-for="(it, i) in dlgEditList" :key="it.id">
+      <DlgEdit v-model="dlgEditList[i]" :cinemaId="query.id"
         @done="dlgEditDone" v-if="it.showDlgEdit"/>
     </div>
   </div>
@@ -63,8 +63,9 @@
 
 <script lang="tsx">
 // doc: https://github.com/kaorun343/vue-property-decorator
-import { Component, Watch } from 'vue-property-decorator'
-import View from '@/util/View'
+import { Component, Watch, Mixins } from 'vue-property-decorator'
+import ViewBase from '@/util/ViewBase'
+import UrlManager from '@/util/UrlManager'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import { clean, slice } from '@/fn/object'
@@ -73,19 +74,17 @@ import DlgEdit from './dlgEdit.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
-const defQuery = {
-  id: '',
-  pageIndex: 1,
-  pageSize: 888888,
-}
-
 @Component({
   components: {
     DlgEdit,
   }
 })
-export default class Main extends View {
-  query: any = { ...defQuery }
+export default class Main extends Mixins(ViewBase, UrlManager) {
+  defQuery = {
+    id: 0
+  }
+
+  query: any = {}
 
   oldQuery: any = {}
 
@@ -111,12 +110,12 @@ export default class Main extends View {
     }, {})
   }
 
-  // 辅助数据
-  helperList: any[] = []
+  // 编辑对话框列表
+  dlgEditList: any[] = []
 
   get columns() {
     return  [
-      { title: '序号', key: 'id', width: 138, align: 'center' },
+      { title: '序号', key: 'id', width: 70, align: 'center' },
       { title: '影厅名称', key: 'name', minWidth: 70, align: 'center' },
       { title: '影厅类型', key: 'typeName', width: 65, align: 'center' },
       { title: '座位数', key: 'seats', width: 55, align: 'center' },
@@ -163,9 +162,7 @@ export default class Main extends View {
   }
 
   mounted() {
-    const { id } = this.$route.params
-    this.query.id = id
-    this.fetch()
+    this.updateQueryByParam()
   }
 
   async fetch() {
@@ -189,7 +186,7 @@ export default class Main extends View {
         ...slice(data, Object.keys(this.enumType))
       }
 
-      this.helperList = this.list.map((it: any) => ({
+      this.dlgEditList = this.list.map((it: any) => ({
         id: it.id,
         showDlgEdit: false,
       }))
@@ -219,10 +216,10 @@ export default class Main extends View {
   }
 
   edit(id: string|number) {
-    let item = this.helperList.find(it => it.id == id)
+    let item = this.dlgEditList.find(it => it.id == id)
     if (item == null && id == 0) {
       item = { id: 0, showDlgEdit: true }
-      this.helperList.push(item)
+      this.dlgEditList.push(item)
     }
     item && (item.showDlgEdit = true)
   }
@@ -233,9 +230,6 @@ export default class Main extends View {
 
   @Watch('query', { deep: true })
   watchQuery() {
-    if (this.query.pageIndex == this.oldQuery.pageIndex) {
-      this.query.pageIndex = 1
-    }
     this.fetch()
   }
 }

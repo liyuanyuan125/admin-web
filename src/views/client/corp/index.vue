@@ -2,24 +2,24 @@
   <div class="page">
     <div class="act-bar flex-box">
       <form class="form flex-1" @submit.prevent="search">
-        <LazyInput v-model="query.id" placeholder="公司ID" class="input input-id"/>
-        <LazyInput v-model="query.name" placeholder="公司名称" class="input"/>
-        <LazyInput v-model="query.userAccount" placeholder="用户账号" class="input"/>
-        <Select v-model="query.type" placeholder="资源方" clearable>
-          <Option v-for="it in typeList" :key="it.id" :value="it.id"
-            :label="it.name">{{it.name}}</Option>
+        <LazyInput v-model="query.companyId" placeholder="公司ID" class="input input-id"/>
+        <LazyInput v-model="query.shortName" placeholder="公司名称" class="input"/>
+        <Select v-model="query.typeCode" placeholder="客户类型" clearable>
+          <Option v-for="it in customerTypeList" :key="it.typeCode" :value="it.typeCode"
+            :label="it.typeName">{{it.typeName}}</Option>
         </Select>
+        <!-- <Cascader style="width:150px" class="type-select" :data="customerTypeList" v-model="query.type" placeholder="客户类型"></Cascader> -->
         <Select v-model="query.status" placeholder="状态" clearable>
-          <Option v-for="it in statusList" :key="it.id" :value="it.id"
-            :label="it.name">{{it.name}}</Option>
+          <Option v-for="it in statusList" :key="it.key" :value="it.key"
+            :label="it.text">{{it.text}}</Option>
         </Select>
-        <Select v-model="query.bizUserId" placeholder="关联商务" clearable>
-          <Option v-for="it in bizUserList" :key="it.id" :value="it.id"
-            :label="it.name">{{[it.name, it.group, it.title].join(' | ')}}</Option>
+        <Select v-model="query.businessDirector" placeholder="关联商务" style="width:200px" filterable clearable>
+          <Option v-if="it.status!=2" v-for="it in businessDirector" :key="it.id" :value="it.id"
+            :label="it.email+'  ['+it.userName+']'">{{ it.email}}<b style="margin-left:5px">[{{it.userName}}]</b></Option>
         </Select>
-        <Select v-model="query.aptitudeStatus" placeholder="资质状态" clearable>
-          <Option v-for="it in aptitudeStatusList" :key="it.id" :value="it.id"
-            :label="it.name">{{it.name}}</Option>
+        <Select v-model="query.approveStatus" placeholder="审核状态" clearable>
+          <Option v-for="it in aptitudeStatusList"  :key="it.key" :value="it.key"
+            :label="it.text">{{it.text}}</Option>
         </Select>
         <!-- <Button type="primary" @click="search" icon="md-search" class="btn-search">查询</Button> -->
         <Button type="default" @click="reset" class="btn-reset">清空</Button>
@@ -33,8 +33,8 @@
       border stripe disabled-hover size="small" class="table"></Table>
 
     <div class="page-wrap" v-if="total > 0">
-      <Page :total="total" show-total :page-size="query.pageSize" show-sizer
-        :page-size-opts="[10, 20, 50, 100]" :current="query.pageIndex"
+      <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
+        show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
         @on-change="page => query.pageIndex = page"
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
@@ -42,88 +42,128 @@
 </template>
 
 <script lang="tsx">
-import { Component, Watch } from 'vue-property-decorator'
-import View from '@/util/View'
+import { Component, Watch, Mixins } from 'vue-property-decorator'
+import ViewBase from '@/util/ViewBase'
+import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
-import { clean } from '@/fn/object'
-import { queryList } from '@/api/corp'
+import { slice, clean } from '@/fn/object'
+import { queryList, statusId, directorList } from '@/api/corpReal'
+import { confirm } from '@/ui/modal'
+import { numberify, numberKeys } from '@/fn/typeCast'
 
-const makeMap = (list: any[]) => toMap(list, 'id', 'name')
-const timeFormat = 'YYYY-MM-DD<br>HH:mm:ss'
-
-const defQuery = {
-  id: null,
-  name: '',
-  userAccount: '',
-  type: null,
-  status: null,
-  bizUserId: null,
-  aptitudeStatus: null,
-  pageIndex: 1,
-  pageSize: 20,
-}
+const makeMap = (list: any[]) => toMap(list, 'key', 'text')
+const conMap = (list: any[]) => toMap(list, 'key', 'controlStatus')
+const timeFormat = 'YYYY/MM/DD HH:mm:ss'
+const typeMap = (list: any[]) => toMap(list, 'typeCode', 'controlStatus')
 
 @Component
-export default class Main extends View {
-  query = { ...defQuery }
+export default class Main extends Mixins(ViewBase, UrlManager) {
+  defQuery = {
+    companyId: '',
+    shortName: '',
+    typeCode: '',
+    status: 0,
+    businessDirector: null,
+    approveStatus: 0,
+    pageIndex: 1,
+    pageSize: 20,
+  }
+  query: any = {}
 
-  oldQuery: any = null
-
+  oldQuery: any = {}
+  defaulitState: any = null
   loading = false
   list = []
   total = 0
-
-  typeList = []
-
+  // 业务类型列表
+  customerTypeList = []
+  // 启用状态列表
   resTypeList = []
-
+  // 资质审核状态列表
   statusList = []
-
-  bizUserList = []
-
-  clientLevelList = []
-
+  levelList = []
   aptitudeStatusList = []
-
+  // 关联商务
+  businessDirector = []
   columns = [
-    { title: '公司ID', key: 'id', width: 90, align: 'center' },
+    { title: '公司ID', key: 'id', width: 80, align: 'center' },
     { title: '公司名称', key: 'name', align: 'center' },
-    { title: '资源方', key: 'isResOwner', width: 80, align: 'center' },
-    { title: '资源方类型', key: 'resTypeName', width: 100, align: 'center' },
-    { title: '客户等级', key: 'clientLevelName', width: 80, align: 'center' },
-    { title: '关联商务', key: 'bizUserName', width: 80, align: 'center' },
+    { title: '客户类型',
+      key: 'customerTypeList',
+      width: 140,
+      align: 'center',
+      render: (hh: any, { row: { types, userType } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        const customerString: any = this.typeListFormt(types)
+        return !!customerString ? (customerString.map((val: any) => {
+          if (!!val.twoText) {
+            const red = (userType as any)[val.two] == 1 ? 1 : 2
+            return red == 1
+            ? <div>{val.oneText}<span class={`status-${red}`}>({val.twoText})</span></div>
+            : <tooltip content="已下架" placement="top">
+              <div>{val.oneText}<span class={`status-${red}`}>({val.twoText})</span></div>
+            </tooltip>
+          } else {
+            return <div v-html={val.oneText}></div>
+          }
+        })) : ''
+        /* tslint:enable */
+      }
+    },
+    { title: '客户等级',
+      key: 'levelCode',
+      width: 70,
+      align: 'center',
+      render: (hh: any, { row: { levelStaus, status, statusText, levelCode, levelText } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        return levelStaus == 1
+            ? <span class={`status-${levelStaus}`}>{levelText}</span>
+            : <tooltip content="已下架" placement="top">
+              <span class={`status-${levelStaus}`}>{levelText}</span>
+            </tooltip>
+        /* tslint:enable */
+      }
+    },
+    { title: '关联商务', key: 'businessDirectorName', align: 'center',
+      render: (hh: any, { row: { businessDirectorEmail, businessDirectorName } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        return <span class='datetime'>{businessDirectorEmail}<p style="font-weight:bold">[{businessDirectorName}]</p></span>
+        /* tslint:enable */
+      }
+    },
     {
       title: '创建时间',
-      key: 'createTime',
-      width: 100,
+      key: 'createTimeTemp',
       align: 'center',
       render: (hh: any, { row: { createTime } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = moment(createTime).format(timeFormat)
+        const html = createTime ? moment(createTime).format(timeFormat) : ''
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
     },
     {
       title: '更新时间',
-      key: 'updateTime',
-      width: 100,
+      key: 'modifyTimeTemp',
       align: 'center',
-      render: (hh: any, { row: { updateTime } }: any) => {
+      render: (hh: any, { row: { modifyTime } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = moment(updateTime).format(timeFormat)
+        const html = modifyTime ? moment(modifyTime).format(timeFormat) : ''
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
     },
     {
       title: '状态',
-      key: 'statusText',
+      key: 'statusString',
       width: 80,
       align: 'center',
       render: (hh: any, { row: { status, statusText } }: any) => {
@@ -134,41 +174,113 @@ export default class Main extends View {
       }
     },
     {
-      title: '公司资质',
-      key: 'aptitudeStatusText',
-      width: 90,
+      title: '审核状态',
+      key: 'approveStatusString',
+      width: 80,
       align: 'center',
-      render: (hh: any, { row: { aptitudeStatus, aptitudeStatusText } }: any) => {
+      render: (hh: any, { row: { approveStatus, aptitudeStatusText } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        return <span class={`aptitude-status-${aptitudeStatus}`}>{aptitudeStatusText}</span>
+        return <span class={`aptitude-status-${approveStatus}`}>{aptitudeStatusText}</span>
         /* tslint:enable */
       }
     },
     {
       title: '操作',
       key: 'action',
-      width: 80,
+      width: 120,
       align: 'center',
-      render: (hh: any, { row: { id } }: any) => {
+      render: (hh: any, { row: { id, status, approveStatus } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
+        const edit = approveStatus == 1 ? '审核' : '编辑'
+        const statusText = status == 1 ? '停用' : '启用'
         return <div class='row-acts'>
-          <router-link to={{ name: 'client-corp-detail', params: { id } }}>详情</router-link>
+          <a class="operation" on-click={this.editStatus.bind(this, id, status)} to={{ name: 'client-corp-detail', params: { id } }}>{statusText}</a>
+          <router-link class="operation" to={{ name: 'client-corp-edit', params: { id } }}>{edit}</router-link>
+          <router-link class="operation" to={{ name: 'client-corp-detail', params: { id } }}>详情</router-link>
         </div>
         /* tslint:enable */
       }
     }
   ]
 
+  mounted() {
+    this.updateQueryByParam()
+  }
+
+  reset() {
+    this.resetQuery()
+  }
+
+  created() {
+    this.business()
+  }
+
+  async business() {
+    try {
+      const res = await directorList()
+      this.businessDirector = res.data.items
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
+  formatCinema(data: any) {
+    const cinemChildren = data && data.map((item: any) => {
+      return item.typeCategoryList
+    }).flat()
+    return typeMap(cinemChildren)
+  }
+
+  typeListFormt(value: any) {
+    const typeArray: any = []
+    if ( !!value ) {
+      value.forEach((i: any) => {
+        const typeObject: any = {}
+        this.customerTypeList.forEach((val: any) => {
+          if (i.typeCode == val.typeCode) {
+            typeObject.oneText = val.typeName
+          }
+          if ( !!i.typeCategoryCode ) {
+            val.typeCategoryList.forEach((chlVal: any) => {
+              if ( i.typeCategoryCode == chlVal.typeCode ) {
+                typeObject.twoText = chlVal.typeName
+                typeObject.two = chlVal.typeCode
+              }
+            })
+          }
+        })
+        typeArray.push(typeObject)
+      })
+    }
+    return typeArray
+    // let brr: any= []
+    // let typeArray: any = null
+    // value.forEach( (val: any, i: any) => {
+    //   if (val.typeCategoryList) {
+    //     typeArray = {
+    //       label: val.typeName,
+    //       value: val.typeCode,
+    //       children: this.typeListFormt(val.typeCategoryList)
+    //     }
+    //   } else {
+    //     typeArray = {
+    //       label: val.typeName,
+    //       value: val.typeCode
+    //     }
+    //   }
+    //   brr.push(typeArray)
+    // })
+    // return brr
+  }
   get cachedMap() {
     return {
-      type: makeMap(this.typeList),
       resType: makeMap(this.resTypeList),
       status: makeMap(this.statusList),
-      bizUser: makeMap(this.bizUserList),
-      clientLevel: makeMap(this.clientLevelList),
-      aptitudeStatus: makeMap(this.aptitudeStatusList)
+      levelList: makeMap(this.levelList),
+      aptitudeStatus: makeMap(this.aptitudeStatusList),
+      levelStaus: conMap(this.levelList),
     }
   }
 
@@ -177,28 +289,15 @@ export default class Main extends View {
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        isResOwner: it.type == 1 ? '是' : '-',
-        resTypeName: cachedMap.resType[it.resType],
-        bizUserName: cachedMap.bizUser[it.bizUserId],
+        resTypeName: cachedMap.resType[it.typeString],
         statusText: cachedMap.status[it.status],
-        clientLevelName: cachedMap.clientLevel[it.clientLevel],
-        aptitudeStatusText: cachedMap.aptitudeStatus[it.aptitudeStatus],
+        levelText: cachedMap.levelList[it.levelCode],
+        aptitudeStatusText: cachedMap.aptitudeStatus[it.approveStatus],
+        levelStaus: cachedMap.levelStaus[it.levelCode],
+        userType: this.formatCinema(this.customerTypeList)
       }
     })
     return list
-  }
-
-  mounted() {
-    this.doSearch()
-  }
-
-  search() {
-    this.query.pageIndex = 1
-  }
-
-  reset() {
-    const { pageSize } = this.query
-    this.query = { ...defQuery, pageSize }
   }
 
   async doSearch() {
@@ -207,28 +306,26 @@ export default class Main extends View {
     }
 
     this.oldQuery = { ...this.query }
-
+    this.updateUrl()
     this.loading = true
     const query = clean({ ...this.query })
     try {
       const { data: {
         items: list,
         totalCount: total,
-        typeList,
+        customerTypeList,
         resTypeList,
         statusList,
-        bizUserList,
-        clientLevelList,
-        aptitudeStatusList,
+        levelList,
+        approveStatusList,
       } } = await queryList(query)
       this.list = list
       this.total = total
-      this.typeList = typeList
+      this.levelList = levelList
+      this.customerTypeList = customerTypeList
       this.resTypeList = resTypeList
-      this.statusList = statusList
-      this.bizUserList = bizUserList
-      this.clientLevelList = clientLevelList
-      this.aptitudeStatusList = aptitudeStatusList
+      this.statusList = statusList.slice(1)
+      this.aptitudeStatusList = approveStatusList.slice(1)
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -239,6 +336,21 @@ export default class Main extends View {
   edit(id: number) {
     const params: any = id > 0 ? { id } : {}
     this.$router.push({ name: 'client-corp-edit', params })
+  }
+
+  async editStatus(id: number, status: number) {
+    const statu = status == 1 ? '停用' : '启用'
+    const statusType = status == 1 ? 2 : 1
+    await confirm(`确定要${statu}该项吗？`)
+    try {
+      await statusId(id, { status: statusType})
+      this.doSearch()
+    } catch (ex) {
+      setTimeout(() => {
+        this.handleError(ex)
+      }, 1000)
+    }
+
   }
 
   @Watch('query', { deep: true })
@@ -265,6 +377,11 @@ export default class Main extends View {
   .input-id {
     width: 80px;
   }
+  .type-select {
+    display: inline-block;
+    width: 100%;
+    margin-left: 8px;
+  }
 }
 
 .btn-search,
@@ -280,6 +397,16 @@ export default class Main extends View {
   }
   /deep/ .aptitude-status-2 {
     color: #19be6b;
+  }
+  /deep/ .row-acts {
+    .operation {
+      margin-right: 6px;
+    }
+  }
+  /deep/ span:only-child:empty {
+    &::before {
+      content: '-';
+    }
   }
 }
 

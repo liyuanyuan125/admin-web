@@ -19,11 +19,10 @@ export default [
     component: () => import('./views/client/account/detail.vue')
   },
   {
-    path: '/client/account/viewLog',
+    path: '/client/account/viewLog/:id?',
     name: 'client-account-viewLog',
     component: () => import('./views/client/account/viewLog.vue')
   },
-
   {
     path: '/client/corp/',
     name: 'client-corp',
@@ -40,11 +39,6 @@ export default [
     component: () => import('./views/client/corp/edit.vue')
   },
 
-  {
-    path: '/client/verify/',
-    name: 'client-verify',
-    component: () => import('./views/client/verify/index.vue')
-  },
   {
     path: '/data/area/',
     name: 'data-area',

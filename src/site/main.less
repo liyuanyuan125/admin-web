@@ -22,6 +22,11 @@ html, body {
   height: 100%;
 }
 
+// 标记为废弃字段，不要用作它图
+.deprecated {
+  color: #ed4014;
+}
+
 //** override
 .ivu-table-cell {
   padding-left: 4px;
@@ -32,4 +37,11 @@ html, body {
 }
 .ivu-input-number {
   width: 100%;
+}
+
+.ivu-modal-confirm-body {
+  padding: 18px 0 0 0;
+}
+.ivu-modal-confirm-head ~ .ivu-modal-confirm-body {
+  padding: 0 0 0 42px;
 }

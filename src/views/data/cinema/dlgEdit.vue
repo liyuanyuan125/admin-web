@@ -24,7 +24,7 @@
         <Col span="8">
           <FormItem label="控制状态" prop="controlStatus">
             <Select v-model="item.controlStatus">
-              <Option v-for="it in controlStatusList" :key="it.key"
+              <Option v-for="it in enumType.controlStatusList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
           </FormItem>
@@ -34,14 +34,13 @@
       <Row>
         <Col span="16">
           <FormItem label="院线" prop="chainId">
-            <CinemaChainSelect v-model="item.chainId" :controlStatus="1"
-              :keepId="item.chainId"/>
+            <CinemaChainSelect v-model="item.chainId"/>
           </FormItem>
         </Col>
         <Col span="8">
           <FormItem label="影院等级" prop="gradeCode">
             <Select v-model="item.gradeCode" clearable>
-              <Option v-for="it in gradeList" :key="it.key"
+              <Option v-for="it in enumType.gradeList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
           </FormItem>
@@ -65,7 +64,7 @@
         <Col span="10">
           <FormItem label="售票系统" prop="softwareCode">
             <Select v-model="item.softwareCode" clearable>
-              <Option v-for="it in softwareList" :key="it.key"
+              <Option v-for="it in enumType.softwareList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
           </FormItem>
@@ -78,7 +77,7 @@
         <Col span="8">
           <FormItem label="营业状态" prop="status">
             <Select v-model="item.status">
-              <Option v-for="it in statusList" :key="it.key"
+              <Option v-for="it in enumType.statusList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
           </FormItem>
@@ -91,30 +90,36 @@
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop, Watch } from 'vue-property-decorator'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 import { queryItem, addItem, updateItem } from '@/api/cinema'
 import AreaSelect from '@/components/AreaSelect.vue'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import { slice } from '@/fn/object'
 import { toast } from '@/ui/modal'
+import { filterItemInList, filterListByControlStatus } from '@/util/dealData'
 
 interface Value {
-  id: string
+  id: number
   showDlgEdit: boolean
 }
 
-interface Enum {
-  key: number
+interface KeyTextControlStatus {
+  key: string | number
   text: string
+  controlStatus: number
 }
 
-const defItem = {
-  id: '',
+interface KeyTextControlStatusMap {
+  [key: string]: KeyTextControlStatus[]
+}
+
+const defItem: any = {
+  id: 0,
   shortName: '',
   code: '',
   officialName: '',
   controlStatus: 0,
-  chainId: '',
+  chainId: 0,
   gradeCode: '',
   provinceId: 0,
   cityId: 0,
@@ -134,7 +139,7 @@ const defItem = {
     CinemaChainSelect,
   }
 })
-export default class DlgEdit extends View {
+export default class DlgEdit extends ViewBase {
   /**
    * 值本身，可以使用 v-model 进行双向绑定
    */
@@ -148,13 +153,12 @@ export default class DlgEdit extends View {
 
   item: any = {}
 
-  gradeList: Enum[] = []
-
-  softwareList: Enum[] = []
-
-  statusList: Enum[] = []
-
-  controlStatusList: Enum[] = []
+  enumType: KeyTextControlStatusMap = {
+    gradeList: [],
+    softwareList: [],
+    statusList: [],
+    controlStatusList: [],
+  }
 
   shortNameError = ''
 
@@ -171,7 +175,7 @@ export default class DlgEdit extends View {
         { required: true, message: '不能为空', trigger: 'blur' }
       ],
       chainId: [
-        { required: true, message: '不能为空', trigger: 'change' }
+        { required: true, type: 'number', min: 1, message: '不能为空', trigger: 'change' }
       ],
       area: [
         {
@@ -179,13 +183,13 @@ export default class DlgEdit extends View {
           message: '不能为空',
           trigger: 'change',
           type: 'array',
-          validator(rule: any, value: string[], callback: any) {
+          validator(rule: any, value: number[], callback: any) {
             if (areaFirstCall) {
               areaFirstCall = false
               return callback()
             }
             const strVal = (value || []).join('')
-            strVal === '000' ? callback(new Error('不能为空')) : callback()
+            ; /^0*$/.test(strVal) ? callback(new Error('不能为空')) : callback()
           }
         }
       ],
@@ -207,10 +211,8 @@ export default class DlgEdit extends View {
       delete data.area
       const res = data.id ? await updateItem(data) : await addItem(data)
       toast(data.id ? '更新成功' : '创建成功')
-      setTimeout(() => {
-        this.$emit('done')
-        this.inValue.showDlgEdit = false
-      }, 1888)
+      this.$emit('done')
+      this.inValue.showDlgEdit = false
     } catch (ex) {
       this.resetSubmitLoading()
       this.handleError(ex)
@@ -225,28 +227,35 @@ export default class DlgEdit extends View {
     this.loading = true
     const query = { id: this.value.id }
     try {
-      const { data: {
-        item = {},
-        gradeList = [],
-        softwareList = [],
-        statusList = [],
-        controlStatusList = [],
-      } } = await queryItem(query)
-      this.item = { ...defItem, ...slice(item, Object.keys(defItem)) }
-      this.gradeList = gradeList
-      this.softwareList = softwareList
-      this.statusList = statusList
-      this.controlStatusList = controlStatusList
+      const { data } = await queryItem(query)
 
-      const { provinceId = '0', cityId = '0', countyId = '0' } = this.item
+      this.enumType = filterListByControlStatus({
+        ...this.enumType,
+        ...slice(data, Object.keys(this.enumType))
+      })
+
+      this.item = filterItemInList({
+        ...defItem,
+        ...slice(data.item, Object.keys(defItem))
+      }, {
+        gradeCode: this.enumType.gradeList,
+        softwareCode: this.enumType.softwareList,
+      }, defItem)
+
+      // 清除非法的 chainId
+      if (data.item && data.item.chainControlStatus != 1) {
+        this.item.chainId = defItem.chainId
+      }
+
+      const { provinceId = 0, cityId = 0, countyId = 0 } = this.item
       this.item.area = [provinceId, cityId, countyId]
 
       // 默认选中第一个
       if (this.item.status == 0) {
-        this.item.status = statusList[0].key
+        this.item.status = this.enumType.statusList[0].key
       }
       if (this.item.controlStatus == 0) {
-        this.item.controlStatus = controlStatusList[0].key
+        this.item.controlStatus = this.enumType.controlStatusList[0].key
       }
     } catch (ex) {
       this.handleError(ex)
@@ -266,7 +275,7 @@ export default class DlgEdit extends View {
   }
 
   @Watch('item.area')
-  watchArea(val: string[]) {
+  watchArea(val: number[]) {
     this.item.provinceId = val[0]
     this.item.cityId = val[1]
     this.item.countyId = val[2]

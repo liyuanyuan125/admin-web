@@ -23,44 +23,41 @@
 </template>
 
 <script lang="tsx">
-import { Component, Watch } from 'vue-property-decorator'
-import View from '@/util/View'
-import { get } from '@/fn/ajax'
+import { Component, Watch, Mixins } from 'vue-property-decorator'
+import ViewBase from '@/util/ViewBase'
+import UrlManager from '@/util/UrlManager'
 import { queryList , dictqueryList } from '@/api/dict'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
-import { numberify, numberKeys } from '@/fn/typeCast'
-import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import dlgViewEdit from './dlgViewEdit.vue'
 
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD<br>HH:mm:ss'
 
-const defQuery = {
-  categoryId: '',
-  pageIndex: 1,
-  pageSize: 20,
-  dictionaryName: ''
-}
-
-
 @Component({
   components: {
     dlgViewEdit
   }
 })
-export default class Main extends View {
-  query = { ...defQuery }
+export default class Main extends Mixins(ViewBase, UrlManager) {
+  defQuery = {
+    categoryId: '',
+    pageIndex: 1,
+    pageSize: 20,
+    dictionaryName: ''
+  }
+
+  query: any = {}
+  oldQuery: any = {}
 
   loading = false
   list = []
   lists = []
   addOrUpdateVisible = false
   total = 0
-  oldQuery: any = {}
   editOne: any = null
   stas: any[] = []
 
@@ -100,6 +97,7 @@ export default class Main extends View {
       }
     }
   ]
+
   get cachedMap() {
     return {
       cqStatus: this.cqStatus,
@@ -120,27 +118,12 @@ export default class Main extends View {
   }
 
   mounted() {
-    const urlQuery = slice(urlParam(), Object.keys(defQuery))
-    this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
-
     const { id } = this.$route.params
-    this.query.categoryId = id
-    // this.doSearch()
+    this.updateQueryByParam({ categoryId: id }, { noRouteParam: true })
   }
 
   search() {
     this.query.pageIndex = 1
-  }
-
-  updateUrl() {
-    const query = prettyQuery(this.query, defQuery)
-    const url = buildUrl(location.pathname, query)
-    history.replaceState(null, '', url)
-  }
-
-  reset() {
-    const { pageSize } = this.query
-    this.query = { ...defQuery, pageSize }
   }
 
   async doSearch() {
@@ -199,6 +182,7 @@ export default class Main extends View {
   goback() {
     this.$router.push({ name: 'data-dict' })
   }
+
   @Watch('query', { deep: true })
   watchQuery() {
     if (this.query.pageIndex == this.oldQuery.pageIndex) {
@@ -216,14 +200,14 @@ export default class Main extends View {
 }
 .bth {
   // text-decoration: underline;
-  margin-right: 5px;
+  margin-right: 8px;
   margin-top: 7px;
 }
 .acts {
   width: 100%;
 }
 .okbth {
-  margin-left: 12px;
+  margin-left: 8px;
   margin-top: 7px;
 }
 .addbth {

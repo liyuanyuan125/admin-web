@@ -33,7 +33,7 @@
           </FormItem>
         </Col>
         <Col span="8">
-          <FormItem label="影厅业务类型" prop="businessTypeCode" clearable>
+          <FormItem label="影厅业务类型" prop="businessTypeCode">
             <Select v-model="item.businessTypeCode">
               <Option v-for="it in enumType.businessTypeList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
@@ -96,19 +96,25 @@
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop, Watch } from 'vue-property-decorator'
-import View from '@/util/View'
+import ViewBase from '@/util/ViewBase'
 import { queryItem, addItem, updateItem } from '@/api/cinemaHall'
 import { slice } from '@/fn/object'
 import { toast } from '@/ui/modal'
+import { filterItemInList, filterListByControlStatus } from '@/util/dealData'
 
 interface Value {
   id: string
   showDlgEdit: boolean
 }
 
-interface Enum {
-  key: number
+interface KeyTextControlStatus {
+  key: string | number
   text: string
+  controlStatus: number
+}
+
+interface KeyTextControlStatusMap {
+  [key: string]: KeyTextControlStatus[]
 }
 
 const defItem = {
@@ -129,7 +135,7 @@ const defItem = {
 }
 
 @Component
-export default class DlgEdit extends View {
+export default class DlgEdit extends ViewBase {
   /**
    * 值本身，可以使用 v-model 进行双向绑定
    */
@@ -138,7 +144,7 @@ export default class DlgEdit extends View {
   /**
    * 影院 ID
    */
-  @Prop({ type: String, default: '', required: true }) cinemaId!: string
+  @Prop({ type: Number, default: 0, required: true }) cinemaId!: number
 
   inValue: Value = this.value
 
@@ -148,7 +154,7 @@ export default class DlgEdit extends View {
 
   item: any = {}
 
-  enumType: any = {
+  enumType: KeyTextControlStatusMap = {
     typeList: [],
     businessTypeList: [],
     projectorTypeList: [],
@@ -168,7 +174,7 @@ export default class DlgEdit extends View {
         { required: true, message: '不能为空', trigger: 'blur' }
       ],
       typeCode: [
-        { required: true, message: '不能为空', trigger: 'blur' }
+        { required: true, message: '不能为空', trigger: 'change' }
       ],
       seats: [
         { required: true, message: '不能为空', trigger: 'blur', type: 'integer' }
@@ -192,10 +198,8 @@ export default class DlgEdit extends View {
         ? await updateItem(this.cinemaId, data)
         : await addItem(this.cinemaId, data)
       toast(data.id ? '更新成功' : '创建成功')
-      setTimeout(() => {
-        this.$emit('done')
-        this.inValue.showDlgEdit = false
-      }, 588)
+      this.$emit('done')
+      this.inValue.showDlgEdit = false
     } catch (ex) {
       const name = `submitError${ex.code}`
       name in this ? (this as any)[name](ex) : this.handleError(ex)
@@ -217,12 +221,22 @@ export default class DlgEdit extends View {
     try {
       const { data } = await queryItem(query)
 
-      this.item = { ...defItem, ...slice(data.item, Object.keys(defItem)) }
-
-      this.enumType = {
+      this.enumType = filterListByControlStatus({
         ...this.enumType,
         ...slice(data, Object.keys(this.enumType))
-      }
+      })
+
+      this.item = filterItemInList({
+        ...defItem,
+        ...slice(data.item, Object.keys(defItem))
+      }, {
+        typeCode: this.enumType.typeList,
+        businessTypeCode: this.enumType.businessTypeList,
+        projectorTypeCode: this.enumType.projectorTypeList,
+        placementCode: this.enumType.placementList,
+        projectorResolutionCode: this.enumType.projectorResolutionList,
+        projectorBrandCode: this.enumType.projectorBrandList,
+      }, defItem)
 
       // 默认选中第一个
       if (this.item.controlStatus == 0) {

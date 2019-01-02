@@ -3,7 +3,7 @@
     <div class="act-bar flex-box">
       <form class="form flex-1" @submit.prevent="search">
         <LazyInput v-model="query.name" placeholder="公司名称" class="input input-id"/>
-        <Button type="default" @click="reset" class="btn-reset">清空</Button>
+        <Button type="default" @click="resetQuery" class="btn-reset">清空</Button>
       </form>
 
       <div class="acts">
@@ -26,9 +26,9 @@
 
 <script lang="tsx">
 // doc: https://github.com/kaorun343/vue-property-decorator
-import { Component, Watch } from 'vue-property-decorator'
-import View from '@/util/View'
-import { get } from '@/fn/ajax'
+import { Component, Watch, Mixins } from 'vue-property-decorator'
+import ViewBase from '@/util/ViewBase'
+import UrlManager from '@/util/UrlManager'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
@@ -40,22 +40,23 @@ import DlgEdit from './dlgEdit.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
-const defQuery = {
-  id: null,
-  name: '',
-  pageIndex: 1,
-  pageSize: 20,
-}
-
 @Component({
   components: {
     DlgEdit
   }
 })
-export default class Main extends View {
-  query = { ...defQuery }
+export default class Main extends Mixins(ViewBase, UrlManager) {
+  defQuery = {
+    id: null,
+    name: '',
+    pageIndex: 1,
+    pageSize: 20,
+  }
+
+  query: any = {}
 
   oldQuery: any = {}
+
   editOne: any = null
   loading = false
   addOrUpdateVisible = false
@@ -126,23 +127,11 @@ export default class Main extends View {
   }
 
   mounted() {
-    const urlQuery = slice(urlParam(), Object.keys(defQuery))
-    this.query = numberify({ ...defQuery, ...urlQuery }, numberKeys(defQuery))
-  }
-
-  updateUrl() {
-    const query = prettyQuery(this.query, defQuery)
-    const url = buildUrl(location.pathname, query)
-    history.replaceState(null, '', url)
+    this.updateQueryByParam()
   }
 
   search() {
     this.query.pageIndex = 1
-  }
-
-  reset() {
-    const { pageSize } = this.query
-    this.query = { ...defQuery, pageSize }
   }
 
   async doSearch() {
@@ -207,11 +196,6 @@ export default class Main extends View {
   .input-id {
     width: 180px;
   }
-}
-
-.btn-search,
-.btn-reset {
-  margin-left: 8px;
 }
 
 .table {

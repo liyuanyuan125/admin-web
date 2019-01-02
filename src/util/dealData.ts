@@ -58,7 +58,6 @@ export function normalizeList(list: any[], idKey: string, nameKey: string) {
  * 格式化数字（每三位加逗号
  * @param nums 数字
  */
-
 export function toThousands(nums: any) {
   let num = (nums || 0).toString()
   let result = ''
@@ -68,4 +67,60 @@ export function toThousands(nums: any) {
   }
   if (num) { result = num + result }
   return result
+}
+
+interface KeyTextControlStatus {
+  key: string | number
+  text: string
+  controlStatus: number
+}
+
+/**
+ * 根据 controlStatus 的值，过滤列表（只保留 controlStatus 为 1 的项）
+ * @param list 要过来的列表
+ */
+export function filterByControlStatus(list: KeyTextControlStatus[]) {
+  return (list || []).filter(it => !('controlStatus' in it) || it.controlStatus == 1)
+}
+
+interface KeyTextControlStatusMap {
+  [key: string]: KeyTextControlStatus[]
+}
+
+/**
+ * 批量根据 controlStatus 的值，过滤列表（只保留 controlStatus 为 1 的项）
+ * @param listMap list 集合，对象形式
+ */
+export function filterListByControlStatus(listMap: KeyTextControlStatusMap) {
+  return Object.entries(listMap).reduce((map, [key, list]) => {
+    map[key] = filterByControlStatus(list)
+    return map
+  }, {} as KeyTextControlStatusMap)
+}
+
+interface InListDefValMap {
+  [key: string]: string | number
+}
+
+/**
+ * 根据 listMap 中的对象值，过滤对象 item 中的值
+ * @param item 对象
+ * @param listMap list 集合
+ * @param defValMap 默认值集合
+ */
+export function filterItemInList(
+  item: any,
+  listMap: KeyTextControlStatusMap,
+  defValMap: InListDefValMap) {
+  const newItem = { ...item }
+  Object.entries(listMap).forEach(([key, list]) => {
+    if (key in newItem) {
+      const val = newItem[key]
+      const found = list.find(t => val == t.key)
+      const defVal = defValMap[key]
+      // 若 val 在 list 中能找到，则 val 是合法的值，否则使用 defVal
+      newItem[key] = found != null && found.controlStatus == 1 ? val : defVal
+    }
+  })
+  return newItem
 }
