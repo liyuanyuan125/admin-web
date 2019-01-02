@@ -41,7 +41,7 @@ import { logout, setUser, appId } from '@/store'
 @Component
 export default class Main extends ViewBase {
   form = {
-    uname: 'admin',
+    uname: '',
     pwd: ''
   }
 
