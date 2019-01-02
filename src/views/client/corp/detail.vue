@@ -205,8 +205,9 @@ export default class Main extends ViewBase {
        return (this.detail.qualificationTypeList[0] as any).text
     }
   }
-  dlgEditDone(email: any) {
+  dlgEditDone(email: any, id: any) {
     this.detail.mainAccountName = email
+    this.detail.mainAccountId = id
   }
 
   search() {

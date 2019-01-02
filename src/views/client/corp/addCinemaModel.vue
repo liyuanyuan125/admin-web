@@ -29,11 +29,17 @@
         </Row>
         <Form ref="radioCinema" :model="form">
           <FormItem>
-            <CheckboxGroup v-model="form.check">
+            <div style="margin-left:34px">
+              <Checkbox
+                  :indeterminate="indeterminate"
+                  :value="checkAll"
+                  @click.prevent.native="handleCheckAll">全选</Checkbox>
+            </div>
+            <CheckboxGroup v-model="form.check" ref="checks" @on-change="checkAllGroupChange">
               <div v-if="items.length>0">
-                <div v-for="(item, index) in items" :key="index" class="check">
+                <div v-for="(item) in items" :key="item.id" class="check">
                   <tooltip content="已下架" v-if="item.controlStatus != 1" placement="right">
-                    <Checkbox :label="item.id" style="color: red">{{item.shortName}}</Checkbox>
+                    <Checkbox :label="item.id" style="color: red">{{item.shortName}}</Checkbox> {{item.id}}
                   </tooltip>
                   <Checkbox v-else :label="item.id">{{item.shortName}}</Checkbox>
                 </div>
@@ -45,12 +51,13 @@
             </CheckboxGroup >
           </FormItem>
         </Form>
-        <!-- <div class="page-wrap" v-if="totalPage > 0">
+        <div class="page-wrap" v-if="totalPage > 0">
           <Page :total="totalPage" :current="pageIndex" :page-size="pageSize"
             show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
             @on-change="sizeChangeHandle"
             @on-page-size-change="currentChangeHandle"/>
-        </div> -->
+            <span class="checkId">已选: {{form.check.length}}</span>
+        </div>
       </div>
     </div>
     <div  slot="footer" class="dialog-footer">
@@ -91,6 +98,8 @@ export default class Main extends ViewBase {
   dataForm = {}
   columns: any = [
   ]
+  // 选中的影院 id加名字
+  checkCinema: any = []
   pageIndex = 1
   pageSize = 10
   totalPage = 0
@@ -100,6 +109,8 @@ export default class Main extends ViewBase {
     cityId: 0,
     countyId: 0
   }
+  indeterminate = false
+  checkAll = false
   init(val: any) {
     if ( val.length > 0 ) {
       this.form.check = val.map((item: any) => {
@@ -117,16 +128,34 @@ export default class Main extends ViewBase {
   }
 
   async seach() {
+    this.dataLoading = true
     const query: any = {
       chainId: this.chainId,
       name: this.value,
       ...this.query,
-      pageSize: 10000,
+      pageSize: this.pageSize,
+      pageIndex: this.pageIndex
     }
     try {
       const res = await queryList(clean({...query}))
       this.items = res.data.items
-      this.dataLoading = false
+      this.totalPage = res.data.totalCount
+      setTimeout(() => {
+        this.dataLoading = false
+      }, 500)
+      const sameId = this.items.filter((it: any) => {
+        return this.form.check.includes(it.id)
+      })
+      if (this.items.length === sameId.length) {
+        this.indeterminate = false
+        this.checkAll = true
+      } else if (sameId.length > 0) {
+        this.indeterminate = true
+        this.checkAll = false
+      } else {
+        this.indeterminate = false
+        this.checkAll = false
+      }
     } catch (ex) {
       this.dataLoading = false
       this.handleError(ex)
@@ -134,38 +163,116 @@ export default class Main extends ViewBase {
   }
 
   async done() {
-    const checkCinema: any = []
-    if (this.form.check.length > 0) {
-      this.items.forEach((item: any) => {
-        if (this.form.check.indexOf(item.id) > -1) {
-          checkCinema.push({
-            id: item.id,
-            cinemaName: item.shortName
-          })
-        }
-      })
-    }
-    if (this.cinemaend == 1 && checkCinema.length > 1) {
+    if (this.cinemaend == 1 && this.checkCinema.length > 1) {
       this.showError('因资源方类型为影院，因此仅能关联一家影院')
       return
     }
-    this.$emit('done', checkCinema)
+    this.$emit('done', this.checkCinema)
     this.showDlg = false
   }
 
-  // // 每页数
-  // sizeChangeHandle(val: any) {
-  //   this.pageSize = val
-  //   this.pageIndex = 1
-  //   this.seach()
-  // }
+  // 每页数
+  sizeChangeHandle(val: any) {
+    this.pageIndex = val
+    this.seach()
+  }
 
-  // // 当前页
-  // currentChangeHandle(val: any) {
-  //   this.pageIndex = val
-  //   this.seach()
-  // }
+  // 当前页
+  currentChangeHandle(val: any) {
+    this.pageSize = val
+    this.seach()
+  }
 
+  handleCheckAll() {
+    if (this.indeterminate) {
+      this.checkAll = false
+    } else {
+      this.checkAll = !this.checkAll
+    }
+    this.indeterminate = false
+    const item = this.items.map((it: any) => {
+      return it.id
+    })
+    if (this.checkAll) {
+      const arr = [...this.form.check, ...item]
+      arr.forEach((v: any) => {
+        if (!this.form.check.includes(v)) {
+          this.form.check.push(v)
+        }
+      })
+    } else {
+      item.forEach((v: any) => {
+        if (this.form.check.includes(v)) {
+          const index = this.form.check.findIndex((it: any) => it == v)
+          this.form.check.splice(index, 1)
+        }
+      })
+    }
+    const checkCinemaId = this.checkCinema.map((its: any) => {
+      return its.id
+    })
+    // 追加关联数据
+    this.items.forEach((itemes: any) => {
+      if (this.form.check.indexOf(itemes.id) > -1 && !checkCinemaId.includes(itemes.id)) {
+        this.checkCinema.push({
+          id: itemes.id,
+          cinemaName: itemes.shortName
+        })
+      }
+      if (this.form.check.indexOf(itemes.id) == -1 && checkCinemaId.includes(itemes.id)) {
+        const index = this.form.check.indexOf(itemes.id)
+        this.checkCinema.splice(index, 1)
+      }
+    })
+  }
+  checkAllGroupChange(data: any) {
+    const item = this.items.map((it: any) => {
+      return it.id
+    })
+
+    const sameId = this.items.filter((it: any) => {
+      return this.form.check.includes(it.id)
+    })
+    // 判断id是否存在
+    const select = data.map((it: any) => {
+      if (item.includes(it)) {
+        return it
+      }
+    })
+
+    // 去除数组的underfind
+    const selectArray = select.filter((val: any) => {
+      return !(!val || val === '')
+    })
+
+    const checkCinemaId = this.checkCinema.map((its: any) => {
+      return its.id
+    })
+
+    // 追加关联数据
+    this.items.forEach((itemes: any) => {
+      if (this.form.check.indexOf(itemes.id) > -1 && !checkCinemaId.includes(itemes.id)) {
+        this.checkCinema.push({
+          id: itemes.id,
+          cinemaName: itemes.shortName
+        })
+      }
+      if (this.form.check.indexOf(itemes.id) == -1 && checkCinemaId.includes(itemes.id)) {
+        const index = this.form.check.indexOf(itemes.id)
+        this.checkCinema.splice(index, 1)
+      }
+    })
+    if (this.items.length === sameId.length) {
+      this.indeterminate = false
+      this.checkAll = true
+    } else if (sameId.length > 0) {
+      this.indeterminate = true
+      this.checkAll = false
+    } else {
+      this.indeterminate = false
+      this.checkAll = false
+    }
+  }
   @Watch('area')
 
   watchArea(val: number[]) {
@@ -234,5 +341,10 @@ export default class Main extends ViewBase {
 .text-center {
   text-align: center;
   line-height: 200px;
+}
+.checkId {
+  position: absolute;
+  bottom: 18px;
+  left: 520px;
 }
 </style>
