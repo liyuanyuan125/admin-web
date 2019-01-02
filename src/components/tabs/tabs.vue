@@ -29,7 +29,7 @@
             @on-close="handleClose"
             @click.native="handleClick(item)"
             :closable="item.name !== 'home'"
-            :color="item.name === value.name ? 'blue' : 'default'"
+            :color="item.name === value.name ? 'primary' : 'default'"
           >{{ item.title }}</Tag>
         </transition-group>
       </div>
@@ -50,8 +50,14 @@ export default class Tabs extends ViewBase {
   @Prop({ type: Object, default: () => {} }) mainTabs: any
   @Prop({ type: Array, default: () => [] }) list: any
   @Prop({ type: String }) mainTabsActiveName: any
+  @Prop({ type: Array, default: () => [] }) defalutTag: any
   @Prop({ type: Object }) value: any
   tagBodyLeft = 0
+
+  sumTag = [...this.defalutTag, ...this.list]
+  created() {
+
+  }
 
   handlescroll(e: any) {
     const type = e.type
@@ -88,22 +94,17 @@ export default class Tabs extends ViewBase {
     }
   }
 
-  // // tabs, 删除tab
-  // removeTabHandle (tabName: string) {
-  //   this.mainTabs = this.mainTabs.filter((item: any) => item.name !== tabName)
-  //   if (this.mainTabs.length >= 1) {
-  //     // 当前选中tab被删除
-  //     if (tabName === this.mainTabsActiveName) {
-  //       var tab = this.mainTabs[this.mainTabs.length - 1]
-  //       this.$router.push({ name: tab.name, query: tab.query, params: tab.params }, () => {
-  //         this.mainTabsActiveName = this.$route.name
-  //       })
-  //     }
-  //   } else {
-  //     this.menuActiveName = ''
-  //     this.$router.push({ name: 'home' })
-  //   }
+  handleClick(item: any) {
+      this.$emit('input', item)
+  }
+
+  // handleCloseTag (res: any, type: string, name: string) {
+  //   const nextName = getNextName(this.tagNavList, name)
+  //   this.setTagNavList(res)
+  //   if (type === 'all') this.turnToPage('home')
+  //   else if (this.$route.name === name) this.$router.push({ name: nextName })
   // }
+
   handleTagsOption(type: any) {
     if (type === 'close-all') {
       // 关闭所有，除了home

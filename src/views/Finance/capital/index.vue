@@ -1,13 +1,13 @@
 <template>
   <div class="page">
-    <Tabs :value="invalue" :list="tabsList"></Tabs>
+    <Tabs :value="invalue" :defalutTag="defalutTag" :list="tabsList"></Tabs>
   </div>
 </template>
 
 <script lang="ts">
 import { Component } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import Tabs from '@/components/tabs.vue'
+import Tabs from '@/components/tabs/tabs.vue'
 @Component({
     components: {
         Tabs
@@ -21,6 +21,16 @@ export default class Main extends ViewBase {
     invalue = {
         name: 'user'
     }
+    defalutTag = [
+      {
+        name: 'advertiser',
+        title: '广告主',
+      },
+      {
+        name: 'resource',
+        title: '资源方',
+      }
+    ]
 }
 </script>
 

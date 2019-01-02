@@ -113,7 +113,25 @@ export default [
   {
     path: '/Finance/capital/',
     name: 'Finance-capital',
-    component: () => import('./views/Finance/capital/index.vue')
+    component: () => import('./views/Finance/capital/index.vue'),
+    children: [
+      {
+        path: 'advertiser',
+        name: 'resource',
+        component: () => import('./views/Finance/capital/advertiser.vue'),
+        meta: {
+          title: '广告主系统'
+        }
+      },
+      {
+        path: 'resource',
+        name: 'name',
+        component: () => import('./views/Finance/capital/resource.vue'),
+        meta: {
+          title: '资源方'
+        }
+      }
+    ]
   },
   {
     path: '/Finance/examine/',
