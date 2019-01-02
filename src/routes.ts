@@ -43,6 +43,11 @@ export default [
     name: 'client-order',
     component: () => import('./views/client/order/index.vue')
   },
+  {
+    path: '/client/order/detail/:id?',
+    name: 'client-order-detail',
+    component: () => import('./views/client/order/detail.vue')
+  },
 
   {
     path: '/data/area/',

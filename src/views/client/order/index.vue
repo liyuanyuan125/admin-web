@@ -3,25 +3,10 @@
     <div  v-if="shows">
       <div class="act-bar flex-box">
         <form class="form flex-1" @submit.prevent="search">
-          <!-- <LazyInput v-model="query.id" placeholder="账号ID" class="input input-corp-id"
-            @on-enter="ev => query.id = ev.target.value" @on-blur="ev => query.id = ev.target.value"/>
-          <LazyInput type="email" v-model="query.email" placeholder="账号" class="input input-corp-id"
-            @on-enter="ev => query.email = ev.target.value" @on-blur="ev => query.email = ev.target.value"/> -->
-          <LazyInput v-model="query.id" placeholder="变更编号" class="input" style="width: 200px"/>
-          <!-- <LazyInput v-model="query.email" placeholder="邮箱账号" class="input"/> -->
-          <!-- <LazyInput v-model="query.companyName" placeholder="公司名称" class="input"/> -->
+          <LazyInput v-model="query.companyName" placeholder="变更编号" class="input" style="width: 200px"/>
           <DatePicker type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="申请日期" class="input" style="width: 200px"></DatePicker>
-          <!-- <Date-picker type="date" v-model="query.createTime" placeholder="注册时间" on-change="selectTime" class="input" style="width: 200px"></Date-picker> -->
-          <!-- <Date-picker type="date" v-model="query.UpdateTime" placeholder="更新时间" on-change="selectTime"  class="input" style="width: 200px"></Date-picker>           -->
-          <!-- <Select v-model="query.status" placeholder="启用状态" clearable>
-            <Option v-for="it in statusList" :key="it.key" :value="it.key"
-              :label="it.text == '是' ? '启用' : '停用'">{{it.text == '是' ? '启用' : '停用'}}</Option>
-          </Select> -->
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </form>
-        <!-- <div class="acts">
-          <Button type="success" icon="md-add-circle" @click="edit(0)">新建</Button>
-        </div> -->
       </div>
       <Table :columns="columns" :data="tableData" :loading="loading"
         border stripe disabled-hover size="small" class="table"></Table>
@@ -163,7 +148,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         const h = jsxReactToVue(hh)
         const sta = approveStatus == 1 ? '审核' : '详情'
         return <div class='row-acts'>
-          <router-link to={{ name: 'client-account-detail', params: { id } }}>{sta}</router-link>
+          <router-link to={{ name: 'client-order-detail', params: { id } }}>{sta}</router-link>
         </div>
         /* tslint:enable */
       }
