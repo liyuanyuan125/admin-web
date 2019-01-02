@@ -39,7 +39,7 @@
               <div v-if="items.length>0">
                 <div v-for="(item) in items" :key="item.id" class="check">
                   <tooltip content="已下架" v-if="item.controlStatus != 1" placement="right">
-                    <Checkbox :label="item.id" style="color: red">{{item.shortName}}</Checkbox> {{item.id}}
+                    <Checkbox :label="item.id" style="color: red">{{item.shortName}}</Checkbox>
                   </tooltip>
                   <Checkbox v-else :label="item.id">{{item.shortName}}</Checkbox>
                 </div>
@@ -162,12 +162,12 @@ export default class Main extends ViewBase {
     }
   }
 
-  async done() {
+  done() {
     if (this.cinemaend == 1 && this.checkCinema.length > 1) {
       this.showError('因资源方类型为影院，因此仅能关联一家影院')
       return
     }
-    this.$emit('done', this.checkCinema)
+    this.$emit('done', [...this.checkCinema])
     this.showDlg = false
   }
 
@@ -305,8 +305,8 @@ export default class Main extends ViewBase {
 }
 /deep/ .cinema-box {
   margin-top: 15px;
-  height: 300px;
-  max-height: 300px;
+  height: 260px;
+  max-height: 260px;
   overflow-y: auto;
   /deep/ .check {
     width: 48%;
