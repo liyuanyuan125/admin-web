@@ -106,7 +106,7 @@
         </Row>
         <Row>
           <Col span="2"><div>子账号</div></Col>
-          <Col span="8"><span v-for="index in detail.accountList" :key="index" style="margin-right:">{{index}}</span></Col>
+          <Col span="8"><span v-for="index in detail.accountList" :key="index" style="margin-right: 6px">{{index}}</span></Col>
         </Row>
       </Row>
       <Row class="detail-check">
