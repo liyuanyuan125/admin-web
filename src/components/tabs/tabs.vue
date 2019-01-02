@@ -22,7 +22,7 @@
         <transition-group name="taglist-moving-animation">
           <Tag
             type="dot"
-            v-for="item in sumTag"
+            v-for="(item, index) in sumTag"
             ref="tagsPageOpened"
             :key="`tag-nav-${item.name}`"
             :name="item.name"
@@ -54,7 +54,10 @@ export default class Tabs extends ViewBase {
   @Prop({ type: Object }) value: any
   tagBodyLeft = 0
 
-  sumTag = [...this.defalutTag, ...this.list]
+  get sumTag() {
+    const sumTag = [...this.defalutTag, ...this.list]
+    return sumTag
+  }
 
   handlescroll(e: any) {
     const type = e.type
