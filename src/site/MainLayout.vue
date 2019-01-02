@@ -69,6 +69,10 @@ export default class App extends ViewBase {
           name: 'client-corp',
           label: '公司管理',
         },
+        {
+          name: 'client-order',
+          label: '变更工单',
+        },
       ]
     },
     {
@@ -99,6 +103,32 @@ export default class App extends ViewBase {
         {
           name: 'data-area',
           label: '地区信息',
+        },
+      ]
+    },
+    {
+      name: 'Finance',
+      icon: 'logo-usd',
+      label: '财务管理',
+      subList: [
+        {
+          name: 'Finance-examine',
+          label: '充值审核',
+        },
+        {
+          name: 'Finance-capital',
+          label: '资金管理',
+        },
+      ]
+    },
+    {
+      name: 'contract',
+      icon: 'md-list',
+      label: '合同管理',
+      subList: [
+        {
+          name: 'contract-list',
+          label: '合同列表',
         },
       ]
     },

@@ -38,6 +38,11 @@ export default [
     name: 'client-corp-edit',
     component: () => import('./views/client/corp/edit.vue')
   },
+  {
+    path: '/client/order/',
+    name: 'client-order',
+    component: () => import('./views/client/order/index.vue')
+  },
 
   {
     path: '/data/area/',
@@ -88,10 +93,26 @@ export default [
     name: 'data-film-detail',
     component: () => import('./views/data/film/detail.vue')
   },
-
   {
     path: '/data/dict-category/',
     name: 'data-dict-category',
     component: () => import('./views/data/dict-category/index.vue')
+  },
+
+  {
+    path: '/contract/list/',
+    name: 'contract-list',
+    component: () => import('./views/contract/list/index.vue')
+  },
+
+  {
+    path: '/Finance/capital/',
+    name: 'Finance-capital',
+    component: () => import('./views/Finance/capital/index.vue')
+  },
+  {
+    path: '/Finance/examine/',
+    name: 'Finance-examine',
+    component: () => import('./views/Finance/examine/index.vue')
   }
 ] as any[]
