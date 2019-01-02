@@ -22,13 +22,13 @@
         <transition-group name="taglist-moving-animation">
           <Tag
             type="dot"
-            v-for="item in list"
+            v-for="item in sumTag"
             ref="tagsPageOpened"
             :key="`tag-nav-${item.name}`"
             :name="item.name"
             @on-close="handleClose"
             @click.native="handleClick(item)"
-            :closable="item.name !== 'home'"
+            :closable="!!defalutTag[index] ? item.name !== defalutTag[index].name : false"
             :color="item.name === value.name ? 'primary' : 'default'"
           >{{ item.title }}</Tag>
         </transition-group>
@@ -55,9 +55,6 @@ export default class Tabs extends ViewBase {
   tagBodyLeft = 0
 
   sumTag = [...this.defalutTag, ...this.list]
-  created() {
-
-  }
 
   handlescroll(e: any) {
     const type = e.type
@@ -98,20 +95,18 @@ export default class Tabs extends ViewBase {
       this.$emit('input', item)
   }
 
-  // handleCloseTag (res: any, type: string, name: string) {
-  //   const nextName = getNextName(this.tagNavList, name)
-  //   this.setTagNavList(res)
-  //   if (type === 'all') this.turnToPage('home')
-  //   else if (this.$route.name === name) this.$router.push({ name: nextName })
-  // }
+  handleClose(e: any, name: string) {
+      const res = this.list.filter((item: any) => item.name !== name)
+      this.$emit('on-close', res, undefined, name)
+    }
 
   handleTagsOption(type: any) {
     if (type === 'close-all') {
-      // 关闭所有，除了home
+      // 关闭所有，除了默认
       const res = this.list.filter((item: any) => item.name === 'home')
       this.$emit('on-close', res, 'all')
     } else {
-      // 关闭除当前页和home页的其他页
+      // 关闭除当前页和默认页的其他页
       const res = this.list.filter((item: any) => item.name === this.value.name || item.name === 'home')
       this.$emit('on-close', res, 'others')
     }
