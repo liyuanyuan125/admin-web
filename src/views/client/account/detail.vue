@@ -12,9 +12,17 @@
           <div class="res-num-item change-item">
             <span>{{list.email}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;【主账号】</span>
             <!-- <s class="blu1 les" @click="viewlog(2)">查看操作日志</span> -->
-            <router-link :to="{path:'/client/account/viewLog/'+ list.id , query: {nus: '主账号' , companyId: list.companyId , id: list.id , createTime: list.createTime , lastLoginTime: list.lastLoginTime , companyName: list.companyName , email: list.email}}" tag="span" class="blu1 les">查看操作日志</router-link>
+            <router-link :to="{path:'/client/account/viewLog/'+ list.id, query: {nus: '主账号', companyId: list.companyId, id: list.id, createTime: list.createTime, lastLoginTime: list.lastLoginTime, companyName: list.companyName, email: list.email, name: list.name, mobile: list.mobile}}" tag="span" class="blu1 les">查看操作日志</router-link>
             <span class="blu2" @click="change(0)">变更主账号</span>
             <!-- <span>变更主账号</span> -->
+          </div>
+        </div>
+        <div class="res-num">
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;姓名</p>
+          <div class="res-num-item">
+            <span>{{list.name}}</span>
+            <span class="res-date les">手机号码</span>
+            <span>{{list.mobile}}</span>
           </div>
         </div>
         <div class="res-num">
@@ -131,11 +139,11 @@ export default class Main extends ViewBase {
       title: '操作',
       key: 'action',
       align: 'center',
-      render: (hh: any, { row: { id , createTime , lastLoginTime , companyName , email , companyId} }: any) => {
+      render: (hh: any, { row: {id, createTime, lastLoginTime, companyName, email, companyId, name, mobile} }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         return <div class='row-acts'>
-          <router-link to={{ name: 'client-account-viewLog', query:{id , createTime , lastLoginTime , companyName , email , companyId }, params: { id } }}>查看操作日志</router-link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <router-link to={{ name: 'client-account-viewLog', query:{id, createTime, lastLoginTime, companyName, email, companyId, name, mobile}, params: { id } }}>查看操作日志</router-link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </div>
         /* tslint:enable */
       }
