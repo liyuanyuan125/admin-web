@@ -3,6 +3,7 @@
     v-model='showDlg'
     :width='720'
     title="添加关联影院"
+    @on-cancel="cancel()"
     >
     <p class="cinema-header">注：因资源方类型为影院，因此仅能关联一家影院</p>
     <Row class="shouDlg-header">
@@ -29,7 +30,7 @@
         </Row>
         <Form ref="radioCinema" :model="form">
           <FormItem>
-            <div style="margin-left:34px">
+            <div style="margin-left:34px" v-if="items.length>0">
               <Checkbox
                   :indeterminate="indeterminate"
                   :value="checkAll"
@@ -293,6 +294,7 @@ export default class Main extends ViewBase {
     this.area = []
     this.chainId = 0
     this.showDlg = false
+    this.pageIndex = 1
     this.seach()
   }
 }
