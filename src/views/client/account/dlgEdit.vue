@@ -30,7 +30,7 @@
         <RadioGroup v-model="dataForm.status" >
           <!-- <Radio label="启用"></Radio>
           <Radio label="停用"></Radio> -->
-          <Radio v-for="it in list" v-if="it.key!=0" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
+          <Radio v-for="it in list" v-if="it.key!=3" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
         </RadioGroup>
       </FormItem>
     </Form>

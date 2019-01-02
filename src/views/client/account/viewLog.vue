@@ -11,6 +11,14 @@
           </div>
         </div>
         <div class="res-num">
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;姓名</p>
+          <div class="res-num-item">
+            <span>{{name}}</span>
+            <span style="margin-left:8%;" class="res-date">手机号</span>
+            <span style="margin-left:2%;">{{mobile}}</span>
+          </div>
+        </div>
+        <div class="res-num">
           <p>所属公司</p>
           <!-- <span class="coms">{{companyName}}</span> -->
           <tooltip style="margin-left: 3%;height:60px;" :content="companyName" placement="top">
@@ -76,6 +84,8 @@ export default class Main extends ViewBase {
   nus: any = ''
   ids: any = ''
   companyId: any = ''
+  name: any = ''
+  mobile: any = ''
   query = { ...defQuery }
   oldQuery: any = {}
   prelist: any = []
@@ -103,7 +113,7 @@ export default class Main extends ViewBase {
   }
 
   mounted() {
-    const {nus , id , createTime , lastLoginTime , companyName , email , companyId } = this.$route.query
+    const {nus , id , createTime , lastLoginTime , companyName , email , companyId , name , mobile } = this.$route.query
     this.createTime = moment(createTime).format(timeFormat)
     this.lastLoginTime = moment(lastLoginTime).format(timeFormat)
     this.companyName = companyName
@@ -111,6 +121,8 @@ export default class Main extends ViewBase {
     this.nus = nus == '主账号' ? '主账号' : '子账号'
     this.ids = id
     this.companyId = companyId
+    this.name = name
+    this.mobile = mobile
 
     this.doSearch()
 
