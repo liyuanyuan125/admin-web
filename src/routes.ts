@@ -123,7 +123,28 @@ export default [
   {
     path: '/Finance/capital/',
     name: 'Finance-capital',
-    component: () => import('./views/Finance/capital/index.vue')
+    redirect: { name: 'advertiser'},
+    component: () => import('./views/Finance/capital/index.vue'),
+    children: [
+      {
+        path: 'advertiser',
+        name: 'advertiser',
+        component: () => import('./views/Finance/capital/advertiser.vue'),
+      },
+      {
+        path: 'resource',
+        name: 'resource',
+        component: () => import('./views/Finance/capital/resource.vue'),
+      },
+      {
+        path: 'payRank',
+        name: 'payRank',
+        component: () => import('./views/Finance/capital/payRank.vue'),
+        meta: {
+          title: '充值记录'
+        }
+      }
+    ]
   },
   {
     path: '/Finance/examine/',
