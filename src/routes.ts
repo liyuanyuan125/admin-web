@@ -109,6 +109,16 @@ export default [
     name: 'contract-list',
     component: () => import('./views/contract/list/index.vue')
   },
+  {
+    path: '/contract/list/edit/:id?',
+    name: 'contract-list-edit',
+    component: () => import('./views/contract/list/edit.vue')
+  },
+  {
+    path: '/contract/list/detail/:id?',
+    name: 'contract-list-detail',
+    component: () => import('./views/contract/list/detail.vue')
+  },
 
   {
     path: '/Finance/capital/',

@@ -1,57 +1,120 @@
 <template>
-  <div class="page" :data="tableData">
-    <!-- 菜单 -->
-    <!-- <div class="work-Title"><span class="workT">工作台</span> > 客户管理 > 账号管理 > 账号详情</div> -->
-    <!-- 注册账号 -->
+  <div class="page">
     <div class="Inp-Group-res">
-      <Button class="bth" icon="md-return-left" @click="goback">返回上一页</Button>
+      <Button style='margin-bottom:5px;' class="bth" icon="md-return-left" @click="goback">返回上一页</Button>
       <div class="Inps-res">
         <div class="res-num">
           <p>变更编号</p>
           <div class="res-num-item change-item">
-            <span>{{list.email}}</span>
+            <span>{{list.id}}</span>
           </div>
         </div>
         <div class="res-num">
           <p>&nbsp;&nbsp;&nbsp;&nbsp;申请人</p>
           <div class="res-num-item">
-            <span>{{list.name}}</span>
+            <span class='item1'>{{list.applyUserName}}</span>
             <span class="res-date les">申请时间</span>
-            <span>{{list.mobile}}</span>
+            <span>{{applyTime}}</span>
           </div>
         </div>
         <div class="res-num">
-          <p>联系人</p>
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;联系人</p>
           <div class="res-num-item">
-            <span>{{createTime}}</span>
+            <span class='item1'>{{company.contract}}</span>
             <span class="res-date les">联系电话</span>
-            <span>{{lastLoginTime}}</span>
+            <span>{{company.contractTel}}</span>
           </div>
         </div>
         <div class="res-num">
           <p>公司简称</p>
           <div class="res-num-item">
-            <span>{{createTime}}</span>
+            <span class='item1'>{{company.shortName}}</span>
             <span class="res-date les">公司地址</span>
-            <span>{{lastLoginTime}}</span>
+            <span>{{company.addressDetail}}</span>
           </div>
         </div>
       </div>
     </div>
-    <!-- 子账号 -->
-    <div class="new-number">
-      <div class="new-num">
-        <div class="n-list">子账号列表</div>
-        <Table :columns="columns" :data="tableData"
-        border stripe disabled-hover size="small" class="table"></Table>
-        <div class="page-wrap" v-if="total > 0">
-          <Page :total="total" show-total :page-size="query.pageSize" show-sizer
-            :page-size-opts="[10, 20, 50, 100]" :current="query.pageIndex"
-            @on-change="page => query.pageIndex = page"
-            @on-page-size-change="pageSize => query.pageSize = pageSize"/>
+    <div class='xq'>
+      <div class='xq-left'>
+        <div class='xq-title'>变更前</div>
+        <div><span>公司名称: </span><span>【{{list.modifyBeforeName}}】</span></div>
+        <div class='Types'><span>公司类型: 【</span>
+          <div v-for="it in precom" :key='it.typeCode'>
+            <div v-for="ity in list.modifyBeforeTypes" :key='ity.typeCode' v-if='ity.typeCode == it.typeCode'>
+              <span>&nbsp;&nbsp;{{it.typeName}}&nbsp;</span>
+            </div>
+         </div> 】
+        </div>
+        <div class='Types'><span>资质类型: </span>
+          <div v-for="it in prequalification" v-if='list.modifyBeforeQualificationType == it.key' :key='it.key'>
+            <!-- <div v-for="ity in list.modifyBeforeQualificationType" v-if='ity.key == it.typeCode'> -->
+              <span>【{{it.text}}】</span>
+            <!-- </div> -->
+          </div>
+        </div>
+        <div><span>资质编号: </span><span>【{{list.modifyBeforeQualificationCode}}】</span></div>
+        <div class='img'>
+          <div>资质图片: </div>
+          <div class='imgs' v-for="it in preimages"  :key='it.key'>
+            <img :src=it.url alt="" sizes="" srcset="">
+          </div>
+        </div>
+      </div>
+      <div class='xq-right'>
+        <div class='xq-title'>变更后</div>
+        <div><span>公司名称: </span><span>【{{list.modifyAfterName}}】</span></div>
+        <div class='Types'><span>公司类型: </span>
+          <div v-for="it in precom"  :key='it.typeCode'>
+            <div v-for="ity in list.modifyAfterTypes" :key='ity.typeCode' v-if='ity.typeCode == it.typeCode'>
+              <span>【{{it.typeName}}】</span>
+            </div>
+          </div>
+        </div>
+        <div class='Types'><span>资质类型: </span>
+          <div v-for="it in prequalification" v-if='list.modifyAfterQualificationType == it.key' :key='it.key'>
+            <!-- <div v-for="ity in list.modifyBeforeQualificationType" v-if='ity.key == it.typeCode'> -->
+              <span>【{{it.text}}】</span>
+            <!-- </div> -->
+          </div>
+        </div>
+        <div><span>资质编号: </span><span>【{{list.modifyAfterQualificationCode}}】</span></div>
+        <div class='img'>
+          <div>资质图片: </div>
+          <div class='imgs' v-for="it in aftimages"  :key='it.key'>
+            <img :src=it.url alt="" sizes="" srcset="">
+          </div>
         </div>
       </div>
     </div>
+    <div class="log">
+      <div class="n-main">审核记录</div>
+      <div class="logs">
+        <div class="logs-item" v-for="(it,index) in log">
+          <span>{{createTime}}   </span>
+          <span>{{it.email}}【{{it.userName}}】   </span>
+          {{it.description}}
+        </div>
+        <div v-if='showStatus'>
+          <Form ref="dataForm" :model="dataForm"  label-position="left" :rules="ruleValidate" :label-width="100">
+            <FormItem label="审核意见" prop="status">
+              <RadioGroup v-model='dataForm.approveStatus'>
+                <!-- <Radio label="启用"></Radio>
+                <Radio label="停用"></Radio> -->
+                <Radio v-for="it in approveStatusList" v-if="it.key!=0&&it.key!=1" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
+              </RadioGroup>
+            </FormItem>
+            <FormItem v-if='dataForm.approveStatus == 3' label="拒绝理由" prop="reason">
+            <Input style="width:240px" v-model="dataForm.refuseReason"></Input>
+          </FormItem>
+          </Form>
+          <Button style='margin-left:20px;' type="primary"  @click="change('dataForm')">确定</Button>
+          <Button style='margin-left:20px;'>取消</Button>
+        </div>
+        
+      </div>
+    </div>
+    
     <!-- <dlgChange  ref="change" :prelist="prelist"  @refreshDataList="search" v-if="changeVisible" @done="dlgEditDone"/> -->
 
   </div>
@@ -61,7 +124,7 @@
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { get } from '@/fn/ajax'
-import { queryItem } from '@/api/account'
+import { queryList , queryItem , setList , dataFrom } from '@/api/order'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
@@ -74,12 +137,17 @@ const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
 const defQuery = {
   id: '',
-  companytId: '',
-  phoneNmber: null,
-  type: null,
-  status: null,
+  // email: '',
+  // companyName: '',
+  // status: null,
   pageIndex: 1,
   pageSize: 20,
+  applyStartTime: 0,
+  applyEndTime: 0
+}
+const dataForm = {
+  refuseReason: '',
+  approveStatus: 2
 }
 
 @Component({
@@ -89,94 +157,89 @@ const defQuery = {
 })
 export default class Main extends ViewBase {
   // change = false
-  changeVisible = false
-
   query = { ...defQuery }
   oldQuery: any = {}
+  ruleValidate = {
+    // status: [
+    //   { required: true, message: '请选择', trigger: 'blur' }
+    // ],
+    // reason: [
+    //   { required: true, message: '请输入拒绝原因'}
+    // ]
+  }
+  changeVisible = false
+
+  // query = { ...defQuery }
+  // oldQuery: any = {}
 
   loading = false
+  applyTime = ''
   createTime = ''
-  lastLoginTime = ''
+  // 所有数据
   list: any = []
-  prelist: any = []
+  // 公司信息
+  company: any = []
+  // 客户类型列表
+  precom: any = []
+  // 资质类型列表
+  prequalification: any = []
+  // 修改前资质图片
+  preimages: any = []
+  // 修改后资质图片
+  aftimages: any = []
+  // 日志
+  log: any = []
+  // 审核
+  approveStatusList: any = []
   total = 0
   ids = ''
+  sta = 2
+  reason = 123132
+  id = 0
+  showStatus: any = true
 
-  columns = [
-    { title: '用户账号', key: 'id', align: 'center' },
-    { title: '姓名', key: 'name', align: 'center' },
-    { title: '手机号', key: 'mobile', align: 'center' },
-    {
-      title: '创建时间',
-      key: 'createTime',
-      align: 'center',
-      render: (hh: any, { row: { createTime } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = moment(createTime).format(timeFormat)
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '最后登陆时间',
-      key: 'lastLoginTime',
-      align: 'center',
-      render: (hh: any, { row: { lastLoginTime } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = moment(lastLoginTime).format(timeFormat)
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '操作',
-      key: 'action',
-      align: 'center',
-      render: (hh: any, { row: {id, createTime, lastLoginTime, companyName, email, companyId, name, mobile} }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        return <div class='row-acts'>
-          <router-link to={{ name: 'client-account-viewLog', query:{id, createTime, lastLoginTime, companyName, email, companyId, name, mobile}, params: { id } }}>查看操作日志</router-link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        </div>
-        /* tslint:enable */
-      }
-    }
-  ]
-  get cachedMap() {
-    return {
-    }
-  }
+  dataForm: any = { ...dataForm }
 
-  get tableData() {
-    const cachedMap = this.cachedMap
-    const prelist = (this.prelist || []).map((it: any) => {
-      return {
-        ...it,
-      }
-    })
-    return prelist
-  }
   mounted() {
     const { id } = this.$route.params
+    if ( this.$route.params.approveStatus == 2 ) {
+      this.showStatus = false
+    }
     this.ids = id
     this.doSearch()
-    this.createTime = moment(this.list.createTime).format(timeFormat)
-    this.lastLoginTime = moment(this.list.lastLoginTime).format(timeFormat)
+    this.applyTime = moment(this.list.applyTime).format(timeFormat)
+    this.createTime = moment(this.log.createTime).format(timeFormat)
   }
 
   dlgEditDone() {
     this.doSearch()
   }
 
-  change() {
-    this.changeVisible = true
-    const params = this.$route.params
-    this.$nextTick(() => {
-      const myThis: any = this
-      myThis.$refs.change.init(params)
+
+
+  change(dataForms: any) {
+    const myThis: any = this
+    myThis.$refs[dataForms].validate(async ( valid: any ) => {
+      if (valid) {
+        const query =  !this.id ? this.dataForm : {
+          id: this.id,
+          ...this.dataForm
+        }
+        // const title = '添加'
+        try {
+          const res =  await setList (this.$route.params.id , query)
+          // toast('操作成功')
+          // this.$emit('done', this.dataForm.email)
+          this.$router.push({ name : 'client-order' })
+        } catch (ex) {
+          this.handleError(ex)
+        }
+      }
     })
+  }
+
+  reloadSearch() {
+    this.doSearch()
   }
 
   search() {
@@ -186,19 +249,6 @@ export default class Main extends ViewBase {
   reset() {
     const { pageSize } = this.query
     this.query = { ...defQuery, pageSize }
-  }
-  //  查看日志
-  viewlog(id: number) {
-    const params = this.$route.params
-    this.$router.push({ name: 'client-account-viewLog', params })
-  }
-  //  查看公司详情
-  viewcompanydetail(id: number) {
-    // console.log(this.list.companyId)
-    // const params = this.list.companyId
-    // // // this.dataForm.category.id = id
-    // // // const params: any = id > 0 ? { id } : {}
-    // this.$router.push({ name: 'client-corp-detail', params })
   }
 
   goback() {
@@ -216,12 +266,18 @@ export default class Main extends ViewBase {
 
     const query = clean({ ...this.query })
     try {
+      const { data } = await queryItem(this.$route.params.id)
+      this.list = data
+      this.company = data.company
+      this.precom = data.customerTypeList
+      this.prequalification = data.qualificationTypeList
+      this.preimages = data.modifyBeforeImageList
+      this.aftimages = data.modifyAfterImageList
+      this.log = data.logList
       const { data: {
-        parentAccount: list,
-        childAccountList: prelist,
-      } } = await queryItem(this.$route.params.id)
-      this.list = list
-      this.prelist = prelist
+        approveStatusList: approveStatusList,
+      } } = await queryList(query)
+      this.approveStatusList = approveStatusList
     } catch (ex) {
       // this.handleError(ex)
     } finally {
@@ -291,6 +347,9 @@ export default class Main extends ViewBase {
   display: inline-block;
   margin-left: 5%;
 }
+.item1 {
+  width: 12%;
+}
 .blu1,
 .blu2 {
   color: #53a1f3;
@@ -322,6 +381,52 @@ export default class Main extends ViewBase {
   font-size: 16px;
   color: #2d8cf0;
   // border-bottom: 2px solid #ecf0f4;
+}
+.xq {
+  padding: 5px;
+  border: 1px solid #ccc;
+}
+.xq div {
+  line-height: 26px;
+}
+.xq-left, .xq-right {
+  width: 50%;
+  display: inline-block;
+}
+.xq-title {
+  width: 100%;
+}
+.Types div {
+  display: inline-block;
+}
+.img div {
+  float: left;
+  height: 100px;
+}
+.imgs {
+  width: 100px;
+  height: 100px;
+  margin-left: 10px;
+}
+.imgs img {
+  margin-top: 15px;
+  width: 80%;
+  height: 80%;
+}
+.log {
+  // background: #ecf0f4;
+  padding: 10px;
+  padding-top: 19px;
+  margin: -14px -10px 0 -10px;
+}
+.logs {
+  margin-top: -4px;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #dcdee2;
+}
+.logs-item {
+  line-height: 30px;
 }
 .table {
   /deep/ .ivu-table-cell > span:only-child:empty {
