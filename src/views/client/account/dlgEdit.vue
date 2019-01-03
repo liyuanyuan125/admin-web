@@ -155,7 +155,7 @@ export default class ComponentMain extends ViewBase {
            const res =  await addList (query)
            toast('操作成功')
            this.showDlg = false
-           this.$emit('done', this.dataForm.email)
+           this.$emit('done', this.dataForm.email, res.data)
         } catch (ex) {
            this.handleError(ex)
            this.showDlg = false

@@ -50,7 +50,9 @@
           <Col span="2"><div>审核意见</div></Col>
           <Col span="4"><span>{{format.approveText}}</span></Col>
           <Col span="2" v-if="detail.approveStatus !=3"><div>有效期至</div></Col>
+          <Col span="2" v-if="detail.approveStatus ==3"><div>拒绝理由</div></Col>
           <Col span="4" v-if="detail.approveStatus !=3"><span >{{format.validityPeriodDate}}</span></Col>
+          <Col span="4" v-if="detail.approveStatus ==3"><span >{{detail.refusedReason}}</span></Col>
         </Row>
         <Row>
           <Col span="2"><div>审核人</div></Col>
@@ -104,7 +106,7 @@
         </Row>
         <Row>
           <Col span="2"><div>子账号</div></Col>
-          <Col span="8"><span v-for="index in detail.accountList" :key="index" style="margin-right:">{{index}}</span></Col>
+          <Col span="8"><span v-for="index in detail.accountList" :key="index" style="margin-right: 6px">{{index}}</span></Col>
         </Row>
       </Row>
       <Row class="detail-check">
@@ -203,8 +205,9 @@ export default class Main extends ViewBase {
        return (this.detail.qualificationTypeList[0] as any).text
     }
   }
-  dlgEditDone(email: any) {
+  dlgEditDone(email: any, id: any) {
     this.detail.mainAccountName = email
+    this.detail.mainAccountId = id
   }
 
   search() {
