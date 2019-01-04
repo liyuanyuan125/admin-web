@@ -148,7 +148,7 @@
         </Row>
         </Row>
         <Row v-if="item.typearr[1]">
-          <FormItem label="关联影院" prop="cinemasList">
+          <FormItem label="关联影院" prop="cinemasList" :show-message="!(item.cinemasList.length>0)">
             <PartBindCinema v-if="loadingShow" v-model="item.cinemasList" :unitList="profitUnitList"
                :incinematype='cinematype' class="part-bind-cinema"/>
           </FormItem>
@@ -274,6 +274,13 @@ export default class Main extends ViewBase {
         }
       }
     }
+    const cinemaVali = ( rules: any, value: any, callback: any) => {
+      if (value.length > 0) {
+        callback()
+      } else {
+        callback(new Error('请选择关联影院'))
+      }
+    }
     const rule: any = {
       name: [
         { required: true, message: '请填写公司名称', trigger: 'blur' }
@@ -291,7 +298,7 @@ export default class Main extends ViewBase {
         { required: true, message: '请选择审核状态', trigger: 'blur', type: 'number' }
       ],
       cinemasList: [
-        { required: true, message: '请选择关联影院', type: 'array', trigger: 'change'}
+        { validator: cinemaVali }
       ],
       levelCode: [
         { required: true, message: '请选择客户等级', trigger: 'change'}
@@ -323,7 +330,7 @@ export default class Main extends ViewBase {
         { required: true, message: '请输入资质编号', trigger: 'blur'}
       ],
       businessDirector: [
-        { required: true, message: '请选择负责商务', trigger: 'blur', type: 'number' }
+        { required: true, message: '请选择负责商务', trigger: 'change', type: 'number' }
       ]
     }
     return rule
