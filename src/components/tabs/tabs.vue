@@ -28,7 +28,7 @@
             :name="item.name"
             @on-close="handleClose"
             @click.native="handleClick(item)"
-            :closable="!!defalutTag[index] ? item.name !== defalutTag[index].name : false"
+            :closable="!!defalutTag[index] ? item.name !== defalutTag[index].name : true"
             :color="item.name === value.name ? 'primary' : 'default'"
           >{{ item.title }}</Tag>
         </transition-group>
@@ -95,22 +95,28 @@ export default class Tabs extends ViewBase {
   }
 
   handleClick(item: any) {
-      this.$emit('input', item)
+    this.$emit('input', item)
   }
 
   handleClose(e: any, name: string) {
-      const res = this.list.filter((item: any) => item.name !== name)
-      this.$emit('on-close', res, undefined, name)
-    }
+    const defaultName = this.defalutTag.map((it: any) => {
+      return it.name
+    })
+    const res = this.sumTag.filter((item: any) => item.name !== name && !defaultName.includes(item.name))
+    this.$emit('on-close', res, undefined, name)
+  }
 
   handleTagsOption(type: any) {
+    const defaultName = this.defalutTag.map((it: any) => {
+      return it.name
+    })
     if (type === 'close-all') {
       // 关闭所有，除了默认
-      const res = this.list.filter((item: any) => item.name === 'home')
+      const res: any = []
       this.$emit('on-close', res, 'all')
     } else {
       // 关闭除当前页和默认页的其他页
-      const res = this.list.filter((item: any) => item.name === this.value.name || item.name === 'home')
+      const res = this.sumTag.filter((item: any) => item.name === this.value.name || !defaultName.includes(item.name))
       this.$emit('on-close', res, 'others')
     }
   }

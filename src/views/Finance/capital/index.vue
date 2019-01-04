@@ -1,7 +1,6 @@
 <template>
   <div class="page">
     <Tabs :value="$route" @input="handleClick" @on-close="handleCloseTag" :defalutTag="defalutTag" :list="tabsList"></Tabs>
-    <router-link :to="{name:'payRank'}">12345</router-link>
     <keep-alive>
       <router-view/>
     </keep-alive>
@@ -22,20 +21,17 @@ import { getNextName } from '@/components/tabs/index'
 export default class Main extends ViewBase {
   tabsList: any = []
 
-  invalue = {
-    name: 'advertiser'
-  }
-
   defalutTag = [
     {
-      name: 'advertiser',
-      title: '广告主',
+      name: 'ggtiser',
+      title: '广告主系统',
     },
     {
       name: 'resource',
-      title: '资源方',
+      title: '资源方系统',
     }
   ]
+
   mounted() {
     this.routeUpdate()
   }
@@ -43,28 +39,57 @@ export default class Main extends ViewBase {
   routeUpdate() {
   }
 
-  turnToPage(name: any) {
+  get cacheList() {
+    return this.tabsList.length ? [...this.tabsList, ...this.defalutTag].map((item: any) => item.name) : []
+  }
+
+  turnToPage(name: any, query: any, params: any) {
     this.$router.push({
-      name
+      name,
+      query,
+      params
     })
   }
 
   handleClick(item: any) {
-    this.turnToPage(item.name)
+    this.turnToPage(item.name, item.query, item.params)
   }
 
   handleCloseTag(res: any, type: string, name: string) {
     const tagNavList = [...this.tabsList, ...this.defalutTag]
     const nextName = getNextName(tagNavList, name, this.defalutTag)
+    this.tabsList = res
     if (type === 'all') {
       this.defalutTag.forEach((item: any) => {
-        this.turnToPage(item.name)
+        this.turnToPage(item.name, item.query, item.params)
       })
     } else if (this.$route.name === name) {
       this.$router.push({ name: nextName })
     }
   }
 
+  @Watch('$route', {immediate: true, deep: true})
+  Watch$route(val: any) {
+    const defaultName = this.defalutTag.map((it: any) => {
+      return it.name
+    })
+    const name = this.tabsList.map((it: any) => {
+      return it.name
+    })
+    if (!defaultName.includes(val.name) && !name.includes(val.name)) {
+      this.tabsList.push({
+        title: val.meta.title,
+        name: val.name,
+        query: val.query,
+        params: val.params
+      })
+    }
+    if (name.includes(val.name)) {
+      const index = name.findIndex((item: any) => item == val.name )
+      this.tabsList[index].query = val.query
+      this.tabsList[index].params = val.params
+    }
+  }
 }
 </script>
 

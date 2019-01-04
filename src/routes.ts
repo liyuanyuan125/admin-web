@@ -113,13 +113,13 @@ export default [
   {
     path: '/Finance/capital/',
     name: 'Finance-capital',
-    redirect: { name: 'advertiser'},
+    redirect: { name: 'ggtiser'},
     component: () => import('./views/Finance/capital/index.vue'),
     children: [
       {
-        path: 'advertiser',
-        name: 'advertiser',
-        component: () => import('./views/Finance/capital/advertiser.vue'),
+        path: 'ggtiser',
+        name: 'ggtiser',
+        component: () => import('./views/Finance/capital/ggtiser.vue'),
       },
       {
         path: 'resource',
@@ -127,11 +127,43 @@ export default [
         component: () => import('./views/Finance/capital/resource.vue'),
       },
       {
+        path: 'rechargeNum/:companyId',
+        name: 'rechargeNum',
+        component: () => import('./views/Finance/capital/rechargeNum.vue'),
+        meta: {
+          title: '充值记录'
+        }
+      },
+      {
         path: 'payRank',
         name: 'payRank',
         component: () => import('./views/Finance/capital/payRank.vue'),
         meta: {
-          title: '充值记录'
+          title: '消费记录'
+        }
+      },
+      {
+        path: 'withdraw/:companyId',
+        name: 'withdraw',
+        component: () => import('./views/Finance/capital/withdraw.vue'),
+        meta: {
+          title: '提现记录'
+        }
+      },
+      {
+        path: 'consume',
+        name: 'consume',
+        component: () => import('./views/Finance/capital/consume.vue'),
+        meta: {
+          title: '结算记录'
+        }
+      },
+      {
+        path: 'withdrawDetail/:id',
+        name: 'withdrawDetail',
+        component: () => import('./views/Finance/capital/withdrawDetail.vue'),
+        meta: {
+          title: '提现详情'
         }
       }
     ]

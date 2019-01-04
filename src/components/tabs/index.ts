@@ -4,8 +4,8 @@
  */
 export const getNextName = (list: any, name: string, defaltList: any) => {
   let res = ''
-  if (list.length === 2) {
-      res = 'home'
+  if (list.length === (defaltList.length + 1)) {
+      res = list[list.length - 1].name
   } else {
     if (list.findIndex((item: any) => item.name === name) === list.length - 1) {
       res = list[list.length - 2].name
