@@ -22,7 +22,7 @@
         <Input style="width:240px" type="password" v-model="dataForm.passwords" ></Input>
       </FormItem>
       <FormItem label="所属公司" prop="companyId">
-        <Select style="width:240px" v-model="dataForm.companyId">
+        <Select style="width:240px" v-model="dataForm.companyId" filterable>
           <Option v-for="it in companys" v-if='it.status==1' :key="it.id" :value="it.id">{{it.name}}</Option>
         </Select>
       </FormItem>
@@ -87,7 +87,7 @@ export default class ComponentMain extends ViewBase {
       email: [
         { required: true, message: '请输入邮箱账号', trigger: 'blur' },
         {
-          pattern: /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((.[a-zA-Z0-9_-]{2,3}){1,2})$/,
+          pattern: /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/,
           message: '请输入正确的邮箱格式',
           trigger: 'blur'
         }
@@ -155,7 +155,7 @@ export default class ComponentMain extends ViewBase {
            const res =  await addList (query)
            toast('操作成功')
            this.showDlg = false
-           this.$emit('done', this.dataForm.email)
+           this.$emit('done', this.dataForm.email, res.data)
         } catch (ex) {
            this.handleError(ex)
            this.showDlg = false

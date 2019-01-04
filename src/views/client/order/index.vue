@@ -3,7 +3,7 @@
     <div  v-if="shows">
       <div class="act-bar flex-box">
         <form class="form flex-1" @submit.prevent="search">
-          <LazyInput v-model="query.companyName" placeholder="变更编号" class="input" style="width: 200px"/>
+          <LazyInput v-model="query.workorderId" placeholder="变更编号" class="input" style="width: 200px"/>
           <DatePicker type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="申请日期" class="input" style="width: 200px"></DatePicker>
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </form>
@@ -87,8 +87,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   company: any = []
 
   columns = [
-    { title: '变更编号', key: 'id', align: 'center' },
-    { title: '公司名称', width: 400, key: 'company', align: 'center',
+    { title: '变更编号', key: 'id', width: 100 , align: 'center' },
+    { title: '公司名称', key: 'company', align: 'center',
       render: (hh: any, { row }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
@@ -99,7 +99,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         /* tslint:enable */
       }
     },
-    { title: '申请人', width: 400, key: 'applyUserName', align: 'center' ,
+    { title: '申请人', key: 'applyUserName', align: 'center' ,
       render: (hh: any, { row: { applyUserName , applyUserEmail } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
@@ -122,6 +122,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     {
       title: '状态',
       key: 'statusText',
+      width: 100,
       align: 'center',
       render: (hh: any, { row: { approveStatus, statusText } }: any) => {
         /* tslint:disable */
@@ -142,13 +143,14 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     {
       title: '操作',
       key: 'action',
+      width: 100,
       align: 'center',
       render: (hh: any, { row: { approveStatus, statusText, id }, row }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         const sta = approveStatus == 1 ? '审核' : '详情'
         return <div class='row-acts'>
-          <router-link to={{ name: 'client-order-detail', params: { id } }}>{sta}</router-link>
+          <router-link to={{ name: 'client-order-detail', params: { id , approveStatus } }}>{sta}</router-link>
         </div>
         /* tslint:enable */
       }

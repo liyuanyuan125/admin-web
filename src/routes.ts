@@ -109,6 +109,16 @@ export default [
     name: 'contract-list',
     component: () => import('./views/contract/list/index.vue')
   },
+  {
+    path: '/contract/list/edit/:id?',
+    name: 'contract-list-edit',
+    component: () => import('./views/contract/list/edit.vue')
+  },
+  {
+    path: '/contract/list/detail/:id?',
+    name: 'contract-list-detail',
+    component: () => import('./views/contract/list/detail.vue')
+  },
 
   {
     path: '/Finance/capital/',
@@ -168,9 +178,20 @@ export default [
       }
     ]
   },
+
   {
     path: '/Finance/examine/',
     name: 'Finance-examine',
     component: () => import('./views/Finance/examine/index.vue')
-  }
+  },
+  {
+    path: '/Finance/examine/detail/:id?',
+    name: 'Finance-examine-detail',
+    component: () => import('./views/Finance/examine/detail.vue')
+  },
+  {
+    path: '/Finance/examine/edit/:id?',
+    name: 'Finance-examine-edit',
+    component: () => import('./views/Finance/examine/edit.vue')
+  },
 ] as any[]

@@ -132,8 +132,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     { title: '关联商务', key: 'businessDirectorName', align: 'center',
       render: (hh: any, { row: { businessDirectorEmail, businessDirectorName } }: any) => {
         /* tslint:disable */
+        const name = businessDirectorName ? `[${businessDirectorName}]`: ''
         const h = jsxReactToVue(hh)
-        return <span class='datetime'>{businessDirectorEmail}<p style="font-weight:bold">[{businessDirectorName}]</p></span>
+        return <span class='datetime'>{businessDirectorEmail}<p style="font-weight:bold">{name}</p></span>
         /* tslint:enable */
       }
     },
@@ -404,6 +405,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
   /deep/ span:only-child:empty {
+    &::before {
+      content: '-';
+    }
+  }
+  /deep/ span p:only-child:empty {
     &::before {
       content: '-';
     }
