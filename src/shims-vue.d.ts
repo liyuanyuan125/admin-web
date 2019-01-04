@@ -17,6 +17,11 @@ declare module 'iview/dist/locale/zh-CN' {
   export default locale
 }
 
+declare module 'clipboard' {
+  const clipboard: any
+  export default clipboard
+}
+
 interface VarType {
   env: string
   baseUrl: string

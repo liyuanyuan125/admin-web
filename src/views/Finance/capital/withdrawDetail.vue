@@ -2,37 +2,44 @@
   <div class="page">
     <div class="detail-box" style="margin-top: 10px">
       <div class="detail-header">
-          <Row>
-            <Col span="3"><div>公司名称</div></Col>
-            <Col span="16"><span>{{detail.companyName}}</span></Col>
-          </Row>
-          <Row>
-            <Col span="3"><div>开户行</div></Col>
-            <Col span="8"><span>{{detail.accountBank}}</span></Col>
-          </Row>
-          <Row>
-            <Col span="3"><div>开户名</div></Col>
-            <Col span="4"><span>{{detail.accountName}}</span></Col>
-            <Col span="3"><div>账户号</div></Col>
-            <Col span="4"><span>{{detail.accountNumber}}</span></Col>
-          </Row>
+        <Row>
+          <Col span="3"><div>公司名称</div></Col>
+          <Col span="16"><span>{{detail.companyName}}</span>
+          </Col>
+        </Row>
+        <Row>
+          <Col span="3"><div>开户行</div></Col>
+          <Col span="8"><span id="success_form_input" style="margin-right: 8px">{{detail.accountBank}}</span>
+            <a ref="copy" data-clipboard-action="copy" data-clipboard-target="#success_form_input" @click="copyLink">复制</a>
+          </Col>
+        </Row>
+        <Row>
+          <Col span="3"><div>开户名</div></Col>
+          <Col span="4"><span id="success_form_input2" style="margin-right: 8px">{{detail.accountName}}</span>
+            <a ref="copy3" data-clipboard-action="copy" data-clipboard-target="#success_form_input2" @click="copyLink">复制</a>
+          </Col>
+          <Col span="3"><div>账户号</div></Col>
+          <Col span="4"><span id="success_form_input3" style="margin-right: 8px">{{detail.accountNumber}}</span>
+            <a ref="copy2" data-clipboard-action="copy" data-clipboard-target="#success_form_input3" @click="copyLink">复制</a>
+          </Col>
+        </Row>
       </div>
       <Row class="detail-content">
         <Row>
-            <Col span="3"><div>项目</div></Col>
-            <Col span="16"><span>{{detail.name}}</span></Col>
+          <Col span="3"><div>项目</div></Col>
+          <Col span="16"><span>{{detail.typeName}}</span></Col>
         </Row>
         <Row>
-            <Col span="3"><div>提现前可用余额</div></Col>
-            <Col span="16"><span>{{format.beforeWithdrawalAmount}}</span></Col>
+          <Col span="3"><div>提现前可用余额</div></Col>
+          <Col span="16"><span>{{format.beforeWithdrawalAmount}}</span></Col>
         </Row>
         <Row>
-            <Col span="3"><div>本次提现金额</div></Col>
-            <Col span="16"><span>{{format.amount}}</span></Col>
+          <Col span="3"><div>本次提现金额</div></Col>
+          <Col span="16"><span>{{format.amount}}</span></Col>
         </Row>
         <Row>
-            <Col span="3"><div>提现后可用余额</div></Col>
-            <Col span="16"><span>{{format.afterWithdrawalAmount}}</span></Col>
+          <Col span="3"><div>提现后可用余额</div></Col>
+          <Col span="16"><span>{{format.afterWithdrawalAmount}}</span></Col>
         </Row>
         <Row class="upload">
           <Col span="3"><div>凭证</div></Col>
@@ -41,7 +48,7 @@
               <div v-if="showimg" class="show-img">
                 <img src="~@/assets/imgerror.png"/>
               </div>
-              <!-- <Upload v-model='detail.imageList' readonly v-if='loading'/> -->
+              <imgModel v-else :uploadList = "img" :type = 2 />
             </div>
           </Col>
         </Row>
@@ -70,6 +77,8 @@ import ViewBase from '@/util/ViewBase'
 import { resIdDetail } from '@/api/advertiser'
 import { toMap } from '@/fn/array'
 import { formatCurrency } from '@/fn/string'
+import imgModel from '../../data/film/imgModel.vue'
+import clipboard from 'clipboard'
 
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 const typeMap = (list: any[]) => toMap(list, 'typeCode', 'controlStatus')
@@ -80,12 +89,17 @@ const timeFormat = 'YYYY/MM/DD'
 
 @Component({
   components: {
+    imgModel
   }
 })
 export default class Main extends ViewBase {
+  httplist = ''
+  link = '2222'
+  copyBtn = null
   detail: any = {}
   loading = false
   showimg = true
+  img: any = []
   logList: any = []
   id: any = ''
   get format() {
@@ -94,6 +108,12 @@ export default class Main extends ViewBase {
       afterWithdrawalAmount: formatCurrency(this.detail.afterWithdrawalAmount),
       beforeWithdrawalAmount: formatCurrency(this.detail.beforeWithdrawalAmount),
     }
+  }
+
+  mounted() {
+    this.copyBtn = new clipboard(this.$refs.copy)
+    this.copyBtn = new clipboard(this.$refs.copy2)
+    this.copyBtn = new clipboard(this.$refs.copy3)
   }
 
   async load() {
@@ -107,6 +127,14 @@ export default class Main extends ViewBase {
           createTime: moment(item.createTime).format(timeFormatDate)
         }
       })
+      if (res.data.imgs && res.data.imgs.length > 0) {
+        this.showimg = false
+        this.img = res.data.img.map((item: any) => {
+          return item.url
+        })
+      } else {
+        this.showimg = true
+      }
       this.logList = logList.slice(0, 20)
       this.loading = true
       setTimeout(() => {
@@ -117,6 +145,9 @@ export default class Main extends ViewBase {
       this.handleError(ex)
     } finally {
     }
+  }
+
+  copyLink() {
   }
 
   @Watch('id', {immediate: true})
