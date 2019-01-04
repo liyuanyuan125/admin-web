@@ -4,85 +4,71 @@
       <Button style='margin-bottom:5px;' class="bth" icon="md-return-left" @click="goback">返回上一页</Button>
       <div class="Inps-res">
         <div class="res-num">
-          <p>变更编号</p>
+          <p>公司名称:&nbsp;&nbsp;&nbsp;</p>
           <div class="res-num-item change-item">
-            <span>{{list.id}}</span>
+            <span>{{list.companyName}}</span>
           </div>
         </div>
         <div class="res-num">
-          <p>&nbsp;&nbsp;&nbsp;&nbsp;申请人</p>
+          <p>充值金额:&nbsp;&nbsp;&nbsp;</p>
           <div class="res-num-item">
-            <span class='item1'>{{list.applyUserName}}</span>
-            <span class="res-date les">申请时间</span>
-            <span>{{applyTime}}</span>
+            <span class='item1'>{{list.amount}}</span>
           </div>
         </div>
         <div class="res-num">
-          <p>&nbsp;&nbsp;&nbsp;&nbsp;联系人</p>
+          <p>申请时间:&nbsp;&nbsp;&nbsp;</p>
           <div class="res-num-item">
-            <span class='item1'>{{company.contract}}</span>
-            <span class="res-date les">联系电话</span>
-            <span>{{company.contractTel}}</span>
+            <span class='item1'>{{applyTime}}</span>
           </div>
         </div>
         <div class="res-num">
-          <p>公司简称</p>
+          <p>申请人:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
           <div class="res-num-item">
-            <span class='item1'>{{company.shortName}}</span>
-            <span class="res-date les">公司地址</span>
-            <span>{{company.addressDetail}}</span>
+            <span class='item1'>{{list.applyName}}</span>
           </div>
         </div>
-      </div>
-    </div>
-    <div class='xq'>
-      <div class='xq-left'>
-        <div class='xq-title'>变更前</div>
-        <div><span>公司名称: </span><span>【{{list.modifyBeforeName}}】</span></div>
-        <div class='Types'><span>公司类型: 【</span>
-          <div v-for="it in precom" :key='it.typeCode'>
-            <div v-for="ity in list.modifyBeforeTypes" :key='ity.typeCode' v-if='ity.typeCode == it.typeCode'>
-              <span>&nbsp;&nbsp;{{it.typeName}}&nbsp;</span>
-            </div>
-         </div> 】
-        </div>
-        <div class='Types'><span>资质类型: </span>
-          <div v-for="it in prequalification" v-if='list.modifyBeforeQualificationType == it.key' :key='it.key'>
-            <!-- <div v-for="ity in list.modifyBeforeQualificationType" v-if='ity.key == it.typeCode'> -->
-              <span>【{{it.text}}】</span>
-            <!-- </div> -->
+        <div class="res-num">
+          <p>汇款人姓名:</p>
+          <div class="res-num-item">
+            <span class='item1'>{{list.accountName}}</span>
+            <!-- <span class="res-date les">公司地址</span> -->
+            <!-- <span>{{company.addressDetail}}</span> -->
           </div>
         </div>
-        <div><span>资质编号: </span><span>【{{list.modifyBeforeQualificationCode}}】</span></div>
-        <div class='img'>
-          <div>资质图片: </div>
-          <div class='imgs' v-for="it in preimages"  :key='it.key'>
-            <img :src=it.url alt="" sizes="" srcset="">
+        <div class="res-num">
+          <p>银行账号:&nbsp;&nbsp;&nbsp;</p>
+          <div class="res-num-item">
+            <span class='item1'>{{list.accountNumber}}</span>
           </div>
         </div>
-      </div>
-      <div class='xq-right'>
-        <div class='xq-title'>变更后</div>
-        <div><span>公司名称: </span><span>【{{list.modifyAfterName}}】</span></div>
-        <div class='Types'><span>公司类型: </span>
-          <div v-for="it in precom"  :key='it.typeCode'>
-            <div v-for="ity in list.modifyAfterTypes" :key='ity.typeCode' v-if='ity.typeCode == it.typeCode'>
-              <span>【{{it.typeName}}】</span>
-            </div>
+        <div class="res-num">
+          <p>联系电话:&nbsp;&nbsp;&nbsp;</p>
+          <div class="res-num-item">
+            <span class='item1'>{{list.contactPhone}}</span>
           </div>
         </div>
-        <div class='Types'><span>资质类型: </span>
-          <div v-for="it in prequalification" v-if='list.modifyAfterQualificationType == it.key' :key='it.key'>
-            <!-- <div v-for="ity in list.modifyBeforeQualificationType" v-if='ity.key == it.typeCode'> -->
-              <span>【{{it.text}}】</span>
-            <!-- </div> -->
+        <div class="res-num">
+          <p>凭证:&nbsp;&nbsp;&nbsp;</p>
+          <div class='imgs'>
+            <img :src=imageList.url alt="" sizes="" srcset="">
           </div>
         </div>
-        <div><span>资质编号: </span><span>【{{list.modifyAfterQualificationCode}}】</span></div>
-        <div class='img'>
-          <div>资质图片: </div>
-          <div class='imgs' v-for="it in aftimages"  :key='it.key'>
-            <img :src=it.url alt="" sizes="" srcset="">
+        <div class="res-num">
+          <p>汇款日期:&nbsp;&nbsp;&nbsp;</p>
+          <div class="res-num-item">
+            <span class='item1'>{{remittanceDate}}</span>
+          </div>
+        </div>
+        <div class="res-num">
+          <p>充值标签:&nbsp;&nbsp;&nbsp;</p>
+          <div class="res-num-item">
+            <span class='item1' v-for='it in tagCodeList' :key='it.tagCode' v-if='list.tagCode == it.tagCode'>{{it.tagName}}</span>
+          </div>
+        </div>
+        <div class="res-num">
+          <p>备注:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+          <div class="res-num-item">
+            <span class='item1'>{{list.remark}}</span>
           </div>
         </div>
       </div>
@@ -98,14 +84,14 @@
         <div v-if='showStatus'>
           <Form ref="dataForm" :model="dataForm"  label-position="left" :rules="ruleValidate" :label-width="100">
             <FormItem label="审核意见" prop="status">
-              <RadioGroup v-model='dataForm.approveStatus'>
+              <RadioGroup v-model='dataForm.approvalStatus'>
                 <!-- <Radio label="启用"></Radio>
                 <Radio label="停用"></Radio> -->
-                <Radio v-for="it in approveStatusList" v-if="it.key!=0&&it.key!=1" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
+                <Radio v-for="it in approvalStatusList" v-if="it.key!=0&&it.key!=1" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
               </RadioGroup>
             </FormItem>
-            <FormItem v-if='dataForm.approveStatus == 3' label="拒绝理由" prop="reason">
-            <Input style="width:240px" v-model="dataForm.refuseReason"></Input>
+            <FormItem v-if='dataForm.approvalStatus == 3' label="拒绝理由" prop="reason">
+            <Input style="width:240px" v-model="dataForm.rejectReason"></Input>
           </FormItem>
           </Form>
           <Button style='margin-left:20px;' type="primary"  @click="change('dataForm')">确定</Button>
@@ -115,7 +101,6 @@
       </div>
     </div>
     
-    <!-- <dlgChange  ref="change" :prelist="prelist"  @refreshDataList="search" v-if="changeVisible" @done="dlgEditDone"/> -->
 
   </div>
 </template>
@@ -124,16 +109,17 @@
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { get } from '@/fn/ajax'
-import { queryList , queryItem , setList , dataFrom } from '@/api/order'
+import { queryList , queryItem , setList , dataFrom} from '@/api/examine'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice , clean } from '@/fn/object'
-// import dlgChange from './dlgChange.vue'
 
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
-const timeFormat = 'YYYY-MM-DD HH:mm:ss'
+const timeFormat = 'YYYY-MM-DD'
+const timeFormats = 'YYYY-MM-DD HH:mm:ss'
+
 
 const defQuery = {
   id: '',
@@ -146,8 +132,8 @@ const defQuery = {
   applyEndTime: 0
 }
 const dataForm = {
-  refuseReason: '',
-  approveStatus: 2
+  rejectReason: '',
+  approvalStatus: 2
 }
 
 @Component({
@@ -173,24 +159,19 @@ export default class Main extends ViewBase {
   // oldQuery: any = {}
 
   loading = false
-  applyTime = ''
   createTime = ''
+  applyTime = ''
+  remittanceDate = ''
   // 所有数据
   list: any = []
-  // 公司信息
-  company: any = []
-  // 客户类型列表
-  precom: any = []
-  // 资质类型列表
-  prequalification: any = []
-  // 修改前资质图片
-  preimages: any = []
-  // 修改后资质图片
-  aftimages: any = []
+  // 充值标签
+  tagCodeList: any = []
+  // 凭证图片
+  imageList: any = []
   // 日志
   log: any = []
   // 审核
-  approveStatusList: any = []
+  approvalStatusList: any = []
   total = 0
   ids = ''
   sta = 2
@@ -198,17 +179,20 @@ export default class Main extends ViewBase {
   id = 0
   showStatus: boolean = true
 
+
+
   dataForm: any = { ...dataForm }
 
   mounted() {
     const { id } = this.$route.params
-    if ( this.$route.params.approveStatus == '2' ) {
+    if ( this.$route.params.approvalStatus == '2' || this.$route.params.approvalStatus == '3' ) {
       this.showStatus = false
     }
     this.ids = id
     this.doSearch()
+    this.createTime = moment(this.log.createTime).format(timeFormats)
     this.applyTime = moment(this.list.applyTime).format(timeFormat)
-    this.createTime = moment(this.log.createTime).format(timeFormat)
+    this.remittanceDate = moment(this.list.remittanceDate).format(timeFormat)
   }
 
   dlgEditDone() {
@@ -225,12 +209,9 @@ export default class Main extends ViewBase {
           id: this.id,
           ...this.dataForm
         }
-        // const title = '添加'
         try {
           const res =  await setList (this.$route.params.id , query)
-          // toast('操作成功')
-          // this.$emit('done', this.dataForm.email)
-          this.$router.push({ name : 'client-order' })
+          this.$router.push({ name : 'Finance-examine' })
         } catch (ex) {
           this.handleError(ex)
         }
@@ -266,18 +247,20 @@ export default class Main extends ViewBase {
 
     const query = clean({ ...this.query })
     try {
-      const { data } = await queryItem(this.$route.params.id)
-      this.list = data
-      this.company = data.company
-      this.precom = data.customerTypeList
-      this.prequalification = data.qualificationTypeList
-      this.preimages = data.modifyBeforeImageList
-      this.aftimages = data.modifyAfterImageList
-      this.log = data.logList
+      // 列表信息
+      const { data : {
+          item: item,
+          tagCodeList: tagCodeList,
+      } } = await queryItem(this.$route.params.id)
+      this.list = item
+      this.tagCodeList = tagCodeList
+      this.imageList = item.imageList
+      this.log = item.logList
+      // 审核状态
       const { data: {
-        approveStatusList: approveStatusList,
+        approvalStatusList: approvalStatusList,
       } } = await queryList(query)
-      this.approveStatusList = approveStatusList
+      this.approvalStatusList = approvalStatusList
     } catch (ex) {
       // this.handleError(ex)
     } finally {
@@ -406,7 +389,7 @@ export default class Main extends ViewBase {
 .imgs {
   width: 100px;
   height: 100px;
-  margin-left: 10px;
+  margin-left: 60px;
 }
 .imgs img {
   margin-top: 15px;

@@ -146,9 +146,20 @@ export default [
       }
     ]
   },
+
   {
     path: '/Finance/examine/',
     name: 'Finance-examine',
     component: () => import('./views/Finance/examine/index.vue')
-  }
+  },
+  {
+    path: '/Finance/examine/detail/:id?',
+    name: 'Finance-examine-detail',
+    component: () => import('./views/Finance/examine/detail.vue')
+  },
+  {
+    path: '/Finance/examine/edit/:id?',
+    name: 'Finance-examine-edit',
+    component: () => import('./views/Finance/examine/edit.vue')
+  },
 ] as any[]

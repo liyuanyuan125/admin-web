@@ -118,24 +118,32 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       render: (hh: any, { row: { validityStartDate , validityEndDate } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html1 = moment(validityStartDate).format(timeFormats)
-        const html2 = moment(validityEndDate).format(timeFormats)
-        return <div>
+        const html1 = String(validityStartDate).slice(0,4) + '-' + String(validityStartDate).slice(4,6) + '-' + String(validityStartDate).slice(6,8)
+        const html2 = String(validityEndDate).slice(0,4) + '-' + String(validityEndDate).slice(4,6) + '-' + String(validityEndDate).slice(6,8)
+        if (validityStartDate.length == 4) {
+          return <div>
+            <span class='datetime' v-html={validityStartDate}></span>~
+            <span class='datetime' v-html={validityEndDate}></span>
+          </div> 
+        } else {
+          return <div>
             <span class='datetime' v-html={html1}></span>~
             <span class='datetime' v-html={html2}></span>
-        </div> 
+          </div>
+        }
+        
         /* tslint:enable */
       }
     },
     {
       title: '创建时间',
-      key: 'validityStartDate',
+      key: 'createTime',
       align: 'center',
-      render: (hh: any, { row: { validityStartDate } }: any) => {
+      render: (hh: any, { row: { createTime } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = moment(validityStartDate).format(timeFormat)
-        return validityStartDate == null ? <span class='datetime' v-html='-'></span> : <span class='datetime' v-html={html}></span>
+        const html = moment(createTime).format(timeFormat)
+        return createTime == null ? <span class='datetime' v-html='-'></span> : <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
     },
@@ -174,25 +182,25 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         // const sta = approveStatus == 1 ? '停用' : '启用'
         if (approveStatus == 1) {
           return <div class='row-acts'>
-          <router-link to={{ name: 'contract-list-edit', params: { id } }}>审批</router-link>&nbsp;&nbsp;
-          <router-link to={{ name: 'ccontract-list-edit', params: { id } }}>编辑</router-link>&nbsp;&nbsp;
-          <router-link to={{ name: 'client-account-detail', params: { id } }}>复制</router-link>&nbsp;&nbsp;
+          <router-link to={{ name: 'contract-list-detail', params: { id , approveStatus } }}>审批</router-link>&nbsp;&nbsp;
+          <router-link to={{ name: 'contract-list-edit', params: { id } }}>编辑</router-link>&nbsp;&nbsp;
+          <router-link to={{ name: 'contract-list-edit', params: { id } }}>复制</router-link>&nbsp;&nbsp;
           <router-link to={{ name: 'contract-list-detail', params: { id } }}>详情</router-link>
         </div>
         } else if (approveStatus == 2) {
           return <div class='row-acts'>
           <a on-click={this.zuofei.bind(this, row.id, row)}>作废</a>&nbsp;&nbsp;
-          <router-link to={{ name: 'client-account-detail', params: { id } }}>复制</router-link>&nbsp;&nbsp;
+          <router-link to={{ name: 'contract-list-edit', params: { id } }}>复制</router-link>&nbsp;&nbsp;
           <router-link to={{ name: 'contract-list-detail', params: { id } }}>详情</router-link>
         </div>
         } else if (approveStatus == 3) {
           return <div class='row-acts'>
-          <router-link to={{ name: 'client-account-detail', params: { id } }}>复制</router-link>&nbsp;&nbsp;
+          <router-link to={{ name: 'contract-list-edit', params: { id } }}>复制</router-link>&nbsp;&nbsp;
           <router-link to={{ name: 'contract-list-detail', params: { id } }}>详情</router-link>
         </div>
         } else if (approveStatus == 4) {
           return <div class='row-acts'>
-          <router-link to={{ name: 'client-account-detail', params: { id } }}>复制</router-link>&nbsp;&nbsp;
+          <router-link to={{ name: 'contract-list-edit', params: { id } }}>复制</router-link>&nbsp;&nbsp;
           <router-link to={{ name: 'contract-list-detail', params: { id } }}>详情</router-link>
         </div>
         }
@@ -307,7 +315,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   async zuofei(id: number, row: any) {
     try {
       await confirm('您确定作废么')
-      await zuofei (id , row)
+      await zuofei (id , {
+        approveStatus: 4
+      })
       this.$Message.success({
         content: `更改成功`,
       })
