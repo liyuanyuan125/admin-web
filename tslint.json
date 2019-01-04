@@ -29,6 +29,6 @@
     "no-empty": false,
     "no-bitwise": false,
     "no-angle-bracket-type-assertion": false,
-    "label-position": false,
+    "label-position": false
   }
 }
