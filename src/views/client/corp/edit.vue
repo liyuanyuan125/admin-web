@@ -305,7 +305,7 @@ export default class Main extends ViewBase {
       ],
       email: [
          {
-           pattern: /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((.[a-zA-Z0-9_-]{2,3}){1,2})$/,
+           pattern: /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/,
            message: '邮箱格式错误',
            trigger: 'blur'
          }
