@@ -24,15 +24,15 @@
         </Row>
         <Row>
             <Col span="3"><div>提现前可用余额</div></Col>
-            <Col span="16"><span>{{detail.name}}</span></Col>
+            <Col span="16"><span>{{format.beforeWithdrawalAmount}}</span></Col>
         </Row>
         <Row>
             <Col span="3"><div>本次提现金额</div></Col>
-            <Col span="16"><span>{{detail.name}}</span></Col>
+            <Col span="16"><span>{{format.amount}}</span></Col>
         </Row>
         <Row>
             <Col span="3"><div>提现后可用余额</div></Col>
-            <Col span="16"><span>{{detail.name}}</span></Col>
+            <Col span="16"><span>{{format.afterWithdrawalAmount}}</span></Col>
         </Row>
         <Row class="upload">
           <Col span="3"><div>凭证</div></Col>
@@ -51,11 +51,11 @@
         </Row>
       </Row>
       <Row class="detail-check" v-if="detail.logs && detail.logs.length > 0">
-        <Row  class="detail-log" v-for="(item, i) in detail.logs" :key="i">
+        <Row  class="detail-log" v-for="(item, i) in logList" :key="i">
           <Col span="3"><div>操作时间</div></Col>
           <Col span="21"><span>{{item.createTime}}</span></Col>
           <Col span="3"><div>操作员</div></Col>
-          <Col span="21"> <span>{{item.email}}<b style="margin: 0 5px">[{{item.userName}}]</b>{{item.description}}</span></span></Col>
+          <Col span="21"> <span>{{item.email}}<b style="margin: 0 5px">[{{item.userName}}]</b></span></Col>
         </Row>
       </Row>
     </div>
@@ -69,6 +69,8 @@ import moment from 'moment'
 import ViewBase from '@/util/ViewBase'
 import { resIdDetail } from '@/api/advertiser'
 import { toMap } from '@/fn/array'
+import { formatCurrency } from '@/fn/string'
+
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 const typeMap = (list: any[]) => toMap(list, 'typeCode', 'controlStatus')
 const conMap = (list: any[]) => toMap(list, 'key', 'controlStatus')
@@ -84,9 +86,13 @@ export default class Main extends ViewBase {
   detail: any = {}
   loading = false
   showimg = true
+  logList: any = []
   id: any = ''
   get format() {
     return {
+      amount: formatCurrency(this.detail.amount),
+      afterWithdrawalAmount: formatCurrency(this.detail.afterWithdrawalAmount),
+      beforeWithdrawalAmount: formatCurrency(this.detail.beforeWithdrawalAmount),
     }
   }
 
@@ -95,6 +101,13 @@ export default class Main extends ViewBase {
     try {
       const res = await resIdDetail({id: this.id})
       this.detail = res.data
+      const logList = res.data.logs.map((item: any) => {
+        return {
+          ...item,
+          createTime: moment(item.createTime).format(timeFormatDate)
+        }
+      })
+      this.logList = logList.slice(0, 20)
       this.loading = true
       setTimeout(() => {
         (this.$Spin as any).hide()
@@ -208,6 +221,7 @@ export default class Main extends ViewBase {
 }
 
 .detail-check {
+  padding: 10px;
   .ivu-col-span-3, .ivu-col-span-21 {
     div {
       line-height: 30px;

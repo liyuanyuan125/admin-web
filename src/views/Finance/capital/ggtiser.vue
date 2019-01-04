@@ -9,11 +9,7 @@
           </FormItem>
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </Form>
-        <div class="acts">
-          <Button type="success" icon="md-add-circle" @click="edit(0)">新建</Button>
-        </div>
       </div>
-
       <Table :columns="columns" :data="tableData" :loading="loading"
         border stripe disabled-hover size="small" class="table"></Table>
 
@@ -33,7 +29,7 @@ import { Component, Watch , Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { resqueryList } from '@/api/advertiser'
+import { advqueryList } from '@/api/advertiser'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
@@ -100,62 +96,66 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         }
       },
       {
-        title: '',
+        title: '可用余额（元）',
         key: 'availableAmount',
         align: 'center',
-        render: (hh: any, { row: { monthSettlementCount, totalSettlementCount } }: any) => {
+        render: (hh: any, { row: { availableAmount } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          return <router-link to={{name: 'consume'}}>{monthSettlementCount + '/' + totalSettlementCount}</router-link>
+          const html = formatCurrency(availableAmount)
+          return <span class='datetime' v-html={html}></span>
           /* tslint:enable */
-        },
-        /* tslint:disable */
-        renderHeader: (hh: any) => {
-          const h = jsxReactToVue(hh)
-          return <span>结算次数<br/>（本月/累计）</span>
         }
-        /* tslint:enable */
+      },
+      {
+        title: '冻结金额（元）',
+        key: 'freezeAmount',
+        align: 'center',
+        render: (hh: any, { row: { freezeAmount } }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          const html = formatCurrency(freezeAmount)
+          return <span class='datetime' v-html={html}></span>
+          /* tslint:enable */
+        }
       },
       {
         title: '',
-        key: 'freezeAmount',
-        align: 'center',
-        render: (hh: any, { row: { monthWithdrawalCount, totalWithdrawalCount, companyId } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          return <router-link to={{name: 'withdraw', params: {companyId: companyId}, query: { beginDate: this.query.beginDate, endDate: this.query.endDate }}}>
-          {monthWithdrawalCount + '/' + totalWithdrawalCount}</router-link>
-          /* tslint:enable */
-        },
-        /* tslint:disable */
-        renderHeader: (hh: any) => {
-          const h = jsxReactToVue(hh)
-          return <span>提现次数<br/>（本月/累计）</span>
-        }
-        /* tslint:enable */
-      },
-      {
-        title: '进账明细',
         key: 'statusText',
         align: 'center',
         render: (hh: any, { row: { monthRechargeCount, totalRechargeCount, companyId } }: any) => {
           /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          return <router-link to={{name: 'rechargeNum', params: {companyId: companyId}}}>查询</router-link>
+            const h = jsxReactToVue(hh)
+            const start = new Date(this.showTime[0]).getTime()
+            const end = new Date(this.showTime[1]).getTime()
+            return <router-link to={{name: 'rechargeNum', params: {companyId: companyId}, query: { beginDate: this.query.beginDate, endDate: this.query.endDate }}}>
+            {monthRechargeCount+'/'+totalRechargeCount}</router-link>
           /* tslint:enable */
+        },
+        /* tslint:disable */
+        renderHeader: (hh: any) => {
+            const h = jsxReactToVue(hh)
+            return <span>充值次数<br/>（本月/累计）</span>
         }
+        /* tslint:enable */
       },
       {
-        title: '操作',
+        title: '',
         key: 'action',
         align: 'center',
-        render: (hh: any, { row: { id }, row }: any) => {
+        render: (hh: any, { row: { monthConsumptionCount, totalConsumptionCount, id }, row }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
           const showTime = this.showTime
-          return <router-link to={{name: 'payRank'}}>添加提现账单</router-link>
+          return <router-link to={{name: 'payRank'}}>{monthConsumptionCount+'/'+totalConsumptionCount}</router-link>
           /* tslint:enable */
+        },
+        /* tslint:disable */
+        renderHeader: (hh: any) => {
+          const h = jsxReactToVue(hh)
+          return <span>消费次数<br/>（本月/累计）</span>
         }
+        /* tslint:enable */
       }
     ]
   }
@@ -196,7 +196,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   search() {
     this.query.pageIndex = 1
   }
-
   reloadSearch() {
     this.doSearch()
   }
@@ -226,7 +225,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       const { data: {
         items: list,
         totalCount: total,
-      } } = await resqueryList(query)
+      } } = await advqueryList(query)
       this.list = list
       this.total = total
     } catch (ex) {
@@ -240,7 +239,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   edit(id: number, row: any) {
     this.addOrUpdateVisible = true
     this.$nextTick(() => {
-      (this.$refs.addOrUpdate as any).init(id)
+      const myThis: any = this
+      myThis.$refs.addOrUpdate.init(id)
     })
   }
 
