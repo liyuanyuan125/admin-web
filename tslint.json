@@ -28,6 +28,7 @@
     "object-literal-key-quotes": [true, "as-needed"],
     "no-empty": false,
     "no-bitwise": false,
-    "no-angle-bracket-type-assertion": false
+    "no-angle-bracket-type-assertion": false,
+    "label-position": false,
   }
 }
