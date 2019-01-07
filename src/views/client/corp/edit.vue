@@ -423,7 +423,7 @@ export default class Main extends ViewBase {
         this.qualificationTypeList = qualificationTypeList
         this.customerTypeList = customerTypeList
         this.item.types[0] = {
-          typeCode: 'advert',
+          typeCode: 'ads',
           typeCategoryCode: 'zhike'
         }
         this.item.typearr[0] = true
