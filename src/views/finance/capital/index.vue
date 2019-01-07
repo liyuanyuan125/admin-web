@@ -89,6 +89,11 @@ export default class Main extends ViewBase {
       this.tabsList[index].query = val.query
       this.tabsList[index].params = val.params
     }
+    if (val.name == 'resource' && val.meta.show) {
+      const res = this.tabsList.filter((item: any) => item.name !== 'withdrawalBill' )
+      this.tabsList = res
+      val.meta.show = false
+    }
   }
 }
 </script>

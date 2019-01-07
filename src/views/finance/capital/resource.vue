@@ -149,11 +149,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         title: '操作',
         key: 'action',
         align: 'center',
-        render: (hh: any, { row: { id }, row }: any) => {
+        render: (hh: any, { row: { companyId }, row }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
           const showTime = this.showTime
-          return <router-link to={{name: 'payRank'}}>添加提现账单</router-link>
+          return <router-link to={{name: 'withdrawalBill', params: { id: companyId }}}>添加提现账单</router-link>
           /* tslint:enable */
         }
       }

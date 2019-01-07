@@ -9,19 +9,18 @@
         </Row>
         <Row>
           <Col span="3"><div>开户行</div></Col>
-          <Col span="8">
-            <span id="success_form_input" style="margin-right: 8px">{{detail.accountBank}}</span>
+          <Col span="8"><span id="success_form_input" style="margin-right: 8px">{{detail.accountBank}}</span>
             <a ref="copy" v-show="detail.accountBank" data-clipboard-action="copy" data-clipboard-target="#success_form_input" @click="copyLink">复制</a>
           </Col>
         </Row>
         <Row>
           <Col span="3"><div>开户名</div></Col>
           <Col span="4"><span id="success_form_input2" style="margin-right: 8px">{{detail.accountName}}</span>
-            <a ref="copy3" v-show="detail.accountName" data-clipboard-action="copy" data-clipboard-target="#success_form_input2" @click="copyLink">复制</a>
+            <a ref="copy3" v-show="detail.accountBank" data-clipboard-action="copy" data-clipboard-target="#success_form_input2" @click="copyLink">复制</a>
           </Col>
           <Col span="3"><div>账户号</div></Col>
           <Col span="4"><span id="success_form_input3" style="margin-right: 8px">{{detail.accountNumber}}</span>
-            <a ref="copy2" v-show="detail.accountName" data-clipboard-action="copy" data-clipboard-target="#success_form_input3" @click="copyLink">复制</a>
+            <a ref="copy2" v-show="detail.accountBank" data-clipboard-action="copy" data-clipboard-target="#success_form_input3" @click="copyLink">复制</a>
           </Col>
         </Row>
       </div>
@@ -36,20 +35,17 @@
         </Row>
         <Row>
           <Col span="3"><div>本次提现金额</div></Col>
-          <Col span="16"><span>{{format.amount}}</span></Col>
+          <Col span="2"><InputNumber enter-button="MAX" :max="detail.beforeWithdrawalAmount || 0" :min="0" v-model="value1" style="margin-top:5px"></InputNumber></Col>
         </Row>
         <Row>
           <Col span="3"><div>提现后可用余额</div></Col>
           <Col span="16"><span>{{format.afterWithdrawalAmount}}</span></Col>
         </Row>
         <Row class="upload">
-          <Col span="3"><div>凭证</div></Col>
+          <Col span="3"><div><span style="red">*</span>凭证</div></Col>
           <Col span="8">
             <div class="upload-wrap">
-              <div v-if="showimg" class="show-img">
-                <img src="~@/assets/imgerror.png"/>
-              </div>
-              <imgModel v-else :uploadList = "img" :type = 2 />
+              <Upload v-model="imageList" :multiple="true" :maxCount="3"/>
             </div>
           </Col>
         </Row>
@@ -58,14 +54,9 @@
           <Col span="8"><span>{{detail.remark}}</span></Col>
         </Row>
       </Row>
-      <Row class="detail-check" v-if="detail.logs && detail.logs.length > 0">
-        <Row  class="detail-log" v-for="(item, i) in logList" :key="i">
-          <Col span="3"><div>操作时间</div></Col>
-          <Col span="21"><span>{{item.createTime}}</span></Col>
-          <Col span="3"><div>操作员</div></Col>
-          <Col span="21"> <span>{{item.email}}<b style="margin: 0 5px">[{{item.userName}}]</b></span></Col>
-        </Row>
-      </Row>
+      <div style="text-align: center">
+        <Button type="primary" size='large' @click="submitWithdraw">提交</Button>
+      </div>
     </div>
   </div>
 </template>
@@ -78,19 +69,16 @@ import ViewBase from '@/util/ViewBase'
 import { resIdDetail } from '@/api/advertiser'
 import { toMap } from '@/fn/array'
 import { formatCurrency } from '@/fn/string'
-import imgModel from '../../data/film/imgModel.vue'
 import clipboard from 'clipboard'
+import Upload from '@/components/Upload.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
-const typeMap = (list: any[]) => toMap(list, 'typeCode', 'controlStatus')
-const conMap = (list: any[]) => toMap(list, 'key', 'controlStatus')
 
 const timeFormatDate = 'YYYY/MM/DD HH:mm:ss'
-const timeFormat = 'YYYY/MM/DD'
 
 @Component({
   components: {
-    imgModel
+    Upload
   }
 })
 export default class Main extends ViewBase {
@@ -99,9 +87,8 @@ export default class Main extends ViewBase {
   copyBtn = null
   detail: any = {}
   loading = false
-  showimg = true
-  img: any = []
-  logList: any = []
+  imageList = []
+  value1 = 0
   id: any = ''
   get format() {
     return {
@@ -128,15 +115,6 @@ export default class Main extends ViewBase {
           createTime: moment(item.createTime).format(timeFormatDate)
         }
       })
-      if (res.data.imgs && res.data.imgs.length > 0) {
-        this.showimg = false
-        this.img = res.data.img.map((item: any) => {
-          return item.url
-        })
-      } else {
-        this.showimg = true
-      }
-      this.logList = logList.slice(0, 20)
       this.loading = true
       setTimeout(() => {
         (this.$Spin as any).hide()
@@ -151,6 +129,11 @@ export default class Main extends ViewBase {
   copyLink() {
   }
 
+  submitWithdraw() {
+    this.$router.push({ name: 'resource' })
+    this.$route.meta.show = true
+  }
+
   @Watch('id', {immediate: true})
   watchid(val: any, oldVal: any) {
     if (val) {
@@ -160,8 +143,9 @@ export default class Main extends ViewBase {
 
   @Watch('$route', {immediate: true})
   watch$route(val: any, oldVal: any) {
-    if (val.name == 'withdrawDetail') {
+    if (val.name == 'withdrawalBill') {
       this.id = this.$route.params.id || 0
+      this.$route.meta.show = false
     }
   }
 }
