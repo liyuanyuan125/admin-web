@@ -175,6 +175,14 @@ export default [
         meta: {
           title: '提现详情'
         }
+      },
+      {
+        path: 'withdrawalBill/:id',
+        name: 'withdrawalBill',
+        component: () => import('./views/Finance/capital/withdrawalBill.vue'),
+        meta: {
+          title: '添加提现账单'
+        }
       }
     ]
   },
