@@ -116,11 +116,10 @@
       </Row>
       附件信息
       <Row class="cinema-content">
-        <Upload multiple :maxCount="3" accept="*"/>
-        + 上传附件
-           <span class='red'>注：支持pdf、doc、docx、rar、7z、zip等格式的文件</span>
+        <UploadButton multiple @success="onUploadSuccess">上传附件</UploadButton>
+        <span class='red'>注：支持pdf、doc、docx、rar、7z、zip等格式的文件</span>
         <Table :columns="columns" :data="tableData"
-        border stripe disabled-hover size="small" class="table"></Table>
+          border stripe disabled-hover size="small" class="table"></Table>
       </Row>
       责任人
       <Row class="cinema-content">
@@ -173,7 +172,7 @@ import ViewBase from '@/util/ViewBase'
 import { queryId , jiacompanysList , companysList , dataFrom , addlist , setlist  } from '@/api/list'
 import { directorList } from '@/api/corpReal'
 import AreaSelect from '@/components/AreaSelect.vue'
-import Upload from '@/components/Upload.vue'
+import UploadButton, { SuccessEvent } from '@/components/UploadButton.vue'
 import PartBindCinema from './partBindCinema.vue'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
@@ -219,7 +218,7 @@ const dataForm = {
   components: {
     AreaSelect,
     PartBindCinema,
-    Upload
+    UploadButton
   }
 })
 
@@ -327,7 +326,7 @@ export default class Main extends ViewBase {
           return <div class='row-acts'>
           <router-link to={{ name: 'contract-list-detail', params: { id } }}>下载</router-link>
         </div>
-        
+
         /* tslint:enable */
       }
     }
@@ -356,6 +355,9 @@ export default class Main extends ViewBase {
       }
     })
     return attachments
+  }
+
+  onUploadSuccess({ files }: SuccessEvent) {
   }
 
   mounted() {

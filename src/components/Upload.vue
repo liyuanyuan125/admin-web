@@ -115,7 +115,7 @@ export default class Upload extends ViewBase {
   /**
    * 接受的文件类型
    */
-  @Prop({ type: String, default: '' }) accept!: string
+  @Prop({ type: String, default: '*' }) accept!: string
 
   /**
    * 上传文件的最大个数，默认 1 个
