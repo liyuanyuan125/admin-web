@@ -76,7 +76,7 @@
         <FormItem label="凭证" prop="receipt">
           <Row class="upload">
             <Col span="12" style="margin-left: 88px">
-                <Upload v-model="dataForm.receipts" multiple :maxCount="3" accept="image/*"/>
+                <Upload v-model="dataForm.receipts" multiple :maxCount="1" accept="image/*"/>
             </Col>
           </Row>
         </FormItem>

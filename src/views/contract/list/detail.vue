@@ -218,7 +218,7 @@ export default class Main extends ViewBase {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
           return <div class='row-acts'>
-          <router-link to={{ name: 'contract-list-detail', params: { id } }}>下载</router-link>
+          <a class="operation" href="" download={row.name}>下载</a>
         </div>
         
         /* tslint:enable */

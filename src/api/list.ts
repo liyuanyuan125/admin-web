@@ -36,8 +36,17 @@ export async function jiacompanysList(query: any) {
   return data
 }
 
+// 新建合同
+export async function addlist(query: any) {
+  const data = await post('/customer/contracts', query)
+  return data
+}
 
-
+// 编辑合同
+export async function setlist(id: any , query: any) {
+  const data = await put(`/customer/contracts/${id}`, query)
+  return data
+}
 
 
 

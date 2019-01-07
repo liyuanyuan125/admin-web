@@ -121,25 +121,25 @@ export default [
   },
 
   {
-    path: '/Finance/capital/',
-    name: 'Finance-capital',
+    path: '/finance/capital/',
+    name: 'finance-capital',
     redirect: { name: 'ggtiser'},
-    component: () => import('./views/Finance/capital/index.vue'),
+    component: () => import('./views/finance/capital/index.vue'),
     children: [
       {
         path: 'ggtiser',
         name: 'ggtiser',
-        component: () => import('./views/Finance/capital/ggtiser.vue'),
+        component: () => import('./views/finance/capital/ggtiser.vue'),
       },
       {
         path: 'resource',
         name: 'resource',
-        component: () => import('./views/Finance/capital/resource.vue'),
+        component: () => import('./views/finance/capital/resource.vue'),
       },
       {
         path: 'rechargeNum/:companyId',
         name: 'rechargeNum',
-        component: () => import('./views/Finance/capital/rechargeNum.vue'),
+        component: () => import('./views/finance/capital/rechargeNum.vue'),
         meta: {
           title: '充值记录'
         }
@@ -147,7 +147,7 @@ export default [
       {
         path: 'payRank',
         name: 'payRank',
-        component: () => import('./views/Finance/capital/payRank.vue'),
+        component: () => import('./views/finance/capital/payRank.vue'),
         meta: {
           title: '消费记录'
         }
@@ -155,7 +155,7 @@ export default [
       {
         path: 'withdraw/:companyId',
         name: 'withdraw',
-        component: () => import('./views/Finance/capital/withdraw.vue'),
+        component: () => import('./views/finance/capital/withdraw.vue'),
         meta: {
           title: '提现记录'
         }
@@ -163,7 +163,7 @@ export default [
       {
         path: 'consume',
         name: 'consume',
-        component: () => import('./views/Finance/capital/consume.vue'),
+        component: () => import('./views/finance/capital/consume.vue'),
         meta: {
           title: '结算记录'
         }
@@ -171,7 +171,7 @@ export default [
       {
         path: 'withdrawDetail/:id',
         name: 'withdrawDetail',
-        component: () => import('./views/Finance/capital/withdrawDetail.vue'),
+        component: () => import('./views/finance/capital/withdrawDetail.vue'),
         meta: {
           title: '提现详情'
         }
@@ -180,18 +180,18 @@ export default [
   },
 
   {
-    path: '/Finance/examine/',
-    name: 'Finance-examine',
-    component: () => import('./views/Finance/examine/index.vue')
+    path: '/finance/examine/',
+    name: 'finance-examine',
+    component: () => import('./views/finance/examine/index.vue')
   },
   {
-    path: '/Finance/examine/detail/:id?',
-    name: 'Finance-examine-detail',
-    component: () => import('./views/Finance/examine/detail.vue')
+    path: '/finance/examine/detail/:id?',
+    name: 'finance-examine-detail',
+    component: () => import('./views/finance/examine/detail.vue')
   },
   {
-    path: '/Finance/examine/edit/:id?',
-    name: 'Finance-examine-edit',
-    component: () => import('./views/Finance/examine/edit.vue')
+    path: '/finance/examine/edit/:id?',
+    name: 'finance-examine-edit',
+    component: () => import('./views/finance/examine/edit.vue')
   },
 ] as any[]
