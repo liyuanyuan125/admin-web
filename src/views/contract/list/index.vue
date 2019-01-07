@@ -120,7 +120,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         const h = jsxReactToVue(hh)
         const html1 = String(validityStartDate).slice(0,4) + '-' + String(validityStartDate).slice(4,6) + '-' + String(validityStartDate).slice(6,8)
         const html2 = String(validityEndDate).slice(0,4) + '-' + String(validityEndDate).slice(4,6) + '-' + String(validityEndDate).slice(6,8)
-        if (validityStartDate.length == 4) {
+        // console.log(String(validityStartDate).length)
+        if (String(validityStartDate).length == 4) {
           return <div>
             <span class='datetime' v-html={validityStartDate}></span>~
             <span class='datetime' v-html={validityEndDate}></span>
@@ -184,23 +185,23 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           return <div class='row-acts'>
           <router-link to={{ name: 'contract-list-detail', params: { id , approveStatus } }}>审批</router-link>&nbsp;&nbsp;
           <router-link to={{ name: 'contract-list-edit', params: { id } }}>编辑</router-link>&nbsp;&nbsp;
-          <router-link to={{ name: 'contract-list-edit', params: { id } }}>复制</router-link>&nbsp;&nbsp;
+          <router-link to={{ name: 'contract-list-edit', params: { id ,copy : -1 } }}>复制</router-link>&nbsp;&nbsp;
           <router-link to={{ name: 'contract-list-detail', params: { id } }}>详情</router-link>
         </div>
         } else if (approveStatus == 2) {
           return <div class='row-acts'>
           <a on-click={this.zuofei.bind(this, row.id, row)}>作废</a>&nbsp;&nbsp;
-          <router-link to={{ name: 'contract-list-edit', params: { id } }}>复制</router-link>&nbsp;&nbsp;
+          <router-link to={{ name: 'contract-list-edit', params: { id ,copy : -1} }}>复制</router-link>&nbsp;&nbsp;
           <router-link to={{ name: 'contract-list-detail', params: { id } }}>详情</router-link>
         </div>
         } else if (approveStatus == 3) {
           return <div class='row-acts'>
-          <router-link to={{ name: 'contract-list-edit', params: { id } }}>复制</router-link>&nbsp;&nbsp;
+          <router-link to={{ name: 'contract-list-edit', params: { id,copy : -1 } }}>复制</router-link>&nbsp;&nbsp;
           <router-link to={{ name: 'contract-list-detail', params: { id } }}>详情</router-link>
         </div>
         } else if (approveStatus == 4) {
           return <div class='row-acts'>
-          <router-link to={{ name: 'contract-list-edit', params: { id } }}>复制</router-link>&nbsp;&nbsp;
+          <router-link to={{ name: 'contract-list-edit', params: { id ,copy : -1} }}>复制</router-link>&nbsp;&nbsp;
           <router-link to={{ name: 'contract-list-detail', params: { id } }}>详情</router-link>
         </div>
         }
@@ -314,7 +315,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   // 作废
   async zuofei(id: number, row: any) {
     try {
-      await confirm('您确定作废么')
+      await confirm('您确定作废合同编号为' + row.contractNo + '的合同吗？')
       await zuofei (id , {
         approveStatus: 4
       })

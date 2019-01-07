@@ -7,7 +7,6 @@
       </div>
     </header>
     <div class="edit-box">
-      <!-- header -->
       合同主体信息
       <Row class="cinema-header">
         <FormItem label="合同名称" prop="contractName">
@@ -43,7 +42,6 @@
             </Col>
           </Row>
         </FormItem>
-        </Row>
       </Row>
       乙方信息
       <Row class="cinema-header">
@@ -70,7 +68,6 @@
             </Col>
           </Row>
         </FormItem>
-        </Row>
       </Row>
       结算账户信息
       <Row class="cinema-header">
@@ -98,25 +95,32 @@
         <FormItem label="结算账期" prop="settlementPeriod">
           <Row>
             <Col span="8">
-              <Input v-model="dataForm.settlementPeriod" placeholder="" type='number'/>注：最小数值必须为7
+              <Input v-model="dataForm.settlementPeriod" placeholder=""/><span class='red'>注：最小数值必须为7</span>
             </Col>
           </Row>
         </FormItem>
       </Row>
-       分成比例  注：资源方在平台进行销售事，平台抽成使用；如不设置分成规则，则该公司关联的所有影院分成比例为【20%】
-      <Row class="cinema-content">
-        <FormItem prop="cinemasList">
-          以下影院，分成比例为<Input style='width:5%;' v-model="dataForm.rule" placeholder=""/>%
-          <!-- <PartBindCinema v-model="dataForm.rule" :unitList="profitUnitList"
-              :incinematype='cinematype' class="part-bind-cinema"/> -->
+       分成比例  <span class='red'>注：资源方在平台进行销售时，平台抽成使用；如不设置分成规则，则该公司关联的所有影院分成比例为【20%】</span>
+      <Row class="cinema-footer">
+        <FormItem v-if='showrule' label="关联影院" prop="cinemasList">
+          以下影院，分成比例为<Input style='width:5%;' placeholder=""/>%
+          <PartBindCinema :unitList="profitUnitList"
+               class="part-bind-cinema"/>
         </FormItem>
-        +添加规则
+        <FormItem label="关联影院" prop="cinemasList" v-for='it in dataForm.rule'>
+          以下影院，分成比例为<Input style='width:5%;' v-model="it.proportion" placeholder=""/>%
+          <PartBindCinema v-model="it.cinemaList" :unitList="profitUnitList"
+               class="part-bind-cinema"/>
+        </FormItem>
+        <a href='javascript:;'>+添加规则</a>
       </Row>
-       附件信息
+      附件信息
       <Row class="cinema-content">
-        + 上传附件   注：支持pdf、doc、docx、rar、7z、zip等格式的文件
-        <!-- <Table :columns="columns" :data="tableData" :loading="loading"
-        border stripe disabled-hover size="small" class="table"></Table> -->
+        <Upload multiple :maxCount="3" accept="*"/>
+        + 上传附件
+           <span class='red'>注：支持pdf、doc、docx、rar、7z、zip等格式的文件</span>
+        <Table :columns="columns" :data="tableData"
+        border stripe disabled-hover size="small" class="table"></Table>
       </Row>
       责任人
       <Row class="cinema-content">
@@ -124,7 +128,7 @@
           <Row>
             <Col span="8">
               <Select v-model="dataForm.signingUser" placeholder="签订人" filterable clearable>
-                <Option v-if="it.status!=2" v-for="it in businessDirector" :key="it.id" :value="it.id"
+                <Option v-for="it in businessDirector" :key="it.id" :value="it.id"
                   :label="it.email+'  ['+it.userName+']'">{{ it.email}}<b style="margin-left:5px">[{{it.userName}}]</b></Option>
               </Select>
             </Col>
@@ -134,42 +138,44 @@
           <Row>
             <Col span="8">
               <Select v-model="dataForm.followUser" placeholder="跟进人" filterable clearable>
-                <Option v-if="it.status!=2" v-for="it in businessDirector" :key="it.id" :value="it.id"
+                <Option v-for="it in businessDirector" :key="it.id" :value="it.id"
                   :label="it.email+'  ['+it.userName+']'">{{ it.email}}<b style="margin-left:5px">[{{it.userName}}]</b></Option>
               </Select>
             </Col>
           </Row>
         </FormItem>
       </Row>
-      备注
       <Row class='beizhu'>
-        <FormItem  prop="name">
+        <FormItem label="备注"  prop="name">
           <Row>
             <Col span="10">
-              <Input style='width:262%;height:50px;margin-left:-22%;' v-model="dataForm.remark" placeholder="输入备注信息"/>
+            <Input v-model="dataForm.remark" type="textarea" style='width:240%;' :autosize="{minRows: 2,maxRows: 5}" placeholder="输入备注信息..."></Input>
+              <!-- <Input v-model="dataForm.remark" placeholder="输入备注信息"/> -->
             </Col>
           </Row>
         </FormItem>
       </Row>
-      <div class="edit-button">
-        <Button type="info" size="large" @click="edit('dataForms')">确定</Button>
-      </div>
-    </Row>
+        <div class="edit-button">
+          <Button type="info" size="large" @click="edit('dataForm')">确定</Button>
+        </div>
+      </Row>
+
     </div>
 
   </Form>
 </template>
 
-<script lang="ts">
+<script lang="tsx">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-// import { queryId, addSeach, addQuery, setQuery, directorList } from '@/api/list'
-import { queryId , jiacompanysList , companysList , dataFrom } from '@/api/list'
+// import { queryId, addSeach, addQuery, setQuery, directorList } from '@/api/corpReal'
+import { queryId , jiacompanysList , companysList , dataFrom , addlist , setlist  } from '@/api/list'
 import { directorList } from '@/api/corpReal'
 import AreaSelect from '@/components/AreaSelect.vue'
 import Upload from '@/components/Upload.vue'
 import PartBindCinema from './partBindCinema.vue'
+import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import { slice, clean } from '@/fn/object'
 import moment from 'moment'
@@ -177,37 +183,36 @@ import moment from 'moment'
 const timeFormat = 'YYYY-MM-DD'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
-
 const defQuery = {
 }
-
 
 const dataForm = {
   contractName: '',
   contractNo: '',
-  companyACode: '',
+  companyACode: null,
   validityStartDate: null,
   validityEndDate: null,
-  companyBId: '',
+  companyBId: null,
   companyBContact: '',
   companyBPhone: '',
   accountBank: '',
   accountName: '',
   accountNumber: '',
   settlementPeriod: null,
-  rule: {
-    proportion: null,
-    cinemas: []
-  },
-  attachments: {
-    name: null,
-    uploadUser: null,
-    uploadTime: null
-  },
+  // rule: {
+  //   proportion: '',
+  //   cinemas: []
+  // },
+  rule: [],
+  // attachments: {
+  //   name: 11,
+  //   uploadUser: 11,
+  //   uploadTime: 11
+  // },
+  attachments: [],
   signingUser: null,
   followUser: null,
   remark: '',
-
 }
 
 @Component({
@@ -219,6 +224,7 @@ const dataForm = {
 })
 
 export default class Main extends ViewBase {
+
   title = ''
   loading = false
 
@@ -235,75 +241,121 @@ export default class Main extends ViewBase {
   // 负责人
   businessDirector: any = []
 
+  dataForm: any = { ...dataForm }
 
+  id = 0
+  // 编辑
+  detail: any = {}
+
+  showrule = false
 
   get rules() {
     const rule: any = {
-      // name: [
-      //   { required: true, message: '请填写公司名称', trigger: 'blur' }
-      // ],
-      // shortName: [
-      //   { required: true, message: '请填写公司简称', trigger: 'blur' }
-      // ],
-      // provinceId: [
-      //   { required: true, pattern: /^[1-9][0-9]*$/, message: '请选择公司地址', trigger: 'change' }
-      // ],
-      // addressDetail: [
-      //   { required: true, message: '请填写公司详细地址', trigger: 'blur' }
-      // ],
-      // approveStatus: [
-      //   { required: true, message: '请选择审核状态', trigger: 'blur', type: 'number' }
-      // ],
-      // cinemasList: [
-      //   { required: true, message: '请选择关联影院', type: 'array', trigger: 'change'}
-      // ],
-      // levelCode: [
-      //   { required: true, message: '请选择客户等级', trigger: 'change'}
-      // ],
-      // validityPeriodDate: [
-      //     { required: true, message: '请填写用户的资质到期日期', trigger: 'change', type: 'date'}
-      // ],
-      // refusedReason: [
-      //    { required: true, message: '请填写拒绝原因', trigger: 'blur'},
-      //    { max: 30, message: '拒绝原因不得超过30个字', trigger: 'change'},
-      // ],
-      // email: [
-      //    {
-      //      pattern: /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((.[a-zA-Z0-9_-]{2,3}){1,2})$/,
-      //      message: '邮箱格式错误',
-      //      trigger: 'blur'
-      //    }
-      // ],
-      // 'typearr[0]': [
-      //   { validator: validateType1 }
-      // ],
-      // 'typearr[1]': [
-      //   { validator: validateType2 }
-      // ],
-      // qualificationType: [
-      //   { required: true, message: '请选择资质', trigger: 'change'},
-      // ],
-      // qualificationCode: [
-      //   { required: true, message: '请输入资质编号', trigger: 'blur'}
-      // ],
-      // businessDirector: [
-      //   { required: true, message: '请选择负责商务', trigger: 'blur', type: 'number' }
-      // ]
+      contractName: [
+        { required: true, message: '请填写合同名称', trigger: 'blur' }
+      ],
+      contractNo: [
+        { required: true, message: '请填写合同编号', trigger: 'blur' }
+      ],
+      companyACode: [
+        { required: true, message: '请选择甲方公司名称' }
+      ],
+      validityStartDate: [
+        { required: true, message: '请选择有效开始时间', trigger: 'blur' }
+      ],
+      validityEndDate: [
+        { required: true, message: '请选择有效结束时间', trigger: 'blur' }
+      ],
+      companyBId: [
+        { required: true, message: '请选择乙方公司' }
+      ],
+      companyBContact: [
+        { required: true, message: '请填写乙方公司联系人', trigger: 'blur' }
+      ],
+      companyBPhone: [
+        { required: true, message: '请填写乙方公司联系电话', trigger: 'blur' }
+      ],
+      accountBank: [
+        { required: true, message: '请填写开户银行', trigger: 'blur' }
+      ],
+      accountName: [
+        { required: true, message: '请填写账户名', trigger: 'blur' }
+      ],
+      accountNumber: [
+        { required: true, message: '请填写账号', trigger: 'blur' }
+      ],
+      settlementPeriod: [
+        { required: true, message: '请选择结账周期', trigger: 'blur' }
+      ],
+      attachments: [
+        { required: true, message: '请上传附件'}
+      ],
+      signingUser: [
+        { required: true, message: '请选择签订人' }
+      ],
+      followUser: [
+        { required: true, message: '请选择跟进人', trigger: 'blur' }
+      ],
     }
     return rule
   }
 
-  dataForm: any = { ...dataForm }
+  columns = [
+    { title: '序号', key: 'id', align: 'center' },
+    { title: '附件', key: 'name', align: 'center' },
+    {
+      title: '上传时间',
+      key: 'uploadTime',
+      align: 'center',
+      render: (hh: any, { row: { uploadTime } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        const html = String(uploadTime).slice(0,4) + '-' + String(uploadTime).slice(4,6) + '-' + String(uploadTime).slice(6,8)
+        // console.log(html)
+        return uploadTime == null ? <span class='datetime' v-html='-'></span> : <span class='datetime' v-html={html}></span>
+        /* tslint:enable */
+      }
+    },
+    { title: '上传人', key: 'uploadUserName', align: 'center' },
+    {
+      title: '操作',
+      key: 'action',
+      align: 'center',
+      render: (hh: any, { row: { approveStatus, statusText, id }, row }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+          return <div class='row-acts'>
+          <router-link to={{ name: 'contract-list-detail', params: { id } }}>下载</router-link>
+        </div>
+        
+        /* tslint:enable */
+      }
+    }
+  ]
+
+  created() {
+  }
+
+  async business() {
+  }
+
+
+  // columns = [
+  // ]
 
   get cachedMap() {
     return {
     }
   }
 
-  get formatArr() {
+  get tableData() {
     const cachedMap = this.cachedMap
-    return {
-    }
+    const attachments = (this.dataForm.attachments || []).map((it: any) => {
+      return {
+        ...it,
+      }
+    })
+    return attachments
   }
 
   mounted() {
@@ -339,18 +391,88 @@ export default class Main extends ViewBase {
     } finally {
       this.loading = false
     }
+    // const query = { id: this.$route.params.id || 0 }
+    try {
+      if ( this.$route.params.id == undefined ) {
+        this.showrule = true
+        const { data: {
+          items: companys,
+        } } = await companysList(query)
+        this.companys = companys
+        // 甲方公司
+        const { data : {
+            companyAList: companyAList
+        } } = await jiacompanysList(query)
+        this.companyAList = companyAList
+        // 负责人
+        const res = await directorList()
+        this.businessDirector = res.data.items
+      } else if ( this.$route.params.id != undefined ) {
+        // 编辑
+        const res = await queryId(this.$route.params.id)
+        this.detail = res.data
+        this.detail.cinemaList = res.data.ruleList || []
+        this.dataForm.contractName = this.detail.contractName
+        this.dataForm.companyACode = this.detail.companyAList[0].key
+        this.dataForm.contractNo = this.detail.contractNo
+        this.dataForm.validityStartDate = new Date(this.formatValid(this.detail.validityStartDate))
+        this.dataForm.validityEndDate = new Date(this.formatValid(this.detail.validityEndDate))
+        this.dataForm.companyBId = this.detail.companyBId
+        this.dataForm.companyBContact = this.detail.companyBContact
+        this.dataForm.companyBPhone = this.detail.companyBPhone
+        this.dataForm.accountBank = this.detail.accountBank
+        this.dataForm.accountName = this.detail.accountName
+        this.dataForm.accountNumber = this.detail.accountNumber
+        this.dataForm.settlementPeriod = this.detail.settlementPeriod
+        this.dataForm.rule = this.detail.ruleList
+        this.dataForm.attachments = this.detail.attachmentList
+        this.dataForm.signingUser = this.detail.signingUser
+        this.dataForm.followUser = this.detail.followUser
+        this.dataForm.remark = this.detail.remark
+      }
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      this.loading = false
+    }
   }
-
+  // 日期时间
+  formatValid(data: any) {
+    const datas = (data + '').split(',')
+    const a = datas[0].slice(0, 4)
+    const b = datas[0].slice(4, 6)
+    const c = datas[0].slice(6)
+    return `${a}/${b}/${c}`
+  }
 
   back() {
     this.$router.go(-1)
   }
 
-  edit(dataForms: string) {
+  edit(dataForms: any) {
+    this.dataForm.validityStartDate = new Date(this.dataForm.validityStartDate).getTime()
+    this.dataForm.validityEndDate = new Date(this.dataForm.validityEndDate).getTime()
 
+    const myThis: any = this
+    myThis.$refs[dataForms].validate(async ( valid: any ) => {
+      if (valid) {
+        const query =  !this.id ? this.dataForm : {
+          id: this.id,
+          ...this.dataForm
+        }
+        try {
+          if (!this.id || this.$route.params.copy) {
+            const res =  await addlist (query)
+          } else if (this.id) {
+            const res =  await setlist (this.$route.params.id , query)
+          }
+          this.$router.push({ name : 'contract-list' })
+        } catch (ex) {
+          this.handleError(ex)
+        }
+      }
+    })
   }
-
-
 }
 </script>
 
@@ -414,5 +536,8 @@ export default class Main extends ViewBase {
 }
 .part-bind-cinema {
   width: 660px;
+}
+.red {
+  color: red;
 }
 </style>
