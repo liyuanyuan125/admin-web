@@ -179,7 +179,7 @@ export default [
       {
         path: 'withdrawalBill/:id',
         name: 'withdrawalBill',
-        component: () => import('./views/Finance/capital/withdrawalBill.vue'),
+        component: () => import('./views/finance/capital/withdrawalBill.vue'),
         meta: {
           title: '添加提现账单'
         }

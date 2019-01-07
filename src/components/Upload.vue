@@ -46,16 +46,22 @@ const genUqid = () => random('upload')
 // 状态，loading 表示正在生成预览（针对图片），uploading 正在上传，done 完成
 type Status = '' | 'loading' | 'uploading' | 'done'
 
-/** 图片项 */
-export interface ImageItem {
-  /** 图片地址 */
+/** 文件项 */
+export interface FileItem {
+  /** 文件（图片）地址 */
   url: string
-  /** 图片文件 ID */
+  /** 文件ID */
   fileId: string
+  /** 可选，客户端文件名 */
+  clientName?: string
+  /** 可选，客户端文件大小 */
+  clientSize?: number
+  /** 可选，客户端文件类型 */
+  clientType?: string
 }
 
 /** 上传项 */
-interface UploadItem extends ImageItem {
+interface UploadItem extends FileItem {
   /** 状态 */
   status: Status
   /** 百分比 */
@@ -69,21 +75,24 @@ interface UploadItem extends ImageItem {
 const defItem: UploadItem = {
   url: '',
   fileId: '',
+  clientName: '',
+  clientSize: 0,
+  clientType: '',
   status: 'done',
   percent: 0,
   uqid: '',
   error: '',
 }
 
-const allDone = (item: ImageItem | UploadItem) =>
+const allDone = (item: FileItem | UploadItem) =>
   !('status' in item) || item.status == 'done'
 
-const toImageItem = (item: ImageItem | UploadItem) =>
-  slice(item, 'url,fileId') as ImageItem
+const toFileItem = (item: FileItem | UploadItem) =>
+  slice(item, 'url,fileId') as FileItem
 
-const hasChange = (alist: ImageItem[], blist: ImageItem[]) => {
-  const alistDone = alist.filter(allDone).map(toImageItem)
-  const blistDone = blist.filter(allDone).map(toImageItem)
+const hasChange = (alist: FileItem[], blist: FileItem[]) => {
+  const alistDone = alist.filter(allDone).map(toFileItem)
+  const blistDone = blist.filter(allDone).map(toFileItem)
   return !isEqual(alistDone, blistDone)
 }
 
@@ -96,7 +105,7 @@ export default class Upload extends ViewBase {
   /**
    * 值本身，可以使用 v-model 进行双向绑定
    */
-  @Prop({ type: Array, default: () => [] }) value!: UploadItem[]
+  @Prop({ type: Array, default: () => [] }) value!: FileItem[]
 
   /**
    * 是否支持多选文件
@@ -104,7 +113,7 @@ export default class Upload extends ViewBase {
   @Prop({ type: Boolean, default: false }) multiple!: boolean
 
   /**
-   * 是否支持多选文件
+   * 接受的文件类型
    */
   @Prop({ type: String, default: '' }) accept!: string
 
@@ -128,7 +137,7 @@ export default class Upload extends ViewBase {
   }
 
   @Watch('value', { deep: true, immediate: true })
-  async watchValue(value: ImageItem[]) {
+  async watchValue(value: FileItem[]) {
     if (hasChange(value, this.inValue)) {
       this.inValue = (value || []).map(it => ({
         ...defItem,
@@ -141,7 +150,7 @@ export default class Upload extends ViewBase {
   @Watch('inValue', { deep: true })
   watchInValue(value: UploadItem[]) {
     if (hasChange(value, this.value)) {
-      const nude = value.map(toImageItem)
+      const nude = value.map(toFileItem)
       this.$emit('input', nude)
     }
   }
@@ -161,6 +170,9 @@ export default class Upload extends ViewBase {
       this.inValue.push({
         url: '',
         fileId: '',
+        clientName: file.name,
+        clientSize: file.size,
+        clientType: file.type,
         status: 'loading',
         percent: 0,
         uqid,
