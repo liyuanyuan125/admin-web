@@ -95,24 +95,35 @@
         <FormItem label="结算账期" prop="settlementPeriod">
           <Row>
             <Col span="8">
-              <Input v-model="dataForm.settlementPeriod" placeholder=""/><span class='red'>注：最小数值必须为7</span>
+              <Input v-model="dataForm.settlementPeriod" @on-change='chg()' type='Number' placeholder=""/><span class='red'>注：最小数值必须为7</span>
             </Col>
           </Row>
         </FormItem>
       </Row>
        分成比例  <span class='red'>注：资源方在平台进行销售时，平台抽成使用；如不设置分成规则，则该公司关联的所有影院分成比例为【20%】</span>
-      <Row class="cinema-footer">
-        <FormItem v-if='showrule' label="关联影院" prop="cinemasList">
+      <Row class="cinema-footer"  >
+        <!-- <FormItem v-if='showrule'
+        v-if="item.status"
+        :label-width='0'
+        :key="index"
+        :prop="'perms.' + index + '.code'"
+        :rules="{required: true, message: '权限编码不能为空', trigger: 'blur'}"
+         label="关联影院" prop="cinemasList">
           以下影院，分成比例为<Input style='width:5%;' placeholder=""/>%
           <PartBindCinema :unitList="profitUnitList"
                class="part-bind-cinema"/>
-        </FormItem>
-        <FormItem label="关联影院" prop="cinemasList" v-for='it in dataForm.rule'>
+        </FormItem> -->
+        <FormItem
+          :label-width='0'
+          :key="index"
+          label="" prop="cinemas" v-for='(it,index) in dataForm.rule'>
           以下影院，分成比例为<Input style='width:5%;' v-model="it.proportion" placeholder=""/>%
-          <PartBindCinema v-model="it.cinemaList" :unitList="profitUnitList"
+          <PartBindCinema v-model="it.cinemas" :unitList="profitUnitList"
                class="part-bind-cinema"/>
+
         </FormItem>
-        <a href='javascript:;'>+添加规则</a>
+        <!-- <a href='javascript:;' id='addrule' @click='addrules()'>+添加规则</a> -->
+        <Button type="dashed"  @click="handleAdd" icon="md-add">添加规则</Button>
       </Row>
       附件信息
       <Row class="cinema-content">
@@ -176,6 +187,8 @@ import AreaSelect from '@/components/AreaSelect.vue'
 import Upload from '@/components/Upload.vue'
 import PartBindCinema from './partBindCinema.vue'
 import jsxReactToVue from '@/util/jsxReactToVue'
+// import jquery from '@types/jquery'
+
 import { toMap } from '@/fn/array'
 import { slice, clean } from '@/fn/object'
 import moment from 'moment'
@@ -213,6 +226,15 @@ const dataForm = {
   signingUser: null,
   followUser: null,
   remark: '',
+  // formDynamic : {
+  //   items: [
+  //     {
+  //         value: '',
+  //         index: 1,
+  //         status: 1
+  //     }
+  //   ]
+  // }
 }
 
 @Component({
@@ -242,6 +264,17 @@ export default class Main extends ViewBase {
   businessDirector: any = []
 
   dataForm: any = { ...dataForm }
+
+  index: any = 1
+  // formDynamic: any = {
+  //     items: [
+  //         {
+  //             value: '',
+  //             index: 1,
+  //             status: 1
+  //         }
+  //     ]
+  // }
 
   id = 0
   // 编辑
@@ -285,7 +318,7 @@ export default class Main extends ViewBase {
         { required: true, message: '请填写账号', trigger: 'blur' }
       ],
       settlementPeriod: [
-        { required: true, message: '请选择结账周期', trigger: 'blur' }
+        { required: true, message: '请选择结账周期', }
       ],
       attachments: [
         { required: true, message: '请上传附件'}
@@ -336,7 +369,35 @@ export default class Main extends ViewBase {
   created() {
   }
 
+  addrules() {
+    // $('.cinema-footer').append(`789`)
+    // // var pre = document.getElementById('#addrule')
+    // document.onclick = function() {
+      // $('#addrule')
+      // console.log(123457988562232)
+    //   const str: any = '78979879898'
+    //   this.document.getElementById('#addrule').appendChild(str)
+    // }
+  }
+
   async business() {
+  }
+
+  async chg() {
+    if (this.dataForm.settlementPeriod < 7) {
+      alert('结算账期输入有误，最小数值为7')
+      this.dataForm.settlementPeriod = 7
+    }
+  }
+
+  handleAdd() {
+    this.index++
+    this.dataForm.rule.push({
+      proportion: '',
+      // index: this.index,
+      // status: 1,
+      cinemas: []
+    })
   }
 
 
@@ -424,7 +485,13 @@ export default class Main extends ViewBase {
         this.dataForm.accountName = this.detail.accountName
         this.dataForm.accountNumber = this.detail.accountNumber
         this.dataForm.settlementPeriod = this.detail.settlementPeriod
-        this.dataForm.rule = this.detail.ruleList
+        // this.dataForm.rule = this.detail.ruleList
+        this.dataForm.rule =  this.detail.ruleList.map((item: any) => {
+        return {
+          ...item,
+          cinemas: item.cinemaList
+        }
+      })
         this.dataForm.attachments = this.detail.attachmentList
         this.dataForm.signingUser = this.detail.signingUser
         this.dataForm.followUser = this.detail.followUser
@@ -452,13 +519,22 @@ export default class Main extends ViewBase {
   edit(dataForms: any) {
     this.dataForm.validityStartDate = new Date(this.dataForm.validityStartDate).getTime()
     this.dataForm.validityEndDate = new Date(this.dataForm.validityEndDate).getTime()
-
+    this.dataForm.settlementPeriod = Number(this.dataForm.settlementPeriod)
+    // this.dataForm.rule.cinemas = [168]
+    // console.log(this.dataForm.rule.cinemas)
     const myThis: any = this
     myThis.$refs[dataForms].validate(async ( valid: any ) => {
       if (valid) {
         const query =  !this.id ? this.dataForm : {
           id: this.id,
-          ...this.dataForm
+          ...this.dataForm,
+          rule: this.dataForm.rule.length > 0 ? this.dataForm.rule.map((it: any) => {
+            return {
+              ...it,
+              proportion : it.proportion,
+              cinemas : it.cinemas.id
+            }
+          }) : []
         }
         try {
           if (!this.id || this.$route.params.copy) {

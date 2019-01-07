@@ -611,6 +611,13 @@
   resolved "http://registry.npm.taobao.org/@types/deep-extend/download/@types/deep-extend-0.4.31.tgz#3fa9d027df52b0819c3c8662aa403ca813a7e56d"
   integrity sha1-P6nQJ99SsIGcPIZiqkA8qBOn5W0=
 
+"@types/jquery@^3.3.29":
+  version "3.3.29"
+  resolved "http://registry.npm.taobao.org/@types/jquery/download/@types/jquery-3.3.29.tgz#680a2219ce3c9250483722fccf5570d1e2d08abd"
+  integrity sha1-aAoiGc48klBINyL8z1Vw0eLQir0=
+  dependencies:
+    "@types/sizzle" "*"
+
 "@types/js-cookie@^2.2.0":
   version "2.2.0"
   resolved "http://registry.npm.taobao.org/@types/js-cookie/download/@types/js-cookie-2.2.0.tgz#ae2eabaa4bc892ba553c664cca21e6ee5224e5b5"
@@ -633,6 +640,11 @@
 "@types/qs@^6.5.1":
   version "6.5.1"
   resolved "http://registry.npm.taobao.org/@types/qs/download/@types/qs-6.5.1.tgz#a38f69c62528d56ba7bd1f91335a8004988d72f7"
+
+"@types/sizzle@*":
+  version "2.3.2"
+  resolved "http://registry.npm.taobao.org/@types/sizzle/download/@types/sizzle-2.3.2.tgz#a811b8c18e2babab7d542b3365887ae2e4d9de47"
+  integrity sha1-qBG4wY4rq6t9VCszZYh64uTZ3kc=
 
 "@types/webpack-env@^1.13.6":
   version "1.13.6"
@@ -4029,6 +4041,11 @@ joi@^13.0.0:
     hoek "5.x.x"
     isemail "3.x.x"
     topo "3.x.x"
+
+jquery@^3.3.1:
+  version "3.3.1"
+  resolved "http://registry.npm.taobao.org/jquery/download/jquery-3.3.1.tgz#958ce29e81c9790f31be7792df5d4d95fc57fbca"
+  integrity sha1-lYzinoHJeQ8xvneS311NlfxX+8o=
 
 js-calendar@^1.2.3:
   version "1.2.3"
