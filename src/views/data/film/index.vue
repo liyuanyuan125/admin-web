@@ -131,7 +131,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         render: (hh: any, { row : { openTime } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          const html = moment(openTime).format(timeFormat)
+          const html = openTime ? moment(openTime).format(timeFormat) : ''
           return <span v-html={html}></span>
           /* tslint:enable */
         }
@@ -170,9 +170,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         render: (hh: any, { row : { performers } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          return <div class="row-hidden" title = { performers }>
+          return <span class="row-hidden" title = { performers }>
             { performers.join(',') }
-          </div>
+          </span>
           /* tslint:enable */
         }
       },
@@ -197,9 +197,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
           const typeName = type ? type.join(',') : ''
-          return <div class="row-hidden">
-            <span title = { type }>{ typeName }</span>
-          </div>
+          return <span class="row-hidden" title = { type }>
+            { typeName }
+          </span>
           /* tslint:enable */
         }
       },
