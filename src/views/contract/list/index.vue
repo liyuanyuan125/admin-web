@@ -440,12 +440,14 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 }
 .table {
   margin-top: 16px;
-  /deep/ .status-2,
-  /deep/ .aptitude-status-3 {
+  /deep/ .status-2 {
     color: #19be6b;
   }
-  /deep/ .aptitude-status-4 {
+  /deep/ .status-3 {
     color: #ed4014;
+  }
+  /deep/ .status-4 {
+    color: #aaa;
   }
   /deep/ .ivu-table-cell > span:only-child:empty {
     &::before {
