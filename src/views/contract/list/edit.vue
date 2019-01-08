@@ -7,7 +7,7 @@
       </div>
     </header>
     <div class="edit-box">
-      合同主体信息
+      <div class='titop'>合同主体信息</div>
       <Row class="cinema-header">
         <FormItem label="合同名称" prop="contractName">
           <Row>
@@ -32,7 +32,7 @@
             </Col>
           </Row>
         </FormItem>
-        <FormItem label="合同有效期" prop="name">
+        <FormItem label="合同有效期" prop="validityStartDate">
           <Row>
             <Col span="16">
               <Date-picker type="date" v-model="dataForm.validityStartDate"
@@ -43,13 +43,13 @@
           </Row>
         </FormItem>
       </Row>
-      乙方信息
+      <div class='titop'>乙方信息</div>
       <Row class="cinema-header">
         <FormItem label="公司名称" prop="companyBId">
           <Row>
             <Col span="8">
               <Select   v-model="dataForm.companyBId">
-                <Option v-for="it in companys" :key="it.id" :value="it.id">{{it.name}}</Option>
+                <Option v-for="it in companys" v-if='it.status==1' :key="it.id" :value="it.id">{{it.name}}</Option>
               </Select>
             </Col>
           </Row>
@@ -69,7 +69,7 @@
           </Row>
         </FormItem>
       </Row>
-      结算账户信息
+      <div class='titop'>结算账户信息</div>
       <Row class="cinema-header">
         <FormItem label="开户行" prop="accountBank">
           <Row>
@@ -92,15 +92,15 @@
             </Col>
           </Row>
         </FormItem>
-        <FormItem label="结算账期" prop="settlementPeriod">
+        <FormItem label="结算账期" prop="validityStartDate">
           <Row>
             <Col span="8">
-              <Input v-model="dataForm.settlementPeriod" @on-change='chg()' type='Number' placeholder=""/><span class='red'>注：最小数值必须为7</span>
+              <InputNumber v-model="dataForm.settlementPeriod" @on-change='chg()' type='Number' placeholder=""/><span class='red'>注：最小数值必须为7</span>
             </Col>
           </Row>
         </FormItem>
       </Row>
-       分成比例  <span class='red'>注：资源方在平台进行销售时，平台抽成使用；如不设置分成规则，则该公司关联的所有影院分成比例为【20%】</span>
+       <div class='titop'>分成比例  <span class='red'>注：资源方在平台进行销售时，平台抽成使用；如不设置分成规则，则该公司关联的所有影院分成比例为【20%】</span></div>
       <Row class="cinema-footer"  >
         <!-- <FormItem v-if='showrule'
         v-if="item.status"
@@ -113,28 +113,31 @@
           <PartBindCinema :unitList="profitUnitList"
                class="part-bind-cinema"/>
         </FormItem> -->
+        
         <FormItem
           :label-width='0'
           :key="index"
           label="" prop="cinemas" v-for='(it,index) in dataForm.rule'>
-          以下影院，分成比例为<Input style='width:5%;' v-model="it.proportion" placeholder=""/>%
-          <PartBindCinema v-model="it.cinemas" :unitList="profitUnitList"
-               class="part-bind-cinema"/>
-
+          以下影院，分成比例为<Input style='width:5%;' v-model="it.proportion" placeholder="默认20%"/>%
+            <!-- <col span='16'> -->
+            <PartBindCinema v-model="it.cinemas" :unitList="profitUnitList"
+                class="part-bind-cinema"/>
+            <!-- </col> -->
         </FormItem>
+        
         <!-- <a href='javascript:;' id='addrule' @click='addrules()'>+添加规则</a> -->
-        <Button type="dashed"  @click="handleAdd" icon="md-add">添加规则</Button>
+        <Button type="dashed" style='margin-bottom:17px;'  @click="handleAdd" icon="md-add">添加规则</Button>
       </Row>
-      附件信息
-      <Row class="cinema-content">
-        <UploadButton multiple @success="onUploadSuccess">上传附件</UploadButton>
+      <div class='titop'>附件信息</div>
+      <Row class="cinema-content" style='padding-right:18px;padding-bottom:18px;'>
+        <UploadButton style='margin-bottom:17px;' v-model="dataForm.attachments" multiple @success="onUploadSuccess">上传附件</UploadButton>
         <span class='red'>注：支持pdf、doc、docx、rar、7z、zip等格式的文件</span>
         <Table :columns="columns" :data="tableData"
           border stripe disabled-hover size="small" class="table"></Table>
       </Row>
-      责任人
+      <div class='titop'>责任人</div>
       <Row class="cinema-content">
-        <FormItem label="签订人" prop="name">
+        <FormItem label="签订人" prop="signingUser">
           <Row>
             <Col span="8">
               <Select v-model="dataForm.signingUser" placeholder="签订人" filterable clearable>
@@ -144,7 +147,7 @@
             </Col>
           </Row>
         </FormItem>
-        <FormItem label="跟进人" prop="name">
+        <FormItem label="跟进人" prop="followUser">
           <Row>
             <Col span="8">
               <Select v-model="dataForm.followUser" placeholder="跟进人" filterable clearable>
@@ -155,21 +158,21 @@
           </Row>
         </FormItem>
       </Row>
-      <Row class='beizhu'>
-        <FormItem label="备注"  prop="name">
-          <Row>
-            <Col span="10">
-            <Input v-model="dataForm.remark" type="textarea" style='width:240%;' :autosize="{minRows: 2,maxRows: 5}" placeholder="输入备注信息..."></Input>
+      <div class='titop'>备注</div>
+      <div class='beizhu'>
+        <!-- <FormItem  prop="remark"> -->
+          <!-- <Row> -->
+            <Col span="26">
+              <Input v-model="dataForm.remark" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="输入备注信息..."></Input>
               <!-- <Input v-model="dataForm.remark" placeholder="输入备注信息"/> -->
             </Col>
-          </Row>
-        </FormItem>
-      </Row>
-        <div class="edit-button">
+          <!-- </Row> -->
+        <!-- </FormItem> -->
+      </div>
+        <div style='margin-top:20px;' class="edit-button">
           <Button type="info" size="large" @click="edit('dataForm')">确定</Button>
+          <!-- <Button type="info" size="large" @click="edit('dataForm')">确定</Button> -->
         </div>
-      </Row>
-
     </div>
 
   </Form>
@@ -275,11 +278,13 @@ export default class Main extends ViewBase {
   //     ]
   // }
 
+  attachmentslist = []
+
   id = 0
   // 编辑
   detail: any = {}
 
-  showrule = false
+  showrule = true
 
   get rules() {
     const rule: any = {
@@ -293,10 +298,10 @@ export default class Main extends ViewBase {
         { required: true, message: '请选择甲方公司名称' }
       ],
       validityStartDate: [
-        { required: true, message: '请选择有效开始时间', trigger: 'blur' }
+        { required: true, message: '请选择有效开始时间' }
       ],
       validityEndDate: [
-        { required: true, message: '请选择有效结束时间', trigger: 'blur' }
+        { required: true, message: '请选择有效结束时间' }
       ],
       companyBId: [
         { required: true, message: '请选择乙方公司' }
@@ -305,7 +310,10 @@ export default class Main extends ViewBase {
         { required: true, message: '请填写乙方公司联系人', trigger: 'blur' }
       ],
       companyBPhone: [
-        { required: true, message: '请填写乙方公司联系电话', trigger: 'blur' }
+        { required: true, message: '请填写乙方公司联系电话', trigger: 'blur' },
+        { pattern: /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/,
+          message: '请输入正确的联系电话', trigger: 'blur'
+        }
       ],
       accountBank: [
         { required: true, message: '请填写开户银行', trigger: 'blur' }
@@ -326,7 +334,7 @@ export default class Main extends ViewBase {
         { required: true, message: '请选择签订人' }
       ],
       followUser: [
-        { required: true, message: '请选择跟进人', trigger: 'blur' }
+        { required: true, message: '请选择跟进人' }
       ],
     }
     return rule
@@ -342,8 +350,7 @@ export default class Main extends ViewBase {
       render: (hh: any, { row: { uploadTime } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = String(uploadTime).slice(0,4) + '-' + String(uploadTime).slice(4,6) + '-' + String(uploadTime).slice(6,8)
-        // console.log(html)
+        const html = moment(uploadTime).format(timeFormat)
         return uploadTime == null ? <span class='datetime' v-html='-'></span> : <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
@@ -353,17 +360,20 @@ export default class Main extends ViewBase {
       title: '操作',
       key: 'action',
       align: 'center',
-      render: (hh: any, { row: { approveStatus, statusText, id }, row }: any) => {
+      render: (hh: any, { row: { approveStatus, statusText, id  }, row  }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
           return <div class='row-acts'>
-          <router-link to={{ name: 'contract-list-detail', params: { id } }}>下载</router-link>
+          <a on-click={this.onDel.bind(this, id)} >删除</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a class="operation" href="" download={row.name}>下载</a>
         </div>
 
         /* tslint:enable */
       }
     }
   ]
+          // <a on-click={this.onDel.bind(this, id)} >删除</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
   created() {
   }
@@ -373,7 +383,6 @@ export default class Main extends ViewBase {
     // // var pre = document.getElementById('#addrule')
     // document.onclick = function() {
       // $('#addrule')
-      // console.log(123457988562232)
     //   const str: any = '78979879898'
     //   this.document.getElementById('#addrule').appendChild(str)
     // }
@@ -388,7 +397,7 @@ export default class Main extends ViewBase {
       this.dataForm.settlementPeriod = 7
     }
   }
-
+  // 添加规则
   handleAdd() {
     this.index++
     this.dataForm.rule.push({
@@ -399,9 +408,16 @@ export default class Main extends ViewBase {
     })
   }
 
+  // 删除文件
+  async onDel(id: number) {
+    await confirm('确定要删除该项吗？')
+    const index = this.dataForm.attachments.findIndex((it: any) => it.id == id)
+    this.dataForm.attachments.splice(index, 1)
+  }
+  // async remove (index) {
+  //   this.dataForm.attachments.splice(index, 1);
+  // }
 
-  // columns = [
-  // ]
 
   get cachedMap() {
     return {
@@ -418,7 +434,12 @@ export default class Main extends ViewBase {
     return attachments
   }
 
+  // 上传文件
   onUploadSuccess({ files }: SuccessEvent) {
+    this.dataForm.attachments.push({
+      name: files[0].clientName,
+      fileId: files[0].fileId
+    })
   }
 
   mounted() {
@@ -457,7 +478,13 @@ export default class Main extends ViewBase {
     // const query = { id: this.$route.params.id || 0 }
     try {
       if ( this.$route.params.id == undefined ) {
-        this.showrule = true
+        // this.handleAdd()
+        // this.dataForm.rule.proportion = 20
+        // this.showrule = true
+        // console.log(this.dataForm.rule.length)
+        if (this.dataForm.rule.length == 0) {
+          this.handleAdd()
+        }
         const { data: {
           items: companys,
         } } = await companysList(query)
@@ -490,7 +517,7 @@ export default class Main extends ViewBase {
         // this.dataForm.rule = this.detail.ruleList
         this.dataForm.rule =  this.detail.ruleList.map((item: any) => {
         return {
-          ...item,
+          proportion: item.proportion,
           cinemas: item.cinemaList
         }
       })
@@ -515,33 +542,50 @@ export default class Main extends ViewBase {
   }
 
   back() {
+    // this.showrule = false
     this.$router.go(-1)
+    // this.$router.push({ name: 'contract-list'})
   }
 
   edit(dataForms: any) {
-    this.dataForm.validityStartDate = new Date(this.dataForm.validityStartDate).getTime()
-    this.dataForm.validityEndDate = new Date(this.dataForm.validityEndDate).getTime()
+    const a = moment(this.dataForm.validityStartDate).format(timeFormat).split('-')
+    const b = moment(this.dataForm.validityEndDate).format(timeFormat).split('-')
+
+    this.dataForm.validityStartDate = Number(a[0] + a[1] + a[2])
+    this.dataForm.validityEndDate = Number(b[0] + b[1] + b[2])
     this.dataForm.settlementPeriod = Number(this.dataForm.settlementPeriod)
-    // this.dataForm.rule.cinemas = [168]
-    // console.log(this.dataForm.rule.cinemas)
+
+    // console.log(this.dataForm.rule)
+    // if (this.dataForm.rule.proportion)
+
     const myThis: any = this
     myThis.$refs[dataForms].validate(async ( valid: any ) => {
       if (valid) {
-        const query =  !this.id ? this.dataForm : {
-          id: this.id,
-          ...this.dataForm,
-          rule: this.dataForm.rule.length > 0 ? this.dataForm.rule.map((it: any) => {
-            return {
-              ...it,
-              proportion : it.proportion,
-              cinemas : it.cinemas.id
+        const rule = this.dataForm.rule.map((it: any) => {
+            const id = it.cinemas.map((item: any) => {
+                return item.id
+            })
+            if (!it.proportion) {
+              return {
+                proportion : 20,
+                cinemas: id
+              }
+            } else {
+              return {
+                proportion : it.proportion,
+                cinemas: id
+              }
             }
-          }) : []
+        })
+        const query =  this.id ? this.dataForm : {
+          // id: Number(this.$route.params.id),
+          ...this.dataForm,
+          rule: this.dataForm.rule.length > 0 ? rule : []
         }
         try {
-          if (!this.id || this.$route.params.copy) {
+          if (this.$route.params.id == undefined || this.$route.params.copy) {
             const res =  await addlist (query)
-          } else if (this.id) {
+          } else if (this.$route.params.id != undefined) {
             const res =  await setlist (this.$route.params.id , query)
           }
           this.$router.push({ name : 'contract-list' })
@@ -550,6 +594,10 @@ export default class Main extends ViewBase {
         }
       }
     })
+  }
+  @Watch('dataForms', { deep: true })
+  watchdataForms(val: any[]) {
+    this.dataForm.attachments = val.map(it => it.fileId)
   }
 }
 </script>
@@ -617,5 +665,15 @@ export default class Main extends ViewBase {
 }
 .red {
   color: red;
+  margin-left: 12px;
+  font-size: 14px;
+}
+// .beizhu .ivu-form-item .ivu-form-item-content{
+//   margin-left: 0px;
+// }
+.titop {
+  line-height: 28px;
+  color: rgb(61, 156, 235);
+  font-size: 16px;
 }
 </style>

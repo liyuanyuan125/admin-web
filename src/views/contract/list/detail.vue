@@ -9,22 +9,22 @@
         @click="goSet()">编辑合同</Button>
     </header>
     <div class="detail-box">
-        合同主体信息
+      <div class='titop'>合同主体信息</div>
       <div class="detail-header">
-          <Row>
-            <Col span="2"><div>合同名称</div></Col>
-            <Col span="8"><span>{{detail.contractName}}</span></Col>
-            <Col span="2"><div>甲方公司</div></Col>
-            <Col span="8"><span>{{detail.companyACode}}</span></Col>
-          </Row>
-          <Row>
-            <Col span="2"><div>合同编号</div></Col>
-            <Col span="8"><span>{{detail.contractNo}}</span></Col>
-            <Col span="2"><div>合同有效期</div></Col>
-            <Col span="8"><span>{{detail.validityStartDate}}~{{detail.validityEndDate}}</span></Col>
-          </Row>
+        <Row>
+          <Col span="2"><div>合同名称</div></Col>
+          <Col span="8"><span>{{detail.contractName}}</span></Col>
+          <Col span="2"><div>甲方公司</div></Col>
+          <Col span="8" v-for='it in detail.companyAList' :key='it.key' v-if='it.key == detail.companyACode' ><span>{{it.text}}</span></Col>
+        </Row>
+        <Row>
+          <Col span="2"><div>合同编号</div></Col>
+          <Col span="8"><span>{{detail.contractNo}}</span></Col>
+          <Col span="2"><div>合同有效期</div></Col>
+          <Col span="8"><span>{{detail.validityStartDate}}~{{detail.validityEndDate}}</span></Col>
+        </Row>
       </div>
-        乙方信息
+      <div class='titop'>乙方信息</div>
       <Row class="detail-content">
         <Row>
           <Col span="2"><div>乙方公司</div></Col>
@@ -37,7 +37,7 @@
           <Col span="8"><span>{{detail.companyBPhone}}</span></Col>
         </Row>
       </Row>
-      结算账户信息
+      <div class='titop'>结算账户信息</div>
       <Row class="detail-content">
         <Row>
           <Col span="2"><div>开户行</div></Col>
@@ -52,36 +52,37 @@
           <Col span="8"><span>{{detail.settlementPeriod}}</span></Col>
         </Row>
       </Row>
+      <div class='titop'>分成比例</div>
       <Row class="detail-content">
         <Row class="cinema-button">
-          <Col span="2"><div>分成比例</div></Col>
-          <Col span="12" v-for='it in detail.cinemaList' :key='it.proportion'>
+          <Col style='margin-top:15px;' span="13" v-for='it in detail.cinemaList' :key='it.proportion'>
           以下影院，分成比例为【{{it.proportion}}%】
               <PartBindCinema type="1" :value="it.cinemaList" />
           </Col>
+          </br>
         </Row>
       </Row>
-       附件信息
-      <Row class="detail-content">
+      <div class='titop'>附件信息</div>
+      <Row>
         <Table :columns="columns" :data="tableData"
         border stripe disabled-hover size="small" class="table"></Table>
       </Row>
-      责任人
+      <div class='titop'>责任人</div>
       <Row class="detail-content">
         <Row>
           <Col span="2"><div>签订人</div></Col>
-          <Col span="8"><span>{{detail.signingUsesName}}</span></Col>
+          <Col span="8"><span>{{detail.signingUserName}}</span></Col>
           <Col span="2"><div>跟进人</div></Col>
           <Col span="8"><span>{{detail.followUserName}}</span></Col>
         </Row>
       </Row>
-      备注
+      <div class='titop'>备注</div>
       <Row class="detail-content">
         <Row>
           <Col span="16"><span>{{detail.remark}}</span></Col>
         </Row>
       </Row>
-      操作记录
+      <div class='titop'>操作记录</div>
       <Row class="detail-check">
         <Row>
           <div v-for="(item, i) in logList" :key="i">
@@ -91,7 +92,7 @@
         </Row>
       </Row>
       <Row v-if='showStatus'>
-        审批信息
+        <div class='titop'>审批信息</div>
         <div>
           <Form ref="dataForm" :model="dataForm"  label-position="left" :rules="ruleValidate" :label-width="100">
             <FormItem label="审核意见" prop="status">
@@ -203,8 +204,8 @@ export default class Main extends ViewBase {
       render: (hh: any, { row: { uploadTime } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = String(uploadTime).slice(0,4) + '-' + String(uploadTime).slice(4,6) + '-' + String(uploadTime).slice(6,8)
-        console.log(html)
+        const html = moment(uploadTime).format(timeFormat)
+        // console.log(html)
         return uploadTime == null ? <span class='datetime' v-html='-'></span> : <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
@@ -431,5 +432,10 @@ export default class Main extends ViewBase {
     width: 100%;
     height: 100%;
   }
+}
+.titop {
+  line-height: 28px;
+  color: rgb(61, 156, 235);
+  font-size: 16px;
 }
 </style>
