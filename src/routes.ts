@@ -109,15 +109,97 @@ export default [
     name: 'contract-list',
     component: () => import('./views/contract/list/index.vue')
   },
-
   {
-    path: '/Finance/capital/',
-    name: 'Finance-capital',
-    component: () => import('./views/Finance/capital/index.vue')
+    path: '/contract/list/edit/:id?',
+    name: 'contract-list-edit',
+    component: () => import('./views/contract/list/edit.vue')
   },
   {
-    path: '/Finance/examine/',
-    name: 'Finance-examine',
-    component: () => import('./views/Finance/examine/index.vue')
-  }
+    path: '/contract/list/detail/:id?',
+    name: 'contract-list-detail',
+    component: () => import('./views/contract/list/detail.vue')
+  },
+
+  {
+    path: '/finance/capital/',
+    name: 'finance-capital',
+    redirect: { name: 'ggtiser'},
+    component: () => import('./views/finance/capital/index.vue'),
+    children: [
+      {
+        path: 'ggtiser',
+        name: 'ggtiser',
+        component: () => import('./views/finance/capital/ggtiser.vue'),
+      },
+      {
+        path: 'resource',
+        name: 'resource',
+        component: () => import('./views/finance/capital/resource.vue'),
+      },
+      {
+        path: 'rechargeNum/:companyId',
+        name: 'rechargeNum',
+        component: () => import('./views/finance/capital/rechargeNum.vue'),
+        meta: {
+          title: '充值记录'
+        }
+      },
+      {
+        path: 'payRank',
+        name: 'payRank',
+        component: () => import('./views/finance/capital/payRank.vue'),
+        meta: {
+          title: '消费记录'
+        }
+      },
+      {
+        path: 'withdraw/:companyId',
+        name: 'withdraw',
+        component: () => import('./views/finance/capital/withdraw.vue'),
+        meta: {
+          title: '提现记录'
+        }
+      },
+      {
+        path: 'consume',
+        name: 'consume',
+        component: () => import('./views/finance/capital/consume.vue'),
+        meta: {
+          title: '结算记录'
+        }
+      },
+      {
+        path: 'withdrawDetail/:id',
+        name: 'withdrawDetail',
+        component: () => import('./views/finance/capital/withdrawDetail.vue'),
+        meta: {
+          title: '提现详情'
+        }
+      },
+      {
+        path: 'withdrawalBill/:id',
+        name: 'withdrawalBill',
+        component: () => import('./views/finance/capital/withdrawalBill.vue'),
+        meta: {
+          title: '添加提现账单'
+        }
+      }
+    ]
+  },
+
+  {
+    path: '/finance/examine/',
+    name: 'finance-examine',
+    component: () => import('./views/finance/examine/index.vue')
+  },
+  {
+    path: '/finance/examine/detail/:id?',
+    name: 'finance-examine-detail',
+    component: () => import('./views/finance/examine/detail.vue')
+  },
+  {
+    path: '/finance/examine/edit/:id?',
+    name: 'finance-examine-edit',
+    component: () => import('./views/finance/examine/edit.vue')
+  },
 ] as any[]

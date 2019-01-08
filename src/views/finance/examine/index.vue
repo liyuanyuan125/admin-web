@@ -3,10 +3,13 @@
     <div  v-if="shows">
       <div class="act-bar flex-box">
         <form class="form flex-1" @submit.prevent="search">
-          <LazyInput v-model="query.workorderId" placeholder="变更编号" class="input" style="width: 200px"/>
-          <DatePicker type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="申请日期" class="input" style="width: 200px"></DatePicker>
+          <LazyInput v-model="query.companyName" placeholder="公司名称" class="input" style="width: 200px"/>
+          <DatePicker type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="汇款日期" class="input" style="width: 200px"></DatePicker>
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </form>
+        <div class="acts">
+          <Button type="success" icon="md-add-circle" @click="edit(0)">新建充值</Button>
+        </div>
       </div>
       <Table :columns="columns" :data="tableData" :loading="loading"
         border stripe disabled-hover size="small" class="table"></Table>
@@ -18,8 +21,7 @@
           @on-page-size-change="pageSize => query.pageSize = pageSize"/>
       </div>
     </div>
-    <DlgEdit  ref="addOrUpdate"   @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/>
-    <!-- <dlgVerify   ref="addOrUpdate"   @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/> -->
+    <!-- <DlgEdit  ref="addOrUpdate"   @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/> -->
   </div>
 </template>
 
@@ -28,40 +30,33 @@ import { Component, Watch , Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { queryList , companysList } from '@/api/order'
+import { queryList } from '@/api/examine'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
-// import { numberify, numberKeys } from '@/fn/typeCast'
-// import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
-import DlgEdit from './dlgEdit.vue'
-// import dlgVerify from './dlgVerify.vue'
+// import DlgEdit from './dlgEdit.vue'
 
 import {confirm , warning , success, toast } from '@/ui/modal'
 
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
-const timeFormat = 'YYYY-MM-DD HH:mm:ss'
+const timeFormat = 'YYYY-MM-DD'
 
 
 @Component({
   components: {
-    DlgEdit,
-    // dlgVerify
+    // DlgEdit,
   }
 })
-// export default class Main extends View {
 export default class Main extends Mixins(ViewBase, UrlManager) {
   defQuery = {
     id: '',
-    // email: '',
-    // companyName: '',
-    // status: null,
+    companyName: '',
     pageIndex: 1,
     pageSize: 20,
-    applyStartTime: 0,
-    applyEndTime: 0
+    beginDate: 0,
+    endDate: 0
   }
   query: any = {}
   shows = true
@@ -87,35 +82,19 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   company: any = []
 
   columns = [
-    { title: '变更编号', key: 'id', width: 100 , align: 'center' },
-    { title: '公司名称', key: 'company', align: 'center',
-      render: (hh: any, { row }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        // console.log(row.company.name)
-        const name = row.company
-        return name == null ? <span v-html='-'></span> : <span v-html={name.name}></span>
-        
-        /* tslint:enable */
-      }
-    },
-    { title: '申请人', key: 'applyUserName', align: 'center' ,
-      render: (hh: any, { row: { applyUserName , applyUserEmail } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        return <span>{applyUserEmail}【{applyUserName}】</span>
-        /* tslint:enable */
-      }
-    },
+    { title: '序号', key: 'id', width: 100 , align: 'center' },
+    { title: '公司名称', key: 'companyName', align: 'center' },
+    { title: '汇款人姓名', key: 'accountName', align: 'center' },
+    { title: '充值金额', key: 'amount', align: 'center' },
     {
-      title: '申请时间',
-      key: 'applyTime',
+      title: '汇款日期',
+      key: 'remittanceDate',
       align: 'center',
-      render: (hh: any, { row: { applyTime } }: any) => {
+      render: (hh: any, { row: { remittanceDate } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = moment(applyTime).format(timeFormat)
-        return applyTime == null ? <span class='datetime' v-html='-'></span> : <span class='datetime' v-html={html}></span>
+        const html = moment(remittanceDate).format(timeFormat)
+        return remittanceDate == null ? <span class='datetime' v-html='-'></span> : <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
     },
@@ -124,16 +103,16 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       key: 'statusText',
       width: 100,
       align: 'center',
-      render: (hh: any, { row: { approveStatus, statusText } }: any) => {
+      render: (hh: any, { row: { approvalStatus, statusText } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        if (approveStatus == 0){
+        if (approvalStatus == 0){
           return <span class={`status-${0}`}>-</span>
-        } else if (approveStatus == 1) {
+        } else if (approvalStatus == 1) {
           return <span class={`status-${1}`}>待审核</span>
-        } else if (approveStatus == 2) {
+        } else if (approvalStatus == 2) {
           return <span class={`status-${2}`}>通过</span>
-        } else if (approveStatus == 3) {
+        } else if (approvalStatus == 3) {
           return <span class={`status-${3}`}>拒绝</span>
         }
         
@@ -145,12 +124,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       key: 'action',
       width: 100,
       align: 'center',
-      render: (hh: any, { row: { approveStatus, statusText, id }, row }: any) => {
+      render: (hh: any, { row: { approvalStatus, statusText, id }, row }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const sta = approveStatus == 1 ? '审核' : '详情'
+        const sta = approvalStatus == 1 ? '审核' : '详情'
         return <div class='row-acts'>
-          <router-link to={{ name: 'client-order-detail', params: { id , approveStatus } }}>{sta}</router-link>
+          <router-link to={{ name: 'Finance-examine-detail', params: { id , approvalStatus } }}>{sta}</router-link>
         </div>
         /* tslint:enable */
       }
@@ -158,7 +137,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   ]
   get cachedMap() {
     return {
-      approveStatus: this.approveStatusList,
+      approvalStatus: this.approveStatusList,
     }
   }
 
@@ -172,20 +151,25 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     })
     return list
   }
+  // 新建
+  edit(id: number) {
+    const params: any = id > 0 ? { id } : {}
+    this.$router.push({ name: 'Finance-examine-edit', params })
+  }
 
   mounted() {
     this.updateQueryByParam()
 
-    !!this.query.applyStartTime ? this.showTime[0] =
-    moment(this.query.applyStartTime).format(timeFormat) : this.showTime[0] = ''
-    !!this.query.applyEndTime ? this.showTime[1] =
-    moment(this.query.applyEndTime).format(timeFormat) : this.showTime[1] = ''
+    !!this.query.beginDate ? this.showTime[0] =
+    moment(this.query.beginDate).format(timeFormat) : this.showTime[0] = ''
+    !!this.query.endDate ? this.showTime[1] =
+    moment(this.query.endDate).format(timeFormat) : this.showTime[1] = ''
   }
 
   dateChange(data: any) {
      // 获取时间戳
-     !!data[0] ? (this.query.applyStartTime = new Date(data[0]).getTime() - 28800000) : this.query.applyStartTime = 0
-     !!data[1] ? (this.query.applyEndTime = new Date(data[1]).getTime() + 57600000) : this.query.applyEndTime = 0
+     !!data[0] ? (this.query.beginDate = new Date(data[0]).getTime() - 28800000) : this.query.beginDate = 0
+     !!data[1] ? (this.query.endDate = new Date(data[1]).getTime() + 57600000) : this.query.endDate = 0
   }
 
   search() {
@@ -210,10 +194,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     // const query = clean({ ...this.query })
     const query: any = {}
     for (const [key, value] of Object.entries(this.oldQuery)) {
-      if (key != 'applyStartTime' && value != 0) {
+      if (key != 'beginDate' && value != 0) {
         query[key] = value
       }
-      if (key != 'applyEndTime' && value != 0) {
+      if (key != 'endDate' && value != 0) {
         query[key] = value
       }
     }
@@ -222,53 +206,17 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       const { data: {
         items: list,
         totalCount: total,
-        approveStatusList: approveStatusList,
-        // company: company
+        approvalStatusList: approvalStatusList,
       } } = await queryList(query)
       this.list = list
       this.total = total
-      // this.company = list.company
-      this.approveStatusList = approveStatusList
-      // console.log(list)
-      // 获取公司列表
-      // const { data: {
-      //   items: companyList,
-      // } } = await companysList(query)
-      // this.company = company
+      this.approveStatusList = approvalStatusList
     } catch (ex) {
       this.handleError(ex)
     } finally {
       this.loading = false
     }
   }
-
-   // 新增
-  // edit(id: number, row: any) {
-  //   this.addOrUpdateVisible = true
-  //   this.$nextTick(() => {
-  //     const myThis: any = this
-  //     myThis.$refs.addOrUpdate.init(id)
-  //   })
-  // }
-  // 修改状态
-  // async change(id: number, row: any) {
-  //   try {
-  //     await confirm('您确定' + (row.statusText == '启用' ? '停用' : '启用') + '当前状态信息吗？')
-  //     await setList ({
-  //       id,
-  //       status: row.status == 1 ? 2 : 1
-  //     })
-  //     this.$Message.success({
-  //       content: `更改成功`,
-  //     })
-  //     this.reloadSearch()
-  //   } catch (ex) {
-  //   }
-  // }
-
-  // dlgEditDone() {
-  //   this.doSearch()
-  // }
 
   @Watch('query', { deep: true })
   watchQuery() {

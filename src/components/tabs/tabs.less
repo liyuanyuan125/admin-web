@@ -1,0 +1,69 @@
+.no-select{
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.tags-nav{
+  position: relative;
+  height: 40px;
+  border-top: 1px solid #F0F0F0;
+  border-bottom: 1px solid #F0F0F0;
+  background: #f0f0f0;
+  .no-select;
+  /deep/ .close-con{
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 32px;
+    background: #fff;
+    text-align: center;
+    z-index: 10;
+  }
+  /deep/ .btn-con {
+    position: absolute;
+    top: 0px;
+    height: 100%;
+    background: #fff;
+    padding-top: 3px;
+    z-index: 10;
+    /deep/ button{
+      padding: 6px 10px;
+      text-align: center;
+    }
+    &.left-btn{
+      left: 0px;
+    }
+    &.right-btn{
+      right: 32px;
+      border-right: 1px solid #F0F0F0;
+    }
+  }
+  .scroll-outer{
+    position: absolute;
+    left: 28px;
+    right: 61px;
+    top: 0;
+    bottom: 0;
+    box-shadow: 0px 0 3px 2px rgba(100,100,100,.1) inset;
+    /deep/ .scroll-body{
+      height: ~"calc(100% - 1px)";
+      display: inline-block;
+      padding: 1px 4px 0;
+      position: absolute;
+      overflow: visible;
+      white-space: nowrap;
+      transition: left .3s ease;
+      .ivu-tag-dot-inner{
+        transition: background .2s ease;
+      }
+      .ivu-tag {
+        line-height: 30px;
+        margin-left: 5px;
+      }
+    }
+  }
+}

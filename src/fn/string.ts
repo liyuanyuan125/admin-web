@@ -71,3 +71,27 @@ export function pascalCase(str: string) {
 export function hyphenCase(str: string) {
   return str.replace(/_/g, '-').replace(/([A-Z])/g, v => '-' + v.toLowerCase())
 }
+
+/**
+ * (保留2位小数)后格式化成金额形式
+ *
+ * @param num 数值(Number或者String)
+ * @return 金额格式的字符串,如'1,234,567.45'
+ * @type String
+ */
+export function formatCurrency(s: any, n = 2) {
+  n = n > 0 && n <= 20 ? n : 2
+  // n大于0小于等于20时，值为n，否则默认为2
+  // 将要格式化的数字转换成字符串，并去掉其中匹配的其他字符后返回一个浮点数。
+  // 把 Number 四舍五入为指定位数的数字后，最终在转换成字符串。
+  s = parseFloat((s + '').replace(/[^\d\.-]/g, '')).toFixed(n) + ''
+  const numArry = s.split('.')
+  const l = numArry[0].split('').reverse()
+  let t = ''
+  for (let i = 0; i < l.length; i++) {
+      // 每隔三位小数分始开隔
+      t += l[i] + ( (i + 1) % 3 == 0 && (i + 1) != l.length ? ',' : '' )
+  }
+  // 将顺序反转回来，并返回一个字符串
+  return t.split('').reverse().join('') + '.' + numArry[1]
+}

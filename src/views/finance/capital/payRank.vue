@@ -2,11 +2,13 @@
   <div class="page">
     <div  v-if="shows">
       <div class="act-bar flex-box">
-        <form class="form flex-1" @submit.prevent="search">
-          <LazyInput v-model="query.workorderId" placeholder="变更编号" class="input" style="width: 200px"/>
-          <DatePicker type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="申请日期" class="input" style="width: 200px"></DatePicker>
+        <Form class="form flex-1" :label-width="0" @submit.prevent="search" :rules="rule" inline>
+          <LazyInput v-model="query.companyName" placeholder="公司名称" class="input input-id"/>
+          <FormItem label='' prop="showTime">
+            <DatePicker @on-change="dateChange" @on-clear="formatTime" type="daterange" v-model="showTime" placement="right-bottom" placeholder="统计范围" class="input" style="width:200px"></DatePicker>
+          </FormItem>
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
-        </form>
+        </Form>
       </div>
       <Table :columns="columns" :data="tableData" :loading="loading"
         border stripe disabled-hover size="small" class="table"></Table>
@@ -18,8 +20,7 @@
           @on-page-size-change="pageSize => query.pageSize = pageSize"/>
       </div>
     </div>
-    <DlgEdit  ref="addOrUpdate"   @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/>
-    <!-- <dlgVerify   ref="addOrUpdate"   @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/> -->
+    <!-- <DlgEdit  ref="addOrUpdate"   @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/> -->
   </div>
 </template>
 
@@ -28,41 +29,39 @@ import { Component, Watch , Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { queryList , companysList } from '@/api/order'
+import { advqueryList } from '@/api/advertiser'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
-// import { numberify, numberKeys } from '@/fn/typeCast'
-// import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import DlgEdit from './dlgEdit.vue'
-// import dlgVerify from './dlgVerify.vue'
 
 import {confirm , warning , success, toast } from '@/ui/modal'
 
-
+const years = new Date().getFullYear()
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
+
+const dataForm = {
+  status: 1
+}
 
 
 @Component({
   components: {
     DlgEdit,
-    // dlgVerify
   }
 })
-// export default class Main extends View {
+// export default class Main extends ViewBase {
 export default class Main extends Mixins(ViewBase, UrlManager) {
   defQuery = {
-    id: '',
-    // email: '',
-    // companyName: '',
-    // status: null,
+    companyName: '',
     pageIndex: 1,
     pageSize: 20,
-    applyStartTime: 0,
-    applyEndTime: 0
+    beginDate: new Date(`${years - 1}/1/1`).getTime(),
+    endDate: new Date(`${years}/12/31`).getTime()
   }
+  showTime: any = [new Date(`${years - 1}/1/1`), new Date(`${years}/12/31`)]
   query: any = {}
   shows = true
   showDlg = false
@@ -78,87 +77,114 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   total = 0
   oldQuery: any = {}
   typeList = []
-  showTime: any = []
 
-  // 状态列表
-  approveStatusList = []
 
-  // 公司列表
-  company: any = []
+  statusList = []
+
+  // company = []
+
+  company2 = []
+  rule = {
+    showTime: [
+      {}
+    ]
+  }
 
   columns = [
-    { title: '变更编号', key: 'id', width: 100 , align: 'center' },
-    { title: '公司名称', key: 'company', align: 'center',
-      render: (hh: any, { row }: any) => {
+    { title: '项目', key: 'companyId', align: 'center', width: 80 },
+    { title: '广告计划', key: 'companyName', align: 'center' },
+    { title: '广告片', key: 'balance', align: 'center',
+      render: (hh: any, { row: { balance } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        // console.log(row.company.name)
-        const name = row.company
-        return name == null ? <span v-html='-'></span> : <span v-html={name.name}></span>
-        
-        /* tslint:enable */
-      }
-    },
-    { title: '申请人', key: 'applyUserName', align: 'center' ,
-      render: (hh: any, { row: { applyUserName , applyUserEmail } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        return <span>{applyUserEmail}【{applyUserName}】</span>
+        const html = (balance.toFixed(2)).toLocaleString('en-US')
+        return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
     },
     {
-      title: '申请时间',
-      key: 'applyTime',
+      title: '消费人',
+      key: 'availableAmount',
       align: 'center',
-      render: (hh: any, { row: { applyTime } }: any) => {
+      render: (hh: any, { row: { availableAmount } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = moment(applyTime).format(timeFormat)
-        return applyTime == null ? <span class='datetime' v-html='-'></span> : <span class='datetime' v-html={html}></span>
+        const html = (availableAmount.toFixed(2)).toLocaleString('en-US')
+        return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
     },
     {
-      title: '状态',
+      title: '冻结金额（元）',
+      key: 'freezeAmount',
+      align: 'center',
+      render: (hh: any, { row: { freezeAmount } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        const html = (freezeAmount.toFixed(2)).toLocaleString('en-US')
+        return <span class='datetime' v-html={html}></span>
+        /* tslint:enable */
+      }
+    },
+    {
+      title: '冻结时间',
       key: 'statusText',
-      width: 100,
       align: 'center',
-      render: (hh: any, { row: { approveStatus, statusText } }: any) => {
+      render: (hh: any, { row: { monthRechargeCount, totalRechargeCount } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        if (approveStatus == 0){
-          return <span class={`status-${0}`}>-</span>
-        } else if (approveStatus == 1) {
-          return <span class={`status-${1}`}>待审核</span>
-        } else if (approveStatus == 2) {
-          return <span class={`status-${2}`}>通过</span>
-        } else if (approveStatus == 3) {
-          return <span class={`status-${3}`}>拒绝</span>
-        }
-        
+        return <span>{monthRechargeCount+'/'+totalRechargeCount}</span>
         /* tslint:enable */
       }
     },
     {
-      title: '操作',
+      title: '扣款金额（元）',
       key: 'action',
-      width: 100,
       align: 'center',
-      render: (hh: any, { row: { approveStatus, statusText, id }, row }: any) => {
+      render: (hh: any, { row: { monthConsumptionCount, totalConsumptionCount, id }, row }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const sta = approveStatus == 1 ? '审核' : '详情'
-        return <div class='row-acts'>
-          <router-link to={{ name: 'client-order-detail', params: { id , approveStatus } }}>{sta}</router-link>
-        </div>
+        return <span>{monthConsumptionCount+'/'+totalConsumptionCount}</span>
+        /* tslint:enable */
+      }
+    },
+    {
+      title: '扣款时间',
+      key: 'action',
+      align: 'center',
+      render: (hh: any, { row: { monthConsumptionCount, totalConsumptionCount, id }, row }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        return <span>{monthConsumptionCount+'/'+totalConsumptionCount}</span>
+        /* tslint:enable */
+      }
+    },
+    {
+      title: '退款金额（元）',
+      key: 'action',
+      align: 'center',
+      render: (hh: any, { row: { monthConsumptionCount, totalConsumptionCount, id }, row }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        return <span>{monthConsumptionCount+'/'+totalConsumptionCount}</span>
+        /* tslint:enable */
+      }
+    },
+    {
+      title: '退款时间',
+      key: 'action',
+      align: 'center',
+      render: (hh: any, { row: { monthConsumptionCount, totalConsumptionCount, id }, row }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        return <span>{monthConsumptionCount+'/'+totalConsumptionCount}</span>
         /* tslint:enable */
       }
     }
   ]
   get cachedMap() {
     return {
-      approveStatus: this.approveStatusList,
+      status: this.statusList,
     }
   }
 
@@ -167,7 +193,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        statusText: it.approveStatus,
+        statusText: it.status == 1 ? '启用' : '停用',
       }
     })
     return list
@@ -175,17 +201,19 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   mounted() {
     this.updateQueryByParam()
-
-    !!this.query.applyStartTime ? this.showTime[0] =
-    moment(this.query.applyStartTime).format(timeFormat) : this.showTime[0] = ''
-    !!this.query.applyEndTime ? this.showTime[1] =
-    moment(this.query.applyEndTime).format(timeFormat) : this.showTime[1] = ''
+    !!this.query.beginDate ? this.showTime[0] =
+    moment(this.query.beginDate).format(timeFormat) : this.showTime[0] = ''
+    !!this.query.endDate ? this.showTime[1] =
+    moment(this.query.endDate).format(timeFormat) : this.showTime[1] = ''
   }
 
+  formatTime() {
+    this.showTime = [new Date(`${years - 1}/1/1`), new Date(`${years}/12/31`)]
+  }
   dateChange(data: any) {
      // 获取时间戳
-     !!data[0] ? (this.query.applyStartTime = new Date(data[0]).getTime() - 28800000) : this.query.applyStartTime = 0
-     !!data[1] ? (this.query.applyEndTime = new Date(data[1]).getTime() + 57600000) : this.query.applyEndTime = 0
+     !!data[0] ? (this.query.beginDate = new Date(data[0]).getTime() - 28800000) : this.query.beginDate = 0
+     !!data[1] ? (this.query.endDate = new Date(data[1]).getTime() + 57600000) : this.query.endDate = 0
   }
 
   search() {
@@ -196,79 +224,40 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
   reset() {
     this.resetQuery()
-    this.showTime = []
+    this.showTime = [new Date(`${years - 1}/1/1`), new Date(`${years}/12/31`)]
   }
 
   async doSearch() {
     if (this.loading) {
       return
     }
-
     this.oldQuery = { ...this.query }
     this.updateUrl()
     this.loading = true
-    // const query = clean({ ...this.query })
     const query: any = {}
     for (const [key, value] of Object.entries(this.oldQuery)) {
-      if (key != 'applyStartTime' && value != 0) {
+      if (key != 'beginDate' && value != 0) {
         query[key] = value
       }
-      if (key != 'applyEndTime' && value != 0) {
+      if (key != 'endDate' && value != 0) {
         query[key] = value
       }
     }
     try {
-      // 获取列表页
       const { data: {
         items: list,
         totalCount: total,
-        approveStatusList: approveStatusList,
-        // company: company
-      } } = await queryList(query)
+        statusList: statusList,
+      } } = await advqueryList(query)
       this.list = list
       this.total = total
-      // this.company = list.company
-      this.approveStatusList = approveStatusList
-      // console.log(list)
-      // 获取公司列表
-      // const { data: {
-      //   items: companyList,
-      // } } = await companysList(query)
-      // this.company = company
+      this.statusList = statusList
     } catch (ex) {
       this.handleError(ex)
     } finally {
       this.loading = false
     }
   }
-
-   // 新增
-  // edit(id: number, row: any) {
-  //   this.addOrUpdateVisible = true
-  //   this.$nextTick(() => {
-  //     const myThis: any = this
-  //     myThis.$refs.addOrUpdate.init(id)
-  //   })
-  // }
-  // 修改状态
-  // async change(id: number, row: any) {
-  //   try {
-  //     await confirm('您确定' + (row.statusText == '启用' ? '停用' : '启用') + '当前状态信息吗？')
-  //     await setList ({
-  //       id,
-  //       status: row.status == 1 ? 2 : 1
-  //     })
-  //     this.$Message.success({
-  //       content: `更改成功`,
-  //     })
-  //     this.reloadSearch()
-  //   } catch (ex) {
-  //   }
-  // }
-
-  // dlgEditDone() {
-  //   this.doSearch()
-  // }
 
   @Watch('query', { deep: true })
   watchQuery() {
@@ -284,8 +273,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 .form {
   .input,
   /deep/ .ivu-select {
-    width: 100px;
+    width: 180px;
     margin-left: 8px;
+    margin-right: 8px;
     &:first-child {
       margin-left: 0;
     }
@@ -381,13 +371,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   margin-top: 16px;
   /deep/ .status-2,
   /deep/ .aptitude-status-3 {
-    color: #19be6b;
+    color: #ed4014;
   }
   /deep/ .aptitude-status-2 {
-    color: #000;
-  }
-  /deep/ .aptitude-status-4 {
-    color: #ed4014;
+    color: #19be6b;
   }
   /deep/ .ivu-table-cell > span:only-child:empty {
     &::before {
@@ -395,14 +382,4 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 }
-// .info-type-inp span {
-//   margin-left: 1%;
-//   color: #53A1F3;
-//   cursor: pointer;
-//   text-decoration: underline;
-// }
-// .info-type Button {
-//   margin-top: 2%;
-//   margin-left: 24%;
-// }
-  </style>
+</style>
