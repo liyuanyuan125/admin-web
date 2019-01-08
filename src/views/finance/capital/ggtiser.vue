@@ -147,7 +147,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
           const showTime = this.showTime
-          return <router-link to={{name: 'payRank'}}>{monthConsumptionCount+'/'+totalConsumptionCount}</router-link>
+          // <router-link to={{name: 'payRank'}}>{monthConsumptionCount+'/'+totalConsumptionCount}</router-link>
+          return <span>{monthConsumptionCount+'/'+totalConsumptionCount}</span>
           /* tslint:enable */
         },
         /* tslint:disable */
