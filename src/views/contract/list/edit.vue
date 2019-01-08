@@ -127,7 +127,7 @@
       </Row>
       附件信息
       <Row class="cinema-content">
-        <UploadButton multiple @success="onUploadSuccess">上传附件</UploadButton>
+        <UploadButton v-model="dataForm.attachments" multiple @success="onUploadSuccess">上传附件</UploadButton>
         <span class='red'>注：支持pdf、doc、docx、rar、7z、zip等格式的文件</span>
         <Table :columns="columns" :data="tableData"
           border stripe disabled-hover size="small" class="table"></Table>
@@ -275,6 +275,8 @@ export default class Main extends ViewBase {
   //     ]
   // }
 
+  attachmentslist = []
+
   id = 0
   // 编辑
   detail: any = {}
@@ -419,6 +421,30 @@ export default class Main extends ViewBase {
   }
 
   onUploadSuccess({ files }: SuccessEvent) {
+    // console.log(files)
+    const obj = files.map((item: any) => {
+        return item.clientName
+    })
+    // console.log(obj)
+    // this.dataForm.attachments.push({
+    //   // name: files.clientName
+    //   // files: files.files
+    // })
+    // clientName
+// :
+// "456.doc"
+// clientSize
+// :
+// 9216
+// clientType
+// :
+// "application/msword"
+// fileId
+// :
+// "bgpvtms1211g008002jg"
+// url
+// :
+// "//aiads-file.oss-cn-beijing.aliyuncs.com/MISC/MISC/bgpvtms1211g008002jg.doc"
   }
 
   mounted() {
@@ -490,7 +516,7 @@ export default class Main extends ViewBase {
         // this.dataForm.rule = this.detail.ruleList
         this.dataForm.rule =  this.detail.ruleList.map((item: any) => {
         return {
-          ...item,
+          proportion: item.proportion,
           cinemas: item.cinemaList
         }
       })
@@ -527,21 +553,26 @@ export default class Main extends ViewBase {
     const myThis: any = this
     myThis.$refs[dataForms].validate(async ( valid: any ) => {
       if (valid) {
-        const query =  !this.id ? this.dataForm : {
+        const rule = this.dataForm.rule.map((it: any) => {
+            const id = it.cinemas.map((item: any) => {
+                return item.id
+            })
+            return {
+              proportion : it.proportion,
+              cinemas: id
+            }
+        })
+        // console.log(rule)
+        const query =  this.id ? this.dataForm : {
           id: this.id,
           ...this.dataForm,
-          rule: this.dataForm.rule.length > 0 ? this.dataForm.rule.map((it: any) => {
-            return {
-              ...it,
-              proportion : it.proportion,
-              cinemas : it.cinemas.id
-            }
-          }) : []
+          rule: this.dataForm.rule.length > 0 ? rule : []
         }
+        // console.log(this.$route.params.id)
         try {
-          if (!this.id || this.$route.params.copy) {
+          if (this.$route.params.id == undefined || this.$route.params.copy) {
             const res =  await addlist (query)
-          } else if (this.id) {
+          } else if (this.$route.params.id != undefined) {
             const res =  await setlist (this.$route.params.id , query)
           }
           this.$router.push({ name : 'contract-list' })
@@ -550,6 +581,10 @@ export default class Main extends ViewBase {
         }
       }
     })
+  }
+  @Watch('dataForms', { deep: true })
+  watchdataForms(val: any[]) {
+    this.dataForm.attachments = val.map(it => it.fileId)
   }
 }
 </script>
