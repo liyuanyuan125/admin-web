@@ -41,11 +41,11 @@ export interface FileItem {
   url: string
   /** 文件ID */
   fileId: string
-  /** 可选，客户端文件名 */
+  /** 客户端文件名 */
   clientName: string
-  /** 可选，客户端文件大小 */
+  /** 客户端文件大小 */
   clientSize: number
-  /** 可选，客户端文件类型 */
+  /** 客户端文件类型 */
   clientType: string
 }
 
