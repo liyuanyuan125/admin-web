@@ -129,7 +129,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         const h = jsxReactToVue(hh)
         const sta = approvalStatus == 1 ? '审核' : '详情'
         return <div class='row-acts'>
-          <router-link to={{ name: 'Finance-examine-detail', params: { id , approvalStatus } }}>{sta}</router-link>
+          <router-link to={{ name: 'finance-examine-detail', params: { id , approvalStatus } }}>{sta}</router-link>
         </div>
         /* tslint:enable */
       }
@@ -154,7 +154,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   // 新建
   edit(id: number) {
     const params: any = id > 0 ? { id } : {}
-    this.$router.push({ name: 'Finance-examine-edit', params })
+    this.$router.push({ name: 'finance-examine-edit', params })
   }
 
   mounted() {

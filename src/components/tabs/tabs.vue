@@ -7,7 +7,6 @@
         </Button>
         <DropdownMenu slot="list">
           <DropdownItem name="close-all">关闭所有</DropdownItem>
-          <DropdownItem name="close-others">关闭其他</DropdownItem>
         </DropdownMenu>
       </Dropdown>
     </div>
@@ -115,7 +114,6 @@ export default class Tabs extends ViewBase {
       const res: any = []
       this.$emit('on-close', res, 'all')
     } else {
-      // 关闭除当前页和默认页的其他页
       const res = this.sumTag.filter((item: any) => item.name === this.value.name || !defaultName.includes(item.name))
       this.$emit('on-close', res, 'others')
     }

@@ -211,7 +211,7 @@ export default class Main extends ViewBase {
         }
         try {
           const res =  await setList (this.$route.params.id , query)
-          this.$router.push({ name : 'Finance-examine' })
+          this.$router.push({ name : 'finance-examine' })
         } catch (ex) {
           this.handleError(ex)
         }
