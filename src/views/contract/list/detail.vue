@@ -15,7 +15,7 @@
           <Col span="2"><div>合同名称</div></Col>
           <Col span="8"><span>{{detail.contractName}}</span></Col>
           <Col span="2"><div>甲方公司</div></Col>
-          <Col span="8"><span>{{detail.companyAList[0].text}}</span></Col>
+          <Col span="8" v-for='it in detail.companyAList' :key='it.key' v-if='it.key == detail.companyACode' ><span>{{it.text}}</span></Col>
         </Row>
         <Row>
           <Col span="2"><div>合同编号</div></Col>
