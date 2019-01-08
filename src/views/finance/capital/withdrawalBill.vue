@@ -25,6 +25,7 @@
         </Row>
       </div>
       <Row class="detail-content">
+        <Form ref="dataFrom" :model="dataFrom" :rules="ruleInline">
         <Row>
           <Col span="3"><div>项目</div></Col>
           <Col span="16"><span>{{detail.typeName}}</span></Col>
@@ -35,24 +36,29 @@
         </Row>
         <Row>
           <Col span="3"><div>本次提现金额</div></Col>
-          <Col span="2"><InputNumber enter-button="MAX" :max="detail.beforeWithdrawalAmount || 0" :min="0" v-model="value1" style="margin-top:5px"></InputNumber></Col>
+          <Col span="2"><InputNumber enter-button="MAX" :max="detail.beforeWithdrawalAmount || 0" :min="0" v-model="dataFrom.amount" style="margin-top:5px"></InputNumber></Col>
         </Row>
         <Row>
           <Col span="3"><div>提现后可用余额</div></Col>
-          <Col span="16"><span>{{format.afterWithdrawalAmount}}</span></Col>
+          <Col span="16"><span>{{afterWithdrawalAmount}}</span></Col>
         </Row>
         <Row class="upload">
           <Col span="3"><div><span style="red">*</span>凭证</div></Col>
           <Col span="8">
-            <div class="upload-wrap">
-              <Upload v-model="imageList" :multiple="true" :maxCount="3"/>
-            </div>
+            <FormItem class="upload-wrap" prop='receipt' :show-message = 'dataFrom.receipt.length == 0'>
+                <Upload v-model="dataFrom.receipt" :multiple="true" :maxCount="3"/>
+            </FormItem>
           </Col>
         </Row>
         <Row>
           <Col span="3"><div>备注</div></Col>
-          <Col span="8"><span>{{detail.remark}}</span></Col>
+          <Col span="8" class="remark">
+            <FormItem label="" prop ='remark'>
+              <inputTextarea v-model="dataFrom.remark" />
+            </FormItem>
+          </Col>
         </Row>
+        </Form>
       </Row>
       <div style="text-align: center">
         <Button type="primary" size='large' @click="submitWithdraw">提交</Button>
@@ -66,11 +72,12 @@
 import { Component, Watch } from 'vue-property-decorator'
 import moment from 'moment'
 import ViewBase from '@/util/ViewBase'
-import { resIdDetail } from '@/api/advertiser'
+import { resIdDetail, withdrawals } from '@/api/advertiser'
 import { toMap } from '@/fn/array'
 import { formatCurrency } from '@/fn/string'
 import clipboard from 'clipboard'
 import Upload from '@/components/Upload.vue'
+import inputTextarea from '@/components/inputTextarea.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
@@ -78,23 +85,54 @@ const timeFormatDate = 'YYYY/MM/DD HH:mm:ss'
 
 @Component({
   components: {
-    Upload
+    Upload,
+    inputTextarea
   }
 })
 export default class Main extends ViewBase {
   httplist = ''
+  remark = '11'
   link = '2222'
   copyBtn = null
   detail: any = {}
   loading = false
   imageList = []
-  value1 = 0
   id: any = ''
+  dataFrom = {
+    remark: '',
+    receipt: [],
+    beforeWithdrawalAmount: 0,
+    afterWithdrawalAmount: 0,
+    amount: 0,
+    companyId: '',
+    typeName: '',
+    accountBank: '',
+    accountName: '',
+    accountNumber: '',
+    companyName: '',
+    withdrawalTime: 0
+  }
+
   get format() {
     return {
       amount: formatCurrency(this.detail.amount),
       afterWithdrawalAmount: formatCurrency(this.detail.afterWithdrawalAmount),
       beforeWithdrawalAmount: formatCurrency(this.detail.beforeWithdrawalAmount),
+    }
+  }
+
+  get afterWithdrawalAmount() {
+    return formatCurrency(this.dataFrom.beforeWithdrawalAmount - this.dataFrom.amount)
+  }
+
+  get ruleInline() {
+    return {
+      receipt: [
+         { required: true, message: '请上传凭证', type: 'array', trigger: 'change'}
+      ],
+      remark: [
+        { max: 30, message: '请上传凭证', trigger: 'change'}
+      ]
     }
   }
 
@@ -115,6 +153,12 @@ export default class Main extends ViewBase {
           createTime: moment(item.createTime).format(timeFormatDate)
         }
       })
+      this.dataFrom.typeName = this.detail.typeName
+      this.dataFrom.beforeWithdrawalAmount = this.detail.beforeWithdrawalAmount
+      this.dataFrom.accountBank = this.detail.accountBank || ''
+      this.dataFrom.accountName = this.detail.accountName || ''
+      this.dataFrom.accountNumber = this.detail.accountNumber || ''
+      this.dataFrom.companyName = this.detail.companyName || ''
       this.loading = true
       setTimeout(() => {
         (this.$Spin as any).hide()
@@ -130,8 +174,25 @@ export default class Main extends ViewBase {
   }
 
   submitWithdraw() {
-    this.$router.push({ name: 'resource' })
-    this.$route.meta.show = true
+    (this.$refs.dataFrom as any).validate(async ( valid: any ) => {
+      if (valid) {
+        this.dataFrom.companyId = this.id
+        this.dataFrom.withdrawalTime = new Date().getTime()
+        const query = {
+          ...this.dataFrom,
+          receipt: this.dataFrom.receipt.map((item: any) => {
+            return item.fileId
+          }).join(',')
+        }
+        try {
+          await withdrawals(query)
+          this.$router.push({ name: 'resource' })
+          this.$route.meta.show = true
+        } catch (ex) {
+          this.handleError(ex)
+        }
+      }
+    })
   }
 
   @Watch('id', {immediate: true})
@@ -251,5 +312,9 @@ export default class Main extends ViewBase {
       line-height: 30px;
     }
   }
+}
+.remark {
+  padding-top: 8px;
+  padding-bottom: 30px;
 }
 </style>

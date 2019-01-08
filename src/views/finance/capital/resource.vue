@@ -106,7 +106,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         render: (hh: any, { row: { monthSettlementCount, totalSettlementCount } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          return <router-link to={{name: 'consume'}}>{monthSettlementCount + '/' + totalSettlementCount}</router-link>
+          // <router-link to={{name: 'consume'}}>{monthSettlementCount + '/' + totalSettlementCount}</router-link>
+          return <span>{monthSettlementCount + '/' + totalSettlementCount}</span>
           /* tslint:enable */
         },
         /* tslint:disable */
@@ -141,7 +142,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         render: (hh: any, { row: { monthRechargeCount, totalRechargeCount, companyId } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          return <router-link to={{name: 'rechargeNum', params: {companyId: companyId}}}>查询</router-link>
+          return <router-link to={{name: 'rechargeNum', params: {companyId: companyId}}}></router-link>
           /* tslint:enable */
         }
       },
