@@ -183,8 +183,8 @@ export default class Main extends ViewBase {
         }
         try {
           await withdrawals(query)
+          this.$route.params.show = 'hide'
           this.$router.push({ name: 'resource' })
-          this.$route.meta.show = true
           ; (this.$refs.dataFrom as any).resetFields()
         } catch (ex) {
           this.handleError(ex)
@@ -200,13 +200,15 @@ export default class Main extends ViewBase {
     }
   }
 
-  @Watch('$route', {immediate: true})
+  @Watch('$route', {immediate: true, deep: true})
   watch$route(val: any, oldVal: any) {
     if (val.name == 'withdrawalBill') {
       this.id = this.$route.params.id || 0
       this.dataFrom.amount = 0
       this.dataFrom.receipt = []
-      this.$route.meta.show = false
+      if (val.params.show == 'show') {
+        this.load()
+      }
     }
   }
 }

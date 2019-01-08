@@ -69,7 +69,7 @@ export default class Main extends ViewBase {
   }
 
   @Watch('$route', {immediate: true, deep: true})
-  Watch$route(val: any) {
+  Watch$route(val: any, to: any) {
     const defaultName = this.defalutTag.map((it: any) => {
       return it.name
     })
@@ -89,10 +89,12 @@ export default class Main extends ViewBase {
       this.tabsList[index].query = val.query
       this.tabsList[index].params = val.params
     }
-    if (val.name == 'resource' && val.meta.show) {
-      const res = this.tabsList.filter((item: any) => item.name !== 'withdrawalBill' )
-      this.tabsList = res
-      val.meta.show = true
+    const names = to ? to.name : ''
+    if (val.name == 'resource' && names == 'withdrawalBill') {
+      if (to.params.show != 'show') {
+        const res = this.tabsList.filter((item: any) => item.name !== 'withdrawalBill' )
+        this.tabsList = res
+      }
     }
   }
 }
