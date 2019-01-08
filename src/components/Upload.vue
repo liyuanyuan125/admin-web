@@ -48,15 +48,17 @@ type Status = '' | 'loading' | 'uploading' | 'done'
 
 /** 文件项 */
 export interface FileItem {
+  /** 唯一 ID，内部添加，会传播到外部 */
+  uqid?: string
   /** 文件（图片）地址 */
   url: string
   /** 文件ID */
   fileId: string
-  /** 可选，客户端文件名 */
+  /** 可选，客户端文件名，内部添加，会传播到外部 */
   clientName?: string
-  /** 可选，客户端文件大小 */
+  /** 可选，客户端文件大小，内部添加，会传播到外部 */
   clientSize?: number
-  /** 可选，客户端文件类型 */
+  /** 可选，客户端文件类型，内部添加，会传播到外部 */
   clientType?: string
 }
 
@@ -66,8 +68,6 @@ interface UploadItem extends FileItem {
   status: Status
   /** 百分比 */
   percent: number
-  /** 唯一 ID，内部使用 */
-  uqid: string
   /** 错误消息，内部使用 */
   error: string
 }
@@ -88,7 +88,7 @@ const allDone = (item: FileItem | UploadItem) =>
   !('status' in item) || item.status == 'done'
 
 const toFileItem = (item: FileItem | UploadItem) =>
-  slice(item, 'url,fileId') as FileItem
+  slice(item, 'uqid,url,fileId,clientName,clientSize,clientType') as FileItem
 
 const hasChange = (alist: FileItem[], blist: FileItem[]) => {
   const alistDone = alist.filter(allDone).map(toFileItem)
