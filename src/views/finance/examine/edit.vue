@@ -75,7 +75,7 @@
         </FormItem>
         <FormItem label="凭证" prop="receipt">
           <Row class="upload">
-            <Col span="12" style="margin-left: 88px">
+            <Col span="12">
                 <Upload v-model="dataForm.receipts" multiple :maxCount="1" accept="image/*"/>
             </Col>
           </Row>
@@ -99,8 +99,9 @@
         </Row>
       </Row>
     </div>
-    <Button @click="cancel('dataForm')">取消</Button>
-    <Button type="primary" @click="dataFormSubmit('dataForm')">确定</Button>
+    <div style="text-align: center">
+      <Button type="primary" @click="dataFormSubmit('dataForm')">确定</Button>
+    </div>
   </Form>
 </template>
 
@@ -220,7 +221,7 @@ export default class Main extends ViewBase {
     this.doSearch()
   }
 
-    // 表单提交
+  // 表单提交
   async dataFormSubmit(dataForms: any) {
     for ( const i in this.companys) {
       if (this.dataForm.companyId == this.companys[i].id) {
@@ -229,7 +230,7 @@ export default class Main extends ViewBase {
     }
 
     this.dataForm.remittanceDate = new Date(this.dataForm.remittanceDate).getTime()
-    this.dataForm.receipt = this.dataForm.receipts[0].fileId
+    this.dataForm.receipt = this.dataForm.receipts.length > 0 ? this.dataForm.receipts[0].fileId : []
 
    const myThis: any = this
    myThis.$refs[dataForms].validate(async ( valid: any ) => {
