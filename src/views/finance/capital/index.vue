@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <Tabs :value="$route" @input="handleClick" @on-close="handleCloseTag" :defalutTag="defalutTag" :list="tabsList"></Tabs>
+    <Tabs class="name" :value="$route" @input="handleClick" @on-close="handleCloseTag" :defalutTag="defalutTag" :list="tabsList"></Tabs>
     <keep-alive>
       <router-view/>
     </keep-alive>
@@ -92,11 +92,16 @@ export default class Main extends ViewBase {
     if (val.name == 'resource' && val.meta.show) {
       const res = this.tabsList.filter((item: any) => item.name !== 'withdrawalBill' )
       this.tabsList = res
-      val.meta.show = false
+      val.meta.show = true
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
+.name {
+  margin-left: -8px;
+  margin-top: -8px;
+  margin-bottom: 20px;
+}
 </style>

@@ -137,7 +137,7 @@ export default [
         component: () => import('./views/finance/capital/resource.vue'),
       },
       {
-        path: 'rechargeNum/:companyId',
+        path: 'rechargeNum/:companyId/:title',
         name: 'rechargeNum',
         component: () => import('./views/finance/capital/rechargeNum.vue'),
         meta: {
@@ -153,7 +153,7 @@ export default [
         }
       },
       {
-        path: 'withdraw/:companyId',
+        path: 'withdraw/:companyId/:title',
         name: 'withdraw',
         component: () => import('./views/finance/capital/withdraw.vue'),
         meta: {

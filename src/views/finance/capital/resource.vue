@@ -121,10 +121,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         title: '',
         key: 'freezeAmount',
         align: 'center',
-        render: (hh: any, { row: { monthWithdrawalCount, totalWithdrawalCount, companyId } }: any) => {
+        render: (hh: any, { row: { monthWithdrawalCount, totalWithdrawalCount, companyId, companyName } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          return <router-link to={{name: 'withdraw', params: {companyId: companyId}, query: { beginDate: this.query.beginDate, endDate: this.query.endDate }}}>
+          return <router-link to={{name: 'withdraw', params: {companyId: companyId, title: companyName}, query: { beginDate: this.query.beginDate, endDate: this.query.endDate }}}>
           {monthWithdrawalCount + '/' + totalWithdrawalCount}</router-link>
           /* tslint:enable */
         },
@@ -154,7 +154,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
           const showTime = this.showTime
-          return <router-link to={{name: 'withdrawalBill', params: { id: companyId }}}>添加提现账单</router-link>
+          return <router-link to={{name: 'withdrawalBill', params: { id: companyId }, meta: {show: false}}}>添加提现账单</router-link>
           /* tslint:enable */
         }
       }
@@ -255,6 +255,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       this.query.pageIndex = 1
     }
     this.doSearch()
+  }
+
+  @Watch('$route', {immediate: true, deep: true})
+  Watch$route(val: any, to: any, from: any) {
+    const name = to ? to.name : ''
+    if (val.name == 'resource' && name == '') {
+    }
   }
 }
 </script>
@@ -358,7 +365,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   margin-left: 5%;
 }
 .table {
-  margin-top: 16px;
   /deep/ .status-2,
   /deep/ .aptitude-status-3 {
     color: #ed4014;

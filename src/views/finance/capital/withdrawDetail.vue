@@ -104,10 +104,12 @@ export default class Main extends ViewBase {
   logList: any = []
   id: any = ''
   get format() {
+    const afterWithdrawalAmount = this.detail.afterWithdrawalAmount || 0
+    const beforeWithdrawalAmount = this.detail.beforeWithdrawalAmount || 0
     return {
       amount: formatCurrency(this.detail.amount),
-      afterWithdrawalAmount: formatCurrency(this.detail.afterWithdrawalAmount),
-      beforeWithdrawalAmount: formatCurrency(this.detail.beforeWithdrawalAmount),
+      afterWithdrawalAmount: formatCurrency(afterWithdrawalAmount),
+      beforeWithdrawalAmount: formatCurrency(beforeWithdrawalAmount),
     }
   }
 
@@ -122,15 +124,15 @@ export default class Main extends ViewBase {
     try {
       const res = await resIdDetail({id: this.id})
       this.detail = res.data
-      const logList = res.data.logs.map((item: any) => {
+      const logList = res.data.logs ? res.data.logs.map((item: any) => {
         return {
           ...item,
           createTime: moment(item.createTime).format(timeFormatDate)
         }
-      })
+      }) : []
       if (res.data.imgs && res.data.imgs.length > 0) {
         this.showimg = false
-        this.img = res.data.img.map((item: any) => {
+        this.img = res.data.imgs.map((item: any) => {
           return item.url
         })
       } else {

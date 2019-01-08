@@ -41,3 +41,9 @@ export async function withdrawals(query: any) {
   const data = await post('/finance/resource/withdrawals', query)
   return data
 }
+
+// 跳转到添加提现页面(资源方)
+export async function withdrawalsId(companyId: any) {
+  const data = await get(`finance/resource/accounts/view/${companyId}`)
+  return data
+}
