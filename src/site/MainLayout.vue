@@ -107,16 +107,16 @@ export default class App extends ViewBase {
       ]
     },
     {
-      name: 'Finance',
+      name: 'finance',
       icon: 'logo-usd',
       label: '财务管理',
       subList: [
         {
-          name: 'Finance-examine',
+          name: 'finance-examine',
           label: '充值审核',
         },
         {
-          name: 'Finance-capital',
+          name: 'finance-capital',
           label: '资金管理',
         },
       ]

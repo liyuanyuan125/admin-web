@@ -35,3 +35,9 @@ export async function resIdDetail(query: any) {
   const data = await get(`/finance/resource/withdrawals/${query.id}`)
   return data
 }
+
+// 新建提现(资源方)
+export async function withdrawals(query: any) {
+  const data = await post('/finance/resource/withdrawals', query)
+  return data
+}
