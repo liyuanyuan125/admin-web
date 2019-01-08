@@ -177,7 +177,7 @@ export default [
         }
       },
       {
-        path: 'withdrawalBill/:id',
+        path: 'withdrawalBill/:id/:show',
         name: 'withdrawalBill',
         component: () => import('./views/finance/capital/withdrawalBill.vue'),
         meta: {
@@ -193,7 +193,7 @@ export default [
     component: () => import('./views/finance/examine/index.vue')
   },
   {
-    path: '/finance/examine/detail/:id?',
+    path: '/finance/examine/detail/:id',
     name: 'finance-examine-detail',
     component: () => import('./views/finance/examine/detail.vue')
   },

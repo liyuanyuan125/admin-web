@@ -142,7 +142,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         render: (hh: any, { row: { monthRechargeCount, totalRechargeCount, companyId } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          return <router-link to={{name: 'rechargeNum', params: {companyId: companyId}}}></router-link>
+          return <span></span>
           /* tslint:enable */
         }
       },
@@ -154,7 +154,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
           const showTime = this.showTime
-          return <router-link to={{name: 'withdrawalBill', params: { id: companyId }, meta: {show: false}}}>添加提现账单</router-link>
+          return <router-link to={{name: 'withdrawalBill', params: { id: companyId, show: 'show' }}}>添加提现账单</router-link>
           /* tslint:enable */
         }
       }
@@ -260,7 +260,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   @Watch('$route', {immediate: true, deep: true})
   Watch$route(val: any, to: any, from: any) {
     const name = to ? to.name : ''
-    if (val.name == 'resource' && name == '') {
+    if (val.name == 'resource' && name == 'withdrawalBill') {
+      if (to.params.show != 'show') {
+        this.doSearch()
+      }
     }
   }
 }
