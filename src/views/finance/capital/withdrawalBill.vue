@@ -36,7 +36,7 @@
         </Row>
         <Row>
           <Col span="3"><div>本次提现金额</div></Col>
-          <Col span="2"><InputNumber enter-button="MAX" :max="detail.beforeWithdrawalAmount || 0" :min="0" v-model="dataFrom.amount" style="margin-top:5px"></InputNumber></Col>
+          <Col span="2"><InputNumber enter-button="MAX" :max="detail.balance || 0" :min="0" v-model="dataFrom.amount" style="margin-top:5px"></InputNumber></Col>
         </Row>
         <Row>
           <Col span="3"><div>提现后可用余额</div></Col>
@@ -72,7 +72,7 @@
 import { Component, Watch } from 'vue-property-decorator'
 import moment from 'moment'
 import ViewBase from '@/util/ViewBase'
-import { resIdDetail, withdrawals } from '@/api/advertiser'
+import { withdrawalsId, withdrawals } from '@/api/advertiser'
 import { toMap } from '@/fn/array'
 import { formatCurrency } from '@/fn/string'
 import clipboard from 'clipboard'
@@ -114,10 +114,12 @@ export default class Main extends ViewBase {
   }
 
   get format() {
+    const beforeWithdrawalAmount = this.detail.balance || 0
+    const afterWithdrawalAmount = this.detail.afterWithdrawalAmount || 0
     return {
       amount: formatCurrency(this.detail.amount),
-      afterWithdrawalAmount: formatCurrency(this.detail.afterWithdrawalAmount),
-      beforeWithdrawalAmount: formatCurrency(this.detail.beforeWithdrawalAmount),
+      afterWithdrawalAmount: formatCurrency(afterWithdrawalAmount),
+      beforeWithdrawalAmount: formatCurrency(beforeWithdrawalAmount),
     }
   }
 
@@ -145,16 +147,10 @@ export default class Main extends ViewBase {
   async load() {
     (this.$Spin as any).show()
     try {
-      const res = await resIdDetail({id: this.id})
+      const res = await withdrawalsId(this.id)
       this.detail = res.data
-      const logList = res.data.logs.map((item: any) => {
-        return {
-          ...item,
-          createTime: moment(item.createTime).format(timeFormatDate)
-        }
-      })
       this.dataFrom.typeName = this.detail.typeName
-      this.dataFrom.beforeWithdrawalAmount = this.detail.beforeWithdrawalAmount
+      this.dataFrom.beforeWithdrawalAmount = this.detail.balance || 0
       this.dataFrom.accountBank = this.detail.accountBank || ''
       this.dataFrom.accountName = this.detail.accountName || ''
       this.dataFrom.accountNumber = this.detail.accountNumber || ''
@@ -176,6 +172,7 @@ export default class Main extends ViewBase {
   submitWithdraw() {
     (this.$refs.dataFrom as any).validate(async ( valid: any ) => {
       if (valid) {
+        this.dataFrom.afterWithdrawalAmount = this.dataFrom.beforeWithdrawalAmount - this.dataFrom.amount
         this.dataFrom.companyId = this.id
         this.dataFrom.withdrawalTime = new Date().getTime()
         const query = {
@@ -188,6 +185,7 @@ export default class Main extends ViewBase {
           await withdrawals(query)
           this.$router.push({ name: 'resource' })
           this.$route.meta.show = true
+          ; (this.$refs.dataFrom as any).resetFields()
         } catch (ex) {
           this.handleError(ex)
         }
@@ -206,6 +204,8 @@ export default class Main extends ViewBase {
   watch$route(val: any, oldVal: any) {
     if (val.name == 'withdrawalBill') {
       this.id = this.$route.params.id || 0
+      this.dataFrom.amount = 0
+      this.dataFrom.receipt = []
       this.$route.meta.show = false
     }
   }

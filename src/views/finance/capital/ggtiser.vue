@@ -123,12 +123,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         title: '',
         key: 'statusText',
         align: 'center',
-        render: (hh: any, { row: { monthRechargeCount, totalRechargeCount, companyId } }: any) => {
+        render: (hh: any, { row: { monthRechargeCount, totalRechargeCount, companyId, companyName } }: any) => {
           /* tslint:disable */
             const h = jsxReactToVue(hh)
             const start = new Date(this.showTime[0]).getTime()
             const end = new Date(this.showTime[1]).getTime()
-            return <router-link to={{name: 'rechargeNum', params: {companyId: companyId}, query: { beginDate: this.query.beginDate, endDate: this.query.endDate }}}>
+            return <router-link to={{name: 'rechargeNum', params: {companyId: companyId, title: companyName }, query: { beginDate: this.query.beginDate, endDate: this.query.endDate }}}>
             {monthRechargeCount+'/'+totalRechargeCount}</router-link>
           /* tslint:enable */
         },
@@ -358,7 +358,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   margin-left: 5%;
 }
 .table {
-  margin-top: 16px;
   /deep/ .status-2,
   /deep/ .aptitude-status-3 {
     color: #ed4014;

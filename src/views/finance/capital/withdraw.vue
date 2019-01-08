@@ -9,8 +9,8 @@
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </Form>
       </div>
-      <div>
-          查询结果：共计金额：{{altogetherAmount}}元   次数共计：{{total}}次
+      <div v-if="totals" class="title">
+        <b style="margin-left:0px">所属公司:</b>{{$route.params.title}} <span style="margin-left:8px"></span> <b>查询结果</b><b>共计金额</b>：{{totals.amount}}元   <b>次数共计</b>：{{total}}次
       </div>
       <Table :columns="columns" :data="tableData" :loading="loading"
         border stripe disabled-hover size="small" class="table"></Table>
@@ -68,7 +68,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   showDlg = false
   addOrUpdateVisible = false
   changeVisible = false
-
+  totals: any = null
   examine = false
   // query = { ...defQuery }
   altogetherAmount: any = ''
@@ -224,10 +224,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         altogetherAmount: altogetherAmount,
         items: list,
         totalCount: total,
+        total: totals,
         typeList: typeList,
       } } = await resIdqueryList(query)
       this.list = list
       this.total = total
+      this.totals = totals
+      this.totals.amount = totals.amount ? formatCurrency(totals.amount) : '0'
       this.typeList = typeList
       this.altogetherAmount = altogetherAmount ? formatCurrency(altogetherAmount) : '0'
     } catch (ex) {
@@ -367,6 +370,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     &::before {
       content: '-';
     }
+  }
+}
+.title {
+  b {
+    margin-left: 10px;
+    margin-right: 4px;
   }
 }
 </style>
