@@ -3,74 +3,74 @@
     <div class="Inp-Group-res">
       <Button style='margin-bottom:5px;' class="bth" icon="md-return-left" @click="goback">返回上一页</Button>
       <div class="Inps-res">
-        <div class="res-num">
-          <p>公司名称:&nbsp;&nbsp;&nbsp;</p>
-          <div class="res-num-item change-item">
+        <Row class="res-num">
+          <Col span="2">公司名称:</Col>
+          <Col span="4" class="res-num-item change-item">
             <span>{{list.companyName}}</span>
-          </div>
-        </div>
-        <div class="res-num">
-          <p>充值金额:&nbsp;&nbsp;&nbsp;</p>
-          <div class="res-num-item">
+          </Col>
+        </Row>
+        <Row class="res-num">
+          <Col span="2">充值金额:</Col>
+          <Col span="4" class="res-num-item">
             <span class='item1'>{{list.amount}}</span>
-          </div>
-        </div>
-        <div class="res-num">
-          <p>申请时间:&nbsp;&nbsp;&nbsp;</p>
-          <div class="res-num-item">
+          </Col>
+        </Row>
+        <Row class="res-num">
+          <Col span="2">申请时间:</Col>
+          <Col span="4" class="res-num-item">
             <span class='item1'>{{applyTime}}</span>
-          </div>
-        </div>
-        <div class="res-num">
-          <p>申请人:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-          <div class="res-num-item">
+          </Col>
+        </Row>
+        <Row class="res-num">
+          <Col span="2">申请人:</Col>
+          <Col span="4" class="res-num-item">
             <span class='item1'>{{list.applyName}}</span>
-          </div>
-        </div>
-        <div class="res-num">
-          <p>汇款人姓名:</p>
-          <div class="res-num-item">
+          </Col>
+        </Row>
+        <Row class="res-num">
+          <Col span="2">汇款人姓名:</Col>
+          <Col span="4" class="res-num-item">
             <span class='item1'>{{list.accountName}}</span>
             <!-- <span class="res-date les">公司地址</span> -->
             <!-- <span>{{company.addressDetail}}</span> -->
-          </div>
-        </div>
-        <div class="res-num">
-          <p>银行账号:&nbsp;&nbsp;&nbsp;</p>
-          <div class="res-num-item">
+          </Col>
+        </Row>
+        <Row class="res-num">
+          <Col span="2">银行账号:</Col>
+          <Col span="4" class="res-num-item">
             <span class='item1'>{{list.accountNumber}}</span>
-          </div>
-        </div>
-        <div class="res-num">
-          <p>联系电话:&nbsp;&nbsp;&nbsp;</p>
-          <div class="res-num-item">
+          </Col>
+        </Row>
+        <Row class="res-num">
+          <Col span="2">联系电话:</Col>
+          <Col span="4" class="res-num-item">
             <span class='item1'>{{list.contactPhone}}</span>
-          </div>
-        </div>
-        <div class="res-num">
-          <p>凭证:&nbsp;&nbsp;&nbsp;</p>
-          <div class='imgs'>
+          </Col>
+        </Row>
+        <Row class="res-num">
+          <Col span="2">凭证:</Col>
+          <Col span="4" class='res-num-item imgs'>
             <img :src=imageList.url alt="" sizes="" srcset="">
-          </div>
-        </div>
-        <div class="res-num">
-          <p>汇款日期:&nbsp;&nbsp;&nbsp;</p>
-          <div class="res-num-item">
+          </Col>
+        </Row>
+        <Row class="res-num">
+          <Col span="2">汇款日期:</Col>
+          <Col span="4" class="res-num-item">
             <span class='item1'>{{remittanceDate}}</span>
-          </div>
-        </div>
-        <div class="res-num">
-          <p>充值标签:&nbsp;&nbsp;&nbsp;</p>
-          <div class="res-num-item">
-            <span class='item1' v-for='it in tagCodeList' :key='it.tagCode' v-if='list.tagCode == it.tagCode'>{{it.tagName}}</span>
-          </div>
-        </div>
-        <div class="res-num">
-          <p>备注:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-          <div class="res-num-item">
+          </Col>
+        </Row>
+        <Row class="res-num">
+          <Col span="2">充值标签:</Col>
+          <Col span="4" class="res-num-item">
+            <span class='item1' v-for='it in tagCodeList.items' :key='it.tagCode' v-if='list.tagCode == it.tagCode'>{{it.tagName}}</span>
+          </Col>
+        </Row>
+        <Row class="res-num">
+          <Col span="2">备注:</Col>
+          <Col span="4" class="res-num-item">
             <span class='item1'>{{list.remark}}</span>
-          </div>
-        </div>
+          </Col>
+        </Row>
       </div>
     </div>
     <div class="log">
@@ -296,11 +296,11 @@ export default class Main extends ViewBase {
 .res-Group {
   margin-top: -5px;
 }
-.Inps-res,
-.res-Inps {
+.Inps-res {
   width: 100%;
   height: 100%;
   padding-top: 7px;
+  padding-left: 10px;
   font-size: 13px;
   background: #fff;
   border: 1px solid #dcdee2;
@@ -319,19 +319,27 @@ export default class Main extends ViewBase {
   max-height: 60px;
   text-align: left;
   margin-left: 0.5%;
+  // width:8%;
 }
 .res-num-item {
   display: flex;
   width: 80%;
   height: 100%;
+  // margin-left: -60px;
   // max-height: 60px;
 }
 .res-num-item span {
+  flex-direction: column-reverse;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
   display: inline-block;
-  margin-left: 5%;
+  margin-left: 2%;
 }
 .item1 {
-  width: 12%;
+  flex-direction: column-reverse;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  // width: 12%;
 }
 .blu1,
 .blu2 {
@@ -387,9 +395,13 @@ export default class Main extends ViewBase {
   height: 100px;
 }
 .imgs {
+  display: flex;
+  flex-direction: column-reverse;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
   width: 100px;
   height: 100px;
-  margin-left: 60px;
+  margin-left: 1.6%;
 }
 .imgs img {
   margin-top: 15px;
