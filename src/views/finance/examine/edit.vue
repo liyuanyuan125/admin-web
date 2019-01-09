@@ -9,7 +9,7 @@
     <div class="edit-box">
       <!-- header -->
       <Row class="cinema-header">
-        <FormItem label="公司名称" prop="name">
+        <FormItem label="公司名称" prop="companyId">
           <Row>
             <Col span="10">
               <Select style="width:240px" v-model="dataForm.companyId">
@@ -163,6 +163,9 @@ export default class Main extends ViewBase {
 
   get ruleValidate() {
     const rules = {
+      companyId: [
+          { required: true, message: '请选择公司 ' }
+      ],
       amount: [
           { required: true, message: '请输入充值金额', trigger: 'blur' }
       ],
@@ -192,9 +195,6 @@ export default class Main extends ViewBase {
           { pattern: /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/,
             message: '请输入正确的手机号码', trigger: 'blur'
           }
-      ],
-      companyId: [
-          { required: true, message: '请选择公司' }
       ],
       status: [
           { required: true }

@@ -318,6 +318,7 @@ export default class Main extends ViewBase {
   width: 100%;
   height: 100%;
   padding-top: 7px;
+  padding-bottom: 7px;
   font-size: 13px;
   background: #fff;
   border: 1px solid #dcdee2;
@@ -325,7 +326,7 @@ export default class Main extends ViewBase {
 .res-num {
   display: flex;
   width: 100%;
-  line-height: 60px;
+  line-height: 45px;
 }
 .res-num p {
   flex-direction: column-reverse;
@@ -387,7 +388,7 @@ export default class Main extends ViewBase {
   border: 1px solid #ccc;
 }
 .xq div {
-  line-height: 26px;
+  line-height: 43px;
 }
 .xq-left, .xq-right {
   width: 50%;
