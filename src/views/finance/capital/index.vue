@@ -103,7 +103,7 @@ export default class Main extends ViewBase {
 <style lang="less" scoped>
 .name {
   margin-left: -8px;
-  margin-top: -8px;
-  margin-bottom: 20px;
+  margin-top: -10px;
+  margin-bottom: 10px;
 }
 </style>

@@ -2,7 +2,7 @@
   <div class="page">
     <div  v-if="shows">
       <div class="act-bar flex-box">
-        <Form class="form flex-1" :label-width="0" @submit.prevent="search" inline>
+        <Form class="form" :label-width="0" @submit.prevent="search" inline>
           <FormItem label=''>
             <DatePicker @on-change="dateChange" @on-clear="formatTime" type="daterange" v-model="showTime" placement="bottom-start" placeholder="统计范围" class="input" style="width:200px"></DatePicker>
           </FormItem>
@@ -12,11 +12,11 @@
           </Select>
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </Form>
+        <div class="title">
+          <b style="margin-left:0px"> 所属公司:</b>{{$route.params.title}} <span style="margin-left:8px"></span><b>查询结果</b><b>共计金额：</b>{{altogetherAmount}}元   <b>次数共计：</b>{{total}}次
+        </div>
       </div>
 
-      <div class="title">
-        <b style="margin-left:0px"> 所属公司:</b>{{$route.params.title}} <span style="margin-left:8px"></span><b>查询结果</b><b>共计金额：</b>{{altogetherAmount}}元   <b>次数共计：</b>{{total}}次
-      </div>
       <Table :columns="columns" :data="tableData" :loading="loading"
         border stripe disabled-hover size="small" class="table"></Table>
 
@@ -301,7 +301,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       margin-left: 0;
     }
   }
-
+  .ivu-form-item {
+    margin-bottom: 12px;
+  }
   .input-corp-id {
     width: 80px;
   }
@@ -389,7 +391,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   margin-left: 5%;
 }
 .table {
-  margin-top: 16px;
   /deep/ .status-2,
   /deep/ .aptitude-status-3 {
     color: #ed4014;
@@ -404,6 +405,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
 }
 .title {
+  float: left;
+  margin-top: 8px;
+  margin-left: 20px;
   b {
     margin-left: 10px;
     margin-right: 4px;

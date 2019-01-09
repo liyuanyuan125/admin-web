@@ -28,7 +28,14 @@
         <Form ref="dataFrom" :model="dataFrom" :rules="ruleInline">
         <Row>
           <Col span="3"><div>项目</div></Col>
-          <Col span="16"><span>{{detail.typeName}}</span></Col>
+          <Col span="16">
+          <FormItem prop='type'>
+            <Select style="width: 200px;margin-top: 8px;" v-model="dataFrom.type" placeholder="请选择项目" clearable>
+              <Option v-if="it.fileId!=0" v-for="it in detail.typeList" :key="it.fileId" :value="it.fileId"
+                :label="it.url">{{it.url}}</Option>
+            </Select>
+          </FormItem>
+          </Col>
         </Row>
         <Row>
           <Col span="3"><div>提现前可用余额</div></Col>
@@ -46,7 +53,7 @@
           <Col span="3"><div><span style="red">*</span>凭证</div></Col>
           <Col span="8">
             <FormItem class="upload-wrap" prop='receipt' :show-message = 'dataFrom.receipt.length == 0'>
-                <Upload v-model="dataFrom.receipt" :multiple="true" :maxCount="3"/>
+              <Upload v-model="dataFrom.receipt" :multiple="true" :maxCount="3"/>
             </FormItem>
           </Col>
         </Row>
@@ -105,14 +112,14 @@ export default class Main extends ViewBase {
     afterWithdrawalAmount: 0,
     amount: 0,
     companyId: '',
-    typeName: '',
     accountBank: '',
     accountName: '',
     accountNumber: '',
     companyName: '',
-    withdrawalTime: 0
+    withdrawalTime: 0,
+    type: 1
   }
-
+  typeList: any = []
   get format() {
     const beforeWithdrawalAmount = this.detail.balance || 0
     const afterWithdrawalAmount = this.detail.afterWithdrawalAmount || 0
@@ -134,6 +141,9 @@ export default class Main extends ViewBase {
       ],
       remark: [
         { max: 30, message: '请上传凭证', trigger: 'change'}
+      ],
+      type: [
+        { required: true, message: '请选择项目', type: 'number', trigger: 'change'}
       ]
     }
   }
@@ -149,7 +159,6 @@ export default class Main extends ViewBase {
     try {
       const res = await withdrawalsId(this.id)
       this.detail = res.data
-      this.dataFrom.typeName = this.detail.typeName
       this.dataFrom.beforeWithdrawalAmount = this.detail.balance || 0
       this.dataFrom.accountBank = this.detail.accountBank || ''
       this.dataFrom.accountName = this.detail.accountName || ''
@@ -158,7 +167,7 @@ export default class Main extends ViewBase {
       this.loading = true
       setTimeout(() => {
         (this.$Spin as any).hide()
-      }, 1000)
+      }, 100)
     } catch (ex) {
       (this.$Spin as any).hide()
       this.handleError(ex)
@@ -191,13 +200,6 @@ export default class Main extends ViewBase {
         }
       }
     })
-  }
-
-  @Watch('id', {immediate: true})
-  watchid(val: any, oldVal: any) {
-    if (val) {
-      this.load()
-    }
   }
 
   @Watch('$route', {immediate: true, deep: true})

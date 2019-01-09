@@ -110,7 +110,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         /* tslint:disable */
         renderHeader: (hh: any) => {
           const h = jsxReactToVue(hh)
-          return <span>结算次数<br/>（本月/累计）</span>
+          return <span class='table-money'>结算次数<br/>（本月/累计）</span>
         }
         /* tslint:enable */
       },
@@ -128,7 +128,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         /* tslint:disable */
         renderHeader: (hh: any) => {
           const h = jsxReactToVue(hh)
-          return <span>提现次数<br/>（本月/累计）</span>
+          return <span class='table-money'>提现次数<br/>（本月/累计）</span>
         }
         /* tslint:enable */
       },
@@ -277,7 +277,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       margin-left: 0;
     }
   }
-
+  .ivu-form-item {
+    margin-bottom: 12px;
+  }
   .input-corp-id {
     width: 80px;
   }
@@ -376,6 +378,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     &::before {
       content: '-';
     }
+  }
+  /deep/ .table-money {
+    display: inline-block;
+    padding-top: 4px;
+    height: 46px;
   }
 }
 </style>
