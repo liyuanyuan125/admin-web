@@ -157,7 +157,7 @@ export default class Main extends ViewBase {
   }
 
   get openTime() {
-    return moment(this.detil.openTime).format(timeFormat)
+    return this.detil.openTime ? moment(this.detil.openTime).format(timeFormat) : ''
   }
 
   get todayBox() {
