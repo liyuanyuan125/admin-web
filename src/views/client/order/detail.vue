@@ -39,12 +39,12 @@
       <div class='xq-left'>
         <div class='xq-title'>变更前</div>
         <div><span>公司名称: </span><span>【{{list.modifyBeforeName}}】</span></div>
-        <div class='Types'><span>公司类型: 【</span>
+        <div class='Types'><span>公司类型: </span>
           <div v-for="it in precom" :key='it.typeCode'>
             <div v-for="ity in list.modifyBeforeTypes" :key='ity.typeCode' v-if='ity.typeCode == it.typeCode'>
-              <span>&nbsp;&nbsp;{{it.typeName}}&nbsp;</span>
+              <span>&nbsp;【{{it.typeName}}】&nbsp;</span>
             </div>
-         </div> 】
+         </div>
         </div>
         <div class='Types'><span>资质类型: </span>
           <div v-for="it in prequalification" v-if='list.modifyBeforeQualificationType == it.key' :key='it.key'>
@@ -64,12 +64,12 @@
       <div class='xq-right'>
         <div class='xq-title'>变更后</div>
         <div><span>公司名称: </span><span>【{{list.modifyAfterName}}】</span></div>
-        <div class='Types'><span>公司类型: 【</span>
+        <div class='Types'><span>公司类型: </span>
           <div v-for="it in precom"  :key='it.typeCode'>
             <div v-for="ity in list.modifyAfterTypes" :key='ity.typeCode' v-if='ity.typeCode == it.typeCode'>
-              <span>&nbsp;&nbsp;{{it.typeName}}&nbsp;</span>
+              <span>&nbsp;【{{it.typeName}}】&nbsp;</span>
             </div>
-          </div>】
+          </div>
         </div>
         <div class='Types'><span>资质类型: </span>
           <div v-for="it in prequalification" v-if='list.modifyAfterQualificationType == it.key' :key='it.key'>
@@ -386,6 +386,7 @@ export default class Main extends ViewBase {
 .xq {
   padding: 5px;
   border: 1px solid #ccc;
+  font-size: 13px;
 }
 .xq div {
   line-height: 43px;

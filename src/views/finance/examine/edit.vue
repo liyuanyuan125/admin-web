@@ -21,7 +21,7 @@
         <FormItem label="充值金额" prop="amount">
           <Row>
             <Col span="8">
-              <Input @blur="chg()" v-model="dataForm.amount"/>
+              <InputNumber  :min="1" type='Number' v-model="dataForm.amount"/>
             </Col>
           </Row>
         </FormItem>
@@ -167,7 +167,8 @@ export default class Main extends ViewBase {
           { required: true, message: '请选择公司 ' }
       ],
       amount: [
-          { required: true, message: '请输入充值金额', trigger: 'blur' }
+          { required: true, message: '请输入不小于0的充值金额', trigger: 'blur' },
+          // { type: 'string', min: 1, message: '金额不能为0或负数', trigger: 'blur' }
       ],
       accountType: [
           { required: true, message: '请选择充值账号类型' }

@@ -48,8 +48,9 @@
         <FormItem label="公司名称" prop="companyBId">
           <Row>
             <Col span="8">
+            <!-- v-if='it.types[0].typeCode=="resource"' -->
               <Select   v-model="dataForm.companyBId" filterable>
-                <Option v-for="it in companys" v-if='it.status==2' :key="it.id" :value="it.id">{{it.name}}</Option>
+                <Option v-for="it in companys"  :key="it.id" :value="it.id">{{it.name}}</Option>
               </Select>
             </Col>
           </Row>
@@ -118,10 +119,13 @@
           :label-width='0'
           :key="index"
           label="" prop="cinemas" v-for='(it,index) in dataForm.rule'>
+          <!-- {{index}} -->
           以下影院，分成比例为<Input style='width:5%;' v-model="it.proportion" placeholder="默认20%"/>%
             <!-- <col span='16'> -->
             <PartBindCinema v-model="it.cinemas" :unitList="profitUnitList"
                 class="part-bind-cinema"/>
+                {{index}}
+            <!-- <Button type="dashed" @click="handleRemove(1)">删除</Button> -->
             <!-- </col> -->
         </FormItem>
         
@@ -414,6 +418,12 @@ export default class Main extends ViewBase {
       cinemas: []
     })
   }
+  // handleReset (id: number) {
+  //   console.log(id)
+  //   // await confirm('确定要删除该项吗？')
+  //   // const index = this.dataForm.rule.findIndex((it: any) => it.id == id)
+  //   // this.dataForm.rule.splice(index, 1)
+  // }
 
   // 删除文件
   async onDel(id: number) {
@@ -468,7 +478,18 @@ export default class Main extends ViewBase {
       const { data: {
         items: companys,
       } } = await companysList(query)
-      this.companys = companys
+      // this.companys = companys
+      this.companys = companys.map((item: any) => {
+        if (item.status == 1) {
+          return {
+            ...item,
+            // item : item.types.map((item: any) => {
+            //     return item.id
+            // })
+            // createTime: moment(item.createTime).format(timeFormat)
+          }
+        }
+      })
       // 甲方公司
       const { data : {
           companyAList: companyAList

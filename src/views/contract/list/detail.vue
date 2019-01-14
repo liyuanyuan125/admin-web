@@ -15,7 +15,7 @@
           <Col span="2"><div>合同名称</div></Col>
           <Col span="8"><span>{{detail.contractName}}</span></Col>
           <Col span="2"><div>甲方公司</div></Col>
-          <Col span="8" v-for='it in detail.companyAList' :key='it.key' v-if='it.key == detail.companyACode' ><span v-if='it.controlStatus==2' style='color:red'>{{it.text}}</span><span v-if='it.controlStatus==1' style='color:red'>{{it.text}}</span></Col>
+          <Col span="8" v-for='it in detail.companyAList' :key='it.key' v-if='it.key == detail.companyACode' ><span v-if='it.controlStatus==2' style='color:red'>{{it.text}}</span><span v-if='it.controlStatus==1'>{{it.text}}</span></Col>
         </Row>
         <Row>
           <Col span="2"><div>合同编号</div></Col>
@@ -107,7 +107,7 @@
             </FormItem>
           </Form>
           <Button style='margin-left:20px;' type="primary"  @click="change('dataForm')">确定</Button>
-          <Button style='margin-left:20px;' @click="cancel('dataForm')">取消</Button>
+          <Button style='margin-left:20px;' @click="goback()">取消</Button>
         </div>
       </Row>
     </div>
@@ -260,11 +260,14 @@ export default class Main extends ViewBase {
     }
   }
 
-  cancel(dataForms: string) {
-    this.dataForm.refuseReason = ''
-    this.dataForm.approveStatus = 2
-    // this.showDlg = false
-    // ; (this.$refs.dataForm as any).resetFields()
+  // cancel(dataForms: string) {
+  //   this.dataForm.refuseReason = ''
+  //   this.dataForm.approveStatus = 2
+  //   // this.showDlg = false
+  //   // ; (this.$refs.dataForm as any).resetFields()
+  // }
+  goback() {
+    this.$router.go(-1)
   }
 
   // 审核状态

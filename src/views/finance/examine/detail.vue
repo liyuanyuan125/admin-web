@@ -95,7 +95,7 @@
           </FormItem>
           </Form>
           <Button style='margin-left:20px;' type="primary"  @click="change('dataForm')">确定</Button>
-          <Button style='margin-left:20px;' @click="cancel('dataForm')">取消</Button>
+          <Button style='margin-left:20px;' @click="goback()">取消</Button>
         </div>
         
       </div>
@@ -200,12 +200,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     this.doSearch()
   }
 
-  cancel(dataForms: string) {
-    this.dataForm.rejectReason = ''
-    this.dataForm.approvalStatus = 2
-    // this.showDlg = false
-    // ; (this.$refs.dataForm as any).resetFields()
-  }
+  // cancel(dataForms: string) {
+  //   this.dataForm.rejectReason = ''
+  //   this.dataForm.approvalStatus = 2
+  //   // this.showDlg = false
+  //   // ; (this.$refs.dataForm as any).resetFields()
+  // }
 
 
   change(dataForms: any) {
