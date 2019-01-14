@@ -5,7 +5,7 @@
         <Form class="form flex-1" :label-width="0" @submit.prevent="search" inline>
           <LazyInput v-model="query.companyName" placeholder="公司名称" class="input input-id"/>
           <FormItem label='' >
-            <DatePicker @on-change="dateChange" @on-clear="formatTime" type="daterange" v-model="showTime" placement="bottom-end" placeholder="统计范围" class="input" style="width:200px"></DatePicker>
+            <DatePicker @on-change="dateChange" @on-clear="formatTime" type="daterange" v-model="showTime" placement="bottom-start" placeholder="统计范围" class="input" style="width:200px"></DatePicker>
           </FormItem>
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </Form>
@@ -128,8 +128,16 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
             const h = jsxReactToVue(hh)
             const start = new Date(this.showTime[0]).getTime()
             const end = new Date(this.showTime[1]).getTime()
-            return <router-link to={{name: 'rechargeNum', params: {companyId: companyId, title: companyName }, query: { beginDate: this.query.beginDate, endDate: this.query.endDate }}}>
-            {monthRechargeCount+'/'+totalRechargeCount}</router-link>
+            const year = new Date().getFullYear()
+            const month = new Date().getMonth() + 1
+            const beginDate = new Date(`${year}/${month}/1`).getTime()
+            const endDate = new Date(`${year}/${month + 1}/1`).getTime() -1
+            return <div>
+            <router-link class="router" to={{name: 'rechargeNum', params: {companyId: companyId, title: companyName }, query: { beginDate: beginDate, endDate: endDate }}}>
+            <span v-html={monthRechargeCount}></span>/</router-link>
+            <router-link class="router" to={{name: 'rechargeNum', params: {companyId: companyId, title: companyName }, query: { beginDate: this.query.beginDate, endDate: this.query.endDate }}}>
+            <span v-html={totalRechargeCount}></span></router-link>
+            </div>
           /* tslint:enable */
         },
         /* tslint:disable */
@@ -370,6 +378,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   /deep/ .ivu-table-cell > span:only-child:empty {
     &::before {
       content: '-';
+    }
+  }
+  /deep/ .router > a:only-child:empty {
+    &::before {
+      content: '0';
     }
   }
   /deep/ .table-money {
