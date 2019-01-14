@@ -50,7 +50,7 @@
             <Col span="8">
             <!-- v-if='it.types[0].typeCode=="resource"' -->
               <Select   v-model="dataForm.companyBId" filterable>
-                <Option v-for="it in companys"  :key="it.id" :value="it.id">{{it.name}}</Option>
+                <Option v-for="it in companys" v-if='it.status==1' :key="it.id" :value="it.id">{{it.name}}</Option>
               </Select>
             </Col>
           </Row>
@@ -124,8 +124,7 @@
             <!-- <col span='16'> -->
             <PartBindCinema v-model="it.cinemas" :unitList="profitUnitList"
                 class="part-bind-cinema"/>
-                {{index}}
-            <!-- <Button type="dashed" @click="handleRemove(1)">删除</Button> -->
+            <Button type="dashed" @click="handleRemove(index)">删除</Button>
             <!-- </col> -->
         </FormItem>
         
@@ -205,6 +204,7 @@ const timeFormats = 'YYYY/MM/DD HH:mm:ss'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
 const defQuery = {
+  typeCode : 'resource'
 }
 
 const dataForm = {
@@ -418,12 +418,14 @@ export default class Main extends ViewBase {
       cinemas: []
     })
   }
-  // handleReset (id: number) {
-  //   console.log(id)
-  //   // await confirm('确定要删除该项吗？')
-  //   // const index = this.dataForm.rule.findIndex((it: any) => it.id == id)
-  //   // this.dataForm.rule.splice(index, 1)
-  // }
+  // 删除规则
+  handleRemove(item: any) {
+    // console.log(item)
+    // this.dataForm.rule.$remove(item)
+    // const index = this.dataForm.rule.findIndex((it: any) => it.item == item)
+    // console.log(index)
+    this.dataForm.rule.splice(item, 1)
+  }
 
   // 删除文件
   async onDel(id: number) {
@@ -477,9 +479,10 @@ export default class Main extends ViewBase {
       // 公司列表
       const { data: {
         items: companys,
-      } } = await companysList(query)
+      } } = await companysList({typeCode : 'resource'})
       // this.companys = companys
       this.companys = companys.map((item: any) => {
+        // console.log(item.status)
         if (item.status == 1) {
           return {
             ...item,
@@ -490,6 +493,7 @@ export default class Main extends ViewBase {
           }
         }
       })
+      // console.log(this.companys)
       // 甲方公司
       const { data : {
           companyAList: companyAList

@@ -4,7 +4,7 @@
       <div class="act-bar flex-box">
         <form class="form flex-1" @submit.prevent="search">
           <LazyInput v-model="query.companyName" placeholder="公司名称" class="input" style="width: 200px"/>
-          <DatePicker type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="汇款日期" class="input" style="width: 200px"></DatePicker>
+          <DatePicker type="daterange" @on-change="dateChange" @on-clear="formatTime" v-model="showTime" placement="bottom-end" placeholder="汇款日期" class="input" style="width: 200px"></DatePicker>
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </form>
         <div class="acts">
@@ -39,6 +39,7 @@ import { slice, clean } from '@/fn/object'
 
 import {confirm , warning , success, toast } from '@/ui/modal'
 
+const years = new Date().getFullYear()
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD'
@@ -165,19 +166,37 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     this.$router.push({ name: 'finance-examine-edit', params })
   }
 
+  created() {
+    // console.log(new Date(`${years}/12/31`))
+    if ( this.showTime.length < 2 ) {
+      this.showTime = [new Date(`${years}/1/1`) , new Date(`${years}/12/31`)]
+    }
+    // console.log(this.showTime)
+  }
+
   mounted() {
     this.updateQueryByParam()
 
-    !!this.query.beginDate ? this.showTime[0] =
-    moment(this.query.beginDate).format(timeFormat) : this.showTime[0] = ''
-    !!this.query.endDate ? this.showTime[1] =
-    moment(this.query.endDate).format(timeFormat) : this.showTime[1] = ''
+    // !!this.query.beginDate ? this.showTime[0] =
+    // moment(this.query.beginDate).format(timeFormat) : this.showTime[0] = ''
+    // !!this.query.endDate ? this.showTime[1] =
+    // moment(this.query.endDate).format(timeFormat) : this.showTime[1] = ''
+    !!this.query.beginDate ? this.$set(this.showTime, 0, new Date(moment(this.query.beginDate).format(timeFormat)))
+     : ''
+    !!this.query.endDate ? this.$set(this.showTime, 1,  new Date(moment(this.query.endDate).format(timeFormat)))
+    : ''
+    // console.log(this.query.endDate)
+  }
+
+  formatTime() {
+    this.showTime = [new Date(`${years}/1/1`), new Date(`${years}/12/31`)]
   }
 
   dateChange(data: any) {
      // 获取时间戳
      !!data[0] ? (this.query.beginDate = new Date(data[0]).getTime() - 28800000) : this.query.beginDate = 0
      !!data[1] ? (this.query.endDate = new Date(data[1]).getTime() + 57600000) : this.query.endDate = 0
+    //  console.log(data[1])
   }
 
   search() {

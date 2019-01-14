@@ -26,7 +26,7 @@ export async function zuofei(id: any , query: any) {
 }
 // 获取公司详情
 export async function companysList(query: any) {
-  const data = await get('/customer/companies', {pageSize: 10000})
+  const data = await get('/customer/companies', query , {pageSize: 10000})
   return data
 }
 

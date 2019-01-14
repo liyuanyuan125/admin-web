@@ -167,7 +167,7 @@ export default class Main extends ViewBase {
           { required: true, message: '请选择公司 ' }
       ],
       amount: [
-          { required: true, message: '请输入不小于0的充值金额', trigger: 'blur' },
+          { required: true, message: '请输入不小于0的充值金额'},
           // { type: 'string', min: 1, message: '金额不能为0或负数', trigger: 'blur' }
       ],
       accountType: [
