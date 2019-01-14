@@ -12,7 +12,7 @@
         <FormItem label="公司名称" prop="companyId">
           <Row>
             <Col span="10">
-              <Select style="width:240px" v-model="dataForm.companyId">
+              <Select style="width:240px" v-model="dataForm.companyId" filterable>
                 <Option v-for="it in companys" :key="it.id" :value="it.id">{{it.name}}</Option>
               </Select>
             </Col>
@@ -21,7 +21,7 @@
         <FormItem label="充值金额" prop="amount">
           <Row>
             <Col span="8">
-              <Input v-model="dataForm.amount"/>
+              <Input @blur="chg()" v-model="dataForm.amount"/>
             </Col>
           </Row>
         </FormItem>
@@ -216,6 +216,10 @@ export default class Main extends ViewBase {
     return {
     }
   }
+
+  // chg () {
+  //   console.log(this.dataForm.amount)
+  // }
 
   mounted() {
     this.doSearch()
