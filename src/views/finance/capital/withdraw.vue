@@ -94,10 +94,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         }
     },
     { title: '项目', key: 'typeListText', align: 'center',
-      render: (hh: any, { row: { typeListText } }: any) => {
+      render: (hh: any, { row: { typeName } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = typeListText
+        const html = typeName
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
