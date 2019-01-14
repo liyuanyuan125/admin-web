@@ -85,7 +85,15 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     { title: '序号', key: 'id', width: 100 , align: 'center' },
     { title: '公司名称', key: 'companyName', align: 'center' },
     { title: '汇款人姓名', key: 'accountName', align: 'center' },
-    { title: '充值金额', key: 'amount', align: 'center' },
+    { title: '充值金额', key: 'amount', align: 'center' ,
+      render: (hh: any, { row: { amount } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        // const html = moment(amount).format(timeFormat)
+        return amount == null ? <span class='datetime' v-html='-'></span> : <span class='datetime' v-html={amount + '.00'}></span>
+        /* tslint:enable */
+      }
+    },
     {
       title: '汇款日期',
       key: 'remittanceDate',

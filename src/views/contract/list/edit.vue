@@ -49,7 +49,7 @@
           <Row>
             <Col span="8">
               <Select   v-model="dataForm.companyBId" filterable>
-                <Option v-for="it in companys" v-if='it.id==1' :key="it.id" :value="it.id">{{it.name}}</Option>
+                <Option v-for="it in companys" v-if='it.status==1' :key="it.id" :value="it.id">{{it.name}}</Option>
               </Select>
             </Col>
           </Row>
@@ -92,10 +92,10 @@
             </Col>
           </Row>
         </FormItem>
-        <FormItem label="结算账期" prop="validityStartDate">
+        <FormItem label="结算账期" prop="settlementPeriod">
           <Row>
             <Col span="8">
-              <InputNumber v-model="dataForm.settlementPeriod" @on-change='chg()' type='Number' placeholder=""/><span class='red'>注：最小数值必须为7</span>
+              <InputNumber v-model="dataForm.settlementPeriod" :min="7" type='Number' placeholder=""/><span class='red'>注：最小数值必须为7</span>
             </Col>
           </Row>
         </FormItem>
@@ -171,7 +171,7 @@
       </div>
         <div style='margin-top:20px;' class="edit-button">
           <Button type="info" size="large" @click="edit('dataForm')">确定</Button>
-          <Button type="default" size="large" @click="cancel('dataForm')">取消</Button>
+          <Button type="default" size="large" @click="cancel('dataForm')">重置</Button>
         </div>
     </div>
 
@@ -398,12 +398,12 @@ export default class Main extends ViewBase {
   async business() {
   }
 
-  async chg() {
-    if (this.dataForm.settlementPeriod < 7) {
-      alert('结算账期输入有误，最小数值为7')
-      this.dataForm.settlementPeriod = 7
-    }
-  }
+  // async chg() {
+  //   if (this.dataForm.settlementPeriod < 7) {
+  //     alert('结算账期输入有误，最小数值为7')
+  //     this.dataForm.settlementPeriod = 7
+  //   }
+  // }
   // 添加规则
   handleAdd() {
     this.index++
@@ -486,13 +486,10 @@ export default class Main extends ViewBase {
     // const query = { id: this.$route.params.id || 0 }
     try {
       if ( this.$route.params.id == undefined ) {
-        // this.handleAdd()
-        // this.dataForm.rule.proportion = 20
-        // this.showrule = true
-        // console.log(this.dataForm.rule.length)
-        if (this.dataForm.rule.length == 0) {
-          this.handleAdd()
-        }
+
+        // if (this.dataForm.rule.length == 0) {
+        //   this.handleAdd()
+        // }
         const { data: {
           items: companys,
         } } = await companysList(query)
@@ -562,8 +559,8 @@ export default class Main extends ViewBase {
   }
 
   edit(dataForms: any) {
-    const a = moment(this.dataForm.validityStartDate).format(timeFormat).split('-')
-    const b = moment(this.dataForm.validityEndDate).format(timeFormat).split('-')
+    const a = moment(this.dataForm.validityStartDate).format(timeFormat).split('/')
+    const b = moment(this.dataForm.validityEndDate).format(timeFormat).split('/')
 
     this.dataForm.validityStartDate = Number(a[0] + a[1] + a[2])
     this.dataForm.validityEndDate = Number(b[0] + b[1] + b[2])

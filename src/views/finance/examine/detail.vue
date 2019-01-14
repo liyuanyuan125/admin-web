@@ -12,7 +12,7 @@
         <Row class="res-num">
           <Col span="2">充值金额:</Col>
           <Col span="4" class="res-num-item">
-            <span class='item1'>{{list.amount}}</span>
+            <span class='item1'>{{list.amount}}.00</span>
           </Col>
         </Row>
         <Row class="res-num">
@@ -87,7 +87,7 @@
               <RadioGroup v-model='dataForm.approvalStatus'>
                 <!-- <Radio label="启用"></Radio>
                 <Radio label="停用"></Radio> -->
-                <Radio v-for="it in approvalStatusList" v-if="it.key!=0&&it.key!=1" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
+                <Radio v-for="it in approvalStatusList" v-if="it.key!=0&&it.key!=1" :key="it.key" :value="it.key" :label="it.key">{{it.text}}&nbsp;<em class='ems' v-if='it.key==2'>(请确保已收到该笔线下转账)</em></Radio>
               </RadioGroup>
             </FormItem>
             <FormItem v-if='dataForm.approvalStatus == 3' label="拒绝理由" prop="reason">
@@ -192,7 +192,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     this.ids = id
     this.doSearch()
     this.createTime = moment(this.log.createTime).format(timeFormats)
-    this.applyTime = moment(this.list.applyTime).format(timeFormat)
+    this.applyTime = moment(this.list.applyTime).format(timeFormats)
     this.remittanceDate = moment(this.list.remittanceDate).format(timeFormat)
   }
 
@@ -430,6 +430,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 }
 .logs-item {
   line-height: 30px;
+}
+.ems {
+  font-style: normal;
+  color: #aaa;
 }
 .table {
   /deep/ .ivu-table-cell > span:only-child:empty {
