@@ -13,7 +13,7 @@
           <!-- <Date-picker type="date" v-model="query.createTime" placeholder="注册时间" on-change="selectTime" class="input" style="width: 200px"></Date-picker> -->
           <!-- <Date-picker type="date" v-model="query.UpdateTime" placeholder="更新时间" on-change="selectTime"  class="input" style="width: 200px"></Date-picker>           -->
           <Select v-model="query.approveStatus" placeholder="状态" clearable>
-            <Option v-for="it in statusList" :key="it.key" :value="it.key"
+            <Option v-for="it in statusList" :key="it.key" :value="it.key" v-if='it.key!=0'
               :label="it.text">{{it.text}}</Option>
           </Select>
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
@@ -75,7 +75,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   defQuery = {
     // id: '',
     contractNo: '',
-    companyName: '',
+    companyBName: '',
     status: null,
     pageIndex: 1,
     pageSize: 20,
@@ -243,12 +243,19 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   //   const url = buildUrl(location.pathname, query)
   //   history.replaceState(null, '', url)
   // }
+  //   const a = moment(this.dataForm.validityStartDate).format(timeFormat).split('-')
+  //   const b = moment(this.dataForm.validityEndDate).format(timeFormat).split('-')
+
+  //   this.dataForm.validityStartDate = Number(a[0] + a[1] + a[2])
+  //   this.dataForm.validityEndDate = Number(b[0] + b[1] + b[2])
 
   dateChange(data: any) {
+    const a = moment(this.query.validityStartDate).format(timeFormat).split('-')
+    const b = moment(this.query.validityEndDate).format(timeFormat).split('-')
      // 获取时间戳
-     !!data[0] ? (this.query.validityStartDate = new Date(data[0]).getTime() - 28800000) :
+     !!data[0] ? (this.query.validityStartDate =  Number(a[0] + a[1] + a[2])) :
      this.query.validityStartDate = 0
-     !!data[1] ? (this.query.validityEndDate = new Date(data[1]).getTime() + 57600000) :
+     !!data[1] ? (this.query.validityEndDate = Number(b[0] + b[1] + b[2])) :
      this.query.validityEndDate = 0
   }
 

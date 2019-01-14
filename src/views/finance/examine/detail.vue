@@ -95,7 +95,7 @@
           </FormItem>
           </Form>
           <Button style='margin-left:20px;' type="primary"  @click="change('dataForm')">确定</Button>
-          <Button style='margin-left:20px;'>取消</Button>
+          <Button style='margin-left:20px;' @click="cancel('dataForm')">取消</Button>
         </div>
         
       </div>
@@ -106,8 +106,9 @@
 </template>
 
 <script lang="tsx">
-import { Component, Watch } from 'vue-property-decorator'
+import { Component, Watch , Mixins  } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
+import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
 import { queryList , queryItem , setList , dataFrom} from '@/api/examine'
 import jsxReactToVue from '@/util/jsxReactToVue'
@@ -141,7 +142,7 @@ const dataForm = {
     // dlgChange
   }
 })
-export default class Main extends ViewBase {
+export default class Main extends Mixins(ViewBase, UrlManager) {
   // change = false
   query = { ...defQuery }
   oldQuery: any = {}
@@ -199,6 +200,12 @@ export default class Main extends ViewBase {
     this.doSearch()
   }
 
+  cancel(dataForms: string) {
+    this.dataForm.rejectReason = ''
+    this.dataForm.approvalStatus = 2
+    // this.showDlg = false
+    // ; (this.$refs.dataForm as any).resetFields()
+  }
 
 
   change(dataForms: any) {
@@ -230,6 +237,7 @@ export default class Main extends ViewBase {
   reset() {
     const { pageSize } = this.query
     this.query = { ...defQuery, pageSize }
+    // this.resetQuery()
   }
 
   goback() {
