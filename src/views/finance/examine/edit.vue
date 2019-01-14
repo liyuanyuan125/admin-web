@@ -84,7 +84,7 @@
           <Row>
             <Col span="10">
               <Select style="width:240px" v-model="dataForm.tagCode">
-                <Option v-for="it in tagCodeList" :key="it.tagCode" :value="it.tagCode">{{it.tagName}}</Option>
+                <Option v-for="it in tagCodeList" :key="it.tagCode" v-if='it.controlStatus==1' :value="it.tagCode">{{it.tagName}}</Option>
               </Select>
             </Col>
           </Row>
@@ -275,9 +275,9 @@ export default class Main extends ViewBase {
       this.companys = companys
       // 充值类型列表
       const { data : {
-          tagCodeList: tagCodeList
+          items: items
       } } = await types(query)
-      this.tagCodeList = tagCodeList
+      this.tagCodeList = items
       // 当前登录用户邮箱信息
       const { data } = await authinfos(query)
       this.itemid = data.userId

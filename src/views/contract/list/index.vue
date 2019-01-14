@@ -236,6 +236,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     moment(this.query.validityStartDate).format(timeFormat) : this.showTime[0] = ''
     !!this.query.validityEndDate ? this.showTime[1] =
     moment(this.query.validityEndDate).format(timeFormat) : this.showTime[1] = ''
+    // console.log(this.query.validityStartDate)
   }
 
   // updateUrl() {
@@ -250,13 +251,14 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   //   this.dataForm.validityEndDate = Number(b[0] + b[1] + b[2])
 
   dateChange(data: any) {
-    const a = moment(this.query.validityStartDate).format(timeFormat).split('-')
-    const b = moment(this.query.validityEndDate).format(timeFormat).split('-')
+    const a = data[0].split('-')
+    const b = data[1].split('-')
      // 获取时间戳
      !!data[0] ? (this.query.validityStartDate =  Number(a[0] + a[1] + a[2])) :
      this.query.validityStartDate = 0
      !!data[1] ? (this.query.validityEndDate = Number(b[0] + b[1] + b[2])) :
      this.query.validityEndDate = 0
+    //  console.log(a)
   }
 
   search() {

@@ -49,7 +49,7 @@
           <Row>
             <Col span="8">
               <Select   v-model="dataForm.companyBId" filterable>
-                <Option v-for="it in companys" v-if='it.status==1' :key="it.id" :value="it.id">{{it.name}}</Option>
+                <Option v-for="it in companys" v-if='it.status==2' :key="it.id" :value="it.id">{{it.name}}</Option>
               </Select>
             </Col>
           </Row>
