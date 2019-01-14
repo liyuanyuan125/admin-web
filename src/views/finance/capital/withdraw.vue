@@ -41,7 +41,7 @@ import {confirm , warning , success, toast } from '@/ui/modal'
 
 const years = new Date().getFullYear()
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
-const timeFormat = 'YYYY-MM-DD<br/>HH:mm:ss'
+const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
 const dataForm = {
   status: 1
@@ -140,7 +140,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     },
     {
       title: '操作员',
-      key: 'createUser',
+      key: 'createName',
       align: 'center'
     },
     {
