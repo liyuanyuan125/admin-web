@@ -58,7 +58,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     companyName: '',
     pageIndex: 1,
     pageSize: 20,
-    beginDate: new Date(`${years - 1}/1/1`).getTime(),
+    beginDate: new Date(`${years}/1/1`).getTime(),
     endDate: new Date(`${years + 1}/1/1`).getTime() - 1
   }
   showTime: any = []
@@ -172,7 +172,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   created() {
     if ( this.showTime.length < 2 ) {
-      this.showTime = [new Date(`${years - 1}/1/1`), new Date(`${years}/12/31`)]
+      this.showTime = [new Date(`${years}/1/1`), new Date(`${years}/12/31`)]
     }
   }
 
@@ -185,7 +185,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
 
   formatTime() {
-    this.showTime = [new Date(`${years - 1}/1/1`), new Date(`${years}/12/31`)]
+    this.showTime = [new Date(`${years}/1/1`), new Date(`${years}/12/31`)]
   }
 
   dateChange(data: any) {
@@ -203,7 +203,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   reset() {
     this.resetQuery()
-    this.showTime = [new Date(`${years - 1}/1/1`), new Date(`${years}/12/31`)]
+    this.showTime = [new Date(`${years}/1/1`), new Date(`${years}/12/31`)]
   }
 
   async doSearch() {

@@ -58,7 +58,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     companyId: '',
     pageIndex: 1,
     pageSize: 20,
-    beginDate: new Date(`${years - 1}/1/1`).getTime(),
+    beginDate: new Date(`${years}/1/1`).getTime(),
     endDate: new Date(`${years + 1}/1/1`).getTime() - 1,
     statistics: true
   }
@@ -184,7 +184,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
 
   formatTime() {
-    this.showTime = [new Date(`${years - 1}/1/1`), new Date(`${years}/12/31`)]
+    this.showTime = [new Date(`${years}/1/1`), new Date(`${years}/12/31`)]
   }
   dateChange(data: any) {
      // 获取时间戳
@@ -198,7 +198,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   reset() {
     this.resetQuery()
-    this.showTime = [new Date(`${years - 1}/1/1`), new Date(`${years}/12/31`)]
+    this.showTime = [new Date(`${years}/1/1`), new Date(`${years}/12/31`)]
   }
 
   async doSearch() {
@@ -230,7 +230,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       this.list = list
       this.total = total
       this.totals = totals
-      this.totals.amount = totals.amount ? formatCurrency(totals.amount) : '0'
+      if (totals) {
+        this.totals.amount = totals.amount ? formatCurrency(totals.amount) : '0'
+      }
       this.typeList = typeList
       this.altogetherAmount = altogetherAmount ? formatCurrency(altogetherAmount) : '0'
     } catch (ex) {

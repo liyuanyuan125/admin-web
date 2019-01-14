@@ -63,7 +63,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     companyId: '',
     pageIndex: 1,
     pageSize: 20,
-    beginDate: new Date(`${years - 1}/1/1`).getTime(),
+    beginDate: new Date(`${years}/1/1`).getTime(),
     type: 0,
     endDate: new Date(`${years + 1}/1/1`).getTime() - 1,
     statistics: true
@@ -218,7 +218,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
 
   formatTime() {
-    this.showTime = [new Date(`${years - 1}/1/1`), new Date(`${years}/12/31`)]
+    this.showTime = [new Date(`${years}/1/1`), new Date(`${years}/12/31`)]
   }
   dateChange(data: any) {
      // 获取时间戳
@@ -232,7 +232,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   reset() {
     this.resetQuery()
-    this.showTime = [new Date(`${years - 1}/1/1`), new Date(`${years}/12/31`)]
+    this.showTime = [new Date(`${years}/1/1`), new Date(`${years}/12/31`)]
   }
 
   async doSearch() {
