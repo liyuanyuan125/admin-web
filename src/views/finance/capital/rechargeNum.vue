@@ -46,12 +46,11 @@ import {confirm , warning , success, toast } from '@/ui/modal'
 
 const years = new Date().getFullYear()
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
-const timeFormat = 'YYYY-MM-DD<br/>HH:mm:ss'
+const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
 const dataForm = {
   status: 1
 }
-
 
 @Component({
   components: {
