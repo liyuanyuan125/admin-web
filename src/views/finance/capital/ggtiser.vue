@@ -5,7 +5,7 @@
         <Form class="form flex-1" :label-width="0" @submit.prevent="search" inline>
           <LazyInput v-model="query.companyName" placeholder="公司名称" class="input input-id"/>
           <FormItem label='' >
-            <DatePicker @on-change="dateChange" @on-clear="formatTime" type="daterange" v-model="showTime" placement="bottom-end" placeholder="统计范围" class="input" style="width:200px"></DatePicker>
+            <DatePicker @on-change="dateChange" @on-clear="formatTime" type="daterange" v-model="showTime" placement="bottom-start" placeholder="统计范围" class="input" style="width:200px"></DatePicker>
           </FormItem>
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </Form>
