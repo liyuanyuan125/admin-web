@@ -20,7 +20,7 @@
           <Row>
             <Col span="8">
               <Select v-model="dataForm.companyACode">
-                <Option v-for="it in companyAList" :key="it.key" :value="it.key">{{it.text}}</Option>
+                <Option v-for="it in companyAList" v-if='it.controlStatus==1' :key="it.key" :value="it.key">{{it.text}}</Option>
               </Select>
             </Col>
           </Row>
@@ -48,8 +48,8 @@
         <FormItem label="公司名称" prop="companyBId">
           <Row>
             <Col span="8">
-              <Select   v-model="dataForm.companyBId">
-                <Option v-for="it in companys" v-if='it.status==1' :key="it.id" :value="it.id">{{it.name}}</Option>
+              <Select   v-model="dataForm.companyBId" filterable>
+                <Option v-for="it in companys" v-if='it.id==1' :key="it.id" :value="it.id">{{it.name}}</Option>
               </Select>
             </Col>
           </Row>
@@ -171,7 +171,7 @@
       </div>
         <div style='margin-top:20px;' class="edit-button">
           <Button type="info" size="large" @click="edit('dataForm')">确定</Button>
-          <!-- <Button type="info" size="large" @click="edit('dataForm')">确定</Button> -->
+          <Button type="default" size="large" @click="cancel('dataForm')">取消</Button>
         </div>
     </div>
 
@@ -195,7 +195,9 @@ import { toMap } from '@/fn/array'
 import { slice, clean } from '@/fn/object'
 import moment from 'moment'
 
-const timeFormat = 'YYYY-MM-DD'
+const timeFormat = 'YYYY/MM/DD'
+const timeFormats = 'YYYY/MM/DD HH:mm:ss'
+
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
 const defQuery = {
@@ -289,10 +291,12 @@ export default class Main extends ViewBase {
   get rules() {
     const rule: any = {
       contractName: [
-        { required: true, message: '请填写合同名称', trigger: 'blur' }
+        { required: true, message: '请填写合同名称', trigger: 'blur' },
+        { type: 'string', min: 1, max: 30, message: '字数限制在1-30之间', trigger: 'blur' }
       ],
       contractNo: [
-        { required: true, message: '请填写合同编号', trigger: 'blur' }
+        { required: true, message: '请填写合同编号', trigger: 'blur' },
+        { type: 'string', min: 1, max: 30, message: '字数限制在1-30之间', trigger: 'blur' }
       ],
       companyACode: [
         { required: true, message: '请选择甲方公司名称' }
@@ -316,13 +320,16 @@ export default class Main extends ViewBase {
         }
       ],
       accountBank: [
-        { required: true, message: '请填写开户银行', trigger: 'blur' }
+        { required: true, message: '请填写开户银行', trigger: 'blur' },
+        { type: 'string', min: 1, max: 30, message: '字数限制在1-30之间', trigger: 'blur' }
       ],
       accountName: [
-        { required: true, message: '请填写账户名', trigger: 'blur' }
+        { required: true, message: '请填写账户名', trigger: 'blur' },
+        { type: 'string', min: 1, max: 30, message: '字数限制在1-30之间', trigger: 'blur' }
       ],
       accountNumber: [
-        { required: true, message: '请填写账号', trigger: 'blur' }
+        { required: true, message: '请填写账号', trigger: 'blur' },
+        { type: 'string', min: 1, max: 20, message: '字数限制在1-20之间', trigger: 'blur' }
       ],
       settlementPeriod: [
         { required: true, message: '请选择结账周期', }
@@ -350,7 +357,7 @@ export default class Main extends ViewBase {
       render: (hh: any, { row: { uploadTime } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = moment(uploadTime).format(timeFormat)
+        const html = moment(uploadTime).format(timeFormats)
         return uploadTime == null ? <span class='datetime' v-html='-'></span> : <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
@@ -467,6 +474,7 @@ export default class Main extends ViewBase {
           companyAList: companyAList
       } } = await jiacompanysList(query)
       this.companyAList = companyAList
+      // console.log(this.companyAList)
       // 负责人
       const res = await directorList()
       this.businessDirector = res.data.items
@@ -547,12 +555,19 @@ export default class Main extends ViewBase {
     // this.$router.push({ name: 'contract-list'})
   }
 
+  cancel(dataForms: any) {
+    // (this.$refs.dataForm as any).resetFields()
+    this.dataForm = {}
+    return
+  }
+
   edit(dataForms: any) {
     const a = moment(this.dataForm.validityStartDate).format(timeFormat).split('-')
     const b = moment(this.dataForm.validityEndDate).format(timeFormat).split('-')
 
     this.dataForm.validityStartDate = Number(a[0] + a[1] + a[2])
     this.dataForm.validityEndDate = Number(b[0] + b[1] + b[2])
+    // console.log(this.dataForm.validityStartDate)
     this.dataForm.settlementPeriod = Number(this.dataForm.settlementPeriod)
 
     // console.log(this.dataForm.rule)
@@ -565,17 +580,21 @@ export default class Main extends ViewBase {
             const id = it.cinemas.map((item: any) => {
                 return item.id
             })
-            if (!it.proportion) {
-              return {
-                proportion : 20,
-                cinemas: id
-              }
-            } else {
-              return {
-                proportion : it.proportion,
-                cinemas: id
-              }
+            return {
+              proportion : it.proportion,
+              cinemas: id
             }
+            // if (!it.proportion) {
+            //   return {
+            //     proportion : 20,
+            //     cinemas: id
+            //   }
+            // } else {
+            //   return {
+            //     proportion : it.proportion,
+            //     cinemas: id
+            //   }
+            // }
         })
         const query =  this.id ? this.dataForm : {
           // id: Number(this.$route.params.id),

@@ -107,7 +107,7 @@
             </FormItem>
           </Form>
           <Button style='margin-left:20px;' type="primary"  @click="change('dataForm')">确定</Button>
-          <Button style='margin-left:20px;'>取消</Button>
+          <Button style='margin-left:20px;' @click="cancel('dataForm')">取消</Button>
         </div>
       </Row>
     </div>
@@ -204,7 +204,7 @@ export default class Main extends ViewBase {
       render: (hh: any, { row: { uploadTime } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = moment(uploadTime).format(timeFormat)
+        const html = moment(uploadTime).format(timeFormatDate)
         // console.log(html)
         return uploadTime == null ? <span class='datetime' v-html='-'></span> : <span class='datetime' v-html={html}></span>
         /* tslint:enable */
@@ -258,6 +258,13 @@ export default class Main extends ViewBase {
       this.handleError(ex)
     } finally {
     }
+  }
+
+  cancel(dataForms: string) {
+    this.dataForm.refuseReason = ''
+    this.dataForm.approveStatus = 2
+    // this.showDlg = false
+    // ; (this.$refs.dataForm as any).resetFields()
   }
 
   // 审核状态

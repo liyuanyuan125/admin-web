@@ -64,12 +64,12 @@
       <div class='xq-right'>
         <div class='xq-title'>变更后</div>
         <div><span>公司名称: </span><span>【{{list.modifyAfterName}}】</span></div>
-        <div class='Types'><span>公司类型: </span>
+        <div class='Types'><span>公司类型: 【</span>
           <div v-for="it in precom"  :key='it.typeCode'>
             <div v-for="ity in list.modifyAfterTypes" :key='ity.typeCode' v-if='ity.typeCode == it.typeCode'>
-              <span>【{{it.typeName}}】</span>
+              <span>&nbsp;&nbsp;{{it.typeName}}&nbsp;</span>
             </div>
-          </div>
+          </div>】
         </div>
         <div class='Types'><span>资质类型: </span>
           <div v-for="it in prequalification" v-if='list.modifyAfterQualificationType == it.key' :key='it.key'>
