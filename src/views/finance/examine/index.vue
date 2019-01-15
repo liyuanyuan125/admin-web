@@ -40,6 +40,14 @@ import { slice, clean } from '@/fn/object'
 import {confirm , warning , success, toast } from '@/ui/modal'
 
 const years = new Date().getFullYear()
+const months = new Date().getMonth() + 1
+const date = new Date()
+// const currentMonth=date.getMonth()
+// const nextMonth=months
+const nextMonthFirstDay = new Date(years, months, 1)
+const oneDay = 1000 * 60 * 60 * 24
+
+
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD'
@@ -56,8 +64,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     companyName: '',
     pageIndex: 1,
     pageSize: 20,
-    beginDate: 0,
-    endDate: 0
+    beginDate: new Date(`${years}/${months}/1`).getTime(),
+    endDate: nextMonthFirstDay.getTime() - oneDay
   }
   query: any = {}
   shows = true
@@ -167,16 +175,17 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
 
   created() {
-    // console.log(new Date(`${years}/12/31`))
+    // this.formatTime()
+
     if ( this.showTime.length < 2 ) {
-      this.showTime = [new Date(`${years}/1/1`) , new Date(`${years}/12/31`)]
+      this.showTime = [new Date(`${years}/${months}/1`) , new Date(nextMonthFirstDay.getTime() - oneDay)]
     }
-    // console.log(this.showTime)
   }
 
   mounted() {
-    this.updateQueryByParam()
 
+    this.updateQueryByParam()
+    // this.showTime = [new Date(`${years}/${months}/1`), new Date(nextMonthFirstDay.getTime() - oneDay)]
     // !!this.query.beginDate ? this.showTime[0] =
     // moment(this.query.beginDate).format(timeFormat) : this.showTime[0] = ''
     // !!this.query.endDate ? this.showTime[1] =
@@ -189,7 +198,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
 
   formatTime() {
-    this.showTime = [new Date(`${years}/1/1`), new Date(`${years}/12/31`)]
+    this.showTime = [new Date(`${years}/${months}/1`), new Date(nextMonthFirstDay.getTime() - oneDay)]
   }
 
   dateChange(data: any) {

@@ -38,57 +38,61 @@
     <div class='xq'>
       <div class='xq-left'>
         <div class='xq-title'>变更前</div>
-        <div><span class='blef'>公司名称</span><span>【{{list.modifyBeforeName}}】</span></div>
-        <div class='Types'><span class='blef'>公司类型 </span>
-          <div v-for="it in precom" :key='it.typeCode'>
-            <div v-for="ity in list.modifyBeforeTypes" :key='ity.typeCode' v-if='ity.typeCode == it.typeCode'>
-              <span>&nbsp;【{{it.typeName}}】&nbsp;</span>
+        <div class='bgs'>
+          <div><span class='blef'>公司名称</span><span>【{{list.modifyBeforeName}}】</span></div>
+          <div class='Types'><span class='blef'>公司类型 </span>
+            <div v-for="it in precom" :key='it.typeCode'>
+              <div v-for="ity in list.modifyBeforeTypes" :key='ity.typeCode' v-if='ity.typeCode == it.typeCode'>
+                <span>&nbsp;【{{it.typeName}}】&nbsp;</span>
+              </div>
             </div>
-         </div>
-        </div>
-        <div class='Types'><span class='blef'>资质类型</span>
-          <div v-for="it in prequalification" v-if='list.modifyBeforeQualificationType == it.key' :key='it.key'>
-            <!-- <div v-for="ity in list.modifyBeforeQualificationType" v-if='ity.key == it.typeCode'> -->
-              <span>【{{it.text}}】</span>
-            <!-- </div> -->
           </div>
-        </div>
-        <div><span class='blef'>资质编号</span><span>【{{list.modifyBeforeQualificationCode}}】</span></div>
-        <div class='img'>
-          <div class='blef'>资质图片</div>
-          <div class='imgs' v-for="it in preimages"  :key='it.key'>
-            <img :src=it.url alt="" @click="onView(it.url)" sizes="" srcset="">
-            <Modal v-model="viewerShow" title="查看图片" width="500" height='500'>
-              <img style='width: 100%;' :src=viewerImage alt="" sizes="" srcset="">
-            </Modal>
+          <div class='Types'><span class='blef'>资质类型</span>
+            <div v-for="it in prequalification" v-if='list.modifyBeforeQualificationType == it.key' :key='it.key'>
+              <!-- <div v-for="ity in list.modifyBeforeQualificationType" v-if='ity.key == it.typeCode'> -->
+                <span>【{{it.text}}】</span>
+              <!-- </div> -->
+            </div>
+          </div>
+          <div><span class='blef'>资质编号</span><span>【{{list.modifyBeforeQualificationCode}}】</span></div>
+          <div class='Types img'>
+            <div class='blef'>资质图片</div>
+            <div class='imgs' v-for="it in preimages"  :key='it.key'>
+              <img :src=it.url alt="" @click="onView(it.url)" sizes="" srcset="">
+              <Modal v-model="viewerShow" title="查看图片" width="500" height='500'>
+                <img style='width: 100%;' :src=viewerImage alt="" sizes="" srcset="">
+              </Modal>
+            </div>
           </div>
         </div>
       </div>
       <div class='xq-right'>
         <div class='xq-title'>变更后</div>
-        <div><span class='blef'>公司名称</span><span>【{{list.modifyAfterName}}】</span></div>
-        <div class='Types'><span class='blef'>公司类型</span>
-          <div v-for="it in precom"  :key='it.typeCode'>
-            <div v-for="ity in list.modifyAfterTypes" :key='ity.typeCode' v-if='ity.typeCode == it.typeCode'>
-              <span>&nbsp;【{{it.typeName}}】&nbsp;</span>
+        <div class='bgs'>
+          <div><span class='blef'>公司名称</span><span>【{{list.modifyAfterName}}】</span></div>
+          <div class='Types'><span class='blef'>公司类型</span>
+            <div v-for="it in precom"  :key='it.typeCode'>
+              <div v-for="ity in list.modifyAfterTypes" :key='ity.typeCode' v-if='ity.typeCode == it.typeCode'>
+                <span>&nbsp;【{{it.typeName}}】&nbsp;</span>
+              </div>
             </div>
           </div>
-        </div>
-        <div class='Types'><span class='blef'>资质类型</span>
-          <div v-for="it in prequalification" v-if='list.modifyAfterQualificationType == it.key' :key='it.key'>
-            <!-- <div v-for="ity in list.modifyBeforeQualificationType" v-if='ity.key == it.typeCode'> -->
-              <span>【{{it.text}}】</span>
-            <!-- </div> -->
+          <div class='Types'><span class='blef'>资质类型</span>
+            <div v-for="it in prequalification" v-if='list.modifyAfterQualificationType == it.key' :key='it.key'>
+              <!-- <div v-for="ity in list.modifyBeforeQualificationType" v-if='ity.key == it.typeCode'> -->
+                <span>【{{it.text}}】</span>
+              <!-- </div> -->
+            </div>
           </div>
-        </div>
-        <div><span class='blef'>资质编号</span><span>【{{list.modifyAfterQualificationCode}}】</span></div>
-        <div class='img'>
-          <div class='blef'>资质图片</div>
-          <div class='imgs' v-for="it in aftimages"  :key='it.key'>
-            <img :src=it.url alt="" sizes="" @click="onView(it.url)" srcset="">
-            <Modal v-model="viewerShow" title="查看图片" width="500" height='500'>
-              <img style='width: 100%;' :src=viewerImage alt="" sizes="" srcset="">
-            </Modal>
+          <div><span class='blef'>资质编号</span><span>【{{list.modifyAfterQualificationCode}}】</span></div>
+          <div class='img'>
+            <div class='blef'>资质图片</div>
+            <div class='imgs' v-for="it in aftimages"  :key='it.key'>
+              <img :src=it.url alt="" sizes="" @click="onView(it.url)" srcset="">
+              <Modal v-model="viewerShow" title="查看图片" width="500" height='500'>
+                <img style='width: 100%;' :src=viewerImage alt="" sizes="" srcset="">
+              </Modal>
+            </div>
           </div>
         </div>
       </div>
@@ -337,9 +341,11 @@ export default class Main extends ViewBase {
   height: 100%;
   padding-top: 7px;
   padding-bottom: 7px;
+  padding-left: 7px;
   font-size: 13px;
   background: #fff;
   border: 1px solid #dcdee2;
+  font-weight: bold;
 }
 .res-num {
   display: flex;
@@ -373,6 +379,7 @@ export default class Main extends ViewBase {
 .blef {
   display: inline-flex;
   width: 15%;
+  margin-left: 2%;
 }
 .blu1,
 .blu2 {
@@ -409,20 +416,29 @@ export default class Main extends ViewBase {
 .xq {
   padding: 5px;
   border: 1px solid #ccc;
+  padding-left: 12px;
   font-size: 13px;
 }
 .xq div {
   line-height: 43px;
 }
 .xq-left, .xq-right {
-  width: 50%;
+  width: 35%;
   display: inline-block;
+}
+.xq-right {
+  margin-left: 15%;
 }
 .xq-title {
   width: 100%;
+  font-weight: bold;
+  padding-left: 2%;
 }
 .Types div {
   display: inline-block;
+}
+.img {
+  height: 100px;
 }
 .img div {
   float: left;
@@ -452,6 +468,12 @@ export default class Main extends ViewBase {
 }
 .logs-item {
   line-height: 30px;
+}
+.bgs {
+  // border: 1px solid #ccc;
+  background: #f0f0f3;
+  margin-left: 1.5%;
+  margin-bottom: 3.5%;
 }
 .table {
   /deep/ .ivu-table-cell > span:only-child:empty {
