@@ -10,7 +10,7 @@ module.exports = {
     },
     proxy: {
       '/': {
-        target: 'http://mapi.dev.aiads.com',
+        target: 'http://mapi.aiads-dev.com',
         changeOrigin: true,
         ws: false,
         bypass(req) {
@@ -36,8 +36,8 @@ module.exports = {
     ; [
       {
         env: 'dev',
-        baseUrl: isDev ? '/' : '//admin.dev.aiads.com',
-        ajaxBaseUrl: isDev ? '/' : '//mapi.dev.aiads.com',
+        baseUrl: isDev ? '/' : '//admin.aiads-dev.com',
+        ajaxBaseUrl: isDev ? '/' : '//mapi.aiads-dev.com',
       },
       {
         env: 'qas',
