@@ -177,7 +177,6 @@ export default class UploadButton extends ViewBase {
   }
 
   onUploadEnd(uqid: string) {
-    const item = this.list.find(it => it.uqid === uqid)!
     this.checkComplete()
   }
 
