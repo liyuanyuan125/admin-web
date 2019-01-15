@@ -183,7 +183,7 @@ export default class Main extends ViewBase {
           { required: true, message: '请选择汇款日期' }
       ],
       receipt: [
-          // { required: true, message: '请选择凭证' }
+          { required: true, message: '请选择凭证' }
       ],
       tagCode: [
           { required: true, message: '请选择充值标签'}

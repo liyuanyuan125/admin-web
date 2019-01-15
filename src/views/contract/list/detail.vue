@@ -15,7 +15,7 @@
           <Col span="2"><div>合同名称</div></Col>
           <Col span="8"><span>{{detail.contractName}}</span></Col>
           <Col span="2"><div>甲方公司</div></Col>
-          <Col span="8" v-for='it in detail.companyAList' :key='it.key' v-if='it.key == detail.companyACode' ><span v-if='it.controlStatus==2' style='color:red'>{{it.text}}</span><span v-if='it.controlStatus==1'>{{it.text}}</span></Col>
+          <Col span="8" v-for='it in detail.companyAList' :key='it.key' v-if='it.key == detail.companyACode' ><Tooltip content="已停用" placement="top"><span v-if='it.controlStatus==2' style='color:red'>{{it.text}}</span></Tooltip><span v-if='it.controlStatus==1'>{{it.text}}</span></Col>
         </Row>
         <Row>
           <Col span="2"><div>合同编号</div></Col>
@@ -87,7 +87,8 @@
         <Row>
           <div v-for="(item, i) in logList" :key="i">
             <span>{{item.createTime}}</span>
-            <span>由{{item.email}}<b style="margin: 0 5px">[{{item.userName}}]</b>{{item.description}}</span>
+            <!-- <span>由{{item.email}}<b style="margin: 0 5px">[{{item.userName}}]</b>{{item.description}}</span> -->
+            <span>由{{item.email}}<b style="margin: 0 5px">{{item.description}}</b></span>
           </div>
         </Row>
       </Row>

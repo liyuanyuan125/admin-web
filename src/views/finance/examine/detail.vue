@@ -57,7 +57,7 @@
           <Col span="2">凭证:</Col>
           <Col span="4" class='res-num-item imgs'>
             <img :src=imageList.url alt="" @click="onView(imageList.url)" sizes="" srcset="">
-            <Modal v-model="viewerShow" title="查看图片" width="888">
+            <Modal v-model="viewerShow" title="查看图片" width="500">
               <img style='width: 100%;' :src=viewerImage alt="" sizes="" srcset="">
             </Modal>
           </Col>
