@@ -479,20 +479,8 @@ export default class Main extends ViewBase {
       // 公司列表
       const { data: {
         items: companys,
-      } } = await companysList({typeCode : 'resource' , status : 1})
+      } } = await companysList({typeCode : 'resource' , status : 1 , pageSize: 1000000})
       this.companys = companys
-      // this.companys = companys.map((item: any) => {
-      //   // console.log(item.status)
-      //   if (item.status == 1) {
-      //     return {
-      //       ...item,
-      //       // item : item.types.map((item: any) => {
-      //       //     return item.id
-      //       // })
-      //       // createTime: moment(item.createTime).format(timeFormat)
-      //     }
-      //   }
-      // })
       // console.log(this.companys)
       // 甲方公司
       const { data : {
