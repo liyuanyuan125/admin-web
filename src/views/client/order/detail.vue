@@ -115,7 +115,7 @@
           </FormItem>
           </Form>
           <Button style='margin-left:20px;' type="primary"  @click="change('dataForm')">确定</Button>
-          <Button style='margin-left:20px;'>取消</Button>
+          <Button style='margin-left:20px;' @click="goback">取消</Button>
         </div>
         
       </div>
