@@ -50,7 +50,7 @@
             <Col span="8">
             <!-- v-if='it.types[0].typeCode=="resource"' -->
               <Select   v-model="dataForm.companyBId" filterable>
-                <Option v-for="it in companys" v-if='it.status==1' :key="it.id" :value="it.id">{{it.name}}</Option>
+                <Option v-for="it in companys" :key="it.id" :value="it.id">{{it.name}}</Option>
               </Select>
             </Col>
           </Row>
@@ -479,7 +479,7 @@ export default class Main extends ViewBase {
       // 公司列表
       const { data: {
         items: companys,
-      } } = await companysList({typeCode : 'resource'})
+      } } = await companysList({typeCode : 'resource' , status : 1})
       this.companys = companys
       // this.companys = companys.map((item: any) => {
       //   // console.log(item.status)
