@@ -7,7 +7,13 @@
     >
     <p class="cinema-header">注：因资源方类型为影院，因此仅能关联一家影院</p>
     <Row class="shouDlg-header">
+      <Col span="7">
+        <CinemaChainSelect v-model="chainId"/>
+      </Col>
       <Col span="7" offset="1">
+        <AreaSelect v-model="area"/>
+      </Col>
+      <Col span="5" offset="1">
          <Input v-model="value" placeholder="请输入影院名称" />
       </Col>
       <Button style="float:right" type="primary" @click="seach">搜索</Button>
@@ -22,7 +28,7 @@
             </Spin>
           </Col>
         </Row>
-        <Form ref="radioCinema" :model="form">
+        <Form class="table" ref="radioCinema" :model="form">
           <FormItem>
             <div style="margin-left:34px" v-if="items.length>0">
               <Checkbox
@@ -126,13 +132,15 @@ export default class Main extends ViewBase {
     }
     this.dataLoading = true
     const query: any = {
+      chainId: this.chainId,
       name: this.value,
+      ...this.query,
       pageSize: this.pageSize,
       pageIndex: this.pageIndex
     }
     try {
-      const res = await cinemaId(this.id, query)
-      this.items = res.data.items
+      const res = await cinemaId(this.id, clean(query))
+      this.items = res.data.items || []
       this.totalPage = res.data.totalCount
       setTimeout(() => {
         this.dataLoading = false
@@ -310,6 +318,9 @@ export default class Main extends ViewBase {
   height: 260px;
   max-height: 260px;
   overflow-y: auto;
+  .table {
+    min-height: 200px;
+  }
   /deep/ .check {
     width: 48%;
     padding-left: 5%;
