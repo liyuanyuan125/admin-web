@@ -7,20 +7,14 @@
     >
     <p class="cinema-header">注：因资源方类型为影院，因此仅能关联一家影院</p>
     <Row class="shouDlg-header">
-      <Col span="7">
-        <CinemaChainSelect v-model="chainId"/>
-      </Col>
       <Col span="7" offset="1">
-        <AreaSelect v-model="area"/>
-      </Col>
-      <Col span="5" offset="1">
          <Input v-model="value" placeholder="请输入影院名称" />
       </Col>
       <Button style="float:right" type="primary" @click="seach">搜索</Button>
     </Row>
     <div class="cinema-box">
       <div>
-        <Row v-if="dataLoading">
+        <Row v-if="dataLoading && id">
           <Col class="demo-spin-col" span="22">
             <Spin fix>
               <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
@@ -39,10 +33,7 @@
             <CheckboxGroup v-model="form.check" ref="checks" @on-change="checkAllGroupChange">
               <div v-if="items.length>0">
                 <div v-for="(item) in items" :key="item.id" class="check">
-                  <tooltip content="已下架" v-if="item.controlStatus != 1" placement="right">
-                    <Checkbox :label="item.id" style="color: red">{{item.shortName}}</Checkbox>
-                  </tooltip>
-                  <Checkbox v-else :label="item.id">{{item.shortName}}</Checkbox>
+                  <Checkbox :label="item.id">{{item.shortName}}</Checkbox>
                 </div>
                 <div v-if="(items.length%4) == 3" class="check">&nbsp;</div>
               </div>
@@ -74,7 +65,7 @@ import ViewBase from '@/util/ViewBase'
 import AreaSelect from '@/components/AreaSelect.vue'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import { slice, clean } from '@/fn/object'
-import { queryList } from '@/api/cinema'
+import { cinemaId } from '@/api/list'
 import { isEqual } from 'lodash'
 
 @Component({
@@ -86,6 +77,7 @@ import { isEqual } from 'lodash'
 export default class Main extends ViewBase {
   @Prop({ type: Array, default: () => [] }) addData!: any[]
   @Prop() cinemaend: any
+  @Prop() id: any
   form: any = {
     check: []
   }
@@ -129,16 +121,17 @@ export default class Main extends ViewBase {
   }
 
   async seach() {
+    if (!this.id) {
+      return
+    }
     this.dataLoading = true
     const query: any = {
-      chainId: this.chainId,
       name: this.value,
-      ...this.query,
       pageSize: this.pageSize,
       pageIndex: this.pageIndex
     }
     try {
-      const res = await queryList(clean({...query}))
+      const res = await cinemaId(this.id, query)
       this.items = res.data.items
       this.totalPage = res.data.totalCount
       setTimeout(() => {

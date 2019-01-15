@@ -48,7 +48,8 @@ export async function setlist(id: any , query: any) {
   return data
 }
 
-
-
-
-
+// 编辑合同
+export async function cinemaId(companyId: any, query: any) {
+  const data = await get(`/customer/contracts/${companyId}/cinemas`, query)
+  return data
+}

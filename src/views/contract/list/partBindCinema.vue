@@ -4,7 +4,7 @@
     <div class="act-bar">
       <a @click="onAdd" v-if="!type">添加关联影院</a>
     </div>
-    <AddCinemaModel ref="addCinemaModel" :cinemaend = "incinematype" :addData="inValue" @done="columndata"  v-if="!type" />
+    <AddCinemaModel ref="addCinemaModel" :id="id" :cinemaend = "incinematype" :addData="inValue" @done="columndata"  v-if="!type" />
   </div>
 </template>
 
@@ -31,7 +31,7 @@ export default class ComponentMain extends ViewBase {
 
   // 判断新增和添加
   @Prop() type: any
-
+  @Prop() id: any
   /**
    * 分润单位列表
    */
