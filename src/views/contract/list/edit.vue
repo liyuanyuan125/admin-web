@@ -479,7 +479,7 @@ export default class Main extends ViewBase {
       // 公司列表
       const { data: {
         items: companys,
-      } } = await companysList({typeCode : 'resource' , status : 1 , pageSize: 1000000})
+      } } = await companysList({typeCode : 'resource' , status : 1 , pageSize: 100000})
       this.companys = companys
       // console.log(this.companys)
       // 甲方公司
@@ -505,7 +505,7 @@ export default class Main extends ViewBase {
         // }
         const { data: {
           items: companys,
-        } } = await companysList(query)
+        } } = await companysList({typeCode : 'resource' , status : 1 , pageSize: 100000})
         this.companys = companys
         // 甲方公司
         const { data : {
