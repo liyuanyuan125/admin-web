@@ -47,10 +47,19 @@
             <span class='item1'>{{list.contactPhone}}</span>
           </Col>
         </Row>
-        <Row class="res-num">
+        <!-- <Row class="res-num">
           <Col span="2">凭证:</Col>
           <Col span="4" class='res-num-item imgs'>
             <img :src=imageList.url alt="" sizes="" srcset="">
+          </Col>
+        </Row> -->
+        <Row class="res-num">
+          <Col span="2">凭证:</Col>
+          <Col span="4" class='res-num-item imgs'>
+            <img :src=imageList.url alt="" @click="onView(imageList.url)" sizes="" srcset="">
+            <Modal v-model="viewerShow" title="查看图片" width="888">
+              <img style='width: 100%;' :src=viewerImage alt="" sizes="" srcset="">
+            </Modal>
           </Col>
         </Row>
         <Row class="res-num">
@@ -180,6 +189,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   id = 0
   showStatus: boolean = true
 
+  // 查看图片
+  viewerShow = false
+  viewerImage = ''
+
+
 
 
   dataForm: any = { ...dataForm }
@@ -275,6 +289,15 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       this.loading = false
     }
   }
+
+  // 查看图片
+  onView(url: string) {
+    // console.log(url)
+    this.viewerImage = url
+    this.viewerShow = true
+  }
+
+
   @Watch('query', { deep: true })
   onQueryChange() {
     if (this.query.pageIndex == this.oldQuery.pageIndex) {

@@ -57,7 +57,10 @@
         <div class='img'>
           <div>资质图片: </div>
           <div class='imgs' v-for="it in preimages"  :key='it.key'>
-            <img :src=it.url alt="" sizes="" srcset="">
+            <img :src=it.url alt="" @click="onView(it.url)" sizes="" srcset="">
+            <Modal v-model="viewerShow" title="查看图片" width="888">
+              <img style='width: 100%;' :src=viewerImage alt="" sizes="" srcset="">
+            </Modal>
           </div>
         </div>
       </div>
@@ -82,7 +85,10 @@
         <div class='img'>
           <div>资质图片: </div>
           <div class='imgs' v-for="it in aftimages"  :key='it.key'>
-            <img :src=it.url alt="" sizes="" srcset="">
+            <img :src=it.url alt="" sizes="" @click="onView(it.url)" srcset="">
+            <Modal v-model="viewerShow" title="查看图片" width="888">
+              <img style='width: 100%;' :src=viewerImage alt="" sizes="" srcset="">
+            </Modal>
           </div>
         </div>
       </div>
@@ -198,6 +204,10 @@ export default class Main extends ViewBase {
   id = 0
   showStatus: boolean = true
 
+  // 查看图片
+  viewerShow = false
+  viewerImage = ''
+
   dataForm: any = { ...dataForm }
 
   mounted() {
@@ -284,6 +294,14 @@ export default class Main extends ViewBase {
       this.loading = false
     }
   }
+
+  // 查看图片
+  onView(url: string) {
+    // console.log(url)
+    this.viewerImage = url
+    this.viewerShow = true
+  }
+
   @Watch('query', { deep: true })
   onQueryChange() {
     if (this.query.pageIndex == this.oldQuery.pageIndex) {
@@ -349,7 +367,7 @@ export default class Main extends ViewBase {
   margin-left: 5%;
 }
 .item1 {
-  width: 12%;
+  width: 13%;
 }
 .blu1,
 .blu2 {
