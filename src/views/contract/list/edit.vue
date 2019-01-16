@@ -534,7 +534,6 @@ export default class Main extends ViewBase {
         this.dataForm.accountNumber = this.detail.accountNumber
         this.dataForm.settlementPeriod = this.detail.settlementPeriod
         // this.dataForm.rule = this.detail.ruleList
-        // debugger
         this.dataForm.rule =  (this.detail.ruleList || []).map((item: any) => {
         return {
           proportion: item.proportion,
@@ -591,9 +590,7 @@ export default class Main extends ViewBase {
     const myThis: any = this
     myThis.$refs[dataForms].validate(async ( valid: any ) => {
       if (valid) {
-        // debugger
         const rule = this.dataForm.rule.map((it: any) => {
-          // debugger
             const id = it.cinemas.map((item: any) => {
                 return item.id
             })
