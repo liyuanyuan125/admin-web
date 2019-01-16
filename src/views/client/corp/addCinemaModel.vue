@@ -8,7 +8,13 @@
     <p class="cinema-header">注：因资源方类型为影院，因此仅能关联一家影院</p>
     <Row class="shouDlg-header">
       <Col span="7">
-        <CinemaChainSelect v-model="chainId"/>
+        <Select v-model="chainId" placeholder="请输入院线名称" filterable
+          clearable class="component" ref="ui">
+          <Option v-if="!!it.chainName" v-for="it in options" :key="it.id" :value="it.chainId"
+            :label="it.chainName" class="flex-box">
+            <span class="flex-1">{{it.chainName}}</span>
+          </Option>
+        </Select>
       </Col>
       <Col span="7" offset="1">
         <AreaSelect v-model="area"/>
@@ -28,7 +34,7 @@
             </Spin>
           </Col>
         </Row>
-        <Form ref="radioCinema" :model="form">
+        <Form class="table" ref="radioCinema" :model="form">
           <FormItem>
             <div style="margin-left:34px" v-if="items.length>0">
               <Checkbox
@@ -93,6 +99,7 @@ export default class Main extends ViewBase {
   showDlg: any = false
   loading = true
   value = ''
+  options: any = []
   area: number[] = []
   chainId: number = 0
   cinemaList: any = []
@@ -122,10 +129,23 @@ export default class Main extends ViewBase {
     }
     this.showDlg = true
     this.seach()
+    this.authIdList()
   }
 
   created() {
     this.seach()
+  }
+
+  async authIdList() {
+    try {
+      const { data } = await queryList({
+        pageSize: 888888
+      })
+      const list: any[] = data.items || []
+      this.options = list
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
 
   async seach() {
@@ -317,6 +337,9 @@ export default class Main extends ViewBase {
   height: 260px;
   max-height: 260px;
   overflow-y: auto;
+  .table {
+    min-height: 200px;
+  }
   /deep/ .check {
     width: 48%;
     padding-left: 5%;
