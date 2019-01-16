@@ -170,8 +170,10 @@ export default class Main extends ViewBase {
       }, 100)
     } catch (ex) {
       (this.$Spin as any).hide()
-      this.handleError(ex)
+      this.$route.params.show = 'hide'
+      this.handleError(ex.data.html.msg)
     } finally {
+      this.$router.push({ name: 'resource' })
     }
   }
 

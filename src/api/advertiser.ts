@@ -2,7 +2,7 @@ import { get , post , put } from '@/fn/ajax'
 
 // 分页获取充值消费统计列表（广告主）
 export async function advqueryList(query: any) {
-  const data = await get('/finance/advertiser/statistics', query)
+  const data = await get('/finance/xadvertiser/statistics', query)
   return data
 }
 
