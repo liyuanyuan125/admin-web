@@ -10,7 +10,7 @@
       <Col span="7">
       <Select v-model="chainId" placeholder="请输入院线名称" filterable
         clearable class="component" ref="ui">
-        <Option v-for="it in options" :key="it.chainId" :value="it.chainId"
+        <Option v-for="it in options" :key="it.id" :value="it.chainId"
           :label="it.chainName" class="flex-box">
           <span class="flex-1">{{it.chainName}}</span>
         </Option>
@@ -43,7 +43,7 @@
                   @click.prevent.native="handleCheckAll">全选</Checkbox>
             </div>
             <CheckboxGroup v-model="form.check" ref="checks" @on-change="checkAllGroupChange">
-              <div v-if="items.length>0">
+              <div v-if="items.length>0" v-show="items.length>0">
                 <div v-for="(item) in items" :key="item.id" class="check">
                   <Checkbox :label="item.id">{{item.shortName}}</Checkbox>
                 </div>
