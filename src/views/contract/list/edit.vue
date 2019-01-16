@@ -506,7 +506,7 @@ export default class Main extends ViewBase {
         // }
         const { data: {
           items: companys,
-        } } = await companysList(query)
+        } } = await companysList({typeCode : 'resource' , status : 1 , pageSize: 1000000})
         this.companys = companys
         // 甲方公司
         const { data : {
