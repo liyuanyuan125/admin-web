@@ -8,7 +8,16 @@
     <p class="cinema-header">注：因资源方类型为影院，因此仅能关联一家影院</p>
     <Row class="shouDlg-header">
       <Col span="7">
-        <CinemaChainSelect v-model="chainId"/>
+        <Select
+          v-model="chainId"
+          filterable
+          remote
+          clearable
+          placeholder="请输入院线名称"
+          :remote-method="authIdList"
+          :loading="loading">
+          <Option v-for="(option, index) in options" :value="option.value" :key="index">{{option.label}}</Option>
+      </Select>
       </Col>
       <Col span="7" offset="1">
         <AreaSelect v-model="area"/>
@@ -73,6 +82,7 @@ import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import { slice, clean } from '@/fn/object'
 import { cinemaId } from '@/api/list'
 import { isEqual } from 'lodash'
+import { queryList } from '@/api/cinemaChain'
 
 @Component({
   components: {
@@ -87,6 +97,8 @@ export default class Main extends ViewBase {
   form: any = {
     check: []
   }
+  queryText = ''
+  options: any = []
   dataLoading: boolean = true
   showDlg: any = false
   loading = true
@@ -124,6 +136,37 @@ export default class Main extends ViewBase {
 
   created() {
     this.seach()
+  }
+
+  async authIdList(query: any) {
+    if (query !== '') {
+      this.loading = true
+      try {
+        const {
+          data: {
+            items
+          }
+        } = await queryList({
+          pageSize: 888888
+        })
+        const datas = items
+        const name: any = []
+        datas.forEach((it: any) => {
+          if (it.shortName.includes(query)) {
+            name.push({
+              value: it.id,
+              label: it.shortName
+            })
+          }
+        })
+        this.options = [...name]
+        this.loading = false
+      } catch (ex) {
+        this.options = []
+      }
+    } else {
+      this.options = []
+    }
   }
 
   async seach() {
