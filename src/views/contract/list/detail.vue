@@ -5,7 +5,7 @@
       <div class="flex-1">
         <em></em>
       </div>
-      <Button  v-if='showStatus' type="success" icon="md-add-circle" class="btn-new"
+      <Button  v-if='showedit' type="success" icon="md-add-circle" class="btn-new"
         @click="goSet()">编辑合同</Button>
     </header>
     <div class="detail-box">
@@ -92,7 +92,7 @@
           </div>
         </Row>
       </Row>
-      <!-- <Row>
+      <Row v-if='showStatus'>
         <div class='titop'>审批信息</div>
         <div>
           <Form ref="dataForm" :model="dataForm"  label-position="left" :rules="ruleValidate" :label-width="100">
@@ -108,7 +108,7 @@
           <Button style='margin-left:20px;' type="primary"  @click="change('dataForm')">确定</Button>
           <Button style='margin-left:20px;' @click="goback()">取消</Button>
         </div>
-      </Row> -->
+      </Row>
     </div>
   </div>
 </template>
@@ -157,6 +157,8 @@ export default class Main extends ViewBase {
   attachments: any = []
   showimg = true
   showStatus: any = false
+  showedit: any = false
+
   id = 0
 
   validityStartDate: any = ''
@@ -177,6 +179,11 @@ export default class Main extends ViewBase {
   mounted() {
     if ( this.$route.params.approveStatus == '1' ) {
       this.showStatus = true
+      this.showedit = true
+    }
+    if ( this.$route.params.edi == '1' ) {
+      // this.showStatus = true
+      this.showedit = true
     }
     this.doSearch()
   }
