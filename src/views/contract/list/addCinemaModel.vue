@@ -139,6 +139,9 @@ export default class Main extends ViewBase {
   }
 
   async authIdList(query: any) {
+    if (!this.id) {
+      return
+    }
     if (query !== '') {
       this.loading = true
       try {
@@ -146,10 +149,10 @@ export default class Main extends ViewBase {
           data: {
             items
           }
-        } = await queryList({
+        } = await cinemaId(this.id, {
           pageSize: 888888
         })
-        const datas = items
+        const datas = items || []
         const name: any = []
         datas.forEach((it: any) => {
           if (it.shortName.includes(query)) {
