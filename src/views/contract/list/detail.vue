@@ -5,7 +5,7 @@
       <div class="flex-1">
         <em></em>
       </div>
-      <Button type="success" icon="md-add-circle" class="btn-new"
+      <Button  v-if='showStatus' type="success" icon="md-add-circle" class="btn-new"
         @click="goSet()">编辑合同</Button>
     </header>
     <div class="detail-box">
@@ -21,7 +21,7 @@
           <Col span="2"><div>合同编号</div></Col>
           <Col span="8"><span>{{detail.contractNo}}</span></Col>
           <Col span="2"><div>合同有效期</div></Col>
-          <Col span="8"><span>{{detail.validityStartDate}}~{{detail.validityEndDate}}</span></Col>
+          <Col span="8"><span>{{validityStartDate}}~{{validityEndDate}}</span></Col>
         </Row>
       </div>
       <div class='titop'>乙方信息</div>
@@ -92,14 +92,12 @@
           </div>
         </Row>
       </Row>
-      <Row v-if='showStatus'>
+      <!-- <Row>
         <div class='titop'>审批信息</div>
         <div>
           <Form ref="dataForm" :model="dataForm"  label-position="left" :rules="ruleValidate" :label-width="100">
             <FormItem label="审核意见" prop="status">
               <RadioGroup v-model='dataForm.approveStatus'>
-                <!-- <Radio label="启用"></Radio>
-                <Radio label="停用"></Radio> -->
                 <Radio v-for="it in approveStatusList" v-if="it.key==2||it.key==3" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
               </RadioGroup>
             </FormItem>
@@ -110,7 +108,7 @@
           <Button style='margin-left:20px;' type="primary"  @click="change('dataForm')">确定</Button>
           <Button style='margin-left:20px;' @click="goback()">取消</Button>
         </div>
-      </Row>
+      </Row> -->
     </div>
   </div>
 </template>
@@ -160,6 +158,10 @@ export default class Main extends ViewBase {
   showimg = true
   showStatus: any = false
   id = 0
+
+  validityStartDate: any = ''
+  validityEndDate: any = ''
+
   // 审核
   dataForm: any = { ...dataForm }
 
@@ -238,6 +240,10 @@ export default class Main extends ViewBase {
       this.detail = res.data
       this.detail.cinemaList = res.data.ruleList || []
       this.approveStatusList = res.data.approveStatusList
+      this.validityStartDate = String(this.detail.validityStartDate).slice(0, 4) + '-' +
+      String(this.detail.validityStartDate).slice(4, 6) + '-' + String(this.detail.validityStartDate).slice(6, 8)
+      this.validityEndDate = String(this.detail.validityEndDate).slice(0, 4) + '-' +
+      String(this.detail.validityEndDate).slice(4, 6) + '-' + String(this.detail.validityEndDate).slice(6, 8)
       // 附件
       this.attachments = res.data.attachmentList
       const logList = res.data.logList.map((item: any) => {

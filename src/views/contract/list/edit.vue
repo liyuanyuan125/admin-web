@@ -455,6 +455,7 @@ export default class Main extends ViewBase {
 
   // 上传文件
   onUploadSuccess({ files }: SuccessEvent) {
+    // console.log(files[0].clientName)
     this.dataForm.attachments.push({
       name: files[0].clientName,
       fileId: files[0].fileId
@@ -479,7 +480,7 @@ export default class Main extends ViewBase {
       // 公司列表
       const { data: {
         items: companys,
-      } } = await companysList({typeCode : 'resource' , status : 1 , pageSize: 100000})
+      } } = await companysList({typeCode : 'resource' , status : 1 , pageSize: 1000000})
       this.companys = companys
       // console.log(this.companys)
       // 甲方公司
@@ -505,7 +506,7 @@ export default class Main extends ViewBase {
         // }
         const { data: {
           items: companys,
-        } } = await companysList({typeCode : 'resource' , status : 1 , pageSize: 100000})
+        } } = await companysList(query)
         this.companys = companys
         // 甲方公司
         const { data : {
@@ -533,13 +534,14 @@ export default class Main extends ViewBase {
         this.dataForm.accountNumber = this.detail.accountNumber
         this.dataForm.settlementPeriod = this.detail.settlementPeriod
         // this.dataForm.rule = this.detail.ruleList
-        this.dataForm.rule =  this.detail.ruleList.map((item: any) => {
+        // debugger
+        this.dataForm.rule =  (this.detail.ruleList || []).map((item: any) => {
         return {
           proportion: item.proportion,
           cinemas: item.cinemaList
         }
       })
-        this.dataForm.attachments = this.detail.attachmentList
+        this.dataForm.attachments = this.detail.attachmentList || []
         this.dataForm.signingUser = this.detail.signingUser
         this.dataForm.followUser = this.detail.followUser
         this.dataForm.remark = this.detail.remark
@@ -575,8 +577,11 @@ export default class Main extends ViewBase {
     const a = moment(this.dataForm.validityStartDate).format(timeFormat).split('/')
     const b = moment(this.dataForm.validityEndDate).format(timeFormat).split('/')
 
-    this.dataForm.validityStartDate = Number(a[0] + a[1] + a[2])
-    this.dataForm.validityEndDate = Number(b[0] + b[1] + b[2])
+    // this.dataForm.validityStartDate = Number(a[0] + a[1] + a[2])
+    // this.dataForm.validityEndDate = Number(b[0] + b[1] + b[2])
+
+    const validityStartDate = Number(a[0] + a[1] + a[2])
+    const validityEndDate = Number(b[0] + b[1] + b[2])
     // console.log(this.dataForm.validityStartDate)
     this.dataForm.settlementPeriod = Number(this.dataForm.settlementPeriod)
 
@@ -586,7 +591,9 @@ export default class Main extends ViewBase {
     const myThis: any = this
     myThis.$refs[dataForms].validate(async ( valid: any ) => {
       if (valid) {
+        // debugger
         const rule = this.dataForm.rule.map((it: any) => {
+          // debugger
             const id = it.cinemas.map((item: any) => {
                 return item.id
             })
@@ -606,10 +613,18 @@ export default class Main extends ViewBase {
             //   }
             // }
         })
-        const query =  this.id ? this.dataForm : {
+        const query =  this.id ? {
           // id: Number(this.$route.params.id),
           ...this.dataForm,
-          rule: this.dataForm.rule.length > 0 ? rule : []
+          rule: this.dataForm.rule.length > 0 ? rule : [],
+          validityStartDate,
+          validityEndDate
+        } : {
+          // id: Number(this.$route.params.id),
+          ...this.dataForm,
+          rule: this.dataForm.rule.length > 0 ? rule : [],
+          validityStartDate,
+          validityEndDate
         }
         try {
           if (this.$route.params.id == undefined || this.$route.params.copy) {

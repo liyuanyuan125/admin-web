@@ -186,23 +186,23 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           <router-link to={{ name: 'contract-list-detail', params: { id , approveStatus } }}>审批</router-link>&nbsp;&nbsp;
           <router-link to={{ name: 'contract-list-edit', params: { id } }}>编辑</router-link>&nbsp;&nbsp;
           <router-link to={{ name: 'contract-list-edit', params: { id ,copy : -1 } }}>复制</router-link>&nbsp;&nbsp;
-          <router-link to={{ name: 'contract-list-detail', params: { id } }}>详情</router-link>
+          <router-link to={{ name: 'contract-list-detail', params: { id , approveStatus  } }}>详情</router-link>
         </div>
         } else if (approveStatus == 2) {
           return <div class='row-acts'>
           <a on-click={this.zuofei.bind(this, row.id, row)}>作废</a>&nbsp;&nbsp;
           <router-link to={{ name: 'contract-list-edit', params: { id ,copy : -1} }}>复制</router-link>&nbsp;&nbsp;
-          <router-link to={{ name: 'contract-list-detail', params: { id } }}>详情</router-link>
+          <router-link to={{ name: 'contract-list-detail', params: { id , approveStatus  } }}>详情</router-link>
         </div>
         } else if (approveStatus == 3) {
           return <div class='row-acts'>
           <router-link to={{ name: 'contract-list-edit', params: { id,copy : -1 } }}>复制</router-link>&nbsp;&nbsp;
-          <router-link to={{ name: 'contract-list-detail', params: { id } }}>详情</router-link>
+          <router-link to={{ name: 'contract-list-detail', params: { id , approveStatus  } }}>详情</router-link>
         </div>
         } else if (approveStatus == 4) {
           return <div class='row-acts'>
           <router-link to={{ name: 'contract-list-edit', params: { id ,copy : -1} }}>复制</router-link>&nbsp;&nbsp;
-          <router-link to={{ name: 'contract-list-detail', params: { id } }}>详情</router-link>
+          <router-link to={{ name: 'contract-list-detail', params: { id , approveStatus  } }}>详情</router-link>
         </div>
         }
         /* tslint:enable */
