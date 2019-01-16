@@ -8,15 +8,12 @@
     <p class="cinema-header">注：因资源方类型为影院，因此仅能关联一家影院</p>
     <Row class="shouDlg-header">
       <Col span="7">
-        <Select
-          v-model="chainId"
-          filterable
-          remote
-          clearable
-          placeholder="请输入院线名称"
-          :remote-method="authIdList"
-          :loading="loading">
-          <Option v-for="(option, index) in options" :value="option.value" :key="index">{{option.label}}</Option>
+      <Select v-model="chainId" placeholder="请输入院线名称" filterable
+        clearable class="component" ref="ui">
+        <Option v-for="it in options" :key="it.chainId" :value="it.chainId"
+          :label="it.chainName" class="flex-box">
+          <span class="flex-1">{{it.chainName}}</span>
+        </Option>
       </Select>
       </Col>
       <Col span="7" offset="1">
@@ -132,43 +129,26 @@ export default class Main extends ViewBase {
     }
     this.showDlg = true
     this.seach()
+    this.authIdList()
   }
 
   created() {
     this.seach()
+    this.authIdList()
   }
 
-  async authIdList(query: any) {
+  async authIdList() {
     if (!this.id) {
       return
     }
-    if (query !== '') {
-      this.loading = true
-      try {
-        const {
-          data: {
-            items
-          }
-        } = await cinemaId(this.id, {
-          pageSize: 888888
-        })
-        const datas = items || []
-        const name: any = []
-        datas.forEach((it: any) => {
-          if (it.shortName.includes(query)) {
-            name.push({
-              value: it.id,
-              label: it.shortName
-            })
-          }
-        })
-        this.options = [...name]
-        this.loading = false
-      } catch (ex) {
-        this.options = []
-      }
-    } else {
-      this.options = []
+    try {
+      const { data } = await cinemaId(this.id, {
+        pageSize: 888888
+      })
+      const list: any[] = data.items || []
+      this.options = list
+    } catch (ex) {
+      this.handleError(ex)
     }
   }
 
@@ -337,12 +317,11 @@ export default class Main extends ViewBase {
   }
 
   cancel(dataForms: string) {
+    this.pageIndex = 1
     this.value = ''
     this.area = []
     this.chainId = 0
     this.showDlg = false
-    this.pageIndex = 1
-    this.seach()
   }
 }
 </script>
