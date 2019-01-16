@@ -66,12 +66,12 @@
             <Col span="2"><div>客户等级</div></Col>
             <Col span="4">
               <tooltip v-if="format.levelStaus == 2" content="已下架" placement="top">
-                <span :class="format.levelStaus == 2 ? 'red' : ''">{{format.levelText}}级</span>
+                <span :class="format.levelStaus == 2 ? 'red' : ''"><span v-if="format.levelText">{{format.levelText}}级</span></span>
               </tooltip>
-              <span v-else>{{format.levelText}}级</span>
+              <span v-else><span v-if="format.levelText">{{format.levelText}}级</span></span>
             </Col>
             <Col span="2"><div>负责商务</div></Col>
-            <Col span="6"><span>{{detail.businessDirectorEmail}}<b style="margin-left:5px">[{{detail.businessDirectorName}}]</b></span></Col>
+            <Col span="6"><span>{{detail.businessDirectorEmail}}<b v-if="detail.businessDirectorName" style="margin-left:5px">[{{detail.businessDirectorName}}]</b></span></Col>
         </Row>
         <Row>
           <Col span="2"><div>客户类型</div></Col>

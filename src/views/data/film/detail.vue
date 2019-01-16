@@ -74,16 +74,12 @@
       </dl>
       <dl>
         <dt>主图</dt>
-        <dd><ImgModel v-if="show" :uploadList = "detil.mainPicUrl" :type = 1 /></dd>
+        <dd><ImgModel v-if="show&&detil.mainPicUrl" :uploadList = "detil.mainPicUrl" :type = 1 /></dd>
       </dl>
       <dl>
         <dt>剧情照片</dt>
         <dd>
-          <div>
-            <div>
-              <ImgModel v-if="show" :uploadList = "detil.plotPicUrl" :type = 2 />
-            </div>
-          </div>
+          <ImgModel v-if="show&&detil.plotPicUrl.length>0" :uploadList = "detil.plotPicUrl" :type = 2 />
         </dd>
       </dl>
       <dl>
@@ -259,6 +255,11 @@ export default class Main extends ViewBase {
     dt {
       width: 60px;
       text-align: right;
+    }
+    dd:empty {
+      &::before {
+        content: '暂无';
+      }
     }
   }
 }
