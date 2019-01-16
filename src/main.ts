@@ -7,7 +7,7 @@ import app from './app.vue'
 import Router from 'vue-router'
 import home from './views/home.vue'
 import login from './views/login.vue'
-import MainLayout from './site/MainLayout.vue'
+import MainLayout from './views/layout/MainLayout.vue'
 import routes from './routes'
 import locale from 'iview/dist/locale/zh-CN'
 import event from './fn/event'
@@ -34,10 +34,12 @@ const router = new Router({
       path: '/login',
       name: 'login',
       component: login,
+      meta: {
+        unauth: true
+      }
     },
     {
       path: '/',
-      name: 'main-layout',
       component: MainLayout,
       children: [{
         path: '/',
@@ -55,7 +57,7 @@ iView.LoadingBar.config({
 
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start()
-  if (!hasLogin() && to.name !== 'login') {
+  if (!to.meta.unauth && !hasLogin()) {
     next({ name: 'login' })
   // } else if (!store.getters.canSee(to.name)) {
   //   next({ name: '403' })

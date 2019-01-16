@@ -200,7 +200,7 @@ export default class App extends ViewBase {
 </script>
 
 <style lang="less" scoped>
-@import './lib.less';
+@import '~@/site/lib.less';
 
 .site-layout {
   position: relative;
