@@ -132,6 +132,32 @@ export default class App extends ViewBase {
         },
       ]
     },
+    {
+      name: 'ggPlan',
+      icon: 'logo-usd',
+      label: '广告管理',
+      subList: [
+        {
+          name: 'ggtising-plan',
+          label: '计划管理',
+        },
+        {
+          name: 'gg-film',
+          label: '广告片管理',
+        },
+      ]
+    },
+    // {
+    //   name: 'contract',
+    //   icon: 'md-list',
+    //   label: '资源位管理',
+    //   subList: [
+    //     {
+    //       name: 'contract-list',
+    //       label: '刊例价管理',
+    //     },
+    //   ]
+    // },
   ]
 
   get siderOpenNames() {

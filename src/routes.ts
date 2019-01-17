@@ -202,4 +202,24 @@ export default [
     name: 'finance-examine-edit',
     component: () => import('./views/finance/examine/edit.vue')
   },
+  {
+    path: '/plan/ggtising',
+    name: 'ggtising-plan',
+    component: () => import('./views/plan/plan/index.vue')
+  },
+  {
+    path: '/plan/ggtising/edit/:edit/:id',
+    name: 'ggtising-plan-edit',
+    component: () => import('./views/plan/plan/detail.vue')
+  },
+  {
+    path: '/plan/ggtising/cinema/:id',
+    name: 'ggtising-plan-cinema',
+    component: () => import('./views/plan/plan/cinema.vue')
+  },
+  {
+    path: '/gg/film',
+    name: 'gg-film',
+    component: () => import('./views/plan/film/index.vue')
+  },
 ] as any[]

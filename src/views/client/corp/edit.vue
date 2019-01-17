@@ -174,6 +174,7 @@ import PartBindCinema from './partBindCinema.vue'
 import { toMap } from '@/fn/array'
 import { slice, clean } from '@/fn/object'
 import moment from 'moment'
+import { toast } from '@/ui/modal'
 
 const timeFormat = 'YYYY-MM-DD'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
@@ -549,15 +550,17 @@ export default class Main extends ViewBase {
         it.typeCode && types.push(it)
       })
       try {
-        route == 0 ? await addQuery({
+        let data: any = {}
+        route == 0 ? data =  await addQuery({
           ...newqQuery,
           cinemas: this.item.typearr[1] ? this.cinemas : [],
           types
-        }) : await setQuery(route, {
+        }) : data = await setQuery(route, {
           ...newqQuery,
           cinemas: this.item.typearr[1] ? this.cinemas : [],
           types
         })
+        toast(data.msg)
         this.$router.go(-1)
       } catch (ex) {
         this.handleError(ex)
