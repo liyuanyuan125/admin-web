@@ -151,12 +151,22 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         title: '',
         key: 'action',
         align: 'center',
-        render: (hh: any, { row: { monthConsumptionCount, totalConsumptionCount, id }, row }: any) => {
+        render: (hh: any, { row: { companyId, companyName, monthConsumptionCount, totalConsumptionCount } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          const showTime = this.showTime
+          const start = new Date(this.showTime[0]).getTime()
+          const end = new Date(this.showTime[1]).getTime()
+          const year = new Date().getFullYear()
+          const month = new Date().getMonth() + 1
+          const beginDate = new Date(`${year}/${month}/1`).getTime()
+          const endDate = new Date(`${year}/${month + 1}/1`).getTime() -1
           // <router-link to={{name: 'payRank'}}>{monthConsumptionCount+'/'+totalConsumptionCount}</router-link>
-          return <span>{monthConsumptionCount+'/'+totalConsumptionCount}</span>
+          return <div>
+            <router-link class="router" to={{name: 'payRank', params: {companyId: companyId, title: companyName }, query: { beginDate: beginDate, endDate: endDate }}}>
+            <span v-html={monthConsumptionCount}></span>/</router-link>
+            <router-link class="router" to={{name: 'payRank', params: {companyId: companyId, title: companyName }, query: { beginDate: this.query.beginDate, endDate: this.query.endDate }}}>
+            <span v-html={totalConsumptionCount}></span></router-link>
+            </div>
           /* tslint:enable */
         },
         /* tslint:disable */

@@ -18,6 +18,12 @@ export async function payList(query: any) {
   return data
 }
 
+// 消费列表（广告主）
+export async function ceilList(query: any) {
+  const data = await get('/finance/advertiser/consumes', query)
+  return data
+}
+
 // 分页获取充值消费统计列表（资源方）
 export async function resqueryList(query: any) {
   const data = await get('/finance/resource/statistics', query)

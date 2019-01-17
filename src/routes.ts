@@ -145,7 +145,7 @@ export default [
         }
       },
       {
-        path: 'payRank',
+        path: 'payRank/:companyId/:title',
         name: 'payRank',
         component: () => import('./views/finance/capital/payRank.vue'),
         meta: {

@@ -70,11 +70,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   showTime: any = []
   query: any = {}
   shows = true
-  showDlg = false
-  addOrUpdateVisible = false
-  changeVisible = false
 
-  examine = false
   // query = { ...defQuery }
   altogetherAmount: any = ''
   loading = false
