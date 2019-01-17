@@ -230,10 +230,19 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   formatCinema(data: any) {
     const cinemChildren = data && data.map((item: any) => {
       return item.typeCategoryList
-    }).flat()
-    return typeMap(cinemChildren)
+    })
+    return typeMap(this.flatten(cinemChildren))
   }
 
+  flatten(arr: any) {
+    return  arr.reduce((pre: any, cur: any) => {
+          if ( !Array.isArray(cur) ) {
+              return [...pre, cur]
+          } else {
+              return [...pre, ...this.flatten(cur)]
+          }
+      }, [])
+  }
   typeListFormt(value: any) {
     const typeArray: any = []
     if ( !!value ) {
