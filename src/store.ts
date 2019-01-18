@@ -2,7 +2,7 @@
  * 全部数据结构，这里做了简化，暂不使用 Vuex
  */
 
-import tryParseJson from '@/util/tryParseJson'
+import tryParseJson from '@/fn/tryParseJson'
 import cookie from 'js-cookie'
 import { logout as postLogout } from '@/api/auth'
 
