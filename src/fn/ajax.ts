@@ -5,15 +5,15 @@
 
 import axios from 'axios'
 import event from './event'
+import tryParseJson from '@/fn/tryParseJson'
 
 const ajaxBaseUrl = VAR.ajaxBaseUrl
 
 const isAbsoluteUrl = (url: string) => /^[a-z][a-z0-9+.-]*:/.test(url)
 
-const emit = (r: any) => {
-  r.handled = false
-  event.emit(`ajax${r.code}`, r)
-  return r
+const emit = (data: any) => {
+  event.emit(`ajax${data.code}`, data)
+  return data
 }
 
 // 确保最终的数据，始终有值
@@ -42,7 +42,13 @@ const request = async (url: string, opts: object) => {
   } catch (ex) {
     if (ex && ex.response) {
       const { status, data: html } = ex.response
-      throw emit({ code: status, data: { html }, msg: 'HTTP 错误' })
+      const error = { code: status, data: { html }, msg: 'HTTP 错误' }
+      // 对 500 进一步处理
+      if (status == 500) {
+        res = tryParseJson(html, error)
+      } else {
+        throw emit(error)
+      }
     } else {
       throw emit({ code: 810, data: { ex }, msg: '未知错误' })
     }
