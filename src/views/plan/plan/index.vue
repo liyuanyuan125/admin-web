@@ -195,13 +195,14 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     },
     { title: '所属公司', key: 'companyName', align: 'center' },
     { title: '操作', key: 'accountName', width: 100, align: 'center',
-      render: (hh: any, {row: { id }}: any) => {
+      render: (hh: any, {row: { id, settlementStatus }}: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
+        const edit = settlementStatus == 2 ? '审核' : '详情'
+        const detail = settlementStatus == 2 ? 'edit' : 'detail'
         return <div>
           <a on-click={this.edittime.bind(this, id, 'start')}>开始</a>
-          <a on-click={this.edittime.bind(this, id, 'end')}>暂停</a>
-          <router-link to={{name: 'ggtising-plan-edit', params: {id, edit: 'detail'}}}>详情</router-link>
+          <router-link to={{name: 'ggtising-plan-edit', params: {id, edit: detail}}}>{edit}</router-link>
         </div>
         /* tslint:disable */
       }
