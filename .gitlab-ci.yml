@@ -5,7 +5,6 @@ stages:
 
 variables:
   SERVICE_NAME: iadp-admin-web
-  YARN_REGISTRY: https://registry.yarnpkg.com
 
 build:
   image: $REGISTRY_ADDRESS/devops/nodejs/build
@@ -14,9 +13,10 @@ build:
     - testing
     - release
   script:
-    - yarn config set registry $YARN_REGISTRY && yarn && yarn lint && yarn build
+    - yarn && yarn lint && yarn build
   artifacts:
     paths:
+      - yarn.lock
       - dist
       - Dockerfile
     expire_in: 2 hrs
