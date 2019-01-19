@@ -144,10 +144,10 @@ export default class Main extends ViewBase {
   show = false
 
   created() {
-    if (!sessionStorage.getItem('film-id')) {
-      sessionStorage.setItem('film-id', JSON.stringify(this.$route.params))
+    if (!localStorage.getItem('film-id')) {
+      localStorage.setItem('film-id', JSON.stringify(this.$route.params))
     }
-    const id: any = sessionStorage.getItem('film-id')
+    const id: any = localStorage.getItem('film-id')
     this.nextId = this.$route.params.id ? this.$route.params : JSON.parse(id)
     this.detils()
   }
