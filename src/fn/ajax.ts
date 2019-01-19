@@ -45,12 +45,15 @@ const request = async (url: string, opts: object) => {
       const error: any = { code: status, data: { html }, msg: 'HTTP 错误' }
       // 对 500 进一步处理
       if (status == 500) {
-        res = tryParseJson(html, error)
+        res = {
+          data: tryParseJson(html, error)
+        }
       } else {
         throw emit(error)
       }
     } else {
-      throw emit({ code: 810, data: { ex }, msg: '未知错误' })
+      const msg = ex && ex.message || '未知错误'
+      throw emit({ code: 810, data: { ex }, msg })
     }
   }
 
