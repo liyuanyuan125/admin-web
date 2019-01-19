@@ -45,6 +45,7 @@
            实时刊例价查询
         </Tab-pane>
       </Tabs>
+      <DlgEdit />
   </div>
 </template>
 
@@ -58,7 +59,7 @@ import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
-// import DlgEdit from './dlgEdit.vue'
+import DlgEdit from './dlgEdit.vue'
 
 import {confirm , warning , success, toast } from '@/ui/modal'
 
@@ -67,6 +68,7 @@ const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
 @Component({
   components: {
+    DlgEdit
   }
 })
 export default class Main extends Mixins(ViewBase, UrlManager) {

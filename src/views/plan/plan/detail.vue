@@ -163,7 +163,7 @@
               <FormItem style="margin-bottom: 20px" :label-width="210" v-if="dataForm.status == 4" label="冻结款" prop="discount">
                 <div>
                   <span style="height: 40px" class="orient">原价: ({{detail.item.estimateCostAmount}}) ✖️ 折扣</span><InputNumber :max="100" :min="0" style=" width: 80px" v-model="dataForm.discount" placeholder=""/>
-                  <span style="height: 40px">%    =    应冻结</span><InputNumber disabled="true" :max="detail.item.estimateCostAmount" :min="0" style="margin: 0px 5px 0px 5px; width: 150px" v-model="dataForm.freezeAmount" placeholder=""/>元
+                  <span style="height: 40px">%    =    应冻结</span><InputNumber :disabled="true" :max="detail.item.estimateCostAmount" :min="0" style="margin: 0px 5px 0px 5px; width: 150px" v-model="dataForm.freezeAmount" placeholder=""/>元
                 </div>
               </FormItem>
               <FormItem style="margin-bottom: 20px" v-if="dataForm.status == 10" label="拒绝原因" prop="refuseReason">
