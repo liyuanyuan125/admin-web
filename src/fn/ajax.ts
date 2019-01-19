@@ -42,7 +42,7 @@ const request = async (url: string, opts: object) => {
   } catch (ex) {
     if (ex && ex.response) {
       const { status, data: html } = ex.response
-      const error = { code: status, data: { html }, msg: 'HTTP 错误' }
+      const error: any = { code: status, data: { html }, msg: 'HTTP 错误' }
       // 对 500 进一步处理
       if (status == 500) {
         res = tryParseJson(html, error)
@@ -55,7 +55,6 @@ const request = async (url: string, opts: object) => {
   }
 
   const { data } = res
-
   if (data && data.code !== undefined) {
     const result = perfectData(data)
     if (data.code == 0) {
