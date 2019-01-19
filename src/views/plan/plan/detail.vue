@@ -3,19 +3,20 @@
     <header class="header flex-box">
       <Button icon="md-return-left" @click="back" class="btn-back">返回上一页</Button>
       <div class="flex-1">
-        <em>计划管理 - 计划详情</em>
+        <em v-if="$route.params.edit == 'detail'">计划管理 - 计划详情</em>
+        <em v-else>计划管理 - 计划审核</em>
       </div>
     </header>
 
-    <div class="detail-box">
+    <div class="detail-box" v-if="detail.item">
       <div class='titop'>基础信息</div>
       <div class="detail-header">
         <Row>
           <Row>
             <Col span="2"><div>计划名称</div></Col>
-            <Col span="8"><span>{{detail.name}}</span></Col>
+            <Col span="8"><span>{{detail.item.name}}</span></Col>
             <Col span="2"><div>计划ID</div></Col>
-            <Col span="8"><span>{{detail.calendarId}}</span></Col>
+            <Col span="8"><span>{{detail.item.calendarId}}</span></Col>
           </Row>
           <Row>
             <Col span="2"><div>投放排期</div></Col>
@@ -26,8 +27,8 @@
           <Row>
             <Col span="2"><div>广告片</div></Col>
             <Col span="8">
-              <router-link v-if="detail.videoName" :to="{name: 'ggtising-plan-cinema', params: {id: detail.id}}">
-                <span style="color: #2d8cf0" v-if="detail.videoId">{{format.videoId}}</span> <span style="color: #2d8cf0">{{detail.videoName}}</span>
+              <router-link v-if="detail.item.videoName" :to="{name: 'ggtising-plan-cinema', params: {id: detail.item.id}}">
+                <span style="color: #2d8cf0" v-if="detail.item.videoId">{{format.videoId}}</span> <span style="color: #2d8cf0">{{detail.item.videoName}}</span>
               </router-link>
               <span v-else></span>
             </Col>
@@ -48,7 +49,7 @@
           </Row>
           <Row>
             <Col span="2"><div>客户</div></Col>
-            <Col span="8"><span>{{detail.customerName}}</span></Col>
+            <Col span="8"><span v-if="detail.item.customerId">[{{detail.item.customerId}}]</span><span>{{detail.item.customerName}}</span></Col>
             <Col span="2"><div>创建时间</div></Col>
             <Col span="8"><span>{{format.applyTime}}</span></Col>
           </Row>
@@ -72,8 +73,10 @@
           <Col span="2"><div>影院列表</div></Col>
           <Col span="20">
             <Row>
+              
               <Table :columns="columns" :data="format.cinemaList"
               border stripe disabled-hover size="small" class="table"></Table>
+              <div style="padding: 20px 0px">查看更多请点击<a :href="href" download="影院列表" >"导出影院列表"</a></div>
             </Row>
           </Col>
         </Row>
@@ -109,7 +112,7 @@
       <Row class="detail-content">
         <Row v-if="format.movieList.length > 0">
           <Col v-for="(item, index) in format.movieList" :span="10" :key="index">
-            <span>《{{item.name}}》{{(item.typeCode || []).join(',')}} {{auto(item.openTime + '')}}</span>
+            <span>《{{item.name}}》{{(item.typeCode || []).join(' / ')}} {{auto(item.openTime + '')}}</span>
           </Col>
         </Row>
         <Row v-else>
@@ -120,19 +123,58 @@
       </Row>
       <Row>
       </Row>
-
-      <div class='titop'>操作记录</div>
-      <Row class="detail-content">
-        <Row v-if="format.logList > 0">
-          <Col v-for="(item, index) in format.logList" :key="index">
-
-          </Col>
+      <Row v-if="$route.params.edit == 'detail'">
+        <div class='titop'>操作记录</div>
+        <Row class="detail-content">
+          <Row v-if="format.logList.length > 0">
+            <Col v-for="(item, index) in format.logList" :key="index">
+              <span>
+                {{autoTime(item.createTime)}} {{item.email}}【{{item.userName}}】{{item.description}}
+              </span>
+            </Col>
+          </Row>
+          <Row v-else>
+            <Col>
+              <span></span>
+            </Col>
+          </Row>
         </Row>
-        <Row v-else>
-          <Col>
-            <span></span>
-          </Col>
+      </Row>
+      
+      <Row v-else>
+        <div class='titop'>审核</div>
+        <Row class="detail-content">
+          <Form ref="dataForm" :model="dataForm" label-position="left" :rules="rule" :label-width="80">
+            <Row>
+              <FormItem label="审核意见" prop="status">
+                <Row>
+                  <Col span="8">
+                    <RadioGroup v-model="dataForm.status">
+                      <Radio :label=4>
+                        <span>通过</span>
+                      </Radio>
+                      <Radio style="margin-left: 80px" :label=10>
+                        <span>拒接</span>
+                      </Radio>
+                    </RadioGroup>
+                  </Col>
+                </Row>
+              </FormItem>
+              <FormItem style="margin-bottom: 20px" :label-width="210" v-if="dataForm.status == 4" label="冻结款" prop="discount">
+                <div>
+                  <span style="height: 40px" class="orient">原价: ({{detail.item.estimateCostAmount}}) ✖️ 折扣</span><InputNumber :max="100" :min="0" style=" width: 80px" v-model="dataForm.discount" placeholder=""/>
+                  <span style="height: 40px">%    =    应冻结</span><InputNumber disabled="true" :max="detail.item.estimateCostAmount" :min="0" style="margin: 0px 5px 0px 5px; width: 150px" v-model="dataForm.freezeAmount" placeholder=""/>元
+                </div>
+              </FormItem>
+              <FormItem style="margin-bottom: 20px" v-if="dataForm.status == 10" label="拒绝原因" prop="refuseReason">
+                <Input style="margin-top: 8px; width: 400px" v-model="dataForm.refuseReason" placeholder="拒绝原因"/>
+              </FormItem>
+            </Row>
+          </Form>
         </Row>
+        <div>
+          <Button style="padding: 6px 40px" type="info" size="large" @click="edit('dataForm')">保存</Button>
+        </div>
       </Row>
     </div>
   </div>
@@ -147,8 +189,9 @@ import { queryList , queryId , zuofei } from '@/api/list'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import { slice , clean } from '@/fn/object'
-import { queryDetail } from '@/api/ggplan'
+import { queryDetail, queryAudit, downLoad } from '@/api/ggplan'
 import { formatCurrency } from '@/fn/string'
+import { dataFrom } from '@/api/account'
 
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 const cinemaMap = (list: any[]) => toMap(list, 'tagTypeCode', 'text')
@@ -159,17 +202,41 @@ const timeFormat = 'YYYY/MM/DD'
 const defQuery = {
 }
 
-const dataForm = {
-  refuseReason: '',
-  approveStatus: 2
-}
-
 @Component
 export default class Main extends ViewBase {
   detail: any = {}
 
+  dataForm: any = {
+    status: 4,
+    refuseReason: '',
+    discount: null,
+    freezeAmount: null,
+  }
   mounted() {
     this.doSearch()
+  }
+
+  get rule() {
+    return {
+      refuseReason: [
+        { required: true, message: '请输入拒绝原因', trigger: 'blur' }
+      ],
+      discount: [
+        { required: true, message: '请输入折扣', trigger: 'blur', type: 'number' }
+      ]
+    }
+  }
+
+  get href() {
+    return `${VAR.ajaxBaseUrl}/xadvert/plans/${this.detail.item.id}/export`
+  }
+
+  get discount() {
+    return this.dataForm.discount
+  }
+
+  get freezeAmount() {
+    return this.dataForm.freezeAmount
   }
 
   get cachedMap() {
@@ -196,28 +263,27 @@ export default class Main extends ViewBase {
     const detail = this.detail
     const start = moment(detail.beginDate).format(timeFormat)
     const end = moment(detail.endDate).format(timeFormat)
-
     return {
       time: start ? `${start}~${end}` : '',
-      cycle: detail.cycle ? detail.cycle + '天' : '',
-      specification: detail.specification ? detail.specification + 's' : '',
-      length: detail.videoLength ? detail.videoLength + 's' : '',
-      typeText: detail.deliveryType ? cachedMap.typeList[detail.deliveryType] : '',
-      bfMoney: detail.budgetAmount ? formatCurrency(detail.budgetAmount * 10000) : '',
-      afMoney: detail.budgetAmount ? detail.budgetAmount + '万' : '',
-      directext: detail.deliveryType ? cachedMap.directext[detail.deliveryType] : '',
-      dirtext: detail.directionType ?
-      `${scheme[detail.directionType]} [ ${cachedMap.dirtext[detail.directionType]} ]` : '',
-      applyTime: detail.applyTime ? moment(detail.applyTime).format(timeFormat) : '',
+      cycle: detail.item.cycle ? detail.item.cycle + '天' : '',
+      specification: detail.item.specification ? detail.item.specification + 's' : '',
+      length: detail.item.videoLength ? detail.item.videoLength + 's' : '',
+      typeText: detail.item.deliveryType ? cachedMap.typeList[detail.item.deliveryType] : '',
+      bfMoney: detail.item.budgetAmount ? formatCurrency(detail.item.budgetAmount * 10000) : '',
+      afMoney: detail.item.budgetAmount ? detail.item.budgetAmount + '万' : '',
+      directext: detail.item.deliveryType ? cachedMap.directext[detail.item.deliveryType] : '',
+      dirtext: detail.item.directionType ?
+      `${scheme[detail.item.directionType]} [ ${cachedMap.dirtext[detail.item.directionType]} ]` : '',
+      applyTime: detail.item.applyTime ? moment(detail.item.applyTime).format(timeFormat) : '',
       areaCount: detail.areaCount ? `[ ${detail.areaCount} ]` : '',
-      provinceCount: detail.provinceCount ? `[ ${detail.provinceCount} ]` : '',
-      cityCount: detail.cityCount ? `[ ${detail.cityCount} ]` : '',
-      cinemasCount: detail.cinemasCount ? `[ ${detail.cinemasCount} ]` : '',
-      videoId: detail.videoId ? `[ ${detail.videoId} ]` : '',
-      deliveryGroups: detail.deliveryGroups || [],
+      provinceCount: detail.item.provinceCount ? `[ ${detail.item.provinceCount} ]` : '',
+      cityCount: detail.item.cityCount ? `[ ${detail.item.cityCount} ]` : '',
+      cinemasCount: detail.item.cinemasCount ? `[ ${detail.item.cinemasCount} ]` : '',
+      videoId: detail.item.videoId ? `[ ${detail.item.videoId} ]` : '',
+      deliveryGroups: detail.item.deliveryGroups || [],
       movieList: detail.movieList || [],
       logList: (detail.logList || []).slice(0, 20),
-      cinemaList: detail.cinemaList || []
+      cinemaList: detail.item.cinemaList || []
     }
   }
 
@@ -241,6 +307,10 @@ export default class Main extends ViewBase {
       { title: '省份', key: 'provinceName', align: 'center' },
       { title: '区域', key: 'areaName', align: 'center' },
     ]
+  }
+
+  autoTime(time: any) {
+    return moment(time).format(timeFormatDate)
   }
 
   async doSearch() {
@@ -268,6 +338,22 @@ export default class Main extends ViewBase {
     return `${year}-${month}-${day}`
   }
 
+  edit(dataFroms: any) {
+    (this.$refs[dataFroms] as any).validate(async ( valid: any ) => {
+      if (valid) {
+        try {
+          await queryAudit(this.$route.params.id, clean({
+            ...this.dataForm
+          }))
+          this.$router.push({ name: 'ggtising-plan' })
+          ; (this.$refs[dataFroms] as any).resetFields()
+        } catch (ex) {
+          this.handleError(ex)
+        }
+      }
+    })
+  }
+
   // 返回
   back() {
     this.$router.go(-1)
@@ -277,6 +363,31 @@ export default class Main extends ViewBase {
   goSet() {
     const id = this.$route.params.id
     this.$router.replace({ name: 'contract-list-edit', params: { id }} )
+  }
+
+  @Watch('discount')
+  watchdiscount(val: any) {
+    if (val != null) {
+      this.dataForm.freezeAmount = (val * this.detail.item.estimateCostAmount) / 100
+    }
+  }
+
+  @Watch('dataForm', { deep: true })
+  watchdataForm(val: any) {
+    const form = 'dataForm'
+    if (val.status == 4) {
+      (this.$refs[form] as any).fields.forEach((e: any) => {
+        if (e.prop == 'refuseReason') {
+          e.resetField()
+        }
+      })
+    } else if (val.status == 10) {
+      (this.$refs[form] as any).fields.forEach((e: any) => {
+        if (e.prop == 'discount') {
+          e.resetField()
+        }
+      })
+    }
   }
 }
 </script>
@@ -368,9 +479,13 @@ export default class Main extends ViewBase {
       }
     }
   }
-  span {
+  .ivu-form-item {
+    margin-bottom: 0;
+  }
+  span, /deep/ .ivu-form-item-label {
     display: inline-block;
     line-height: 50px;
+    padding: 0;
     color: #717975;
   }
   span:empty {
@@ -380,6 +495,10 @@ export default class Main extends ViewBase {
   }
   /deep/ .cinema-button {
     margin-bottom: 20px;
+  }
+  /deep/ .orient {
+    position: absolute;
+    left: -130px;
   }
 }
 .check-select-group {
