@@ -147,17 +147,28 @@ export default class App extends ViewBase {
         },
       ]
     },
-    // {
-    //   name: 'contract',
-    //   icon: 'md-list',
-    //   label: '资源位管理',
-    //   subList: [
-    //     {
-    //       name: 'contract-list',
-    //       label: '刊例价管理',
-    //     },
-    //   ]
-    // },
+    {
+      name: 'resource',
+      icon: 'md-list',
+      label: '资源位管理',
+      subList: [
+        {
+          name: 'resource-management',
+          label: '刊例价管理',
+        },
+      ]
+    },
+    {
+      name: 'system',
+      icon: 'md-list',
+      label: '系统设置',
+      subList: [
+        {
+          name: 'system-setup',
+          label: '财务设置',
+        },
+      ]
+    }
   ]
 
   get siderOpenNames() {

@@ -80,7 +80,7 @@ event.on({
   ajax403(ev: any) {
     alert('权限不足')
   }
-}, false)
+}, false as any)
 
 new Vue({
   router,

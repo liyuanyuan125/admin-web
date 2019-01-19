@@ -222,4 +222,19 @@ export default [
     name: 'gg-film',
     component: () => import('./views/plan/film/index.vue')
   },
+  {
+    path: '/gg/film/detail/:id',
+    name: 'gg-film-detail',
+    component: () => import('./views/plan/film/detail.vue')
+  },
+  {
+    path: '/resource/management',
+    name: 'resource-management',
+    component: () => import('./views/resource/management/index.vue')
+  },
+  {
+    path: '/system/setup',
+    name: 'system-setup',
+    component: () => import('./views/system/setup/index.vue')
+  },
 ] as any[]
