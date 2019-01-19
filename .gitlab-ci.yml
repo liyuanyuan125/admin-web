@@ -13,10 +13,9 @@ build:
     - testing
     - release
   script:
-    - yarn && yarn lint && yarn build
+    - rm -r yarn.lock && yarn && yarn lint && yarn build
   artifacts:
     paths:
-      - yarn.lock
       - dist
       - Dockerfile
     expire_in: 2 hrs
