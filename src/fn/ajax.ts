@@ -55,7 +55,6 @@ const request = async (url: string, opts: object) => {
   }
 
   const { data } = res
-
   if (data && data.code !== undefined) {
     const result = perfectData(data)
     if (data.code == 0) {

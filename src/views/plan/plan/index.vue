@@ -16,11 +16,11 @@
             <Option v-for="(option, index) in options" :value="option.value" :key="index">{{option.label}}</Option>
           </Select>
           <CompanyList v-model="query.companyId" />
-          <Select v-model="query.status" placeholder="计划状态" clearable>
+          <Select v-model="query.settlementStatus" placeholder="计划状态" clearable>
             <Option v-if="it.key != 0" v-for="it in settlementStatusList" :key="it.key" :value="it.key"
               :label="it.text">{{it.text}}</Option>
           </Select>
-          <Select v-model="query.settlementStatus" placeholder="结算状态" clearable>
+          <Select v-model="query.status" placeholder="结算状态" clearable>
             <Option v-if="it.key != 0" v-for="it in statusList" :key="it.key" :value="it.key"
               :label="it.text">{{it.text}}</Option>
           </Select>
@@ -175,10 +175,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     { title: '计划状态', key: 'statusText', align: 'center' },
     { title: '结算状态', key: 'setText', align: 'center' },
     { title: '结算金额(元)', width: 100, key: 'amount', align: 'center',
-      render: (hh: any, { row: { amount } }: any) => {
+      render: (hh: any, { row: { settlementAmount } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = amount ? formatCurrency(amount) : ''
+        const html = settlementAmount ? formatCurrency(settlementAmount) : ''
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
@@ -195,13 +195,14 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     },
     { title: '所属公司', key: 'companyName', align: 'center' },
     { title: '操作', key: 'accountName', width: 100, align: 'center',
-      render: (hh: any, {row: { id }}: any) => {
+      render: (hh: any, {row: { id, status }}: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
+        const edit = status == 2 ? '审核' : '详情'
+        const detail = status == 2 ? 'audit' : 'detail'
+        // <a on-click={this.edittime.bind(this, id, 'start')}>开始</a>
         return <div>
-          <a on-click={this.edittime.bind(this, id, 'start')}>开始</a>
-          <a on-click={this.edittime.bind(this, id, 'end')}>暂停</a>
-          <router-link to={{name: 'ggtising-plan-edit', params: {id, edit: 'detail'}}}>详情</router-link>
+          <router-link to={{name: 'ggtising-plan-edit', params: {id, edit: detail}}}>{edit}</router-link>
         </div>
         /* tslint:disable */
       }
@@ -347,6 +348,24 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       this.query.pageIndex = 1
     }
     this.doSearch()
+  }
+
+  @Watch('item', { deep: true })
+  watchitem(val: any) {
+    const form = 'dataForms'
+    if (val.approveStatus == 3) {
+      (this.$refs[form] as any).fields.forEach((e: any) => {
+        if (e.prop == 'validityPeriodDate') {
+          e.resetField()
+        }
+      })
+    } else if (val.approveStatus == 1) {
+      (this.$refs[form] as any).fields.forEach((e: any) => {
+        if (e.prop == 'refusedReason') {
+          e.resetField()
+        }
+      })
+    }
   }
 }
 </script>

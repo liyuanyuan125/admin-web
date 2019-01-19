@@ -1,23 +1,10 @@
 stages:
-  - lint
   - build
   - package
   - deploy
 
 variables:
   SERVICE_NAME: iadp-admin-web
-  YARN_REGISTRY: https://registry.yarnpkg.com
-
-lint:
-  image: $REGISTRY_ADDRESS/devops/nodejs/build
-  stage: lint
-  only:
-    - testing
-    - release
-  script:
-    - yarn config set registry $YARN_REGISTRY && yarn && yarn lint
-  tags:
-    - nodejs
 
 build:
   image: $REGISTRY_ADDRESS/devops/nodejs/build
@@ -26,7 +13,7 @@ build:
     - testing
     - release
   script:
-    - yarn config set registry $YARN_REGISTRY && yarn && yarn build
+    - rm -r yarn.lock && yarn && yarn lint && yarn build
   artifacts:
     paths:
       - dist

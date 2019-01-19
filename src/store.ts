@@ -22,7 +22,7 @@ let theUser: User | null = null
 
 const restoreUser = (): User | null => {
   const token = cookie.get(KEY_TOKEN)
-  const user = tryParseJson(sessionStorage.user)
+  const user = tryParseJson(localStorage.user)
   return token && user ? user : null
 }
 
@@ -42,7 +42,7 @@ export function getUser() {
  */
 export function setUser(user: User) {
   theUser = user
-  sessionStorage.user = JSON.stringify(user)
+  localStorage.user = JSON.stringify(user)
 }
 
 /**
@@ -57,7 +57,7 @@ export function hasLogin() {
  */
 export function logout() {
   cookie.remove(KEY_TOKEN, COOKIE_OPTIONS)
-  delete sessionStorage.user
+  delete localStorage.user
   theUser = null
   postLogout()
 }

@@ -58,17 +58,10 @@
       <div class='titop'>专制</div>
       <Row class="detail-content">
         <Row>
-          <Col span="2">
+          <Col span="20">
           <Table :columns="columns" :data="tableData"
               border stripe disabled-hover size="small" class="table"></Table>
           </Col>
-          <Col span="8"><span>{{detail.accountBank}}</span></Col>
-          <Col span="2"><div>观影人群年龄</div></Col>
-          <Col span="8"><span>{{detail.accountName}}</span></Col>
-        </Row>
-        <Row>
-          <Col span="2"><div>观影人群偏好</div></Col>
-          <Col span="8"><span>{{detail.accountNumber}}</span></Col>
         </Row>
       </Row>
 
