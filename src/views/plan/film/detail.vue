@@ -59,11 +59,11 @@
         <div>
           <Form ref="dataForm" :model="dataForm"  label-position="left" :label-width="100">
             <FormItem label="审核意见" prop="status">
-              <RadioGroup v-model='dataForm.operation'>
+              <RadioGroup v-model='dataForm.agree'>
                 <Radio v-for="it in approveStatusList" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
               </RadioGroup>
             </FormItem>
-            <FormItem v-if='dataForm.operation == 2' label="拒绝理由" prop="reason">
+            <FormItem v-if='dataForm.agree == 2' label="拒绝理由" prop="reason">
               <Input style="width:240px" v-model="dataForm.refuseReason"></Input>
             </FormItem>
           </Form>
@@ -107,7 +107,7 @@ const defQuery = {
 
 const dataForm = {
   refuseReason: '',
-  operation: 2
+  agree: 1
 }
 
 @Component({
