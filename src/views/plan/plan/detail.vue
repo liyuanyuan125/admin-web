@@ -343,7 +343,10 @@ export default class Main extends ViewBase {
       if (valid) {
         try {
           await queryAudit(this.$route.params.id, clean({
-            ...this.dataForm
+            refuseReason: this.dataForm.refuseReason,
+            discount: this.dataForm.discount,
+            freezeAmount: this.dataForm.freezeAmount,
+            agree: this.dataForm.status == 4 ? true : false
           }))
           this.$router.push({ name: 'ggtising-plan' })
           ; (this.$refs[dataFroms] as any).resetFields()
