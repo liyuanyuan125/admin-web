@@ -18,8 +18,8 @@
 
     </div>
 
-    <div class="page-wrap" v-if="total2 > 0">
-    <Page :total="total2" :current="query.pageIndex" :page-size="query.pageSize"
+    <div class="page-wrap" v-if="total > 0">
+    <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
         show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
         @on-change="page => query.pageIndex = page"
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
@@ -40,6 +40,7 @@ import { syncData } from '@/api/film'
 export default class ComponentMain extends ViewBase {
   showDlg = true
   rolads = false
+  total = 0
   dataForm = {
     years: new Date().getFullYear(),
     pageIndex: 1,
