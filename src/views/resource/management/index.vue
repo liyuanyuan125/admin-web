@@ -99,7 +99,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   addOrUpdateVisible = false
   changeVisible = false
   diaries = {
-    id: '1108',
+    id: '',
     name: ''
   }
   diariesShow = false
