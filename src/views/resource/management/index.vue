@@ -4,21 +4,11 @@
         <Tab-pane label="平台刊例价" key="key1">
           <div class="act-bar flex-box">
             <form class="form flex-1" @submit.prevent="search">
-<<<<<<< HEAD
-              <Select style="width:90px" v-model="date.numdate" filterable>
-                <Option v-for="it in dates" :key="it.key" :value="it.key">{{it.name}}</Option>
-              </Select>
-              <DatePicker v-if='date.numdate == 1' type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="注册时间" class="input" style="width: 200px"></DatePicker>
-              <!-- <LazyInput v-model="query.id" placeholder="广告片ID/名称" class="input"/> -->
-              <Select style="width:240px" v-model="query.gradeCode" filterable>
-                <Option v-for="it in gradeList" :key="it.code" :value="it.code">{{it.desc}}</Option>
-=======
               <div @click="checkShow" style="float: left">
                 <LazyInput v-model="diaries.name" placeholder="广告片ID/名称" class="input"/>
               </div>
               <Select style="width:240px" v-model="query.companyId" filterable>
                 <Option v-for="it in companys" v-if='it.status==1' :key="it.id" :value="it.id">{{it.name}}</Option>
->>>>>>> b5b08bdf3f0e809311e6fc6a509c34dd3c350470
               </Select>
               <Button type="default" @click="reset" class="btn-reset">清空</Button>
             </form>
