@@ -4,11 +4,13 @@
         <Tab-pane label="平台刊例价" key="key1">
           <div class="act-bar flex-box">
             <form class="form flex-1" @submit.prevent="search">
-              <div @click="checkShow" style="float: left">
-                <LazyInput v-model="diaries.name" placeholder="广告片ID/名称" class="input"/>
-              </div>
-              <Select style="width:240px" v-model="query.companyId" filterable>
-                <Option v-for="it in companys" v-if='it.status==1' :key="it.id" :value="it.id">{{it.name}}</Option>
+              <Select style="width:90px" v-model="date.numdate" filterable>
+                <Option v-for="it in dates" :key="it.key" :value="it.key">{{it.name}}</Option>
+              </Select>
+              <DatePicker v-if="date.numdate == 1" type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="选择时间" class="input" style="width: 230px"></DatePicker>
+              <LazyInput  v-if="date.numdate == 2" @on-focus='checkShow' v-model="date.calendarName" placeholder="档期" class="input"/>
+              <Select style="width:240px" v-model="query.gradeCode" filterable>
+                <Option v-for="it in gradeList" :key="it.code" :value="it.code">{{it.desc}}</Option>
               </Select>
               <Button type="default" @click="reset" class="btn-reset">清空</Button>
             </form>
@@ -32,8 +34,8 @@
               <Select style="width:90px" v-model="date.numdate" filterable>
                 <Option v-for="it in dates" :key="it.key" :value="it.key">{{it.name}}</Option>
               </Select>
-              <DatePicker v-if='date.numdate == 1' type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="注册时间" class="input" style="width: 200px"></DatePicker>
-              <!-- <LazyInput v-model="query.query" placeholder="广告片ID/名称" class="input"/> -->
+              <DatePicker v-if="date.numdate == 1" type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="注册时间" class="input" style="width: 230px"></DatePicker>
+              <LazyInput  v-if="date.numdate == 2" @on-focus='checkShow' v-model="date.calendarName" placeholder="档期" class="input"/>
               <Select style="width:240px" v-model="query.companyName" filterable>
                 <Option v-for="it in companys" v-if='it.status==1' :key="it.name" :value="it.name">{{it.name}}</Option>
               </Select>
@@ -57,7 +59,7 @@
            实时刊例价查询
         </Tab-pane>
       </Tabs>
-      <DlgEdit v-if="diariesShow" v-model="diaries" />
+      <DlgEdit v-if="diariesShow" v-model="diaries" @input='getdates(diaries)'/>
   </div>
 </template>
 
@@ -129,7 +131,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   // 日期
   date = {
-    numdate: 1
+    numdate: 1,
+    calendarName: '',
   }
   dates = [
     {
@@ -310,6 +313,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     moment(this.query.beginDate).format(timeFormat) : this.showTime[0] = ''
     !!this.query.endDate ? this.showTime[1] =
     moment(this.query.endDate).format(timeFormat) : this.showTime[1] = ''
+
   }
 
   dateChange(data: any) {
@@ -321,15 +325,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
      !!data[1] ? (this.query.endDate = b[0] + b[1] + b[2]) : this.query.endDate = 0
   }
 
-  // 日期时间
-  // formatValid(data: any) {
-    // const datas = (data + '').split(',')
-    // const a = datas[0].slice(0, 4)
-    // const b = datas[0].slice(4, 6)
-    // const c = datas[0].slice(6)
-    // return `${a}/${b}/${c}`
-  // }
-
+  getdates(diaries: any) {
+    this.query.calendarId = diaries.id
+    this.date.calendarName = diaries.name
+  }
 
 
   search() {
@@ -376,7 +375,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
       this.list = list // 平台刊例价
       this.list2 = list2 // 公司刊例价
-      this.gradeList = gradeList
+      this.gradeList = gradeList || []
 
 
       this.total = total // 平台刊例价
@@ -432,7 +431,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 .form {
   .input,
   /deep/ .ivu-select {
-    width: 100px;
+    width: 230px;
     margin-left: 8px;
     &:first-child {
       margin-left: 0;
