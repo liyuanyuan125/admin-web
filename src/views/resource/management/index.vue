@@ -13,7 +13,7 @@
               <Button type="default" @click="reset" class="btn-reset">清空</Button>
             </form>
             <div class="acts">
-              <Button type="success" @click="edit(0)">新建刊例价</Button>
+              <Button type="success" @click="edit('platform', 'edit')">新建刊例价</Button>
             </div>
           </div>
           <Table :columns="columns" :data="list" :loading="loading"
@@ -327,8 +327,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   }
 
-  edit(id: any) {
-
+  edit(msg: string, edit: string) {
+    this.$router.push({ name: 'resource-edit', params: {msg, edit}})
   }
 
   checkShow() {
