@@ -7,11 +7,11 @@
     @on-cancel="cancel"
     >
     <Form ref="dataForm" :model="dataForm" label-position="left" :label-width="0">
-        <FormItem>
-          <Icon size="28" type="ios-arrow-back" @click="dataForm.years -= 1" />
-            <InputNumber ref="input" style="width:80px" v-model="dataForm.years" placeholder="请输入"/>
-          <Icon size="28" @click="dataForm.years += 1" type="ios-arrow-forward" />
-        </FormItem>
+      <FormItem>
+        <Icon size="28" type="ios-arrow-back" @click="dataForm.years -= 1" />
+          <InputNumber ref="input" style="width:80px" v-model="dataForm.years" placeholder="请输入"/>
+        <Icon size="28" @click="dataForm.years += 1" type="ios-arrow-forward" />
+      </FormItem>
     </Form>
 
     <Row v-if="dataLoading">
