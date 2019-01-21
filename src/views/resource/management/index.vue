@@ -7,8 +7,8 @@
               <Select style="width:90px" v-model="date.numdate" filterable>
                 <Option v-for="it in dates" :key="it.key" :value="it.key">{{it.name}}</Option>
               </Select>
-              <DatePicker v-if="date.numdate == 1" type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="选择时间" class="input" style="width: 200px"></DatePicker>
-              <LazyInput  v-if="date.numdate == 2" v-model="query.calendarName" placeholder="广告片ID/名称" class="input"/>
+              <DatePicker v-if="date.numdate == 1" type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="选择时间" class="input" style="width: 230px"></DatePicker>
+              <LazyInput  v-if="date.numdate == 2" @on-focus='checkShow' v-model="date.calendarName" placeholder="档期" class="input"/>
               <Select style="width:240px" v-model="query.gradeCode" filterable>
                 <Option v-for="it in gradeList" :key="it.code" :value="it.code">{{it.desc}}</Option>
               </Select>
@@ -34,8 +34,8 @@
               <Select style="width:90px" v-model="date.numdate" filterable>
                 <Option v-for="it in dates" :key="it.key" :value="it.key">{{it.name}}</Option>
               </Select>
-              <DatePicker v-if="date.numdate == 1" type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="注册时间" class="input" style="width: 200px"></DatePicker>
-              <LazyInput  v-if="date.numdate == 2" v-model="query.calendarName" placeholder="档期" class="input"/>
+              <DatePicker v-if="date.numdate == 1" type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="注册时间" class="input" style="width: 230px"></DatePicker>
+              <LazyInput  v-if="date.numdate == 2" @on-focus='checkShow' v-model="date.calendarName" placeholder="档期" class="input"/>
               <Select style="width:240px" v-model="query.companyName" filterable>
                 <Option v-for="it in companys" v-if='it.status==1' :key="it.name" :value="it.name">{{it.name}}</Option>
               </Select>
@@ -59,7 +59,7 @@
            实时刊例价查询
         </Tab-pane>
       </Tabs>
-      <DlgEdit v-if="date.numdate == 2" v-model="diaries" @input='getdates(diaries)'/>
+      <DlgEdit v-if="diariesShow" v-model="diaries" @input='getdates(diaries)'/>
   </div>
 </template>
 
@@ -88,7 +88,6 @@ const timeFormat = 'YYYY-MM-DD'
 export default class Main extends Mixins(ViewBase, UrlManager) {
   defQuery = {
     calendarId: null,
-    calendarName: '',
     gradeCode: null,
     companyName: '',
     beginDate: 0,
@@ -132,7 +131,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   // 日期
   date = {
-    numdate: 1
+    numdate: 1,
+    calendarName: '',
   }
   dates = [
     {
@@ -327,7 +327,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   getdates(diaries: any) {
     this.query.calendarId = diaries.id
-    this.query.calendarName = diaries.name
+    this.date.calendarName = diaries.name
   }
 
 
@@ -375,7 +375,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
       this.list = list // 平台刊例价
       this.list2 = list2 // 公司刊例价
-      this.gradeList = gradeList
+      this.gradeList = gradeList || []
 
 
       this.total = total // 平台刊例价
@@ -431,7 +431,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 .form {
   .input,
   /deep/ .ivu-select {
-    width: 100px;
+    width: 230px;
     margin-left: 8px;
     &:first-child {
       margin-left: 0;
