@@ -4,7 +4,9 @@
         <Tab-pane label="平台刊例价" key="key1">
           <div class="act-bar flex-box">
             <form class="form flex-1" @submit.prevent="search">
-              <LazyInput v-model="query.query" placeholder="广告片ID/名称" class="input"/>
+              <div @click="checkShow" style="float: left">
+                <LazyInput v-model="diaries.name" placeholder="广告片ID/名称" class="input"/>
+              </div>
               <Select style="width:240px" v-model="query.companyId" filterable>
                 <Option v-for="it in companys" v-if='it.status==1' :key="it.id" :value="it.id">{{it.name}}</Option>
               </Select>
@@ -48,7 +50,7 @@
            实时刊例价查询
         </Tab-pane>
       </Tabs>
-      <DlgEdit />
+      <DlgEdit v-if="diariesShow" v-model="diaries" />
   </div>
 </template>
 
@@ -87,8 +89,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   showDlg = false
   addOrUpdateVisible = false
   changeVisible = false
-
-
+  diaries = {
+    id: '1108',
+    name: ''
+  }
+  diariesShow = false
   examine = false
 
   loading = false
@@ -326,6 +331,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   }
 
+  checkShow() {
+    this.diariesShow = true
+  }
+
   @Watch('query', { deep: true })
   watchQuery() {
     if (this.query.pageIndex == this.oldQuery.pageIndex) {
@@ -333,6 +342,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
     this.doSearch()
   }
+
 }
 </script>
 
