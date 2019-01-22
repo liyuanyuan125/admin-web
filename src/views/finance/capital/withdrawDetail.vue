@@ -114,10 +114,18 @@ export default class Main extends ViewBase {
     }
   }
 
-  mounted() {
+  init() {
     this.copyBtn = new clipboard(this.$refs.copy)
     this.copyBtn = new clipboard(this.$refs.copy2)
     this.copyBtn = new clipboard(this.$refs.copy3)
+  }
+
+  mounted() {
+    this.init()
+  }
+
+  activated() {
+    this.init()
   }
 
   async load() {

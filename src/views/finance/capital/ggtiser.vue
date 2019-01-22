@@ -175,7 +175,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 
-  mounted() {
+  init() {
     this.updateQueryByParam()
     !!this.query.beginDate
       ? this.$set(this.showTime, 0, new Date(moment(this.query.beginDate).format(timeFormat)))
@@ -183,6 +183,14 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     !!this.query.endDate
       ? this.$set(this.showTime, 1,  new Date(moment(this.query.endDate).format(timeFormat)))
       : ''
+  }
+
+  mounted() {
+    this.init()
+  }
+
+  activated() {
+    this.init()
   }
 
   formatTime() {

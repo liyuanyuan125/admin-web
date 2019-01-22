@@ -151,6 +151,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       }
     }
   ]
+
   get cachedMap() {
     return {
       typeList: this.typeList,
@@ -168,10 +169,18 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     return list
   }
 
-  mounted() {
+  init() {
     this.updateQueryByParam()
     !!this.query.beginDate ? this.$set(this.showTime, 0, moment(this.query.beginDate).format(timeFormat)) :  ''
     !!this.query.endDate ? this.$set(this.showTime, 1, moment(this.query.endDate).format(timeFormat)) :  ''
+  }
+
+  mounted() {
+    this.init()
+  }
+
+  activated() {
+    this.init()
   }
 
   formatTime() {

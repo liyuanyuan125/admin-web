@@ -105,6 +105,7 @@ export default class Main extends ViewBase {
   loading = false
   imageList = []
   id: any = ''
+
   dataFrom = {
     remark: '',
     receipt: [],
@@ -119,7 +120,9 @@ export default class Main extends ViewBase {
     withdrawalTime: 0,
     type: 1
   }
+
   typeList: any = []
+
   get format() {
     const beforeWithdrawalAmount = this.detail.balance || 0
     const afterWithdrawalAmount = this.detail.afterWithdrawalAmount || 0
@@ -148,10 +151,18 @@ export default class Main extends ViewBase {
     }
   }
 
-  mounted() {
+  init() {
     this.copyBtn = new clipboard(this.$refs.copy)
     this.copyBtn = new clipboard(this.$refs.copy2)
     this.copyBtn = new clipboard(this.$refs.copy3)
+  }
+
+  mounted() {
+    this.init()
+  }
+
+  activated() {
+    this.init()
   }
 
   async load() {
