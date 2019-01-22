@@ -241,6 +241,11 @@ export default [
     component: () => import('./views/resource/management/index.vue')
   },
   {
+    path: '/resource/:msg/:edit',
+    name: 'resource-edit',
+    component: () => import('./views/resource/management/edit.vue')
+  },
+  {
     path: '/system/setup',
     name: 'system-setup',
     component: () => import('./views/system/setup/index.vue')

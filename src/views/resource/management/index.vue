@@ -4,16 +4,18 @@
         <Tab-pane label="平台刊例价" key="key1">
           <div class="act-bar flex-box">
             <form class="form flex-1" @submit.prevent="search">
-              <div @click="checkShow" style="float: left">
-                <LazyInput v-model="diaries.name" placeholder="广告片ID/名称" class="input"/>
-              </div>
-              <Select style="width:240px" v-model="query.companyId" filterable>
-                <Option v-for="it in companys" v-if='it.status==1' :key="it.id" :value="it.id">{{it.name}}</Option>
+              <Select style="width:90px" v-model="date.numdate" filterable>
+                <Option v-for="it in dates" :key="it.key" :value="it.key">{{it.name}}</Option>
+              </Select>
+              <DatePicker v-if="date.numdate == 1" type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="选择时间" class="input" style="width: 230px"></DatePicker>
+              <LazyInput  v-if="date.numdate == 2" @on-focus='checkShow' v-model="date.calendarName" placeholder="档期" class="input"/>
+              <Select style="width:240px" v-model="query.gradeCode" filterable>
+                <Option v-for="it in gradeList" :key="it.code" :value="it.code">{{it.desc}}</Option>
               </Select>
               <Button type="default" @click="reset" class="btn-reset">清空</Button>
             </form>
             <div class="acts">
-              <Button type="success" @click="edit(0)">新建刊例价</Button>
+              <Button type="success" @click="edit('platform', 'edit')">新建刊例价</Button>
             </div>
           </div>
           <Table :columns="columns" :data="list" :loading="loading"
@@ -29,12 +31,19 @@
         <Tab-pane label="公司刊例价" key="key2">
           <div class="act-bar flex-box">
             <form class="form flex-1" @submit.prevent="search">
-              <LazyInput v-model="query.query" placeholder="广告片ID/名称" class="input"/>
-              <Select style="width:240px" v-model="query.companyId" filterable>
-                <Option v-for="it in companys" v-if='it.status==1' :key="it.id" :value="it.id">{{it.name}}</Option>
+              <Select style="width:90px" v-model="date.numdate" filterable>
+                <Option v-for="it in dates" :key="it.key" :value="it.key">{{it.name}}</Option>
+              </Select>
+              <DatePicker v-if="date.numdate == 1" type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="注册时间" class="input" style="width: 230px"></DatePicker>
+              <LazyInput  v-if="date.numdate == 2" @on-focus='checkShow' v-model="date.calendarName" placeholder="档期" class="input"/>
+              <Select style="width:240px" v-model="query.companyName" filterable>
+                <Option v-for="it in companys" v-if='it.status==1' :key="it.name" :value="it.name">{{it.name}}</Option>
               </Select>
               <Button type="default" @click="reset" class="btn-reset">清空</Button>
             </form>
+            <div class="acts">
+              <Button type="success" @click="edit(0)">新建刊例价</Button>
+            </div>
           </div>
           <Table :columns="columns2" :data="list2" :loading="loading"
             border stripe disabled-hover size="small" class="table"></Table>
@@ -50,7 +59,7 @@
            实时刊例价查询
         </Tab-pane>
       </Tabs>
-      <DlgEdit v-if="diariesShow" v-model="diaries" />
+      <DlgEdit v-if="diariesShow" v-model="diaries" @input='getdates(diaries)'/>
   </div>
 </template>
 
@@ -59,7 +68,7 @@ import { Component, Watch , Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { pingqueryList , comqueryList , companysList} from '@/api/management'
+import { pingqueryList , comqueryList , companysList , dels , pricingLevelList} from '@/api/management'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
@@ -69,7 +78,7 @@ import DlgEdit from './dlgEdit.vue'
 import {confirm , warning , success, toast } from '@/ui/modal'
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
-const timeFormat = 'YYYY-MM-DD HH:mm:ss'
+const timeFormat = 'YYYY-MM-DD'
 
 @Component({
   components: {
@@ -78,9 +87,11 @@ const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 })
 export default class Main extends Mixins(ViewBase, UrlManager) {
   defQuery = {
-    query: '',
-    companyId: null,
-    status: 1,
+    calendarId: null,
+    gradeCode: null,
+    companyName: '',
+    beginDate: 0,
+    endDate: 0,
     pageIndex: 1,
     pageSize: 20,
   }
@@ -90,7 +101,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   addOrUpdateVisible = false
   changeVisible = false
   diaries = {
-    id: '1108',
+    id: '',
     name: ''
   }
   diariesShow = false
@@ -110,61 +121,89 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   showTime: any = []
 
 
+
+
   statusList = []
   // 公司
   companys = []
+  // 等级
+  gradeList = []
+
+  // 日期
+  date = {
+    numdate: 1,
+    calendarName: '',
+  }
+  dates = [
+    {
+      key: 1,
+      name: '当前日期'
+    },
+    {
+      key: 2,
+      name: '档期'
+    }
+  ]
 
 
   columns = [
     { title: '序号', key: 'id', align: 'center' },
-    { title: '影院定价等级', key: 'name', align: 'center' },
-    { title: '30秒刊例价(元/千人次)', key: 'customerName', align: 'center',
-     render: (hh: any, { row: { customerId , customerName } }: any) => {
+    { title: '影院定价等级', key: 'gradeDesc', align: 'center' ,
+      render: (hh: any, { row: { gradeDesc , gradeCode  } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = '[' + customerId + '] '+ customerName
+        const html = '(' + gradeCode + '级)' + gradeDesc
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
     },
-    { title: '15秒折扣', key: 'specification', align: 'center',
-     render: (hh: any, { row: { specification } }: any) => {
+    { title: '30秒刊例价(元/千人次)', key: 'cpm', align: 'center',
+     render: (hh: any, { row: { cpm  } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = specification + 's'
+        const html = cpm + '.00'
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
     },
-    { title: '档期', key: 'length', align: 'center',
-      render: (hh: any, { row: { length } }: any) => {
+    { title: '15秒折扣', key: 'discount', align: 'center',
+     render: (hh: any, { row: { discount } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = length + 's'
+        const html = discount + '%'
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
+    },
+    { title: '档期', key: 'calendarName', align: 'center',
+      // render: (hh: any, { row: { length } }: any) => {
+      //   /* tslint:disable */
+      //   const h = jsxReactToVue(hh)
+      //   const html = length + 's'
+      //   return <span class='datetime' v-html={html}></span>
+      //   /* tslint:enable */
+      // }
     },
     {
       title: '开始日期',
-      key: 'applyTime',
+      key: 'beginDate',
       align: 'center',
-      render: (hh: any, { row: { applyTime } }: any) => {
+      render: (hh: any, { row: { beginDate } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = moment(applyTime).format(timeFormat)
+        const html = String(beginDate).slice(0, 4) + '-' + String(beginDate).slice(4, 6) + '-' + String(beginDate).slice(6, 8)
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
     },
     {
       title: '结束日期',
-      key: 'applyTime',
+      key: 'endDate',
       align: 'center',
-      render: (hh: any, { row: { applyTime } }: any) => {
+      render: (hh: any, { row: { endDate } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = moment(applyTime).format(timeFormat)
+        const html = String(endDate).slice(0, 4) + '-' + String(endDate).slice(4, 6) + '-' + String(endDate).slice(6, 8)
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
@@ -174,13 +213,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       key: 'action',
       align: 'center',
       width: 90,
-      render: (hh: any, { row: { status, statusText, id }, row }: any) => {
+      render: (hh: any, { row: { id }, row }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const sta = status == 1 ? '停用' : '启用'
+        // const sta = status == 1 ? '停用' : '启用'
         return <div class='row-acts'>
-          <a href='javascript:;'>编辑</a>&nbsp;&nbsp;&nbsp;
-          <a href='javascript:;' on-click={this.del(id)}>删除</a>
+          <a on-click={this.edit.bind(this, row.id, row)}>编辑</a>&nbsp;&nbsp;&nbsp;
+          <a on-click={this.del.bind(this, row.id)}>删除</a>
         </div>
         /* tslint:enable */
       }
@@ -188,63 +227,63 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   ]
   columns2 = [
     { title: '序号', key: 'id', align: 'center' },
-    { title: '公司名称', key: 'name', align: 'center' },
-    { title: '影响影院', key: 'customerName', align: 'center',
-     render: (hh: any, { row: { customerId , customerName } }: any) => {
+    { title: '公司名称', key: 'companyName', align: 'center' },
+    { title: '影响影院', key: 'cinemaCount', align: 'center',
+    //  render: (hh: any, { row: { customerId , customerName } }: any) => {
+    //     /* tslint:disable */
+    //     const h = jsxReactToVue(hh)
+    //     const html = '[' + customerId + '] '+ customerName
+    //     return <span class='datetime' v-html={html}></span>
+    //     /* tslint:enable */
+    //   }
+    },
+    { title: '30秒刊例价(元/千人次)', key: 'cpm', align: 'center',
+     render: (hh: any, { row: { cpm } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = '[' + customerId + '] '+ customerName
+        const html = cpm + '%'
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
     },
-    { title: '30秒刊例价(元/千人次)', key: 'specification', align: 'center',
-     render: (hh: any, { row: { specification } }: any) => {
+    { title: '15秒折扣', key: 'discount', align: 'center',
+      render: (hh: any, { row: { discount } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = specification + 's'
+        const html = discount + 's'
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
     },
-    { title: '15秒折扣', key: 'length', align: 'center',
-      render: (hh: any, { row: { length } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = length + 's'
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    { title: '档期', key: 'transFee', align: 'center',
-      render: (hh: any, { row: { transFee } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = transFee + '.00'
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
+    { title: '档期', key: 'calendarName', align: 'center',
+      // render: (hh: any, { row: { transFee } }: any) => {
+      //   /* tslint:disable */
+      //   const h = jsxReactToVue(hh)
+      //   const html = transFee + '.00'
+      //   return <span class='datetime' v-html={html}></span>
+      //   /* tslint:enable */
+      // }
     },
     {
       title: '开始日期',
-      key: 'applyTime',
+      key: 'beginDate',
       align: 'center',
-      render: (hh: any, { row: { applyTime } }: any) => {
+      render: (hh: any, { row: { beginDate } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = moment(applyTime).format(timeFormat)
+        const html = String(beginDate).slice(0, 4) + '-' + String(beginDate).slice(4, 6) + '-' + String(beginDate).slice(6, 8)
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
     },
     {
       title: '结束日期',
-      key: 'applyTime',
+      key: 'endDate',
       align: 'center',
-      render: (hh: any, { row: { applyTime } }: any) => {
+      render: (hh: any, { row: { endDate } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = moment(applyTime).format(timeFormat)
+        const html = String(endDate).slice(0, 4) + '-' + String(endDate).slice(4, 6) + '-' + String(endDate).slice(6, 8)
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
@@ -254,13 +293,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       key: 'action',
       width: 90,
       align: 'center',
-      render: (hh: any, { row: { status, statusText, id }, row }: any) => {
+      render: (hh: any, { row: { id }, row }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const sta = status == 1 ? '停用' : '启用'
+        // const sta = status == 1 ? '停用' : '启用'
         return <div class='row-acts'>
-          <a href='javascript:;'>编辑</a>&nbsp;&nbsp;&nbsp;
-          <a href='javascript:;' on-click={this.del(id)}>删除</a>
+          <a on-click={this.edit.bind(this, row.id, row)}>编辑</a>&nbsp;&nbsp;&nbsp;
+          <a on-click={this.del.bind(this, row.id)}>删除</a>
         </div>
         /* tslint:enable */
       }
@@ -269,9 +308,27 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   mounted() {
     this.updateQueryByParam()
-    this.doSearch()
+    // this.doSearch()
+    !!this.query.beginDate ? this.showTime[0] =
+    moment(this.query.beginDate).format(timeFormat) : this.showTime[0] = ''
+    !!this.query.endDate ? this.showTime[1] =
+    moment(this.query.endDate).format(timeFormat) : this.showTime[1] = ''
+
   }
 
+  dateChange(data: any) {
+     // 获取时间戳
+     const a = (moment(new Date(data[0]).getTime() - 28800000).format(timeFormat)).split('-')
+     const b = (moment(new Date(data[1]).getTime() + 57600000).format(timeFormat)).split('-')
+
+     !!data[0] ? (this.query.beginDate = a[0] + a[1] + a[2]) : this.query.beginDate = 0
+     !!data[1] ? (this.query.endDate = b[0] + b[1] + b[2]) : this.query.endDate = 0
+  }
+
+  getdates(diaries: any) {
+    this.query.calendarId = diaries.id
+    this.date.calendarName = diaries.name
+  }
 
 
   search() {
@@ -282,6 +339,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
   reset() {
     this.resetQuery()
+    this.showTime = []
   }
 
 
@@ -293,13 +351,22 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     this.oldQuery = { ...this.query }
     this.updateUrl()
     this.loading = true
-    const query = clean({ ...this.query })
-    // const query: any = {}
+    // const query = clean({ ...this.query })
+    const query: any = {}
+    for (const [key, value] of Object.entries(this.oldQuery)) {
+      if (key != 'beginDate' && value != 0) {
+        query[key] = value
+      }
+      if (key != 'endDate' && value != 0) {
+        query[key] = value
+      }
+    }
     try {
       // 待审核
       const { data: {
         items: list,
         totalCount: total,
+        gradeList: gradeList
       } } = await pingqueryList(query)
       const { data: {
         items: list2,
@@ -308,6 +375,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
       this.list = list // 平台刊例价
       this.list2 = list2 // 公司刊例价
+      this.gradeList = gradeList || []
+
 
       this.total = total // 平台刊例价
       this.total2 = total2 // 公司刊例价
@@ -316,6 +385,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         items: companys
       } } = await companysList({ pageSize: 1000000 })
       this.companys = companys
+      // // 等级列表
+      // const { data: {
+      //   pricingLevelList: pricingLevelList
+      // } } = await companysList({ pageSize: 1000000 })
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -323,12 +396,20 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 
-  del(id: any) {
-
+  async del(id: any) {
+    // console.log(id)
+    try {
+      await confirm('您确定删除当前刊例价吗？')
+      await dels(id)
+      toast('删除成功')
+      this.reloadSearch()
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
 
-  edit(id: any) {
-
+  edit(msg: string, edit: string) {
+    this.$router.push({ name: 'resource-edit', params: {msg, edit}})
   }
 
   checkShow() {
@@ -350,7 +431,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 .form {
   .input,
   /deep/ .ivu-select {
-    width: 100px;
+    width: 230px;
     margin-left: 8px;
     &:first-child {
       margin-left: 0;
