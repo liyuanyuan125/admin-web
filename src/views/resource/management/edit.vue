@@ -59,12 +59,12 @@
                 </RadioGroup>
               </FormItem>
             </Col>
-            <FormItem v-if="dateStaus == 1" class="begin-left" prop="cpm">
-              <DatePicker type="daterange" @on-change="dateChange" v-model="dataForm.showTime" placement="bottom-start" placeholder="指定日期"  style="width: 200px"></DatePicker>
+            <FormItem v-if="dateStaus == 1" class="begin-left" prop="showTime">
+              <DatePicker type="daterange" @on-change="dateChange" v-model="dataForm.showTime" placement="bottom-start" placeholder="指定日期"  style="width: 220px"></DatePicker>
             </FormItem>
             <div v-else class="begin-right" @click="diaresShow">
-              <FormItem prop="cpm">
-                <Input v-model="dataForm.name" placeholder="请选择档期" style="width: 200px" />
+              <FormItem prop="diaries[name]">
+                <Input v-model="dataForm.diaries.name" readonly placeholder="请选择档期" style="width: 220px" />
               </FormItem>
             </div>
           </Row>
@@ -79,7 +79,7 @@
         <Row class="detail-content">
           <Row>
             <Col :span="4">
-              <FormItem prop="cpm" class="mt10">
+              <FormItem class="mt10">
                 <RadioGroup v-model="cinemaStatus" vertical>
                   <Radio label="1">
                     <span>按平台定价等级</span>
@@ -90,22 +90,30 @@
                 </RadioGroup>
               </FormItem>
             </Col>
-            <FormItem v-if="cinemaStatus == 1" class="cinema-left" prop="cpm">
-                <Input v-model="dataForm.platform.gradeCode" placeholder="请选择等级" style="width: 200px" />
+            <FormItem v-if="cinemaStatus == 1" class="cinema-left" prop='cinemaLevel'>
+                <CinemaLevel v-model="dataForm.cinemaLevel" />
             </FormItem>
             <div v-else class="cinema-right">
-              <FormItem prop="cpm">
-                <Input v-model="dataForm.company.companyId" placeholder="请选择公司" style="width: 200px" />
+              <FormItem prop="companyId">
+                <CinemaList v-model="dataForm.companyId" style="width: 220px" />
               </FormItem>
             </div>
+          </Row>
+          <Row>
+            <Col :span="14" class="cinema-add">
+              <FormItem>
+                <PartBindCinema v-model="dataForm.company.cinemasList" class="part-bind-cinema"/>
+              </FormItem>
+            </Col>
           </Row>
         </Row>
       </div>
     </form>
+
     <div class="edit-button">
       <Button style="padding: 6px 40px" type="info" size="large" @click="edit('dataForm')">保存</Button>
     </div>
-    <DlgEdit ref="diaries" v-if="diariesShow" v-model="diaries" />
+    <DlgEdit ref="diaries" v-if="diariesShow" v-model="dataForm.diaries" />
   </div>
 </template>
 
@@ -113,17 +121,23 @@
 import { Component } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import DlgEdit from './dlgEdit.vue'
+import CinemaLevel from '@/components/priceLevel.vue'
+import CinemaList from '@/components/companyList.vue'
+import PartBindCinema from './partBindCinema.vue'
 
 @Component({
   components: {
-    DlgEdit
+    DlgEdit,
+    CinemaLevel,
+    CinemaList,
+    PartBindCinema
   }
 })
 export default class Main extends ViewBase {
   dataForm: any = {
     cpm: 0,
     discount: 0,
-    showTime: null,
+    showTime: [],
     name: '',
     platform: {
       gradeCode: '',
@@ -132,7 +146,13 @@ export default class Main extends ViewBase {
     company: {
       companyId: null,
       cinemaList: []
-    }
+    },
+    diaries: {
+      id: '',
+      name: ''
+    },
+    cinemaLevel: '',
+    companyId: null,
   }
 
   diaries: any = {
@@ -144,13 +164,32 @@ export default class Main extends ViewBase {
   dateStaus = '1'
   cinemaStatus = '1'
   get rule() {
+    const validatorDate = (rule: any, value: any, callback: any) => {
+      if (value[0] == '') {
+        callback(new Error('请选择指定日期'))
+      } else {
+        callback()
+      }
+    }
     return {
       cpm: [
-        { required: true, message: '不能为空', trigger: 'blur', type: 'number' }
+        { required: true, message: '不能为空', trigger: 'change', type: 'number' }
       ],
       discount: [
-        { required: true, message: '不能为空', trigger: 'blur', type: 'number' }
+        { required: true, message: '不能为空', trigger: 'change', type: 'number' }
       ],
+      showTime: [
+        { validator: validatorDate, trigger: 'change', type: 'array' }
+      ],
+      'diaries[name]': [
+        { required: true, message: '请选择档期', trigger: 'change' }
+      ],
+      cinemaLevel: [
+        { required: true, message: '请选择定价等级', trigger: 'change' }
+      ],
+      companyId: [
+        { required: true, message: '请选择公司', trigger: 'change', type: 'number' }
+      ]
     }
   }
 
@@ -221,6 +260,7 @@ export default class Main extends ViewBase {
   .begin-right {
     position: absolute;
     left: calc(100% / 24 * 2);
+    bottom: 0;
   }
   .cinema-left {
     position: absolute;
@@ -230,6 +270,10 @@ export default class Main extends ViewBase {
   .cinema-right {
     position: absolute;
     left: calc(100% / 24 * 3);
+    bottom: 0;
+  }
+  .cinema-add {
+    margin-left: calc(100% / 24 * 3);
   }
   .mt8 {
     margin-top: 8px;
@@ -248,5 +292,8 @@ export default class Main extends ViewBase {
   margin-top: 20px;
   margin-bottom: 30px;
   text-align: center;
+}
+.part-bind-cinema {
+  width: 660px;
 }
 </style>
