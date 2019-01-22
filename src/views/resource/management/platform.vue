@@ -1,65 +1,33 @@
 <template>
   <div class="page">
-    <Tabs type="card"  :animated="false" @click="reset">
-        <Tab-pane label="平台刊例价" key="key1">
-          <div class="act-bar flex-box">
-            <form class="form flex-1" @submit.prevent="search">
-              <Select style="width:90px" v-model="date.numdate" filterable>
-                <Option v-for="it in dates" :key="it.key" :value="it.key">{{it.name}}</Option>
-              </Select>
-              <DatePicker v-if="date.numdate == 1" type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="选择时间" class="input" style="width: 230px"></DatePicker>
-              <LazyInput  v-if="date.numdate == 2" @on-focus='checkShow' v-model="date.calendarName" placeholder="档期" class="input"/>
-              <Select style="width:240px" v-model="query.gradeCode" filterable>
-                <Option v-for="it in gradeList" :key="it.code" :value="it.code">{{it.desc}}</Option>
-              </Select>
-              <Button type="default" @click="reset" class="btn-reset">清空</Button>
-            </form>
-            <div class="acts">
-              <Button type="success" @click="edit('platform', 'edit')">新建刊例价</Button>
-            </div>
-          </div>
-          <Table :columns="columns" :data="list" :loading="loading"
-            border stripe disabled-hover size="small" class="table"></Table>
+    <div class="act-bar flex-box">
+      <form class="form flex-1" @submit.prevent="search">
+        <Select style="width:90px" v-model="date.numdate" filterable>
+          <Option v-for="it in dates" :key="it.key" :value="it.key">{{it.name}}</Option>
+        </Select>
+        <DatePicker v-if="date.numdate == 1" type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="选择时间" class="input" style="width: 230px"></DatePicker>
+        <LazyInput  v-if="date.numdate == 2" @on-focus='checkShow' v-model="date.calendarName" placeholder="档期" class="input"/>
+        <Select style="width:240px" v-model="query.gradeCode" filterable>
+          <Option v-for="it in gradeList" :key="it.code" :value="it.code">{{it.desc}}</Option>
+        </Select>
+        <Button type="default" @click="reset" class="btn-reset">清空</Button>
+      </form>
+      <div class="acts">
+        <Button type="success" @click="edit('platform', 'edit')">新建刊例价</Button>
+      </div>
+    </div>
 
-          <div class="page-wrap" v-if="total > 0">
-            <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
-              show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-              @on-change="page => query.pageIndex = page"
-              @on-page-size-change="pageSize => query.pageSize = pageSize"/>
-          </div>
-        </Tab-pane>
-        <Tab-pane label="公司刊例价" key="key2">
-          <div class="act-bar flex-box">
-            <form class="form flex-1" @submit.prevent="search">
-              <Select style="width:90px" v-model="date.numdate" filterable>
-                <Option v-for="it in dates" :key="it.key" :value="it.key">{{it.name}}</Option>
-              </Select>
-              <DatePicker v-if="date.numdate == 1" type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="注册时间" class="input" style="width: 230px"></DatePicker>
-              <LazyInput  v-if="date.numdate == 2" @on-focus='checkShow' v-model="date.calendarName" placeholder="档期" class="input"/>
-              <Select style="width:240px" v-model="query.companyName" filterable>
-                <Option v-for="it in companys" v-if='it.status==1' :key="it.name" :value="it.name">{{it.name}}</Option>
-              </Select>
-              <Button type="default" @click="reset" class="btn-reset">清空</Button>
-            </form>
-            <div class="acts">
-              <Button type="success" @click="edit(0)">新建刊例价</Button>
-            </div>
-          </div>
-          <Table :columns="columns2" :data="list2" :loading="loading"
-            border stripe disabled-hover size="small" class="table"></Table>
+    <Table :columns="columns" :data="list" :loading="loading"
+      border stripe disabled-hover size="small" class="table"></Table>
 
-          <div class="page-wrap" v-if="total2 > 0">
-            <Page :total="total2" :current="query.pageIndex" :page-size="query.pageSize"
-              show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-              @on-change="page => query.pageIndex = page"
-              @on-page-size-change="pageSize => query.pageSize = pageSize"/>
-          </div>
-        </Tab-pane>
-        <Tab-pane label="实时刊例价查询" key="key3">
-           实时刊例价查询
-        </Tab-pane>
-      </Tabs>
-      <DlgEdit v-if="diariesShow" v-model="diaries" @input='getdates(diaries)'/>
+    <div class="page-wrap" v-if="total > 0">
+      <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
+        show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
+        @on-change="page => query.pageIndex = page"
+        @on-page-size-change="pageSize => query.pageSize = pageSize"/>
+    </div>
+
+    <DlgEdit v-if="diariesShow" v-model="diaries" @input='getdates(diaries)'/>
   </div>
 </template>
 
@@ -119,9 +87,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   oldQuery: any = {}
   typeList = []
   showTime: any = []
-
-
-
 
   statusList = []
   // 公司
@@ -483,5 +448,4 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 /deep/ .ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab-active {
   color: #222;
 }
-
 </style>

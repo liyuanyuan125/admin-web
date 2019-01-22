@@ -123,7 +123,7 @@ export default [
   {
     path: '/finance/capital/',
     name: 'finance-capital',
-    redirect: { name: 'finance-capital-ggtiser'},
+    redirect: { name: 'finance-capital-ggtiser' },
     component: () => import('./components/tabLayout'),
     children: [
       {
@@ -235,11 +235,44 @@ export default [
     name: 'gg-film-detail',
     component: () => import('./views/plan/film/detail.vue')
   },
+
+  // 刊例价管理
   {
     path: '/resource/management',
     name: 'resource-management',
-    component: () => import('./views/resource/management/index.vue')
+    redirect: { name: 'resource-management-platform' },
+    component: () => import('./components/tabLayout'),
+    children: [
+      {
+        path: 'platform',
+        name: 'resource-management-platform',
+        component: () => import('./views/resource/management/platform.vue'),
+        meta: {
+          title: '平台刊例价',
+          fixed: true,
+        }
+      },
+      {
+        path: 'corp',
+        name: 'resource-management-corp',
+        component: () => import('./views/resource/management/corp.vue'),
+        meta: {
+          title: '公司刊例价',
+          fixed: true,
+        }
+      },
+      {
+        path: 'realtime',
+        name: 'resource-management-realtime',
+        component: () => import('./views/resource/management/realtime.vue'),
+        meta: {
+          title: '实时刊例价查询',
+          fixed: true,
+        }
+      },
+    ]
   },
+
   {
     path: '/resource/:msg/:edit',
     name: 'resource-edit',
