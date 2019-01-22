@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <div class="detail-box" style="margin-top: 10px">
+    <div class="detail-box">
       <div class="detail-header">
         <Row>
           <Col span="3"><div>公司名称</div></Col>
@@ -202,18 +202,6 @@ export default class Main extends ViewBase {
         }
       }
     })
-  }
-
-  @Watch('$route', {immediate: true, deep: true})
-  watch$route(val: any, oldVal: any) {
-    if (val.name == 'withdrawalBill') {
-      this.id = this.$route.params.id || 0
-      this.dataFrom.amount = 0
-      this.dataFrom.receipt = []
-      if (val.params.show == 'show') {
-        this.load()
-      }
-    }
   }
 }
 </script>

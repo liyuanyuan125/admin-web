@@ -1,31 +1,29 @@
 <template>
   <div class="page">
-    <div  v-if="shows">
-      <div class="act-bar flex-box">
-        <Form class="form" :label-width="0" @submit.prevent="search" inline>
-          <FormItem label=''>
-            <DatePicker @on-change="dateChange" @on-clear="formatTime" type="daterange" v-model="showTime" placement="bottom-start" placeholder="统计范围" class="input" style="width:200px"></DatePicker>
-          </FormItem>
-          <Select v-model="query.type" placeholder="客户类型" clearable>
-            <Option v-for="it in typeList" :key="it.key" :value="it.key"
-              :label="it.text">{{it.text}}</Option>
-          </Select>
-          <Button type="default" @click="reset" class="btn-reset">清空</Button>
-        </Form>
-        <div class="title">
-          <b style="margin-left:0px"> 所属公司:</b>{{$route.params.title}} <span style="margin-left:8px"></span><b>查询结果</b><b>共计金额：</b>{{altogetherAmount}}元   <b>次数共计：</b>{{total}}次
-        </div>
+    <div class="act-bar flex-box">
+      <Form class="form" :label-width="0" @submit.prevent="search" inline>
+        <DatePicker @on-change="dateChange" @on-clear="formatTime" type="daterange" v-model="showTime"
+          placement="bottom-start" placeholder="统计范围" class="input" style="width:200px"></DatePicker>
+        <Select v-model="query.type" placeholder="客户类型" clearable>
+          <Option v-for="it in typeList" :key="it.key" :value="it.key"
+            :label="it.text">{{it.text}}</Option>
+        </Select>
+        <Button type="default" @click="reset" class="btn-reset">清空</Button>
+      </Form>
+      <div class="title">
+        <b style="margin-left:0px"> 所属公司:</b>{{$route.params.title}} <span style="margin-left:8px"></span>
+        <b>查询结果</b><b>共计金额：</b>{{altogetherAmount}}元   <b>次数共计：</b>{{total}}次
       </div>
+    </div>
 
-      <Table :columns="columns" :data="tableData" :loading="loading"
-        border stripe disabled-hover size="small" class="table"></Table>
+    <Table :columns="columns" :data="tableData" :loading="loading"
+      border stripe disabled-hover size="small" class="table"></Table>
 
-      <div class="page-wrap" v-if="total > 0">
-        <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
-          show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-          @on-change="page => query.pageIndex = page"
-          @on-page-size-change="pageSize => query.pageSize = pageSize"/>
-      </div>
+    <div class="page-wrap" v-if="total > 0">
+      <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
+        show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
+        @on-change="page => query.pageIndex = page"
+        @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
   </div>
 </template>
@@ -34,7 +32,6 @@
 import { Component, Watch , Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
-import { get } from '@/fn/ajax'
 import { payList, payStatus } from '@/api/advertiser'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
@@ -52,11 +49,7 @@ const dataForm = {
   status: 1
 }
 
-@Component({
-  components: {
-    DlgEdit,
-  }
-})
+@Component
 export default class Main extends Mixins(ViewBase, UrlManager) {
   defQuery = {
     companyId: '',
@@ -69,19 +62,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
   showTime: any = []
   query: any = {}
-  shows = true
 
-  // query = { ...defQuery }
   altogetherAmount: any = ''
   loading = false
   list = []
   total = 0
   oldQuery: any = {}
   typeList = []
-
-  // company = []
-
-  company2 = []
 
   columns = [
     { title: '充值序号', key: 'id', align: 'center', width: 80 },
@@ -189,6 +176,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       }
     }
   ]
+
   get cachedMap() {
     return {
       typeList: makeMap(this.typeList),
@@ -215,6 +203,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   formatTime() {
     this.showTime = [new Date(`${years}/1/1`), new Date(`${years}/12/31`)]
   }
+
   dateChange(data: any) {
      // 获取时间戳
      !!data[0] ? (this.query.beginDate = new Date(data[0]).getTime() - 28800000) : this.query.beginDate = 0
@@ -273,15 +262,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
     this.doSearch()
   }
-
-  @Watch('$route', {immediate: true})
-  watch$route(val: any, oldVal: any) {
-    if (val.name == 'rechargeNum') {
-      this.updateQueryByParam()
-      !!val.query.beginDate ? this.$set(this.showTime, 0, moment(Number(val.query.beginDate)).format(timeFormat)) : ''
-      !!val.query.endDate ? this.$set(this.showTime, 1, moment(Number(val.query.endDate)).format(timeFormat)) : ''
-    }
-  }
 }
 </script>
 
@@ -308,34 +288,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 .btn-reset {
   margin-left: 8px;
 }
+
 .page-wrap {
   margin: 20px 0 18px;
   text-align: center;
 }
-.Add-Inp {
-  width: 100%;
-  height: 60px;
-  line-height: 60px;
-  font-size: 15px;
-}
-.Add-Inp span {
-  display: inline-block;
-  width: 7%;
-  text-align: right;
-  margin-right: 4%;
-}
-.Add-Inp input {
-  display: inline-block;
-}
-.button2 {
-  width: 6%;
-  height: 40px;
-  margin-left: 5%;
-}
-.page-f {
-  margin-top: 10px;
-  font-size: 15px;
-}
+
 .bge {
   background: #fff;
   padding: 5px;
@@ -386,6 +344,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   margin-left: 5%;
 }
 .table {
+  margin-top: 10px;
   /deep/ .status-2,
   /deep/ .aptitude-status-3 {
     color: #ed4014;

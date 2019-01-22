@@ -1,26 +1,35 @@
 <template>
   <div class="page">
-    <div  v-if="shows">
-      <div class="act-bar flex-box">
-        <Form class="form flex-1" :label-width="0" @submit.prevent="search" inline>
-          <LazyInput v-model="query.companyName" placeholder="公司名称" class="input input-id"/>
-          <FormItem label='' >
-            <DatePicker @on-change="dateChange" @on-clear="formatTime" type="daterange" v-model="showTime" placement="bottom-start" placeholder="统计范围" class="input" style="width:200px"></DatePicker>
-          </FormItem>
-          <Button type="default" @click="reset" class="btn-reset">清空</Button>
-        </Form>
-      </div>
-      <Table :columns="columns" :data="tableData" :loading="loading"
-        border stripe disabled-hover size="small" class="table"></Table>
-
-      <div class="page-wrap" v-if="total > 0">
-        <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
-          show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-          @on-change="page => query.pageIndex = page"
-          @on-page-size-change="pageSize => query.pageSize = pageSize"/>
-      </div>
+    <div class="act-bar flex-box">
+      <Form class="form flex-1" :label-width="0" @submit.prevent="search" inline>
+        <LazyInput v-model="query.companyName" placeholder="公司名称" class="input input-id"/>
+        <DatePicker v-model="showTime" type="daterange" placement="bottom-start" class="input"
+          @on-change="dateChange" @on-clear="formatTime" placeholder="统计范围" style="width:200px"></DatePicker>
+        <Button type="default" @click="reset" class="btn-reset">清空</Button>
+      </Form>
     </div>
-    <!-- <DlgEdit  ref="addOrUpdate"   @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/> -->
+
+    <Table :columns="columns" :data="tableData" :loading="loading"
+      border stripe disabled-hover size="small" class="table">
+      <template slot-scope="{ row: { balance } }" slot="balance">
+        <span class="datetime">{{balance|currency}}</span>
+      </template>
+
+      <template slot-scope="{ row: { availableAmount } }" slot="availableAmount">
+        <span class="datetime">{{availableAmount|currency}}</span>
+      </template>
+
+      <template slot-scope="{ row: { freezeAmount } }" slot="freezeAmount">
+        <span class="datetime">{{freezeAmount|currency}}</span>
+      </template>
+    </Table>
+
+    <div class="page-wrap" v-if="total > 0">
+      <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
+        show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
+        @on-change="page => query.pageIndex = page"
+        @on-page-size-change="pageSize => query.pageSize = pageSize"/>
+    </div>
   </div>
 </template>
 
@@ -28,13 +37,11 @@
 import { Component, Watch , Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
-import { get } from '@/fn/ajax'
 import { advqueryList } from '@/api/advertiser'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
-import DlgEdit from './dlgEdit.vue'
 import { formatCurrency } from '@/fn/string'
 import {confirm , warning , success, toast } from '@/ui/modal'
 
@@ -46,10 +53,9 @@ const dataForm = {
   status: 1
 }
 
-
 @Component({
-  components: {
-    DlgEdit,
+  filters: {
+    currency: formatCurrency
   }
 })
 // export default class Main extends ViewBase {
@@ -63,14 +69,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
   showTime: any = []
   query: any = {}
-  shows = true
-  showDlg = false
+
   addOrUpdateVisible = false
   changeVisible = false
 
-
   examine = false
-  // query = { ...defQuery }
 
   loading = false
   list = []
@@ -78,72 +81,44 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   oldQuery: any = {}
   typeList = []
 
-  // company = []
-
-  company2 = []
-
   get columns() {
     return [
       { title: '公司ID', key: 'companyId', align: 'center', width: 80 },
       { title: '公司名称', key: 'companyName', align: 'center' },
-      { title: '账户余额（元）', key: 'balance', align: 'center',
-        render: (hh: any, { row: { balance } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          const html = formatCurrency(balance)
-          return <span class='datetime' v-html={html}></span>
-          /* tslint:enable */
-        }
-      },
-      {
-        title: '可用余额（元）',
-        key: 'availableAmount',
-        align: 'center',
-        render: (hh: any, { row: { availableAmount } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          const html = formatCurrency(availableAmount)
-          return <span class='datetime' v-html={html}></span>
-          /* tslint:enable */
-        }
-      },
-      {
-        title: '冻结金额（元）',
-        key: 'freezeAmount',
-        align: 'center',
-        render: (hh: any, { row: { freezeAmount } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          const html = formatCurrency(freezeAmount)
-          return <span class='datetime' v-html={html}></span>
-          /* tslint:enable */
-        }
-      },
+      { title: '账户余额（元）', key: 'balance', align: 'center', slot: 'balance' },
+      { title: '可用余额（元）', key: 'availableAmount', align: 'center', slot: 'availableAmount' },
+      { title: '冻结金额（元）', key: 'freezeAmount', align: 'center', slot: 'freezeAmount' },
       {
         title: '',
         key: 'statusText',
         align: 'center',
         render: (hh: any, { row: { monthRechargeCount, totalRechargeCount, companyId, companyName } }: any) => {
           /* tslint:disable */
-            const h = jsxReactToVue(hh)
-            const start = new Date(this.showTime[0]).getTime()
-            const end = new Date(this.showTime[1]).getTime()
-            const year = new Date().getFullYear()
-            const month = new Date().getMonth() + 1
-            const beginDate = new Date(`${year}/${month}/1`).getTime()
-            const endDate = new Date(`${year}/${month + 1}/1`).getTime() -1
-            return <div>
-            <router-link class="router" to={{name: 'rechargeNum', params: {companyId: companyId, title: companyName }, query: { beginDate: beginDate, endDate: endDate }}}>
-            <span v-html={monthRechargeCount}></span>/</router-link>
-            <router-link class="router" to={{name: 'rechargeNum', params: {companyId: companyId, title: companyName }, query: { beginDate: this.query.beginDate, endDate: this.query.endDate }}}>
-            <span v-html={totalRechargeCount}></span></router-link>
-            </div>
+          const h = jsxReactToVue(hh)
+          const start = new Date(this.showTime[0]).getTime()
+          const end = new Date(this.showTime[1]).getTime()
+          const year = new Date().getFullYear()
+          const month = new Date().getMonth() + 1
+          const beginDate = new Date(`${year}/${month}/1`).getTime()
+          const endDate = new Date(`${year}/${month + 1}/1`).getTime() -1
+          return <div>
+            <router-link class="router" to={{name: 'finance-capital-rechargeNum',
+              params: {companyId: companyId, title: companyName },
+              query: { beginDate: beginDate, endDate: endDate }}}>
+              <span v-html={monthRechargeCount}></span>/
+            </router-link>
+            <router-link class="router" to={{name: 'finance-capital-rechargeNum',
+              params: {companyId: companyId, title: companyName },
+              query: { beginDate: this.query.beginDate, endDate: this.query.endDate }}}>
+              <span v-html={totalRechargeCount}></span>
+            </router-link>
+          </div>
           /* tslint:enable */
         },
         /* tslint:disable */
         renderHeader: (hh: any) => {
-            const h = jsxReactToVue(hh)
-            return <span class='table-money'>充值次数<br/>（本月/累计）</span>
+          const h = jsxReactToVue(hh)
+          return <span class='table-money'>充值次数<br/>（本月/累计）</span>
         }
         /* tslint:enable */
       },
@@ -159,14 +134,20 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           const year = new Date().getFullYear()
           const month = new Date().getMonth() + 1
           const beginDate = new Date(`${year}/${month}/1`).getTime()
-          const endDate = new Date(`${year}/${month + 1}/1`).getTime() -1
+          const endDate = new Date(`${year}/${month + 1}/1`).getTime() - 1
           // <router-link to={{name: 'payRank'}}>{monthConsumptionCount+'/'+totalConsumptionCount}</router-link>
           return <div>
-            <router-link class="router" to={{name: 'payRank', params: {companyId: companyId, title: companyName }, query: { beginDate: beginDate, endDate: endDate }}}>
-            <span v-html={monthConsumptionCount}></span>/</router-link>
-            <router-link class="router" to={{name: 'payRank', params: {companyId: companyId, title: companyName }, query: { beginDate: this.query.beginDate, endDate: this.query.endDate }}}>
-            <span v-html={totalConsumptionCount}></span></router-link>
-            </div>
+            <router-link class="router" to={{name: 'finance-capital-payRank',
+              params: {companyId: companyId, title: companyName },
+              query: { beginDate: beginDate, endDate: endDate }}}>
+              <span v-html={monthConsumptionCount}></span>/
+            </router-link>
+            <router-link class="router" to={{name: 'finance-capital-payRank',
+              params: {companyId: companyId, title: companyName },
+              query: { beginDate: this.query.beginDate, endDate: this.query.endDate }}}>
+              <span v-html={totalConsumptionCount}></span>
+            </router-link>
+          </div>
           /* tslint:enable */
         },
         /* tslint:disable */
@@ -196,10 +177,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   mounted() {
     this.updateQueryByParam()
-    !!this.query.beginDate ? this.$set(this.showTime, 0, new Date(moment(this.query.beginDate).format(timeFormat)))
-     : ''
-    !!this.query.endDate ? this.$set(this.showTime, 1,  new Date(moment(this.query.endDate).format(timeFormat)))
-    : ''
+    !!this.query.beginDate
+      ? this.$set(this.showTime, 0, new Date(moment(this.query.beginDate).format(timeFormat)))
+      : ''
+    !!this.query.endDate
+      ? this.$set(this.showTime, 1,  new Date(moment(this.query.endDate).format(timeFormat)))
+      : ''
   }
 
   formatTime() {
@@ -215,6 +198,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   search() {
     this.query.pageIndex = 1
   }
+
   reloadSearch() {
     this.doSearch()
   }
@@ -254,7 +238,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 
-   // 新增
+  // 新增
   edit(id: number, row: any) {
     this.addOrUpdateVisible = true
     this.$nextTick(() => {
@@ -288,9 +272,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       margin-left: 0;
     }
   }
-  .ivu-form-item {
-    margin-bottom: 12px;
-  }
   .input-corp-id {
     width: 80px;
   }
@@ -300,38 +281,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 .btn-reset {
   margin-left: 8px;
 }
+
 .page-wrap {
   margin: 20px 0 18px;
   text-align: center;
 }
-.Add-Inp {
-  width: 100%;
-  height: 60px;
-  line-height: 60px;
-  font-size: 15px;
-}
-.Add-Inp span {
-  display: inline-block;
-  width: 7%;
-  text-align: right;
-  margin-right: 4%;
-}
-.Add-Inp input {
-  display: inline-block;
-}
-.button2 {
-  width: 6%;
-  height: 40px;
-  margin-left: 5%;
-}
-.page-f {
-  margin-top: 10px;
-  font-size: 15px;
-}
-.bge {
-  background: #fff;
-  padding: 5px;
-}
+
 .info {
   width: 35%;
   background: #fff;
@@ -378,6 +333,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   margin-left: 5%;
 }
 .table {
+  margin-top: 10px;
   /deep/ .status-2,
   /deep/ .aptitude-status-3 {
     color: #ed4014;

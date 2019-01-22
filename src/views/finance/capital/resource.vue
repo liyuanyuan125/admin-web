@@ -1,27 +1,24 @@
 <template>
   <div class="page">
-    <div  v-if="shows">
-      <div class="act-bar flex-box">
-        <Form class="form flex-1" :label-width="0" @submit.prevent="search" inline>
-          <LazyInput v-model="query.companyName" placeholder="公司名称" class="input input-id"/>
-          <FormItem label='' >
-            <DatePicker @on-change="dateChange" @on-clear="formatTime" type="daterange" v-model="showTime" placement="bottom-start" placeholder="统计范围" class="input" style="width:200px"></DatePicker>
-          </FormItem>
-          <Button type="default" @click="reset" class="btn-reset">清空</Button>
-        </Form>
-      </div>
-
-      <Table :columns="columns" :data="tableData" :loading="loading"
-        border stripe disabled-hover size="small" class="table"></Table>
-
-      <div class="page-wrap" v-if="total > 0">
-        <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
-          show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-          @on-change="page => query.pageIndex = page"
-          @on-page-size-change="pageSize => query.pageSize = pageSize"/>
-      </div>
+    <div class="act-bar flex-box">
+      <Form class="form flex-1" :label-width="0" @submit.prevent="search" inline>
+        <LazyInput v-model="query.companyName" placeholder="公司名称" class="input input-id"/>
+          <DatePicker @on-change="dateChange" @on-clear="formatTime" type="daterange"
+            v-model="showTime" placement="bottom-start" placeholder="统计范围"
+            class="input" style="width:200px"></DatePicker>
+        <Button type="default" @click="reset" class="btn-reset">清空</Button>
+      </Form>
     </div>
-    <!-- <DlgEdit  ref="addOrUpdate"   @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/> -->
+
+    <Table :columns="columns" :data="tableData" :loading="loading"
+      border stripe disabled-hover size="small" class="table"></Table>
+
+    <div class="page-wrap" v-if="total > 0">
+      <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
+        show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
+        @on-change="page => query.pageIndex = page"
+        @on-page-size-change="pageSize => query.pageSize = pageSize"/>
+    </div>
   </div>
 </template>
 
@@ -29,13 +26,11 @@
 import { Component, Watch , Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
-import { get } from '@/fn/ajax'
 import { resqueryList } from '@/api/advertiser'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
-import DlgEdit from './dlgEdit.vue'
 import { formatCurrency } from '@/fn/string'
 import {confirm , warning , success, toast } from '@/ui/modal'
 
@@ -47,12 +42,7 @@ const dataForm = {
   status: 1
 }
 
-
-@Component({
-  components: {
-    DlgEdit,
-  }
-})
+@Component
 // export default class Main extends ViewBase {
 export default class Main extends Mixins(ViewBase, UrlManager) {
   defQuery = {
@@ -62,26 +52,19 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     beginDate: new Date(`${years}/1/1`).getTime(),
     endDate: new Date(`${years + 1}/1/1`).getTime() - 1
   }
+
   showTime: any = []
   query: any = {}
-  shows = true
-  showDlg = false
   addOrUpdateVisible = false
   changeVisible = false
 
-
   examine = false
-  // query = { ...defQuery }
 
   loading = false
   list = []
   total = 0
   oldQuery: any = {}
   typeList = []
-
-  // company = []
-
-  company2 = []
 
   get columns() {
     return [
@@ -126,9 +109,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           const beginDate = new Date(`${year}/${month}/1`).getTime()
           const endDate = new Date(`${year}/${month + 1}/1`).getTime() -1
           return <div>
-          <router-link to={{name: 'withdraw', params: {companyId: companyId, title: companyName}, query: { beginDate, endDate }}}>
+          <router-link to={{name: 'finance-capital-withdraw', params: {companyId: companyId, title: companyName}, query: { beginDate, endDate }}}>
           <span v-html={monthWithdrawalCount}></span>/</router-link>
-          <router-link to={{name: 'withdraw', params: {companyId: companyId, title: companyName}, query: { beginDate: this.query.beginDate, endDate: this.query.endDate }}}>
+          <router-link to={{name: 'finance-capital-withdraw', params: {companyId: companyId, title: companyName}, query: { beginDate: this.query.beginDate, endDate: this.query.endDate }}}>
           <span v-html={totalWithdrawalCount}></span>
           </router-link>
           </div>
@@ -160,7 +143,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
           const showTime = this.showTime
-          return <router-link to={{name: 'withdrawalBill', params: { id: companyId, show: 'show' }}}>添加提现账单</router-link>
+          return <router-link to={{name: 'finance-capital-withdrawalBill', params: { id: companyId, show: 'show' }}}>添加提现账单</router-link>
           /* tslint:enable */
         }
       }
@@ -262,16 +245,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
     this.doSearch()
   }
-
-  @Watch('$route', {immediate: true, deep: true})
-  Watch$route(val: any, to: any, from: any) {
-    const name = to ? to.name : ''
-    if (val.name == 'resource' && name == 'withdrawalBill') {
-      if (to.params.show != 'show') {
-        this.doSearch()
-      }
-    }
-  }
 }
 </script>
 
@@ -298,38 +271,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 .btn-reset {
   margin-left: 8px;
 }
+
 .page-wrap {
   margin: 20px 0 18px;
   text-align: center;
 }
-.Add-Inp {
-  width: 100%;
-  height: 60px;
-  line-height: 60px;
-  font-size: 15px;
-}
-.Add-Inp span {
-  display: inline-block;
-  width: 7%;
-  text-align: right;
-  margin-right: 4%;
-}
-.Add-Inp input {
-  display: inline-block;
-}
-.button2 {
-  width: 6%;
-  height: 40px;
-  margin-left: 5%;
-}
-.page-f {
-  margin-top: 10px;
-  font-size: 15px;
-}
-.bge {
-  background: #fff;
-  padding: 5px;
-}
+
 .info {
   width: 35%;
   background: #fff;
@@ -375,7 +322,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 .info-inp {
   margin-left: 5%;
 }
+
 .table {
+  margin-top: 10px;
   /deep/ .status-2,
   /deep/ .aptitude-status-3 {
     color: #ed4014;

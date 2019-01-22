@@ -123,22 +123,30 @@ export default [
   {
     path: '/finance/capital/',
     name: 'finance-capital',
-    redirect: { name: 'ggtiser'},
-    component: () => import('./views/finance/capital/index.vue'),
+    redirect: { name: 'finance-capital-ggtiser'},
+    component: () => import('./components/tabLayout'),
     children: [
       {
         path: 'ggtiser',
-        name: 'ggtiser',
+        name: 'finance-capital-ggtiser',
         component: () => import('./views/finance/capital/ggtiser.vue'),
+        meta: {
+          title: '广告主系统',
+          fixed: true,
+        }
       },
       {
         path: 'resource',
-        name: 'resource',
+        name: 'finance-capital-resource',
         component: () => import('./views/finance/capital/resource.vue'),
+        meta: {
+          title: '资源方系统',
+          fixed: true,
+        }
       },
       {
         path: 'rechargeNum/:companyId/:title',
-        name: 'rechargeNum',
+        name: 'finance-capital-rechargeNum',
         component: () => import('./views/finance/capital/rechargeNum.vue'),
         meta: {
           title: '充值记录'
@@ -146,7 +154,7 @@ export default [
       },
       {
         path: 'payRank/:companyId/:title',
-        name: 'payRank',
+        name: 'finance-capital-payRank',
         component: () => import('./views/finance/capital/payRank.vue'),
         meta: {
           title: '消费记录'
@@ -154,7 +162,7 @@ export default [
       },
       {
         path: 'withdraw/:companyId/:title',
-        name: 'withdraw',
+        name: 'finance-capital-withdraw',
         component: () => import('./views/finance/capital/withdraw.vue'),
         meta: {
           title: '提现记录'
@@ -162,7 +170,7 @@ export default [
       },
       {
         path: 'consume',
-        name: 'consume',
+        name: 'finance-capital-consume',
         component: () => import('./views/finance/capital/consume.vue'),
         meta: {
           title: '结算记录'
@@ -170,7 +178,7 @@ export default [
       },
       {
         path: 'withdrawDetail/:id',
-        name: 'withdrawDetail',
+        name: 'finance-capital-withdrawDetail',
         component: () => import('./views/finance/capital/withdrawDetail.vue'),
         meta: {
           title: '提现详情'
@@ -178,7 +186,7 @@ export default [
       },
       {
         path: 'withdrawalBill/:id/:show',
-        name: 'withdrawalBill',
+        name: 'finance-capital-withdrawalBill',
         component: () => import('./views/finance/capital/withdrawalBill.vue'),
         meta: {
           title: '添加提现账单'

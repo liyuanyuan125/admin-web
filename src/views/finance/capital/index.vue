@@ -1,6 +1,7 @@
 <template>
   <div class="page">
-    <Tabs class="name" :value="$route" @input="handleClick" @on-close="handleCloseTag" :defalutTag="defalutTag" :list="tabsList"></Tabs>
+    <Tabs class="name" :value="$route" @input="handleClick"
+      @on-close="handleCloseTag" :defalutTag="defalutTag" :list="tabsList"></Tabs>
     <keep-alive>
       <router-view/>
     </keep-alive>
@@ -23,11 +24,11 @@ export default class Main extends ViewBase {
 
   defalutTag = [
     {
-      name: 'ggtiser',
+      name: 'finance-capital-ggtiser',
       title: '广告主系统',
     },
     {
-      name: 'resource',
+      name: 'finance-capital-resource',
       title: '资源方系统',
     }
   ]
@@ -90,9 +91,9 @@ export default class Main extends ViewBase {
       this.tabsList[index].params = val.params
     }
     const names = to ? to.name : ''
-    if (val.name == 'resource' && names == 'withdrawalBill') {
+    if (val.name == 'finance-capital-resource' && names == 'finance-capital-withdrawalBill') {
       if (to.params.show != 'show') {
-        const res = this.tabsList.filter((item: any) => item.name !== 'withdrawalBill' )
+        const res = this.tabsList.filter((item: any) => item.name !== 'finance-capital-withdrawalBill' )
         this.tabsList = res
       }
     }
