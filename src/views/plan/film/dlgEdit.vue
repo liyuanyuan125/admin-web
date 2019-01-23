@@ -42,22 +42,18 @@ export default class ComponentMain extends ViewBase {
 
   ruleValidate = {
     url: [
-      { required: true, message: '请输入档期名称', trigger: 'blur' }
+      { required: true, message: '请输入下载链接', trigger: 'blur' }
     ]
   }
 
   dataForm: any = { ...dataForm }
 
   init(id: number , key: any) {
-    // console.log(id , key)
     this.dataForm.typeCode = key
-    // console.log(this.dataForm)
     this.showDlg = true
     this.id = id || 0
     ; (this.$refs.dataForm as any).resetFields()
     if (this.id) {
-      // console.log(this.cinemaOnes)
-      // this.dataForm.typeCode = this.cinemaOnes.key
       this.dataForm.url = this.cinemaOnes.desc.fileUrl
     }
   }
