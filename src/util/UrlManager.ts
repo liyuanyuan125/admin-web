@@ -67,9 +67,10 @@ export default class UrlManager extends Vue {
 
   /**
    * 重置查询
+   * @param keepFields 保留的查询参数，默认为 pageSize
    */
-  resetQuery() {
-    const { pageSize } = this.query
-    this.updateQuery({ ...this.defQuery, pageSize })
+  resetQuery(keepFields: string | string[] = 'pageSize') {
+    const fields = slice(this.query, keepFields)
+    this.updateQuery({ ...this.defQuery, ...fields })
   }
 }

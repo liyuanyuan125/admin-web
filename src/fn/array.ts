@@ -48,7 +48,7 @@ export function toMap(list: any[], key?: string|ToMapCallback, val?: string|ToMa
  *
  * @param str 要解析的字符串
  */
-export function parse(str: string|any[], def = []) {
+export function parse(str: string|any[], def: any[] = []) {
   if (str instanceof Array) {
     return str
   }

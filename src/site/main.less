@@ -17,6 +17,12 @@
   flex: 2;
 }
 
+.empty-as-hyphen:empty {
+  &::before {
+    content: '-';
+  }
+}
+
 //** 全局
 html, body {
   height: 100%;

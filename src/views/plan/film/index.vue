@@ -1,707 +1,203 @@
 <template>
   <div class="page">
-    <Tabs type="card"  :animated="false" @click="reset">
-        <Tab-pane label="待审核" key="key1">
-          <div class="act-bar flex-box">
-            <form class="form flex-1" @submit.prevent="search">
-              <LazyInput v-model="query.query" placeholder="广告片ID/名称" class="input"/>
-              <Select style="width:240px" v-model="query.companyId" filterable>
-                <Option v-for="it in companys" v-if='it.status==1' :key="it.id" :value="it.id">{{it.name}}</Option>
-              </Select>
-              <Button type="default" @click="reset" class="btn-reset">清空</Button>
-            </form>
-          </div>
-          <Table :columns="columns" :data="list" :loading="loading"
-            border stripe disabled-hover size="small" class="table"></Table>
+    <Tabs v-model="query.status" type="card" class="tabs">
+      <TabPane name="1" label="待审核"/>
+      <TabPane name="2" label="待支付"/>
+      <TabPane name="3" label="待转码"/>
+      <TabPane name="4" label="已完成"/>
+      <TabPane name="5" label="审核已拒绝"/>
+      <TabPane name="6" label="已取消"/>
+    </Tabs>
 
-          <div class="page-wrap" v-if="total > 0">
-            <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
-              show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-              @on-change="page => query.pageIndex = page"
-              @on-page-size-change="pageSize => query.pageSize = pageSize"/>
-          </div>
-        </Tab-pane>
-        <Tab-pane label="待支付" key="key2">
-          <div class="act-bar flex-box">
-            <form class="form flex-1" @submit.prevent="search">
-              <LazyInput v-model="query.query" placeholder="广告片ID/名称" class="input"/>
-              <Select style="width:240px" v-model="query.companyId" filterable>
-                <Option v-for="it in companys" v-if='it.status==1' :key="it.id" :value="it.id">{{it.name}}</Option>
-              </Select>
-              <Button type="default" @click="reset" class="btn-reset">清空</Button>
-            </form>
-          </div>
-          <Table :columns="columns2" :data="list2" :loading="loading"
-            border stripe disabled-hover size="small" class="table"></Table>
+    <div class="act-bar flex-box">
+      <form class="form flex-1" @submit.prevent="search">
+        <LazyInput v-model="query.query" placeholder="广告片ID/名称" class="input"/>
+        <Select v-model="query.companyId" filterable clearable class="select-company">
+          <Option v-for="it in companys" :key="it.id" :value="it.id">{{it.name}}</Option>
+        </Select>
+        <Button type="default" class="btn-reset" @click="reset">清空</Button>
+      </form>
+    </div>
 
-          <div class="page-wrap" v-if="total2 > 0">
-            <Page :total="total2" :current="query.pageIndex" :page-size="query.pageSize"
-              show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-              @on-change="page => query.pageIndex = page"
-              @on-page-size-change="pageSize => query.pageSize = pageSize"/>
-          </div>
-        </Tab-pane>
-        <Tab-pane label="待转码" key="key3">
-           <div class="act-bar flex-box">
-            <form class="form flex-1" @submit.prevent="search">
-              <LazyInput v-model="query.query" placeholder="广告片ID/名称" class="input"/>
-              <Select style="width:240px" v-model="query.companyId" filterable>
-                <Option v-for="it in companys" v-if='it.status==1' :key="it.id" :value="it.id">{{it.name}}</Option>
-              </Select>
-              <Button type="default" @click="reset" class="btn-reset">清空</Button>
-            </form>
-          </div>
-          <Table :columns="columns3" :data="list3" :loading="loading"
-            border stripe disabled-hover size="small" class="table"></Table>
+    <Table :columns="columns" :data="list" :loading="loading"
+      border stripe disabled-hover size="small" class="table">
+      <template slot="customerName" slot-scope="{ row: { customerId , customerName } }">
+        [{{customerId}}] {{customerName}}
+      </template>
 
-          <div class="page-wrap" v-if="total3 > 0">
-            <Page :total="total3" :current="query.pageIndex" :page-size="query.pageSize"
-              show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-              @on-change="page => query.pageIndex = page"
-              @on-page-size-change="pageSize => query.pageSize = pageSize"/>
-          </div>
-        </Tab-pane>
-        <Tab-pane label="已完成" key="key4">
-           <div class="act-bar flex-box">
-            <form class="form flex-1" @submit.prevent="search">
-              <LazyInput v-model="query.query" placeholder="广告片ID/名称" class="input"/>
-              <Select style="width:240px" v-model="query.companyId" filterable>
-                <Option v-for="it in companys" v-if='it.status==1' :key="it.id" :value="it.id">{{it.name}}</Option>
-              </Select>
-              <Button type="default" @click="reset" class="btn-reset">清空</Button>
-            </form>
-          </div>
-          <Table :columns="columns4" :data="list4" :loading="loading"
-            border stripe disabled-hover size="small" class="table"></Table>
+      <template slot="specification" slot-scope="{ row: { specification } }">
+        {{specification}}s
+      </template>
 
-          <div class="page-wrap" v-if="total4 > 0">
-            <Page :total="total4" :current="query.pageIndex" :page-size="query.pageSize"
-              show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-              @on-change="page => query.pageIndex = page"
-              @on-page-size-change="pageSize => query.pageSize = pageSize"/>
-          </div>
-        </Tab-pane>
-        <Tab-pane label="审核已拒绝" key="key5">
-           <div class="act-bar flex-box">
-            <form class="form flex-1" @submit.prevent="search">
-              <LazyInput v-model="query.query" placeholder="广告片ID/名称" class="input"/>
-              <Select style="width:240px" v-model="query.companyId" filterable>
-                <Option v-for="it in companys" v-if='it.status==1' :key="it.id" :value="it.id">{{it.name}}</Option>
-              </Select>
-              <Button type="default" @click="reset" class="btn-reset">清空</Button>
-            </form>
-          </div>
-          <Table :columns="columns2" :data="list5" :loading="loading"
-            border stripe disabled-hover size="small" class="table"></Table>
+      <template slot="length" slot-scope="{ row: { length } }">
+        {{length}}s
+      </template>
 
-          <div class="page-wrap" v-if="total5 > 0">
-            <Page :total="total5" :current="query.pageIndex" :page-size="query.pageSize"
-              show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-              @on-change="page => query.pageIndex = page"
-              @on-page-size-change="pageSize => query.pageSize = pageSize"/>
-          </div>
-        </Tab-pane>
-        <Tab-pane label="已取消" key="key6">
-           <div class="act-bar flex-box">
-            <form class="form flex-1" @submit.prevent="search">
-              <LazyInput v-model="query.query" placeholder="广告片ID/名称" class="input"/>
-              <Select style="width:240px" v-model="query.companyId" filterable>
-                <Option v-for="it in companys" v-if='it.status==1' :key="it.id" :value="it.id">{{it.name}}</Option>
-              </Select>
-              <Button type="default" @click="reset" class="btn-reset">清空</Button>
-            </form>
-          </div>
-          <Table :columns="columns6" :data="list6" :loading="loading"
-            border stripe disabled-hover size="small" class="table"></Table>
+      <template slot="transFee" slot-scope="{ row: { transFee } }">
+        {{transFee}}.00
+      </template>
 
-          <div class="page-wrap" v-if="total6 > 0">
-            <Page :total="total6" :current="query.pageIndex" :page-size="query.pageSize"
-              show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-              @on-change="page => query.pageIndex = page"
-              @on-page-size-change="pageSize => query.pageSize = pageSize"/>
-          </div>
-        </Tab-pane>
-      </Tabs>
+      <template slot="applyTime" slot-scope="{ row: { applyTime } }">
+        <span class="datetime">{{applyTime|dateTime}}</span>
+      </template>
+
+      <template slot="approvalUser" slot-scope="{ row: { approvalEmail, approvalName } }">
+        <span class="empty-as-hyphen">{{ approvalEmail || approvalName
+          ? `${approvalEmail}【${approvalName}】` : '' }}</span>
+      </template>
+
+      <template slot="approvalTime" slot-scope="{ row: { approvalTime } }">
+        <span class="datetime">{{approvalTime|dateTime}}</span>
+      </template>
+
+      <template slot="payTime" slot-scope="{ row: { payTime } }">
+        <span class="datetime">{{payTime|dateTime}}</span>
+      </template>
+
+      <template slot="transTime" slot-scope="{ row: { transTime } }">
+        <span class="datetime">{{transTime|dateTime}}</span>
+      </template>
+
+      <template slot="cancelTime" slot-scope="{ row: { cancelTime } }">
+        <span class="datetime">{{cancelTime|dateTime}}</span>
+      </template>
+
+      <template slot="action" slot-scope="{ row: { id, status } }">
+        <div class="row-acts">
+          <router-link :to="{ name: 'gg-film-detail',
+            params: { id } }">{{ status == 1 ? '审核' : '详情'}}</router-link>
+        </div>
+      </template>
+    </Table>
+
+    <div class="page-wrap" v-if="total > 0">
+      <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
+        show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
+        @on-change="page => query.pageIndex = page"
+        @on-page-size-change="pageSize => query.pageSize = pageSize"/>
+    </div>
   </div>
 </template>
 
-<script lang="tsx">
+<script lang="ts">
 import { Component, Watch , Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
-import { get } from '@/fn/ajax'
-import { queryList , companysList} from '@/api/planfilm'
-import jsxReactToVue from '@/util/jsxReactToVue'
-import { toMap } from '@/fn/array'
-import moment from 'moment'
-import { slice, clean } from '@/fn/object'
-// import DlgEdit from './dlgEdit.vue'
-
-import {confirm , warning , success, toast } from '@/ui/modal'
-
-const makeMap = (list: any[]) => toMap(list, 'id', 'name')
-const timeFormat = 'YYYY-MM-DD HH:mm:ss'
+import { queryList , companysList } from '@/api/planfilm'
+import { clean } from '@/fn/object'
+import { filterDateTime } from '@/util/filters'
 
 @Component({
-  components: {
+  filters: {
+    dateTime: filterDateTime
   }
 })
 export default class Main extends Mixins(ViewBase, UrlManager) {
   defQuery = {
     query: '',
     companyId: null,
-    status: 1,
+    status: '1',
     pageIndex: 1,
     pageSize: 20,
   }
+
+  oldQuery: any = {}
+
   query: any = {}
-  shows = true
-  showDlg = false
-  addOrUpdateVisible = false
-  changeVisible = false
-
-
-  examine = false
 
   loading = false
 
-  list: any = [] // 待审核
-  list2: any = [] // 待支付
-  list3: any = [] // 待转码
-  list4: any = [] // 已完成
-  list5: any = [] // 已拒绝
-  list6: any = [] // 已取消
+  list: any = []
 
   total = 0
-  total2 = 0
-  total3 = 0
-  total4 = 0
-  total5 = 0
-  total6 = 0
 
-  oldQuery: any = {}
-  typeList = []
-  showTime: any = []
-
-
-  statusList = []
-  // 公司
+  // 公司列表
   companys = []
 
-
-  columns = [
-    { title: '广告片ID', key: 'id', align: 'center' },
-    { title: '广告片名称', key: 'name', align: 'center' },
-    { title: '客户', key: 'customerName', align: 'center',
-     render: (hh: any, { row: { customerId , customerName } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = '[' + customerId + '] '+ customerName
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    { title: '规格', key: 'specification', align: 'center',
-     render: (hh: any, { row: { specification } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = specification + 's'
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    { title: '时长', key: 'length', align: 'center',
-      render: (hh: any, { row: { length } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = length + 's'
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    { title: '转制费(元)', key: 'transFee', align: 'center',
-      render: (hh: any, { row: { transFee } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = transFee + '.00'
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '创建时间',
-      key: 'applyTime',
-      align: 'center',
-      render: (hh: any, { row: { applyTime } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = moment(applyTime).format(timeFormat)
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '操作',
-      key: 'action',
-      align: 'center',
-      render: (hh: any, { row: { status, statusText, id }, row }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const sta = status == 1 ? '停用' : '启用'
-        return <div class='row-acts'>
-          <router-link to={{ name: 'gg-film-detail', params: { status , id } }}>审核</router-link>
-        </div>
-        /* tslint:enable */
-      }
-    }
-  ]
-  columns2 = [
-    { title: '广告片ID', key: 'id', align: 'center' },
-    { title: '广告片名称', key: 'name', align: 'center' },
-    { title: '客户', key: 'customerName', align: 'center',
-     render: (hh: any, { row: { customerId , customerName } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = '[' + customerId + '] '+ customerName
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    { title: '规格', key: 'specification', align: 'center',
-     render: (hh: any, { row: { specification } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = specification + 's'
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    { title: '时长', key: 'length', align: 'center',
-      render: (hh: any, { row: { length } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = length + 's'
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    { title: '转制费(元)', key: 'transFee', align: 'center',
-      render: (hh: any, { row: { transFee } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = transFee + '.00'
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '创建时间',
-      key: 'applyTime',
-      align: 'center',
-      render: (hh: any, { row: { applyTime } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = moment(applyTime).format(timeFormat)
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '审核人',
-      key: 'approvalUser',
-      align: 'center',
-      render: (hh: any, { row: { approvalName , approvalEmail } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = approvalEmail + '【' + approvalName + '】'
-        if (approvalName == null && approvalEmail == null ) {
-          return <span class='datetime' v-html={'-'}></span>
-        } else {
-          return <span class='datetime' v-html={html}></span>
-        }
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '审核时间',
-      key: 'approvalTime',
-      align: 'center',
-      render: (hh: any, { row: { approvalTime } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = moment(approvalTime).format(timeFormat)
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '操作',
-      key: 'action',
-      align: 'center',
-      render: (hh: any, { row: { status, statusText, id }, row }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const sta = status == 1 ? '停用' : '启用'
-        return <div class='row-acts'>
-          <router-link to={{ name: 'gg-film-detail', params: { status , id } }}>详情</router-link>
-        </div>
-        /* tslint:enable */
-      }
-    }
-  ]
-  columns3 = [
-    { title: '广告片ID', key: 'id', align: 'center' },
-    { title: '广告片名称', key: 'name', align: 'center' },
-    { title: '客户', key: 'customerName', align: 'center',
-     render: (hh: any, { row: { customerId , customerName } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = '[' + customerId + '] '+ customerName
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    { title: '规格', key: 'specification', align: 'center',
-     render: (hh: any, { row: { specification } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = specification + 's'
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    { title: '时长', key: 'length', align: 'center',
-      render: (hh: any, { row: { length } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = length + 's'
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    { title: '转制费(元)', key: 'transFee', align: 'center',
-      render: (hh: any, { row: { transFee } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = transFee + '.00'
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '创建时间',
-      key: 'applyTime',
-      align: 'center',
-      render: (hh: any, { row: { applyTime } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = moment(applyTime).format(timeFormat)
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '支付时间',
-      key: 'payTime',
-      align: 'center',
-      render: (hh: any, { row: { payTime } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = moment(payTime).format(timeFormat)
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '操作',
-      key: 'action',
-      align: 'center',
-      render: (hh: any, { row: { status, statusText, id }, row }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const sta = status == 1 ? '停用' : '启用'
-        return <div class='row-acts'>
-          <router-link to={{ name: 'gg-film-detail', params: { status , id } }}>详情</router-link>
-        </div>
-        /* tslint:enable */
-      }
-    }
-  ]
-  columns4 = [
-    { title: '广告片ID', key: 'id', align: 'center' },
-    { title: '广告片名称', key: 'name', align: 'center' },
-    { title: '客户', key: 'customerName', align: 'center',
-     render: (hh: any, { row: { customerId , customerName } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = '[' + customerId + '] '+ customerName
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    { title: '规格', key: 'specification', align: 'center',
-     render: (hh: any, { row: { specification } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = specification + 's'
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    { title: '时长', key: 'length', align: 'center',
-      render: (hh: any, { row: { length } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = length + 's'
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    { title: '转制费(元)', key: 'transFee', align: 'center',
-      render: (hh: any, { row: { transFee } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = transFee + '.00'
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '创建时间',
-      key: 'applyTime',
-      align: 'center',
-      render: (hh: any, { row: { applyTime } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = moment(applyTime).format(timeFormat)
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '转码时间',
-      key: 'transTime',
-      align: 'center',
-      render: (hh: any, { row: { transTime } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = moment(transTime).format(timeFormat)
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '操作',
-      key: 'action',
-      align: 'center',
-      render: (hh: any, { row: { status, statusText, id }, row }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const sta = status == 1 ? '停用' : '启用'
-        return <div class='row-acts'>
-          <router-link to={{ name: 'gg-film-detail', params: { status , id } }}>详情</router-link>
-        </div>
-        /* tslint:enable */
-      }
-    }
-  ]
-  columns6 = [
-    { title: '广告片ID', key: 'id', align: 'center' },
-    { title: '广告片名称', key: 'name', align: 'center' },
-    { title: '客户', key: 'customerName', align: 'center',
-     render: (hh: any, { row: { customerId , customerName } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = '[' + customerId + '] '+ customerName
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    { title: '规格', key: 'specification', align: 'center',
-     render: (hh: any, { row: { specification } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = specification + 's'
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    { title: '时长', key: 'length', align: 'center',
-      render: (hh: any, { row: { length } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = length + 's'
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    { title: '转制费(元)', key: 'transFee', align: 'center',
-      render: (hh: any, { row: { transFee } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = transFee + '.00'
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '创建时间',
-      key: 'applyTime',
-      align: 'center',
-      render: (hh: any, { row: { applyTime } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = moment(applyTime).format(timeFormat)
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '取消时间',
-      key: 'cancelTime',
-      align: 'center',
-      render: (hh: any, { row: { cancelTime } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = moment(cancelTime).format(timeFormat)
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '操作',
-      key: 'action',
-      align: 'center',
-      render: (hh: any, { row: { status, statusText, id }, row }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const sta = status == 1 ? '停用' : '启用'
-        return <div class='row-acts'>
-          <router-link to={{ name: 'gg-film-detail', params: { status , id } }}>详情</router-link>
-        </div>
-        /* tslint:enable */
-      }
-    }
-  ]
+  get columns() {
+    const status = this.query.status
+    return [
+      { title: '广告片ID', key: 'id', width: 70 },
+      { title: '广告片名称', key: 'name' },
+      { title: '客户', slot: 'customerName' },
+      { title: '规格', slot: 'specification', width: 60 },
+      { title: '时长', slot: 'length', width: 60 },
+      { title: '转制费(元)', slot: 'transFee', width: 110 },
+      { title: '创建时间', slot: 'applyTime', width: 135 },
+      status in { 2: 1, 5: 1 } && { title: '审核人', slot: 'approvalUser', width: 110 },
+      status in { 2: 1, 5: 1 } && { title: '审核时间', slot: 'approvalTime', width: 135 },
+      status == 3 && { title: '支付时间', slot: 'payTime', width: 135 },
+      status == 4 && { title: '转码时间', slot: 'transTime', width: 135 },
+      status == 6 && { title: '取消时间', slot: 'cancelTime', width: 135 },
+      { title: '操作', slot: 'action', width: 60 },
+    ]
+    .filter(it => !!it)
+    .map((it: any) => ({ align: 'center', ...it }))
+  }
 
   mounted() {
     this.updateQueryByParam()
-    this.doSearch()
+    this.fetch()
+    this.fetchCompanys()
   }
-
-
 
   search() {
     this.query.pageIndex = 1
   }
-  reloadSearch() {
-    this.doSearch()
-  }
+
   reset() {
-    this.resetQuery()
+    this.resetQuery('status,pageSize')
   }
 
-  async doSearch() {
+  async fetch() {
     if (this.loading) {
       return
     }
 
     this.oldQuery = { ...this.query }
     this.updateUrl()
+
     this.loading = true
     const query = clean({ ...this.query })
-    // const query: any = {}
     try {
-      // 待审核
-      const { data: {
-        items: list,
-        totalCount: total,
-      } } = await queryList({ status: 1,
-                              companyId: query.companyId,
-                              query: query.query,
-                              pageIndex: query.pageIndex,
-                              pageSize: query.pageSize
-                            })
-      const { data: {
-        items: list2,
-        totalCount: total2,
-      } } = await queryList({ status: 2,
-                              companyId: query.companyId,
-                              query: query.query,
-                              pageIndex: query.pageIndex,
-                              pageSize: query.pageSize
-                            })
-      const { data: {
-        items: list3,
-        totalCount: total3,
-      } } = await queryList({ status: 3,
-                              companyId: query.companyId,
-                              query: query.query,
-                              pageIndex: query.pageIndex,
-                              pageSize: query.pageSize
-                            })
-      const { data: {
-        items: list4,
-        totalCount: total4,
-      } } = await queryList({ status: 4,
-                              companyId: query.companyId,
-                              query: query.query,
-                              pageIndex: query.pageIndex,
-                              pageSize: query.pageSize
-                            })
-      const { data: {
-        items: list5,
-        totalCount: total5,
-      } } = await queryList({ status: 5,
-                              companyId: query.companyId,
-                              query: query.query,
-                              pageIndex: query.pageIndex,
-                              pageSize: query.pageSize
-                            })
-      const { data: {
-        items: list6,
-        totalCount: total6,
-      } } = await queryList({ status: 6,
-                              companyId: query.companyId,
-                              query: query.query,
-                              pageIndex: query.pageIndex,
-                              pageSize: query.pageSize
-                            })
-      this.list = list // 待审核
-      this.list2 = list2 // 待支付
-      this.list3 = list3 // 待转码
-      this.list4 = list4 // 已完成
-      this.list5 = list5 // 已拒绝
-      this.list6 = list6 // 已取消
+      this.list = [] // 确保在切换 tab 时，不显示前一个 tab 的数据
 
-      this.total = total // 待审核
-      this.total2 = total2 // 待支付
-      this.total3 = total3 // 待转码
-      this.total4 = total4 // 已完成
-      this.total5 = total5 // 已拒绝
-      this.total6 = total6 // 已取消
-      // 公司列表
-      const { data: {
-        items: companys
-      } } = await companysList({ pageSize: 1000000 })
-      this.companys = companys
+      const { data: { items: list, totalCount: total } } = await queryList(query)
+      this.list = list
+      this.total = total
     } catch (ex) {
       this.handleError(ex)
     } finally {
       this.loading = false
     }
   }
+
+  async fetchCompanys() {
+    try {
+      const { data: { items: companys } } = await companysList({ pageSize: 1000000 })
+      this.companys = companys.filter((it: any) => it.status == 1)
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
   @Watch('query', { deep: true })
   watchQuery() {
     if (this.query.pageIndex == this.oldQuery.pageIndex) {
       this.query.pageIndex = 1
     }
-    this.doSearch()
+    this.fetch()
   }
 }
 </script>
 
 <style lang="less" scoped>
+.tabs {
+  /deep/ .ivu-tabs-bar {
+    margin-bottom: 10px;
+  }
+}
+
 .form {
   .input,
   /deep/ .ivu-select {
@@ -711,48 +207,34 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       margin-left: 0;
     }
   }
-
-  .input-corp-id {
-    width: 80px;
+  .select-company {
+    width: 240px;
   }
 }
+
 .table {
-  margin-top: 20px;
+  margin-top: 10px;
+  /deep/ .ivu-table-cell {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+  /deep/ .ivu-table-cell > span:only-child:empty {
+    &::before {
+      content: '-';
+    }
+  }
+  /deep/ .row-acts > a {
+    margin: 0 4px;
+  }
 }
 
 .btn-search,
 .btn-reset {
   margin-left: 8px;
 }
+
 .page-wrap {
   margin: 20px 0 18px;
   text-align: center;
 }
-/deep/ .ivu-tabs-bar .ivu-tabs-nav-container {
-  height: 70px !important;
-}
-/deep/ .nav-text {
-  width: 100%;
-  margin-left: 0.02%;
-}
-/deep/ .ivu-tabs-tab {
-  border-radius: 0 !important;
-  background: #fff;
-  color: #222;
-  width: 16.66%;
-  height: 70px !important;
-  margin-right: 0 !important;
-  text-align: center;
-  line-height: 60px;
-  font-size: 16px;
-  border: 2px solid #fff !important;
-  border-left: 0 !important;
-}
-/deep/ .ivu-tabs-nav-container:focus .ivu-tabs-tab-focused {
-  border-color: #fff !important;
-}
-/deep/ .ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab-active {
-  color: #222;
-}
-
 </style>
