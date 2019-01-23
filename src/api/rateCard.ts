@@ -35,3 +35,9 @@ export async function addRateCard(query: any) {
   const data = await post(`/xadvert/cpms`, query)
   return data
 }
+
+// 查看刊例价
+export async function rateCardDetail(id: any) {
+  const data = await get(`/xadvert/cpms/${id}`)
+  return data
+}

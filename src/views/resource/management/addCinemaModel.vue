@@ -7,7 +7,6 @@
     @on-cancel="cancel()"
     >
 
-{{companyId}}
     <Row class="shouDlg-header">
       <Col span="7">
         <AreaSelect v-model="area"/>

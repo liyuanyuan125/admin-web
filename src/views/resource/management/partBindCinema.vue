@@ -1,6 +1,5 @@
 <template>
   <div class="component">
-    {{companyId}}
     <Table :columns="columns" :data="inValue" border disabled-hover size="small"/>
     <div class="act-bar">
       <a @click="onAdd" v-if="!type">添加关联影院</a>

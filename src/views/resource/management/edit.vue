@@ -3,7 +3,7 @@
     <header class="header flex-box">
       <Button icon="md-return-left" @click="back" class="btn-back">返回上一页</Button>
       <div class="flex-1" style="margin-left: 8px" >
-        <em> 新建刊例价</em>
+        <em v-if="!$route.params.id"> 新建刊例价</em>
       </div>
     </header>
 
@@ -121,7 +121,7 @@
       </div>
     </form>
 
-    <div class="edit-button">
+    <div class="edit-button" v-if="$route.params.id">
       <Button style="padding: 6px 40px" type="info" size="large" @click="edit('dataForm')">保存</Button>
     </div>
     <DlgEdit ref="diaries" v-if="diariesShow" v-model="dataForm.diaries" />
@@ -136,7 +136,7 @@ import CinemaLevel from '@/components/priceLevel.vue'
 import CinemaList from '@/components/companyList.vue'
 import PartBindCinema from './partBindCinema.vue'
 import { clean } from '@/fn/object'
-import { cinemaLevel, cinemanum, addRateCard } from '@/api/rateCard'
+import { cinemaLevel, cinemanum, addRateCard, rateCardDetail } from '@/api/rateCard'
 
 @Component({
   components: {
@@ -219,6 +219,19 @@ export default class Main extends ViewBase {
 
   created() {
     this.levelList()
+    this.search()
+  }
+
+  async search() {
+    const id = this.$route.params.id || 0
+    if (!id) {
+      return
+    }
+    try {
+      await rateCardDetail(id)
+    } catch (ex) {
+
+    }
   }
 
   async levelList() {

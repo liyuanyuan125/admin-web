@@ -274,7 +274,7 @@ export default [
   },
 
   {
-    path: '/resource/management/edit',
+    path: '/resource/management/edit/:id?',
     name: 'resource-management-edit',
     component: () => import('./views/resource/management/edit.vue')
   },
