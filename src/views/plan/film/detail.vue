@@ -46,11 +46,13 @@
           <Col span="12">
             <video :src="detail.srcFileUrl" width='100%' height='50%' controls="controls">
             </video>
+             <a class="operation" v-if='showedit' href="" :download=detail.srcFileUrl>下载源文件</a>
           </Col>
         </Row>
       </Row>
-      <div class='titop'>转制</div>
-      <Row>
+      <div v-if='showedit' class='titop'>转制</div>
+      <Row v-if='showedit' >
+        <UploadButton style='margin-bottom:17px;' multiple @success="onUploadSuccess">上传</UploadButton>
         <Table :columns="columns" :data="tableData"
         border stripe disabled-hover size="small" class="table"></Table>
       </Row>
@@ -80,6 +82,7 @@
         </div>
       </row>
     </div>
+    <DlgEdit  ref="addOrUpdate" :cinemaOnes="editOne"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" @done="dlgeditdone"/>
   </div>
 </template>
 
@@ -88,18 +91,20 @@
 import { Component, Watch , Mixins  } from 'vue-property-decorator'
 import moment from 'moment'
 import ViewBase from '@/util/ViewBase'
-import { queryList , queryItem , sapproval , dataFrom } from '@/api/planfilm'
-// import AreaSelect from '@/components/AreaSelect.vue'
-// import PartBindCinema from './partBindCinema.vue'
-// import DlgEdit from '../account/dlgEdit.vue'
-// import Upload from '@/components/Upload.vue'
+import { queryList , queryItem , sapproval , dataFrom , dels , addvideo } from '@/api/planfilm'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import { slice , clean } from '@/fn/object'
+import { warning , success, toast } from '@/ui/modal'
+import UploadButton, { SuccessEvent } from '@/components/UploadButton.vue'
+import DlgEdit from './dlgEdit.vue'
+
+
+
 
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
-const timeFormatDate = 'YYYY/MM/DD HH:mm:ss'
+const timeFormatDate = 'YYYY-MM-DD HH:mm:ss'
 const timeFormat = 'YYYY/MM/DD'
 
 const defQuery = {
@@ -112,12 +117,15 @@ const dataForm = {
 
 @Component({
   components: {
+    UploadButton,
+    DlgEdit
   }
 })
 export default class Main extends ViewBase {
   query = { ...defQuery }
   oldQuery: any = {}
   detail: any = {}
+  att: any = {}
   attachments: any = []
   approveStatusList: any = [
     {
@@ -132,6 +140,15 @@ export default class Main extends ViewBase {
   logList: any = []
   showStatus: any = false
   showedit: any = false
+  typeList: any = []
+
+
+  objfiles: any = []
+  editOne: any = null
+
+
+  addOrUpdateVisible = false
+
 
   id = 0
 
@@ -149,6 +166,38 @@ export default class Main extends ViewBase {
     }
     this.doSearch()
   }
+
+
+  // 上传文件
+  async onUploadSuccess({ files }: SuccessEvent) {
+    // console.log(files[0].clientName.split('.')[1])
+    // this.objfiles.push({
+    //   name: files[0].clientName,
+    //   fileId: files[0].fileId
+    // })
+    // this.dataForm.attachments.push({
+    //   name: files[0].clientName,
+    //   fileId: files[0].fileId
+    // })
+    const typetext = files[0].clientName.split('.')[1]
+    const typecode = this.typeList.map((item: any) => {
+          return item.text
+    })
+    const index = typecode.indexOf(typetext)
+    if (index != -1) {
+      try {
+        await addvideo (this.$route.params.id , {
+                                                name: files[0].clientName,
+                                                fileId: files[0].fileId,
+                                                typeCode: this.typeList[index].key
+                                              })
+        toast('操作成功')
+        this.doSearch()
+      } catch (ex) {
+        this.handleError(ex)
+      }
+    }
+  }
   get cachedMap() {
     return {
     }
@@ -156,42 +205,85 @@ export default class Main extends ViewBase {
 
   get tableData() {
     const cachedMap = this.cachedMap
-    const attachments = (this.attachments || []).map((it: any) => {
+    const typeList = (this.typeList || []).map((it: any) => {
       return {
         ...it,
       }
     })
-    return attachments
+    return typeList
   }
 
   columns = [
-    { title: '序号', key: 'id', align: 'center' },
-    { title: '格式', key: 'typeCode', align: 'center' },
-    { title: '附件', key: 'name', align: 'center' },
-    {
-      title: '上传时间',
-      key: 'uploadTime',
-      align: 'center',
-      render: (hh: any, { row: { uploadTime } }: any) => {
+    { title: '序号', key: 'sort', width: 80 , align: 'center' },
+    { title: '格式', key: 'text', width: 130 , align: 'center' },
+    { title: '附件', key: 'name',  align: 'center',
+      render: (hh: any, { row: { desc , text } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = moment(uploadTime).format(timeFormatDate)
-        // console.log(html)
-        return uploadTime == null ? <span class='datetime' v-html={'-'}></span> : <span class='datetime' v-html={html}></span>
+        if (desc!=undefined && desc.fileId == '') {
+          return <span class='datetime' v-html={desc.fileUrl}></span>
+        } else {
+          return <span class='datetime' style='color:#4b9cf2' v-html={desc.name}></span>
+        }
         /* tslint:enable */
       }
     },
-    { title: '上传人', key: 'uploadName', align: 'center' },
+    {
+      title: '上传时间',
+      key: 'uploadTime',
+      width: 150 ,
+      align: 'center',
+      render: (hh: any, { row: { desc } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        const html = moment(desc.uploadTime).format(timeFormatDate)
+        if (desc!=undefined ) {
+          return desc.uploadTime == null ? <span class='datetime' v-html={'-'}></span> : <span class='datetime' v-html={html}></span>
+        }
+        /* tslint:enable */
+      }
+    },
+    { title: '上传人', key: 'uploadName', align: 'center', width: 150,
+      render: (hh: any, { row: { desc } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        // const html = moment(desc.uploadTime).format(timeFormatDate)
+        const html = '【' + desc.uploadEmail + '】' + desc.uploadName
+        if (desc!=undefined && desc.uploadEmail == null) {
+          return <span class='datetime' v-html={desc.uploadName}></span>
+        } else {
+          return <span class='datetime' v-html={html}></span>
+        }
+        /* tslint:enable */
+      }
+    },
     {
       title: '操作',
       key: 'action',
+      width: 150,
       align: 'center',
-      render: (hh: any, { row: { approveStatus, statusText, id }, row }: any) => {
+      render: (hh: any, { row: { desc , key }, row }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
+        if ( desc == undefined ) {
+          const ids = 0;
           return <div class='row-acts'>
-          <a class="operation" href="" download={row.name}>下载</a>
-        </div>
+            <a on-click={this.edit.bind(this , 0 , key)}>录入下载链接</a>
+          </div>
+        } else {
+          if ( row.desc.fileId == '' || row.desc.fileId == null) {
+            return <div class='row-acts'>
+              <a on-click={this.edit.bind(this, desc.id, key , row )}>编辑</a>&nbsp;&nbsp;&nbsp;
+              <a on-click={this.del.bind(this, desc.id)}>删除</a>
+            </div>
+          } else {
+            return <div class='row-acts'>
+              <a class="operation" href="" download={desc.fileUrl}>下载</a>&nbsp;&nbsp;&nbsp;
+              <a on-click={this.del.bind(this, desc.id)}>删除</a>
+            </div>
+          }
+        }
+        
         /* tslint:enable */
       }
     }
@@ -205,26 +297,33 @@ export default class Main extends ViewBase {
     try {
       const res = await queryItem(this.$route.params.id)
       this.detail = res.data.item
-      // console.log(this.detail)
-    //   this.detail.cinemaList = res.data.ruleList || []
-      // this.approveStatusList = res.data.statusList
-    //   this.validityStartDate = String(this.detail.validityStartDate).slice(0, 4) + '-' +
-    //   String(this.detail.validityStartDate).slice(4, 6) + '-' + String(this.detail.validityStartDate).slice(6, 8)
-    //   this.validityEndDate = String(this.detail.validityEndDate).slice(0, 4) + '-' +
-    //   String(this.detail.validityEndDate).slice(4, 6) + '-' + String(this.detail.validityEndDate).slice(6, 8)
-    //   // 附件
-      this.attachments = this.detail.attachments
-      const logList = res.data.logList.map((item: any) => {
+       // 附件
+      this.typeList = res.data.typeList.map((it: any) => {
+        const key = it.key
+        const typecode = this.detail.attachments.map((item: any) => {
+          return item.typeCode
+        })
+        const index = typecode.indexOf(key)
+        if (index != -1) {
+          return {
+            ...it,
+            desc: this.detail.attachments[index]
+          }
+        } else {
+          return {
+            ...it
+          }
+        }
+      })
+      // console.log(this.typeList)
+
+
+      this.logList = res.data.logList.map((item: any) => {
         return {
           ...item,
           createTime: moment(item.createTime).format(timeFormatDate)
         }
       })
-    //   this.logList = logList.slice(0, 20)
-    //   const { data: {
-    //     approveStatusList: approveStatusList,
-    //   } } = await queryList(query)
-    //   this.approveStatusList = approveStatusList
       setTimeout(() => {
         (this.$Spin as any).hide()
       }, 1000)
@@ -234,15 +333,23 @@ export default class Main extends ViewBase {
     } finally {
     }
   }
+  // 新增 / 修改
+  edit(id: number , key: any , row: any ) {
+    this.addOrUpdateVisible = true
+    !!id ? this.editOne = row : this.editOne
+    this.$nextTick(() => {
+      const myThis: any = this
+      myThis.$refs.addOrUpdate.init(id , key)
+    })
+  }
 
-//   // cancel(dataForms: string) {
-//   //   this.dataForm.refuseReason = ''
-//   //   this.dataForm.approveStatus = 2
-//   //   // this.showDlg = false
-//   //   // ; (this.$refs.dataForm as any).resetFields()
-//   // }
+  dlgeditdone() {
+    this.doSearch()
+  }
 
-//   // 审核状态
+  reloadSearch() {
+    this.doSearch()
+  }
 
   change(dataForms: any) {
     const myThis: any = this
@@ -263,6 +370,17 @@ export default class Main extends ViewBase {
         }
       }
     })
+  }
+
+  async del(id: any) {
+    try {
+      await confirm('您确定删除此视频文件吗？')
+      await dels(this.$route.params.id , id)
+      toast('删除成功')
+      this.doSearch()
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
 
   // 返回
@@ -411,7 +529,7 @@ export default class Main extends ViewBase {
   }
 }
 .titop {
-  line-height: 28px;
+  line-height: 35px;
   color: rgb(61, 156, 235);
   font-size: 16px;
 }

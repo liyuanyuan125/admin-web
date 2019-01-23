@@ -1,6 +1,6 @@
 
 
-import { get , post , put } from '@/fn/ajax'
+import { get , post , put , del } from '@/fn/ajax'
 
 // 列表
 export async function queryList(query: any) {
@@ -32,5 +32,24 @@ export async function companysList(query: any) {
   const data = await get('/customer/companies' , {pagesize: 10000})
   return data
 }
+// 删除
+export async function dels(videoId: any , id: any) {
+  const res = await del(`/xadvert/videos/${videoId}/attachments/${id}`)
+  return res
+}
+
+// 上传 编辑
+export async function addvideo(id: any , query: any) {
+  const res = await post(`/xadvert/videos/${id}/attachments`, query)
+  return res
+}
+
+
+// 编辑视频附件
+export async function editvideo(videoId: any , attachmentId: any, query: any) {
+  const res = await put(`/xadvert/videos/${videoId}/attachments/${attachmentId}` , query)
+  return res
+}
+
 
 

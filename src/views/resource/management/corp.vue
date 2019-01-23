@@ -450,5 +450,4 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 /deep/ .ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab-active {
   color: #222;
 }
-
 </style>
