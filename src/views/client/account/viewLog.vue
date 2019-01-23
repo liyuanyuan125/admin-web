@@ -24,7 +24,7 @@
           <tooltip style="margin-left: 3%;height:60px;" :content="companyName" placement="top">
             <span class="company-name">{{companyName}}</span>
           </tooltip>
-          <div class="res-num-item" v-for="it in list" v-if="it.id==companyId" :key="it.id">
+          <div v-for="it in list" v-if="it.id==companyId" :key="it.id">
             <div class="item-lis" v-for="ity in it.types" :key="ity.typeCode">
               <span v-for="its in customerTypeList" v-if="its.typeCode==ity.typeCode" :key='its.typeCode'>
                 <em v-for="itname in its.typeCategoryList" v-if="itname.typeCode==ity.typeCategoryCode" :key='itname.typeCode'>【{{its.typeName}}：{{itname.typeName}}】</em>

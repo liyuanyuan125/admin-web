@@ -49,14 +49,14 @@
       <div class='titop' v-if='showmoney'>交易信息
         <Button type='success' style='float: right;' @click="edittransaction('dataForm')">保存</Button>
       </div>
-      <Row class="cinema-header" v-if='showmoney'>
+      <Row class="jiaoyi cinema-header" v-if='showmoney'>
         <Row>
           <Col span="3">
             <FormItem label="初始分成比例" prop="proportion">
               <Input v-model="dataForm.proportion" placeholder=""/>
             </FormItem>
           </Col>
-          <col span='14'>% ， <span style='color:red;'>注：未设置分成比例的资源方公司，在平台接单时将使用本项设置</span></Col>
+          <col span='14'>&nbsp;% ， <span style='color:red;'>注：未设置分成比例的资源方公司，在平台接单时将使用本项设置</span></Col>
         </Row>
         <Row>
           <Col span="3">
@@ -65,11 +65,11 @@
             </FormItem>
           </Col>
           <Col span="4" class='shou'>
-            <FormItem label="秒 ，收取" prop="stepCost">
+            <FormItem label="   秒 ，收取" prop="stepCost">
               <Input v-model="dataForm.stepCost" placeholder=""/>
             </FormItem>
           </Col>
-          <col span='14'>元 ， <span style='color:red;'>注：超出部分按照一整个阶梯收取费用</span></Col>
+          <col span='14'>&nbsp;元 ， <span style='color:red;'>&nbsp;注：超出部分按照一整个阶梯收取费用</span></Col>
         </Row>
       </Row>
       <div class='titop' v-if='!showmoney'>交易信息
@@ -77,12 +77,12 @@
       </div>
       <Row class="cinema-header" v-if='!showmoney'>
         <Row>
-          <Col span="2"><div>初始分成比例</div></Col>
-          <Col span="14"><span>{{detail.proportion}}%</span><span style='color:red;'>注：未设置分成比例的资源方公司，在平台接单时将使用本项设置</span></Col>
+          <Col span="2"><div>初始分成比例&nbsp;&nbsp;</div></Col>
+          <Col span="14"><span>{{detail.proportion}}%</span><span style='color:red;margin-left:15px;'>注：未设置分成比例的资源方公司，在平台接单时将使用本项设置</span></Col>
         </Row>
         <Row>
-          <Col span="2"><div>数字转制费用</div></Col>
-          <Col span="14"><span>每{{detail.timeStep}}秒，收取{{detail.stepCost}}元 </span><span style='color:red;'>注：超出部分按照一整个阶梯收取费用</span></Col>
+          <Col span="2"><div>数字转制费用&nbsp;&nbsp;</div></Col>
+          <Col span="14"><span>每{{detail.timeStep}}秒，收取{{detail.stepCost}}元 </span><span style='color:red;margin-left:15px;'>注：超出部分按照一整个阶梯收取费用</span></Col>
         </Row>
       </Row>
     </div>
@@ -252,8 +252,10 @@ export default class Main extends ViewBase {
         }
         try {
           const res =  await bank (query)
-          toast('操作成功')
-          this.$router.push({ name : 'system-setup' })
+          toast('充值信息操作成功')
+          setTimeout(() => {
+            history.go(0)
+          }, 1000)
         } catch (ex) {
           this.handleError(ex)
         }
@@ -271,8 +273,10 @@ export default class Main extends ViewBase {
         // const title = '添加'
         try {
           const res =  await transaction (query)
-          toast('操作成功')
-          this.$router.push({ name : 'system-setup' })
+          toast('交易信息操作成功')
+          setTimeout(() => {
+            history.go(0)
+          }, 1000)
         } catch (ex) {
           this.handleError(ex)
         }
@@ -364,6 +368,11 @@ export default class Main extends ViewBase {
 .shou {
   /deep/ .btn-back {
     width: 70px;
+  }
+}
+.jiaoyi {
+  /deep/ .ivu-form-item-label {
+    margin-top: 8px;
   }
 }
 </style>

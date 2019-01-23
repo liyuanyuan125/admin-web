@@ -4,10 +4,10 @@
         <Tab-pane label="平台刊例价" key="key1">
           <div class="act-bar flex-box">
             <form class="form flex-1" @submit.prevent="search">
-              <Select style="width:90px" v-model="date.numdate" filterable>
+              <Select style="width:100px;" v-model="date.numdate" filterable>
                 <Option v-for="it in dates" :key="it.key" :value="it.key">{{it.name}}</Option>
               </Select>
-              <DatePicker v-if="date.numdate == 1" type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="选择时间" class="input" style="width: 230px"></DatePicker>
+              <DatePicker v-if="date.numdate == 1" type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-start" placeholder="选择时间" class="input" style="width: 230px"></DatePicker>
               <LazyInput  v-if="date.numdate == 2" @on-focus='checkShow' v-model="date.calendarName" placeholder="档期" class="input"/>
               <Select style="width:240px" v-model="query.gradeCode" filterable>
                 <Option v-for="it in gradeList" :key="it.code" :value="it.code">{{it.desc}}</Option>
@@ -31,7 +31,7 @@
         <Tab-pane label="公司刊例价" key="key2">
           <div class="act-bar flex-box">
             <form class="form flex-1" @submit.prevent="search">
-              <Select style="width:90px" v-model="date.numdate" filterable>
+              <Select style="width:100px;" v-model="date.numdate" filterable>
                 <Option v-for="it in dates" :key="it.key" :value="it.key">{{it.name}}</Option>
               </Select>
               <DatePicker v-if="date.numdate == 1" type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="注册时间" class="input" style="width: 230px"></DatePicker>

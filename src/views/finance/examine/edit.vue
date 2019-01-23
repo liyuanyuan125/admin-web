@@ -247,7 +247,7 @@ export default class Main extends ViewBase {
         const title = '添加'
         try {
            const res =  await addList (query)
-           this.$router.push({ name : 'Finance-examine' })
+           this.$router.push({ name : 'finance-examine' })
         } catch (ex) {
            this.handleError(ex)
         }

@@ -7,13 +7,13 @@ export async function queryList(query: any) {
 
 // 银行开户信息
 export async function bank(query: any) {
-  const data = await put(`/finance/settings/set-bank-account`)
+  const data = await put(`/finance/settings/set-bank-account` , query)
   return data
 }
 
 // 交易配置信息
 export async function transaction(query: any) {
-  const data = await put(`/finance/settings/set-transaction-info`)
+  const data = await put(`/finance/settings/set-transaction-info` , query)
   return data
 }
 
