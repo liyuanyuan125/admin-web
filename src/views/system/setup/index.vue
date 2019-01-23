@@ -1,6 +1,5 @@
 <template>
 <div>
-  <!-- 45646 -->
   <Form  :model='dataForm' :label-width='93' :rules='rules' label-position="left" class='form page' ref='dataForm'>
     <div class="edit-box">
       <div class='titop' v-if='showbank'>充值信息
@@ -86,38 +85,6 @@
         </Row>
       </Row>
     </div>
-    <!-- <div class="edit-box"> -->
-      <!-- <div class='titop' v-if='!showbank'>充值信息
-        <Button type='success' style='float: right;' @click='showbanktrue'>修改</Button>
-      </div>
-      <div class="cinema-header" v-if='!showbank'>
-        <Row>
-          <Col span="2"><div>开户行</div></Col>
-          <Col span="8"><span>{{detail.accountBank}}</span></Col>
-        </Row>
-        <Row>
-          <Col span="2"><div>开户名</div></Col>
-          <Col span="8"><span>{{detail.accountName}}</span></Col>
-        </Row>
-        <Row>
-          <Col span="2"><div>银行账号</div></Col>
-          <Col span="8"><span>{{detail.accountNumber}}</span></Col>
-        </Row>
-      </div> -->
-      <!-- <div class='titop' v-if='!showmoney'>交易信息
-        <Button type='success' style='float: right;' @click='showmoneytrue'>修改</Button>
-      </div>
-      <Row class="cinema-header" v-if='!showmoney'>
-        <Row>
-          <Col span="2"><div>初始分成比例</div></Col>
-          <Col span="8"><span>{{detail.proportion}}%</span>注：未设置分成比例的资源方公司，在平台接单时将使用本项设置</Col>
-        </Row>
-        <Row>
-          <Col span="2"><div>数字转制费用</div></Col>
-          <Col span="8"><span>每{{detail.timeStep}}秒，收取{{detail.stepCost}}元 </span>注：超出部分按照一整个阶梯收取费用</Col>
-        </Row>
-      </Row> -->
-    <!-- </div> -->
   </Form>
 </div>
   
@@ -155,9 +122,6 @@ const dataForm = {
 
 @Component({
   components: {
-    // AreaSelect,
-    // PartBindCinema,
-    // UploadButton
   }
 })
 
@@ -176,26 +140,6 @@ export default class Main extends ViewBase {
 
   get rules() {
     const rule: any = {
-      // accountBank: [
-      //   { required: true, message: '请填写合同名称', trigger: 'blur' },
-      //   { type: 'string', min: 1, max: 30, message: '字数限制在1-30之间', trigger: 'blur' }
-      // ],
-      // accountName: [
-      //   { required: true, message: '请填写合同编号', trigger: 'blur' },
-      //   { type: 'string', min: 1, max: 30, message: '字数限制在1-30之间', trigger: 'blur' }
-      // ],
-      // accountNumber: [
-      //   { required: true, message: '请选择甲方公司名称' }
-      // ],
-      // proportion: [
-      //   { required: true, message: '请选择有效开始时间' }
-      // ],
-      // timeStep: [
-      //   { required: true, message: '请选择有效结束时间' }
-      // ],
-      // stepCost: [
-      //   { required: true, message: '请选择乙方公司' }
-      // ],
     }
     return rule
   }
@@ -242,11 +186,6 @@ export default class Main extends ViewBase {
     const myThis: any = this
     myThis.$refs[dataForms].validate(async ( valid: any ) => {
       if (valid) {
-        // const query =  this.id ? {
-        //   ...this.dataForm,
-        // } : {
-        //   ...this.dataForm,
-        // }
         const query = {
           ...this.dataForm,
         }
@@ -270,7 +209,6 @@ export default class Main extends ViewBase {
           id: this.id,
           ...this.dataForm
         }
-        // const title = '添加'
         try {
           const res =  await transaction (query)
           toast('交易信息操作成功')
@@ -283,10 +221,6 @@ export default class Main extends ViewBase {
       }
     })
   }
-//   @Watch('dataForms', { deep: true })
-//   watchdataForms(val: any[]) {
-//     this.dataForm.attachments = val.map(it => it.fileId)
-//   }
 }
 </script>
 

@@ -5,8 +5,6 @@
       <div class="flex-1">
         <em></em>
       </div>
-      <!-- <Button  v-if='showedit' type="success" icon="md-add-circle" class="btn-new"
-        @click="goSet()">编辑合同</Button> -->
     </header>
     <div class="detail-box">
       <div class='titop'>基础信息</div>
@@ -76,7 +74,7 @@
       <div class='titop' v-if='!showStatus'>操作记录</div>
       <Row class='detail-content' v-if='!showStatus'>
         <div class="logs-item" v-for="(it,index) in logList">
-          <span>{{createTime}}</span>
+          <span>{{it.createTime}}</span>
           <span>{{it.email}}【{{it.userName}}】</span>
           {{it.description}}
         </div>
@@ -142,8 +140,6 @@ export default class Main extends ViewBase {
   showedit: any = false
   typeList: any = []
 
-
-  objfiles: any = []
   editOne: any = null
 
 
@@ -161,7 +157,6 @@ export default class Main extends ViewBase {
       this.showStatus = true
     }
     if ( this.$route.params.status == '3' || this.$route.params.status == '4' ) {
-      // this.showStatus = true
       this.showedit = true
     }
     this.doSearch()
@@ -170,15 +165,6 @@ export default class Main extends ViewBase {
 
   // 上传文件
   async onUploadSuccess({ files }: SuccessEvent) {
-    // console.log(files[0].clientName.split('.')[1])
-    // this.objfiles.push({
-    //   name: files[0].clientName,
-    //   fileId: files[0].fileId
-    // })
-    // this.dataForm.attachments.push({
-    //   name: files[0].clientName,
-    //   fileId: files[0].fileId
-    // })
     const typetext = files[0].clientName.split('.')[1]
     const typecode = this.typeList.map((item: any) => {
           return item.text
@@ -196,6 +182,8 @@ export default class Main extends ViewBase {
       } catch (ex) {
         this.handleError(ex)
       }
+    } else {
+      alert('请确认上传文件格式')
     }
   }
   get cachedMap() {
@@ -220,11 +208,16 @@ export default class Main extends ViewBase {
       render: (hh: any, { row: { desc , text } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        if (desc!=undefined && desc.fileId == '') {
-          return <span class='datetime' v-html={desc.fileUrl}></span>
+        if (desc!=undefined) {
+          if (desc.fileId == '') {
+            return <span class='datetime' v-html={desc.fileUrl}></span>
+          } else {
+            return <span class='datetime' style='color:#4b9cf2' v-html={desc.name}></span>
+          }
         } else {
-          return <span class='datetime' style='color:#4b9cf2' v-html={desc.name}></span>
+          <span class='datetime' v-html={'-'}></span>
         }
+        
         /* tslint:enable */
       }
     },
@@ -236,9 +229,11 @@ export default class Main extends ViewBase {
       render: (hh: any, { row: { desc } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = moment(desc.uploadTime).format(timeFormatDate)
         if (desc!=undefined ) {
+          const html = moment(desc.uploadTime).format(timeFormatDate)
           return desc.uploadTime == null ? <span class='datetime' v-html={'-'}></span> : <span class='datetime' v-html={html}></span>
+        } else {
+          <span class='datetime' v-html={'-'}></span>
         }
         /* tslint:enable */
       }
@@ -247,13 +242,17 @@ export default class Main extends ViewBase {
       render: (hh: any, { row: { desc } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        // const html = moment(desc.uploadTime).format(timeFormatDate)
-        const html = '【' + desc.uploadEmail + '】' + desc.uploadName
-        if (desc!=undefined && desc.uploadEmail == null) {
-          return <span class='datetime' v-html={desc.uploadName}></span>
+        if (desc!=undefined ) {
+          const html = '【' + desc.uploadEmail + '】' + desc.uploadName
+          if (desc.uploadEmail == null) {
+            return <span class='datetime' v-html={desc.uploadName}></span>
+          } else {
+            return <span class='datetime' v-html={html}></span>
+          }
         } else {
-          return <span class='datetime' v-html={html}></span>
+          <span class='datetime' v-html={'-'}></span>
         }
+        
         /* tslint:enable */
       }
     },
@@ -283,7 +282,6 @@ export default class Main extends ViewBase {
             </div>
           }
         }
-        
         /* tslint:enable */
       }
     }
@@ -315,13 +313,12 @@ export default class Main extends ViewBase {
           }
         }
       })
-      // console.log(this.typeList)
 
 
       this.logList = res.data.logList.map((item: any) => {
         return {
           ...item,
-          createTime: moment(item.createTime).format(timeFormatDate)
+          createTime: item.createTime == null ? '暂无时间' : moment(item.createTime).format(timeFormatDate)
         }
       })
       setTimeout(() => {
@@ -359,11 +356,8 @@ export default class Main extends ViewBase {
           id: this.id,
           ...this.dataForm
         }
-        // const title = '添加'
         try {
           const res =  await sapproval (this.$route.params.id , query)
-          // toast('操作成功')
-          // this.$emit('done', this.dataForm.email)
           this.$router.push({ name : 'gg-film' })
         } catch (ex) {
           this.handleError(ex)
