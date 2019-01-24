@@ -14,11 +14,18 @@ import event from './fn/event'
 import { alert } from './ui/modal'
 import LazyInput from '@/components/LazyInput'
 import { hasLogin } from './store'
+import moment from 'moment'
+import 'moment/locale/zh-cn'
 
 Vue.use(Router)
 
-// 设置星期一为一周开始
-locale.i.datepicker.weekStartDay = '1'
+// 设置 moment 的语言为简体中文，并重置周开始为周日（简体中文默认为周一）
+moment.locale('zh-cn', {
+  week: {
+    dow: 0
+  }
+} as any)
+
 Vue.use(iView, { locale })
 
 // 全局注册一些常用组件

@@ -9,7 +9,7 @@ import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { getSubList, isValidArea } from '@/api/area'
 import { toast } from '@/ui/modal'
-import { queryList } from '@/api/dateArea'
+
 const isAllZero = (list: number[] | null) => (list || []).every(it => it === 0)
 
 @Component
@@ -24,7 +24,15 @@ export default class AreaSelect extends ViewBase {
    */
   @Prop({ type: Number, default: 3 }) maxLevel!: number
 
+  /**
+   * 是否可清除值，默认可以
+   */
   @Prop({ type: Boolean, default: true }) clearable!: boolean
+
+  /**
+   * 是否去掉本区域，默认不去掉（即显示本区域）
+   */
+  @Prop({ type: Boolean, default: false }) noSelf!: boolean
 
   inValue: number[] = []
 
@@ -33,12 +41,12 @@ export default class AreaSelect extends ViewBase {
   async getSubList(pid = 0, level = 0) {
     let list: any[]
     try {
-      const res = await queryList({parentIds: pid, pageSize: 10000})
-      list = res.data.items
+      list = await getSubList(pid)
     } catch (ex) {
       list = []
       this.handleError(ex)
     }
+
     const subLevel = level + 1
 
     const tlist = list.map((it: any) => {
@@ -54,7 +62,7 @@ export default class AreaSelect extends ViewBase {
       return item
     })
 
-    const result = level > 0
+    const result = level > 0 && !this.noSelf
       ? [{ value: 0, label: '本区域', isFake: true }].concat(tlist)
       : tlist
 

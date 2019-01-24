@@ -12,6 +12,18 @@ export async function queryItem(query: any = {}) {
 }
 
 /**
+ * 获取影院的影厅列表
+ * @param cinemaId 影院ID
+ * @param query 查询参数
+ * https://yapi.aiads.com/project/22/interface/api/1433
+ */
+export async function queryList(cinemaId: number, query: any = {}) {
+  const url = `/theater/cinemas/${cinemaId}/halls`
+  const res = await get(url, query)
+  return res
+}
+
+/**
  * 新增
  * @param cinemaId 所属影院ID
  * @param data 数据，参见接口文档

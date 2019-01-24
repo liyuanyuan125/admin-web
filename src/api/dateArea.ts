@@ -2,7 +2,7 @@ import { get, post, put, del } from '@/fn/ajax'
 
 // 获取地区所在集合
 export async function arealist(query: any) {
-    const res = await get('/basis/districts/areas', query)
+    const res = await get('/basis/areas', query)
     return res
 }
 

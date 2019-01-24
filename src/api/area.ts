@@ -1,48 +1,28 @@
 import { get } from '@/fn/ajax'
 
-interface PromiseCache {
-  [id: number]: Promise<any[]>
-}
-
-// 刷新浏览器后重置
-const subListCache: PromiseCache = {}
-
 /**
- * 获取子区域列表，带缓存
+ * 获取子区域列表，并按照 orderNum 进行排序
  * @param pid 父区域ID
  */
 export async function getSubList(pid: number = 0) {
-  const cachePromise = subListCache[pid]
-  if (cachePromise != null) {
-    return cachePromise
-  }
+  const { data } = await get('/basis/districts', { parentIds: pid, pageSize: 888888 })
 
-  try {
-    subListCache[pid] = get('/basis/districts', { parentIds: pid, pageSize: 888888 })
-    .then(({ data }) => {
-      const tlist: any[] = (data.items || []).map((it: any) => {
-        return {
-          ...it,
-          name: (it.nameCn || it.nameEn)
-        }
-      })
+  const tlist: any[] = (data.items || []).map((it: any) => {
+    return {
+      ...it,
+      name: (it.nameCn || it.nameEn)
+    }
+  })
 
-      const list = tlist.sort((a, b) => {
-        const tsa = parseInt(a.orderNum, 10)
-        const tsb = parseInt(a.orderNum, 10)
-        const sortA = isNaN(tsa) ? Number.MAX_SAFE_INTEGER : tsa
-        const sortB = isNaN(tsb) ? Number.MAX_SAFE_INTEGER : tsb
-        return sortA - sortB
-      })
+  const list = tlist.sort((a, b) => {
+    const tsa = parseInt(a.orderNum, 10)
+    const tsb = parseInt(a.orderNum, 10)
+    const sortA = isNaN(tsa) ? Number.MAX_SAFE_INTEGER : tsa
+    const sortB = isNaN(tsb) ? Number.MAX_SAFE_INTEGER : tsb
+    return sortA - sortB
+  })
 
-      return list
-    })
-  } catch (ex) {
-    delete subListCache[pid]
-    throw ex
-  }
-
-  return subListCache[pid]
+  return list
 }
 
 const isAllZero = (list: number[] | null) => (list || []).every(it => it === 0)

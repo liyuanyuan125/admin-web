@@ -12,7 +12,7 @@ export function numberKeys(obj: object) {
 }
 
 /**
- * 将对象中的 keys 转成字数字
+ * 将对象中的 keys 转成数字
  * @param obj 对象
  * @param keys 要转成数字的 key
  */

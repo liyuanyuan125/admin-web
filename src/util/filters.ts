@@ -45,3 +45,12 @@ export function filterDateTime(time: number | string | Date, options: DateTimeOp
   const format = `${formatDate}${opts.separator}${opts.noSecond ? formatTimeNoSecond : formatTime}`
   return filterDateCommon(time, format)
 }
+
+/**
+ * 将分加工成元
+ * @param cent 分
+ */
+export function centToYuan(cent: number, defaultValue: any = '') {
+  const yuan = (cent / 100).toFixed(2)
+  return !isNaN(yuan as any) ? yuan : defaultValue
+}
