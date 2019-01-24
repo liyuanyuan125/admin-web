@@ -4,7 +4,7 @@
     <div class="act-bar">
       <a @click="onAdd" v-if="!type">添加关联影院</a>
     </div>
-    <AddCinemaModel ref="addCinemaModel" :cinemaend = "incinematype" :addData="inValue" @done="columndata"  v-if="!type" />
+    <AddCinemaModel :inhallTypeList="inhallTypeList" ref="addCinemaModel" :companyId = "companyId" :addData="inValue" @done="columndata"  v-if="!type" />
   </div>
 </template>
 
@@ -31,7 +31,8 @@ export default class ComponentMain extends ViewBase {
 
   // 判断新增和添加
   @Prop() type: any
-
+  @Prop() inhallTypeList: any
+  @Prop() companyId: any
   /**
    * 分润单位列表
    */
@@ -48,13 +49,7 @@ export default class ComponentMain extends ViewBase {
       { title: '影院ID',
         align: 'center',
         width: 70,
-        key: 'shortName',
-        render: (hh: any, { row: { cinemaName } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          return <a>{cinemaName}</a>
-          /* tslint:enable */
-        }
+        key: 'id'
       },
       { title: '影院名称',
         align: 'center',
@@ -69,10 +64,11 @@ export default class ComponentMain extends ViewBase {
       { title: '影厅',
         align: 'center',
         key: 'shortName',
-        render: (hh: any, { row: { cinemaName } }: any) => {
+        render: (hh: any, { row: { hallName } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          return <a>{cinemaName}</a>
+          const name = hallName || []
+          return <a>{name.join(',')}</a>
           /* tslint:enable */
         }
       },

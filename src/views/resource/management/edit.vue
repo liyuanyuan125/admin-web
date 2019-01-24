@@ -3,7 +3,7 @@
     <header class="header flex-box">
       <Button icon="md-return-left" @click="back" class="btn-back">返回上一页</Button>
       <div class="flex-1" style="margin-left: 8px" >
-        <em>平台刊例价 - 新建刊例价</em>
+        <em v-if="!$route.params.id"> 新建刊例价</em>
       </div>
     </header>
 
@@ -22,7 +22,7 @@
               <Col span="2"><div>每30秒</div></Col>
               <Col span="8">
                 <FormItem prop="cpm" class="mt8">
-                  <InputNumber style="width: 80px" :min="0" v-model="dataForm.cpm" placeholder=""/>  元/千人次
+                  <InputNumber style="width: 80px" :min="1" v-model="dataForm.cpm" placeholder=""/>  元/千人次
                 </FormItem>
               </Col>
             </Col>
@@ -30,7 +30,7 @@
               <Col span="2"><div>15秒折扣</div></Col>
               <Col span="8">
                 <FormItem prop="discount" class="mt8">
-                  <InputNumber style="width: 80px" :max="100" :min="0" v-model="dataForm.discount" placeholder=""/>  %
+                  <InputNumber style="width: 80px" :max="100" :min="1" v-model="dataForm.discount" placeholder=""/>  %
                 </FormItem>
               </Col>
             </Col>
@@ -84,25 +84,36 @@
                   <Radio label="1">
                     <span>按平台定价等级</span>
                   </Radio>
-                  <Radio class="mt30" label="2">
+                  <Radio class="mt40" label="2">
                     <span>按公司设置影院</span>
                   </Radio>
                 </RadioGroup>
               </FormItem>
             </Col>
-            <FormItem v-if="cinemaStatus == 1" class="cinema-left" prop='cinemaLevel'>
-                <CinemaLevel v-model="dataForm.cinemaLevel" />
-            </FormItem>
+            <div v-if="cinemaStatus == 1" class="cinema-left">
+              <FormItem prop='cinemaLevel'>
+                <CinemaLevel :ingradeList='gradeList' v-model="dataForm.cinemaLevel" />
+                <span class="cinema-span" v-if="dataForm.cinemaLevel">共计( {{cinemanums}} )个影院</span>
+              </FormItem>
+              <FormItem v-if="dataForm.cinemaLevel" style="margin-top: -20px">
+                <CheckboxGroup v-model="dataForm.platform.hallTypeList">
+                  <Checkbox v-for="(item, index) in hallTypeList" :key="index" :label="item.code">
+                    <span>{{item.name}}</span>
+                  </Checkbox>
+                </CheckboxGroup>
+              </FormItem>
+            </div>
+            
             <div v-else class="cinema-right">
               <FormItem prop="companyId">
-                <CinemaList v-model="dataForm.companyId" style="width: 220px" />
+                <CinemaList v-model="dataForm.companyId" @input="cinemeClean" style="width: 220px" />
               </FormItem>
             </div>
           </Row>
-          <Row>
+          <Row v-if="cinemaStatus != 1 && dataForm.companyId">
             <Col :span="14" class="cinema-add">
               <FormItem>
-                <PartBindCinema v-model="dataForm.company.cinemasList" class="part-bind-cinema"/>
+                <PartBindCinema :companyId="dataForm.companyId" :inhallTypeList='hallTypeList' v-model="dataForm.company.cinemaList" class="part-bind-cinema"/>
               </FormItem>
             </Col>
           </Row>
@@ -110,7 +121,7 @@
       </div>
     </form>
 
-    <div class="edit-button">
+    <div class="edit-button" v-if="$route.params.id">
       <Button style="padding: 6px 40px" type="info" size="large" @click="edit('dataForm')">保存</Button>
     </div>
     <DlgEdit ref="diaries" v-if="diariesShow" v-model="dataForm.diaries" />
@@ -118,12 +129,14 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
+import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import DlgEdit from './dlgEdit.vue'
 import CinemaLevel from '@/components/priceLevel.vue'
 import CinemaList from '@/components/companyList.vue'
 import PartBindCinema from './partBindCinema.vue'
+import { clean } from '@/fn/object'
+import { cinemaLevel, cinemanum, addRateCard, rateCardDetail } from '@/api/rateCard'
 
 @Component({
   components: {
@@ -135,8 +148,8 @@ import PartBindCinema from './partBindCinema.vue'
 })
 export default class Main extends ViewBase {
   dataForm: any = {
-    cpm: 0,
-    discount: 0,
+    cpm: 1,
+    discount: 1,
     showTime: [],
     name: '',
     platform: {
@@ -155,6 +168,12 @@ export default class Main extends ViewBase {
     companyId: null,
   }
 
+  hallTypeList: any = []
+  gradeList: any = []
+
+  // 定价等级 影院数
+  cinemanums: any = ''
+
   diaries: any = {
     id: '',
     name: ''
@@ -163,6 +182,11 @@ export default class Main extends ViewBase {
   diariesShow = false
   dateStaus = '1'
   cinemaStatus = '1'
+
+  get cinemaLev() {
+    return this.dataForm.cinemaLevel
+  }
+
   get rule() {
     const validatorDate = (rule: any, value: any, callback: any) => {
       if (value[0] == '') {
@@ -193,8 +217,44 @@ export default class Main extends ViewBase {
     }
   }
 
+  created() {
+    this.levelList()
+    this.search()
+  }
+
+  async search() {
+    const id = this.$route.params.id || 0
+    if (!id) {
+      return
+    }
+    try {
+      await rateCardDetail(id)
+    } catch (ex) {
+
+    }
+  }
+
+  async levelList() {
+    try {
+      const {
+        data: {
+          gradeList,
+          hallTypeList
+        }
+      } = await cinemaLevel()
+      this.gradeList = gradeList
+      this.hallTypeList = hallTypeList
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
   dateChange() {
 
+  }
+
+  cinemeClean() {
+    this.dataForm.company.cinemaList = []
   }
 
   diaresShow() {
@@ -209,10 +269,57 @@ export default class Main extends ViewBase {
     if (volid) {
       return
     }
+    const dataForms = this.dataForm
+    const oldquery = {
+      cpm: dataForms.cpm,
+      discount: dataForms.discount,
+      calendarId: dataForms.diaries.id,
+      beginDate: dataForms.showTime[0] ? new Date(dataForms.showTime[0]).getTime() : '',
+      endDate: dataForms.showTime[0] ? new Date(dataForms.showTime[0]).getTime() : '',
+    }
+    let platform: any = {}
+    let company: any = {}
+    if (dataForms.companyId) {
+      company = {
+        companyId: dataForms.companyId
+      }
+    } else {
+      platform = dataForms.platform
+    }
+    const query = dataForms.companyId ? {
+      ...oldquery,
+      company
+    } : {
+      ...oldquery,
+      platform
+    }
+    try {
+      await addRateCard(clean(query))
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
 
   back() {
     this.$router.go(-1)
+  }
+
+  async cinemacount(val: string) {
+    if (!val) {
+      return
+    }
+    try {
+      const res = await cinemanum(val)
+      this.cinemanums = res.data.cinemaCount || 0
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
+  @Watch('cinemaLev')
+
+  watchcinemaLev(val: any) {
+    this.cinemacount(val)
   }
 }
 </script>
@@ -267,6 +374,12 @@ export default class Main extends ViewBase {
     left: calc(100% / 24 * 3);
     top: 8px;
   }
+  .cinema-span {
+    position: absolute;
+    width: 300px;
+    left: 230px;
+    top: 3px;
+  }
   .cinema-right {
     position: absolute;
     left: calc(100% / 24 * 3);
@@ -286,6 +399,9 @@ export default class Main extends ViewBase {
   }
   .mt30 {
     margin-top: 30px;
+  }
+  .mt40 {
+    margin-top: 40px;
   }
 }
 .edit-button {

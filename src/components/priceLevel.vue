@@ -1,18 +1,20 @@
 <template>
-  <Select v-model="inValue" :placeholder="placeholder" filterable
-    clearable class="component" ref="ui">
-    <Option v-for="(it, index) in list" :key="index" :value="it.key"
-      :label="it.text" class="flex-box">
-      <span>{{it.text}}</span>
-    </Option>
-  </Select>
+  <div>
+    <Select v-model="inValue" :placeholder="placeholder" filterable
+      clearable class="component" ref="ui">
+      <Option v-for="(it, index) in ingradeList" :key="index" :value="it.code"
+        :label="it.desc" class="flex-box">
+        <span>{{it.desc}}</span>
+      </Option>
+    </Select>
+  </div>
+  
 </template>
 
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import { cinemaLevel } from '@/api/rateCard'
 
 @Component
 export default class CinemaChainSelect extends ViewBase {
@@ -20,6 +22,7 @@ export default class CinemaChainSelect extends ViewBase {
    * 值本身，可以使用 v-model 进行双向绑定
    */
   @Prop({ type: String, default: '' }) value!: string
+  @Prop({ default: () => []}) ingradeList!: any
 
   /**
    * 提示文字
@@ -30,20 +33,8 @@ export default class CinemaChainSelect extends ViewBase {
 
   inValue: string = this.value
 
-  list: any[] = []
-
-  async mounted() {
-    try {
-      const { data } = await cinemaLevel({
-        pageSize: 1
-      })
-      const list: any[] = data.pricingLevelList || []
-      this.list = list
-    } catch (ex) {
-      this.handleError(ex)
-    }
+  created() {
   }
-
   @Watch('value')
   watchValue(val: string) {
     this.inValue = val

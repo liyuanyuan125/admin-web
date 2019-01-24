@@ -13,7 +13,7 @@
         <Button type="default" @click="reset" class="btn-reset">清空</Button>
       </form>
       <div class="acts">
-        <Button type="success" @click="edit('platform', 'edit')">新建刊例价</Button>
+        <Button :to="{name: 'resource-management-edit'}" type="success" >新建刊例价</Button>
       </div>
     </div>
 
@@ -183,88 +183,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         const h = jsxReactToVue(hh)
         // const sta = status == 1 ? '停用' : '启用'
         return <div class='row-acts'>
-          <a on-click={this.edit.bind(this, row.id, row)}>编辑</a>&nbsp;&nbsp;&nbsp;
-          <a on-click={this.del.bind(this, row.id)}>删除</a>
-        </div>
-        /* tslint:enable */
-      }
-    }
-  ]
-  columns2 = [
-    { title: '序号', key: 'id', align: 'center' },
-    { title: '公司名称', key: 'companyName', align: 'center' },
-    { title: '影响影院', key: 'cinemaCount', align: 'center',
-    //  render: (hh: any, { row: { customerId , customerName } }: any) => {
-    //     /* tslint:disable */
-    //     const h = jsxReactToVue(hh)
-    //     const html = '[' + customerId + '] '+ customerName
-    //     return <span class='datetime' v-html={html}></span>
-    //     /* tslint:enable */
-    //   }
-    },
-    { title: '30秒刊例价(元/千人次)', key: 'cpm', align: 'center',
-     render: (hh: any, { row: { cpm } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = cpm + '%'
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    { title: '15秒折扣', key: 'discount', align: 'center',
-      render: (hh: any, { row: { discount } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = discount + 's'
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    { title: '档期', key: 'calendarName', align: 'center',
-      // render: (hh: any, { row: { transFee } }: any) => {
-      //   /* tslint:disable */
-      //   const h = jsxReactToVue(hh)
-      //   const html = transFee + '.00'
-      //   return <span class='datetime' v-html={html}></span>
-      //   /* tslint:enable */
-      // }
-    },
-    {
-      title: '开始日期',
-      key: 'beginDate',
-      align: 'center',
-      render: (hh: any, { row: { beginDate } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = String(beginDate).slice(0, 4) + '-' + String(beginDate).slice(4, 6) + '-' + String(beginDate).slice(6, 8)
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '结束日期',
-      key: 'endDate',
-      align: 'center',
-      render: (hh: any, { row: { endDate } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = String(endDate).slice(0, 4) + '-' + String(endDate).slice(4, 6) + '-' + String(endDate).slice(6, 8)
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '操作',
-      key: 'action',
-      width: 90,
-      align: 'center',
-      render: (hh: any, { row: { id }, row }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        // const sta = status == 1 ? '停用' : '启用'
-        return <div class='row-acts'>
-          <a on-click={this.edit.bind(this, row.id, row)}>编辑</a>&nbsp;&nbsp;&nbsp;
-          <a on-click={this.del.bind(this, row.id)}>删除</a>
+          <a on-click={this.edit.bind(this, row.id)}>详情</a>
         </div>
         /* tslint:enable */
       }
@@ -373,8 +292,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 
-  edit(msg: string, edit: string) {
-    this.$router.push({ name: 'resource-edit', params: {msg, edit}})
+  edit(id: any) {
+    this.$router.push({ name: 'resource-management-edit', params: { id }})
   }
 
   checkShow() {

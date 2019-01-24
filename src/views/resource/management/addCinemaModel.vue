@@ -3,6 +3,7 @@
     v-model='showDlg'
     :width='720'
     title="添加关联影院"
+    :mask-closable='false'
     @on-cancel="cancel()"
     >
 
@@ -16,6 +17,14 @@
       <Button style="float:right" type="primary" @click="seach">搜索</Button>
     </Row>
 
+    <Row class="model-check">
+      <span>批量选择：</span>
+      <CheckboxGroup v-model="modelCheck">
+        <Checkbox v-for="(item, index) in inhallTypeList" :key="index" :label="item.code">
+          <span>{{item.name}}</span>
+        </Checkbox>
+      </CheckboxGroup>
+    </Row>
     <div class="cinema-box">
       <div>
 
@@ -39,16 +48,17 @@
 
             <CheckboxGroup v-model="form.check" ref="checks" @on-change="checkAllGroupChange">
               <div v-if="items.length>0">
-                <div v-for="(item) in items" :key="item.id" class="check">
+                <div v-for="(item, index) in items" :key="index" class="check">
                   <Checkbox :label="item.id">{{item.shortName}}</Checkbox>
-                  <Icon class="cinema-icon-left" v-show="cidCinema(item.id)" type="ios-arrow-forward" />
+                  <span>{{hallCount(item.id)}}</span>
+                  <Icon class="cinema-icon-left" @click="addhall(item.id)" v-show="cidCinema(item.id)" type="ios-arrow-forward" />
                 </div>
                 <div v-if="(items.length%4) == 3" class="check">&nbsp;</div>
               </div>
               <div v-else class="text-center">
                 暂无数据
               </div>
-            </CheckboxGroup >
+            </CheckboxGroup>
           </FormItem>
         </Form>
 
@@ -60,7 +70,7 @@
             <span class="checkId">已选: {{form.check.length}}</span>
         </div>
 
-        <MovieHall ref="moviehall" />
+        <MovieHall ref="moviehall" @done="halldata" />
 
       </div>
     </div>
@@ -78,7 +88,7 @@ import AreaSelect from '@/components/AreaSelect.vue'
 import MovieHall from './moviehall.vue'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import { slice, clean } from '@/fn/object'
-import { cinemaList } from '@/api/rateCard'
+import { cinemaList, cinemaCldList } from '@/api/rateCard'
 import { isEqual } from 'lodash'
 
 @Component({
@@ -90,16 +100,21 @@ import { isEqual } from 'lodash'
 })
 export default class Main extends ViewBase {
   @Prop({ type: Array, default: () => [] }) addData!: any[]
+  @Prop() inhallTypeList: any
+  @Prop() companyId: any
+
   form: any = {
     check: []
   }
 
+  // 影厅格式
+  modelCheck: any = []
   // 搜索loadding
   dataLoading: boolean = true
 
   // 是否显示影院遮罩层
   showDlg: any = false
-
+  items: any = []
   value = ''
   options: any = []
   area: number[] = []
@@ -113,7 +128,6 @@ export default class Main extends ViewBase {
   pageIndex = 1
   pageSize = 10
   totalPage = 0
-  items: any = []
   query: any = {
     provinceId: 0,
     cityId: 0,
@@ -124,13 +138,16 @@ export default class Main extends ViewBase {
   indeterminate = false
 
   checkAll = false
+
   init(val: any) {
     if ( val.length > 0 ) {
       this.form.check = val.map((item: any) => {
         return item.id
       })
+      this.checkCinema = val
     } else {
       this.form.check = []
+      this.checkCinema = []
     }
     this.showDlg = true
     this.seach()
@@ -144,6 +161,7 @@ export default class Main extends ViewBase {
   async authIdList() {
     try {
       const { data } = await cinemaList({
+        companyId: this.companyId,
         pageSize: 888888
       })
       const list: any[] = data.items || []
@@ -158,12 +176,13 @@ export default class Main extends ViewBase {
     const query: any = {
       name: this.value,
       ...this.query,
+      companyId: this.companyId,
       pageSize: this.pageSize,
       pageIndex: this.pageIndex
     }
     try {
       const res = await cinemaList(clean({...query}))
-      this.items = res.data.items
+      this.items = res.data.items || []
       this.totalPage = res.data.totalCount
 
       setTimeout(() => {
@@ -192,7 +211,7 @@ export default class Main extends ViewBase {
   }
 
   cidCinema(id: any) {
-    const ids = this.checkCinema.map((it: any) => it.id)
+    const ids = this.form.check
     if (ids.includes(id)) {
       return true
     }
@@ -305,6 +324,42 @@ export default class Main extends ViewBase {
     }
   }
 
+  addhall(id: any) {
+    const ids = this.form.check
+    const index = ids.indexOf(id)
+    const hallCheck = this.checkCinema[index].hallList || []
+    this.$nextTick(() => {
+      (this.$refs.moviehall as any).init(id, this.modelCheck, hallCheck)
+    })
+  }
+
+  halldata(data: any) {
+    this.checkCinema = this.checkCinema.map((it: any) => {
+      if (it.id == data.id) {
+        return {
+          ...it,
+          hallList: data.hallcheck,
+          hallName: data.hallName
+        }
+      } else {
+        return {
+          ...it
+        }
+      }
+    })
+  }
+
+  hallCount(id: any) {
+    const ids = this.form.check
+
+    const index = ids.indexOf(id)
+    if (index != -1) {
+      return this.checkCinema[index].hallList ? this.checkCinema[index].hallList.length + '个' : ''
+    } else {
+      return ''
+    }
+  }
+
   @Watch('area')
 
   // 选择所选城市
@@ -326,14 +381,12 @@ export default class Main extends ViewBase {
 
   // 确定操作
   done() {
-    this.checkCinema.forEach((item: any) => {
-      if (this.form.check.indexOf(item.id) == -1 ) {
-        const index = this.checkCinema.indexOf(item.id)
-        this.checkCinema.splice(index, 1)
-      }
+
+    const cinema = this.checkCinema.filter((it: any) => {
+      return this.form.check.includes(it.id)
     })
 
-    this.$emit('done', [...this.checkCinema])
+    this.$emit('done', [...cinema])
     this.showDlg = false
   }
 }
@@ -351,8 +404,18 @@ export default class Main extends ViewBase {
 /deep/ .ivu-table-wrapper > .ivu-spin-fix {
   border: 0;
 }
+.model-check {
+  display: flex;
+  height: 40px;
+  line-height: 40px;
+  margin-top: 14px;
+  background: #f2f2f2;
+  span {
+    margin-right: 20px;
+  }
+}
 /deep/ .cinema-box {
-  margin-top: 15px;
+  margin-top: 10px;
   height: 260px;
   max-height: 260px;
   overflow-y: auto;
