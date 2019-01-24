@@ -320,7 +320,7 @@ export default class Main extends ViewBase {
       this.detail = data
       setTimeout(() => {
         (this.$Spin as any).hide()
-      }, 1000)
+      }, 300)
     } catch (ex) {
       (this.$Spin as any).hide()
       this.handleError(ex)

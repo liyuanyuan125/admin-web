@@ -195,14 +195,11 @@ export default class Main extends ViewBase {
       this.showError('因资源方类型为影院，因此仅能关联一家影院')
       return
     }
-    this.checkCinema.forEach((item: any) => {
-      if (this.form.check.indexOf(item.id) == -1 ) {
-        const index = this.checkCinema.indexOf(item.id)
-        this.checkCinema.splice(index, 1)
-      }
+    const cinema = this.checkCinema.filter((it: any) => {
+      return this.form.check.includes(it.id)
     })
 
-    this.$emit('done', [...this.checkCinema])
+    this.$emit('done', [...cinema])
     this.showDlg = false
   }
 

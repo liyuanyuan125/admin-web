@@ -144,10 +144,8 @@ export default class Main extends ViewBase {
       this.form.check = val.map((item: any) => {
         return item.id
       })
-      this.checkCinema = val
     } else {
       this.form.check = []
-      this.checkCinema = []
     }
     this.showDlg = true
     this.seach()
@@ -308,8 +306,9 @@ export default class Main extends ViewBase {
         })
       }
       if (this.form.check.indexOf(itemes.id) == -1 && checkCinemaId.includes(itemes.id)) {
-        const index = this.form.check.indexOf(itemes.id)
-        this.checkCinema.splice(index, 1)
+        this.checkCinema = this.checkCinema.filter((it: any) => {
+          return this.form.check.includes(it.id)
+        })
       }
     })
     if (this.items.length === sameId.length) {

@@ -80,10 +80,10 @@
           <Col :span="24">
             <Col span="2">
               <div v-if="diaries.id">
-                指定档期
+                档期
               </div>
               <div v-else>
-                指定日期
+                日期
               </div>
             </Col>
             <Col span="8">
@@ -147,7 +147,7 @@
         <Row v-else class="detail-content">
           <Col>
             <Col v-if="dataForm.platform.gradeCode" :span="24">
-              <Col span="2"><div>按平台定价等级</div></Col>
+              <Col span="2"><div>平台定价等级</div></Col>
               <Col span="8">
                 <div class="detail-height">
                  <span>{{dataForm.platform.gradeCode}}级</span>
@@ -156,7 +156,7 @@
               </Col>
             </Col>
             <Col v-if="companyName" :span="24">
-              <Col span="2"><div>按公司设置影院</div></Col>
+              <Col span="2"><div>公司关联影院</div></Col>
               <Col span="8">
                 <div class="detail-height">{{companyName}}</div>
                 <PartBindCinema style="margin-bottom: 20px" type="detail" :companyId="dataForm.companyId" :inhallTypeList='hallTypeList' v-model="dataForm.company.cinemaList" class="part-bind-cinema"/>
@@ -277,6 +277,7 @@ export default class Main extends ViewBase {
     if (!id) {
       return
     }
+    (this.$Spin as any).show()
     try {
       const {
         data
@@ -310,7 +311,9 @@ export default class Main extends ViewBase {
           }
         })
       }
+      (this.$Spin as any).hide()
     } catch (ex) {
+      (this.$Spin as any).hide()
       this.handleError(ex)
     }
   }
@@ -365,8 +368,8 @@ export default class Main extends ViewBase {
       cpm: dataForms.cpm,
       discount: dataForms.discount,
       calendarId: dataForms.diaries.id,
-      beginDate: dataForms.showTime[0] ? moment(dataForms.showTime[0]).format(timeFormat) : '',
-      endDate: dataForms.showTime[0] ? moment(dataForms.showTime[1]).format(timeFormat) : '',
+      beginDate: dataForms.showTime[0] ? Number(moment(dataForms.showTime[0]).format(timeFormat)) : '',
+      endDate: dataForms.showTime[0] ? Number(moment(dataForms.showTime[1]).format(timeFormat)) : '',
     }
     const cinemaList = dataForms.company.cinemaList ? dataForms.company.cinemaList.map((it: any) => {
       return {
