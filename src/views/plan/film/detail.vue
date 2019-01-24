@@ -209,7 +209,7 @@ export default class Main extends ViewBase {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         if (desc!=undefined) {
-          if (desc.fileId == '') {
+          if (desc.fileId == '' || desc.fileId == null) {
             return <span class='datetime' v-html={desc.fileUrl}></span>
           } else {
             return <span class='datetime' style='color:#4b9cf2' v-html={desc.name}></span>

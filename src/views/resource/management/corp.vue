@@ -333,6 +333,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 }
 .table {
   margin-top: 20px;
+  /deep/ .ivu-table-cell > span:only-child:empty {
+    &::before {
+      content: '-';
+    }
+  }
 }
 
 .btn-search,
