@@ -27,7 +27,7 @@
           <Row>
             <Col span="2"><div>广告片</div></Col>
             <Col span="8">
-              <router-link v-if="detail.item.videoName" :to="{name: 'ggtising-plan-cinema', params: {id: detail.item.id}}">
+              <router-link v-if="detail.item.videoName" :to="{name: 'gg-film-detail', params: {id: detail.item.videoId , status: '4'}}">
                 <span style="color: #2d8cf0" v-if="detail.item.videoId">{{format.videoId}}</span> <span style="color: #2d8cf0">{{detail.item.videoName}}</span>
               </router-link>
               <span v-else></span>
