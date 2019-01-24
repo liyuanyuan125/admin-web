@@ -37,7 +37,6 @@
           <p>所属公司</p>
           <div class="res-num-item">
             <span>{{list.companyName}}</span>
-            <!-- <span class="blu1 les" @click="viewcompanydetail(5)">查看公司详情</span> -->
             <router-link :to="{path:'/client/corp/detail/'+ list.companyId}" tag="span" class="blu1 les">查看公司详情</router-link>
           </div>
         </div>
@@ -47,14 +46,40 @@
     <div class="new-number">
       <div class="new-num">
         <div class="n-list">子账号列表</div>
-        <Table :columns="columns" :data="tableData"
+        <!-- <Tabs v-model="stm.systemCode"  class="tabs">
+          <TabPane name="ads" label="广告主系统子账户"/>
+          <TabPane name="resource" label="资源方系统子账户"/>
+        </Tabs> -->
+        <Tabs>
+          <Tab-pane label="广告主系统子账户">
+            <Table :columns="columns" :data="tableData"
+            border stripe disabled-hover size="small" class="table"></Table>
+            <div class="page-wrap" v-if="total > 0">
+              <Page :total="total" show-total :page-size="query.pageSize" show-sizer
+                :page-size-opts="[10, 20, 50, 100]" :current="query.pageIndex"
+                @on-change="page => query.pageIndex = page"
+                @on-page-size-change="pageSize => query.pageSize = pageSize"/>
+            </div>
+          </Tab-pane>
+          <Tab-pane label="资源方系统子账户">
+            <Table :columns="columns" :data="prelists"
+            border stripe disabled-hover size="small" class="table"></Table>
+            <div class="page-wrap" v-if="total > 0">
+              <Page :total="total" show-total :page-size="query.pageSize" show-sizer
+                :page-size-opts="[10, 20, 50, 100]" :current="query.pageIndex"
+                @on-change="page => query.pageIndex = page"
+                @on-page-size-change="pageSize => query.pageSize = pageSize"/>
+            </div>
+          </Tab-pane>
+        </Tabs>
+        <!-- <Table :columns="columns" :data="prelist"
         border stripe disabled-hover size="small" class="table"></Table>
         <div class="page-wrap" v-if="total > 0">
           <Page :total="total" show-total :page-size="query.pageSize" show-sizer
             :page-size-opts="[10, 20, 50, 100]" :current="query.pageIndex"
             @on-change="page => query.pageIndex = page"
             @on-page-size-change="pageSize => query.pageSize = pageSize"/>
-        </div>
+        </div> -->
       </div>
     </div>
     <dlgChange  ref="change" :prelist="prelist"  @refreshDataList="search" v-if="changeVisible" @done="dlgEditDone"/>
@@ -66,7 +91,7 @@
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { get } from '@/fn/ajax'
-import { queryItem } from '@/api/account'
+import {queryList , queryItem } from '@/api/account'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
@@ -76,6 +101,8 @@ import dlgChange from './dlgChange.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
+
+
 
 const defQuery = {
   id: '',
@@ -102,10 +129,20 @@ export default class Main extends ViewBase {
   loading = false
   createTime = ''
   lastLoginTime = ''
+  //  广告主
   list: any = []
   prelist: any = []
+  //  资源方
+  lists: any = []
+  prelists: any = []
   total = 0
   ids = ''
+
+  statusList = []
+
+  stm: any = {
+    systemCode: 'ads'
+  }
 
   columns = [
     { title: '用户账号', key: 'id', align: 'center' },
@@ -136,6 +173,22 @@ export default class Main extends ViewBase {
       }
     },
     {
+      title: '状态',
+      key: 'statusText',
+      align: 'center',
+      render: (hh: any, { row: { status, statusText } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        if (status == 1) {
+          return <span class={`status-${status}`}>{'已启用'}</span>
+        } else if (status == 2) {
+          return <span class={`status-${status}`}>{'已禁用'}</span>
+        }
+        
+        /* tslint:enable */
+      }
+    },
+    {
       title: '操作',
       key: 'action',
       align: 'center',
@@ -162,6 +215,15 @@ export default class Main extends ViewBase {
       }
     })
     return prelist
+  }
+  get tableDatas() {
+    const cachedMap = this.cachedMap
+    const prelists = (this.prelists || []).map((it: any) => {
+      return {
+        ...it,
+      }
+    })
+    return prelists
   }
   mounted() {
     const { id } = this.$route.params
@@ -197,14 +259,6 @@ export default class Main extends ViewBase {
     const params = this.$route.params
     this.$router.push({ name: 'client-account-viewLog', params })
   }
-  //  查看公司详情
-  viewcompanydetail(id: number) {
-    // console.log(this.list.companyId)
-    // const params = this.list.companyId
-    // // // this.dataForm.category.id = id
-    // // // const params: any = id > 0 ? { id } : {}
-    // this.$router.push({ name: 'client-corp-detail', params })
-  }
 
   goback() {
     this.$router.go(-1)
@@ -221,12 +275,18 @@ export default class Main extends ViewBase {
 
     const query = clean({ ...this.query })
     try {
+      // 主账号详情 广告主
       const { data: {
         parentAccount: list,
         childAccountList: prelist,
-      } } = await queryItem(this.$route.params.id)
+      } } = await queryItem(this.$route.params.id , { systemCode: 'ads' })
       this.list = list
       this.prelist = prelist
+      // 主账号详情 资源方
+      const { data: {
+        childAccountList: prelists,
+      } } = await queryItem(this.$route.params.id , { systemCode: 'resource' })
+      this.prelists = prelists
     } catch (ex) {
       // this.handleError(ex)
     } finally {

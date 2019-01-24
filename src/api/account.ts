@@ -7,8 +7,8 @@ export async function queryList(query: any) {
   return data
 }
 
-export async function queryItem(query: any) {
-  const data = await get(`/customer/accounts/${query}/`)
+export async function queryItem(id: any , query: any) {
+  const data = await get(`/customer/accounts/${id}/` , query)
   return data
 }
 
