@@ -183,6 +183,8 @@ export default class Main extends ViewBase {
           return <span class={`status-${status}`}>{'已启用'}</span>
         } else if (status == 2) {
           return <span class={`status-${status}`}>{'已禁用'}</span>
+        } else if (status == 3) {
+          return <span class={`status-${status}`}>{'待激活'}</span>
         }
         
         /* tslint:enable */
