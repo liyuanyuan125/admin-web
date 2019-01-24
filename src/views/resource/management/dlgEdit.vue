@@ -27,7 +27,7 @@
         暂无档期
       </div>
       <div class="diaries-height">
-        <div @click="checkId(item)" :class="['diaries-date', invalue.id == item.id ? 'diaries-check' : '']" v-for="(item, index) in data" :key="index">
+        <div style="margin-top: 10px" @click="checkId(item)" :class="['diaries-date', invalue.id == item.id ? 'diaries-check' : '']" v-for="(item, index) in data" :key="index">
           <span>
             {{item.name}} <b>[</b>{{formatTime(item.beginDate)}} ~ {{formatTime(item.beginDate)}}<b>]</b>
           </span>

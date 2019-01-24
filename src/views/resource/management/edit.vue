@@ -76,7 +76,7 @@
             </div>
           </Row>
         </Row>
-        <Row class="detail-content">
+        <Row v-else class="detail-content">
           <Col :span="24">
             <Col span="2">
               <div v-if="diaries.id">
@@ -120,7 +120,7 @@
                 <CinemaLevel :ingradeList='gradeList' v-model="dataForm.platform.gradeCode" />
                 <span class="cinema-span" v-if="dataForm.platform.gradeCode">共计( {{cinemanums}} )个影院</span>
               </FormItem>
-              <FormItem v-if="dataForm.platform.gradeCode" style="margin-top: -20px">
+              <FormItem prop='platform[hallTypeList]' v-if="dataForm.platform.gradeCode" style="margin-top: -20px">
                 <CheckboxGroup v-model="dataForm.platform.hallTypeList">
                   <Checkbox v-for="(item, index) in hallTypeList" :key="index" :label="item.code">
                     <span>{{item.name}}</span>
@@ -137,7 +137,7 @@
           </Row>
           <Row v-if="cinemaStatus != 1 && dataForm.companyId">
             <Col :span="14" class="cinema-add">
-              <FormItem>
+              <FormItem prop="company[cinemaList]" :show-message="!(dataForm.company.cinemaList.length > 0)">
                 <PartBindCinema :companyId="dataForm.companyId" :inhallTypeList='hallTypeList' v-model="dataForm.company.cinemaList" class="part-bind-cinema"/>
               </FormItem>
             </Col>
@@ -159,7 +159,7 @@
               <Col span="2"><div>公司关联影院</div></Col>
               <Col span="8">
                 <div class="detail-height">{{companyName}}</div>
-                <PartBindCinema style="margin-bottom: 20px" type="detail" :companyId="dataForm.companyId" :inhallTypeList='hallTypeList' v-model="dataForm.company.cinemaList" class="part-bind-cinema"/>
+                  <PartBindCinema style="margin-bottom: 20px" type="detail" :companyId="dataForm.companyId" :inhallTypeList='hallTypeList' v-model="dataForm.company.cinemaList" class="part-bind-cinema"/>
               </Col>
             </Col>
           </Col>
@@ -244,6 +244,15 @@ export default class Main extends ViewBase {
         callback()
       }
     }
+
+    const cinemaVali = ( rules: any, value: any, callback: any) => {
+      if (value.length > 0) {
+        callback()
+      } else {
+        callback(new Error('请选择关联影院'))
+      }
+    }
+
     return {
       cpm: [
         { required: true, message: '不能为空', trigger: 'change', type: 'number' }
@@ -262,6 +271,12 @@ export default class Main extends ViewBase {
       ],
       companyId: [
         { required: true, message: '请选择公司', trigger: 'change', type: 'number' }
+      ],
+      'platform[hallTypeList]': [
+        { required: true, message: '请选择类型', trigger: 'change', type: 'array' }
+      ],
+      'company[cinemaList]': [
+        { validator: cinemaVali }
       ]
     }
   }
@@ -372,22 +387,33 @@ export default class Main extends ViewBase {
       endDate: dataForms.showTime[0] ? Number(moment(dataForms.showTime[1]).format(timeFormat)) : '',
     }
     const cinemaList = dataForms.company.cinemaList ? dataForms.company.cinemaList.map((it: any) => {
+      const id = it.hallList.map((its: any) => {
+        return {id: its}
+      })
       return {
         id: it.id,
-        hallList: it.hallList
+        hallList: id
       }
     }) : []
     let platform: any = {}
     let company: any = {}
-    if (dataForms.companyId) {
+    if (this.cinemaStatus != '1') {
       company = {
         companyId: dataForms.companyId,
         cinemaList
       }
     } else {
-      platform = dataForms.platform
+      const hallTypeList = dataForms.platform.hallTypeList.map((it: any) => {
+        return {
+          code: it
+        }
+      })
+      platform = {
+        gradeCode: dataForms.platform.gradeCode,
+        hallTypeList
+      }
     }
-    const query = dataForms.companyId ? {
+    const query = this.cinemaStatus != '1' ? {
       ...oldquery,
       company
     } : {
@@ -396,6 +422,7 @@ export default class Main extends ViewBase {
     }
     try {
       await addRateCard(clean(query))
+      this.$router.go(-1)
     } catch (ex) {
       this.handleError(ex)
     }

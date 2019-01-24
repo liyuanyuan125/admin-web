@@ -52,10 +52,9 @@ export default class Main extends ViewBase {
   id: any = ''
   dataLoading = false
 
-  async init(id: any, check: any, inhallCheck: any) {
+  async init(id: any, inhallCheck: any) {
     this.dataLoading = false
     this.id = id
-    this.modelCheck = check
     this.hallcheck = inhallCheck
     try {
       const {
@@ -65,9 +64,6 @@ export default class Main extends ViewBase {
         }
       } = await cinemaCldList(id)
       this.hallList = item.halls || []
-      check.length > 0 ? this.hallcheck = this.hallList.filter((it: any) => {
-        return this.modelCheck.includes(it.typeCode)
-      }).map((it: any) => it.id) : ''
       this.typeList = makeMap(typeList)
       this.showDlg = true
       this.dataLoading = false

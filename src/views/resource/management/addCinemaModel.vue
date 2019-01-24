@@ -25,6 +25,7 @@
         </Checkbox>
       </CheckboxGroup>
     </Row>
+
     <div class="cinema-box">
       <div>
 
@@ -39,16 +40,9 @@
 
         <Form v-else class="table" ref="radioCinema" :model="form">
           <FormItem>
-            <div style="margin-left:34px" v-if="items.length>0">
-              <Checkbox
-                  :indeterminate="indeterminate"
-                  :value="checkAll"
-                  @click.prevent.native="handleCheckAll">全选</Checkbox>
-            </div>
-
             <CheckboxGroup v-model="form.check" ref="checks" @on-change="checkAllGroupChange">
               <div v-if="items.length>0">
-                <div v-for="(item, index) in items" :key="index" class="check">
+                <div  @click="hallCountNum(item.id)" v-for="(item, index) in items" :key="index" class="check">
                   <Checkbox :label="item.id">{{item.shortName}}</Checkbox>
                   <span>{{hallCount(item.id)}}</span>
                   <Icon class="cinema-icon-left" @click="addhall(item.id)" v-show="cidCinema(item.id)" type="ios-arrow-forward" />
@@ -63,11 +57,17 @@
         </Form>
 
         <div class="page-wrap" v-if="dataLoading == false && totalPage > 0">
-          <Page :total="totalPage" :current="pageIndex" :page-size="pageSize"
+          <div class="check-all" style="margin-left: 5%" v-if="items.length>0">
+            <Checkbox
+              :indeterminate="indeterminate"
+              :value="checkAll"
+              @click.prevent.native="handleCheckAll">本页全选</Checkbox>
+          </div>
+          <Page class="page" :total="totalPage" :current="pageIndex" :page-size="pageSize"
             show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
             @on-change="sizeChangeHandle"
             @on-page-size-change="currentChangeHandle"/>
-            <span class="checkId">已选: {{form.check.length}}</span>
+            <span class="checkId">已选: {{cinemaLength}}</span>
         </div>
 
         <MovieHall ref="moviehall" @done="halldata" />
@@ -89,6 +89,7 @@ import MovieHall from './moviehall.vue'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import { slice, clean } from '@/fn/object'
 import { cinemaList, cinemaCldList } from '@/api/rateCard'
+import { info } from '@/ui/modal.ts'
 import { isEqual } from 'lodash'
 
 @Component({
@@ -108,7 +109,7 @@ export default class Main extends ViewBase {
   }
 
   // 影厅格式
-  modelCheck: any = []
+  modelCheck: any = ['VIP']
   // 搜索loadding
   dataLoading: boolean = true
 
@@ -156,6 +157,12 @@ export default class Main extends ViewBase {
     this.seach()
   }
 
+  get pageItem() {
+    return this.items.map((it: any) => {
+      return it.id
+    })
+  }
+  // 获取影院列表
   async authIdList() {
     try {
       const { data } = await cinemaList({
@@ -169,6 +176,18 @@ export default class Main extends ViewBase {
     }
   }
 
+  // 获取所选长度
+  get cinemaLength() {
+    const cinema = this.checkCinema.filter((it: any) => {
+      return this.form.check.includes(it.id)
+    })
+    const cinemaArray = cinema.filter((it: any) => {
+      return  it.hallList && it.hallList.length > 0
+    })
+    return cinemaArray.length
+  }
+
+  // 搜索
   async seach() {
     this.dataLoading = true
     const query: any = {
@@ -208,6 +227,7 @@ export default class Main extends ViewBase {
     }
   }
 
+  // ‘>’ 显示隐藏
   cidCinema(id: any) {
     const ids = this.form.check
     if (ids.includes(id)) {
@@ -270,11 +290,60 @@ export default class Main extends ViewBase {
         this.checkCinema.splice(index, 1)
       }
     })
+    this.pageItem.forEach((it: any) => {
+      this.hallCountNum(it)
+    })
+  }
+
+  async hallCountNum(cinemaId: any) {
+    if (this.pageItem.includes(cinemaId) && this.modelCheck.length > 0) {
+      try {
+        const {
+          data: {
+            item,
+            typeList
+          }
+        } = await cinemaCldList(cinemaId)
+        let hallList = item.halls || []
+        if (hallList.length > 0) {
+          this.modelCheck.length > 0 ? hallList = hallList.filter((it: any) => {
+            return this.modelCheck.includes(it.typeCode)
+          }).map((it: any) => {
+            return {
+              id: it.id,
+              name: it.name
+            }
+          }) : ''
+          const hallcheck: any = hallList.length > 0 ? hallList.map((it: any) => it.id) : []
+          const hallName: any = hallList.length > 0 ? hallList.map((it: any) => it.name) : []
+          this.halldata({
+            id: cinemaId,
+            hallcheck,
+            hallName
+          })
+        } else {
+          this.halldata({
+            id: cinemaId,
+            hallcheck: [],
+            hallName: []
+          })
+          info('该影院下暂无影厅')
+        }
+      } catch (ex) {
+        this.handleError(ex)
+        this.halldata({
+          id: cinemaId,
+          hallcheck: [],
+          hallName: []
+        })
+        // info('该影院下暂无影厅')
+      }
+    }
   }
 
   // 判断是否都选中
   checkAllGroupChange(data: any) {
-    const item = this.items.map((it: any) => {
+    const itemID = this.items.map((it: any) => {
       return it.id
     })
 
@@ -283,7 +352,7 @@ export default class Main extends ViewBase {
     })
     // 判断id是否存在
     const select = data.map((it: any) => {
-      if (item.includes(it)) {
+      if (itemID.includes(it)) {
         return it
       }
     })
@@ -311,6 +380,7 @@ export default class Main extends ViewBase {
         })
       }
     })
+
     if (this.items.length === sameId.length) {
       this.indeterminate = false
       this.checkAll = true
@@ -323,37 +393,52 @@ export default class Main extends ViewBase {
     }
   }
 
+  // 影厅显示
   addhall(id: any) {
     const ids = this.form.check
     const index = ids.indexOf(id)
     const hallCheck = this.checkCinema[index].hallList || []
     this.$nextTick(() => {
-      (this.$refs.moviehall as any).init(id, this.modelCheck, hallCheck)
+      (this.$refs.moviehall as any).init(id, hallCheck)
     })
   }
 
+  // 影厅hallList，hallName追加
   halldata(data: any) {
-    this.checkCinema = this.checkCinema.map((it: any) => {
-      if (it.id == data.id) {
-        return {
-          ...it,
-          hallList: data.hallcheck,
-          hallName: data.hallName
+    if (data.hallName.length > 0) {
+      this.checkCinema = this.checkCinema.map((it: any) => {
+        if (it.id == data.id) {
+          return {
+            ...it,
+            hallList: data.hallcheck,
+            hallName: data.hallName
+          }
+        } else {
+          return {
+            ...it
+          }
         }
-      } else {
-        return {
-          ...it
-        }
+      })
+    } else {
+      this.form.check = this.form.check.filter((it: any) => it != data.id)
+      if (this.form.check.length > 0) {
+        this.checkAll = false
+        this.indeterminate = true
+      } else if (this.form.check.length == 0) {
+        this.checkAll = false
+        this.indeterminate = false
       }
-    })
+    }
   }
 
+  // 所选影厅的个数
   hallCount(id: any) {
     const ids = this.form.check
 
     const index = ids.indexOf(id)
     if (index != -1) {
-      return this.checkCinema[index].hallList ? this.checkCinema[index].hallList.length + '个' : ''
+      const hallList = this.checkCinema[index].hallList || []
+      return (hallList && hallList.length > 0) ? this.checkCinema[index].hallList.length + '个' : ''
     } else {
       return ''
     }
@@ -385,7 +470,10 @@ export default class Main extends ViewBase {
       return this.form.check.includes(it.id)
     })
 
-    this.$emit('done', [...cinema])
+    const cinemaHall = cinema.filter((it: any) => {
+      return  it.hallList && it.hallList.length > 0
+    })
+    this.$emit('done', [...cinemaHall])
     this.showDlg = false
   }
 }
@@ -462,6 +550,16 @@ export default class Main extends ViewBase {
 .text-center {
   text-align: center;
   line-height: 200px;
+}
+.page-wrap {
+  display: flex;
+  .page {
+    position: absolute;
+    right: 5%;
+  }
+}
+.check-all {
+  padding-top: 6px;
 }
 .checkId {
   position: absolute;

@@ -250,6 +250,7 @@ export default class Main extends ViewBase {
       }
     })
   }
+
   checkAllGroupChange(data: any) {
     const item = this.items.map((it: any) => {
       return it.id
