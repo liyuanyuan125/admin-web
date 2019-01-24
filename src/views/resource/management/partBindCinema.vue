@@ -1,6 +1,6 @@
 <template>
   <div class="component">
-    <Table :columns="columns" :data="inValue" border disabled-hover size="small"/>
+    <Table style="margin-bottom: 10px" :columns="columns" :data="inValue" border disabled-hover size="small"/>
     <div class="act-bar">
       <a @click="onAdd" v-if="!type">添加关联影院</a>
     </div>
@@ -71,8 +71,9 @@ export default class ComponentMain extends ViewBase {
           return <a>{name.join(',')}</a>
           /* tslint:enable */
         }
-      },
-      {
+      }
+    ]
+    const del = [{
         title: '操作',
         width: 70,
         align: 'center',
@@ -82,9 +83,8 @@ export default class ComponentMain extends ViewBase {
           return <a on-click={this.onDel.bind(this, id)}>删除</a>
           /* tslint:enable */
         }
-      }
-    ]
-    const column = arr
+      }]
+    const column = this.type == 'detail' ? arr : [...arr, ...del]
     return column
   }
 

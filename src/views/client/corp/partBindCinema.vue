@@ -4,7 +4,7 @@
     <div class="act-bar">
       <a @click="onAdd" v-if="!type">添加关联影院</a>
     </div>
-    <AddCinemaModel ref="addCinemaModel" :cinemaend = "incinematype" :addData="inValue" @done="columndata"  v-if="!type" />
+    <AddCinemaModel v-if="type != 'detail'" ref="addCinemaModel" :cinemaend = "incinematype" :addData="inValue" @done="columndata" />
   </div>
 </template>
 

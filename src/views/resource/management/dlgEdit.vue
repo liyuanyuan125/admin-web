@@ -2,7 +2,7 @@
   <Modal 
     v-model='showDlg'
     :transfer='false'
-    :width='620'
+    :width='660'
     title='选择档期'
     @on-cancel="cancel"
     >

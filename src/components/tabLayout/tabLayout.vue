@@ -1,7 +1,7 @@
 <template>
   <Tabs v-model="currentName" type="card" :class="`tab-layout tab-layout-${list.length}`"
     @on-click="onClick" @on-tab-remove="onRemove">
-    <TabPane style='height: 700px' v-for="(it, i) in list" :key="i" :name="it.name" :label="it.meta.title"
+    <TabPane v-for="(it, i) in list" :key="i" :name="it.name" :label="it.meta.title"
       :closable="!it.meta.fixed">
       <keep-alive>
         <component :is="it.component" v-if="it.name == currentName"></component>
@@ -161,6 +161,7 @@ export default class TabLayout extends ViewBase {
   }
 }
 /deep/ .ivu-tabs-content .ivu-tabs-content-animated {
-  height: 700px;
+  min-height: 700px;
+  overflow-y: scroll;
 }
 </style>

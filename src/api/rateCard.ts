@@ -26,7 +26,7 @@ export async function cinemaList(query: any) {
 
 // 根据影厅ID查询影厅详情
 export async function cinemaCldList(id: any) {
-  const data = await get(`/theater/halls/${id}`)
+  const data = await get(`/theater/cinemas/${id}`)
   return data
 }
 

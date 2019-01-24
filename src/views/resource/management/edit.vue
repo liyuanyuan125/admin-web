@@ -4,6 +4,7 @@
       <Button icon="md-return-left" @click="back" class="btn-back">返回上一页</Button>
       <div class="flex-1" style="margin-left: 8px" >
         <em v-if="!$route.params.id"> 新建刊例价</em>
+        <em v-else> {{title}}</em>
       </div>
     </header>
 
@@ -21,17 +22,23 @@
             <Col :span="24">
               <Col span="2"><div>每30秒</div></Col>
               <Col span="8">
-                <FormItem prop="cpm" class="mt8">
+                <FormItem v-if="!$route.params.id" prop="cpm" class="mt8">
                   <InputNumber style="width: 80px" :min="1" v-model="dataForm.cpm" placeholder=""/>  元/千人次
                 </FormItem>
+                <div class="detail-height" v-else>
+                  {{dataForm.discount}}元/千人次
+                </div>
               </Col>
             </Col>
             <Col :span="24">
               <Col span="2"><div>15秒折扣</div></Col>
               <Col span="8">
-                <FormItem prop="discount" class="mt8">
+                <FormItem v-if="!$route.params.id" prop="discount" class="mt8">
                   <InputNumber style="width: 80px" :max="100" :min="1" v-model="dataForm.discount" placeholder=""/>  %
                 </FormItem>
+                <div class="detail-height" v-else>
+                  {{dataForm.cpm}}%
+                </div>
               </Col>
             </Col>
           </Col>
@@ -43,7 +50,7 @@
             注：指定日期与档期重合时，重合日期的有效报价为档期刊例价
           </Col>
         </Row>
-        <Row class="detail-content">
+        <Row v-if="!$route.params.id" class="detail-content">
           <Row>
             <Col :span="2">
               <FormItem class="mt10">
@@ -69,6 +76,23 @@
             </div>
           </Row>
         </Row>
+        <Row class="detail-content">
+          <Col :span="24">
+            <Col span="2">
+              <div v-if="diaries.id">
+                指定档期
+              </div>
+              <div v-else>
+                指定日期
+              </div>
+            </Col>
+            <Col span="8">
+              <div class="detail-height" style="width: 100%">
+                {{diaries.name}}
+              </div>
+            </Col>
+          </Col>
+        </Row>
 
         <Row class='titop'>
           <Col :span="2">有效范围</Col>
@@ -76,7 +100,7 @@
             注：部分影院有刊例价时，有效报价为部分影院刊例价
           </Col>
         </Row>
-        <Row class="detail-content">
+        <Row v-if="!$route.params.id" class="detail-content">
           <Row>
             <Col :span="4">
               <FormItem class="mt10">
@@ -90,12 +114,13 @@
                 </RadioGroup>
               </FormItem>
             </Col>
+
             <div v-if="cinemaStatus == 1" class="cinema-left">
-              <FormItem prop='cinemaLevel'>
-                <CinemaLevel :ingradeList='gradeList' v-model="dataForm.cinemaLevel" />
-                <span class="cinema-span" v-if="dataForm.cinemaLevel">共计( {{cinemanums}} )个影院</span>
+              <FormItem prop='platform[gradeCode]'>
+                <CinemaLevel :ingradeList='gradeList' v-model="dataForm.platform.gradeCode" />
+                <span class="cinema-span" v-if="dataForm.platform.gradeCode">共计( {{cinemanums}} )个影院</span>
               </FormItem>
-              <FormItem v-if="dataForm.cinemaLevel" style="margin-top: -20px">
+              <FormItem v-if="dataForm.platform.gradeCode" style="margin-top: -20px">
                 <CheckboxGroup v-model="dataForm.platform.hallTypeList">
                   <Checkbox v-for="(item, index) in hallTypeList" :key="index" :label="item.code">
                     <span>{{item.name}}</span>
@@ -118,10 +143,31 @@
             </Col>
           </Row>
         </Row>
+
+        <Row v-else class="detail-content">
+          <Col>
+            <Col v-if="dataForm.platform.gradeCode" :span="24">
+              <Col span="2"><div>按平台定价等级</div></Col>
+              <Col span="8">
+                <div class="detail-height">
+                 <span>{{dataForm.platform.gradeCode}}级</span>
+                 <span style="margin-left: 8px" v-for="item in dataForm.platform.hallTypeList" :key="item.name">{{item.name}}</span>
+                </div>
+              </Col>
+            </Col>
+            <Col v-if="companyName" :span="24">
+              <Col span="2"><div>按公司设置影院</div></Col>
+              <Col span="8">
+                <div class="detail-height">{{companyName}}</div>
+                <PartBindCinema style="margin-bottom: 20px" type="detail" :companyId="dataForm.companyId" :inhallTypeList='hallTypeList' v-model="dataForm.company.cinemaList" class="part-bind-cinema"/>
+              </Col>
+            </Col>
+          </Col>
+        </Row>
       </div>
     </form>
 
-    <div class="edit-button" v-if="$route.params.id">
+    <div class="edit-button" v-if="!$route.params.id">
       <Button style="padding: 6px 40px" type="info" size="large" @click="edit('dataForm')">保存</Button>
     </div>
     <DlgEdit ref="diaries" v-if="diariesShow" v-model="dataForm.diaries" />
@@ -135,9 +181,11 @@ import DlgEdit from './dlgEdit.vue'
 import CinemaLevel from '@/components/priceLevel.vue'
 import CinemaList from '@/components/companyList.vue'
 import PartBindCinema from './partBindCinema.vue'
+import moment from 'moment'
 import { clean } from '@/fn/object'
 import { cinemaLevel, cinemanum, addRateCard, rateCardDetail } from '@/api/rateCard'
 
+const timeFormat = 'YYYYMMDD'
 @Component({
   components: {
     DlgEdit,
@@ -153,7 +201,7 @@ export default class Main extends ViewBase {
     showTime: [],
     name: '',
     platform: {
-      gradeCode: '',
+      gradeCode: null,
       hallTypeList: []
     },
     company: {
@@ -164,10 +212,11 @@ export default class Main extends ViewBase {
       id: '',
       name: ''
     },
-    cinemaLevel: '',
     companyId: null,
   }
 
+  title = ''
+  companyName = ''
   hallTypeList: any = []
   gradeList: any = []
 
@@ -184,7 +233,7 @@ export default class Main extends ViewBase {
   cinemaStatus = '1'
 
   get cinemaLev() {
-    return this.dataForm.cinemaLevel
+    return this.dataForm.platform.gradeCode
   }
 
   get rule() {
@@ -208,7 +257,7 @@ export default class Main extends ViewBase {
       'diaries[name]': [
         { required: true, message: '请选择档期', trigger: 'change' }
       ],
-      cinemaLevel: [
+      'platform[gradeCode]': [
         { required: true, message: '请选择定价等级', trigger: 'change' }
       ],
       companyId: [
@@ -224,14 +273,56 @@ export default class Main extends ViewBase {
 
   async search() {
     const id = this.$route.params.id || 0
+    const dataForm = this.dataForm
     if (!id) {
       return
     }
     try {
-      await rateCardDetail(id)
+      const {
+        data
+      } = await rateCardDetail(id)
+      dataForm.cpm = data.cpm
+      dataForm.discount = data.discount
+      const beginDate = this.autoTime(data.beginDate + '')
+      const endDate = this.autoTime(data.endDate + '')
+      if (data.calendarId != null) {
+        this.diaries.id = data.calendarId
+        this.diaries.name = `${data.calendarName}${beginDate}~${endDate}`
+      } else {
+        this.diaries.name = `${beginDate}~${endDate}`
+      }
+      if (data.platform) {
+        dataForm.platform.gradeCode = data.platform.gradeDesc
+        dataForm.platform.hallTypeList = data.platform.hallTypeList || []
+        this.title = '公司刊例价'
+      }
+      if (data.company) {
+        this.title = '平台刊例价'
+        this.companyName = data.company.companyName
+        this.dataForm.company.cinemaList = data.company.cinemaList.map((it: any) => {
+          const hallName = it.hallList.map((itmes: any) => {
+            return itmes.name
+          })
+          return {
+            id: it.id,
+            cinemaName: it.name,
+            hallName
+          }
+        })
+      }
     } catch (ex) {
-
+      this.handleError(ex)
     }
+  }
+
+  autoTime(num: any) {
+    if (!num) {
+      return ''
+    }
+    const year = num.slice(0, 4)
+    const month = num.slice(4, 6)
+    const day = num.slice(6)
+    return `${year}-${month}-${day}`
   }
 
   async levelList() {
@@ -266,7 +357,7 @@ export default class Main extends ViewBase {
 
   async edit(dataForm: any) {
     const volid = await (this.$refs[dataForm] as any).validate()
-    if (volid) {
+    if (!volid) {
       return
     }
     const dataForms = this.dataForm
@@ -274,14 +365,21 @@ export default class Main extends ViewBase {
       cpm: dataForms.cpm,
       discount: dataForms.discount,
       calendarId: dataForms.diaries.id,
-      beginDate: dataForms.showTime[0] ? new Date(dataForms.showTime[0]).getTime() : '',
-      endDate: dataForms.showTime[0] ? new Date(dataForms.showTime[0]).getTime() : '',
+      beginDate: dataForms.showTime[0] ? moment(dataForms.showTime[0]).format(timeFormat) : '',
+      endDate: dataForms.showTime[0] ? moment(dataForms.showTime[1]).format(timeFormat) : '',
     }
+    const cinemaList = dataForms.company.cinemaList ? dataForms.company.cinemaList.map((it: any) => {
+      return {
+        id: it.id,
+        hallList: it.hallList
+      }
+    }) : []
     let platform: any = {}
     let company: any = {}
     if (dataForms.companyId) {
       company = {
-        companyId: dataForms.companyId
+        companyId: dataForms.companyId,
+        cinemaList
       }
     } else {
       platform = dataForms.platform
@@ -349,15 +447,18 @@ export default class Main extends ViewBase {
   font-size: 16px;
 }
 .detail-content {
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   border: 1px solid #dcdee2;
   padding-top: 6px;
   padding-left: 14px;
   /deep/ .ivu-col-span-2 {
     div {
       line-height: 50px;
-      width: 88px;
     }
+  }
+  /deep/ .detail-height {
+    height: 50px;
+    line-height: 50px;
   }
   .begin-left {
     position: absolute;
