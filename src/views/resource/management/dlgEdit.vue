@@ -1,7 +1,7 @@
 <template>
   <Modal 
     v-model='showDlg'
-    :transfer='false'
+    :transfer='true'
     :width='660'
     title='选择档期'
     @on-cancel="cancel"
