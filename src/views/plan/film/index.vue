@@ -65,7 +65,7 @@
       <template slot="action" slot-scope="{ row: { id, status } }">
         <div class="row-acts">
           <router-link :to="{ name: 'gg-film-detail',
-            params: { id } }">{{ status == 1 ? '审核' : '详情'}}</router-link>
+            params: { id , status } }">{{ status == 1 ? '审核' : '详情'}}</router-link>
         </div>
       </template>
     </Table>
