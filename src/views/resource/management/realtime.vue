@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <section class="act-bar flex-box">
-      <form class="form flex-1" @submit.prevent="search">
+      <form class="form flex-1" @submit.prevent>
         <CinemaChainSelect v-model="query.chainId"/>
 
         <AreaSelect v-model="query.area" noSelf/>
@@ -22,17 +22,18 @@
       </div>
     </section>
 
-    <section class="calendar-wrap" v-if="list.length > 0">
+    <section class="calendar-wrap" v-if="query.hallId > 0">
       <div class="calendar-bar flex-box">
         <Cascader v-model="query.date" :data="yearMonthData" size="small"
           :render-format="labels => labels.join('')" :clearable="false"/>
         <div class="flex-1"></div>
         <ButtonGroup size="small">
-          <Button icon="ios-arrow-back"></Button>
-          <Button>今天</Button>
-          <Button icon="ios-arrow-forward"></Button>
+          <Button icon="ios-arrow-back" @click="prevMonth"></Button>
+          <Button @click="currentMonth">今天</Button>
+          <Button icon="ios-arrow-forward" @click="nextMonth"></Button>
         </ButtonGroup>
       </div>
+
       <table class="calendar-table">
         <thead>
           <th v-for="(it, i) in weekNames" :key="i">{{it}}</th>
@@ -57,7 +58,8 @@
         </tbody>
       </table>
     </section>
-    <div class="calendar-empty" v-if="query.hallId == 0">请选择影院、影厅</div>
+
+    <div class="calendar-empty" v-else>请选择影院、影厅</div>
 
     <DlgReport v-model="dlgReportData" :companyTypes="companyTypes"/>
   </div>
@@ -172,6 +174,28 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     return chunk(list, 7)
   }
 
+  updateDateByMoment(m: Moment) {
+    this.query.date = [ m.get('year'), m.get('month') + 1 ]
+  }
+
+  jumpMonth(amount: number) {
+    const [ year, month ] = this.query.date
+    const m = moment([ year, month - 1, 1 ]).add(amount, 'month')
+    this.updateDateByMoment(m)
+  }
+
+  prevMonth() {
+    this.jumpMonth(-1)
+  }
+
+  currentMonth() {
+    this.updateDateByMoment(moment())
+  }
+
+  nextMonth() {
+    this.jumpMonth(1)
+  }
+
   showReport(it: any) {
     if (it.isCompany) {
       this.dlgReportData.showDlg = true
@@ -191,9 +215,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     this.query.area = parse(this.query.area).map(it => +it || 0)
     this.query.date = parse(this.query.date).map(it => +it || 0)
     this.query.date.join('') == '00' && this.resetToday()
-  }
-
-  search() {
   }
 
   reset() {
@@ -216,8 +237,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     try {
       const query = { cinemaId, hallId, beginDate, endDate }
       const { data: { items, companyTypes } } = await queryLowestList(query)
-      this.list = items
-      this.companyTypes = companyTypes
+      this.list = items || []
+      this.companyTypes = companyTypes || []
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -232,10 +253,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       const { chainId, area: [ provinceId, cityId, countyId ] } = this.query
       const query = { chainId, provinceId, cityId, countyId, pageSize: 88888888 }
       const { data: { items } } = await queryCinemaList(query)
-      this.cinemaList = items
+      this.cinemaList = items || []
 
       // 若现有列表中，没有找到已选择的影院，则清空
-      const foundItem = items.find((it: any) => it.id == this.query.cinemaId)
+      const foundItem = this.cinemaList.find((it: any) => it.id == this.query.cinemaId)
       if (foundItem == null) {
         this.query.cinemaId = 0
       }
@@ -259,10 +280,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     try {
       const query = { pageSize: 88888888 }
       const { data: { items } } = await queryHallList(cinemaId, query)
-      this.hallList = items
+      this.hallList = items || []
 
       // 若现有列表中，没有找到已选择的影院，则清空
-      const foundItem = items.find((it: any) => it.id == this.query.hallId)
+      const foundItem = this.hallList.find((it: any) => it.id == this.query.hallId)
       if (foundItem == null) {
         this.query.hallId = 0
       }
@@ -285,6 +306,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
 
   @Watch('query.hallId')
+  @Watch('query.date', { deep: true })
   watchHallId() {
     this.fetchList()
   }

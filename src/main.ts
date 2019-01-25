@@ -19,12 +19,10 @@ import 'moment/locale/zh-cn'
 
 Vue.use(Router)
 
-// 设置 moment 的语言为简体中文，并重置周开始为周日（简体中文默认为周一）
-moment.locale('zh-cn', {
-  week: {
-    dow: 0
-  }
-} as any)
+// 设置周开始为周日（默认为周一）
+moment.updateLocale('zh-cn', { week: { dow: 0 } } as any)
+// 设置 moment 的语言为简体中文
+moment.locale('zh-cn')
 
 Vue.use(iView, { locale })
 

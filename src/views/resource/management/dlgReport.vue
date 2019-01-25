@@ -18,7 +18,7 @@ interface Item {
   discount: number
   company: {
     companyName: string
-    companyTypeCode: string[]
+    companyTypeCode: string
   }
 }
 
@@ -56,13 +56,12 @@ export default class ComponentMain extends ViewBase {
     const list = (cloneDeep(this.inner.list) || [])
     .sort((a, b) => a.cpm - b.cpm)
     .map(it => {
-      const companyTypeName = (it.company.companyTypeCode || [])
-        .map(code => this.companyTypeMap[code] || '')
-        .join('')
+      const { companyName, companyTypeCode } = it.company
+      const companyTypeName = this.companyTypeMap[companyTypeCode] || ''
       return {
         cpm: centToYuan(it.cpm),
         discount: `${it.discount}%`,
-        companyName: it.company.companyName,
+        companyName,
         companyTypeName,
       }
     })

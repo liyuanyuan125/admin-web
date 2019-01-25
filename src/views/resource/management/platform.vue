@@ -214,18 +214,18 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     this.date.calendarName = diaries.name
   }
 
-
   search() {
     this.query.pageIndex = 1
   }
+
   reloadSearch() {
     this.doSearch()
   }
+
   reset() {
     this.resetQuery()
     this.showTime = []
   }
-
 
   async doSearch() {
     if (this.loading) {
