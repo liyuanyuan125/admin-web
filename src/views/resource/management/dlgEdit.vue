@@ -29,7 +29,7 @@
       <div class="diaries-height">
         <div style="margin-top: 10px" @click="checkId(item)" :class="['diaries-date', invalue.id == item.id ? 'diaries-check' : '']" v-for="(item, index) in data" :key="index">
           <span>
-            {{item.name}} <b>[</b>{{formatTime(item.beginDate)}} ~ {{formatTime(item.beginDate)}}<b>]</b>
+            {{item.name}} <b>[</b>{{formatTime(item.beginDate)}} ~ {{formatTime(item.endDate)}}<b>]</b>
           </span>
         </div>
       </div>
@@ -72,7 +72,9 @@ export default class ComponentMain extends ViewBase {
     this.invalue.id = item.id
     this.$emit('input', {
       id: item.id,
-      name: `${item.name} [${this.formatTime(item.beginDate)} ~ ${this.formatTime(item.beginDate)} ]  `
+      begin: item.beginDate,
+      end: item.endDate,
+      name: `${item.name} [${this.formatTime(item.beginDate)} ~ ${this.formatTime(item.endDate)} ]  `
     })
     this.showDlg = false
   }

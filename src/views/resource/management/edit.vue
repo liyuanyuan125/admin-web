@@ -211,6 +211,8 @@ export default class Main extends ViewBase {
     },
     diaries: {
       id: '',
+      begin: 0,
+      end: 0,
       name: ''
     },
     companyId: null,
@@ -384,8 +386,10 @@ export default class Main extends ViewBase {
       cpm: dataForms.cpm,
       discount: dataForms.discount,
       calendarId: this.dateStaus == '1' ? '' : dataForms.diaries.id,
-      beginDate: this.dateStaus == '1' ? Number(moment(dataForms.showTime[0]).format(timeFormat)) : '',
-      endDate: this.dateStaus == '1' ? Number(moment(dataForms.showTime[1]).format(timeFormat)) : '',
+      beginDate: this.dateStaus == '1' ?
+        Number(moment(dataForms.showTime[0]).format(timeFormat)) : dataForms.diaries.begin,
+      endDate: this.dateStaus == '1' ?
+        Number(moment(dataForms.showTime[1]).format(timeFormat)) : dataForms.diaries.end,
     }
     const cinemaList = dataForms.company.cinemaList ? dataForms.company.cinemaList.map((it: any) => {
       const id = it.hallList.map((its: any) => {
