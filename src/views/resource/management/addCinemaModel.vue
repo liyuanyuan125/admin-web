@@ -8,13 +8,13 @@
     >
 
     <Row class="shouDlg-header">
-      <Col span="7">
+      <Col span="7" style="margin-left: 20px">
         <AreaSelect v-model="area"/>
       </Col>
       <Col span="5" offset="1">
          <Input v-model="value" placeholder="请输入影院名称" />
       </Col>
-      <Button style="float:right" type="primary" @click="seach">搜索</Button>
+      <Button style="float:right; margin-right: 6px" type="primary" @click="seach">搜索</Button>
     </Row>
 
     <Row class="model-check">
@@ -57,7 +57,7 @@
         </Form>
 
         <div class="page-wrap" v-if="dataLoading == false && totalPage > 0">
-          <div class="check-all" style="margin-left: 5%" v-if="items.length>0">
+          <div class="check-all" style="padding-left: 40px" v-if="items.length>0">
             <Checkbox
               :indeterminate="indeterminate"
               :value="checkAll"
@@ -74,7 +74,7 @@
 
       </div>
     </div>
-    <div  slot="footer" class="dialog-footer">
+    <div  slot="footer" class="dialog-footer" style="margin-right: 6px">
       <Button type="primary" @click="done()">关联</Button>
       <Button @click="cancel()">取消</Button>
     </div>
@@ -496,14 +496,19 @@ export default class Main extends ViewBase {
   height: 40px;
   line-height: 40px;
   margin-top: 14px;
+  margin-left: -16px;
+  margin-right: -16px;
   background: #f2f2f2;
-  span {
+  > span {
+    margin-left: 40px;
     margin-right: 20px;
   }
 }
 /deep/ .cinema-box {
   margin-top: 10px;
   height: 260px;
+  margin-left: -16px;
+  margin-right: -16px;
   max-height: 260px;
   overflow-y: auto;
   .table {
@@ -511,8 +516,9 @@ export default class Main extends ViewBase {
   }
   /deep/ .check {
     position: relative;
-    width: 48%;
-    padding-left: 5%;
+    padding-left: 40px;
+    margin-bottom: 8px;
+    width: 50%;
     float: left;
     .cinema-icon-left {
       position: absolute;

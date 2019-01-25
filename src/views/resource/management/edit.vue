@@ -184,6 +184,7 @@ import PartBindCinema from './partBindCinema.vue'
 import moment from 'moment'
 import { clean } from '@/fn/object'
 import { cinemaLevel, cinemanum, addRateCard, rateCardDetail } from '@/api/rateCard'
+import { toast } from '@/ui/modal.ts'
 
 const timeFormat = 'YYYYMMDD'
 @Component({
@@ -382,9 +383,9 @@ export default class Main extends ViewBase {
     const oldquery = {
       cpm: dataForms.cpm,
       discount: dataForms.discount,
-      calendarId: dataForms.diaries.id,
-      beginDate: dataForms.showTime[0] ? Number(moment(dataForms.showTime[0]).format(timeFormat)) : '',
-      endDate: dataForms.showTime[0] ? Number(moment(dataForms.showTime[1]).format(timeFormat)) : '',
+      calendarId: this.dateStaus == '1' ? '' : dataForms.diaries.id,
+      beginDate: this.dateStaus == '1' ? Number(moment(dataForms.showTime[0]).format(timeFormat)) : '',
+      endDate: this.dateStaus == '1' ? Number(moment(dataForms.showTime[1]).format(timeFormat)) : '',
     }
     const cinemaList = dataForms.company.cinemaList ? dataForms.company.cinemaList.map((it: any) => {
       const id = it.hallList.map((its: any) => {
@@ -422,6 +423,7 @@ export default class Main extends ViewBase {
     }
     try {
       await addRateCard(clean(query))
+      toast('添加成功')
       this.$router.go(-1)
     } catch (ex) {
       this.handleError(ex)
