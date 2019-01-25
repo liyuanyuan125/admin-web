@@ -313,10 +313,10 @@ export default class Main extends ViewBase {
       if (data.platform) {
         dataForm.platform.gradeCode = data.platform.gradeDesc
         dataForm.platform.hallTypeList = data.platform.hallTypeList || []
-        this.title = '公司刊例价'
+        this.title = '平台刊例价'
       }
       if (data.company) {
-        this.title = '平台刊例价'
+        this.title = '公司刊例价'
         this.companyName = data.company.companyName
         this.dataForm.company.cinemaList = data.company.cinemaList.map((it: any) => {
           const hallName = it.hallList.map((itmes: any) => {
