@@ -53,9 +53,7 @@
     <Table :columns="columns" :data="tableData" :loading="loading"
       border stripe disabled-hover size="small" class="table"></Table>
 
-    <div v-for="(it, i) in dlgEditList" :key="it.id">
-      <DlgEdit v-model="dlgEditList[i]" :cinemaId="query.id"
-        @done="dlgEditDone" v-if="it.showDlgEdit"/>
+    <DlgEdit v-model="dlgEditModel" :cinemaId="query.id" @done="dlgEditDone"/>
     </div>
   </div>
 </template>
@@ -109,8 +107,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }, {})
   }
 
-  // 编辑对话框列表
-  dlgEditList: any[] = []
+  dlgEditModel = {
+    show: false,
+    id: -1
+  }
 
   get columns() {
     return  [
@@ -189,11 +189,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         ...slice(data, Object.keys(this.enumType))
       }
 
-      this.dlgEditList = this.list.map((it: any) => ({
-        id: it.id,
-        showDlgEdit: false,
-      }))
-
       const statusMap = makeMap(data.statusList)
       const gradeMap = makeMap(data.gradeList)
       this.cinema = {
@@ -214,13 +209,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 
-  edit(id: string|number) {
-    let item = this.dlgEditList.find(it => it.id == id)
-    if (item == null && id == 0) {
-      item = { id: 0, showDlgEdit: true }
-      this.dlgEditList.push(item)
-    }
-    item && (item.showDlgEdit = true)
+  edit(id: number) {
+    this.dlgEditModel.id = id
+    this.dlgEditModel.show = true
   }
 
   dlgEditDone() {

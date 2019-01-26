@@ -1,7 +1,8 @@
 <template>
-  <Modal v-model="inValue.showDlgEdit" :transfer="false" :width="700"
+  <Modal v-model="inner.show" :width="700"
     :loading="submitLoading" @on-ok="submit">
-    <Form :model="item" :label-width="98" :rules="rules" class="form" ref="form">
+    <Form :model="item" :label-width="98" :rules="rules" class="form" ref="form"
+      v-show="!loading">
       <Row>
         <Col span="16">
           <FormItem label="影厅名称" prop="name" :error="nameError">
@@ -90,6 +91,9 @@
         </Col>
       </Row>
     </Form>
+    <div class="inner-loading flex-mid" v-if="loading">
+      <TinyLoading :size="38"/>
+    </div>
   </Modal>
 </template>
 
@@ -98,13 +102,14 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { queryItem, addItem, updateItem } from '@/api/cinemaHall'
+import TinyLoading from '@/components/TinyLoading.vue'
 import { slice } from '@/fn/object'
 import { toast } from '@/ui/modal'
 import { filterItemInList, filterListByControlStatus } from '@/util/dealData'
 
 interface Value {
-  id: string
-  showDlgEdit: boolean
+  show: boolean
+  id: number
 }
 
 interface KeyTextControlStatus {
@@ -134,19 +139,17 @@ const defItem = {
   controlStatus: 0,
 }
 
-@Component
+@Component({
+  components: {
+    TinyLoading
+  }
+})
 export default class DlgEdit extends ViewBase {
-  /**
-   * 值本身，可以使用 v-model 进行双向绑定
-   */
   @Prop({ type: Object, default: () => {} }) value!: Value
 
-  /**
-   * 影院 ID
-   */
   @Prop({ type: Number, default: 0, required: true }) cinemaId!: number
 
-  inValue: Value = this.value
+  inner: Value = this.value
 
   loading = false
 
@@ -177,7 +180,7 @@ export default class DlgEdit extends ViewBase {
         { required: true, message: '不能为空', trigger: 'change' }
       ],
       seats: [
-        { required: true, message: '不能为空', trigger: 'blur', type: 'integer' }
+        { required: true, message: '不能为空', trigger: 'blur', type: 'integer', min: 1 }
       ],
     }
   }
@@ -199,7 +202,7 @@ export default class DlgEdit extends ViewBase {
         : await addItem(this.cinemaId, data)
       toast(data.id ? '更新成功' : '创建成功')
       this.$emit('done')
-      this.inValue.showDlgEdit = false
+      this.inner.show = false
     } catch (ex) {
       const name = `submitError${ex.code}`
       name in this ? (this as any)[name](ex) : this.handleError(ex)
@@ -216,9 +219,14 @@ export default class DlgEdit extends ViewBase {
   }
 
   async load() {
+    const { show, id } = this.inner
+    if (!show || id < 0) {
+      return
+    }
+
     this.loading = true
-    const query = { id: this.value.id }
     try {
+      const query = { id }
       const { data } = await queryItem(query)
 
       this.enumType = filterListByControlStatus({
@@ -249,14 +257,23 @@ export default class DlgEdit extends ViewBase {
     }
   }
 
-  @Watch('value')
-  watchValue(val: Value) {
-    this.inValue = val
+  // 关闭时清空所有错误
+  resetFieldsOnClose() {
+    if (!this.value.show) {
+      (this.$refs.form as any).resetFields()
+    }
   }
 
-  @Watch('inValue', { deep: true })
-  watchInValue(val: Value) {
-    this.$emit('input', val)
+  @Watch('value', { deep: true })
+  watchValue(value: Value) {
+    this.inner = value
+    this.load()
+    this.resetFieldsOnClose()
+  }
+
+  @Watch('inner', { deep: true })
+  watchInner(value: Value) {
+    this.$emit('input', value)
   }
 
   @Watch('area')
@@ -272,5 +289,8 @@ export default class DlgEdit extends ViewBase {
 .form {
   margin-top: 18px;
   padding-right: 28px;
+}
+.inner-loading {
+  min-height: 227 + 18px;
 }
 </style>
