@@ -17,6 +17,10 @@
           <Option v-for="it in enumType.hallDataStatusList" :key="it.key"
             :value="it.key">{{it.text}}</Option>
         </Select>
+        <Select v-model="query.pricingLevelCode" placeholder="定价级别" clearable>
+          <Option v-for="it in enumType.pricingLevelList" :key="it.key"
+            :value="it.key">{{it.text}}</Option>
+        </Select>
         <Button type="default" @click="resetQuery()" class="btn-reset">清空</Button>
       </form>
       <div class="acts">
@@ -42,6 +46,10 @@
         <PoptipSelect v-model="controlStatusModel" @change="editControlStatus"/>
       </template>
 
+      <template slot="pricingLevelCode" slot-scope="{ row: { pricingLevelCodeModel } }">
+        <PoptipSelect v-model="pricingLevelCodeModel" @change="editPricingLevelCode"/>
+      </template>
+
       <template slot="action" slot-scope="{ row: { id } }">
         <div class="row-acts">
           <router-link :to="{ name: 'data-cinema-hall', params: { id } }">查看影厅</router-link>
@@ -61,15 +69,14 @@
   </div>
 </template>
 
-<script lang="tsx">
+<script lang="ts">
 import { Component, Watch, Mixins, Vue } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
-import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import { slice, clean } from '@/fn/object'
 import { isEqual } from 'lodash'
-import { queryList, updateStatus, updateControlStatus } from '@/api/cinema'
+import { queryList, updateStatus, updateControlStatus, updatePricingLevelCode } from '@/api/cinema'
 import AreaSelect from '@/components/AreaSelect.vue'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import PoptipSelect from '@/components/PoptipSelect.vue'
@@ -97,6 +104,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     status: 0,
     controlStatus: 0,
     hallDataStatus: 0,
+    pricingLevelCode: '',
     pageIndex: 1,
     pageSize: 20,
   }
@@ -121,6 +129,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     controlStatusList: [],
     hallDataStatusList: [],
     gradeList: [],
+    pricingLevelList: [],
   }
 
   get enumMap() {
@@ -143,6 +152,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       { title: '级别', slot: 'gradeName', width: 60 },
       { title: '营业状态', slot: 'status', width: 70 },
       { title: '控制状态', slot: 'controlStatus', width: 75 },
+      { title: '定价级别', slot: 'pricingLevelCode', width: 75 },
       { title: '操作', slot: 'action', width: 108 }
     ]
     .map(it => ({ align: 'center', ...it }))
@@ -166,6 +176,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           value: it.controlStatus,
           list: this.enumType.controlStatusList
         },
+        pricingLevelCodeModel: {
+          id: it.id,
+          value: it.pricingLevelCode,
+          list: this.enumType.pricingLevelList,
+        }
       }
     })
     return list
@@ -238,6 +253,19 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 
+  async editPricingLevelCode({ id, value, showLoading, hideLoading }: any) {
+    const item = this.list.find(it => it.id == id)
+    try {
+      showLoading()
+      await updatePricingLevelCode(id, value)
+      item.pricingLevelCode = value
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      hideLoading()
+    }
+  }
+
   @Watch('query', { deep: true })
   watchQuery() {
     if (this.query.pageIndex == this.oldQuery.pageIndex) {
@@ -265,6 +293,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 <style lang="less" scoped>
 @import '../../../site/lib.less';
 
+.page {
+  min-height: 388px;
+}
+
 .act-bar {
   margin-top: 5px;
 }
@@ -272,7 +304,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 .form {
   .input,
   /deep/ .ivu-select {
-    width: 100px;
+    width: 90px;
     margin-left: 8px;
     &:first-child {
       margin-left: 0;

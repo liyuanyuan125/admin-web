@@ -1,6 +1,6 @@
 <template>
-  <Modal v-model="inner.show" :width="700" :loading="submitLoading" @on-ok="submit">
-    <Form :model="item" :label-width="78" :rules="rules" class="form" ref="form"
+  <Modal v-model="inner.show" :width="770" :loading="submitLoading" @on-ok="submit">
+    <Form :model="item" :label-width="76" :rules="rules" class="form" ref="form"
       v-show="!loading">
       <Row>
         <Col span="16">
@@ -69,12 +69,12 @@
             </Select>
           </FormItem>
         </Col>
-        <Col span="6">
-          <FormItem label="邮编" prop="zipCode" :label-width="58">
+        <Col span="4">
+          <FormItem label="邮编" prop="zipCode" :label-width="48">
             <Input v-model="item.zipCode" placeholder="请输入"/>
           </FormItem>
         </Col>
-        <Col span="8">
+        <Col span="5">
           <FormItem label="营业状态" prop="status">
             <Select v-model="item.status">
               <Option v-for="it in enumType.statusList" :key="it.key"
@@ -82,10 +82,18 @@
             </Select>
           </FormItem>
         </Col>
+        <Col span="5">
+          <FormItem label="定价级别" prop="pricingLevelCode">
+            <Select v-model="item.pricingLevelCode">
+              <Option v-for="it in enumType.pricingLevelList" :key="it.key"
+                :value="it.key">{{it.text}}</Option>
+            </Select>
+          </FormItem>
+        </Col>
       </Row>
     </Form>
     <div class="inner-loading flex-mid" v-if="loading">
-      <TinyLoading :size="88"/>
+      <TinyLoading :size="38"/>
     </div>
   </Modal>
 </template>
@@ -133,6 +141,7 @@ const defItem: any = {
   softwareCode: '',
   zipCode: '',
   status: 0,
+  pricingLevelCode: '',
 
   // 辅助字段，提交的时候，应该去掉
   area: [ 0, 0, 0 ],
@@ -166,6 +175,7 @@ export default class DlgEdit extends ViewBase {
     softwareList: [],
     statusList: [],
     controlStatusList: [],
+    pricingLevelList: [],
   }
 
   shortNameError = ''

@@ -59,3 +59,14 @@ export async function updateControlStatus(id: string, controlStatus: number) {
   const res = await put('/theater/cinemas/cstatus', { id, controlStatus })
   return res
 }
+
+/**
+ * 更新影院定价级别
+ * @param id 要操作的ID
+ * @param pricingLevelCode 新的定价级别
+ */
+export async function updatePricingLevelCode(id: string, pricingLevelCode: number) {
+  const res = await put('/theater/cinemas/change-pricing-level', { id, pricingLevelCode })
+  return res
+}
+
