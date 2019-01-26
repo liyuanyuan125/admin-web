@@ -1,7 +1,7 @@
 <template>
   <Poptip v-model="show" @on-popper-show="onShow" v-if="!loading">
     <span class="edit">
-      <span :class="{ deprecated: isDeprecated }">{{inValue.text}}</span>
+      <span :class="{ deprecated: isDeprecated }">{{showText}}</span>
       <icon type="ios-create-outline"/>
     </span>
     <div slot="content">
@@ -37,9 +37,10 @@ interface KeyTextControlStatus {
 
 interface Value {
   id: string
-  text: string
   value: number | string
   list: KeyTextControlStatus[]
+  // text 可选，不提供，则使用 value 在 list 中查找
+  text?: string
 }
 
 @Component
@@ -61,6 +62,12 @@ export default class PoptipSelect extends ViewBase {
     const { value, list = [] } = this.inValue
     const found = list.find(it => it.key == value)
     return found == null
+  }
+
+  get showText() {
+    const { value, list = [], text } = this.inValue
+    const result = text || (list.find(it => it.key == value) || { text: '' }).text
+    return result
   }
 
   @Watch('value', { deep: true })

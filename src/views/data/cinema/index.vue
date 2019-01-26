@@ -17,7 +17,7 @@
           <Option v-for="it in enumType.hallDataStatusList" :key="it.key"
             :value="it.key">{{it.text}}</Option>
         </Select>
-        <Button type="default" @click="resetQuery" class="btn-reset">清空</Button>
+        <Button type="default" @click="resetQuery()" class="btn-reset">清空</Button>
       </form>
       <div class="acts">
         <Button type="success" icon="md-add-circle" @click="edit(0)">新建影院</Button>
@@ -25,7 +25,30 @@
     </div>
 
     <Table :columns="columns" :data="tableData" :loading="loading"
-      border stripe disabled-hover size="small" class="table"></Table>
+      border stripe disabled-hover size="small" class="table">
+      <template slot="chainName" slot-scope="{ row: { chainControlStatus, chainName } }">
+        <Deprecated :controlStatus="chainControlStatus">{{chainName}}</Deprecated>
+      </template>
+
+      <template slot="gradeName" slot-scope="{ row: { gradeControlStatus, gradeName } }">
+        <Deprecated :controlStatus="gradeControlStatus">{{gradeName}}</Deprecated>
+      </template>
+
+      <template slot="status" slot-scope="{ row: { statusModel } }">
+        <PoptipSelect v-model="statusModel" @change="editStatus"/>
+      </template>
+
+      <template slot="controlStatus" slot-scope="{ row: { controlStatusModel } }">
+        <PoptipSelect v-model="controlStatusModel" @change="editControlStatus"/>
+      </template>
+
+      <template slot="action" slot-scope="{ row: { id } }">
+        <div class="row-acts">
+          <router-link :to="{ name: 'data-cinema-hall', params: { id } }">查看影厅</router-link>
+          <a @click="edit(id)">编辑</a>
+        </div>
+      </template>
+    </Table>
 
     <div class="page-wrap" v-if="total > 0">
       <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
@@ -34,14 +57,12 @@
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
 
-    <div v-for="(it, i) in dlgEditList" :key="it.id">
-      <DlgEdit v-model="dlgEditList[i]" @done="dlgEditDone" v-if="it.showDlgEdit"/>
-    </div>
+    <DlgEdit v-model="dlgEditModel"  @done="dlgEditDone"/>
   </div>
 </template>
 
 <script lang="tsx">
-import { Component, Watch, Mixins } from 'vue-property-decorator'
+import { Component, Watch, Mixins, Vue } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import jsxReactToVue from '@/util/jsxReactToVue'
@@ -52,6 +73,7 @@ import { queryList, updateStatus, updateControlStatus } from '@/api/cinema'
 import AreaSelect from '@/components/AreaSelect.vue'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import PoptipSelect from '@/components/PoptipSelect.vue'
+import Deprecated from '@/components/Deprecated.vue'
 import DlgEdit from './dlgEdit.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'key')
@@ -61,6 +83,7 @@ const makeMap = (list: any[]) => toMap(list, 'key')
     AreaSelect,
     CinemaChainSelect,
     PoptipSelect,
+    Deprecated,
     DlgEdit,
   }
 })
@@ -88,8 +111,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   area: number[] = []
 
-  // 编辑对话框列表
-  dlgEditList: any[] = []
+  dlgEditModel = {
+    show: false,
+    id: -1
+  }
 
   enumType: any = {
     statusList: [],
@@ -108,107 +133,39 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   get columns() {
     return  [
-      { title: '序号', key: 'id', width: 70, align: 'center' },
-      { title: '专资ID', key: 'code', width: 70, align: 'center' },
-      { title: '影院名称', key: 'shortName', minWidth: 70, align: 'center' },
-      {
-        title: '院线',
-        key: 'chainName',
-        width: 120,
-        align: 'center',
-        render: (hh: any, { row: { chainControlStatus, chainName } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          return chainControlStatus == 1
-            ? <span>{chainName}</span>
-            : <tooltip content="已下架" placement="top">
-              <span class="deprecated">{chainName}</span>
-            </tooltip>
-          /* tslint:enable */
-        }
-      },
-      { title: '省份', key: 'provinceName', width: 80, align: 'center' },
-      { title: '城市', key: 'cityName', width: 80, align: 'center' },
-      { title: '区县', key: 'countyName', width: 80, align: 'center' },
-      {
-        title: '级别',
-        key: 'gradeName',
-        width: 60,
-        align: 'center',
-        render: (hh: any, { row: { gradeCode, gradeName } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          const gradeItem = this.enumMap.grade[gradeCode]
-          return gradeItem == null || gradeItem.controlStatus == 1
-            ? <span>{gradeName}</span>
-            : <tooltip content="已下架" placement="top">
-              <span class="deprecated">{gradeName}</span>
-            </tooltip>
-          /* tslint:enable */
-        }
-      },
-      {
-        title: '营业状态',
-        width: 70,
-        align: 'center',
-        render: (hh: any, { row: { id, status, statusText } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          const value = {
-            id,
-            text: statusText,
-            value: status,
-            list: this.enumType.statusList,
-          }
-          return <PoptipSelect v-model={value}
-            on-change={this.editStatus.bind(this)}/>
-          /* tslint:enable */
-        }
-      },
-      {
-        title: '控制状态',
-        width: 75,
-        align: 'center',
-        render: (hh: any, { row: { id, controlStatus, controlStatusText } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          const value = {
-            id,
-            text: controlStatusText,
-            value: controlStatus,
-            list: this.enumType.controlStatusList,
-          }
-          return <PoptipSelect v-model={value}
-            on-change={this.editControlStatus.bind(this)}/>
-          /* tslint:enable */
-        }
-      },
-      {
-        title: '操作',
-        key: 'action',
-        width: 108,
-        align: 'center',
-        render: (hh: any, { row: { id } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          return <div class="row-acts">
-            <router-link to={{ name: 'data-cinema-hall', params: { id } }}>查看影厅</router-link>
-            <a on-click={this.edit.bind(this, id)}>编辑</a>
-          </div>
-          /* tslint:enable */
-        }
-      }
+      { title: '序号', key: 'id', width: 70 },
+      { title: '专资ID', key: 'code', width: 70 },
+      { title: '影院名称', key: 'shortName', minWidth: 70 },
+      { title: '院线', slot: 'chainName', width: 120 },
+      { title: '省份', key: 'provinceName', width: 80 },
+      { title: '城市', key: 'cityName', width: 80 },
+      { title: '区县', key: 'countyName', width: 80 },
+      { title: '级别', slot: 'gradeName', width: 60 },
+      { title: '营业状态', slot: 'status', width: 70 },
+      { title: '控制状态', slot: 'controlStatus', width: 75 },
+      { title: '操作', slot: 'action', width: 108 }
     ]
+    .map(it => ({ align: 'center', ...it }))
   }
 
   get tableData() {
     const enumMap = this.enumMap
     const list = (this.list || []).map((it: any) => {
+      const gradeItem = enumMap.grade[it.gradeCode] || {}
       return {
         ...it,
-        gradeName: (enumMap.grade[it.gradeCode] || {}).text,
-        statusText: (enumMap.status[it.status] || {}).text,
-        controlStatusText: (enumMap.controlStatus[it.controlStatus] || {}).text,
+        gradeName: gradeItem.text,
+        gradeControlStatus: gradeItem.controlStatus,
+        statusModel: {
+          id: it.id,
+          value: it.status,
+          list: this.enumType.statusList,
+        },
+        controlStatusModel: {
+          id: it.id,
+          value: it.controlStatus,
+          list: this.enumType.controlStatusList
+        },
       }
     })
     return list
@@ -239,11 +196,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         ...this.enumType,
         ...slice(data, Object.keys(this.enumType))
       }
-
-      this.dlgEditList = this.list.map((it: any) => ({
-        id: it.id,
-        showDlgEdit: false,
-      }))
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -251,13 +203,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 
-  edit(id: string | number) {
-    let item = this.dlgEditList.find(it => it.id == id)
-    if (item == null && id == 0) {
-      item = { id: 0, showDlgEdit: true }
-      this.dlgEditList.push(item)
-    }
-    item && (item.showDlgEdit = true)
+  edit(id: number) {
+    this.dlgEditModel.id = id
+    this.dlgEditModel.show = true
   }
 
   dlgEditDone() {

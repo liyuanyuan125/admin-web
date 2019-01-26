@@ -1,7 +1,7 @@
 <template>
-  <Modal v-model="inValue.showDlgEdit" :transfer="false" :width="700"
-    :loading="submitLoading" @on-ok="submit">
-    <Form :model="item" :label-width="78" :rules="rules" class="form" ref="form">
+  <Modal v-model="inner.show" :width="700" :loading="submitLoading" @on-ok="submit">
+    <Form :model="item" :label-width="78" :rules="rules" class="form" ref="form"
+      v-show="!loading">
       <Row>
         <Col span="16">
           <FormItem label="影城名称" prop="shortName" :error='shortNameError'>
@@ -50,7 +50,7 @@
       <Row class="row-address">
         <Col span="10">
           <FormItem label="公司地址" prop="area">
-            <AreaSelect v-model="item.area"/>
+            <AreaSelect v-model="item.area" noSelf/>
           </FormItem>
         </Col>
         <Col span="14">
@@ -84,6 +84,9 @@
         </Col>
       </Row>
     </Form>
+    <div class="inner-loading flex-mid" v-if="loading">
+      <TinyLoading :size="88"/>
+    </div>
   </Modal>
 </template>
 
@@ -92,15 +95,17 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { queryItem, addItem, updateItem } from '@/api/cinema'
+import TinyLoading from '@/components/TinyLoading.vue'
 import AreaSelect from '@/components/AreaSelect.vue'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import { slice } from '@/fn/object'
 import { toast } from '@/ui/modal'
 import { filterItemInList, filterListByControlStatus } from '@/util/dealData'
+import { cloneDeep } from 'lodash'
 
 interface Value {
+  show: boolean
   id: number
-  showDlgEdit: boolean
 }
 
 interface KeyTextControlStatus {
@@ -130,28 +135,31 @@ const defItem: any = {
   status: 0,
 
   // 辅助字段，提交的时候，应该去掉
-  area: [],
+  area: [ 0, 0, 0 ],
+}
+
+const defValue: Value = {
+  show: false,
+  id: -1
 }
 
 @Component({
   components: {
+    TinyLoading,
     AreaSelect,
     CinemaChainSelect,
   }
 })
 export default class DlgEdit extends ViewBase {
-  /**
-   * 值本身，可以使用 v-model 进行双向绑定
-   */
-  @Prop({ type: Object, default: () => {} }) value!: Value
+  @Prop({ type: Object, default: () => ({ ...defValue }), required: true }) value!: Value
 
-  inValue: Value = this.value
+  inner: Value = { ...defValue }
 
   loading = false
 
   submitLoading = true
 
-  item: any = {}
+  item: any = cloneDeep(defItem)
 
   enumType: KeyTextControlStatusMap = {
     gradeList: [],
@@ -162,8 +170,11 @@ export default class DlgEdit extends ViewBase {
 
   shortNameError = ''
 
+  // TODO: 临时解决某些组件的验证问题，正常情况下，应该使这些组件避免过度发 change 事件
+  preventValidateError = true
+
   get rules() {
-    let areaFirstCall = true
+    const self = this
     return {
       shortName: [
         { required: true, message: '不能为空', trigger: 'blur' }
@@ -175,17 +186,25 @@ export default class DlgEdit extends ViewBase {
         { required: true, message: '不能为空', trigger: 'blur' }
       ],
       chainId: [
-        { required: true, type: 'number', min: 1, message: '不能为空', trigger: 'change' }
+        {
+          required: true,
+          trigger: 'change',
+          type: 'number',
+          validator(rule: any, value: number, callback: any) {
+            if (self.preventValidateError) {
+              return callback()
+            }
+            value > 0 ? callback() : callback(new Error('不能为空'))
+          }
+        }
       ],
       area: [
         {
           required: true,
-          message: '不能为空',
           trigger: 'change',
           type: 'array',
           validator(rule: any, value: number[], callback: any) {
-            if (areaFirstCall) {
-              areaFirstCall = false
+            if (self.preventValidateError) {
               return callback()
             }
             const strVal = (value || []).join('')
@@ -212,21 +231,28 @@ export default class DlgEdit extends ViewBase {
       const res = data.id ? await updateItem(data) : await addItem(data)
       toast(data.id ? '更新成功' : '创建成功')
       this.$emit('done')
-      this.inValue.showDlgEdit = false
+      this.inner.show = false
     } catch (ex) {
       this.resetSubmitLoading()
       this.handleError(ex)
     }
   }
 
-  mounted() {
+  created() {
     this.load()
   }
 
   async load() {
+    const { show, id } = this.inner
+    if (!show || id < 0) {
+      return
+    }
+
+    this.preventValidateError = true
+
     this.loading = true
-    const query = { id: this.value.id }
     try {
+      const query = { id }
       const { data } = await queryItem(query)
 
       this.enumType = filterListByControlStatus({
@@ -248,7 +274,7 @@ export default class DlgEdit extends ViewBase {
       }
 
       const { provinceId = 0, cityId = 0, countyId = 0 } = this.item
-      this.item.area = [provinceId, cityId, countyId]
+      this.item.area = [ provinceId, cityId, countyId ]
 
       // 默认选中第一个
       if (this.item.status == 0) {
@@ -261,24 +287,41 @@ export default class DlgEdit extends ViewBase {
       this.handleError(ex)
     } finally {
       this.loading = false
+
+      // 很短时间后，设置 this.preventValidateError 为 false
+      setTimeout(() => {
+        this.preventValidateError = false
+      }, 588)
     }
   }
 
-  @Watch('value')
-  watchValue(val: Value) {
-    this.inValue = val
+  // 关闭时清空所有错误
+  resetFieldsOnClose() {
+    if (!this.value.show) {
+      this.preventValidateError = true
+      ; (this.$refs.form as any).resetFields()
+    }
   }
 
-  @Watch('inValue', { deep: true })
-  watchInValue(val: Value) {
-    this.$emit('input', val)
+  @Watch('value', { deep: true })
+  watchValue(value: Value) {
+    this.inner = value
+    this.load()
+    this.resetFieldsOnClose()
   }
 
-  @Watch('item.area')
+  @Watch('inner', { deep: true })
+  watchInner(value: Value) {
+    this.$emit('input', value)
+  }
+
+  @Watch('item.area', { deep: true })
   watchArea(val: number[]) {
-    this.item.provinceId = val[0]
-    this.item.cityId = val[1]
-    this.item.countyId = val[2]
+    if (this.item != null) {
+      this.item.provinceId = val[0]
+      this.item.cityId = val[1]
+      this.item.countyId = val[2]
+    }
   }
 }
 </script>
@@ -299,5 +342,8 @@ export default class DlgEdit extends ViewBase {
       margin-left: 0 !important;
     }
   }
+}
+.inner-loading {
+  min-height: 302px;
 }
 </style>

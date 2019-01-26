@@ -3,7 +3,7 @@
     <div class="act-bar flex-box">
       <form class="form flex-1" @submit.prevent="search">
         <LazyInput v-model="query.name" placeholder="公司名称" class="input input-id"/>
-        <Button type="default" @click="resetQuery" class="btn-reset">清空</Button>
+        <Button type="default" @click="resetQuery()" class="btn-reset">清空</Button>
       </form>
 
       <div class="acts">

@@ -68,13 +68,27 @@ export default [
 
   {
     path: '/data/cinema/',
-    name: 'data-cinema',
-    component: () => import('./views/data/cinema/index.vue')
-  },
-  {
-    path: '/data/cinema-hall/:id',
-    name: 'data-cinema-hall',
-    component: () => import('./views/data/cinema-hall/index.vue')
+    redirect: { name: 'data-cinema' },
+    component: () => import('./components/tabLayout'),
+    children: [
+      {
+        path: '/data/cinema/',
+        name: 'data-cinema',
+        component: () => import('./views/data/cinema/index.vue'),
+        meta: {
+          title: '影院管理',
+          fixed: true,
+        }
+      },
+      {
+        path: '/data/cinema-hall/:id',
+        name: 'data-cinema-hall',
+        component: () => import('./views/data/cinema-hall/index.vue'),
+        meta: {
+          title: '影厅列表',
+        }
+      },
+    ]
   },
 
   {
