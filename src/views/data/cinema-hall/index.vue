@@ -1,7 +1,6 @@
 <template>
   <div class="page">
     <header class="header flex-box">
-      <Button icon="md-return-left" @click="back" class="btn-back">返回列表</Button>
       <div class="flex-1">
         <em>{{cinema.shortName}}</em>
         <i>影厅列表</i>
@@ -165,6 +164,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     this.updateQueryByParam()
   }
 
+  activated() {
+    this.updateQueryByParam()
+  }
+
   async fetch() {
     if (this.loading) {
       return
@@ -211,10 +214,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 
-  back() {
-    this.$router.go(-1)
-  }
-
   edit(id: string|number) {
     let item = this.dlgEditList.find(it => it.id == id)
     if (item == null && id == 0) {
@@ -249,9 +248,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     font-size: 16px;
     color: @c-base;
   }
-}
-.btn-back {
-  margin-right: 10px;
 }
 
 .info-pane {
