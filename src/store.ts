@@ -11,6 +11,7 @@ interface User {
   name: string
 }
 
+const KEY_USER = 'user@admin.aiads.com'
 const KEY_TOKEN = 'X-API-TOKEN'
 
 const COOKIE_OPTIONS = {
@@ -22,7 +23,7 @@ let theUser: User | null = null
 
 const restoreUser = (): User | null => {
   const token = cookie.get(KEY_TOKEN)
-  const user = tryParseJson(localStorage.user)
+  const user = tryParseJson(localStorage[KEY_USER])
   return token && user ? user : null
 }
 
@@ -42,7 +43,28 @@ export function getUser() {
  */
 export function setUser(user: User) {
   theUser = user
-  localStorage.user = JSON.stringify(user)
+  localStorage[KEY_USER] = JSON.stringify(user)
+}
+
+// 简单的断言
+const assert = (expression: any, errorMessage: string) => {
+  if (!!expression === false) {
+    throw new Error(errorMessage)
+  }
+}
+
+/** 检查用户信息完成性，若不完整，则清空，退出  */
+export function checkUser() {
+  const user = getUser()
+  if (user != null) {
+    try {
+      assert(user.id, '用户 ID 必须存在')
+    } catch (ex) {
+      // tslint:disable-next-line:no-console
+      console.error(`用户信息不完整：${ex.message}，退出重新登录`)
+      logout()
+    }
+  }
 }
 
 /**
@@ -57,7 +79,7 @@ export function hasLogin() {
  */
 export function logout() {
   cookie.remove(KEY_TOKEN, COOKIE_OPTIONS)
-  delete localStorage.user
+  delete localStorage[KEY_USER]
   theUser = null
   postLogout()
 }
