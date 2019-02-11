@@ -245,7 +245,7 @@ export default [
     component: () => import('./views/plan/film/index.vue')
   },
   {
-    path: '/gg/film/detail/:id',
+    path: '/gg/film/detail/:id/:status',
     name: 'gg-film-detail',
     component: () => import('./views/plan/film/detail.vue')
   },

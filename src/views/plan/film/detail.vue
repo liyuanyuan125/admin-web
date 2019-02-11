@@ -153,6 +153,7 @@ export default class Main extends ViewBase {
 
 
   mounted() {
+    // console.log(this.$route.params)
     if ( this.$route.params.status == '1' ) {
       this.showStatus = true
     }

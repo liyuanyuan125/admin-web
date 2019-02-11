@@ -27,7 +27,7 @@
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
 
-    <DlgEdit v-if="diariesShow" v-model="diaries" @input='getdates(diaries)'/>
+    <DlgEdit ref="diaries" v-if="diariesShow" v-model="diaries" @input='getdates(diaries)'/>
   </div>
 </template>
 
@@ -300,6 +300,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   checkShow() {
     // console.log(123)
     this.diariesShow = true
+    this.$nextTick(() => {
+      (this.$refs.diaries as any).init()
+    })
   }
 
   @Watch('query', { deep: true })
