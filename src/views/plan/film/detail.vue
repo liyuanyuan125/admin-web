@@ -63,7 +63,7 @@
                 <Radio v-for="it in approveStatusList" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
               </RadioGroup>
             </FormItem>
-            <FormItem v-if='dataForm.agree == 2' label="拒绝理由" prop="reason">
+            <FormItem v-if='dataForm.agree == false' label="拒绝理由" prop="reason">
               <Input style="width:240px" v-model="dataForm.refuseReason"></Input>
             </FormItem>
           </Form>
@@ -110,7 +110,7 @@ const defQuery = {
 
 const dataForm = {
   refuseReason: '',
-  agree: 1
+  agree: true
 }
 
 @Component({
@@ -127,11 +127,11 @@ export default class Main extends ViewBase {
   attachments: any = []
   approveStatusList: any = [
     {
-      key: 1,
+      key: true,
       text: '通过'
     },
     {
-      key: 2,
+      key: false,
       text: '拒绝'
     }
   ]

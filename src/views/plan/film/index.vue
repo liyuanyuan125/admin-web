@@ -174,7 +174,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   async fetchCompanys() {
     try {
-      const { data: { items: companys } } = await companysList({ pageSize: 1000000 })
+      const { data: { items: companys } } = await companysList()
       this.companys = companys.filter((it: any) => it.status == 1)
     } catch (ex) {
       this.handleError(ex)

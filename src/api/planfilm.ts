@@ -28,8 +28,8 @@ export async function dataFrom(query: any) {
 
 
 // 获取公司详情
-export async function companysList(query: any) {
-  const data = await get('/customer/companies' , {pagesize: 10000})
+export async function companysList() {
+  const data = await get('/customer/companies' , {pageSize: 1000000 , status: 1})
   return data
 }
 // 删除
