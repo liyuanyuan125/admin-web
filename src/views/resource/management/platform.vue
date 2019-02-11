@@ -102,7 +102,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   dates = [
     {
       key: 1,
-      name: '当前日期'
+      name: '有效日期'
     },
     {
       key: 2,
@@ -225,6 +225,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   reset() {
     this.resetQuery()
     this.showTime = []
+    this.date.calendarName = ''
   }
 
   async doSearch() {
