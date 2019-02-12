@@ -26,7 +26,7 @@
                   <InputNumber style="width: 80px" :min="1" v-model="dataForm.cpm" placeholder=""/>  元/千人次
                 </FormItem>
                 <div class="detail-height" v-else>
-                  {{dataForm.discount}}元/千人次
+                  {{dataForm.cpm}}元/千人次
                 </div>
               </Col>
             </Col>
@@ -37,7 +37,7 @@
                   <InputNumber style="width: 80px" :max="100" :min="1" v-model="dataForm.discount" placeholder=""/>  %
                 </FormItem>
                 <div class="detail-height" v-else>
-                  {{dataForm.cpm}}%
+                  {{dataForm.discount}}%
                 </div>
               </Col>
             </Col>

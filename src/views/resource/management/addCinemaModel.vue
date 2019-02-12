@@ -44,8 +44,8 @@
               <div v-if="items.length>0">
                 <div  @click="hallCountNum(item.id)" v-for="(item, index) in items" :key="index" class="check">
                   <Checkbox :label="item.id">{{item.shortName}}</Checkbox>
-                  <span>{{hallCount(item.id)}}</span>
-                  <Icon class="cinema-icon-left" @click="addhall(item.id)" v-show="cidCinema(item.id)" type="ios-arrow-forward" />
+                  <span class="blue">{{hallCount(item.id)}}</span>
+                  <Icon class="cinema-icon-left" @click="addhall(item.id)" v-show="cidCinema(item.id)" type="ios-arrow-down" />
                 </div>
                 <div v-if="(items.length%4) == 3" class="check">&nbsp;</div>
               </div>
@@ -336,7 +336,7 @@ export default class Main extends ViewBase {
           hallcheck: [],
           hallName: []
         })
-        // info('该影院下暂无影厅')
+        info('该影院下暂无影厅')
       }
     }
   }
@@ -438,7 +438,7 @@ export default class Main extends ViewBase {
     const index = ids.indexOf(id)
     if (index != -1) {
       const hallList = this.checkCinema[index].hallList || []
-      return (hallList && hallList.length > 0) ? this.checkCinema[index].hallList.length + '个' : ''
+      return (hallList && hallList.length > 0) ? `( ${this.checkCinema[index].hallList.length}个 )` : '( 0个 )'
     } else {
       return ''
     }
@@ -571,5 +571,8 @@ export default class Main extends ViewBase {
   position: absolute;
   bottom: 18px;
   left: 520px;
+}
+.blue {
+  color: #09f;
 }
 </style>
