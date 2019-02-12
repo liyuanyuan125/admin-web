@@ -278,8 +278,8 @@ export default class Main extends ViewBase {
       dirtext: detail.item.directionType ?
       `${scheme[detail.item.directionType]} [ ${cachedMap.dirtext[detail.item.directionType]} ]` : '',
       applyTime: detail.item.applyTime ? moment(detail.item.applyTime).format(timeFormat) : '',
-      areaCount: detail.areaCount ? `[ ${detail.areaCount} ]` : '',
-      provinceCount: detail.item.provinceCount ? `[ ${detail.item.provinceCount} ]` : '',
+      areaCount: detail.item.areaCount ? `[ ${detail.item.areaCount} ]` : '',
+      provinceCount: detail.item.proviceCount ? `[ ${detail.item.proviceCount} ]` : '',
       cityCount: detail.item.cityCount ? `[ ${detail.item.cityCount} ]` : '',
       cinemasCount: detail.item.cinemasCount ? `[ ${detail.item.cinemasCount} ]` : '',
       videoId: detail.item.videoId ? `[ ${detail.item.videoId} ]` : '',

@@ -22,7 +22,7 @@
       <Col span="5" offset="1">
          <Input v-model="value" placeholder="请输入影院名称" />
       </Col>
-      <Button style="float:right" type="primary" @click="seach">搜索</Button>
+      <Button style="float:right" type="primary" @click="seach(1)">搜索</Button>
     </Row>
     <div class="cinema-box">
       <div>
@@ -107,7 +107,7 @@ export default class Main extends ViewBase {
   columns: any = [
   ]
   // 选中的影院 id加名字
-  checkCinema: any = []
+  checkCinema: any = [ ...this.addData ]
   pageIndex = 1
   pageSize = 10
   totalPage = 0
@@ -148,14 +148,14 @@ export default class Main extends ViewBase {
     }
   }
 
-  async seach() {
+  async seach(id?: any) {
     this.dataLoading = true
     const query: any = {
       chainId: this.chainId,
       name: this.value,
       ...this.query,
       pageSize: this.pageSize,
-      pageIndex: this.pageIndex
+      pageIndex: id || this.pageIndex
     }
     try {
       const res = await queryList(clean({...query}))
