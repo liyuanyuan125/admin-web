@@ -131,7 +131,7 @@
             
             <div v-else class="cinema-right">
               <FormItem prop="companyId">
-                <CinemaList v-model="dataForm.companyId" @input="cinemeClean" style="width: 220px" />
+                <CinemaList typeCode="resource" v-model="dataForm.companyId" @input="cinemeClean" style="width: 220px" />
               </FormItem>
             </div>
           </Row>

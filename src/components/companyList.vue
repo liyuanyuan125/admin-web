@@ -13,6 +13,7 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { queryList } from '@/api/corpReal'
+import { clean } from '@/fn/object'
 
 @Component
 export default class CinemaChainSelect extends ViewBase {
@@ -20,7 +21,7 @@ export default class CinemaChainSelect extends ViewBase {
    * 值本身，可以使用 v-model 进行双向绑定
    */
   @Prop({ type: Number, default: 0 }) value!: number
-
+  @Prop({ default: '' }) typeCode!: string
   /**
    * 提示文字
    */
@@ -34,10 +35,11 @@ export default class CinemaChainSelect extends ViewBase {
 
   async mounted() {
     try {
-      const { data } = await queryList({
+      const { data } = await queryList(clean({
         pageSize: 888888,
-        status: 1
-      })
+        status: 1,
+        typeCode: this.typeCode
+      }))
       const list: any[] = data.items || []
       this.list = list
     } catch (ex) {
