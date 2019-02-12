@@ -5,7 +5,7 @@
         <Select style="width:90px" v-model="date.numdate" filterable>
           <Option v-for="it in dates" :key="it.key" :value="it.key">{{it.name}}</Option>
         </Select>
-        <DatePicker v-if="date.numdate == 1" type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-start" placeholder="注册时间" class="input" style="width: 230px"></DatePicker>
+        <DatePicker v-if="date.numdate == 1" type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-start" placeholder="选择时间" class="input" style="width: 230px"></DatePicker>
         <LazyInput  v-if="date.numdate == 2" @on-focus='checkShow' v-model="date.calendarName" placeholder="档期" class="input"/>
         <Select style="width:240px" v-model="query.companyName" filterable>
           <Option v-for="it in companys" v-if='it.status==1' :key="it.name" :value="it.name">{{it.name}}</Option>
@@ -130,7 +130,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
      render: (hh: any, { row: { cpm } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = cpm + '%'
+        const html = cpm + '.00'
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
@@ -139,7 +139,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       render: (hh: any, { row: { discount } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = discount + 's'
+        const html = discount + '%'
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
