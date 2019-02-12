@@ -1,6 +1,6 @@
 <template>
   <Tabs v-model="currentName" type="card" :class="`tab-layout tab-layout-${list.length}`"
-    @on-click="onClick" @on-tab-remove="onRemove">
+    @on-click="onClick" @on-tab-remove="onRemove" style='height: 1000px;'>
     <TabPane v-for="(it, i) in list" :key="i" :name="it.name" :label="it.meta.title"
       :closable="!it.meta.fixed">
       <keep-alive>
