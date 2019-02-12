@@ -252,22 +252,22 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
     try {
       // 待审核
-      const { data: {
-        items: list,
-        totalCount: total,
-        gradeList: gradeList
-      } } = await pingqueryList(query)
+      // const { data: {
+      //   items: list,
+      //   totalCount: total,
+      //   gradeList: gradeList
+      // } } = await pingqueryList(query)
       const { data: {
         items: list2,
         totalCount: total2,
       } } = await comqueryList(query)
 
-      this.list = list // 平台刊例价
+      // this.list = list // 平台刊例价
       this.list2 = list2 // 公司刊例价
-      this.gradeList = gradeList || []
+      // this.gradeList = gradeList || []
 
 
-      this.total = total // 平台刊例价
+      // this.total = total // 平台刊例价
       this.total2 = total2 // 公司刊例价
       // 公司列表
       const { data: {
