@@ -23,7 +23,7 @@
           <Col span="2"><div>上传人</div></Col>
           <Col span="8"><span>{{detail.applyUser}}</span></Col>
           <Col span="2"><div>上传时间</div></Col>
-          <Col span="8"><span>{{detail.approvalTime}}</span></Col>
+          <Col span="8"><span>{{applyTime}}</span></Col>
         </Row>
       </div>
       <div class='titop'>广告片</div>
@@ -74,9 +74,9 @@
       <div class='titop' v-if='!showStatus'>操作记录</div>
       <Row class='detail-content' v-if='!showStatus'>
         <div class="logs-item" v-for="(it,index) in logList">
-          <span>{{it.createTime}}</span>
-          <span>{{it.email}}【{{it.userName}}】</span>
-          {{it.description}}
+          <span>{{it.createTime}}   </span>&nbsp;&nbsp;
+          <span>   {{it.email}}【{{it.userName}}】</span>
+             {{it.description}}
         </div>
       </row>
     </div>
@@ -148,12 +148,15 @@ export default class Main extends ViewBase {
 
   id = 0
 
+  applyTime = ''
+
 //   // 审核
   dataForm: any = { ...dataForm }
 
 
   mounted() {
     // console.log(this.$route.params)
+    this.applyTime = moment(this.detail.applyTime).format(timeFormatDate)
     if ( this.$route.params.status == '1' ) {
       this.showStatus = true
     }
