@@ -218,10 +218,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   get tableData() {
     const cachedMap = this.cachedMap
+    console.log(cachedMap)
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        setText: cachedMap.settlementStatusList[it.settlementAmount],
+        setText: cachedMap.settlementStatusList[it.status],
         statusText: cachedMap.statusList[it.settlementStatus],
       }
     })

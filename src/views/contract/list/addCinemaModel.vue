@@ -22,7 +22,7 @@
       <Col span="5" offset="1">
          <Input v-model="value" placeholder="请输入影院名称" />
       </Col>
-      <Button style="float:right" type="primary" @click="seach">搜索</Button>
+      <Button style="float:right" type="primary" @click="seach(1)">搜索</Button>
     </Row>
     <div class="cinema-box">
       <div>
@@ -124,6 +124,7 @@ export default class Main extends ViewBase {
       this.form.check = val.map((item: any) => {
         return item.id
       })
+      this.cinemaList = [...val]
     } else {
       this.form.check = []
     }
