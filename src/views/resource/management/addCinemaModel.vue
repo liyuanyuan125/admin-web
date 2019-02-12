@@ -40,12 +40,12 @@
 
         <Form v-else class="table" ref="radioCinema" :model="form">
           <FormItem>
-            <CheckboxGroup v-model="form.check" ref="checks" @on-change="checkAllGroupChange">
+            <CheckboxGroup v-model="form.check" ref="checks" @on-change.stop="checkAllGroupChange">
               <div v-if="items.length>0">
-                <div  @click="hallCountNum(item.id)" v-for="(item, index) in items" :key="index" class="check">
-                  <Checkbox :label="item.id">{{item.shortName}}</Checkbox>
+                <div v-for="(item, index) in items" :key="index" class="check">
+                  <Checkbox @click.prevent.native="hallCountNum(item.id)" :label="item.id"><span>{{item.shortName}}</span></Checkbox>
                   <span class="blue">{{hallCount(item.id)}}</span>
-                  <Icon class="cinema-icon-left" @click="addhall(item.id)" v-show="cidCinema(item.id)" type="ios-arrow-down" />
+                  <Icon class="cinema-icon-left" @click.stop="addhall(item.id)" v-show="cidCinema(item.id)" type="ios-arrow-down" />
                 </div>
                 <div v-if="(items.length%4) == 3" class="check">&nbsp;</div>
               </div>
@@ -330,7 +330,7 @@ export default class Main extends ViewBase {
           info('该影院下暂无影厅')
         }
       } catch (ex) {
-        this.handleError(ex)
+        // this.handleError(ex)
         this.halldata({
           id: cinemaId,
           hallcheck: [],
@@ -523,7 +523,7 @@ export default class Main extends ViewBase {
     .cinema-icon-left {
       position: absolute;
       top: 5px;
-      right: 10px;
+      right: 30px;
       font-size: 18px;
       cursor: pointer;
     }
