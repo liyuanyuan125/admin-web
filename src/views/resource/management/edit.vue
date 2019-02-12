@@ -479,7 +479,7 @@ export default class Main extends ViewBase {
   }
 }
 .red {
-  font-size: 14px;
+  font-size: 12px;
   color: red;
 }
 .titop {
