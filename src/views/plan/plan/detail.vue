@@ -112,7 +112,7 @@
       <Row class="detail-content">
         <Row v-if="format.movieList.length > 0">
           <Col v-for="(item, index) in format.movieList" :span="10" :key="index">
-            <span>《{{item.name}}》{{(item.typeCode || []).join(' / ')}} {{auto(item.openTime + '')}}</span>
+            <span>《{{item.name}}》{{(item.typeCode || []).join(' / ')}} [{{auto(item.openTime + '')}}]</span>
           </Col>
         </Row>
         <Row v-else>
@@ -154,7 +154,7 @@
                         <span>通过</span>
                       </Radio>
                       <Radio style="margin-left: 80px" :label=10>
-                        <span>拒接</span>
+                        <span>拒绝</span>
                       </Radio>
                     </RadioGroup>
                   </Col>
@@ -212,6 +212,7 @@ export default class Main extends ViewBase {
     discount: null,
     freezeAmount: null,
   }
+
   mounted() {
     this.doSearch()
   }
@@ -243,7 +244,8 @@ export default class Main extends ViewBase {
     return {
       typeList: makeMap(this.detail.typeList),
       directext: makeMap(this.detail.deliveryTypeList),
-      dirtext: makeMap(this.detail.directionTypeList)
+      dirtext: makeMap(this.detail.directionTypeList),
+      tags: makeMap(this.detail.tags)
     }
   }
 
@@ -263,6 +265,7 @@ export default class Main extends ViewBase {
     const detail = this.detail
     const start = moment(detail.beginDate).format(timeFormat)
     const end = moment(detail.endDate).format(timeFormat)
+    const tags = detail.tags.map((item: any) => item.code)
     return {
       time: start ? `${start}~${end}` : '',
       cycle: detail.item.cycle ? detail.item.cycle + '天' : '',
@@ -280,8 +283,28 @@ export default class Main extends ViewBase {
       cityCount: detail.item.cityCount ? `[ ${detail.item.cityCount} ]` : '',
       cinemasCount: detail.item.cinemasCount ? `[ ${detail.item.cinemasCount} ]` : '',
       videoId: detail.item.videoId ? `[ ${detail.item.videoId} ]` : '',
-      deliveryGroups: detail.item.deliveryGroups || [],
-      movieList: detail.movieList || [],
+      deliveryGroups: detail.item.deliveryGroups ? detail.item.deliveryGroups.map((it: any) => {
+        if ( tags.includes(it.tagTypeCode)) {
+          const index = tags.indexOf(it.tagTypeCode)
+          const textMap = makeMap(detail.tags[index].values)
+          return {
+            ...it,
+            text: textMap[it.text]
+          }
+        } else {
+          return {
+            ...it
+          }
+        }
+      }) : [],
+      movieList: detail.movieList ? detail.movieList.map((it: any) => {
+        const values: any = makeMap(detail.tags[0].values)
+        const typeText: any = it.typeCode.map((item: any) => values[item])
+        return {
+          ...it,
+          typeCode: typeText
+        }
+      }) : [],
       logList: (detail.logList || []).slice(0, 20),
       cinemaList: detail.item.cinemaList || []
     }
@@ -481,6 +504,9 @@ export default class Main extends ViewBase {
         margin-right: 8px;
       }
     }
+  }
+  i {
+    font-style: normal;
   }
   .ivu-form-item {
     margin-bottom: 0;

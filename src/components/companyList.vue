@@ -35,7 +35,8 @@ export default class CinemaChainSelect extends ViewBase {
   async mounted() {
     try {
       const { data } = await queryList({
-        pageSize: 888888
+        pageSize: 888888,
+        status: 1
       })
       const list: any[] = data.items || []
       this.list = list

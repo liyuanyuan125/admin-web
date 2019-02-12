@@ -461,6 +461,10 @@ export default class Main extends ViewBase {
 <style lang="less" scoped>
 @import '../../../site/lib.less';
 
+.site-content {
+  height: 665px;
+}
+
 .header {
   margin-top: 5px;
   margin-bottom: 10px;
@@ -475,6 +479,7 @@ export default class Main extends ViewBase {
   }
 }
 .red {
+  font-size: 14px;
   color: red;
 }
 .titop {
@@ -543,7 +548,7 @@ export default class Main extends ViewBase {
 }
 .edit-button {
   margin-top: 20px;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
   text-align: center;
 }
 .part-bind-cinema {
