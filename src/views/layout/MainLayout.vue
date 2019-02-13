@@ -298,7 +298,7 @@ export default class App extends ViewBase {
 }
 
 .sider-menu {
-  margin-bottom: 188px;
+  // margin-bottom: 188px;
   &::after {
     display: none;
   }

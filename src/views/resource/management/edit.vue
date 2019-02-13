@@ -1,5 +1,5 @@
 <template>
-  <div class="page">
+  <div class="page" :class="[!$route.params.id ? 'pageHeight' : '']">
     <header class="header flex-box">
       <Button icon="md-return-left" @click="back" class="btn-back">返回上一页</Button>
       <div class="flex-1" style="margin-left: 8px" >
@@ -460,11 +460,12 @@ export default class Main extends ViewBase {
 
 <style lang="less" scoped>
 @import '../../../site/lib.less';
-
 .site-content {
   height: 665px;
 }
-
+.pageHeight {
+  min-height: 660px;
+}
 .header {
   margin-top: 5px;
   margin-bottom: 10px;
@@ -547,7 +548,7 @@ export default class Main extends ViewBase {
   }
 }
 .edit-button {
-  margin-top: 20px;
+  margin-top: 30px;
   margin-bottom: 10px;
   text-align: center;
 }
