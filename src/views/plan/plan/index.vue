@@ -16,12 +16,12 @@
             <Option v-for="(option, index) in options" :value="option.value" :key="index">{{option.label}}</Option>
           </Select>
           <CompanyList v-model="query.companyId" />
-          <Select v-model="query.status" placeholder="计划状态" clearable>
-            <Option v-if="it.key != 0" v-for="it in settlementStatusList" :key="it.key" :value="it.key"
+          <Select v-model="query.settlementStatus" placeholder="计划状态" clearable>
+            <Option v-if="it.key != 0" v-for="it in statusList" :key="it.key" :value="it.key"
               :label="it.text">{{it.text}}</Option>
           </Select>
-          <Select v-model="query.settlementStatus" placeholder="结算状态" clearable>
-            <Option v-if="it.key != 0" v-for="it in statusList" :key="it.key" :value="it.key"
+          <Select v-model="query.status" placeholder="结算状态" clearable>
+            <Option v-if="it.key != 0" v-for="it in settlementStatusList" :key="it.key" :value="it.key"
               :label="it.text">{{it.text}}</Option>
           </Select>
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
@@ -172,8 +172,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         /* tslint:enable */
       }
     },
-    { title: '计划状态', key: 'setText', align: 'center' },
-    { title: '结算状态', key: 'statusText', align: 'center' },
+    { title: '计划状态', key: 'statusText', align: 'center' },
+    { title: '结算状态', key: 'setText', align: 'center' },
     { title: '结算金额(元)', width: 100, key: 'amount', align: 'center',
       render: (hh: any, { row: { settlementAmount } }: any) => {
         /* tslint:disable */
