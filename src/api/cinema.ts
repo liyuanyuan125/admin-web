@@ -70,3 +70,13 @@ export async function updatePricingLevelCode(id: string, pricingLevelCode: numbe
   return res
 }
 
+/**
+ * 更新影院票房级别
+ * @param id 要操作的ID
+ * @param boxLevelCode 新的定价级别
+ */
+export async function updateBoxLevelCode(id: string, boxLevelCode: number) {
+  const res = await put('/theater/cinemas/change-box-level', { id, boxLevelCode })
+  return res
+}
+

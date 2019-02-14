@@ -69,12 +69,12 @@
             </Select>
           </FormItem>
         </Col>
-        <Col span="4">
-          <FormItem label="邮编" prop="zipCode" :label-width="48">
+        <Col span="6">
+          <FormItem label="邮编" prop="zipCode">
             <Input v-model="item.zipCode" placeholder="请输入"/>
           </FormItem>
         </Col>
-        <Col span="5">
+        <Col span="8">
           <FormItem label="营业状态" prop="status">
             <Select v-model="item.status">
               <Option v-for="it in enumType.statusList" :key="it.key"
@@ -82,10 +82,21 @@
             </Select>
           </FormItem>
         </Col>
-        <Col span="5">
+      </Row>
+
+      <Row>
+        <Col span="10">
           <FormItem label="定价级别" prop="pricingLevelCode">
             <Select v-model="item.pricingLevelCode">
               <Option v-for="it in enumType.pricingLevelList" :key="it.key"
+                :value="it.key">{{it.text}}</Option>
+            </Select>
+          </FormItem>
+        </Col>
+        <Col span="6">
+          <FormItem label="票房级别" prop="boxLevelCode">
+            <Select v-model="item.boxLevelCode">
+              <Option v-for="it in enumType.boxLevelList" :key="it.key"
                 :value="it.key">{{it.text}}</Option>
             </Select>
           </FormItem>
@@ -142,6 +153,7 @@ const defItem: any = {
   zipCode: '',
   status: 0,
   pricingLevelCode: '',
+  boxLevelCode: '',
 
   // 辅助字段，提交的时候，应该去掉
   area: [ 0, 0, 0 ],
@@ -176,6 +188,7 @@ export default class DlgEdit extends ViewBase {
     statusList: [],
     controlStatusList: [],
     pricingLevelList: [],
+    boxLevelList: [],
   }
 
   shortNameError = ''

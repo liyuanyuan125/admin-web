@@ -25,7 +25,7 @@
       </div>
     </header>
     <Layout class="site-center">
-      <Sider collapsible hide-trigger v-model="isOff" class="site-sider" ref="sider">
+      <Sider collapsible hide-trigger v-model="isOff" :width="168" class="site-sider" ref="sider">
         <Menu width="auto" class="sider-menu" :class="isOff && 'sider-menu-off'"
           :active-name="siderActiveName" :open-names="siderOpenNames">
           <Submenu v-for="menu in siderMenuList" :key="menu.name" :name="menu.name">

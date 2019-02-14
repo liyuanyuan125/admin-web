@@ -21,6 +21,10 @@
           <Option v-for="it in enumType.pricingLevelList" :key="it.key"
             :value="it.key">{{it.text}}</Option>
         </Select>
+        <Select v-model="query.boxLevelCode" placeholder="票房级别" clearable>
+          <Option v-for="it in enumType.boxLevelList" :key="it.key"
+            :value="it.key">{{it.text}}</Option>
+        </Select>
         <Button type="default" @click="resetQuery()" class="btn-reset">清空</Button>
       </form>
       <div class="acts">
@@ -50,6 +54,10 @@
         <PoptipSelect v-model="pricingLevelCodeModel" @change="editPricingLevelCode"/>
       </template>
 
+      <template slot="boxLevelCode" slot-scope="{ row: { boxLevelCodeModel } }">
+        <PoptipSelect v-model="boxLevelCodeModel" @change="editBoxLevelCode"/>
+      </template>
+
       <template slot="action" slot-scope="{ row: { id } }">
         <div class="row-acts">
           <router-link :to="{ name: 'data-cinema-hall', params: { id } }">查看影厅</router-link>
@@ -76,7 +84,8 @@ import UrlManager from '@/util/UrlManager'
 import { toMap } from '@/fn/array'
 import { slice, clean } from '@/fn/object'
 import { isEqual } from 'lodash'
-import { queryList, updateStatus, updateControlStatus, updatePricingLevelCode } from '@/api/cinema'
+import { queryList, updateStatus, updateControlStatus,
+  updatePricingLevelCode, updateBoxLevelCode } from '@/api/cinema'
 import AreaSelect from '@/components/AreaSelect.vue'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import PoptipSelect from '@/components/PoptipSelect.vue'
@@ -105,6 +114,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     controlStatus: 0,
     hallDataStatus: 0,
     pricingLevelCode: '',
+    boxLevelCode: '',
     pageIndex: 1,
     pageSize: 20,
   }
@@ -130,6 +140,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     hallDataStatusList: [],
     gradeList: [],
     pricingLevelList: [],
+    boxLevelList: [],
   }
 
   get enumMap() {
@@ -153,6 +164,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       { title: '营业状态', slot: 'status', width: 70 },
       { title: '控制状态', slot: 'controlStatus', width: 75 },
       { title: '定价级别', slot: 'pricingLevelCode', width: 75 },
+      { title: '票房级别', slot: 'boxLevelCode', width: 75 },
       { title: '操作', slot: 'action', width: 108 }
     ]
     .map(it => ({ align: 'center', ...it }))
@@ -180,6 +192,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           id: it.id,
           value: it.pricingLevelCode,
           list: this.enumType.pricingLevelList,
+        },
+        boxLevelCodeModel: {
+          id: it.id,
+          value: it.boxLevelCode,
+          list: this.enumType.boxLevelList,
         }
       }
     })
@@ -266,6 +283,19 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 
+  async editBoxLevelCode({ id, value, showLoading, hideLoading }: any) {
+    const item = this.list.find(it => it.id == id)
+    try {
+      showLoading()
+      await updateBoxLevelCode(id, value)
+      item.boxLevelCode = value
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      hideLoading()
+    }
+  }
+
   @Watch('query', { deep: true })
   watchQuery() {
     if (this.query.pageIndex == this.oldQuery.pageIndex) {
@@ -304,14 +334,17 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 .form {
   .input,
   /deep/ .ivu-select {
-    width: 90px;
+    width: 85px;
     margin-left: 8px;
     &:first-child {
       margin-left: 0;
     }
   }
+  .select-chain {
+    min-width: 168px;
+  }
   .select-area {
-    width: 180px;
+    width: 160px;
     margin-left: 8px;
   }
 }
