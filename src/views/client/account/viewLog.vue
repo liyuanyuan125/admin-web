@@ -59,7 +59,7 @@
       <div class="logs">
         <div class="logs-item" v-for="(it,index) in datalog">
 
-          <span>{{it.createTime}}   </span>由
+          <span>{{it.createTime}}   </span>
           <span>{{it.operatorName}}   </span>
           {{it.operateDesc}}
         </div>
