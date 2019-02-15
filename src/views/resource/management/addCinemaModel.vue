@@ -557,6 +557,7 @@ export default class Main extends ViewBase {
 }
 .page-wrap {
   display: flex;
+  position: relative;
   .page {
     position: absolute;
     right: 5%;

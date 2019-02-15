@@ -305,9 +305,11 @@ export default class Main extends ViewBase {
       const beginDate = this.autoTime(data.beginDate + '')
       const endDate = this.autoTime(data.endDate + '')
       if (data.calendarId != null) {
-        this.diaries.id = data.calendarId
-        this.diaries.name = `${data.calendarName}${beginDate}~${endDate}`
+        this.diaries.id = 1
+        const nams = data.calendarName || ''
+        this.diaries.name = `${nams}${beginDate}~${endDate}`
       } else {
+        this.diaries.id = 2
         this.diaries.name = `${beginDate}~${endDate}`
       }
       if (data.platform) {
