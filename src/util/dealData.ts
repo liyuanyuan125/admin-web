@@ -77,7 +77,7 @@ interface KeyTextControlStatus {
 
 /**
  * 根据 controlStatus 的值，过滤列表（只保留 controlStatus 为 1 的项）
- * @param list 要过来的列表
+ * @param list 列表
  */
 export function filterByControlStatus(list: KeyTextControlStatus[]) {
   return (list || []).filter(it => !('controlStatus' in it) || it.controlStatus == 1)
