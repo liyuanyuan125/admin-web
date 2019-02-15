@@ -16,11 +16,11 @@
             <Option v-for="(option, index) in options" :value="option.value" :key="index">{{option.label}}</Option>
           </Select>
           <CompanyList v-model="query.companyId" />
-          <Select v-model="query.settlementStatus" placeholder="计划状态" clearable>
+          <Select v-model="query.status" placeholder="计划状态" clearable>
             <Option v-if="it.key != 0" v-for="it in statusList" :key="it.key" :value="it.key"
               :label="it.text">{{it.text}}</Option>
           </Select>
-          <Select v-model="query.status" placeholder="结算状态" clearable>
+          <Select v-model="query.settlementStatus" placeholder="结算状态" clearable>
             <Option v-if="it.key != 0" v-for="it in settlementStatusList" :key="it.key" :value="it.key"
               :label="it.text">{{it.text}}</Option>
           </Select>
@@ -222,8 +222,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        setText: cachedMap.settlementStatusList[it.status],
-        statusText: cachedMap.statusList[it.settlementStatus],
+        setText: cachedMap.settlementStatusList[it.settlementStatus],
+        statusText: cachedMap.statusList[it.status],
       }
     })
     return list

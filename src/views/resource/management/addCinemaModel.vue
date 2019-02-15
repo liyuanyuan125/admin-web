@@ -40,12 +40,12 @@
 
         <Form v-else class="table" ref="radioCinema" :model="form">
           <FormItem>
-            <CheckboxGroup v-model="form.check" ref="checks" @on-change.stop="checkAllGroupChange">
+            <CheckboxGroup v-model="form.check" ref="checks" @on-change="checkAllGroupChange">
               <div v-if="items.length>0">
-                <div v-for="(item, index) in items" :key="index" class="check">
-                  <Checkbox @click.prevent.native="hallCountNum(item.id)" :label="item.id"><span>{{item.shortName}}</span></Checkbox>
+                <div @click="hallCountNum(item.id)" v-for="(item, index) in items" :key="index" class="check">
+                  <Checkbox :label="item.id"><span>{{item.shortName}}</span></Checkbox>
                   <span class="blue">{{hallCount(item.id)}}</span>
-                  <Icon class="cinema-icon-left" @click.stop="addhall(item.id)" v-show="cidCinema(item.id)" type="ios-arrow-down" />
+                  <Icon class="cinema-icon-left" @click="addhall(item.id)" v-show="cidCinema(item.id)" type="ios-arrow-down" />
                 </div>
                 <div v-if="(items.length%4) == 3" class="check">&nbsp;</div>
               </div>
@@ -89,7 +89,7 @@ import MovieHall from './moviehall.vue'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import { slice, clean } from '@/fn/object'
 import { cinemaList, cinemaCldList } from '@/api/rateCard'
-import { info } from '@/ui/modal.ts'
+import { toast } from '@/ui/modal.ts'
 import { isEqual } from 'lodash'
 
 @Component({
@@ -327,16 +327,15 @@ export default class Main extends ViewBase {
             hallcheck: [],
             hallName: []
           })
-          info('该影院下暂无影厅')
+          this.$Message.error('该影院下暂无影厅')
         }
       } catch (ex) {
-        // this.handleError(ex)
         this.halldata({
           id: cinemaId,
           hallcheck: [],
           hallName: []
         })
-        info('该影院下暂无影厅')
+        this.$Message.error('该影院下暂无影厅')
       }
     }
   }
@@ -434,7 +433,6 @@ export default class Main extends ViewBase {
   // 所选影厅的个数
   hallCount(id: any) {
     const ids = this.form.check
-
     const index = ids.indexOf(id)
     if (index != -1) {
       const hallList = this.checkCinema[index].hallList || []
