@@ -55,7 +55,8 @@
       </template>
 
       <template slot="transTime" slot-scope="{ row: { transTime } }">
-        <span class="datetime">{{transTime|dateTime}}</span>
+
+        <span class="datetime">{{transTime == null ? '-' : (transTime|dateTime)}}</span>
       </template>
 
       <template slot="cancelTime" slot-scope="{ row: { cancelTime } }">
