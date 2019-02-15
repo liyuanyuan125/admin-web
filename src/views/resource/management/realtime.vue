@@ -79,6 +79,7 @@ import moment, { Moment } from 'moment'
 import { parse, toMap } from '@/fn/array'
 import { centToYuan } from '@/util/filters'
 import DlgReport, { CompanyType } from './dlgReport.vue'
+import { filterByControlStatus } from '@/util/dealData'
 
 @Component({
   components: {
@@ -253,7 +254,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       const { chainId, area: [ provinceId, cityId, countyId ] } = this.query
       const query = { chainId, provinceId, cityId, countyId, pageSize: 88888888 }
       const { data: { items } } = await queryCinemaList(query)
-      this.cinemaList = items || []
+      this.cinemaList = filterByControlStatus(items)
 
       // 若现有列表中，没有找到已选择的影院，则清空
       const foundItem = this.cinemaList.find((it: any) => it.id == this.query.cinemaId)
@@ -280,13 +281,21 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     try {
       const query = { pageSize: 88888888 }
       const { data: { items } } = await queryHallList(cinemaId, query)
-      this.hallList = items || []
+      this.hallList = filterByControlStatus(items)
 
       // 若现有列表中，没有找到已选择的影院，则清空
       const foundItem = this.hallList.find((it: any) => it.id == this.query.hallId)
       if (foundItem == null) {
         this.query.hallId = 0
       }
+
+      // 若没有影厅选择，则默认选中第一个
+      // hallList 发生变化，hallId 可能会被 Select 组件设置为 undefined
+      this.$nextTick(() => {
+        if (!(this.query.hallId > 0) && this.hallList.length > 0) {
+          this.query.hallId = this.hallList[0].id
+        }
+      })
     } catch (ex) {
       this.handleError(ex)
     } finally {
