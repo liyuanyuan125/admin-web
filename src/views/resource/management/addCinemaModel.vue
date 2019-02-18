@@ -67,7 +67,6 @@
             show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
             @on-change="sizeChangeHandle"
             @on-page-size-change="currentChangeHandle"/>
-            <span class="checkId">已选: {{cinemaLength}}</span>
         </div>
 
         <MovieHall ref="moviehall" @done="halldata" />
@@ -75,6 +74,7 @@
       </div>
     </div>
     <div  slot="footer" class="dialog-footer" style="margin-right: 6px">
+      <span class="checkId">已选: {{cinemaLength}}</span>
       <Button type="primary" @click="done()">关联</Button>
       <Button @click="cancel()">取消</Button>
     </div>
@@ -504,13 +504,13 @@ export default class Main extends ViewBase {
 }
 /deep/ .cinema-box {
   margin-top: 10px;
-  height: 260px;
+  height: 270px;
   margin-left: -16px;
   margin-right: -16px;
-  max-height: 260px;
+  max-height: 270px;
   overflow-y: auto;
   .table {
-    min-height: 200px;
+    min-height: 190px;
   }
   /deep/ .check {
     position: relative;
