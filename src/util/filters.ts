@@ -6,8 +6,12 @@ const formatDate = 'YYYY-MM-DD'
 const formatTime = 'HH:mm:ss'
 const formatTimeNoSecond = 'HH:mm'
 
-const filterDateCommon = (time: number | string | Date, format: string) =>
-  moment(time).format(format)
+const filterDateCommon = (time: number | string | Date, format: string) => {
+  if (time == null || String(time).trim() === '') {
+    return ''
+  }
+  return moment(time).format(format)
+}
 
 interface DateTimeOptions {
   separator: string
