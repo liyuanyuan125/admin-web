@@ -168,6 +168,17 @@ export default class App extends ViewBase {
           label: '财务设置',
         },
       ]
+    },
+    {
+      name: 'order',
+      icon: 'md-list',
+      label: '订单管理',
+      subList: [
+        {
+          name: 'order-list',
+          label: '订单管理',
+        },
+      ]
     }
   ]
 

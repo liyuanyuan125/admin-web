@@ -297,4 +297,9 @@ export default [
     name: 'system-setup',
     component: () => import('./views/system/setup/index.vue')
   },
+  {
+    path: '/order/list',
+    name: 'order-list',
+    component: () => import('./views/order/list/index.vue')
+  },
 ] as any[]
