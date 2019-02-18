@@ -55,8 +55,7 @@
       </template>
 
       <template slot="transTime" slot-scope="{ row: { transTime } }">
-
-        <span class="datetime">{{transTime == null ? '-' : (transTime|dateTime)}}</span>
+        <span class="datetime">{{transTime|dateTime}}</span>
       </template>
 
       <template slot="cancelTime" slot-scope="{ row: { cancelTime } }">
@@ -226,6 +225,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
   /deep/ .row-acts > a {
     margin: 0 4px;
+  }
+}
+.datetime:only-child:empty {
+  &::before {
+    content: '-';
   }
 }
 

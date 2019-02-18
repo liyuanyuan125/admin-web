@@ -302,4 +302,9 @@ export default [
     name: 'order-list',
     component: () => import('./views/order/list/index.vue')
   },
+  {
+    path: '/order/list/:id/:status',
+    name: 'order-list-detail',
+    component: () => import('./views/order/list/detail.vue')
+  },
 ] as any[]
