@@ -1,7 +1,6 @@
 <template>
   <div class="page">
     <header class="header flex-box">
-      <a href="//aiads-file.oss-cn-beijing.aliyuncs.com/IMAGE/MOVIE/bgdh39aho420008002i0.jpg" download="" target="_blank">111</a>
       <Button icon="md-return-left" @click="back" class="btn-back">返回上一页</Button>
       <div class="flex-1">
         <em v-if="$route.params.edit == 'detail'">计划管理 - 计划详情</em>
