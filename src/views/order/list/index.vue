@@ -33,6 +33,7 @@
       <div class="page-wrap" v-if="total > 0">
         <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
           show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
+          placement='top'
           @on-change="page => query.pageIndex = page"
           @on-page-size-change="pageSize => query.pageSize = pageSize"/>
       </div>
@@ -114,11 +115,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
 
   columns = [
-    { title: '订单编号', key: 'id', width: 60, align: 'center' },
-    { title: '广告主公司名称', width: 230, key: 'advertiserName', align: 'center' },
-    { title: '广告计划', width: 200, key: 'planName', align: 'center' },
-    { title: '资源方公司名称', width: 230, key: 'resourceName', align: 'center' },
-    { title: '订单类型', key: 'planType', align: 'center', width: 80,
+    { title: '订单编号', key: 'id', width: 80, align: 'center' },
+    { title: '广告主公司名称', key: 'advertiserName', align: 'center' },
+    { title: '广告计划',  key: 'planName', align: 'center' },
+    { title: '资源方公司名称', key: 'resourceName', align: 'center' },
+    { title: '订单类型', key: 'planType', align: 'center', width: 90,
       render: (hh: any, { row: { planType } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
@@ -136,6 +137,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       title: '接单时间',
       key: 'createTime',
       align: 'center',
+      width: 180,
       render: (hh: any, { row: { createTime } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
@@ -148,7 +150,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       title: '状态',
       key: 'status',
       align: 'center',
-      width: 80,
+      width: 90,
       render: (hh: any, { row: { status } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
