@@ -52,7 +52,7 @@
             <Col span='9'>{{createTime}}</Col>
         </Row>
         <Row class='row-list'>
-            <Col span='3' class='hui'>按单接片</Col>
+            <Col span='3' class='hui'>接单影院</Col>
             <Col span='16'>
               <singleCinema :cinemas="cinemasList" />
             </Col>

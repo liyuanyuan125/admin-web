@@ -5,7 +5,7 @@
         <AreaSelect v-model="area"/>
       </Col>
       <Col span="5" offset="1">
-        <Input v-model="dataForm.name" placeholder="请输入影院名称" />
+        <Input v-model="dataForm.name" placeholder="【专资编码】或 影院名称" />
       </Col>
       <Col span="2" offset="1">
         <Button type="primary" @click="search">搜索</Button>
