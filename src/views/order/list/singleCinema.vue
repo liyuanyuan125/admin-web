@@ -100,8 +100,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       render: (hh: any, { row: { status } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
+        return <div> 取消执行</div>
         /* tslint:enable */
-        return <div> 取消执行 < /div>
       }
     },
   ]
