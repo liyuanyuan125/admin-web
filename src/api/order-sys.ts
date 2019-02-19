@@ -23,10 +23,16 @@ export async function queryItem(id: any ) {
   const data = await get(`/xadvert/execute-orders/${id}`)
   return data
 }
+
 // 关闭
 export async function set(id: any , query: any) {
   const res = await put(`/xadvert/execute-orders/${id}/closed`, query)
   return res
 }
 
+// 结算
+export async function number(id: any , query: any) {
+  const res = await put(`/xadvert/execute-orders/${id}/settlement`, query)
+  return res
+}
 

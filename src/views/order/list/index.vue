@@ -114,10 +114,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
 
   columns = [
-    { title: '订单编号', key: 'id', width: 80, align: 'center' },
-    { title: '广告主公司名称', width: 250, key: 'advertiserName', align: 'center' },
-    { title: '广告计划', width: 220, key: 'planName', align: 'center' },
-    { title: '资源方公司名称', width: 250, key: 'resourceName', align: 'center' },
+    { title: '订单编号', key: 'id', width: 60, align: 'center' },
+    { title: '广告主公司名称', width: 230, key: 'advertiserName', align: 'center' },
+    { title: '广告计划', width: 200, key: 'planName', align: 'center' },
+    { title: '资源方公司名称', width: 230, key: 'resourceName', align: 'center' },
     { title: '订单类型', key: 'planType', align: 'center', width: 80,
       render: (hh: any, { row: { planType } }: any) => {
         /* tslint:disable */
@@ -162,6 +162,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         }
          else if (status == 4) {
           return <span class={`status-4`}>已关闭</span>
+        }else if (status == 5) {
+          return <span class={`status-5`}>已结算</span>
         }
         /* tslint:enable */
       }
