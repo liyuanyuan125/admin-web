@@ -3,15 +3,15 @@
     <div class="Inp-Group-res">
       <Button class="bth" icon="md-return-left" @click="goback">返回列表</Button>
       <Button v-if='$route.params.status != 4' class="bth" style='float: right' @click="edit($route.params.id)">关闭订单</Button><br>
-      <!-- <div class="n-main">结算信息</div>
-      <div class="Inps-res">
+      <div v-if='$route.params.status == 5' class="n-main">结算信息</div>
+      <div v-if='$route.params.status == 5' class="Inps-res">
         <Row class='row-list'>
             <Col span='3' class='hui'>结算金额</Col>
-            <Col span='9'>1200.00 元</Col>
+            <Col span='9'>{{settlementAmount}} 元</Col>
             <Col span='3' class='hui'>操作时间/人</Col>
-            <Col span='9'>2019-01-11 12:22:22 / zhiping.zhao@aiads.com【老麦】</Col>
+            <Col span='9'>{{settlementTime}}</Col>
         </Row>
-      </div> -->
+      </div>
       <div class="n-main">广告主信息</div>
       <div class="Inps-res">
         <Row class='row-list'>
@@ -40,7 +40,7 @@
         </Row>
         <Row class='row-list'>
             <Col span='3' class='hui'>影片列表</Col>
-            <Col span='20'><span v-for='it in item.movieList'>《{{it.name}}》</span></Col>
+            <Col span='20'><span v-for='(it,index) in item.movieList'>《{{it.name}}》</span><span v-if='this.movieList.length == 0'>暂无</span></Col>
         </Row>
       </div>
       <div class="n-main">资源方信息</div>
@@ -49,7 +49,7 @@
             <Col span='3' class='hui'>资源方</Col>
             <Col span='9'>【{{item.resourceId}}】{{item.resourceName}}</Col>
             <Col span='3' class='hui'>接单时间</Col>
-            <Col span='9'>{{item.createTime}}</Col>
+            <Col span='9'>{{createTime}}</Col>
         </Row>
         <Row class='row-list'>
             <Col span='3' class='hui'>按单接片</Col>
@@ -78,7 +78,7 @@
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { get } from '@/fn/ajax'
-import {queryList , queryItem } from '@/api/order-sys'
+import {queryList , queryItem } from '@/api/orderSys'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
@@ -87,7 +87,7 @@ import close from './closeorder.vue'
 import singleCinema from './singleCinema.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
-const timeFormat = 'YYYY/MM/DD HH:mm:ss'
+const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 const timeFormats = 'YYYY-MM-DD'
 
 
@@ -121,12 +121,53 @@ export default class Main extends ViewBase {
 
   begin: any = ''
   end: any = ''
+  createTime: any = ''
+  settlementTime: any = ''
+  settlementAmount: any = ''
+  movieList: any = []
+
+  count = 0
+  newend: any = ''
+
+  addNumber(number: any) {
+    this.newend = ''
+    this.count = 0
+    if (number.indexOf('.') == -1) {
+      for (let i = number.length - 1; i >= 0; i--) {
+        if (this.count % 3 == 0 && this.count != 0) {
+          this.newend = number.charAt(i) + ',' + this.newend
+        } else {
+          this.newend = number.charAt(i) + this.newend
+        }
+        this.count++
+      }
+      number = this.newend + '.00' // 自动补小数点后两位
+      return number
+    } else {
+      for (let i = number.indexOf('.') - 1; i >= 0; i--) {
+        if (this.count % 3 == 0 && this.count != 0) {
+          this.newend = number.charAt(i) + ',' + this.newend // 碰到3的倍数则加上“,”号
+        } else {
+          this.newend = number.charAt(i) + this.newend // 逐个字符相接起来
+        }
+        this.count++
+      }
+      number =
+        this.newend + (number + '00').substr((number + '00').indexOf('.'), 3)
+      return number
+    }
+  }
 
   mounted() {
     this.doSearch()
     this.begin = moment(this.item.beginDate).format(timeFormats)
     this.end = moment(this.item.endDate).format(timeFormats)
+    this.createTime = moment(this.item.createTime).format(timeFormat)
+    this.settlementTime = moment(this.item.settlementTime).format(timeFormat)
+    this.settlementAmount = this.addNumber(String(this.item.settlementAmount))
   }
+
+
 
   search() {
     this.query.pageIndex = 1
@@ -158,6 +199,8 @@ export default class Main extends ViewBase {
 
       } } = await queryItem(this.$route.params.id)
       this.item = item
+      this.settlementAmount = this.addNumber(String(this.item.settlementAmount))
+      this.movieList = this.item.movieList
       this.logList = (logList || []).map((it: any) => {
           return {
               ...it,

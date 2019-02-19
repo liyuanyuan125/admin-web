@@ -21,7 +21,7 @@
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop } from 'vue-property-decorator'
-import { set } from '@/api/order-sys'
+import { set } from '@/api/orderSys'
 import { warning , success, toast , info } from '@/ui/modal'
 import moment from 'moment'
 import ViewBase from '@/util/ViewBase'

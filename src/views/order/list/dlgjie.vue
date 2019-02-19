@@ -6,8 +6,8 @@
     :title="'结算'"
     @on-cancel="cancel" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
-      <FormItem label="结算金额" prop="name">
-        <Input v-model="dataForm.name"></Input>
+      <FormItem label="结算金额" prop="settlementAmount">
+        <Input v-model="dataForm.settlementAmount"></Input>
       </FormItem>
     </Form>
     <div slot="footer" class="dialog-footer">
@@ -20,27 +20,26 @@
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop } from 'vue-property-decorator'
-import { dataFrom , add , set , dels } from '@/api/calendar'
+import { number } from '@/api/orderSys'
 import { warning , success, toast } from '@/ui/modal'
 import moment from 'moment'
 import ViewBase from '@/util/ViewBase'
 const timeFormat = 'YYYY-MM-DD'
 const dataForm = {
-  name: '',
+  settlementAmount: '',
 }
 
 @Component
 export default class ComponentMain extends ViewBase {
-//   @Prop({ type: Object }) cinemaOnes: any
 
   loading = false
   showDlg = false
   id = 0
 
   ruleValidate = {
-    // name: [
-    //   { required: true, message: '请输入档期名称', trigger: 'blur' }
-    // ],
+    settlementAmount: [
+      { required: true, message: '请输入结算金额', trigger: 'blur' }
+    ],
   }
 
   dataForm: any = { ...dataForm }
@@ -55,7 +54,6 @@ export default class ComponentMain extends ViewBase {
   }
 
   cancel() {
-    // this.dataForm.beginDate
     this.showDlg = false
     ; (this.$refs.dataForm as any).resetFields()
   }
@@ -67,14 +65,8 @@ export default class ComponentMain extends ViewBase {
     if (!valid) {
       return
     }
-    const query = !this.id ? {
-      ...this.dataForm,
-    } : {
-      id: this.id,
-      ...this.dataForm,
-    }
     try {
-      const res = !this.id ? await add (query) : await set (query)
+      const res = await number (this.id , this.dataForm)
       toast('成功')
       this.showDlg = false
       this.$emit('done')
