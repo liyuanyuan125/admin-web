@@ -20,7 +20,7 @@
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop } from 'vue-property-decorator'
-import { number } from '@/api/order-sys'
+import { number } from '@/api/orderSys'
 import { warning , success, toast } from '@/ui/modal'
 import moment from 'moment'
 import ViewBase from '@/util/ViewBase'

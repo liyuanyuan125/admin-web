@@ -72,7 +72,7 @@
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { get } from '@/fn/ajax'
-import {queryList , queryItem } from '@/api/order-sys'
+import {queryList , queryItem } from '@/api/orderSys'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
