@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pages">
     <Row class="shouDlg-header">
       <Col span="7">
         <AreaSelect v-model="area"/>
@@ -14,7 +14,7 @@
     <Table :columns="columns" :data="tableData" :loading="loading"
       border stripe disabled-hover size="small" class="table"></Table>
     <div class="page-wrap" v-if="total > 0">
-       <Page class="page" :total="totalPage" :current="dataForm.pageIndex" :page-size="dataForm.pageSize"
+       <Page class="page" :total="total" :current="dataForm.pageIndex" :page-size="dataForm.pageSize"
           show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
           @on-change="sizeChangeHandle"
           @on-page-size-change="currentChangeHandle"/>
@@ -333,5 +333,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       content: '-';
     }
   }
+}
+.pages {
+  background: #e4e4e4;
+  padding: 20px 10px 2px 10px;
 }
 </style>
