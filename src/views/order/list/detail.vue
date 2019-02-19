@@ -53,7 +53,7 @@
         </Row>
         <Row class='row-list'>
             <Col span='3' class='hui'>按单接片</Col>
-            <Col span='20'>
+            <Col span='16'>
               <singleCinema :cinemas="cinemasList" />
             </Col>
         </Row>

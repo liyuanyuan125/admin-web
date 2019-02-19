@@ -1,13 +1,15 @@
 <template>
   <div>
     <Row class="shouDlg-header">
-      <Col span="7" style="margin-left: 20px">
+      <Col span="7">
         <AreaSelect v-model="area"/>
       </Col>
       <Col span="5" offset="1">
         <Input v-model="dataForm.name" placeholder="请输入影院名称" />
       </Col>
-      <Button style="float:right; margin-right: 6px" type="primary" @click="search">搜索</Button>
+      <Col span="2" offset="1">
+        <Button type="primary" @click="search">搜索</Button>
+      </Col>
     </Row>
     <Table :columns="columns" :data="tableData" :loading="loading"
       border stripe disabled-hover size="small" class="table"></Table>
@@ -17,6 +19,8 @@
           @on-change="sizeChangeHandle"
           @on-page-size-change="currentChangeHandle"/>
     </div>
+    <singDlg ref="addOrUpdate" @done="dlgEditDone" />
+    <imgModel ref="img" />
   </div>
 </template>
 
@@ -32,7 +36,8 @@ import moment from 'moment'
 import { slice, clean } from '@/fn/object'
 import {confirm , warning , success, toast } from '@/ui/modal'
 import AreaSelect from '@/components/AreaSelect.vue'
-
+import singDlg from './singDlg.vue'
+import imgModel from './imgDlg.vue'
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
@@ -42,11 +47,14 @@ const dataForm = {
 
 @Component({
   components: {
-    AreaSelect
+    AreaSelect,
+    singDlg,
+    imgModel
   }
 })
 export default class Main extends Mixins(ViewBase, UrlManager) {
   @Prop({ type: Array, default: () => [] }) cinemas!: any[]
+
   dataForm: any = {
     pageIndex: 1,
     pageSize: 20,
@@ -55,6 +63,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     cityId: 0,
     countyId: 0,
   }
+  cinemaArray: any = []
   showDlg = false
   addOrUpdateVisible = false
   changeVisible = false
@@ -66,52 +75,69 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   typeList = []
   showTime: any = []
 
-  columns = [
-    { title: '影院名称', key: 'id', width: 140, align: 'center' },
-    { title: '影厅数量', width: 60, key: 'advertiserName', align: 'center' },
-    { title: '场次数量', width: 60, key: 'planName', align: 'center' },
-    { title: '专资编码', width: 140, key: 'resourceName', align: 'center' },
-    {
-      title: '所在地',
-      key: 'status',
-      align: 'center',
-      width: 120,
-      render: (hh: any, { row: { status } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        /* tslint:enable */
+  get columns() {
+    const data: any = [
+      { title: '影院名称', key: 'shortName', width: 130, align: 'center' },
+      { title: '影厅数量', width: 60, key: 'hallCount', align: 'center' },
+      { title: '场次数量', width: 60, key: 'seatCount', align: 'center' },
+      { title: '专资编码', width: 120, key: 'code', align: 'center' },
+      {
+        title: '所在地',
+        key: 'status',
+        align: 'center',
+        render: (hh: any, { row: { areaName, provinceName, cityName } }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          const area = areaName ? areaName + ' , ' : ''
+          const province = provinceName ? provinceName + ' , ' : ''
+          const city = cityName ? cityName : ''
+          return <span>{area}{province}{city}</span>
+          /* tslint:enable */
+        }
+      },
+      {
+        title: '执行凭证',
+        key: 'status',
+        align: 'center',
+        width: 80,
+        render: (hh: any, { row: { status } }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          return <a on-click={this.find.bind(this)}>-</a>
+          /* tslint:enable */
+        }
       }
-    },
-    {
-      title: '执行凭证',
-      key: 'status',
-      align: 'center',
-      width: 80,
-      render: (hh: any, { row: { status } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        /* tslint:enable */
+    ]
+    const opernation = [
+       {
+        title: '操作',
+        key: 'status',
+        align: 'center',
+        width: 80,
+        render: (hh: any, { row: { status }, row }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          return  <a on-click={this.change.bind(this, row.id, row.shortName )}>取消执行</a>
+          /* tslint:enable */
+        }
       }
-    },
-    {
-      title: '操作',
-      key: 'status',
-      align: 'center',
-      render: (hh: any, { row: { status } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        return <div> 取消执行</div>
-        /* tslint:enable */
-      }
-    },
-  ]
+    ]
+    return this.$route.params.status == '2' ? [...data, ...opernation] : data
+  }
 
   get cachedMap() {
     return {
     }
   }
 
+  dlgEditDone(id: any) {
+    this.cinemaArray = this.cinemaArray.filter((it: any) => it != id)
+  }
+
   get tableData() {
+     if (this.cinemaArray.length == 0) {
+      return []
+    }
     const cachedMap = this.cachedMap
     const list = (this.list || []).map((it: any) => {
       return {
@@ -119,6 +145,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       }
     })
     return list
+  }
+
+  find() {
+    this.$nextTick(() => {
+      (this.$refs.img as any).init()
+    })
   }
 
   // 每页数
@@ -141,13 +173,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     if (this.loading) {
       return
     }
-
-    if (this.cinemas.length == 0) {
+    if (this.cinemaArray.length == 0) {
       return
     }
 
     this.loading = true
-    const query = clean({ ...this.dataForm, ids: this.cinemas.join(',') })
+    const query = clean({ ...this.dataForm, ids: this.cinemaArray.join(',') })
     try {
         // 订单列表
       const { data: {
@@ -157,7 +188,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         planTypeList: planTypeList
       } } = await cinemaList(this.$route.params.id, query)
       this.list = list
-      this.totalPage = total
+      this.total = total
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -165,12 +196,33 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 
-  @Watch('area')
+  @Watch('area', {immediate : true})
 
   watchArea(val: number[]) {
-    this.dataForm.provinceId = val[0]
-    this.dataForm.cityId = val[1]
-    this.dataForm.countyId = val[2]
+    this.dataForm.provinceId = !!val[0] ? val[0] : ''
+    this.dataForm.cityId = !!val[1] ? val[1] : ''
+    this.dataForm.countyId = !!val[2] ? val[2] : ''
+  }
+
+  change(id: number, shortName: any) {
+    this.addOrUpdateVisible = true
+    this.$nextTick(() => {
+      (this.$refs.addOrUpdate as any).init(id, shortName)
+    })
+  }
+
+  @Watch('cinemaArray', {deep: true})
+
+  watchcinemaArray(val: number[]) {
+    if (val.length > 0) {
+      this.search()
+    }
+  }
+
+  @Watch('cinemas', {deep: true})
+
+  watchcinemas(val: number[]) {
+    this.cinemaArray = val
   }
 }
 </script>

@@ -6,8 +6,8 @@
           <Input v-model="invalue" @input="remark"/>
           <span style="pointer-events: none" :class="{ red: minlength > 30}">{{minlength}}/{{maxLength}}</span>
         </div>
-        <div v-else class="input">
-          <Input v-model="invalue" type="textarea" :rows="4" />
+        <div v-else class="input-area">
+          <Input v-model="invalue" @input="remark" placeholder="请输入" type="textarea" :rows="4" />
           <span style="pointer-events: none" :class="{ red: minlength > 30}">{{minlength}}/{{maxLength}}</span>
         </div>
       </Col>
@@ -43,6 +43,15 @@ export default class ComponentMain extends ViewBase {
     position: absolute;
     margin-left: 6px;
     float: right;
+  }
+}
+.input-area {
+  position: relative;
+  span {
+    position: absolute;
+    right: 0;
+    bottom: -30px;
+    color: #ccc;
   }
 }
 .red {
