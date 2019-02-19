@@ -9,7 +9,7 @@
             <Col span='3' class='hui'>结算金额</Col>
             <Col span='9'>{{settlementAmount}} 元</Col>
             <Col span='3' class='hui'>操作时间/人</Col>
-            <Col span='9'>{{settlementTime}}</Col>
+            <Col span='9'>{{settlementTime}} / {{item.settlementUserName}}</Col>
         </Row>
       </div>
       <div class="n-main">广告主信息</div>
@@ -212,6 +212,7 @@ export default class Main extends ViewBase {
       this.planTypeList = planTypeList
       this.planDirectionList = planDirectionList
     } catch (ex) {
+      this.handleError(ex)
     } finally {
       this.loading = false
     }
