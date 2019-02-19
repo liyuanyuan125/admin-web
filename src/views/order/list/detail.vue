@@ -51,7 +51,7 @@
             <Col span='3' class='hui'>接单时间</Col>
             <Col span='9'>{{createTime}}</Col>
         </Row>
-        <Row class='row-list'>
+        <Row class='row-list pb20'>
             <Col span='3' class='hui'>接单影院</Col>
             <Col span='16'>
               <singleCinema :cinemas="cinemasList" />
@@ -276,6 +276,9 @@ export default class Main extends ViewBase {
       content: '-';
     }
   }
+}
+.pb20 {
+  padding-bottom: 20px;
 }
 /deep/ .ivu-form-item-content {
   margin-left: 0 !important;
