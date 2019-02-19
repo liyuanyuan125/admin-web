@@ -5,15 +5,14 @@
         <AreaSelect v-model="area"/>
       </Col>
       <Col span="5" offset="1">
-        <Input v-model="value" placeholder="请输入影院名称" />
+        <Input v-model="dataForm.name" placeholder="请输入影院名称" />
       </Col>
       <Button style="float:right; margin-right: 6px" type="primary" @click="search">搜索</Button>
     </Row>
     <Table :columns="columns" :data="tableData" :loading="loading"
       border stripe disabled-hover size="small" class="table"></Table>
-
     <div class="page-wrap" v-if="total > 0">
-       <Page class="page" :total="totalPage" :current="pageIndex" :page-size="pageSize"
+       <Page class="page" :total="totalPage" :current="dataForm.pageIndex" :page-size="dataForm.pageSize"
           show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
           @on-change="sizeChangeHandle"
           @on-page-size-change="currentChangeHandle"/>
@@ -22,11 +21,11 @@
 </template>
 
 <script lang="tsx">
-import { Component, Watch , Mixins } from 'vue-property-decorator'
+import { Component, Watch , Mixins, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { queryList , planlist , company } from '@/api/order-sys'
+import { cinemaCancel , cinemaList } from '@/api/orderSys'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
@@ -41,48 +40,31 @@ const dataForm = {
   status: 1
 }
 
-
 @Component({
   components: {
     AreaSelect
   }
 })
 export default class Main extends Mixins(ViewBase, UrlManager) {
+  @Prop({ type: Array, default: () => [] }) cinemas!: any[]
   dataForm: any = {
     pageIndex: 1,
     pageSize: 20,
-    adsCompanyId: 0,
-    resourceCompanyId: 0,
-    planId: 0,
-    planType: 0,
-    status: 0,
+    name: '',
+    provinceId: 0,
+    cityId: 0,
+    countyId: 0,
   }
-  query: any = {}
-  shows = true
   showDlg = false
   addOrUpdateVisible = false
   changeVisible = false
-
-
-  examine = false
-
+  area: any = []
+  totalPage = 0
   loading = false
   list = []
   total = 0
-  oldQuery: any = {}
   typeList = []
   showTime: any = []
-
-  // 状态列表
-  statusList: any = []
-  // 计划状态列表
-  planTypeList: any = []
-  // 计划列表
-  planlist: any = []
-  // 广告主公司列表
-  adscompany: any = []
-  // 资源方公司列表
-  resourcescompany: any = []
 
   columns = [
     { title: '影院名称', key: 'id', width: 140, align: 'center' },
@@ -126,7 +108,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   get cachedMap() {
     return {
-      status: this.statusList,
     }
   }
 
@@ -134,8 +115,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     const cachedMap = this.cachedMap
     const list = (this.list || []).map((it: any) => {
       return {
-        ...it,
-        // statusText: it.status,
+        ...it
       }
     })
     return list
@@ -153,12 +133,21 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     this.search()
   }
 
+  mounted() {
+    this.search()
+  }
+
   async search() {
     if (this.loading) {
       return
     }
+
+    if (this.cinemas.length == 0) {
+      return
+    }
+
     this.loading = true
-    const query = clean({ ...this.query })
+    const query = clean({ ...this.dataForm, ids: this.cinemas.join(',') })
     try {
         // 订单列表
       const { data: {
@@ -166,19 +155,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         totalCount: total,
         statusList: statusList,
         planTypeList: planTypeList
-      } } = await queryList(query)
+      } } = await cinemaList(this.$route.params.id, query)
       this.list = list
-      this.total = total
-      this.statusList = statusList
-      this.planTypeList = planTypeList
-    // 广告计划列表
-    const plandata = await planlist({pageSize: 100000})
-    this.planlist = plandata.data.items
-    // 公司列表
-    const adscmy = await company({typeCode: 'ads' , pageSize: 100000})
-    const rescmy = await company({typeCode: 'resource' , pageSize: 100000})
-    this.adscompany = adscmy.data.items
-    this.resourcescompany = rescmy.data.items
+      this.totalPage = total
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -189,9 +168,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   @Watch('area')
 
   watchArea(val: number[]) {
-    this.query.provinceId = val[0]
-    this.query.cityId = val[1]
-    this.query.countyId = val[2]
+    this.dataForm.provinceId = val[0]
+    this.dataForm.cityId = val[1]
+    this.dataForm.countyId = val[2]
   }
 }
 </script>

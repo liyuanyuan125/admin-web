@@ -54,7 +54,7 @@
         <Row class='row-list'>
             <Col span='3' class='hui'>按单接片</Col>
             <Col span='20'>
-              <singleCinema />
+              <singleCinema :cinemas="cinemasList" />
             </Col>
         </Row>
       </div>
@@ -112,7 +112,7 @@ export default class Main extends ViewBase {
   loading = false
   addOrUpdateVisible = false
 
-
+  cinemasList: any = []
   item: any = []
   logList: any = []
   statusList: any = []
@@ -207,6 +207,7 @@ export default class Main extends ViewBase {
               createTime: moment(it.createTime).format(timeFormat)
           }
       })
+      this.cinemasList = item.cinemas || []
       this.statusList = statusList
       this.planTypeList = planTypeList
       this.planDirectionList = planDirectionList
