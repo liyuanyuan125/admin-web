@@ -51,6 +51,12 @@
             <Col span='3' class='hui'>接单时间</Col>
             <Col span='9'>{{item.createTime}}</Col>
         </Row>
+        <Row class='row-list'>
+            <Col span='3' class='hui'>按单接片</Col>
+            <Col span='20'>
+              <singleCinema />
+            </Col>
+        </Row>
       </div>
       <div class="n-main">操作记录</div>
       <div class="Inps-res">
@@ -78,7 +84,7 @@ import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice , clean } from '@/fn/object'
 import close from './closeorder.vue'
-
+import singleCinema from './singleCinema.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY/MM/DD HH:mm:ss'
@@ -93,7 +99,8 @@ const defQuery = {
 
 @Component({
   components: {
-    close
+    close,
+    singleCinema
   }
 })
 export default class Main extends ViewBase {
