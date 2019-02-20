@@ -183,7 +183,7 @@ export default [
         }
       },
       {
-        path: 'consume',
+        path: 'consume/:companyId/:title',
         name: 'finance-capital-consume',
         component: () => import('./views/finance/capital/consume.vue'),
         meta: {

@@ -83,11 +83,22 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         title: '',
         key: 'availableAmount',
         align: 'center',
-        render: (hh: any, { row: { monthSettlementCount, totalSettlementCount } }: any) => {
+        render: (hh: any, { row: { monthSettlementCount, totalSettlementCount, companyId, companyName } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
+          const year = new Date().getFullYear()
+          const month = new Date().getMonth() + 1
+          const beginDate = new Date(`${year}/${month}/1`).getTime()
+          const endDate = new Date(`${year}/${month + 1}/1`).getTime() -1
           // <router-link to={{name: 'consume'}}>{monthSettlementCount + '/' + totalSettlementCount}</router-link>
-          return <span>{monthSettlementCount + '/' + totalSettlementCount}</span>
+          // return <span>{monthSettlementCount + '/' + totalSettlementCount}</span>
+          return <div>
+            <router-link to={{name: 'finance-capital-consume', params: {companyId: companyId, title: companyName}, query: { beginDate, endDate }}}>
+            <span v-html={monthSettlementCount}></span>/</router-link>
+            <router-link to={{name: 'finance-capital-consume', params: {companyId: companyId, title: companyName}, query: { beginDate: this.query.beginDate, endDate: this.query.endDate }}}>
+            <span v-html={totalSettlementCount}></span>
+            </router-link>
+          </div>
           /* tslint:enable */
         },
         /* tslint:disable */

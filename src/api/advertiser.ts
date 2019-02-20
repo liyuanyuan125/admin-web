@@ -53,3 +53,9 @@ export async function withdrawalsId(companyId: any) {
   const data = await get(`finance/resource/accounts/view/${companyId}`)
   return data
 }
+
+// 根据资源方ID分页获取结算列表
+export async function consumeList(query: any) {
+  const data = await get(`/finance/resource/settlements`, query)
+  return data
+}

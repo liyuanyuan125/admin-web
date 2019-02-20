@@ -2,18 +2,16 @@
   <div class="page">
     <div class="act-bar flex-box">
       <Form class="form" :label-width="0" @submit.prevent="search" inline>
-        <DatePicker @on-change="dateChange" @on-clear="formatTime" type="daterange"
-          v-model="showTime" placement="bottom-start" placeholder="统计范围" class="input"
-          style="width:200px"></DatePicker>
-        <Select v-model="query.type" placeholder="客户类型" clearable>
-          <Option v-for="it in typeList" :key="it.key" :value="it.key"
-            :label="it.text">{{it.text}}</Option>
-        </Select>
+        <DatePicker @on-change="dateChange" @on-clear="formatTime" type="daterange" v-model="showTime"
+          placement="bottom-start" placeholder="统计范围" class="input" style="width:200px"></DatePicker>
+        <LazyInput v-model="query.nameCn" placeholder="广告" class="input input-id"/>
         <Button type="default" @click="reset" class="btn-reset">清空</Button>
       </Form>
-      <div class="act-stats flex-1">查询结果：共计金额：{{altogetherAmount}}元   次数共计：{{total}}次</div>
+      <div v-if="totals" class="title">
+        <b style="margin-left:0px">所属公司:</b>{{$route.params.title}} <span style="margin-left:8px"></span>
+        <b>查询结果</b><b>共计曝光人次</b>：{{totals.amount}}元   <b> 共计结算金额</b>：{{totals.count}}次
+      </div>
     </div>
-
     <Table :columns="columns" :data="tableData" :loading="loading"
       border stripe disabled-hover size="small" class="table"></Table>
 
@@ -30,8 +28,7 @@
 import { Component, Watch , Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
-import { get } from '@/fn/ajax'
-import { payList, payStatus } from '@/api/advertiser'
+import { consumeList } from '@/api/advertiser'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
@@ -41,7 +38,8 @@ import {confirm , warning , success, toast } from '@/ui/modal'
 
 const years = new Date().getFullYear()
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
-const timeFormat = 'YYYY-MM-DD<br/>HH:mm:ss'
+const timeFormat = 'YYYY-MM-DD HH:mm:ss'
+const timeFormats = 'YYYY-MM-DD'
 
 const dataForm = {
   status: 1
@@ -53,18 +51,17 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     companyId: '',
     pageIndex: 1,
     pageSize: 20,
-    beginDate: new Date(`${years - 1}/1/1`).getTime(),
-    type: 0,
+    beginDate: new Date(`${years}/1/1`).getTime(),
     endDate: new Date(`${years + 1}/1/1`).getTime() - 1,
     statistics: true
   }
+
   showTime: any = []
   query: any = {}
 
-  showDlg = false
   addOrUpdateVisible = false
   changeVisible = false
-
+  totals: any = null
   examine = false
   // query = { ...defQuery }
   altogetherAmount: any = ''
@@ -74,108 +71,110 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   oldQuery: any = {}
   typeList = []
 
+  // company = []
+
+  company2 = []
+
   columns = [
-    { title: '充值序号', key: 'id', align: 'center', width: 80 },
-    { title: '汇款日期', key: 'remittanceDate', align: 'center' },
-    { title: '充值类型', key: 'balance', align: 'center',
-      render: (hh: any, { row: { typeListText } }: any) => {
+    { title: '项目', key: 'typeListText', align: 'center', width: 80 },
+    { title: '投放公司', key: 'customerCompanyName', align: 'center',
+      // render: (hh: any, { row: { withdrawalTime }, row }: any) => {
+      //     /* tslint:disable */
+      //     const h = jsxReactToVue(hh)
+      //     const html = withdrawalTime ? moment(withdrawalTime).format(timeFormat) : ''
+      //     return <span class='datetime' v-html={html}></span>
+      //     /* tslint:enable */
+      //   }
+    },
+    { title: '广告', key: 'videoName', align: 'center',
+      // render: (hh: any, { row: { typeName } }: any) => {
+      //   /* tslint:disable */
+      //   const h = jsxReactToVue(hh)
+      //   const html = typeName
+      //   return <span class='datetime' v-html={html}></span>
+      //   /* tslint:enable */
+      // }
+    },
+    {
+      title: '开始时间',
+      key: 'amount',
+      align: 'center',
+      render: (hh: any, { row: { beginDate }, row }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = typeListText
+        const html = beginDate ? moment(beginDate).format(timeFormats) : ''
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
     },
     {
-      title: '充值金额',
-      key: 'amount',
+      title: '结束时间',
+      key: 'freezeAmount',
+      align: 'center',
+      render: (hh: any, { row: { endDate }, row }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        const html = endDate ? moment(endDate).format(timeFormats) : ''
+        return <span class='datetime' v-html={html}></span>
+        /* tslint:enable */
+      }
+    },
+    {
+      title: '总曝光人次',
+      key: 'statusText',
+      align: 'center',
+      render: (hh: any, { row: { exposureCount } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        const html = !!exposureCount ? formatCurrency(exposureCount) + '次' : ''
+        return <span class='datetime' v-html={html}></span>
+        /* tslint:enable */
+      }
+    },
+    {
+      title: '结算金额',
+      key: 'createName',
       align: 'center',
       render: (hh: any, { row: { amount } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = amount ? formatCurrency(amount) : ''
+        const html = !!amount ? formatCurrency(amount) + '次' : ''
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
     },
     {
-      title: '充值前金额',
-      key: 'freezeAmount',
+      title: '结算时间',
+      key: 'remark',
       align: 'center',
-      render: (hh: any, { row: { beforeAmount } }: any) => {
+      render: (hh: any, { row: { settlementTime }, row }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = beforeAmount ? formatCurrency(beforeAmount) : ''
+        const html = settlementTime ? moment(settlementTime).format(timeFormats) : ''
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
     },
     {
-      title: '充值后金额',
+      title: '报表名称',
       key: 'statusText',
       align: 'center',
-      render: (hh: any, { row: { afterAmount } }: any) => {
+      render: (hh: any, { row: { reportName } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = afterAmount ? formatCurrency(afterAmount) : ''
-        return <span class='datetime' v-html={html}></span>
+       
+        return reportName ? <span class='datetime'>{reportName}</span> : <a>生成报表</a>
         /* tslint:enable */
       }
     },
     {
-      title: '申请人',
+      title: '操作',
       key: 'action',
       align: 'center',
-      render: (hh: any, { row: { applyName }, row }: any) => {
+      render: (hh: any, { row: { reportName }, row }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        return <span>{applyName}</span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '申请时间',
-      key: 'action',
-      align: 'center',
-      render: (hh: any, { row: { applyTime }, row }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = applyTime ? moment(applyTime).format(timeFormat) : ''
-        return <span v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '审核人',
-      key: 'action',
-      align: 'center',
-      render: (hh: any, { row: { approvalName}, row }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        return <span>{approvalName}</span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '审核时间',
-      key: 'action',
-      align: 'center',
-      render: (hh: any, { row: { approvalTime }, row }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = approvalTime ? moment(approvalTime).format(timeFormat) : ''
-        return <span v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '备注',
-      key: 'action',
-      align: 'center',
-      render: (hh: any, { row: { remark }, row }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        return <span>{remark}</span>
+        return reportName ? <a>下载报表</a> : <span class='datetime'></span>
         /* tslint:enable */
       }
     }
@@ -192,7 +191,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        typeListText: cachedMap.typeList[it.type]
+        typeListText: cachedMap.typeList[it.typeCode]
       }
     })
     return list
@@ -213,8 +212,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
 
   formatTime() {
-    this.showTime = [new Date(`${years - 1}/1/1`), new Date(`${years}/12/31`)]
+    this.showTime = [new Date(`${years}/1/1`), new Date(`${years}/12/31`)]
   }
+
   dateChange(data: any) {
      // 获取时间戳
      !!data[0] ? (this.query.beginDate = new Date(data[0]).getTime() - 28800000) : this.query.beginDate = 0
@@ -227,7 +227,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   reset() {
     this.resetQuery()
-    this.showTime = [new Date(`${years - 1}/1/1`), new Date(`${years}/12/31`)]
+    this.showTime = [new Date(`${years}/1/1`), new Date(`${years}/12/31`)]
   }
 
   async doSearch() {
@@ -247,18 +247,22 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         query[key] = value
       }
     }
-
     try {
       const { data: {
-        altogetherAmount: altogetherAmount,
         items: list,
         totalCount: total,
+        total: totals,
         typeList: typeList,
-      } } = await payList(query)
+      } } = await consumeList(query)
       this.list = list
       this.total = total
+      this.totals = totals
+      if (totals) {
+        this.totals.amount = totals.amount ? formatCurrency(totals.amount) : '0'
+        this.totals.count = totals.count ? formatCurrency(totals.count) : '0'
+      }
       this.typeList = typeList
-      this.altogetherAmount = altogetherAmount ? formatCurrency(altogetherAmount) : '0'
+      this.loading = false
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -278,6 +282,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
 <style lang="less" scoped>
 .form {
+  float: left;
   .input,
   /deep/ .ivu-select {
     width: 180px;
@@ -287,7 +292,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       margin-left: 0;
     }
   }
-
+  .ivu-form-item {
+    margin-bottom: 12px;
+  }
   .input-corp-id {
     width: 80px;
   }
@@ -301,11 +308,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 .page-wrap {
   margin: 20px 0 18px;
   text-align: center;
-}
-
-.act-stats {
-  line-height: 32px;
-  margin-left: 20px;
 }
 
 .info {
@@ -353,6 +355,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 .info-inp {
   margin-left: 5%;
 }
+
 .table {
   margin-top: 10px;
   /deep/ .status-2,
@@ -366,6 +369,15 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     &::before {
       content: '-';
     }
+  }
+}
+.title {
+  float: left;
+  margin-top: 8px;
+  margin-left: 20px;
+  b {
+    margin-left: 10px;
+    margin-right: 4px;
   }
 }
 </style>
