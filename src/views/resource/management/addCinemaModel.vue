@@ -6,7 +6,6 @@
     :mask-closable='false'
     @on-cancel="cancel()"
     >
-
     <Row class="shouDlg-header">
       <Col span="7" style="margin-left: 20px">
         <AreaSelect v-model="area"/>
@@ -42,8 +41,8 @@
           <FormItem>
             <CheckboxGroup v-model="form.check" ref="checks" @on-change="checkAllGroupChange">
               <div v-if="items.length>0">
-                <div @click="hallCountNum(item.id)" v-for="(item, index) in items" :key="index" class="check">
-                  <Checkbox :label="item.id"><span>{{item.shortName}}</span></Checkbox>
+                <div v-for="(item, index) in items" :key="index" class="check">
+                  <Checkbox @click.native="hallCountNum(item.id)" :label="item.id"><span>{{item.shortName}}</span></Checkbox>
                   <span class="blue">{{hallCount(item.id)}}</span>
                   <Icon class="cinema-icon-left" @click="addhall(item.id)" v-show="cidCinema(item.id)" type="ios-arrow-down" />
                 </div>
@@ -333,7 +332,8 @@ export default class Main extends ViewBase {
         this.halldata({
           id: cinemaId,
           hallcheck: [],
-          hallName: []
+          hallName: [],
+          check: true
         })
         this.$Message.error('该影院下暂无影厅')
       }
@@ -419,7 +419,20 @@ export default class Main extends ViewBase {
         }
       })
     } else {
-      this.form.check = this.form.check.filter((it: any) => it != data.id)
+      this.checkCinema = this.checkCinema.map((it: any) => {
+        if (it.id == data.id) {
+          return {
+            ...it,
+            hallList: [],
+            hallName: []
+          }
+        } else {
+          return { ...it }
+        }
+      })
+      if (data.check && data.check) {
+        this.form.check = this.form.check.filter((item: any) => data.id != item)
+      }
       if (this.form.check.length > 0) {
         this.checkAll = false
         this.indeterminate = true

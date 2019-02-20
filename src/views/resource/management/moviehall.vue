@@ -77,9 +77,7 @@ export default class Main extends ViewBase {
   }
 
   done() {
-    const hallname = this.hallList.filter((it: any) => {
-      return this.hallcheck.includes(it.id)
-    }).map((item: any) => item.name)
+    const hallname = this.hallList.map((item: any) => item.name)
 
     this.$emit('done', {
       id: this.id,
