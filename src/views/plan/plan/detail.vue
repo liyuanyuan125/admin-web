@@ -16,7 +16,7 @@
             <Col span="2"><div>计划名称</div></Col>
             <Col span="8"><span>{{detail.item.name}}</span></Col>
             <Col span="2"><div>计划ID</div></Col>
-            <Col span="8"><span>{{detail.item.calendarId}}</span></Col>
+            <Col span="8"><span>{{detail.item.id}}</span></Col>
           </Row>
           <Row>
             <Col span="2"><div>投放排期</div></Col>
@@ -37,15 +37,17 @@
           </Row>
           <Row>
             <Col span="2"><div>投放类型</div></Col>
-            <Col span="8"><span>{{format.typeText}}</span></Col>
+            <Col span="8"><span>{{format.directext}}<i v-if="format.directext">
+              [ CPM/{{format.specification}} ]
+            </i></span></Col>
             <Col span="2"><div>预算/曝光</div></Col>
             <Col span="8"><span>{{format.bfMoney}}</span> / <span>{{format.afMoney}}</span> </Col>
           </Row>
           <Row>
             <Col span="2"><div>定向类型</div></Col>
-            <Col span="8"><span>{{format.directext}}</span></Col>
-            <Col span="2"><div>投放方案</div></Col>
             <Col span="8"><span>{{format.dirtext}}</span></Col>
+            <Col span="2"><div>投放方案</div></Col>
+            <Col span="8"><span>{{format.typeText}}</span></Col>
           </Row>
           <Row>
             <Col span="2"><div>客户</div></Col>
@@ -87,23 +89,17 @@
         <Row>
           <Col span="2"><div>观影人群性别</div></Col>
           <Col span="8">
-            <span>
-              <i v-if="item.tagTypeCode == 'PLAN_GROUP_SEX'" v-for="(item, index) in format.deliveryGroups" :key="index">{{item.text}}</i>
-            </span>
+            <span v-if="item.tagTypeCode == 'PLAN_GROUP_SEX'" v-for="(item, index) in format.deliveryGroups" :key="index">{{item.text}}</span>
           </Col>
           <Col span="2"><div>观影人群年龄</div></Col>
           <Col span="8">
-            <span>
-              <i v-if="item.tagTypeCode == 'PLAN_GROUP_AGE'" v-for="(item, index) in format.deliveryGroups" :key="index">{{item.text}}</i>
-            </span>
+            <span v-if="item.tagTypeCode == 'PLAN_GROUP_AGE'" v-for="(item, index) in format.deliveryGroups" :key="index">{{item.text}}</span>
           </Col>
         </Row>
         <Row>
           <Col span="2"><div>观影人群偏好</div></Col>
           <Col span="8">
-            <span>
-             <i v-if="item.tagTypeCode == 'MOVIE_TYPE'" v-for="(item, index) in format.deliveryGroups" :key="index">{{item.text}}</i>
-            </span>
+            <span v-if="item.tagTypeCode == 'MOVIE_TYPE'" v-for="(item, index) in format.deliveryGroups" :key="index">{{item.text}}</span>
           </Col>
         </Row>
       </Row>
@@ -196,8 +192,8 @@ import { dataFrom } from '@/api/account'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 const cinemaMap = (list: any[]) => toMap(list, 'tagTypeCode', 'text')
 
-const timeFormatDate = 'YYYY/MM/DD HH:mm:ss'
-const timeFormat = 'YYYY/MM/DD'
+const timeFormatDate = 'YYYY-MM-DD HH:mm:ss'
+const timeFormat = 'YYYY-MM-DD'
 
 const defQuery = {
 }
@@ -263,21 +259,22 @@ export default class Main extends ViewBase {
     const scheme = ['', '方案一', '方案二', '方案三', '方案四']
     const cachedMap = this.cachedMap
     const detail = this.detail
-    const start = moment(detail.beginDate).format(timeFormat)
-    const end = moment(detail.endDate).format(timeFormat)
+    const start = moment(detail.item.beginDate).format(timeFormat)
+    const end = moment(detail.item.endDate).format(timeFormat)
     const tags = detail.tags.map((item: any) => item.code)
     return {
       time: start ? `${start}~${end}` : '',
       cycle: detail.item.cycle ? detail.item.cycle + '天' : '',
       specification: detail.item.specification ? detail.item.specification + 's' : '',
       length: detail.item.videoLength ? detail.item.videoLength + 's' : '',
-      typeText: detail.item.deliveryType ? cachedMap.typeList[detail.item.deliveryType] : '',
+      typeText: detail.item.deliveryType ?
+      `${scheme[detail.item.directionType]} [ ${cachedMap.typeList[detail.item.deliveryType]} ]` : '',
       bfMoney: detail.item.estimateCostAmount ? detail.item.estimateCostAmount / 10000 + '万' : '',
       afMoney: detail.item.estimateShowCount ? detail.item.estimateShowCount + '场' : '',
       directext: detail.item.deliveryType ? cachedMap.directext[detail.item.deliveryType] : '',
       dirtext: detail.item.directionType ?
-      `${scheme[detail.item.directionType]} [ ${cachedMap.dirtext[detail.item.directionType]} ]` : '',
-      applyTime: detail.item.applyTime ? moment(detail.item.applyTime).format(timeFormat) : '',
+      `${cachedMap.dirtext[detail.item.directionType]}` : '',
+      applyTime: detail.item.applyTime ? moment(detail.item.applyTime).format(timeFormatDate) : '',
       areaCount: detail.item.areaCount ? `[ ${detail.item.areaCount} ]` : '',
       provinceCount: detail.item.proviceCount ? `[ ${detail.item.proviceCount} ]` : '',
       cityCount: detail.item.cityCount ? `[ ${detail.item.cityCount} ]` : '',
@@ -333,7 +330,7 @@ export default class Main extends ViewBase {
   }
 
   autoTime(time: any) {
-    return moment(time).format(timeFormatDate)
+    return time ? moment(time).format(timeFormatDate) : '暂无'
   }
 
   async doSearch() {
@@ -352,8 +349,8 @@ export default class Main extends ViewBase {
   }
 
   auto(num: any) {
-    if (!num) {
-      return ''
+    if (!num || num == '0') {
+      return '暂无'
     }
     const year = num.slice(0, 4)
     const month = num.slice(4, 6)
