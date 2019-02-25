@@ -15,7 +15,6 @@
       </Col>
       <Button style="float:right; margin-right: 6px" type="primary" @click="seach">搜索</Button>
     </Row>
-
     <Row class="model-check">
       <span>批量选择：</span>
       <CheckboxGroup v-model="modelCheck">
@@ -289,9 +288,11 @@ export default class Main extends ViewBase {
         this.checkCinema.splice(index, 1)
       }
     })
-    this.pageItem.forEach((it: any) => {
-      this.hallCountNum(it)
-    })
+    if (this.checkAll) {
+      this.pageItem.forEach((it: any) => {
+        this.hallCountNum(it)
+      })
+    }
   }
 
   async hallCountNum(cinemaId: any) {
@@ -395,7 +396,8 @@ export default class Main extends ViewBase {
   // 影厅显示
   addhall(id: any) {
     const ids = this.form.check
-    const index = ids.indexOf(id)
+    const checkId = this.checkCinema.map((it: any) => it.id)
+    const index = checkId.findIndex((item: any) => ids.includes(item) && item == id)
     const hallCheck = this.checkCinema[index].hallList || []
     this.$nextTick(() => {
       (this.$refs.moviehall as any).init(id, hallCheck)
@@ -446,7 +448,8 @@ export default class Main extends ViewBase {
   // 所选影厅的个数
   hallCount(id: any) {
     const ids = this.form.check
-    const index = ids.indexOf(id)
+    const checkId = this.checkCinema.map((it: any) => it.id)
+    const index = checkId.findIndex((item: any) => ids.includes(item) && item == id)
     if (index != -1) {
       const hallList = this.checkCinema[index].hallList || []
       return (hallList && hallList.length > 0) ? `( ${this.checkCinema[index].hallList.length}个 )` : '( 0个 )'

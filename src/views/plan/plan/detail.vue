@@ -99,7 +99,7 @@
         <Row>
           <Col span="2"><div>观影人群偏好</div></Col>
           <Col span="8">
-            <span v-if="item.tagTypeCode == 'MOVIE_TYPE'" v-for="(item, index) in format.deliveryGroups" :key="index">{{item.text}}</span>
+            <span class="unife" v-if="item.tagTypeCode == 'MOVIE_TYPE'" v-for="(item, index) in format.deliveryGroups" :key="index">{{item.text}}</span>
           </Col>
         </Row>
       </Row>
@@ -267,8 +267,8 @@ export default class Main extends ViewBase {
       cycle: detail.item.cycle ? detail.item.cycle + '天' : '',
       specification: detail.item.specification ? detail.item.specification + 's' : '',
       length: detail.item.videoLength ? detail.item.videoLength + 's' : '',
-      typeText: detail.item.deliveryType ?
-      `${scheme[detail.item.directionType]} [ ${cachedMap.typeList[detail.item.deliveryType]} ]` : '',
+      typeText: detail.item.type ?
+      `${scheme[detail.item.directionType]} [ ${cachedMap.typeList[detail.item.type]} ]` : '',
       bfMoney: detail.item.estimateCostAmount ? detail.item.estimateCostAmount / 10000 + '万' : '',
       afMoney: detail.item.estimateShowCount ? detail.item.estimateShowCount + '场' : '',
       directext: detail.item.deliveryType ? cachedMap.directext[detail.item.deliveryType] : '',
@@ -610,5 +610,8 @@ export default class Main extends ViewBase {
   line-height: 28px;
   color: rgb(61, 156, 235);
   font-size: 16px;
+}
+.unife:not(:last-child)::after {
+  content: ' / ';
 }
 </style>
