@@ -268,7 +268,7 @@ export default class Main extends ViewBase {
       specification: detail.item.specification ? detail.item.specification + 's' : '',
       length: detail.item.videoLength ? detail.item.videoLength + 's' : '',
       typeText: detail.item.type ?
-      `${scheme[detail.item.directionType]} [ ${cachedMap.typeList[detail.item.type]} ]` : '',
+      `${scheme[detail.item.type]} [ ${cachedMap.typeList[detail.item.type]} ]` : '',
       bfMoney: detail.item.estimateCostAmount ? detail.item.estimateCostAmount / 10000 + '万' : '',
       afMoney: detail.item.estimateShowCount ? detail.item.estimateShowCount + '场' : '',
       directext: detail.item.deliveryType ? cachedMap.directext[detail.item.deliveryType] : '',
