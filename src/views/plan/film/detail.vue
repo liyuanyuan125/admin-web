@@ -156,7 +156,6 @@ export default class Main extends ViewBase {
 
   mounted() {
     // console.log(this.$route.params)
-    this.applyTime = moment(this.detail.applyTime).format(timeFormatDate)
     if ( this.$route.params.status == '1' ) {
       this.showStatus = true
     }
@@ -299,6 +298,7 @@ export default class Main extends ViewBase {
     try {
       const res = await queryItem(this.$route.params.id)
       this.detail = res.data.item
+      this.applyTime = moment(this.detail.applyTime).format(timeFormatDate)
        // 附件
       this.typeList = res.data.typeList.map((it: any) => {
         const key = it.key
