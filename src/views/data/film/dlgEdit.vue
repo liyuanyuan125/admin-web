@@ -51,11 +51,9 @@ export default class ComponentMain extends ViewBase {
       (this.$Spin as any).show()
       const res = await syncData (this.dataForm.mtimeId, 0)
       this.$Message.success({
-        content: `同步成功`,
-        onClose: () => {
-          this.showDlg = false
-        }
+        content: `同步成功`
       })
+      this.showDlg = false
       ; (this.$Spin as any).hide()
       this.dataForm.mtimeId = ''
       this.$emit('refreshDataList')

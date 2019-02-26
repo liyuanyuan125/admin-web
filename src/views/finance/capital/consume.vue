@@ -4,12 +4,12 @@
       <Form class="form" :label-width="0" @submit.prevent="search" inline>
         <DatePicker @on-change="dateChange" @on-clear="formatTime" type="daterange" v-model="showTime"
           placement="bottom-start" placeholder="统计范围" class="input" style="width:200px"></DatePicker>
-        <LazyInput v-model="query.nameCn" placeholder="广告" class="input input-id"/>
+        <LazyInput v-model="query.query" placeholder="广告" class="input input-id"/>
         <Button type="default" @click="reset" class="btn-reset">清空</Button>
       </Form>
       <div v-if="totals" class="title">
         <b style="margin-left:0px">所属公司:</b>{{$route.params.title}} <span style="margin-left:8px"></span>
-        <b>查询结果</b><b>共计曝光人次</b>：{{totals.amount}}次   <b> 共计结算金额</b>：{{totals.count}}元
+        <b>查询结果</b><b>共计曝光人次</b>：{{totals.count}}次   <b> 共计结算金额</b>：{{totals.amount}}元
       </div>
     </div>
     <Table :columns="columns" :data="tableData" :loading="loading"
@@ -86,14 +86,14 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       //     /* tslint:enable */
       //   }
     },
-    { title: '广告', key: 'videoName', align: 'center',
-      // render: (hh: any, { row: { typeName } }: any) => {
-      //   /* tslint:disable */
-      //   const h = jsxReactToVue(hh)
-      //   const html = typeName
-      //   return <span class='datetime' v-html={html}></span>
-      //   /* tslint:enable */
-      // }
+    { title: '广告', width: 230, key: 'videoName', align: 'center',
+      render: (hh: any, { row: { planId, planName, videoId, videoName } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        const html = `[${planId}] ${planName} - [${videoId}] ${videoName}`
+        return <span class='datetime' v-html={html}></span>
+        /* tslint:enable */
+      }
     },
     {
       title: '开始时间',
@@ -226,7 +226,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
 
   reset() {
-    this.query.nameCn = ''
+    this.query.query = ''
     this.resetQuery()
     this.showTime = [new Date(`${years}/1/1`), new Date(`${years}/12/31`)]
   }
