@@ -160,10 +160,10 @@ export default class Main extends ViewBase {
 
   mounted() {
     this.doSearch()
-    this.begin = moment(this.item.beginDate).format(timeFormats)
-    this.end = moment(this.item.endDate).format(timeFormats)
+    // this.begin = moment(this.item.beginDate).format(timeFormats)
+    // this.end = moment(this.item.endDate).format(timeFormats)
     this.createTime = moment(this.item.createTime).format(timeFormat)
-    this.settlementTime = moment(this.item.settlementTime).format(timeFormat)
+    // this.settlementTime = moment(this.item.settlementTime).format(timeFormat)
     this.settlementAmount = this.addNumber(String(this.item.settlementAmount))
   }
 
@@ -199,6 +199,10 @@ export default class Main extends ViewBase {
 
       } } = await queryItem(this.$route.params.id)
       this.item = item
+      this.begin = moment(this.item.beginDate).format(timeFormats)
+      this.end = moment(this.item.endDate).format(timeFormats)
+      this.createTime = moment(this.item.createTime).format(timeFormat)
+      this.settlementTime = moment(this.item.settlementTime).format(timeFormat)
       this.settlementAmount = this.addNumber(String(this.item.settlementAmount))
       this.movieList = this.item.movieList
       this.logList = (logList || []).map((it: any) => {
