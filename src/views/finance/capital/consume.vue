@@ -260,7 +260,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       this.totals = totals
       if (totals) {
         this.totals.amount = totals.amount ? formatCurrency(totals.amount) : '0'
-        this.totals.count = totals.count ? formatCurrency(totals.count) : '0'
+        this.totals.count = totals.count ? totals.count : '0'
       }
       this.typeList = typeList
       this.loading = false
