@@ -182,7 +182,7 @@ export default class Main extends ViewBase {
     } catch (ex) {
       (this.$Spin as any).hide()
       this.$route.params.show = 'hide'
-      this.$router.push({ name: 'resource' })
+      this.$router.push({ name: 'finance-capital-resource' })
       this.handleError(ex)
     } finally {
     }
@@ -206,13 +206,20 @@ export default class Main extends ViewBase {
         try {
           await withdrawals(query)
           this.$route.params.show = 'hide'
-          this.$router.push({ name: 'resource' })
+          this.$router.push({ name: 'finance-capital-resource' })
           ; (this.$refs.dataFrom as any).resetFields()
         } catch (ex) {
           this.handleError(ex)
         }
       }
     })
+  }
+  @Watch('$route', {immediate: true})
+  watch$route(val: any, oldVal: any) {
+    if (val.name == 'finance-capital-withdrawalBill') {
+      this.id = this.$route.params.id || 0
+      this.load()
+    }
   }
 }
 </script>

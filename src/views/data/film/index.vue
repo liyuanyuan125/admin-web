@@ -80,7 +80,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       {
         title: '序号',
         key: 'id',
-        width: 80,
+        width: 60,
         align: 'center',
         render: (hh: any, { row : { id } }: any) => {
           /* tslint:disable */
@@ -89,7 +89,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           /* tslint:enable */
         }
       },
-      { title: 'MtimeID', key: 'mtimeId', width: 100, align: 'center' },
+      { title: 'MtimeID', key: 'mtimeId', width: 90, align: 'center' },
       {
         title: '专资ID',
         key: 'specialId',
@@ -179,7 +179,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       {
         title: '导演', // tslint:disable-line
         key: 'director',
-        width: 80,
         align: 'center'
       },
       {

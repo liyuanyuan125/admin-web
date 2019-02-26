@@ -9,7 +9,7 @@
       </Form>
       <div v-if="totals" class="title">
         <b style="margin-left:0px">所属公司:</b>{{$route.params.title}} <span style="margin-left:8px"></span>
-        <b>查询结果</b><b>共计曝光人次</b>：{{totals.amount}}元   <b> 共计结算金额</b>：{{totals.count}}次
+        <b>查询结果</b><b>共计曝光人次</b>：{{totals.amount}}次   <b> 共计结算金额</b>：{{totals.count}}元
       </div>
     </div>
     <Table :columns="columns" :data="tableData" :loading="loading"
@@ -138,7 +138,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       render: (hh: any, { row: { amount } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = !!amount ? formatCurrency(amount) + '次' : ''
+        const html = !!amount ? formatCurrency(amount) : ''
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
@@ -226,6 +226,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
 
   reset() {
+    this.query.nameCn = ''
     this.resetQuery()
     this.showTime = [new Date(`${years}/1/1`), new Date(`${years}/12/31`)]
   }
