@@ -126,7 +126,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       render: (hh: any, { row: { exposureCount } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = !!exposureCount ? formatCurrency(exposureCount) + '次' : ''
+        const html = !!exposureCount || exposureCount == 0 ? formatCurrency(exposureCount).slice(0, -3) + '次' : ''
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
