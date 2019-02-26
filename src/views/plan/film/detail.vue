@@ -52,7 +52,7 @@
       <Row v-if='showedit' >
         <UploadButton style='margin-bottom:17px;' multiple @success="onUploadSuccess">上传</UploadButton>
         <Table :columns="columns" :data="tableData"
-        border stripe disabled-hover size="small" class="table"></Table>
+        border disabled-hover size="small" class="table"></Table>
       </Row>
       <div class='titop' v-if='showStatus'>审核</div>
       <Row class="detail-content" v-if='showStatus'>
@@ -167,27 +167,27 @@ export default class Main extends ViewBase {
 
 
   // 上传文件
-  async onUploadSuccess({ files }: SuccessEvent) {
-    const typetext = files[0].clientName.split('.')[1]
-    const typecode = this.typeList.map((item: any) => {
-          return item.text
-    })
-    const index = typecode.indexOf(typetext)
-    if (index != -1) {
+  async onUploadSuccess( key: any , { files }: SuccessEvent) {
+    const typetext = key
+    // const typecode = this.typeList.map((item: any) => {
+    //       return item.sort
+    // })
+    // const index = typecode.indexOf(typetext)
+    // if (index != -1) {
       try {
         await addvideo (this.$route.params.id , {
                                                 name: files[0].clientName,
                                                 fileId: files[0].fileId,
-                                                typeCode: this.typeList[index].key
+                                                typeCode: key
                                               })
         toast('操作成功')
         this.doSearch()
       } catch (ex) {
         this.handleError(ex)
       }
-    } else {
-      alert('请确认上传文件格式')
-    }
+    // } else {
+    //   alert('请确认上传文件格式')
+    // }
   }
   get cachedMap() {
     return {
@@ -259,10 +259,11 @@ export default class Main extends ViewBase {
         /* tslint:enable */
       }
     },
+    // <uploadButton style='margin-bottom:17px;' multiple @success="onUploadSuccess">上传</uploadButton>
     {
       title: '操作',
       key: 'action',
-      width: 150,
+      width: 170,
       align: 'center',
       render: (hh: any, { row: { desc , key }, row }: any) => {
         /* tslint:disable */
@@ -270,6 +271,7 @@ export default class Main extends ViewBase {
         if ( desc == undefined ) {
           const ids = 0;
           return <div class='row-acts'>
+            <UploadButton on-success={this.onUploadSuccess.bind(this , key)}>上传</UploadButton>
             <a on-click={this.edit.bind(this , 0 , key)}>录入下载链接</a>
           </div>
         } else {
@@ -390,7 +392,9 @@ export default class Main extends ViewBase {
 
 <style lang="less" scoped>
 @import '../../../site/lib.less';
-
+.addbut {
+  margin-top: 10px;
+}
 .header {
   margin-top: 5px;
   margin-bottom: 10px;
@@ -530,5 +534,13 @@ export default class Main extends ViewBase {
   line-height: 35px;
   color: rgb(61, 156, 235);
   font-size: 16px;
+}
+/deep/ .ivu-btn:hover {
+  color: #000;
+  background-color: #fff;
+  border-color: #fff;
+}
+/deep/ .ivu-btn {
+  border-color: #fff;
 }
 </style>
