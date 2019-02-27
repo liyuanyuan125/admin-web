@@ -20,7 +20,7 @@
           </Row>
           <Row>
             <Col span="2"><div>投放排期</div></Col>
-            <Col span="8"><span>{{format.time}}</span><span v-if="detail.calendarName" class="bg-red">含：{{detail.calendarName}}</span></Col>
+            <Col span="8"><span>{{format.time}}</span><span v-if="detail.item.calendarName" class="bg-red">含：{{detail.item.calendarName}}</span></Col>
             <Col span="2"><div>投放周期</div></Col>
             <Col span="8"><span>{{format.cycle}}</span></Col>
           </Row>
