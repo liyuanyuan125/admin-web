@@ -164,8 +164,8 @@ export default class Main extends ViewBase {
 
   @Watch('id', {immediate: true})
   watchid(val: any, oldVal: any) {
-    this.id = this.$route.params.id
-    if (val) {
+    this.id = Number(this.$route.params.id)
+    if (val && this.$route.name == 'finance-capital-withdrawDetail') {
       this.load()
     }
   }

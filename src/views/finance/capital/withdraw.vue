@@ -203,7 +203,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
 
   async doSearch() {
-    if (this.loading) {
+    if (this.loading && this.$route.params.companyId) {
       return
     }
     this.query.companyId = this.$route.params.companyId
@@ -219,7 +219,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         query[key] = value
       }
     }
-
     try {
       const { data: {
         altogetherAmount: altogetherAmount,
@@ -248,7 +247,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     if (this.query.pageIndex == this.oldQuery.pageIndex) {
       this.query.pageIndex = 1
     }
-    this.doSearch()
+    if (this.$route.params.companyId) {
+      this.doSearch()
+    }
   }
 }
 </script>
