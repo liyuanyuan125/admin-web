@@ -89,17 +89,23 @@
         <Row>
           <Col span="2"><div>观影人群性别</div></Col>
           <Col span="8">
-            <span v-if="item.tagTypeCode == 'PLAN_GROUP_SEX'" v-for="(item, index) in format.deliveryGroups" :key="index">{{item.text}}</span>
+            <span>
+              <i class="unife" v-if="item.tagTypeCode == 'PLAN_GROUP_SEX'" v-for="(item, index) in format.deliveryGroups" :key="index">{{item.text}}</i>
+            </span>
           </Col>
           <Col span="2"><div>观影人群年龄</div></Col>
           <Col span="8">
-            <span v-if="item.tagTypeCode == 'PLAN_GROUP_AGE'" v-for="(item, index) in format.deliveryGroups" :key="index">{{item.text}}</span>
+            <span>
+              <i class="unife" v-if="item.tagTypeCode == 'PLAN_GROUP_AGE'" v-for="(item, index) in format.deliveryGroups" :key="index">{{item.text}}</i>
+            </span>
           </Col>
         </Row>
         <Row>
           <Col span="2"><div>观影人群偏好</div></Col>
           <Col span="8">
-            <span class="unife" v-if="item.tagTypeCode == 'MOVIE_TYPE'" v-for="(item, index) in format.deliveryGroups" :key="index">{{item.text}}</span>
+            <span>
+              <i class="unife" v-if="item.tagTypeCode == 'MOVIE_TYPE'" v-for="(item, index) in format.deliveryGroups" :key="index">{{item.text}}</i>
+            </span>
           </Col>
         </Row>
       </Row>
@@ -290,7 +296,8 @@ export default class Main extends ViewBase {
           }
         } else {
           return {
-            ...it
+            ...it,
+            text: '暂无'
           }
         }
       }) : [],
