@@ -250,9 +250,6 @@ export default class Main extends ViewBase {
 
   get rules() {
     const validateType1 = ( rule1: any, value: any, callback: any) => {
-      if (this.item.typearr[1]) {
-        callback()
-      } else {
         if (value == false) {
           callback(new Error('请选择一种客户类型'))
         } else {
@@ -262,7 +259,6 @@ export default class Main extends ViewBase {
             callback()
           }
         }
-      }
     }
     const validateType2 = ( rules: any, value: any, callback: any) => {
       if (value == false) {
@@ -494,7 +490,7 @@ export default class Main extends ViewBase {
         this.item.businessDirector = businessDirector
         this.item.cinemas = cinemas || []
         this.imageList = imageList || []
-        this.item.approveStatus = approveStatus
+        this.item.approveStatus = Number(approveStatus)
         this.customerTypeList = customerTypeList
         this.item.validityPeriodDate = validityPeriodDate ? new Date(this.formatValid(validityPeriodDate)) : ''
         this.levelList = levelList
@@ -547,7 +543,10 @@ export default class Main extends ViewBase {
       const newqQuery = slice(query, array)
       const types: any = []
       this.item.types.forEach((it: any) => {
-        it.typeCode && types.push(it)
+        it.typeCode && types.push({
+          ...it,
+          typeCategoryCode: it.typeCategoryCode ? it.typeCategoryCode : ''
+        })
       })
       try {
         let data: any = {}
