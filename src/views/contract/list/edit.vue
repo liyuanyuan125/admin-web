@@ -121,9 +121,9 @@
           label="" prop="cinemas" v-for='(it,index) in dataForm.rule'>
           <!-- {{index}} -->
           以下影院，分成比例为<Input style='width:5%;margin-bottom: 5px;' v-model="it.proportion" placeholder="默认20%"/>%
-          <Button style='margin-left: 40.5%;margin-bottom: 5px;' type="dashed" @click="handleRemove(index)">删除</Button>
+          <Button style='position: absolute; left: 55%;margin-bottom: 5px;' type="dashed" @click="handleRemove(index)">删除</Button>
             <!-- <col span='16'> -->
-            <PartBindCinema v-model="it.cinemas" :id="dataForm.companyBId" :unitList="profitUnitList"
+            <PartBindCinema style='width: 60%;' v-model="it.cinemas" :id="dataForm.companyBId" :unitList="profitUnitList"
                 class="part-bind-cinema"/>
             <!-- </col> -->
         </FormItem>
