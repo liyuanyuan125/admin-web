@@ -417,6 +417,7 @@ export default class Main extends ViewBase {
 
 .btn-back {
   margin-right: 10px;
+  border-color: #dcdee2 !important;
 }
 .detail-check {
   margin-bottom: 10px;
