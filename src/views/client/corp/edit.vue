@@ -136,8 +136,13 @@
           <Col v-for="(it, index) in customerTypeList" :key="index" span="8">
             <FormItem :label="index == 0 ? '客户类型' : ''" :prop="'typearr['+ index + ']'">
               <span class="check-select-group">
-                <div @click="typeCode(it.typeCode,index)"><Checkbox v-model="item.typearr[index]" :label="it.typeName">{{it.typeName}}</Checkbox></div>
-                <Select v-model="item.types[index].typeCategoryCode" :disabled="!item.typearr[index]"
+                <div><Checkbox v-model="item.typearr[index]" :label="it.typeName">{{it.typeName}}</Checkbox></div>
+                <Select v-if="index == 0" v-model="item.typeCategoryCode0" :disabled="!item.typearr[index]"
+                    class="flex-1" clearable>
+                  <Option v-if="sub.controlStatus == 1" v-for="sub in it.typeCategoryList" :key="sub.typeCode"
+                    :value="sub.typeCode">{{sub.typeName}}</Option>
+                </Select>
+                <Select v-else v-model="item.typeCategoryCode1" :disabled="!item.typearr[index]"
                     class="flex-1" clearable>
                   <Option v-if="sub.controlStatus == 1" v-for="sub in it.typeCategoryList" :key="sub.typeCode"
                     :value="sub.typeCode">{{sub.typeName}}</Option>
@@ -184,7 +189,8 @@ const defItem = {
   cinemasList: [],
   name: '',
   shortName: '',
-
+  typeCategoryCode0: '',
+  typeCategoryCode1: '',
   aptitudeNo: '',
 
   provinceId: 0,
@@ -253,7 +259,7 @@ export default class Main extends ViewBase {
         if (value == false) {
           callback(new Error('请选择一种客户类型'))
         } else {
-          if (!this.item.types[0].typeCategoryCode) {
+          if (!this.item.typeCategoryCode0) {
             callback(new Error('请选择二级类型'))
           } else {
             callback()
@@ -264,7 +270,7 @@ export default class Main extends ViewBase {
       if (value == false) {
         callback()
       } else {
-        if (!this.item.types[1].typeCategoryCode) {
+        if (!this.item.typeCategoryCode1) {
           callback(new Error('请选择二级类型'))
         } else {
           callback()
@@ -423,6 +429,7 @@ export default class Main extends ViewBase {
           typeCode: 'ads',
           typeCategoryCode: 'zhike'
         }
+        this.item.typeCategoryCode0 = 'zhike'
         this.item.typearr[0] = true
         this.title = '新建公司'
         ; (this.$Spin as any).hide()
@@ -475,15 +482,19 @@ export default class Main extends ViewBase {
         if (types.length == 1) {
           if (customerTypeList[0].typeCode == types[0].typeCode) {
             this.item.types[0] = types[0]
+            this.item.typeCategoryCode0 = types[0].typeCategoryCode
             this.item.typearr[0] = true
           } else {
-            this.item.types[1] = types[0]
+            this.item.types[1] = types[1]
+            this.item.typeCategoryCode1 = types[1].typeCategoryCode
             this.item.typearr[1] = true
           }
         } else {
           this.item.types = types.sort((a: any, b: any) => {
              return a.typeCode > b.typeCode ? 1 : -1
           })
+          this.item.typeCategoryCode0 = this.item.types[0].typeCategoryCode
+          this.item.typeCategoryCode1 = this.item.types[1].typeCategoryCode
           this.item.typearr = [true, true]
         }
         this.item.refusedReason = refusedReason
@@ -601,6 +612,26 @@ export default class Main extends ViewBase {
           e.resetField()
         }
       })
+    }
+    if (val.typeCategoryCode0) {
+      this.item.types[0].typeCategoryCode = val.typeCategoryCode0
+    } else {
+      this.item.types[0].typeCategoryCode = ''
+    }
+    if (val.typeCategoryCode1) {
+      this.item.types[1].typeCategoryCode = val.typeCategoryCode1
+    } else {
+      this.item.types[1].typeCategoryCode = ''
+    }
+    if (val.typearr[0]) {
+      this.item.types[0].typeCode = (this.customerTypeList[0] as any).typeCode
+    } else {
+      this.item.types[0].typeCode = ''
+    }
+    if (val.typearr[1]) {
+      this.item.types[1].typeCode = (this.customerTypeList[1] as any).typeCode
+    } else {
+      this.item.types[1].typeCode = ''
     }
   }
 }
