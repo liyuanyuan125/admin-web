@@ -485,8 +485,8 @@ export default class Main extends ViewBase {
             this.item.typeCategoryCode0 = types[0].typeCategoryCode
             this.item.typearr[0] = true
           } else {
-            this.item.types[1] = types[1]
-            this.item.typeCategoryCode1 = types[1].typeCategoryCode
+            this.item.types[1] = types[0]
+            this.item.typeCategoryCode1 = types[0].typeCategoryCode
             this.item.typearr[1] = true
           }
         } else {
