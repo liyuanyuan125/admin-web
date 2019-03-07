@@ -361,7 +361,7 @@ export default class Main extends ViewBase {
   margin-left: 5%;
 }
 .item1 {
-  width: 12%;
+  // width: 12%;
 }
 .blu1,
 .blu2 {
