@@ -151,9 +151,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       }
     },
     {
-      title: '投放周期（天）',
+      title: '投放周期(天)',
       key: 'action',
-      width: 100,
+      width: 90,
       align: 'center',
       render: (hh: any, { row: { cycle }, row }: any) => {
         /* tslint:disable */
@@ -163,7 +163,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         /* tslint:enable */
       }
     },
-    { title: '冻结金额(元)', key: 'id', width: 100 , align: 'center',
+    { title: '冻结金额(元)', key: 'id', width: 90 , align: 'center',
       render: (hh: any, { row: { freezeAmount } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
@@ -172,9 +172,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         /* tslint:enable */
       }
     },
-    { title: '计划状态', key: 'statusText', align: 'center' },
-    { title: '结算状态', key: 'setText', align: 'center' },
-    { title: '结算金额(元)', width: 100, key: 'amount', align: 'center',
+    { title: '计划状态', key: 'statusText', width: 70, align: 'center' },
+    { title: '结算状态', key: 'setText', width: 70, align: 'center' },
+    { title: '结算金额(元)', width: 90, key: 'amount', align: 'center',
       render: (hh: any, { row: { settlementAmount } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
@@ -183,7 +183,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         /* tslint:enable */
       }
     },
-    { title: '创建时间', key: 'createTime', width: 80 , align: 'center',
+    { title: '创建时间', key: 'createTime', align: 'center',
       render: (hh: any, { row: { createTime } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
@@ -194,7 +194,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       }
     },
     { title: '所属公司', key: 'companyName', align: 'center' },
-    { title: '操作', key: 'accountName', width: 100, align: 'center',
+    { title: '操作', key: 'accountName', width: 80, align: 'center',
       render: (hh: any, {row: { id, status }}: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
