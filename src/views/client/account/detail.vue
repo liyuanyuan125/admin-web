@@ -231,8 +231,8 @@ export default class Main extends ViewBase {
     const { id } = this.$route.params
     this.ids = id
     this.doSearch()
-    this.createTime = moment(this.list.createTime).format(timeFormat)
-    this.lastLoginTime = moment(this.list.lastLoginTime).format(timeFormat)
+    // this.createTime = moment(this.list.createTime).format(timeFormat)
+    // this.lastLoginTime = moment(this.list.lastLoginTime).format(timeFormat)
   }
 
   dlgEditDone() {
@@ -284,6 +284,8 @@ export default class Main extends ViewBase {
       } } = await queryItem(this.$route.params.id , { systemCode: 'ads' })
       this.list = list
       this.prelist = prelist
+      this.createTime = moment(this.list.createTime).format(timeFormat)
+      this.lastLoginTime = moment(this.list.lastLoginTime).format(timeFormat)
       // 主账号详情 资源方
       const { data: {
         childAccountList: prelists,
