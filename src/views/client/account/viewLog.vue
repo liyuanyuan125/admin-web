@@ -22,7 +22,7 @@
           <p>所属公司</p>
           <!-- <span class="coms">{{companyName}}</span> -->
           <div class="res-num-item">
-            <tooltip style="margin-left: 3%;height:60px;" :content="companyName" placement="top">
+            <tooltip style="margin-left: 3%;height:60px;margin-right: 2%;" :content="companyName" placement="top">
               <span class="company-name">{{companyName}}</span>
             </tooltip>
             <div class="res-num" v-for="it in list" v-if="it.id==companyId" :key="it.id">
@@ -63,6 +63,7 @@
           <span>{{it.operatorName}}   </span>
           {{it.operateDesc}}
         </div>
+        <div v-if='datalog.length == 0' class="logs">暂无操作日志</div>
       </div>
     </div>
   </div>
