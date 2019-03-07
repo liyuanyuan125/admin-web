@@ -14,8 +14,10 @@
           <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;姓名</p>
           <div class="res-num-item">
             <span>{{name}}</span>
+            <span v-if='!name'>暂无</span>
             <span style="margin-left:8%;" class="res-date">手机号</span>
             <span style="margin-left:2%;">{{mobile}}</span>
+            <span v-if='!mobile'>暂无</span>
           </div>
         </div>
         <div class="res-num">
