@@ -134,7 +134,7 @@
         <Row>
         <Row>
           <Col v-for="(it, index) in customerTypeList" :key="index" span="8">
-            <FormItem :label="index == 0 ? '客户类型' : ''" :prop="'typearr['+ index + ']'">
+            <FormItem :label="index == 0 ? '客户类型' : ''" :prop="'typearr['+ index + ']'" :show-message="index == 0 ? show0 : true">
               <span class="check-select-group">
                 <div><Checkbox v-model="item.typearr[index]" :label="it.typeName">{{it.typeName}}</Checkbox></div>
                 <Select v-if="index == 0" v-model="item.typeCategoryCode0" :disabled="!item.typearr[index]"
@@ -236,6 +236,7 @@ export default class Main extends ViewBase {
   loadingShow = false
   item: any = {...defItem}
   shows = true
+  show0 = true
   b: any = {}
   levelList = []
   customerTypeList = []
@@ -256,20 +257,26 @@ export default class Main extends ViewBase {
 
   get rules() {
     const validateType1 = ( rule1: any, value: any, callback: any) => {
-        if (value == false) {
-          callback(new Error('请选择一种客户类型'))
-        } else {
-          if (!this.item.typeCategoryCode0) {
-            callback(new Error('请选择二级类型'))
-          } else {
+        if (this.item.typearr[1]) {
             callback()
+        } else {
+          if (value == false) {
+            callback(new Error('请选择一种客户类型'))
+          } else {
+            if (!this.item.typeCategoryCode0) {
+              callback(new Error('请选择二级类型'))
+            } else {
+              callback()
+            }
           }
         }
     }
     const validateType2 = ( rules: any, value: any, callback: any) => {
       if (value == false) {
+        this.show0 = true
         callback()
       } else {
+        this.show0 = false
         if (!this.item.typeCategoryCode1) {
           callback(new Error('请选择二级类型'))
         } else {
