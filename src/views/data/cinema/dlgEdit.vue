@@ -21,7 +21,7 @@
             <Input v-model="item.officialName" placeholder="请输入"/>
           </FormItem>
         </Col>
-        <Col span="8">
+        <Col span="8" v-auth="'theater.cinemas:change-control-status'">
           <FormItem label="控制状态" prop="controlStatus">
             <Select v-model="item.controlStatus">
               <Option v-for="it in enumType.controlStatusList" :key="it.key"
@@ -74,7 +74,7 @@
             <Input v-model="item.zipCode" placeholder="请输入"/>
           </FormItem>
         </Col>
-        <Col span="8">
+        <Col span="8" v-auth="'theater.cinemas:change-status'">
           <FormItem label="营业状态" prop="status">
             <Select v-model="item.status">
               <Option v-for="it in enumType.statusList" :key="it.key"
@@ -85,7 +85,7 @@
       </Row>
 
       <Row>
-        <Col span="10">
+        <Col span="10" v-auth="'theater.cinemas:change-pricing-level'">
           <FormItem label="定价级别" prop="pricingLevelCode">
             <Select v-model="item.pricingLevelCode">
               <Option v-for="it in enumType.pricingLevelList" :key="it.key"
@@ -93,7 +93,7 @@
             </Select>
           </FormItem>
         </Col>
-        <Col span="6">
+        <Col span="6" v-auth="'theater.cinemas:change-box-level'">
           <FormItem label="票房级别" prop="boxLevelCode">
             <Select v-model="item.boxLevelCode">
               <Option v-for="it in enumType.boxLevelList" :key="it.key"

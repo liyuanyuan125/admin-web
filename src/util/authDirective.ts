@@ -1,5 +1,5 @@
 import Vue, { VNode } from 'vue'
-import { getUser, hasPerm } from '@/store'
+import { hasPerm } from '@/store'
 import { DirectiveBinding } from 'vue/types/options'
 
 const authAct = async (not: boolean, el: HTMLElement, binding: DirectiveBinding, vnode: VNode) => {
@@ -7,10 +7,9 @@ const authAct = async (not: boolean, el: HTMLElement, binding: DirectiveBinding,
   const oldVisibility = el.style.visibility
   el.style.visibility = 'hidden'
 
-  const user = getUser()
-
-  const perm = binding.value as string
-  const has = await hasPerm(perm)
+  const perm = String(binding.value).trim()
+  // 若 perm 为空，则认为是有权限的
+  const has = perm !== '' ? await hasPerm(perm) : true
 
   // 若 not，则翻转 has
   const status = not ? !has : has

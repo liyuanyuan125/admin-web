@@ -9,7 +9,7 @@
             <Input v-model="item.name" placeholder="请输入"/>
           </FormItem>
         </Col>
-        <Col span="8">
+        <Col span="8" v-auth="'theater.halls:change-control-status'">
           <FormItem label="控制状态" prop="controlStatus">
             <Select v-model="item.controlStatus">
               <Option v-for="it in enumType.controlStatusList" :key="it.key"

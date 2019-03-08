@@ -28,7 +28,8 @@
         <Button type="default" @click="resetQuery()" class="btn-reset">清空</Button>
       </form>
       <div class="acts">
-        <Button type="success" icon="md-add-circle" @click="edit(0)">新建影院</Button>
+        <Button type="success" icon="md-add-circle" @click="edit(0)"
+          v-auth="'theater.cinemas:add'">新建影院</Button>
       </div>
     </div>
 
@@ -43,25 +44,30 @@
       </template>
 
       <template slot="status" slot-scope="{ row: { statusModel } }">
-        <PoptipSelect v-model="statusModel" @change="editStatus"/>
+        <PoptipSelect v-model="statusModel" @change="editStatus"
+          auth="theater.cinemas:change-status"/>
       </template>
 
       <template slot="controlStatus" slot-scope="{ row: { controlStatusModel } }">
-        <PoptipSelect v-model="controlStatusModel" @change="editControlStatus"/>
+        <PoptipSelect v-model="controlStatusModel" @change="editControlStatus"
+          auth="theater.cinemas:change-control-status"/>
       </template>
 
       <template slot="pricingLevelCode" slot-scope="{ row: { pricingLevelCodeModel } }">
-        <PoptipSelect v-model="pricingLevelCodeModel" @change="editPricingLevelCode"/>
+        <PoptipSelect v-model="pricingLevelCodeModel" @change="editPricingLevelCode"
+          auth="theater.cinemas:change-pricing-level"/>
       </template>
 
       <template slot="boxLevelCode" slot-scope="{ row: { boxLevelCodeModel } }">
-        <PoptipSelect v-model="boxLevelCodeModel" @change="editBoxLevelCode"/>
+        <PoptipSelect v-model="boxLevelCodeModel" @change="editBoxLevelCode"
+          auth="theater.cinemas:change-box-level"/>
       </template>
 
       <template slot="action" slot-scope="{ row: { id } }">
         <div class="row-acts">
-          <router-link :to="{ name: 'data-cinema-hall', params: { id } }">查看影厅</router-link>
-          <a @click="edit(id)">编辑</a>
+          <router-link :to="{ name: 'data-cinema-hall', params: { id } }"
+            v-auth="'theater.cinemas:info'">查看影厅</router-link>
+          <a @click="edit(id)" v-auth="'theater.cinemas:modify'">编辑</a>
         </div>
       </template>
     </Table>

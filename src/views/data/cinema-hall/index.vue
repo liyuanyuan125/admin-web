@@ -6,7 +6,7 @@
         <i>影厅列表</i>
       </div>
       <Button type="success" icon="md-add-circle" class="btn-new"
-        @click="edit(0)">新建影厅</Button>
+        @click="edit(0)" v-auth="'theater.halls:add'">新建影厅</Button>
     </header>
 
     <div class="info-pane">
@@ -51,10 +51,15 @@
     </div>
 
     <Table :columns="columns" :data="tableData" :loading="loading"
-      border stripe disabled-hover size="small" class="table"></Table>
+      border stripe disabled-hover size="small" class="table">
+      <template slot="action" slot-scope="{ row: { id } }">
+        <div class="row-acts">
+          <a @click="edit(id)" v-auth="'theater.halls:modify'">编辑</a>
+        </div>
+      </template>
+    </Table>
 
     <DlgEdit v-model="dlgEditModel" :cinemaId="query.id" @done="dlgEditDone"/>
-    </div>
   </div>
 </template>
 
@@ -126,20 +131,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       { title: '放映机编号', key: 'projectorNumber', width: 80, align: 'center' },
       { title: '影厅业务类型', key: 'businessTypeName', width: 85, align: 'center' },
       { title: '控制状态', key: 'controlStatusName', width: 65, align: 'center' },
-      {
-        title: '操作',
-        key: 'action',
-        width: 50,
-        align: 'center',
-        render: (hh: any, { row: { id } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          return <div class="row-acts">
-            <a on-click={this.edit.bind(this, id)}>编辑</a>
-          </div>
-          /* tslint:enable */
-        }
-      }
+      { title: '操作', slot: 'action', width: 50, align: 'center' }
     ]
   }
 

@@ -1,26 +1,31 @@
 <template>
-  <Poptip v-model="show" @on-popper-show="onShow" v-if="!loading">
-    <span class="edit">
-      <span :class="{ deprecated: isDeprecated }">{{showText}}</span>
-      <icon type="ios-create-outline"/>
-    </span>
-    <div slot="content">
-      <div class="flex-box">
-        <div class="flex-1">
-          <Select v-model="inValue.value" size="small">
-            <Option v-for="it in inValue.list" :key="it.key"
-              :value="it.key">{{it.text}}</Option>
-          </Select>
+  <div>
+    <div v-auth="auth">
+      <Poptip v-model="show" @on-popper-show="onShow" v-if="!loading">
+        <span class="edit">
+          <span :class="{ deprecated: isDeprecated }">{{showText}}</span>
+          <icon type="ios-create-outline"/>
+        </span>
+        <div slot="content">
+          <div class="flex-box">
+            <div class="flex-1">
+              <Select v-model="inValue.value" size="small">
+                <Option v-for="it in inValue.list" :key="it.key"
+                  :value="it.key">{{it.text}}</Option>
+              </Select>
+            </div>
+            <Button type="primary" size="small" class="btn-ok" @click="onOk">修改</Button>
+          </div>
         </div>
-        <Button type="primary" size="small" class="btn-ok" @click="onOk">修改</Button>
-      </div>
+      </Poptip>
+      <span class="loading-box" v-else>
+        <Spin>
+          <Icon type="ios-loading" class="loading"></Icon>
+        </Spin>
+      </span>
     </div>
-  </Poptip>
-  <span class="loading-box" v-else>
-    <Spin>
-      <Icon type="ios-loading" class="loading"></Icon>
-    </Spin>
-  </span>
+    <span :class="{ deprecated: isDeprecated }" v-auth-not="auth">{{showText}}</span>
+  </div>
 </template>
 
 <script lang="tsx">
@@ -45,10 +50,11 @@ interface Value {
 
 @Component
 export default class PoptipSelect extends ViewBase {
-  /**
-   * 值本身，可以使用 v-model 进行双向绑定
-   */
+  /** 值本身，可以使用 v-model 进行双向绑定 */
   @Prop({ type: Object, default: () => {} }) value!: Value
+
+  /** 权限值，用来控制是否可以编辑 */
+  @Prop({ type: String, default: '' }) auth!: string
 
   inValue: Value = {} as Value
 
