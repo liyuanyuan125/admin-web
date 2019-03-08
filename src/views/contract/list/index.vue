@@ -19,7 +19,7 @@
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </form>
         <div class="acts">
-          <Button type="success" icon="md-add-circle" @click="edit(0)">新建合同</Button>
+          <Button v-auth="'customer.contracts:add'" type="success" icon="md-add-circle" @click="edit(0)">新建合同</Button>
         </div>
       </div>
       <Table :columns="columns" :data="tableData" :loading="loading"
@@ -184,26 +184,26 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         // const sta = approveStatus == 1 ? '停用' : '启用'
         if (approveStatus == 1) {
           return <div class='row-acts'>
-          <router-link to={{ name: 'contract-list-detail', params: { id , approveStatus } }}>审批</router-link>&nbsp;&nbsp;
-          <router-link to={{ name: 'contract-list-edit', params: { id } }}>编辑</router-link>&nbsp;&nbsp;
-          <router-link to={{ name: 'contract-list-edit', params: { id ,copy : -1 } }}>复制</router-link>&nbsp;&nbsp;
-          <router-link to={{ name: 'contract-list-detail', params: { id , edi : 1  } }}>详情</router-link>
+          <router-link v-auth={'customer.contracts:change-status'} to={{ name: 'contract-list-detail', params: { id , approveStatus } }}>审批</router-link>&nbsp;&nbsp;
+          <router-link v-auth={'customer.contracts:modify'} to={{ name: 'contract-list-edit', params: { id } }}>编辑</router-link>&nbsp;&nbsp;
+          <router-lin v-auth={'customer.contracts:add'} to={{ name: 'contract-list-edit', params: { id ,copy : -1 } }}>复制</router-link>&nbsp;&nbsp;
+          <router-link v-auth={'customer.contracts:info'} to={{ name: 'contract-list-detail', params: { id , edi : 1  } }}>详情</router-link>
         </div>
         } else if (approveStatus == 2) {
           return <div class='row-acts'>
           <a on-click={this.zuofei.bind(this, row.id, row)}>作废</a>&nbsp;&nbsp;
-          <router-link to={{ name: 'contract-list-edit', params: { id ,copy : -1} }}>复制</router-link>&nbsp;&nbsp;
-          <router-link to={{ name: 'contract-list-detail', params: { id , edi : 0  } }}>详情</router-link>
+          <router-link v-auth={'customer.contracts:add'} to={{ name: 'contract-list-edit', params: { id ,copy : -1} }}>复制</router-link>&nbsp;&nbsp;
+          <router-link v-auth={'customer.contracts:info'} to={{ name: 'contract-list-detail', params: { id , edi : 0  } }}>详情</router-link>
         </div>
         } else if (approveStatus == 3) {
           return <div class='row-acts'>
-          <router-link to={{ name: 'contract-list-edit', params: { id,copy : -1 } }}>复制</router-link>&nbsp;&nbsp;
-          <router-link to={{ name: 'contract-list-detail', params: { id , edi : 0  } }}>详情</router-link>
+          <router-link v-auth={'customer.contracts:add'} to={{ name: 'contract-list-edit', params: { id,copy : -1 } }}>复制</router-link>&nbsp;&nbsp;
+          <router-link v-auth={'customer.contracts:info'} to={{ name: 'contract-list-detail', params: { id , edi : 0  } }}>详情</router-link>
         </div>
         } else if (approveStatus == 4) {
           return <div class='row-acts'>
-          <router-link to={{ name: 'contract-list-edit', params: { id ,copy : -1} }}>复制</router-link>&nbsp;&nbsp;
-          <router-link to={{ name: 'contract-list-detail', params: { id , edi : 0  } }}>详情</router-link>
+          <router-link v-auth={'customer.contracts:add'} to={{ name: 'contract-list-edit', params: { id ,copy : -1} }}>复制</router-link>&nbsp;&nbsp;
+          <router-link v-auth={'customer.contracts:info'} to={{ name: 'contract-list-detail', params: { id , edi : 0  } }}>详情</router-link>
         </div>
         }
         /* tslint:enable */

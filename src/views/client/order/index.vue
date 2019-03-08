@@ -8,10 +8,10 @@
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </form>
       </div>
-      <Table :columns="columns" :data="tableData" :loading="loading"
+      <Table v-auth="'customer.workorders:list'" :columns="columns" :data="tableData" :loading="loading"
         border stripe disabled-hover size="small" class="table"></Table>
 
-      <div class="page-wrap" v-if="total > 0">
+      <div v-auth="'customer.workorders:list'" class="page-wrap" v-if="total > 0">
         <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
           show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
           @on-change="page => query.pageIndex = page"
@@ -148,10 +148,20 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       render: (hh: any, { row: { approveStatus, statusText, id }, row }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const sta = approveStatus == 1 ? '审核' : '详情'
-        return <div class='row-acts'>
-          <router-link to={{ name: 'client-order-detail', params: { id , approveStatus } }}>{sta}</router-link>
+        // const sta = approveStatus == 1 ? '审核' : '详情'
+        const sta = approveStatus
+        if (sta == 1 ) {
+            return <div class='row-acts'>
+          <router-link v-auth={'customer.workorders:change-status'} to={{ name: 'client-order-detail', params: { id , approveStatus } }}>审核</router-link>
         </div>
+        } else if (sta != 1) {
+          return <div class='row-acts'>
+          <router-link v-auth={'customer.workorders:info'} to={{ name: 'client-order-detail', params: { id , approveStatus } }}>详情</router-link>
+        </div>
+        }
+        // return <div class='row-acts'>
+        //   <router-link to={{ name: 'client-order-detail', params: { id , approveStatus } }}>{sta}</router-link>
+        // </div>
         /* tslint:enable */
       }
     }

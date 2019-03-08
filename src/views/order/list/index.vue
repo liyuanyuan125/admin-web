@@ -180,12 +180,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         const h = jsxReactToVue(hh)
         if (status == 3) {
           return <div class='row-acts'>
-            <a on-click={this.change.bind(this, row.id, row)}>结算</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <router-link to={{ name: 'order-list-detail', params: { id , status } }}>详情</router-link>
+            <a v-auth={'advert.executeOrder:settlement'} on-click={this.change.bind(this, row.id, row)}>结算</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <router-link v-auth={'advert.executeOrder:info'} to={{ name: 'order-list-detail', params: { id , status } }}>详情</router-link>
           </div>
         } else {
           return <div class='row-acts'>
-            <router-link to={{ name: 'order-list-detail', params: { id , status } }}>详情</router-link>
+            <router-link v-auth={'advert.executeOrder:info'} to={{ name: 'order-list-detail', params: { id , status } }}>详情</router-link>
           </div>
         }
         

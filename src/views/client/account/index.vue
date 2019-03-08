@@ -20,7 +20,7 @@
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </form>
         <div class="acts">
-          <Button type="success" icon="md-add-circle" @click="edit(0)">新建</Button>
+          <Button  v-auth="'customer.accounts:add'"  type="success" icon="md-add-circle" @click="edit(0)">新建</Button>
         </div>
       </div>
       <Table :columns="columns" :data="tableData" :loading="loading"
@@ -165,8 +165,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         const h = jsxReactToVue(hh)
         const sta = status == 1 ? '停用' : '启用'
         return <div class='row-acts'>
-          <a on-click={this.change.bind(this, row.id, row)}>{sta}</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <router-link to={{ name: 'client-account-detail', params: { id } }}>详情</router-link>
+          <a v-auth={'customer.accounts:change-status'} on-click={this.change.bind(this, row.id, row)}>{sta}</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <router-link v-auth={'customer.accounts:info'} to={{ name: 'client-account-detail', params: { id } }}>详情</router-link>
         </div>
         /* tslint:enable */
       }

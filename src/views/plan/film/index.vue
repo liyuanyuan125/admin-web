@@ -64,8 +64,10 @@
 
       <template slot="action" slot-scope="{ row: { id, status } }">
         <div class="row-acts">
-          <router-link :to="{ name: 'gg-film-detail',
-            params: { id , status } }">{{ status == 1 ? '审核' : '详情'}}</router-link>
+          <router-link v-auth="'advert.videos:approval'" v-show='status == 1' :to="{ name: 'gg-film-detail',
+            params: { id , status } }">审核</router-link>
+            <router-link v-auth="'advert.videos:info'" v-show='status != 1' :to="{ name: 'gg-film-detail',
+            params: { id , status } }">详情</router-link>
         </div>
       </template>
     </Table>

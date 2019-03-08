@@ -8,7 +8,7 @@
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </form>
         <div class="acts">
-          <Button type="success" icon="md-add-circle" @click="edit(0)">新建充值</Button>
+          <Button v-auth="'finance.recharges:add'" type="success" icon="md-add-circle" @click="edit(0)">新建充值</Button>
         </div>
       </div>
       <Table :columns="columns" :data="tableData" :loading="loading"
@@ -144,10 +144,20 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       render: (hh: any, { row: { approvalStatus, statusText, id }, row }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const sta = approvalStatus == 1 ? '审核' : '详情'
-        return <div class='row-acts'>
-          <router-link to={{ name: 'finance-examine-detail', params: { id , approvalStatus } }}>{sta}</router-link>
+        // const sta = approvalStatus == 1 ? '审核' : '详情'
+        const sta = approvalStatus
+        if (sta == 1){
+          return <div class='row-acts'>
+          <router-link v-auth={'finance.recharges:approval'} to={{ name: 'finance-examine-detail', params: { id , approvalStatus } }}>审核</router-link>
         </div>
+        } else if (sta != 1) {
+          return <div class='row-acts'>
+          <router-link v-auth={'finance.recharges:info'} to={{ name: 'finance-examine-detail', params: { id , approvalStatus } }}>详情</router-link>
+        </div>
+        }
+        // return <div class='row-acts'>
+        //   <router-link to={{ name: 'finance-examine-detail', params: { id , approvalStatus } }}>{sta}</router-link>
+        // </div>
         /* tslint:enable */
       }
     }

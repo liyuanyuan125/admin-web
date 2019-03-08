@@ -5,7 +5,7 @@
         <form class="form flex-1" @submit.prevent="search">
           <LazyInput v-model="query.years" placeholder="输入年份" class="input"/>
           <Button class="btns" type="success" icon="ios-search">查询</Button>
-          <Button class="okbth" type="success" icon="md-add-circle" @click="edit(0)">新建档期</Button>
+          <Button v-auth="'basis.calendars:add'" class="okbth" type="success" icon="md-add-circle" @click="edit(0)">新建档期</Button>
         </form>
       </div>
     </div>
@@ -88,8 +88,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         return <div class='row-acts'>
-          <a on-click={this.edit.bind(this, row.id, row)}>编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <a on-click={this.delete.bind(this, row.id)}>删除</a>
+          <a v-auth={'basis.calendars:modify'} on-click={this.edit.bind(this, row.id, row)}>编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a v-auth={'basis.calendars:delete'} on-click={this.delete.bind(this, row.id)}>删除</a>
         </div>
         /* tslint:enable */
       }
