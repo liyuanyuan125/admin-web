@@ -70,7 +70,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   loading = false
   addOrUpdateVisible = false
   list = []
-  lists = []
   total = 0
 
   beginDates = []

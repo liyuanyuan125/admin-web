@@ -29,6 +29,16 @@ export async function updateStatus(id: string, categoryCode: number) {
 }
 
 /**
+ * 更新上映状态
+ * @param id 要操作的ID
+ * @param status 新的分类
+ */
+export async function updateRel(id: string, releaseStatus: number) {
+  const res = await put(`/theater/movies/${id}`, {  releaseStatus })
+  return res
+}
+
+/**
  * 更新转资ID
  * @param id 要操作的ID
  * @param specialId 转资ID

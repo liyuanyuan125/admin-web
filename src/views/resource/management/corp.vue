@@ -12,13 +12,17 @@
         </Select>
         <Button type="default" @click="reset" class="btn-reset">清空</Button>
       </form>
-      <div class="acts">
+      <div class="acts" v-auth="'advert.cpms:add'">
         <Button type="success" :to="{name: 'resource-management-edit'}" >新建刊例价</Button>
       </div>
     </div>
 
     <Table :columns="columns2" :data="list2" :loading="loading"
-      border stripe disabled-hover size="small" class="table"></Table>
+      border stripe disabled-hover size="small" class="table">
+      <template slot="action" slot-scope="{row}" >
+        <a v-auth="'advert.cpms:info'"  @click="edit(row.id)" class="operation" >详情</a>
+      </template>
+    </Table>
 
     <div class="page-wrap" v-if="total2 > 0">
       <Page :total="total2" :current="query.pageIndex" :page-size="query.pageSize"
@@ -78,11 +82,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   loading = false
 
-  list: any = [] // 平台刊例价
   list2: any = [] // 公司刊例价
 
 
-  total = 0
+
   total2 = 0
 
   oldQuery: any = {}
@@ -179,18 +182,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     },
     {
       title: '操作',
-      key: 'action',
+      slot: 'action',
       width: 90,
-      align: 'center',
-      render: (hh: any, { row: { id }, row }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        // const sta = status == 1 ? '停用' : '启用'
-        return <div class='row-acts'>
-          <a on-click={this.edit.bind(this, row.id)}>详情</a>&nbsp;&nbsp;&nbsp;
-        </div>
-        /* tslint:enable */
-      }
+      align: 'center'
     }
   ]
 
@@ -252,32 +246,19 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
     try {
       // 待审核
-      // const { data: {
-      //   items: list,
-      //   totalCount: total,
-      //   gradeList: gradeList
-      // } } = await pingqueryList(query)
       const { data: {
         items: list2,
         totalCount: total2,
       } } = await comqueryList(query)
 
-      // this.list = list // 平台刊例价
       this.list2 = list2 // 公司刊例价
-      // this.gradeList = gradeList || []
 
-
-      // this.total = total // 平台刊例价
       this.total2 = total2 // 公司刊例价
       // 公司列表
       const { data: {
         items: companys
       } } = await companysList({ pageSize: 1000000 })
       this.companys = companys
-      // // 等级列表
-      // const { data: {
-      //   pricingLevelList: pricingLevelList
-      // } } = await companysList({ pageSize: 1000000 })
     } catch (ex) {
       this.handleError(ex)
     } finally {
