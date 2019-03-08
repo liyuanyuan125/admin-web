@@ -254,6 +254,7 @@ export default class Main extends ViewBase {
       })
       this.logList = logList.slice(0, 20)
       this.approveStatusList = res.data.approveStatusList.slice(1)
+      this.detail.imageList = res.data.imageList || []
       if (res.data.imageList != null) {
         this.detail.imageList.length > 0 ? this.showimg = false : ''
       }

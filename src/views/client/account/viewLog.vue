@@ -14,15 +14,17 @@
           <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;姓名</p>
           <div class="res-num-item">
             <span>{{name}}</span>
+            <span v-if='!name'>暂无</span>
             <span style="margin-left:8%;" class="res-date">手机号</span>
             <span style="margin-left:2%;">{{mobile}}</span>
+            <span v-if='!mobile'>暂无</span>
           </div>
         </div>
         <div class="res-num">
           <p>所属公司</p>
           <!-- <span class="coms">{{companyName}}</span> -->
           <div class="res-num-item">
-            <tooltip style="margin-left: 3%;height:60px;" :content="companyName" placement="top">
+            <tooltip style="margin-left: 3%;height:60px;margin-right: 2%;" :content="companyName" placement="top">
               <span class="company-name">{{companyName}}</span>
             </tooltip>
             <div class="res-num" v-for="it in list" v-if="it.id==companyId" :key="it.id">
@@ -63,6 +65,7 @@
           <span>{{it.operatorName}}   </span>
           {{it.operateDesc}}
         </div>
+        <div v-if='datalog.length == 0' class="logs">暂无操作日志</div>
       </div>
     </div>
   </div>
