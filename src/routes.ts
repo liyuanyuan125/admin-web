@@ -93,9 +93,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     path: '/',
     name: 'home',
     component: home,
-    meta: {
-      authKey: '',
-    }
+    meta: emptyAuth,
   },
 
   // 示例，没有实际用处
@@ -106,7 +104,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     meta: emptyAuth,
   },
 
-  // 客户管理 - 账号管理
+  // 客户管理 - 账号管理 - 列表
   {
     path: '/client/account/',
     name: 'client-account',
@@ -122,25 +120,25 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'client-account-detail',
     component: () => import('./views/client/account/detail.vue'),
     meta: {
-      authKey: ''
+      authKey: 'customer.accounts:info'
     }
   },
 
+  // 客户管理 - 账号管理 - 查看操作日志
   {
     path: '/client/account/viewLog/:id?',
     name: 'client-account-viewLog',
     component: () => import('./views/client/account/viewLog.vue'),
-    meta: {
-      authKey: ''
-    }
+    meta: emptyAuth
   },
 
+  // 客户管理 - 公司管理 - 列表
   {
     path: '/client/corp/',
     name: 'client-corp',
     component: () => import('./views/client/corp/index.vue'),
     meta: {
-      authKey: 'todo'
+      authKey: 'customer.companies:list'
     }
   },
 
