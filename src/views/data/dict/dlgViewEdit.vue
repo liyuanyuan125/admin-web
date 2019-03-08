@@ -5,7 +5,7 @@
     :width='420'
     :title="!id ? '新建词条' : '编辑词条'"
     @on-cancel="cancel('dataForm')" >
-    <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100" :data="tableData">
+    <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
       <FormItem label="词条名称" prop="name">
         <Input v-model="dataForm.name"></Input>
       </FormItem>
@@ -17,18 +17,10 @@
       </FormItem>
       <FormItem label="启用状态" prop="enableStatus">
         <RadioGroup v-model="dataForm.enableStatus" >
-        <!-- {{list}} -->
           <Radio v-for="it in list" v-if="it.key!=0" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
         </RadioGroup>
       </FormItem>
-      <!-- <FormItem label="启用状态" prop="enableStatus">
-        <RadioGroup v-model="dataForm.enableStatus" >
-          <Radio label="1">启用</Radio>
-          <Radio label="2">停用</Radio>
-        </RadioGroup>
-      </FormItem> -->
     </Form>
-    <!-- {{dataForm}} -->
     <div  slot="footer" class="dialog-footer">
       <Button @click="cancel('dataForm')">取消</Button>
       <Button type="primary" @click="dataFormSubmit('dataForm')">确定</Button>
@@ -63,7 +55,6 @@ export default class ComponentMain extends ViewBase {
   oldQuery: any = {}
 
   @Prop({ type: Object }) cinemaOnes: any
-  @Prop({ type: Array }) status: any
 
   showDlg = false
   id = 0
@@ -93,12 +84,14 @@ export default class ComponentMain extends ViewBase {
       const myThis: any = this
       myThis.$refs[dataForms].resetFields()
       if (this.id != 0) {
+        this.list = lists
         this.dataForm.name = this.cinemaOnes.name
         this.dataForm.code = this.cinemaOnes.code
         this.dataForm.sortValue = this.cinemaOnes.sortValue
         this.dataForm.enableStatus = this.cinemaOnes.enableStatus
       }
       if (this.id == 0) {
+        this.list = lists
         this.dataForm.enableStatus = this.lists[1].key
       }
     })
@@ -130,59 +123,13 @@ export default class ComponentMain extends ViewBase {
           this.handleError(ex)
           this.showDlg = false
         }
-        // const res = !this.id ? await add (query) : await set (query)
-        // if ( res && res.code === 0 ) {
-        //   this.$Message.success({
-        //       content: `${title}成功`,
-        //       onClose: () => {
-        //         this.showDlg = false
-        //         this.$emit('refreshDataList')
-        //       }
-        //   })
-        // } else {
-        //   this.$Message.success({
-        //     content: `${title}失败`
-        //   })
-        // }
       }
     })
-  }
-  get cachedMap() {
-    return {
-    }
-  }
-
-  get tableData() {
-    const cachedMap = this.cachedMap
-    const list = (this.list || []).map((it: any) => {
-      return {
-        ...it,
-      }
-    })
-    // console.log(list)
-    return list
   }
 
   mounted() {
     const { id } = this.$route.params
     this.dataForm.category.id = id
-    this.doSearch()
-  }
-
-  async doSearch() {
-    this.oldQuery = { ...this.query }
-    const query = clean({ ...this.query })
-    try {
-      const { data: {
-        enableStatusList: list,
-      } } = await queryList(query)
-      this.list = list
-      // console.log(this.list)
-    } catch (ex) {
-      this.handleError(ex)
-    } finally {
-      // this.loading = false
-    }
   }
 }
 </script>

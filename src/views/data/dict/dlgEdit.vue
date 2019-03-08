@@ -5,7 +5,7 @@
     :width='420'
     :title="!id ? '新建字典分类' : '编辑字典分类'"
     @on-cancel="cancel('dataForm')" >
-    <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100" :data="tableData">
+    <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
       <FormItem label="分类名称" prop="name">
         <Input v-model="dataForm.name"></Input>
       </FormItem>
@@ -60,7 +60,7 @@ export default class ComponentMain extends ViewBase {
     ]
   }
   dataForm = { ...dataForm }
-  async init(id: number) {
+  async init(id: number , qStatus: any) {
     // console.log(id)
     this.showDlg = true
     this.id = id || 0
@@ -69,12 +69,14 @@ export default class ComponentMain extends ViewBase {
       const myThis: any = this
       myThis.$refs[dataForms].resetFields()
       if (this.id) {
-        // const {data: {
-        //   items: list
-        // }} = await dataFrom({ id })
+        // 启用状态列表
+        this.list = qStatus
         this.dataForm.name = this.cinemaOnes.name
         this.dataForm.code = this.cinemaOnes.code
         this.dataForm.enableStatus = this.cinemaOnes.enableStatus
+      }
+      if (this.id == 0) {
+        this.list = qStatus
       }
     })
   }
@@ -100,15 +102,6 @@ export default class ComponentMain extends ViewBase {
            toast('操作成功')
            this.showDlg = false
            this.$emit('done')
-            // if ( res && res.code === 0 ) {
-            //   this.$Message.success({
-            //       content: `${title}成功`,
-            //       onClose: () => {
-            //         this.showDlg = false
-            //         this.$emit('done')
-            //       }
-            //   })
-            // }
         } catch (ex) {
            this.handleError(ex)
            this.showDlg = false
@@ -116,40 +109,9 @@ export default class ComponentMain extends ViewBase {
       }
     })
   }
-  get cachedMap() {
-    return {
-    }
-  }
-
-  get tableData() {
-    const cachedMap = this.cachedMap
-    const list = (this.list || []).map((it: any) => {
-      return {
-        ...it,
-      }
-    })
-    // console.log(list)
-    return list
-  }
   mounted() {
     const { id } = this.$route.params
     this.query.categoryId = this.id
-    this.doSearch()
-  }
-  async doSearch() {
-    this.oldQuery = { ...this.query }
-    const query = clean({ ...this.query })
-    try {
-      const { data: {
-        enableStatusList: list,
-      } } = await queryList(query)
-      this.list = list
-      // console.log(this.list)
-    } catch (ex) {
-      this.handleError(ex)
-    } finally {
-      // this.loading = false
-    }
   }
 }
 </script>
