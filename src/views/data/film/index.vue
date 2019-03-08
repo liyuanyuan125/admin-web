@@ -43,7 +43,7 @@ import moment from 'moment'
 import { slice, clean } from '@/fn/object'
 import { numberify, numberKeys } from '@/fn/typeCast'
 import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
-import { queryList, updateControlStatus, updateStatus, updateSpecialId, reda, syncData } from '@/api/film'
+import { queryList, updateControlStatus, updateStatus, updateSpecialId, reda, syncData, updateRel } from '@/api/film'
 import { toThousands } from '@/util/dealData'
 import PoptipSelect from '@/components/PoptipSelect.vue'
 import PoptipInput from '@/components/PoptipInput.vue'
@@ -82,13 +82,14 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   showTime: any = []
   categoryList = []
   controlList = []
+  releaseStatusList = []
 
   get columns() {
     return [
       {
         title: '序号',
         key: 'id',
-        width: 60,
+        width: 40,
         align: 'center',
         render: (hh: any, { row : { id } }: any) => {
           /* tslint:disable */
@@ -97,11 +98,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           /* tslint:enable */
         }
       },
-      { title: 'MtimeID', key: 'mtimeId', width: 90, align: 'center' },
+      { title: 'MtimeID', key: 'mtimeId', width: 60, align: 'center' },
       {
         title: '专资ID',
         key: 'specialId',
-        width: 80,
+        width: 70,
         align: 'center',
         render: (hh: any, { row: { id, specialId } }: any) => {
           /* tslint:disable */
@@ -119,14 +120,14 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       {
         title: '影片名称',
         key: 'name',
-        width: 90,
+        width: 80,
         slot: 'name',
         align: 'center'
       },
       {
         title: '中国上映时间', // tslint:disable-line
         key: 'openTime',
-        width: 110,
+        width: 100,
         align: 'center',
         render: (hh: any, { row : { openTime } }: any) => {
           /* tslint:disable */
@@ -139,7 +140,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       {
         title: '今日票房', // tslint:disable-line
         key: 'todayBox',
-        width: 90,
+        width: 70,
         align: 'center',
         render: (hh: any, { row : { todayBox } }: any) => {
           /* tslint:disable */
@@ -152,7 +153,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       {
         title: '累计票房', // tslint:disable-line
         key: 'sumBox',
-        width: 80,
+        width: 70,
         align: 'center',
         render: (hh: any, { row : { sumBox } }: any) => {
           /* tslint:disable */
@@ -184,13 +185,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       {
         title: '产地', // tslint:disable-line
         key: 'fromPlace',
-        width: 80,
+        width: 70,
         align: 'center'
       },
       {
         title: '类型', // tslint:disable-line
         key: 'type',
-        width: 80,
+        width: 70,
         align: 'center',
         render: (hh: any, { row : { type } }: any) => {
           /* tslint:disable */
@@ -207,7 +208,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         key: 'categoryName',
         width: 100,
         align: 'center',
-        render: (hh: any, { row: { id, categoryName, categoryCode } }: any) => {
+        render: (hh: any, { row: { id, categoryName, categoryCode,  } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
           const value = {
@@ -216,8 +217,29 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
             value: categoryCode,
             list: this.categoryList,
           }
+          // console.log(categoryCode)
           return <PoptipSelect v-model={value}
             on-change={this.editCategory.bind(this)}/>
+          /* tslint:enable */
+        }
+      },
+      {
+        title: '上映状态', // tslint:disable-line
+        key: 'shows',
+        width: 100,
+        align: 'center',
+        render: (hh: any, { row: { id, releaseStatusListString, releaseStatus,  } }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          const value = {
+            id,
+            text: releaseStatusListString,
+            value: releaseStatus,
+            list: this.releaseStatusList.slice(1),
+          }
+          // console.log(categoryCode)
+          return <PoptipSelect v-model={value}
+            on-change={this.editRel.bind(this)}/>
           /* tslint:enable */
         }
       },
@@ -252,7 +274,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   get cachedMap() {
     return {
       categoryList: makeMap(this.categoryList),
-      controlList: makeMap(this.controlList)
+      controlList: makeMap(this.controlList),
+      releaseStatusList: makeMap(this.releaseStatusList)
     }
   }
 
@@ -264,6 +287,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         // category: cachedMap.categoryList[it.categoryName],
         categoryName: cachedMap.categoryList[it.categoryCode],
         controlStatusString: cachedMap.controlList[it.controlStatus],
+        releaseStatusListString: cachedMap.releaseStatusList[it.releaseStatus]
       }
     })
     return list
@@ -322,6 +346,19 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 
+  async editRel({ id, value, showLoading, hideLoading }: any) {
+    const item = this.list.find(it => it.id == id)
+    try {
+      showLoading()
+      await updateRel(id, value)
+      item.releaseStatus = value
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      hideLoading()
+    }
+  }
+
   async editControlStatus({ id, value, showLoading, hideLoading }: any) {
     const item = this.list.find(it => it.id == id)
     try {
@@ -357,11 +394,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         totalCount: total,
         categoryList = [],
         controlStatusList = [],
+        releaseStatusList = []
       } } = await queryList(clean(query))
       this.list = list
       this.total = total
       this.categoryList = categoryList
       this.controlList = controlStatusList
+      this.releaseStatusList = releaseStatusList
     } catch (ex) {
       this.handleError(ex)
     } finally {
