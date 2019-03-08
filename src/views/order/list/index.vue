@@ -28,7 +28,13 @@
         </form>
       </div>
       <Table :columns="columns" :data="tableData" :loading="loading"
-        border stripe disabled-hover size="small" class="table"></Table>
+        border stripe disabled-hover size="small" class="table">
+          <template slot="spaction" slot-scope="{row}">
+          <a v-show='row.status == 3' v-auth="'advert.executeOrder:settlement'" @click="change(row.id, row)">结算</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <router-link v-show='row.status == 3' v-auth="'advert.executeOrder:info'" :to="{ name: 'order-list-detail', params: { id: row.id , status: row.status } }">详情</router-link>
+          <router-link v-show='row.status != 3' v-auth="'advert.executeOrder:info'" :to="{ name: 'order-list-detail', params: { id: row.id , status: row.status } }">详情</router-link>
+        </template>
+        </Table>
 
       <div class="page-wrap" v-if="total > 0">
         <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
@@ -172,25 +178,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     },
     {
       title: '操作',
-      key: 'action',
+      slot: 'spaction',
       width: 80,
       align: 'center',
-      render: (hh: any, { row: { status, statusText, id }, row }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        if (status == 3) {
-          return <div class='row-acts'>
-            <a on-click={this.change.bind(this, row.id, row)}>结算</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <router-link to={{ name: 'order-list-detail', params: { id , status } }}>详情</router-link>
-          </div>
-        } else {
-          return <div class='row-acts'>
-            <router-link to={{ name: 'order-list-detail', params: { id , status } }}>详情</router-link>
-          </div>
-        }
-        
-        /* tslint:enable */
-      }
     }
   ]
   get cachedMap() {

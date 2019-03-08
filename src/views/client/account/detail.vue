@@ -13,7 +13,7 @@
             <span>{{list.email}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;【主账号】</span>
             <!-- <s class="blu1 les" @click="viewlog(2)">查看操作日志</span> -->
             <router-link :to="{path:'/client/account/viewLog/'+ list.id, query: {nus: '主账号', companyId: list.companyId, id: list.id, createTime: list.createTime, lastLoginTime: list.lastLoginTime, companyName: list.companyName, email: list.email, name: list.name, mobile: list.mobile}}" tag="span" class="blu1 les">查看操作日志</router-link>
-            <span class="blu2" @click="change(0)">变更主账号</span>
+            <span  v-auth="'customer.accounts:set-main-account'" class="blu2" @click="change(0)">变更主账号</span>
             <!-- <span>变更主账号</span> -->
           </div>
         </div>
@@ -37,13 +37,13 @@
           <p>所属公司</p>
           <div class="res-num-item">
             <span>{{list.companyName}}</span>
-            <router-link :to="{path:'/client/corp/detail/'+ list.companyId}" tag="span" class="blu1 les">查看公司详情</router-link>
+            <router-link v-auth="'customer.companies:info'" :to="{path:'/client/corp/detail/'+ list.companyId}" tag="span" class="blu1 les">查看公司详情</router-link>
           </div>
         </div>
       </div>
     </div>
     <!-- 子账号 -->
-    <div class="new-number">
+    <div v-auth="'customer.accounts:sub-accounts'" class="new-number">
       <div class="new-num">
         <div class="n-list">子账号列表</div>
         <!-- <Tabs v-model="stm.systemCode"  class="tabs">

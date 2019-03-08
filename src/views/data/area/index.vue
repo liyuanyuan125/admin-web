@@ -10,13 +10,18 @@
         <Button type="default" @click="reset" class="btn-reset">清空</Button>
         <Button v-if="query.parentIds!=0" @click="goBack" class="btn-reset" style="margin-left: 8px">返回上一级</Button>
       </form>
-      <div class="acts">
+      <div class="acts" v-auth="'basis.districts:add'">
         <Button type="success" icon="md-add-circle" @click="edit(query.parentIds)">新建地区信息</Button>
       </div>
     </div>
 
     <Table :columns="columns" :data="tableData" :loading="loading"
-      border stripe disabled-hover size="small" class="table"></Table>
+      border stripe disabled-hover size="small" class="table">
+      <template slot="action" slot-scope="{row}">
+        <a v-auth="'basis.districts:modify'" @click="edit(row.id, row, 1)">编辑</a>
+        <a style="margin-left: 8px" v-auth="'basis.districts:delete'" @click="deletes(edit.id)">删除</a>
+      </template>
+    </Table>
 
     <div class="page-wrap" v-if="total > 0">
       <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
@@ -128,16 +133,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         title: '操作',
         key: 'action',
         width: 90,
-        align: 'center',
-        render: (hh: any, { row }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          return <div class='row-acts'>
-            <a on-click={this.edit.bind(this, row.id, row , 1)} style="margin-right:10px">编辑</a>
-            <a on-click={this.delete.bind(this, row.id)}>删除</a>
-          </div>
-          /* tslint:enable */
-        }
+        slot: 'action',
+        align: 'center'
       }
     ]
     ; (this.query.parentIds != '0') ? colum.splice(4, 1) : colum
@@ -215,7 +212,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 
-  async delete(id: any) {
+  async deletes(id: any) {
     await confirm('您确定删除当前地区信息吗？')
     try {
       await dels(id)

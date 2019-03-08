@@ -31,7 +31,12 @@
         </div> -->
       </div>
       <Table :columns="columns" :data="tableData" :loading="loading"
-        border stripe disabled-hover size="small" class="table"></Table>
+        border stripe disabled-hover size="small" class="table">
+        <template slot="action" slot-scope="{row}" >
+          <router-link v-if="row.status == '2'" v-auth="'advert.plans:approval'" :to="{name: 'plan-ggtising-edit', params: {id: row.id, edit: 'audit'}}">审核</router-link>
+          <router-link v-else v-auth="'advert.plans:info'" :to="{name: 'plan-ggtising-edit', params: {id: row.id, edit: 'detail'}}">详情</router-link>
+        </template>
+      </Table>
 
       <div class="page-wrap" v-if="total > 0">
         <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
@@ -194,19 +199,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       }
     },
     { title: '所属公司', key: 'companyName', align: 'center' },
-    { title: '操作', key: 'accountName', width: 80, align: 'center',
-      render: (hh: any, {row: { id, status }}: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const edit = status == 2 ? '审核' : '详情'
-        const detail = status == 2 ? 'audit' : 'detail'
-        // <a on-click={this.edittime.bind(this, id, 'start')}>开始</a>
-        return <div>
-          <router-link to={{name: 'plan-ggtising-edit', params: {id, edit: detail}}}>{edit}</router-link>
-        </div>
-        /* tslint:disable */
-      }
-    },
+    { title: '操作', slot: 'action', width: 80, align: 'center'},
   ]
 
   get cachedMap() {
@@ -218,7 +211,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   get tableData() {
     const cachedMap = this.cachedMap
-    console.log(cachedMap)
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,

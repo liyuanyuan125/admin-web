@@ -30,7 +30,15 @@
     </div>
 
     <Table :columns="columns" :data="tableData" :loading="loading"
-      border stripe disabled-hover size="small" class="table"></Table>
+      border stripe disabled-hover size="small" class="table">
+        <template slot="action" slot-scope="{row}" >
+          <a v-auth="'customer.companies:change-status'" style="margin-right: 8px" v-if="row.status == 1" class="operation" @click="editStatus(row.id, row.status)">停用</a>
+          <a v-auth="'customer.companies:change-status'" style="margin-right: 8px" v-else class="operation" @click="editStatus(row.id, row.status)">启用</a>
+          <router-link v-auth="'customer.companies:modify'" style="margin-right: 8px" v-if="row.approveStatus == 1" class="operation" :to="{ name: 'client-corp-edit', params: { id:row.id } }">审核</router-link>
+          <router-link v-auth="'customer.companies:modify'" style="margin-right: 8px" v-else class="operation" :to="{ name: 'client-corp-edit', params: { id:row.id } }">编辑</router-link>
+          <router-link v-auth="'customer.companies:info'" style="margin-right: 8px" class="operation" :to="{ name: 'client-corp-detail', params: { id:row.id }}">详情</router-link>
+        </template>
+    </Table>
 
     <div class="page-wrap" v-if="total > 0">
       <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
@@ -190,19 +198,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       title: '操作',
       key: 'action',
       width: 120,
-      align: 'center',
-      render: (hh: any, { row: { id, status, approveStatus } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const edit = approveStatus == 1 ? '审核' : '编辑'
-        const statusText = status == 1 ? '停用' : '启用'
-        return <div class='row-acts'>
-          <a class="operation" on-click={this.editStatus.bind(this, id, status)} to={{ name: 'client-corp-detail', params: { id } }}>{statusText}</a>
-          <router-link class="operation" to={{ name: 'client-corp-edit', params: { id } }}>{edit}</router-link>
-          <router-link class="operation" to={{ name: 'client-corp-detail', params: { id } }}>详情</router-link>
-        </div>
-        /* tslint:enable */
-      }
+      slot: 'action',
+      align: 'center'
     }
   ]
 

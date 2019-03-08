@@ -2,10 +2,10 @@
 <div>
   <Form  :model='dataForm' :label-width='93' :rules='rules' label-position="left" class='form page' ref='dataForm'>
     <div class="edit-box">
-      <div class='titop' v-if='showbank'>充值信息
+      <div v-auth="'finance.settings:set-bank-account'" class='titop' v-if='showbank'>充值信息
         <Button type='success' style='float: right;' @click="editbank('dataForm')">保存</Button>
       </div>
-      <Row class="cinema-header" v-if='showbank'>
+      <Row v-auth="'finance.settings:set-bank-account'" class="cinema-header" v-if='showbank'>
         <FormItem label="开户行" prop="accountBank">
           <Row>
             <Col span="8">
@@ -28,10 +28,10 @@
           </Row>
         </FormItem>
       </Row>
-      <div class='titop' v-if='!showbank'>充值信息
+      <div v-auth="'finance.settings:default'" class='titop' v-if='!showbank'>充值信息
         <Button type='success' style='float: right;' @click='showbanktrue'>修改</Button>
       </div>
-      <div class="cinema-header" v-if='!showbank'>
+      <div v-auth="'finance.settings:default'" class="cinema-header" v-if='!showbank'>
         <Row>
           <Col span="2"><div>开户行</div></Col>
           <Col span="8"><span>{{detail.accountBank}}</span></Col>
@@ -45,10 +45,10 @@
           <Col span="8"><span>{{detail.accountNumber}}</span></Col>
         </Row>
       </div>
-      <div class='titop' v-if='showmoney'>交易信息
+      <div v-auth="'finance.settings:set-transaction-info'" class='titop' v-if='showmoney'>交易信息
         <Button type='success' style='float: right;' @click="edittransaction('dataForm')">保存</Button>
       </div>
-      <Row class="jiaoyi cinema-header" v-if='showmoney'>
+      <Row v-auth="'finance.settings:set-transaction-info'" class="jiaoyi cinema-header" v-if='showmoney'>
         <Row>
           <Col span="3">
             <FormItem label="初始分成比例" prop="proportion">
@@ -71,10 +71,10 @@
           <col span='14'>&nbsp;元 ， <span style='color:red;'>&nbsp;注：超出部分按照一整个阶梯收取费用</span></Col>
         </Row>
       </Row>
-      <div class='titop' v-if='!showmoney'>交易信息
+      <div v-auth="'finance.settings:default'" class='titop' v-if='!showmoney'>交易信息
         <Button type='success' style='float: right;' @click='showmoneytrue'>修改</Button>
       </div>
-      <Row class="cinema-header" v-if='!showmoney'>
+      <Row v-auth="'finance.settings:default'" class="cinema-header" v-if='!showmoney'>
         <Row>
           <Col span="2"><div>初始分成比例&nbsp;&nbsp;</div></Col>
           <Col span="14"><span>{{detail.proportion}}%</span><span style='color:red;margin-left:15px;'>注：未设置分成比例的资源方公司，在平台接单时将使用本项设置</span></Col>
