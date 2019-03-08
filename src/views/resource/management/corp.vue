@@ -12,13 +12,17 @@
         </Select>
         <Button type="default" @click="reset" class="btn-reset">清空</Button>
       </form>
-      <div class="acts">
+      <div class="acts" v-auth="'advert.cpms:add'">
         <Button type="success" :to="{name: 'resource-management-edit'}" >新建刊例价</Button>
       </div>
     </div>
 
     <Table :columns="columns2" :data="list2" :loading="loading"
-      border stripe disabled-hover size="small" class="table"></Table>
+      border stripe disabled-hover size="small" class="table">
+      <template slot="action" slot-scope="{row}" >
+        <a v-auth="'advert.cpms:info'"  @click="edit(row.id)" class="operation" >详情</a>
+      </template>
+    </Table>
 
     <div class="page-wrap" v-if="total2 > 0">
       <Page :total="total2" :current="query.pageIndex" :page-size="query.pageSize"
@@ -179,18 +183,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     },
     {
       title: '操作',
-      key: 'action',
+      slot: 'action',
       width: 90,
-      align: 'center',
-      render: (hh: any, { row: { id }, row }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        // const sta = status == 1 ? '停用' : '启用'
-        return <div class='row-acts'>
-          <a on-click={this.edit.bind(this, row.id)}>详情</a>&nbsp;&nbsp;&nbsp;
-        </div>
-        /* tslint:enable */
-      }
+      align: 'center'
     }
   ]
 

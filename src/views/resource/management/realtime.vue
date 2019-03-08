@@ -17,7 +17,7 @@
 
         <Button type="default" class="btn-reset" @click="reset">清空</Button>
       </form>
-      <div class="acts">
+      <div class="acts" v-auth="'advert.cpms:add'">
         <Button type="success" :to="{ name: 'resource-management-edit' }">新建刊例价</Button>
       </div>
     </section>

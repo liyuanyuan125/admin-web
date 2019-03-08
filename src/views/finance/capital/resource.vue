@@ -11,7 +11,38 @@
     </div>
 
     <Table :columns="columns" :data="tableData" :loading="loading"
-      border stripe disabled-hover size="small" class="table"></Table>
+      border stripe disabled-hover size="small" class="table">
+      <template slot="freezeAmount" slot-scope="{row}" >
+        <div v-auth="'finance.resource:withdrawals-list'">
+          <router-link :to="{name: 'finance-capital-withdraw', params: {companyId: row.companyId, title: row.companyName}, query: { beginDate: row.beginDateGetTime, endDate: row.endDateGetTime }}">
+          <span>{{row.monthWithdrawalCount}}</span>/</router-link>
+          <router-link :to="{name: 'finance-capital-withdraw', params: {companyId: row.companyId, title: row.companyName}, query: { beginDate: query.beginDate, endDate: query.endDate }}">
+          <span>{{row.totalWithdrawalCount}}</span>
+          </router-link>
+        </div>
+        <div v-auth-not="'finance.resource:withdrawals-list'">
+          <span>{{row.monthWithdrawalCount}}</span> / <span>{{row.totalWithdrawalCount}}</span>
+        </div>
+      </template>
+      <template slot="availableAmount" slot-scope="{row}" >
+        <div v-auth="'finance.resource:settlements-list'">
+          <router-link :to="{name: 'finance-capital-consume', params: {companyId: row.companyId, title: row.companyName}, query: { beginDate: row.beginDateGetTime, endDate: row.endDateGetTime }}">
+          <span>{{row.monthSettlementCount}}</span>/</router-link>
+          <router-link :to="{name: 'finance-capital-consume', params: {companyId: row.companyId, title: row.companyName}, query: { beginDate: query.beginDate, endDate: query.endDate }}">
+          <span>{{row.totalSettlementCount}}</span>
+          </router-link>
+        </div>
+        <div v-auth-not="'finance.resource:settlements-list'">
+          <span>{{row.monthSettlementCount}}</span> / <span>{{row.totalSettlementCount}}</span>
+        </div>
+      </template>
+      <template slot="action" slot-scope="{row}" >
+        <router-link v-auth="'finance.resource:withdrawals'" :to="{name: 'finance-capital-withdrawalBill', params: { id: row.companyId, show: 'show' }}">添加提现账单</router-link>
+      </template>
+      <template slot="action" slot-scope="{row}" >
+        <router-link v-auth="'finance.resource:withdrawals'" :to="{name: 'finance-capital-withdrawalBill', params: { id: row.companyId, show: 'show' }}">添加提现账单</router-link>
+      </template>
+    </Table>
 
     <div class="page-wrap" v-if="total > 0">
       <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
@@ -57,7 +88,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   query: any = {}
   addOrUpdateVisible = false
   changeVisible = false
-
   examine = false
 
   loading = false
@@ -81,26 +111,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       },
       {
         title: '',
-        key: 'availableAmount',
+        slot: 'availableAmount',
         align: 'center',
-        render: (hh: any, { row: { monthSettlementCount, totalSettlementCount, companyId, companyName } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          const year = new Date().getFullYear()
-          const month = new Date().getMonth() + 1
-          const beginDate = new Date(`${year}/${month}/1`).getTime()
-          const endDate = new Date(`${year}/${month + 1}/1`).getTime() -1
-          // <router-link to={{name: 'consume'}}>{monthSettlementCount + '/' + totalSettlementCount}</router-link>
-          // return <span>{monthSettlementCount + '/' + totalSettlementCount}</span>
-          return <div>
-            <router-link to={{name: 'finance-capital-consume', params: {companyId: companyId, title: companyName}, query: { beginDate, endDate }}}>
-            <span v-html={monthSettlementCount}></span>/</router-link>
-            <router-link to={{name: 'finance-capital-consume', params: {companyId: companyId, title: companyName}, query: { beginDate: this.query.beginDate, endDate: this.query.endDate }}}>
-            <span v-html={totalSettlementCount}></span>
-            </router-link>
-          </div>
-          /* tslint:enable */
-        },
         /* tslint:disable */
         renderHeader: (hh: any) => {
           const h = jsxReactToVue(hh)
@@ -110,24 +122,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       },
       {
         title: '',
-        key: 'freezeAmount',
+        slot: 'freezeAmount',
         align: 'center',
-        render: (hh: any, { row: { monthWithdrawalCount, totalWithdrawalCount, companyId, companyName } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          const year = new Date().getFullYear()
-          const month = new Date().getMonth() + 1
-          const beginDate = new Date(`${year}/${month}/1`).getTime()
-          const endDate = new Date(`${year}/${month + 1}/1`).getTime() -1
-          return <div>
-          <router-link to={{name: 'finance-capital-withdraw', params: {companyId: companyId, title: companyName}, query: { beginDate, endDate }}}>
-          <span v-html={monthWithdrawalCount}></span>/</router-link>
-          <router-link to={{name: 'finance-capital-withdraw', params: {companyId: companyId, title: companyName}, query: { beginDate: this.query.beginDate, endDate: this.query.endDate }}}>
-          <span v-html={totalWithdrawalCount}></span>
-          </router-link>
-          </div>
-          /* tslint:enable */
-        },
         /* tslint:disable */
         renderHeader: (hh: any) => {
           const h = jsxReactToVue(hh)
@@ -148,23 +144,24 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       },
       {
         title: '操作',
-        key: 'action',
-        align: 'center',
-        render: (hh: any, { row: { companyId }, row }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          const showTime = this.showTime
-          return <router-link to={{name: 'finance-capital-withdrawalBill', params: { id: companyId, show: 'show' }}}>添加提现账单</router-link>
-          /* tslint:enable */
-        }
+        slot: 'action',
+        align: 'center'
       }
     ]
   }
 
   get tableData() {
+    const year = new Date().getFullYear()
+    const month = new Date().getMonth() + 1
+    const beginDateGetTime = new Date(`${year}/${month}/1`).getTime()
+    const endDateGetTime = new Date(`${year}/${month + 1}/1`).getTime() - 1
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
+        year,
+        month,
+        beginDateGetTime,
+        endDateGetTime
       }
     })
     return list
