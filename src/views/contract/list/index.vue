@@ -186,7 +186,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           return <div class='row-acts'>
           <router-link v-auth={'customer.contracts:change-status'} to={{ name: 'contract-list-detail', params: { id , approveStatus } }}>审批</router-link>&nbsp;&nbsp;
           <router-link v-auth={'customer.contracts:modify'} to={{ name: 'contract-list-edit', params: { id } }}>编辑</router-link>&nbsp;&nbsp;
-          <router-lin v-auth={'customer.contracts:add'} to={{ name: 'contract-list-edit', params: { id ,copy : -1 } }}>复制</router-link>&nbsp;&nbsp;
+          <router-link v-auth={'customer.contracts:add'} to={{ name: 'contract-list-edit', params: { id ,copy : -1 } }}>复制</router-link>&nbsp;&nbsp;
           <router-link v-auth={'customer.contracts:info'} to={{ name: 'contract-list-detail', params: { id , edi : 1  } }}>详情</router-link>
         </div>
         } else if (approveStatus == 2) {

@@ -1,5 +1,5 @@
 <template>
-  <div class="pages">
+  <div class="pages" v-auth="'advert.executeOrder:cinemas'">
     <Row class="shouDlg-header">
       <Col span="7">
         <AreaSelect v-model="area"/>
@@ -12,7 +12,11 @@
       </Col>
     </Row>
     <Table :columns="columns" :data="tableData" :loading="loading"
-      border stripe disabled-hover size="small" class="table"></Table>
+      border stripe disabled-hover size="small" class="table">
+      <template v-if="$route.params.status == '2'" slot="action" slot-scope="{row}" >
+        <a v-auth="'advert.executeOrder:cancelCinema'" @click="change( row.id, row.shortName )">取消执行</a>
+      </template>
+    </Table>
     <div class="page-wrap" v-if="total > 0">
        <Page class="page" :total="total" :current="dataForm.pageIndex" :page-size="dataForm.pageSize"
           show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
@@ -114,12 +118,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         key: 'status',
         align: 'center',
         width: 80,
-        render: (hh: any, { row: { status }, row }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          return  <a on-click={this.change.bind(this, row.id, row.shortName )}>取消执行</a>
-          /* tslint:enable */
-        }
+        slot: 'action'
       }
     ]
     return this.$route.params.status == '2' ? [...data, ...opernation] : data
