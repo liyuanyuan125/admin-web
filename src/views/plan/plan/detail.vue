@@ -78,7 +78,7 @@
               
               <Table :columns="columns" :data="format.cinemaList"
               border stripe disabled-hover size="small" class="table"></Table>
-              <div style="padding: 20px 0px">查看更多请点击<a :href="href" download="影院列表" >"导出影院列表"</a></div>
+              <div v-auth="'advert.plans:export'" style="padding: 20px 0px">查看更多请点击<a :href="href" download="影院列表" >"导出影院列表"</a></div>
             </Row>
           </Col>
         </Row>
