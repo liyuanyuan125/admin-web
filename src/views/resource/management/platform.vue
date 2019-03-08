@@ -82,11 +82,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   loading = false
 
   list: any = [] // 平台刊例价
-  list2: any = [] // 公司刊例价
+
 
 
   total = 0
-  total2 = 0
+
 
   oldQuery: any = {}
   typeList = []
@@ -248,27 +248,18 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         totalCount: total,
         gradeList: gradeList
       } } = await pingqueryList(query)
-      // const { data: {
-      //   items: list2,
-      //   totalCount: total2,
-      // } } = await comqueryList(query)
 
       this.list = list // 平台刊例价
-      // this.list2 = list2 // 公司刊例价
+
       this.gradeList = gradeList || []
 
 
       this.total = total // 平台刊例价
-      // this.total2 = total2 // 公司刊例价
       // 公司列表
       const { data: {
         items: companys
       } } = await companysList({ pageSize: 1000000 })
       this.companys = companys
-      // // 等级列表
-      // const { data: {
-      //   pricingLevelList: pricingLevelList
-      // } } = await companysList({ pageSize: 1000000 })
     } catch (ex) {
       this.handleError(ex)
     } finally {
