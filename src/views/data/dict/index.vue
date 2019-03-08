@@ -66,8 +66,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   addOrUpdateVisible = false
   list = []
   total = 0
-  names = []
-  qStatus = []
+  enableStatusList: any = []
+
+  qStatus: any = ''
 
   columns = [
     { title: '序号', key: 'id', align: 'center' },
@@ -95,7 +96,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         qStatus: it.enableStatus == 1 ? '启用' : '停用',
       }
     })
-    // console.log(list)
     return list
   }
 
@@ -120,12 +120,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       const { data: {
         items: list,
         totalCount: total,
-        qStatus
+        enableStatusList: enableStatusList,
       } } = await queryList(query)
       this.list = list
       this.total = total
-      this.qStatus = qStatus
-      this.names = this.list
+      this.enableStatusList = enableStatusList
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -140,7 +139,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     !!id ? this.editOne = row : this.editOne
     this.$nextTick(() => {
       const myThis: any = this
-      myThis.$refs.addOrUpdate.init(id)
+      myThis.$refs.addOrUpdate.init(id , this.enableStatusList)
     })
   }
 

@@ -22,7 +22,11 @@
         @on-change="page => query.pageIndex = page"
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
+<<<<<<< HEAD
     <dlgViewEdit :cinemaOnes="editOne" :status="stas" ref="addOrUpdate" @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"></dlgViewEdit>
+=======
+    <dlgViewEdit :cinemaOnes="editOne"   ref="addOrUpdate" @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"></dlgViewEdit>
+>>>>>>> testing
   </div>
 </template>
 
@@ -59,7 +63,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   loading = false
   list = []
-  lists = []
+  // 新建传值默认启用状态
+  enableStatusList = []
   addOrUpdateVisible = false
   total = 0
   editOne: any = null
@@ -143,19 +148,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       this.cqStatus = cqStatus
       this.categorys = categorys
       this.stas = list
-    } catch (ex) {
-      this.handleError(ex)
-    } finally {
-      this.loading = false
-    }
-    try {
+      // 弹窗传值启用状态
       const { data: {
-        enableStatusList: list,
-        totalCount: total,
-        cqStatus,
-        categorys,
+        enableStatusList: enableStatusList,
       } } = await queryList(query)
-      this.lists = list
+      this.enableStatusList = enableStatusList
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -167,7 +164,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     !!id ? this.editOne = row : this.editOne
     this.$nextTick(() => {
       const myThis: any = this
-      myThis.$refs.addOrUpdate.init(id, this.lists)
+      myThis.$refs.addOrUpdate.init(id, this.enableStatusList)
     })
   }
 
