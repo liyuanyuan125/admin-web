@@ -277,8 +277,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       this.list = item
       this.tagCodeList = tagCodeList
       this.imageList = item.imageList
-      this.log = item.logList
-      this.createTime = moment(this.log.createTime).format(timeFormats)
+      this.log = (item.logList || []).map((it: any) => {
+        return {
+          ...it,
+          createTime :  moment(it.createTime).format(timeFormats)
+        }
+      })
+      // this.createTime = moment(this.log.createTime).format(timeFormats)
       this.applyTime = moment(this.list.applyTime).format(timeFormats)
       this.remittanceDate = moment(this.list.remittanceDate).format(timeFormat)
       // 审核状态
