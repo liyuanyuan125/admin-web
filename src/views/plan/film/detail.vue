@@ -52,7 +52,19 @@
       <Row v-if='showedit' >
         <UploadButton style='margin-bottom:17px;' multiple @success="onUploadSuccess">上传</UploadButton>
         <Table :columns="columns" :data="tableData"
-        border disabled-hover size="small" class="table"></Table>
+        border disabled-hover size="small" class="table">
+          <template slot="spaction" slot-scope="{row}">
+
+            <UploadButton v-show='row.desc == undefined' v-auth="'advert.videos:upload-attachment'" @success="onUploadSuccess(key)">上传</UploadButton>
+            <a v-show='row.desc == undefined' @click="edit(0 , key)">录入下载链接</a>
+
+            <a v-show='row.desc != undefined && (row.desc.fileId == '' || row.desc.fileId == null)' v-auth="'advert.videos:modify-attachment'" @click="edit(row.desc.id, row.key , row )">编辑</a>&nbsp;&nbsp;&nbsp;
+            <a v-show='row.desc != undefined && (row.desc.fileId == '' || row.desc.fileId == null)' @click="del( row.desc.id)">删除</a>
+
+            <a v-show='row.desc != undefined && (row.desc.fileId != '' || row.desc.fileId != null)' class="operation" href="" @download="desc.fileUrl">下载</a>&nbsp;&nbsp;&nbsp;
+            <a v-show='row.desc != undefined && (row.desc.fileId != '' || row.desc.fileId != null)' v-auth="'advert.videos:delete-attachment'" @click="del( row.desc.id)">删除</a>
+        </template>
+        </Table>
       </Row>
       <div class='titop' v-if='showStatus'>审核</div>
       <Row class="detail-content" v-if='showStatus'>
@@ -262,33 +274,9 @@ export default class Main extends ViewBase {
     // <uploadButton style='margin-bottom:17px;' multiple @success="onUploadSuccess">上传</uploadButton>
     {
       title: '操作',
-      key: 'action',
+      slot: 'spaction',
       width: 170,
       align: 'center',
-      render: (hh: any, { row: { desc , key }, row }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        if ( desc == undefined ) {
-          const ids = 0;
-          return <div class='row-acts'>
-            <UploadButton v-auth={'advert.videos:upload-attachment'} on-success={this.onUploadSuccess.bind(this , key)}>上传</UploadButton>
-            <a on-click={this.edit.bind(this , 0 , key)}>录入下载链接</a>
-          </div>
-        } else {
-          if ( row.desc.fileId == '' || row.desc.fileId == null) {
-            return <div class='row-acts'>
-              <a v-auth={'advert.videos:modify-attachment'} on-click={this.edit.bind(this, desc.id, key , row )}>编辑</a>&nbsp;&nbsp;&nbsp;
-              <a on-click={this.del.bind(this, desc.id)}>删除</a>
-            </div>
-          } else {
-            return <div class='row-acts'>
-              <a class="operation" href="" download={desc.fileUrl}>下载</a>&nbsp;&nbsp;&nbsp;
-              <a v-auth={'advert.videos:delete-attachment'} on-click={this.del.bind(this, desc.id)}>删除</a>
-            </div>
-          }
-        }
-        /* tslint:enable */
-      }
     }
   ]
   async doSearch() {

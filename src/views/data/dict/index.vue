@@ -7,7 +7,12 @@
     </div>
 
     <Table :columns="columns" :data="tableData" :loading="loading"
-      border stripe disabled-hover size="small" class="table"></Table>
+      border stripe disabled-hover size="small" class="table">
+        <template slot="spaction" slot-scope="{row}">
+          <router-link v-auth="'basis.dictionarys:categorie-info'" to="{ name: 'data-dict-viewDictionary', params: { id: row.id } }">查看字典</router-link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a v-auth="'basis.dictionarys:modify-categorie'" @click="edit(row.id, row)">编辑</a>
+        </template>
+      </Table>
 
     <div class="page-wrap" v-if="total > 0">
       <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
@@ -71,17 +76,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     { title: '控制状态', key: 'qStatus', align: 'center' },
     {
       title: '操作',
-      key: 'action',
+      slot: 'spaction',
       align: 'center',
-      render: (hh: any, { row: { id }, row }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        return <div class='row-acts'>
-          <router-link v-auth={'basis.dictionarys:categorie-info'} to={{ name: 'data-dict-viewDictionary', params: { id } }}>查看字典</router-link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <a v-auth={'basis.dictionarys:modify-categorie'} on-click={this.edit.bind(this, row.id, row)}>编辑</a>
-        </div>
-        /* tslint:enable */
-      }
     }
   ]
 

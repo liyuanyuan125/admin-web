@@ -11,7 +11,12 @@
     </div>
 
     <Table :columns="columns" :data="tableData" :loading="loading"
-      border stripe disabled-hover size="small" class="table"></Table>
+      border stripe disabled-hover size="small" class="table">
+        <template slot="spaction" slot-scope="{row}">
+          <a v-auth="'basis.calendars:modify'" @click="edit(row.id, row)">编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a v-auth="'basis.calendars:delete'" @click="delete(row.id)">删除</a>
+        </template>
+      </Table>
 
     <div class="page-wrap" v-if="total > 0">
       <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
@@ -82,17 +87,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     { title: '结束时间', key: 'endDates', align: 'center' },
     {
       title: '操作',
-      key: 'action',
+      slot: 'spaction',
       align: 'center',
-      render: (hh: any, { row }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        return <div class='row-acts'>
-          <a v-auth={'basis.calendars:modify'} on-click={this.edit.bind(this, row.id, row)}>编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <a v-auth={'basis.calendars:delete'} on-click={this.delete.bind(this, row.id)}>删除</a>
-        </div>
-        /* tslint:enable */
-      }
     }
   ]
 
