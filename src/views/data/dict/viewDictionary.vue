@@ -18,7 +18,7 @@
         @on-change="page => query.pageIndex = page"
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
-    <dlgViewEdit :cinemaOnes="editOne" :status="stas"  ref="addOrUpdate" @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"></dlgViewEdit>
+    <dlgViewEdit :cinemaOnes="editOne" :status="stas" ref="addOrUpdate" @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"></dlgViewEdit>
   </div>
 </template>
 

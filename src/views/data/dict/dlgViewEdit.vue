@@ -83,7 +83,9 @@ export default class ComponentMain extends ViewBase {
         { required: true, message: '请输入排序序号' }
     ]
   }
+
   dataForm: any = { ...dataForm }
+
   async init(id: number, lists: any) {
     this.lists = lists
     this.showDlg = true

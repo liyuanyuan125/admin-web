@@ -4,7 +4,7 @@
     <TabPane v-for="(it, i) in list" :key="i" :name="it.name" :label="it.meta.title"
       :closable="!it.meta.fixed">
       <keep-alive>
-        <component :is="it.component" v-if="it.name == currentName"></component>
+        <component :is="it.component ? it.component : it.components.default" v-if="it.name == currentName"></component>
       </keep-alive>
     </TabPane>
   </Tabs>

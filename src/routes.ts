@@ -142,39 +142,66 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
-  {
-    path: '/client/corp/detail/:id?',
-    name: 'client-corp-detail',
-    component: () => import('./views/client/corp/detail.vue'),
-    meta: {
-      authKey: ''
-    }
-  },
-
+  // 客户管理 - 公司管理 - 添加、编辑
   {
     path: '/client/corp/edit/:id?',
     name: 'client-corp-edit',
     component: () => import('./views/client/corp/edit.vue'),
     meta: {
-      authKey: ''
+      authKey(route) {
+        const isEdit = parseInt(route.params.id, 10) > 0
+        return isEdit ? 'customer.companies:modify' : 'customer.companies:add'
+      }
     }
   },
 
+  // 客户管理 - 公司管理 - 详情
+  {
+    path: '/client/corp/detail/:id?',
+    name: 'client-corp-detail',
+    component: () => import('./views/client/corp/detail.vue'),
+    meta: {
+      authKey: 'customer.companies:info'
+    }
+  },
+
+  // 客户管理 - 变更工单 - 列表
   {
     path: '/client/order/',
     name: 'client-order',
     component: () => import('./views/client/order/index.vue'),
     meta: {
-      authKey: ''
+      authKey: 'customer.workorders:list'
     }
   },
 
+  // 客户管理 - 变更工单 - 详情、审核
   {
     path: '/client/order/detail/:id?',
     name: 'client-order-detail',
     component: () => import('./views/client/order/detail.vue'),
     meta: {
-      authKey: ''
+      authKey: 'customer.workorders:info'
+    }
+  },
+
+  // 基础数据 - 系统字典 - 分类列表
+  {
+    path: '/data/dict/',
+    name: 'data-dict',
+    component: () => import('./views/data/dict/index.vue'),
+    meta: {
+      authKey: 'basis.dictionarys:categorie-list'
+    }
+  },
+
+  // 基础数据 - 系统字典 - 查看字典
+  {
+    path: '/data/dict/viewDictionary/:id?',
+    name: 'data-dict-viewDictionary',
+    component: () => import('./views/data/dict/viewDictionary.vue'),
+    meta: {
+      authKey: 'basis.dictionarys:list'
     }
   },
 
@@ -233,23 +260,6 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   },
 
   {
-    path: '/data/dict/',
-    name: 'data-dict',
-    component: () => import('./views/data/dict/index.vue'),
-    meta: {
-      authKey: ''
-    }
-  },
-  {
-    path: '/data/dict/viewDictionary/:id?',
-    name: 'data-dict-viewDictionary',
-    component: () => import('./views/data/dict/viewDictionary.vue'),
-    meta: {
-      authKey: ''
-    }
-  },
-
-  {
     path: '/data/film/',
     name: 'data-film',
     component: () => import('./views/data/film/index.vue'),
@@ -261,14 +271,6 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     path: '/data/film/detail/:id',
     name: 'data-film-detail',
     component: () => import('./views/data/film/detail.vue'),
-    meta: {
-      authKey: ''
-    }
-  },
-  {
-    path: '/data/dict-category/',
-    name: 'data-dict-category',
-    component: () => import('./views/data/dict-category/index.vue'),
     meta: {
       authKey: ''
     }
