@@ -271,19 +271,19 @@ export default class Main extends ViewBase {
         if ( desc == undefined ) {
           const ids = 0;
           return <div class='row-acts'>
-            <UploadButton on-success={this.onUploadSuccess.bind(this , key)}>上传</UploadButton>
+            <UploadButton v-auth={'advert.videos:upload-attachment'} on-success={this.onUploadSuccess.bind(this , key)}>上传</UploadButton>
             <a on-click={this.edit.bind(this , 0 , key)}>录入下载链接</a>
           </div>
         } else {
           if ( row.desc.fileId == '' || row.desc.fileId == null) {
             return <div class='row-acts'>
-              <a on-click={this.edit.bind(this, desc.id, key , row )}>编辑</a>&nbsp;&nbsp;&nbsp;
+              <a v-auth={'advert.videos:modify-attachment'} on-click={this.edit.bind(this, desc.id, key , row )}>编辑</a>&nbsp;&nbsp;&nbsp;
               <a on-click={this.del.bind(this, desc.id)}>删除</a>
             </div>
           } else {
             return <div class='row-acts'>
               <a class="operation" href="" download={desc.fileUrl}>下载</a>&nbsp;&nbsp;&nbsp;
-              <a on-click={this.del.bind(this, desc.id)}>删除</a>
+              <a v-auth={'advert.videos:delete-attachment'} on-click={this.del.bind(this, desc.id)}>删除</a>
             </div>
           }
         }

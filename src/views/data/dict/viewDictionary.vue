@@ -6,13 +6,13 @@
         <!-- <Button class="bth" type="text" @click="goback()">返回字典分类</Button> -->
         <LazyInput v-model="query.dictionaryName"  placeholder="词条名称" class="input"/>
         <Button class="okbth" type="success" @submit.prevent="search">查询</Button>
-        <Button class="addbth" type="success" icon="md-add-circle" @click="edit(0)">新建词条</Button>
+        <Button v-auth="'basis.dictionary:add'" class="addbth" type="success" icon="md-add-circle" @click="edit(0)">新建词条</Button>
       </div>
     </div>
-    <Table :columns="columns" :data="tableData" :loading="loading"
+    <Table v-auth="'basis.dictionarys:list'" :columns="columns" :data="tableData" :loading="loading"
       border stripe disabled-hover size="small" class="table"></Table>
 
-    <div class="page-wrap" v-if="total > 0">
+    <div v-auth="'basis.dictionarys:list'" class="page-wrap" v-if="total > 0">
       <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
         show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
         @on-change="page => query.pageIndex = page"
@@ -91,7 +91,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         return <div class='row-acts'>
-          <a on-click={this.edit.bind(this, row.id, row)}>编辑</a>
+          <a v-auth={'basis.dictionary:modify'} on-click={this.edit.bind(this, row.id, row)}>编辑</a>
         </div>
         /* tslint:enable */
       }

@@ -2,7 +2,7 @@
   <div class="component">
     <Table :columns="columns" :data="inValue" border disabled-hover size="small"/>
     <div class="act-bar">
-      <a @click="onAdd" v-if="!type">添加关联影院</a>
+      <a v-auth="'customer.contracts:cinems'" @click="onAdd" v-if="!type">添加关联影院</a>
     </div>
     <AddCinemaModel ref="addCinemaModel" :id="id" :cinemaend = "incinematype" :addData="inValue" @done="columndata"  v-if="!type" />
   </div>

@@ -2,7 +2,7 @@
   <div class="page">
     <div class="act-bar flex-box">
       <div class="acts">
-        <Button type="success" icon="md-add-circle" class="addinp" @click="edit(0)">新建字典分类</Button>
+        <Button v-auth="'basis.dictionarys:add-categorie'" type="success" icon="md-add-circle" class="addinp" @click="edit(0)">新建字典分类</Button>
       </div>
     </div>
 
@@ -77,8 +77,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         return <div class='row-acts'>
-          <router-link to={{ name: 'data-dict-viewDictionary', params: { id } }}>查看字典</router-link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <a on-click={this.edit.bind(this, row.id, row)}>编辑</a>
+          <router-link v-auth={'basis.dictionarys:categorie-info'} to={{ name: 'data-dict-viewDictionary', params: { id } }}>查看字典</router-link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a v-auth={'basis.dictionarys:modify-categorie'} on-click={this.edit.bind(this, row.id, row)}>编辑</a>
         </div>
         /* tslint:enable */
       }
