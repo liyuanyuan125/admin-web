@@ -7,12 +7,20 @@
         <Button type="default" @click="reset" class="btn-reset">清空</Button>
       </form>
 
-      <div class="acts">
+      <div class="acts" v-auth="'theater.movies:sync'">
         <Button type="success" icon="md-add-circle" @click="edit()">新建影片</Button>
       </div>
     </div>
     <Table  :columns="columns" :data="tableData" :loading="loading"
-      border stripe disabled-hover size="small" class="table"></Table>
+      border stripe disabled-hover size="small" class="table">
+      <template slot="name" slot-scope="{row}">
+        <router-link v-auth="'theater.movies:info'" :to="{name: 'data-film-detail', params: { id: row.id }}">{{row.name}}</router-link>
+        <span v-auth-not="'theater.movies:info'">{{row.name}}</span>
+      </template>
+      <template slot="spaction" slot-scope="{row}" >
+        <a v-auth="'theater.chains:modify'"  @click="reloads(row.mtimeId)" class="operation" >刷新</a>
+      </template>
+    </Table>
 
     <div class="page-wrap" v-if="total > 0">
       <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
@@ -112,16 +120,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         title: '影片名称',
         key: 'name',
         width: 90,
-        align: 'center',
-        render: (hh: any, { row: {id, name, englishName} }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          const names = name || englishName
-          return <div class="row-acts row-hidden">
-            <router-link to={{name: 'data-film-detail', params: { id }}}>{names}</router-link>
-          </div>
-          /* tslint:enable */
-        }
+        slot: 'name',
+        align: 'center'
       },
       {
         title: '中国上映时间', // tslint:disable-line
@@ -242,17 +242,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       },
       {
         title: '操作', // tslint:disable-line
-        key: 'action',
+        slot: 'spaction',
         width: 80,
-        align: 'center',
-        render: (hh: any, { row: { mtimeId } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          return <div class='row-acts'>
-            <a on-click={this.reloads.bind(this, mtimeId)}>刷新</a>
-          </div>
-          /* tslint:enable */
-        }
+        align: 'center'
       }
     ]
   }

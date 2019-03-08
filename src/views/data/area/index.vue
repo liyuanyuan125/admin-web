@@ -10,13 +10,14 @@
         <Button type="default" @click="reset" class="btn-reset">清空</Button>
         <Button v-if="query.parentIds!=0" @click="goBack" class="btn-reset" style="margin-left: 8px">返回上一级</Button>
       </form>
-      <div class="acts">
+      <div class="acts" v-auth="'basis.districts:add'">
         <Button type="success" icon="md-add-circle" @click="edit(query.parentIds)">新建地区信息</Button>
       </div>
     </div>
 
     <Table :columns="columns" :data="tableData" :loading="loading"
-      border stripe disabled-hover size="small" class="table"></Table>
+      border stripe disabled-hover size="small" class="table">
+    </Table>
 
     <div class="page-wrap" v-if="total > 0">
       <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
@@ -128,6 +129,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         title: '操作',
         key: 'action',
         width: 90,
+        slot: 'action',
         align: 'center',
         render: (hh: any, { row }: any) => {
           /* tslint:disable */

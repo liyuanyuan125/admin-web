@@ -6,13 +6,17 @@
         <Button type="default" @click="resetQuery()" class="btn-reset">清空</Button>
       </form>
 
-      <div class="acts">
+      <div class="acts" v-auth="'theater.chains:add'">
         <Button type="success" icon="md-add-circle" @click="edit(0)">新建院线信息</Button>
       </div>
     </div>
 
     <Table :columns="columns" :data="tableData" :loading="loading"
-      border stripe disabled-hover size="small" class="table"></Table>
+      border stripe disabled-hover size="small" class="table">
+      <template slot="spaction" slot-scope="{row}" >
+        <a v-auth="'theater.chains:modify'"  @click="edit(row.id, row)" class="operation" >编辑</a>
+      </template>
+    </Table>
 
     <div class="page-wrap" v-if="total > 0">
       <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
@@ -94,16 +98,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     },
     {
       title: '操作',
-      key: 'action',
-      align: 'center',
-      render: (hh: any, { row }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        return <div class='row-acts'>
-          <a on-click={this.edit.bind(this, row.id, row)}>编辑</a>
-        </div>
-        /* tslint:enable */
-      }
+      slot: 'spaction',
+      align: 'center'
     }
   ]
 
