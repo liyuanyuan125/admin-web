@@ -12,7 +12,11 @@
       </div>
     </div>
     <Table :columns="columns" :data="tableData" :loading="loading"
-      border stripe disabled-hover size="small" class="table"></Table>
+      border stripe disabled-hover size="small" class="table">
+      <template slot="action" slot-scope="{row}" >
+        <router-link v-auth="'finance.resource:withdrawals-info'" :to="{name: 'finance-capital-withdrawDetail', params: {id: row.id}}">详情</router-link>
+      </template>
+    </Table>
 
     <div class="page-wrap" v-if="total > 0">
       <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
@@ -141,14 +145,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     },
     {
       title: '操作',
-      key: 'action',
-      align: 'center',
-      render: (hh: any, { row: { id }, row }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        return <router-link to={{name: 'finance-capital-withdrawDetail', params: {id}}}>详情</router-link>
-        /* tslint:enable */
-      }
+      slot: 'action',
+      align: 'center'
     }
   ]
 
