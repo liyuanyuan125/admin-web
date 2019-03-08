@@ -16,7 +16,7 @@
           @on-select='onMenuSelect'>
           <Submenu name="user">
             <template slot="title">
-              <Icon type="md-person"></Icon>用户
+              <Icon type="md-person"></Icon>{{user && user.name || '用户'}}
             </template>
             <MenuItem name="settings">账户信息</MenuItem>
             <MenuItem name="logout">退出登录</MenuItem>
@@ -27,12 +27,12 @@
     <Layout class="site-center">
       <Sider collapsible hide-trigger v-model="isOff" :width="168" class="site-sider" ref="sider">
         <Menu width="auto" class="sider-menu" :class="isOff && 'sider-menu-off'"
-          :active-name="siderActiveName" :open-names="siderOpenNames">
+          :active-name="siderActiveName" :open-names="siderOpenNames" v-if="siderMenuList.length > 0">
           <Submenu v-for="menu in siderMenuList" :key="menu.name" :name="menu.name">
             <template slot="title">
               <Icon :type="menu.icon"/>{{menu.label}}
             </template>
-            <MenuItem v-for="sub in menu.subList" :key="sub.name" :name="sub.name">
+            <MenuItem v-for="sub in menu.children" :key="sub.name" :name="sub.name">
               <router-link :to="{name: sub.name}">{{sub.label}}</router-link>
             </MenuItem>
           </Submenu>
@@ -40,7 +40,7 @@
       </Sider>
 
       <Content class="site-content">
-        <router-view></router-view>
+        <router-view :name="viewName"/>
       </Content>
     </Layout>
   </div>
@@ -49,143 +49,45 @@
 <script lang="ts">
 import { Component } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import { logout } from '@/store'
+import { getUser, getCurrentPerms, logout } from '@/store'
+import { PermPage } from '@/util/types'
+import { getMenuList, SiderMenuItem } from './menuList'
+import event from '@/fn/event'
+
+let instance: any = null
+let viewName: string = 'default'
+
+event.on('route-perm', ({ has, to, from }: any) => {
+  viewName = has ? 'default' : '403'
+  instance && (instance.viewName = viewName)
+})
 
 @Component
 export default class App extends ViewBase {
   isOff = false
 
-  siderMenuList = [
-    {
-      name: 'client',
-      icon: 'md-person',
-      label: '客户管理',
-      subList: [
-        {
-          name: 'client-account',
-          label: '账号管理',
-        },
-        {
-          name: 'client-corp',
-          label: '公司管理',
-        },
-        {
-          name: 'client-order',
-          label: '变更工单',
-        },
-      ]
-    },
-    {
-      name: 'data',
-      icon: 'md-cloud',
-      label: '基础数据',
-      subList: [
-        {
-          name: 'data-dict',
-          label: '系统字典',
-        },
-        {
-          name: 'data-calendar',
-          label: '日历设置',
-        },
-        {
-          name: 'data-cinema-chain',
-          label: '院线管理',
-        },
-        {
-          name: 'data-cinema',
-          label: '影院管理',
-        },
-        {
-          name: 'data-film',
-          label: '影片管理',
-        },
-        {
-          name: 'data-area',
-          label: '地区信息',
-        },
-      ]
-    },
-    {
-      name: 'finance',
-      icon: 'logo-usd',
-      label: '财务管理',
-      subList: [
-        {
-          name: 'finance-examine',
-          label: '充值审核',
-        },
-        {
-          name: 'finance-capital',
-          label: '资金管理',
-        },
-      ]
-    },
-    {
-      name: 'contract',
-      icon: 'md-list',
-      label: '合同管理',
-      subList: [
-        {
-          name: 'contract-list',
-          label: '合同列表',
-        },
-      ]
-    },
-    {
-      name: 'ggPlan',
-      icon: 'logo-usd',
-      label: '广告管理',
-      subList: [
-        {
-          name: 'ggtising-plan',
-          label: '计划管理',
-        },
-        {
-          name: 'gg-film',
-          label: '广告片管理',
-        },
-      ]
-    },
-    {
-      name: 'resource',
-      icon: 'md-list',
-      label: '资源位管理',
-      subList: [
-        {
-          name: 'resource-management',
-          label: '刊例价管理',
-        },
-      ]
-    },
-    {
-      name: 'system',
-      icon: 'md-list',
-      label: '系统设置',
-      subList: [
-        {
-          name: 'system-setup',
-          label: '财务设置',
-        },
-      ]
-    },
-    {
-      name: 'order',
-      icon: 'md-list',
-      label: '订单管理',
-      subList: [
-        {
-          name: 'order-list',
-          label: '订单管理',
-        },
-      ]
+  user = getUser()
+
+  viewName = 'default'
+
+  permMenu: PermPage[] | null = null
+
+  get siderMenuList() {
+    const user = this.user
+    if (user == null || this.permMenu == null) {
+      return []
     }
-  ]
+
+    const permMenu = this.permMenu
+    const list = getMenuList(permMenu)
+
+    return list
+  }
 
   get siderOpenNames() {
     const activeName = this.siderActiveName
     const item = this.siderMenuList.find(it => {
-      const exists = (it.subList || [{ name: it.name }]).some(t => t.name === activeName)
+      const exists = (it.children! || [{ name: it.name }]).some(t => t.name === activeName)
       return exists
     })
     return item != null ? [ item.name ] : []
@@ -194,8 +96,8 @@ export default class App extends ViewBase {
   // 获取导航中全部可点击的页面 name
   get siderMenuNameMap() {
     const result = this.siderMenuList.reduce((map: any, it) => {
-      const names = it.subList != null
-        ? it.subList.map(t => t.name)
+      const names = it.children != null
+        ? it.children.map(t => t.name)
         : [ it.name ]
       names.forEach(name => map[name] = 1)
       return map
@@ -228,6 +130,20 @@ export default class App extends ViewBase {
 
     // 最后的手段：硬编码映射关系
     return this.siderActiveMap[name]
+  }
+
+  async created() {
+    // 初始化 viewName，设置全局 instance
+    this.viewName = viewName
+    instance = this
+
+    const perms = await getCurrentPerms()
+    // 若无法获取权限，则退出
+    if (perms == null) {
+      return logout()
+    }
+
+    this.permMenu = perms.menu
   }
 
   toggleSider() {

@@ -202,7 +202,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         const detail = status == 2 ? 'audit' : 'detail'
         // <a on-click={this.edittime.bind(this, id, 'start')}>开始</a>
         return <div>
-          <router-link to={{name: 'ggtising-plan-edit', params: {id, edit: detail}}}>{edit}</router-link>
+          <router-link to={{name: 'plan-ggtising-edit', params: {id, edit: detail}}}>{edit}</router-link>
         </div>
         /* tslint:disable */
       }

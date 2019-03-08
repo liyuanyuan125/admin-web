@@ -4,7 +4,6 @@
  * 1、不要将与业务逻辑有关的代码放在此处
  * 2、若 lodash 等优秀开源库中已有相应函数，直接使用之，不要重复造轮子
  */
-
 type ToMapCallback = (v: any) => string
 
 /**
@@ -48,7 +47,7 @@ export function toMap(list: any[], key?: string|ToMapCallback, val?: string|ToMa
  *
  * @param str 要解析的字符串
  */
-export function parse(str: string|any[], def: any[] = []) {
+export function parse<T = string>(str: string|T[], def: any[] = []): T[] {
   if (str instanceof Array) {
     return str
   }

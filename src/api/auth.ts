@@ -1,4 +1,5 @@
 import { get, post } from '@/fn/ajax'
+import { appId } from '@/store'
 
 interface LoginData {
   username: string
@@ -27,5 +28,21 @@ export async function logout() {
  */
 export async function getUserInfo() {
   const res = await get('/auth/infos')
+  return res
+}
+
+/**
+ * 获取当前登录用户的菜单列表
+ */
+export async function getMenuList() {
+  const res = await get('/auth/menus/current-user', { appId })
+  return res
+}
+
+/**
+ * 获取当前登录用户的权限列表
+ */
+export async function getPermList() {
+  const res = await get('/auth/perms/current-user', { appId })
   return res
 }

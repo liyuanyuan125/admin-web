@@ -1,3 +1,6 @@
+import { MapType } from '@/util/types'
+import { parse } from '@/fn/array'
+
 /**
  * 提供一组处理数据的工具方法
  */
@@ -123,4 +126,18 @@ export function filterItemInList(
     }
   })
   return newItem
+}
+
+/**
+ * 将 list 变成 { a: 1, b: 1 } 形式的 map 对象
+ * @param list 能被 fn/array#parse 解析成数组的字符串，或数组
+ * @param ignoreCase 忽略大小写，默认为 true，为 true，则所有 key 转换成小写
+ */
+export function makeMap(list: string | any[], ignoreCase = true): MapType<number> {
+  const result = parse(list).reduce<MapType<number>>((map, it) => {
+    const key = ignoreCase ? String(it).toLowerCase() : it
+    map[key] = 1
+    return map
+  }, {})
+  return result
 }

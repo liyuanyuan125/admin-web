@@ -375,7 +375,7 @@ export default class Main extends ViewBase {
             freezeAmount: this.dataForm.freezeAmount,
             agree: this.dataForm.status == 4 ? true : false
           }))
-          this.$router.push({ name: 'ggtising-plan' })
+          this.$router.push({ name: 'plan-ggtising' })
           ; (this.$refs[dataFroms] as any).resetFields()
         } catch (ex) {
           this.handleError(ex)
