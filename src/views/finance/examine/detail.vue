@@ -86,7 +86,7 @@
       <div class="n-main">审核记录</div>
       <div class="logs">
         <div class="logs-item" v-for="(it,index) in log">
-          <span>{{createTime}}   </span>
+          <span>{{it.createTime}}   </span>
           <span>{{it.email}}【{{it.userName}}】   </span>
           {{it.description}}
         </div>
@@ -280,7 +280,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       this.log = (item.logList || []).map((it: any) => {
         return {
           ...it,
-          createTime :  moment(it.createTime).format(timeFormats)
+          createTime: moment(it.createTime).format(timeFormats)
         }
       })
       // this.createTime = moment(this.log.createTime).format(timeFormats)
