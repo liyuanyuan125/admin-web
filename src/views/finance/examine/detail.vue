@@ -205,9 +205,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
     this.ids = id
     this.doSearch()
-    this.createTime = moment(this.log.createTime).format(timeFormats)
-    this.applyTime = moment(this.list.applyTime).format(timeFormats)
-    this.remittanceDate = moment(this.list.remittanceDate).format(timeFormat)
+    // this.createTime = moment(this.log.createTime).format(timeFormats)
+    // this.applyTime = moment(this.list.applyTime).format(timeFormats)
+    // this.remittanceDate = moment(this.list.remittanceDate).format(timeFormat)
   }
 
   dlgEditDone() {
@@ -278,6 +278,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       this.tagCodeList = tagCodeList
       this.imageList = item.imageList
       this.log = item.logList
+      this.createTime = moment(this.log.createTime).format(timeFormats)
+      this.applyTime = moment(this.list.applyTime).format(timeFormats)
+      this.remittanceDate = moment(this.list.remittanceDate).format(timeFormat)
       // 审核状态
       const { data: {
         approvalStatusList: approvalStatusList,
