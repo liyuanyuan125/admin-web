@@ -136,8 +136,8 @@ export async function getCurrentPerms() {
     const menu = (menuList || []) as PermPage[]
     const permMap = makeMap(permList as string[])
 
-    devInfo('permMenu', menu)
-    devInfo('permMap', permMap)
+    // devInfo('permMenu', menu)
+    // devInfo('permMap', permMap)
 
     const result: PermResult = { menu, permMap }
     return result
@@ -162,7 +162,7 @@ export async function hasPerm(perm: string) {
   const { permMap = {} } = await getCurrentPerms() || {}
   const lower = (perm || '').toLowerCase()
   const has = lower in permMap
-  // !has && devWarn(`[perm] ${lower} not in permMap`)
+  // !has && devInfo(`[perm] ${lower} not in`, permMap)
   return has
 }
 
