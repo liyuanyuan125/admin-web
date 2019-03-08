@@ -31,8 +31,8 @@
         border stripe disabled-hover size="small" class="table">
           <template slot="spaction" slot-scope="{row}">
           <a v-show='row.status == 3' v-auth="'advert.executeOrder:settlement'" @click="change(row.id, row)">结算</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <router-link v-show='row.status == 3' v-auth="'advert.executeOrder:info'" to="{ name: 'order-list-detail', params: { id: row.id , status: row.status } }">详情</router-link>
-          <router-link v-show='row.status != 3' v-auth="'advert.executeOrder:info'" to="{ name: 'order-list-detail', params: { id: row.id , status: row.status } }">详情</router-link>
+          <router-link v-show='row.status == 3' v-auth="'advert.executeOrder:info'" :to="{ name: 'order-list-detail', params: { id: row.id , status: row.status } }">详情</router-link>
+          <router-link v-show='row.status != 3' v-auth="'advert.executeOrder:info'" :to="{ name: 'order-list-detail', params: { id: row.id , status: row.status } }">详情</router-link>
         </template>
         </Table>
 

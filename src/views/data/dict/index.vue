@@ -9,7 +9,7 @@
     <Table :columns="columns" :data="tableData" :loading="loading"
       border stripe disabled-hover size="small" class="table">
         <template slot="spaction" slot-scope="{row}">
-          <router-link v-auth="'basis.dictionarys:categorie-info'" to="{ name: 'data-dict-viewDictionary', params: { id: row.id } }">查看字典</router-link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <router-link v-auth="'basis.dictionarys:categorie-info'" :to="{ name: 'data-dict-viewDictionary', params: { id: row.id } }">查看字典</router-link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <a v-auth="'basis.dictionarys:modify-categorie'" @click="edit(row.id, row)">编辑</a>
         </template>
       </Table>

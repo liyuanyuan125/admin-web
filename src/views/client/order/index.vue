@@ -11,8 +11,8 @@
       <Table  :columns="columns" :data="tableData" :loading="loading"
         border stripe disabled-hover size="small" class="table">
           <template slot="spaction" slot-scope="{row}">
-          <router-link v-show='row.status == 1' v-auth="'customer.workorders:change-status'" to="{ name: 'client-order-detail', params: { id: row.id , approveStatus : row.approveStatus } }">审核</router-link>
-          <router-link v-show='row.status != 1' v-auth="'customer.workorders:change-status'" to="{ name: 'client-order-detail', params: { id: row.id , approveStatus : row.approveStatus } }">详情</router-link>
+          <router-link v-show='row.status == 1' v-auth="'customer.workorders:change-status'" :to="{ name: 'client-order-detail', params: { id: row.id , approveStatus : row.approveStatus } }">审核</router-link>
+          <router-link v-show='row.status != 1' v-auth="'customer.workorders:change-status'" :to="{ name: 'client-order-detail', params: { id: row.id , approveStatus : row.approveStatus } }">详情</router-link>
         </template>
 
         </Table>

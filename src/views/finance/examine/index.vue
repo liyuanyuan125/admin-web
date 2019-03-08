@@ -14,8 +14,8 @@
       <Table :columns="columns" :data="tableData" :loading="loading"
         border stripe disabled-hover size="small" class="table">
           <template slot="spaction" slot-scope="{row}">
-          <router-link v-show='row.approvalStatus == 1' v-auth="'finance.recharges:approval'" to="{ name: 'finance-examine-detail', params: { id : row.id , approvalStatus : row.approvalStatus } }}">审核</router-link>
-          <router-link v-show='row.approvalStatus != 1' v-auth="'finance.recharges:info'" to="{ name: 'finance-examine-detail', params: { id : row.id , approvalStatus : row.approvalStatus } }}">详情</router-link>
+          <router-link v-show='row.approvalStatus == 1' v-auth="'finance.recharges:approval'" :to="{ name: 'finance-examine-detail', params: { id : row.id , approvalStatus : row.approvalStatus } }">审核</router-link>
+          <router-link v-show='row.approvalStatus != 1' v-auth="'finance.recharges:info'" :to="{ name: 'finance-examine-detail', params: { id : row.id , approvalStatus : row.approvalStatus } }">详情</router-link>
         </template>
         </Table>
 

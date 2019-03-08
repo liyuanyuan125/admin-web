@@ -28,7 +28,7 @@
           <template slot="spaction" slot-scope="{row}" >
           <a v-show='row.status != 1' v-auth="'customer.accounts:change-status'" @click="change(row.id, row)">启用</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <a v-show='row.status == 1' v-auth="'customer.accounts:change-status'" @click="change(row.id, row)">停用</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <router-link v-auth="'customer.accounts:info'" to="{ name: 'client-account-detail', params: { id: row.id } }">详情</router-link>
+          <router-link v-auth="'customer.accounts:info'" :to="{ name: 'client-account-detail', params: { id: row.id } }">详情</router-link>
         </template>
         </Table>
 
