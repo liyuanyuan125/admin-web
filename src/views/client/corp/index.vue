@@ -220,7 +220,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       const res = await directorList()
       this.businessDirector = res.data.items
     } catch (ex) {
-      this.handleError(ex)
     }
   }
 
