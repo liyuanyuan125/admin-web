@@ -55,14 +55,14 @@
         border disabled-hover size="small" class="table">
           <template slot="spaction" slot-scope="{row}">
 
-            <UploadButton v-show='row.desc == undefined' v-auth="'advert.videos:upload-attachment'" @success="onUploadSuccess(key)">上传</UploadButton>
-            <a v-show='row.desc == undefined' @click="edit(0 , key)">录入下载链接</a>
+            <UploadButton v-auth="'advert.videos:upload-attachment'" style='margin-top:17px;' v-if='row.desc == undefined'  @success="onUploadSuccess(row , row.key)">上传</UploadButton>
+            <a v-if='row.desc == undefined' @click="edit(0 , row.key)">录入下载链接</a>
 
-            <a v-show='row.desc != undefined && (row.desc.fileId == '' || row.desc.fileId == null)' v-auth="'advert.videos:modify-attachment'" @click="edit(row.desc.id, row.key , row )">编辑</a>&nbsp;&nbsp;&nbsp;
-            <a v-show='row.desc != undefined && (row.desc.fileId == '' || row.desc.fileId == null)' @click="del( row.desc.id)">删除</a>
+            <a v-auth="'advert.videos:modify-attachment'" style='margin-top:17px;' v-if="row.desc != undefined && row.desc.fileId == null"  @click="edit(row.desc.id, row.key , row )">编辑</a>&nbsp;&nbsp;&nbsp;
+            <a v-auth="'advert.videos:delete-attachment'" style='margin-top:17px;' v-if="row.desc != undefined && row.desc.fileId == null" @click="del( row.desc.id)">删除</a>
 
-            <a v-show='row.desc != undefined && (row.desc.fileId != '' || row.desc.fileId != null)' class="operation" href="" @download="desc.fileUrl">下载</a>&nbsp;&nbsp;&nbsp;
-            <a v-show='row.desc != undefined && (row.desc.fileId != '' || row.desc.fileId != null)' v-auth="'advert.videos:delete-attachment'" @click="del( row.desc.id)">删除</a>
+            <a v-if="row.desc != undefined && row.desc.fileId != null" style='margin-top:17px;' class="operation" href="" @download="desc.fileUrl">下载</a>&nbsp;&nbsp;&nbsp;
+            <a v-auth="'advert.videos:delete-attachment'" style='margin-top:17px;' v-if="row.desc != undefined && row.desc.fileId != null"  @click="del( row.desc.id)">删除</a>
         </template>
         </Table>
       </Row>
