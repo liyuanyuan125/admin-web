@@ -55,15 +55,15 @@
         border disabled-hover size="small" class="table">
           <template slot="spaction" slot-scope="{row}">
 
-            <UploadButton v-auth="'advert.videos:upload-attachment'" style='margin-top:17px;' v-if='row.desc == undefined'  @success="onUploadSuccess(row , row.key)">上传</UploadButton>
+            <UploadButton v-auth="'advert.videos:upload-attachment'" style='margin-top:17px;' v-if='row.desc == undefined'  @success="onUploadSuccess($event, row.key)">上传</UploadButton>
             <a v-if='row.desc == undefined' @click="edit(0 , row.key)">录入下载链接</a>
 
             <a v-auth="'advert.videos:modify-attachment'" style='margin-top:17px;' v-if="row.desc != undefined && row.desc.fileId == null"  @click="edit(row.desc.id, row.key , row )">编辑</a>&nbsp;&nbsp;&nbsp;
             <a v-auth="'advert.videos:delete-attachment'" style='margin-top:17px;' v-if="row.desc != undefined && row.desc.fileId == null" @click="del( row.desc.id)">删除</a>
-
-            <a v-if="row.desc != undefined && row.desc.fileId != null" style='margin-top:17px;' class="operation" href="" @download="desc.fileUrl">下载</a>&nbsp;&nbsp;&nbsp;
+ 
+            <a v-if="row.desc != undefined && row.desc.fileId != null" style='margin-top:17px;' class="operation" :href="row.desc.fileUrl" :download="row.desc.fileUrl">下载</a>&nbsp;&nbsp;&nbsp;
             <a v-auth="'advert.videos:delete-attachment'" style='margin-top:17px;' v-if="row.desc != undefined && row.desc.fileId != null"  @click="del( row.desc.id)">删除</a>
-        </template>
+        </template> 
         </Table>
       </Row>
       <div class='titop' v-if='showStatus'>审核</div>
@@ -165,7 +165,6 @@ export default class Main extends ViewBase {
 //   // 审核
   dataForm: any = { ...dataForm }
 
-
   mounted() {
     // console.log(this.$route.params)
     if ( this.$route.params.status == '1' ) {
@@ -179,7 +178,8 @@ export default class Main extends ViewBase {
 
 
   // 上传文件
-  async onUploadSuccess( key: any , { files }: SuccessEvent) {
+  async onUploadSuccess({ files }: SuccessEvent, key: number) {
+    // console.log(this, key, files)
     const typetext = key
     // const typecode = this.typeList.map((item: any) => {
     //       return item.sort
@@ -279,6 +279,7 @@ export default class Main extends ViewBase {
       align: 'center',
     }
   ]
+
   async doSearch() {
      (this.$Spin as any).show()
      this.oldQuery = { ...this.query }
@@ -531,5 +532,8 @@ export default class Main extends ViewBase {
 }
 /deep/ .ivu-btn {
   border-color: #fff;
+}
+/deep/ .ivu-btn:focus {
+  box-shadow: 0;
 }
 </style>
