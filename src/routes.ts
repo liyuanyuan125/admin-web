@@ -393,7 +393,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
   {
-    path: '/finance/examine/detail/:id',
+    path: '/finance/examine/detail/:id/:approvalStatus',
     name: 'finance-examine-detail',
     component: () => import('./views/finance/examine/detail.vue'),
     meta: {
