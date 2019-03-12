@@ -286,6 +286,14 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   },
   {
     path: '/contract/list/edit/:id?',
+    name: 'contract-list-edits',
+    component: () => import('./views/contract/list/edit.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+  {
+    path: '/contract/list/edit/:id/:copy?',
     name: 'contract-list-edit',
     component: () => import('./views/contract/list/edit.vue'),
     meta: {
@@ -293,7 +301,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
   {
-    path: '/contract/list/detail/:id?',
+    path: '/contract/list/detail/:id/:approveStatus/:edi?',
     name: 'contract-list-detail',
     component: () => import('./views/contract/list/detail.vue'),
     meta: {
