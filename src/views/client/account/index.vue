@@ -27,7 +27,7 @@
         border stripe disabled-hover size="small" class="table">
           <template slot="spaction" slot-scope="{row}" >
           <a v-show='row.status != 1' v-auth="'customer.accounts:change-status'" @click="change(row.id, row)">启用</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <a v-show='row.status == 1' v-auth="'customer.accounts:change-status'" @click="change(row.id, row)">停用</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a v-show='row.status == 1' v-auth="'customer.accounts:change-status'" @click="change(row.id, row)">禁用</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <router-link v-auth="'customer.accounts:info'" :to="{ name: 'client-account-detail', params: { id: row.id } }">详情</router-link>
         </template>
         </Table>
@@ -267,7 +267,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   // 修改状态
   async change(id: number, row: any) {
     try {
-      await confirm('您确定' + (row.statusText == '启用' ? '停用' : '启用') + '当前状态信息吗？')
+      await confirm('您确定' + (row.statusText == '启用' ? '禁用' : '启用') + '当前状态信息吗？')
       await setList ({
         id,
         status: row.status == 1 ? 2 : 1
