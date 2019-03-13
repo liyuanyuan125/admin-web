@@ -15,7 +15,7 @@
           <!-- <Date-picker type="date" v-model="query.UpdateTime" placeholder="更新时间" on-change="selectTime"  class="input" style="width: 200px"></Date-picker>           -->
           <Select v-model="query.status" placeholder="启用状态" clearable>
             <Option v-for="it in statusList" :key="it.key" :value="it.key"
-              :label="it.text == '是' ? '启用' : '停用'">{{it.text == '是' ? '启用' : '停用'}}</Option>
+              :label="it.text">{{it.text}}</Option>
           </Select>
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </form>
