@@ -179,7 +179,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        statusText: it.status == 1 ? '启用' : '停用',
+        statusText: it.status == 1 ? '启用' : '禁用',
       }
     })
     return list
