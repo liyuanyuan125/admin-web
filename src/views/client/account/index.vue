@@ -122,6 +122,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   company2 = []
 
+  stats: any = ''
+
 
   columns = [
     { title: '账号ID', key: 'id', align: 'center' },
@@ -158,7 +160,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       render: (hh: any, { row: { status, statusText } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        return <span class={`status-${status}`}>{statusText}</span>
+        if (status == 1) {
+          return <span class={`status-${status}`}>启用</span>
+        } else if (status == 2) {
+          return <span class={`status-${status}`}>停用</span>
+        } else if (status == 3) {
+          return <span class={`status-${status}`}>待激活</span>
+        }
         /* tslint:enable */
       }
     },
@@ -179,7 +187,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        statusText: it.status == 1 ? '启用' : '禁用',
+        // statusText: it.status == 1 ? '启用' : '禁用',
       }
     })
     return list
@@ -267,7 +275,15 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   // 修改状态
   async change(id: number, row: any) {
     try {
-      await confirm('您确定' + (row.statusText == '启用' ? '禁用' : '启用') + '当前状态信息吗？')
+      if (row.status == 1) {
+        this.stats = '禁用'
+      } else if (row.status == 2) {
+        this.stats = '启用'
+      } else if (row.status == 3) {
+        this.stats = '激活'
+      }
+
+      await confirm('您确定' + this.stats + '当前状态信息吗？')
       await setList ({
         id,
         status: row.status == 1 ? 2 : 1
