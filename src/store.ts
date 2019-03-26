@@ -37,7 +37,7 @@ let theUser: User | null = null
 
 const restoreUser = (): User | null => {
   const token = cookie.get(KEY_TOKEN)
-  const user = tryParseJson(localStorage[KEY_USER])
+  const user = tryParseJson(localStorage.getItem(KEY_USER))
   return token && user ? user : null
 }
 
@@ -57,7 +57,7 @@ export function getUser() {
  */
 export function setUser(user: User) {
   theUser = user
-  localStorage[KEY_USER] = JSON.stringify(user)
+  localStorage.setItem(KEY_USER, JSON.stringify(user))
 }
 
 // 简单的断言
@@ -92,7 +92,7 @@ export function hasLogin() {
  */
 export function logout() {
   cookie.remove(KEY_TOKEN, COOKIE_OPTIONS)
-  delete localStorage[KEY_USER]
+  localStorage.removeItem(KEY_USER)
 
   // 清除权限缓存
   if (theUser != null) {
