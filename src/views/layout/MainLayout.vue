@@ -1,5 +1,5 @@
 <template>
-  <div class="site-layout" :class="menuIsOff && 'site-layout-menu-off'">
+  <div class="site-layout" :class="menuIsFold && 'site-layout-menu-fold'">
     <header class="site-header flex-box">
       <h1 class="logo">
         <router-link to="/" class="logo-link">Aiads 广告投放</router-link>
@@ -8,7 +8,7 @@
       <div class="flex-1 flex-box">
         <a class="sider-toggle" @click="toggleSider">
           <Icon type="md-menu" size="24" class="menu-icon"
-            :class="menuIsOff && 'rotate-icon'"></Icon>
+            :class="menuIsFold && 'rotate-icon'"></Icon>
         </a>
 
         <div class="flex-1"></div>
@@ -50,9 +50,10 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
+import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import { getUser, getCurrentPerms, logout } from '@/store'
+import { getUser, getCurrentPerms, logout,
+  getUserSettings, updateUserSettings } from '@/store'
 import { PermPage } from '@/util/types'
 import { getMenuList, SiderMenuItem } from './menuList'
 import event from '@/fn/event'
@@ -67,7 +68,7 @@ event.on('route-perm', ({ has, to, from }: any) => {
 
 @Component
 export default class App extends ViewBase {
-  menuIsOff = false
+  menuIsFold = false
 
   user = getUser()
 
@@ -136,6 +137,10 @@ export default class App extends ViewBase {
   }
 
   async created() {
+    // 恢复用户设置
+    const { siderMenuIsFold } = getUserSettings()
+    this.menuIsFold = !!siderMenuIsFold
+
     // 初始化 viewName，设置全局 instance
     this.viewName = viewName
     instance = this
@@ -150,7 +155,7 @@ export default class App extends ViewBase {
   }
 
   toggleSider() {
-    this.menuIsOff = !this.menuIsOff
+    this.menuIsFold = !this.menuIsFold
   }
 
   onMenuSelect(name: string) {
@@ -158,6 +163,11 @@ export default class App extends ViewBase {
       logout()
       this.$router.push({ name: 'login' })
     }
+  }
+
+  @Watch('menuIsFold')
+  watchMenuIsFold(value: boolean) {
+    updateUserSettings({ siderMenuIsFold: value })
   }
 }
 </script>
@@ -264,7 +274,7 @@ export default class App extends ViewBase {
   }
 }
 
-.site-layout-menu-off {
+.site-layout-menu-fold {
   .site-sider {
     transform: translateX(-148px);
     &:hover {

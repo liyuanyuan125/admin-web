@@ -6,7 +6,7 @@ import cookie from 'js-cookie'
 import { logout as postLogout } from '@/api/auth'
 import { MapType, PermPage } from '@/util/types'
 import { getMenuList, getPermList } from '@/api/auth'
-import { devInfo, devError } from '@/util/dev'
+import { devInfo, devError, devAssert } from '@/util/dev'
 import { makeMap } from '@/util/dealData'
 import { Route } from 'vue-router'
 import { RouteMetaUnauth, RouteMetaAuth } from './routes'
@@ -60,19 +60,12 @@ export function setUser(user: User) {
   localStorage.setItem(KEY_USER, JSON.stringify(user))
 }
 
-// 简单的断言
-const assert = (expression: any, errorMessage: string) => {
-  if (!!expression === false) {
-    throw new Error(errorMessage)
-  }
-}
-
 /** 检查用户信息完成性，若不完整，则清空，退出  */
 export function checkUser() {
   const user = getUser()
   if (user != null) {
     try {
-      assert(user.id, '用户 ID 必须存在')
+      devAssert(user.id, '用户 ID 必须存在')
     } catch (ex) {
       devError(`用户信息不完整：${ex.message}，退出重新登录`)
       logout()
@@ -201,4 +194,58 @@ export async function hasRoutePerm(route: Route) {
 
   const has = await hasPerm(perm)
   return has
+}
+
+/** 用户设置，将会保存在本地存储 */
+export interface UserSettings {
+  /** 侧边菜单是否折叠 */
+  siderMenuIsFold?: boolean
+}
+
+const userSettingsKeyPrefix = 'userSettings@admin.aiads.com'
+
+const defaultUserSettings: UserSettings = {
+  siderMenuIsFold: false
+}
+
+let userSettings: UserSettings
+
+const getUserSettingsKey = () => {
+  const user = getUser()!
+  devAssert(user != null)
+  const key = `${userSettingsKeyPrefix}${user.id}`
+  return key
+}
+
+/**
+ * 获取当前用户的设置
+ */
+export function getUserSettings(): UserSettings {
+  const user = getUser()
+  if (user == null) {
+    return { ...defaultUserSettings }
+  }
+
+  if (userSettings == null) {
+    const key = getUserSettingsKey()
+    const settings = tryParseJson(localStorage.getItem(key)) || {}
+    userSettings = { ...defaultUserSettings, ...settings }
+  }
+
+  return userSettings
+}
+
+const setUserSettings = (settings: UserSettings) => {
+  const key = getUserSettingsKey()
+  const json = JSON.stringify(settings)
+  localStorage.setItem(key, json)
+}
+
+/**
+ * 更新当前用户的设置
+ */
+export function updateUserSettings(settings: UserSettings) {
+  const oldSettings = getUserSettings()
+  const newSettings = { ...defaultUserSettings, ...oldSettings, ...settings }
+  setUserSettings(newSettings)
 }
