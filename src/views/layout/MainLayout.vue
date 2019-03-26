@@ -18,7 +18,6 @@
             <template slot="title">
               <Icon type="md-person"></Icon>{{user && user.name || '用户'}}
             </template>
-            <MenuItem name="settings">账户信息</MenuItem>
             <MenuItem name="logout">退出登录</MenuItem>
           </Submenu>
         </Menu>
@@ -155,11 +154,7 @@ export default class App extends ViewBase {
   }
 
   onMenuSelect(name: string) {
-    if (name == 'settings') {
-      alert('暂未实现')
-      // this.$router.push({ name })
-    } else if (name == 'logout') {
-      // TODO: do logout
+    if (name == 'logout') {
       logout()
       this.$router.push({ name: 'login' })
     }
