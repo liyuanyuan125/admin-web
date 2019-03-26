@@ -1,19 +1,19 @@
 <template>
-  <div class="site-layout">
+  <div class="site-layout" :class="menuIsOff && 'site-layout-menu-off'">
     <header class="site-header flex-box">
       <h1 class="logo">
         <router-link to="/" class="logo-link">Aiads 广告投放</router-link>
       </h1>
+
       <div class="flex-1 flex-box">
-        <a class="sider-toggle" @click="toggleSider" style="display:none">
+        <a class="sider-toggle" @click="toggleSider">
           <Icon type="md-menu" size="24" class="menu-icon"
-            :class="isOff && 'rotate-icon'"></Icon>
+            :class="menuIsOff && 'rotate-icon'"></Icon>
         </a>
 
         <div class="flex-1"></div>
 
-        <Menu mode="horizontal" class="user-menu flex-box"
-          @on-select='onMenuSelect'>
+        <Menu mode="horizontal" class="user-menu flex-box" @on-select="onMenuSelect">
           <Submenu name="user">
             <template slot="title">
               <Icon type="md-person"></Icon>{{user && user.name || '用户'}}
@@ -24,13 +24,15 @@
         </Menu>
       </div>
     </header>
+
     <Layout class="site-center">
-      <Sider collapsible hide-trigger v-model="isOff" :width="168" class="site-sider" ref="sider">
-        <Menu width="auto" class="sider-menu" :class="isOff && 'sider-menu-off'"
-          :active-name="siderActiveName" :open-names="siderOpenNames" v-if="siderMenuList.length > 0">
+      <Sider collapsible hide-trigger :width="168" class="site-sider light-scroll">
+        <Menu width="auto" class="sider-menu" :active-name="siderActiveName"
+          :open-names="siderOpenNames" v-if="siderMenuList.length > 0">
           <Submenu v-for="menu in siderMenuList" :key="menu.name" :name="menu.name">
             <template slot="title">
-              <Icon :type="menu.icon"/>{{menu.label}}
+              <Icon :type="menu.icon" class="sider-menu-icon"/>
+              <label class="sider-menu-label">{{menu.label}}</label>
             </template>
             <MenuItem v-for="sub in menu.children" :key="sub.name" :name="sub.name">
               <router-link :to="{name: sub.name}">{{sub.label}}</router-link>
@@ -40,7 +42,9 @@
       </Sider>
 
       <Content class="site-content">
-        <router-view :name="viewName"/>
+        <main class="site-main">
+          <router-view :name="viewName"/>
+        </main>
       </Content>
     </Layout>
   </div>
@@ -64,7 +68,7 @@ event.on('route-perm', ({ has, to, from }: any) => {
 
 @Component
 export default class App extends ViewBase {
-  isOff = false
+  menuIsOff = false
 
   user = getUser()
 
@@ -147,7 +151,7 @@ export default class App extends ViewBase {
   }
 
   toggleSider() {
-    (this.$refs.sider as any).toggleCollapse()
+    this.menuIsOff = !this.menuIsOff
   }
 
   onMenuSelect(name: string) {
@@ -170,13 +174,17 @@ export default class App extends ViewBase {
   position: relative;
 }
 .site-header {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
   height: 50px;
   line-height: 50px;
   background-color: lighten(@c-base, 8%);
+  z-index: 88;
 }
 .logo {
-  width: 200px;
+  width: 168px;
   font-weight: 400;
   font-size: 18px;
 }
@@ -186,7 +194,11 @@ export default class App extends ViewBase {
   color: #fff;
 }
 
-// TODO: 右侧菜单收缩功能稍微开发完成
+.sider-toggle {
+  width: 42px;
+  color: #fff;
+  text-align: center;
+}
 .menu-icon {
   transition: all .3s;
 }
@@ -212,20 +224,31 @@ export default class App extends ViewBase {
 .site-center {
   position: relative;
   background-color: transparent;
+  padding-top: 50px;
 }
 .site-sider {
-  position: relative;
+  position: fixed;
+  left: 0;
+  top: 50px;
+  height: 100%;
   background-color: #fff;
-  border-right: 1px solid #eee;
+  box-shadow: 8px 0 16px rgba(80, 110, 255, .06);
+  z-index: 80;
+  overflow-x: hidden;
+  transform: translateX(0);
 }
 .site-content {
   position: relative;
-  padding: 10px;
+  padding-left: 168px;
   overflow-x: auto !important;
+  transition: padding-left .2s;
+}
+.site-main {
+  padding: 10px;
 }
 
 .sider-menu {
-  // margin-bottom: 188px;
+  margin-bottom: 188px;
   &::after {
     display: none;
   }
@@ -234,7 +257,7 @@ export default class App extends ViewBase {
       padding: 0 !important;
       & > a {
         display: block;
-        padding: 14px 24px 14px 42px;
+        padding: 14px 24px 14px 46px;
         color: @c-text;
       }
     }
@@ -244,40 +267,18 @@ export default class App extends ViewBase {
       }
     }
   }
-  // a {
-  //   position: absolute;
-  //   top: 0;
-  //   left: 0;
-  //   width: 100%;
-  //   height: 100%;
-  // }
-  // span {
-  //   display: inline-block;
-  //   width: 69px;
-  //   overflow: hidden;
-  //   text-overflow: ellipsis;
-  //   white-space: nowrap;
-  //   vertical-align: bottom;
-  //   transition: width .2s ease .2s;
-  // }
-  // i {
-  //   transform: translateX(0);
-  //   transition: font-size .2s ease, transform .2s ease;
-  //   vertical-align: middle;
-  //   font-size: 16px;
-  // }
 }
 
-// .sider-menu-off {
-//   span {
-//     width: 0;
-//     transition: width .2s ease;
-//   }
-//   i {
-//     transform: translateX(5px);
-//     transition: font-size .2s ease .2s, transform .2s ease .2s;
-//     vertical-align: middle;
-//     font-size: 22px;
-//   }
-// }
+.site-layout-menu-off {
+  .site-sider {
+    transform: translateX(-148px);
+    &:hover {
+      transform: translateX(0);
+    }
+  }
+
+  .site-content {
+    padding-left: 20px;
+  }
+}
 </style>
