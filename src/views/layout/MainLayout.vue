@@ -25,8 +25,8 @@
     </header>
 
     <Layout class="site-center">
-      <Sider collapsible hide-trigger :width="168" class="site-sider light-scroll">
-        <Menu width="auto" class="sider-menu" :active-name="siderActiveName"
+      <Sider collapsible hide-trigger :width="168" theme="dark" class="site-sider light-scroll">
+        <Menu width="auto" class="sider-menu" :active-name="siderActiveName" theme="dark"
           :open-names="siderOpenNames" v-if="siderMenuList.length > 0">
           <Submenu v-for="menu in siderMenuList" :key="menu.name" :name="menu.name">
             <template slot="title">
@@ -41,6 +41,11 @@
       </Sider>
 
       <Content class="site-content">
+        <Breadcrumb separator="<i class='ivu-icon ivu-icon-ios-arrow-forward'></i>" class="site-breadcrumb">
+          <BreadcrumbItem v-for="(it, i) in breadcrumbList" :key="i"
+            :to="it.isRoute && i < breadcrumbList.length - 1 ? { name: it.name } : null">{{it.text}}</BreadcrumbItem>
+        </Breadcrumb>
+
         <main class="site-main">
           <router-view :name="viewName"/>
         </main>
@@ -55,8 +60,10 @@ import ViewBase from '@/util/ViewBase'
 import { getUser, getCurrentPerms, logout,
   getUserSettings, updateUserSettings } from '@/store'
 import { PermPage } from '@/util/types'
-import { getMenuList, SiderMenuItem } from './menuList'
+import { getMenuList, SiderMenuItem, BreadcrumbConfig,
+  getBreadcrumbListFromRoute } from './layout'
 import event from '@/fn/event'
+import { Route } from 'vue-router'
 
 let instance: any = null
 let viewName: string = 'default'
@@ -67,7 +74,7 @@ event.on('route-perm', ({ has, to, from }: any) => {
 })
 
 @Component
-export default class App extends ViewBase {
+export default class MainLayout extends ViewBase {
   menuIsFold = false
 
   user = getUser()
@@ -75,6 +82,8 @@ export default class App extends ViewBase {
   viewName = 'default'
 
   permMenu: PermPage[] | null = null
+
+  breadcrumbList: BreadcrumbConfig[] = []
 
   get siderMenuList() {
     const user = this.user
@@ -169,6 +178,15 @@ export default class App extends ViewBase {
   watchMenuIsFold(value: boolean) {
     updateUserSettings({ siderMenuIsFold: value })
   }
+
+  @Watch('$route', { immediate: true })
+  @Watch('permMenu')
+  watchRoute() {
+    if (this.permMenu == null) {
+      return
+    }
+    this.breadcrumbList = getBreadcrumbListFromRoute(this.$route, this.permMenu)
+  }
 }
 </script>
 
@@ -178,6 +196,7 @@ export default class App extends ViewBase {
 .site-layout {
   position: relative;
 }
+
 .site-header {
   position: fixed;
   top: 0;
@@ -185,14 +204,16 @@ export default class App extends ViewBase {
   width: 100%;
   height: 50px;
   line-height: 50px;
-  background-color: lighten(@c-base, 8%);
+  background-color: #515a6e;
   z-index: 88;
 }
+
 .logo {
   width: 168px;
   font-weight: 400;
   font-size: 18px;
 }
+
 .logo-link {
   display: block;
   text-align: center;
@@ -200,13 +221,15 @@ export default class App extends ViewBase {
 }
 
 .sider-toggle {
-  width: 42px;
+  width: 50px;
   color: #fff;
   text-align: center;
 }
+
 .menu-icon {
   transition: all .3s;
 }
+
 .rotate-icon {
   transform: rotate(-90deg);
 }
@@ -231,59 +254,90 @@ export default class App extends ViewBase {
   background-color: transparent;
   padding-top: 50px;
 }
+
 .site-sider {
   position: fixed;
   left: 0;
   top: 50px;
   height: 100%;
-  background-color: #fff;
   box-shadow: 8px 0 16px rgba(80, 110, 255, .06);
   z-index: 80;
   overflow-x: hidden;
   transform: translateX(0);
 }
+
 .site-content {
   position: relative;
   padding-left: 168px;
   overflow-x: auto !important;
   transition: padding-left .2s;
 }
+
+.site-breadcrumb {
+  padding: 15px 15px 0;
+  user-select: none;
+  /deep/ .ivu-breadcrumb-item-link {
+    color: #888;
+    &[href]:hover {
+      color: @c-base;
+    }
+  }
+  /deep/ .ivu-breadcrumb-item-separator {
+    color: #bbb;
+    margin: 0 8px 0 3px;
+  }
+  > span:last-child {
+    font-weight: normal;
+  }
+}
+
 .site-main {
-  padding: 10px;
+  padding: 15px;
 }
 
 .sider-menu {
   margin-bottom: 188px;
+  line-height: 20px;
+
   &::after {
     display: none;
   }
+
   /deep/ .ivu-menu-submenu {
     .ivu-menu-item {
       padding: 0 !important;
       & > a {
         display: block;
-        padding: 14px 24px 14px 46px;
-        color: @c-text;
+        padding: 10px 24px 10px 46px;
+        color: rgba(255, 255, 255, .7);
+        &:hover {
+          color: #fff;
+        }
       }
     }
+
     .ivu-menu-item-selected {
       & > a {
-        color: @c-base;
+        color: #fff;
       }
+    }
+
+    .ivu-menu-submenu-title {
+      padding: 10px 24px;
     }
   }
 }
 
 .site-layout-menu-fold {
   .site-sider {
-    transform: translateX(-148px);
+    transform: translateX(-158px);
     &:hover {
       transform: translateX(0);
     }
   }
 
   .site-content {
-    padding-left: 20px;
+    padding-left: 10px;
   }
 }
 </style>
