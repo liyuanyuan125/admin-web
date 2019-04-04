@@ -151,7 +151,5 @@ export function getBreadcrumbListFromRoute(route: Route, permMenu: PermPage[]) {
     key = key.replace(lastHyphen, '')
   }
 
-  devInfo(list)
-
   return list
 }

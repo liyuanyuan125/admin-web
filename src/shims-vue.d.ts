@@ -10,6 +10,7 @@ declare module 'iview' {
   export const Modal: any   // tslint:disable-line
   export const Message: any // tslint:disable-line
   export const Input: any   // tslint:disable-line
+  export const Select: any  // tslint:disable-line
 }
 
 declare module 'iview/dist/locale/zh-CN' {

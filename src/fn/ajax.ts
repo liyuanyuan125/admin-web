@@ -6,6 +6,7 @@
 import axios from 'axios'
 import event from './event'
 import tryParseJson from '@/fn/tryParseJson'
+import { AjaxResult } from '@/util/types'
 
 const ajaxBaseUrl = VAR.ajaxBaseUrl
 
@@ -25,7 +26,7 @@ const perfectData = ({ code, data, msg }: any = {}) => {
   }
 }
 
-const request = async (url: string, opts: object) => {
+const request = async (url: string, opts: object): Promise<AjaxResult> => {
   const isAbs = isAbsoluteUrl(url)
 
   const config = {

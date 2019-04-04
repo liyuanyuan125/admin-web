@@ -57,11 +57,9 @@
 <script lang="ts">
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import { getUser, getCurrentPerms, logout,
-  getUserSettings, updateUserSettings } from '@/store'
+import { getUser, getCurrentPerms, logout, getUserSettings, updateUserSettings } from '@/store'
 import { PermPage } from '@/util/types'
-import { getMenuList, SiderMenuItem, BreadcrumbConfig,
-  getBreadcrumbListFromRoute } from './layout'
+import { getMenuList, SiderMenuItem, BreadcrumbConfig, getBreadcrumbListFromRoute } from './layout'
 import event from '@/fn/event'
 import { Route } from 'vue-router'
 
@@ -276,6 +274,7 @@ export default class MainLayout extends ViewBase {
 .site-breadcrumb {
   padding: 15px 15px 0;
   user-select: none;
+  line-height: 16px;
   /deep/ .ivu-breadcrumb-item-link {
     color: #888;
     &[href]:hover {

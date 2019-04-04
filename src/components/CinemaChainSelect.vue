@@ -1,6 +1,6 @@
 <template>
   <Select v-model="inValue" :placeholder="placeholder" filterable
-    clearable class="component" ref="ui">
+    clearable class="cinema-chain-select" ref="ui">
     <Option v-for="it in list" :key="it.id" :value="it.id"
       :label="it.shortName || it.name" class="flex-box">
       <span class="flex-1">{{it.shortName || it.name}}</span>
@@ -68,7 +68,7 @@ export default class CinemaChainSelect extends ViewBase {
 </script>
 
 <style lang="less" scoped>
-.component {
+.cinema-chain-select {
   min-width: 188px;
 }
 .offline {

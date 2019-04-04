@@ -1,6 +1,6 @@
 import home from './views/home.vue'
 import login from './views/login.vue'
-import MainLayout from './views/layout/MainLayout.vue'
+import MainLayout from './layout/mainLayout'
 import Error from './views/error/index.vue'
 
 import { RouteConfig, Route } from 'vue-router'
@@ -230,29 +230,24 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   // 基础数据 - 影院管理 - 列表
   {
     path: '/data/cinema/',
-    redirect: { name: 'data-cinema' },
-    component: () => import('./components/tabLayout'),
-    children: [
-      {
-        path: '/data/cinema/',
-        name: 'data-cinema',
-        component: () => import('./views/data/cinema/index.vue'),
-        meta: {
-          authKey: 'theater.cinemas:list',
-          title: '影院管理',
-          fixed: true,
-        }
-      },
-      {
-        path: '/data/cinema-hall/:id',
-        name: 'data-cinema-hall',
-        component: () => import('./views/data/cinema-hall/index.vue'),
-        meta: {
-          authKey: 'theater.halls:list',
-          title: '影厅列表',
-        }
-      },
-    ]
+    name: 'data-cinema',
+    component: () => import('./views/data/cinema/index.vue'),
+    meta: {
+      authKey: 'theater.cinemas:list',
+      title: '影院管理',
+      fixed: true,
+    }
+  },
+
+  // 基础数据 - 影院管理 - 影厅列表
+  {
+    path: '/data/cinema-hall/:id',
+    name: 'data-cinema-hall',
+    component: () => import('./views/data/cinema-hall/index.vue'),
+    meta: {
+      authKey: 'theater.halls:list',
+      title: '影厅列表',
+    }
   },
 
   // 基础数据 - 影片管理 - 列表

@@ -1,8 +1,9 @@
 import { Vue, Component } from 'vue-property-decorator'
 import { slice } from '@/fn/object'
-import { numberify, numberKeys } from '@/fn/typeCast'
+import { numberify, numberKeys, arrayify } from '@/fn/typeCast'
 import { prettyQuery, urlParam } from '@/fn/url'
 import { isEmpty } from 'lodash'
+import { devInfo } from '@/util/dev'
 
 /**
  * updateQueryByParam 参数
@@ -59,7 +60,8 @@ export default class UrlManager extends Vue {
   updateQuery(query: any) {
     const keys = Object.keys(this.defQuery)
     const urlQuery = slice(query, keys)
-    const newQuery = numberify({ ...this.defQuery, ...urlQuery }, numberKeys(this.defQuery))
+    const tquery = numberify({ ...this.defQuery, ...urlQuery }, numberKeys(this.defQuery))
+    const newQuery = arrayify(tquery, this.defQuery)
     isEmpty(this.query)
       ? (this.query = newQuery)
       : keys.forEach(key => this.query[key] = newQuery[key])
