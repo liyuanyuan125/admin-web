@@ -12,7 +12,7 @@
         <Row class="res-num">
           <Col span="2">充值金额:</Col>
           <Col span="4" class="res-num-item">
-            <span class='item1'>{{list.amount}}.00</span>
+            <span class='item1'>{{amount}}</span>
           </Col>
         </Row>
         <Row class="res-num">
@@ -193,6 +193,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   viewerShow = false
   viewerImage = ''
 
+  amount: any = ''
+  newend = ''
+  count = 0
+
 
 
 
@@ -209,6 +213,36 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     // this.applyTime = moment(this.list.applyTime).format(timeFormats)
     // this.remittanceDate = moment(this.list.remittanceDate).format(timeFormat)
   }
+
+  async addNumber(number: any) {
+    this.newend = ''
+    this.count = 0
+    if (number.indexOf('.') == -1) {
+      for (let i = number.length - 1; i >= 0; i--) {
+        if (this.count % 3 == 0 && this.count != 0) {
+          this.newend = number.charAt(i) + ',' + this.newend
+        } else {
+          this.newend = number.charAt(i) + this.newend
+        }
+        this.count++
+      }
+      number = this.newend + '.00' // 自动补小数点后两位
+      return number
+    } else {
+      for (let i = number.indexOf('.') - 1; i >= 0; i--) {
+        if (this.count % 3 == 0 && this.count != 0) {
+          this.newend = number.charAt(i) + ',' + this.newend // 碰到3的倍数则加上“,”号
+        } else {
+          this.newend = number.charAt(i) + this.newend // 逐个字符相接起来
+        }
+        this.count++
+      }
+      number =
+        this.newend + (number + '00').substr((number + '00').indexOf('.'), 3)
+      return number
+    }
+  }
+
 
   dlgEditDone() {
     this.doSearch()
@@ -283,6 +317,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           createTime: moment(it.createTime).format(timeFormats)
         }
       })
+      const htmls = String(this.list.amount)
+      if (htmls.indexOf('.') == -1) {
+        this.amount = htmls + '.00'
+      } else {
+        this.amount = htmls
+      }
       // this.createTime = moment(this.log.createTime).format(timeFormats)
       this.applyTime = moment(this.list.applyTime).format(timeFormats)
       this.remittanceDate = moment(this.list.remittanceDate).format(timeFormat)

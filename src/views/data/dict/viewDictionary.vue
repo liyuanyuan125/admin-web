@@ -22,11 +22,11 @@
         @on-change="page => query.pageIndex = page"
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
-<<<<<<< HEAD
+<!-- <<<<<<< HEAD -->
     <dlgViewEdit :cinemaOnes="editOne" :status="stas" ref="addOrUpdate" @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"></dlgViewEdit>
-=======
-    <dlgViewEdit :cinemaOnes="editOne"   ref="addOrUpdate" @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"></dlgViewEdit>
->>>>>>> testing
+<!-- ======= -->
+    <!-- <dlgViewEdit :cinemaOnes="editOne"   ref="addOrUpdate" @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"></dlgViewEdit> -->
+<!-- >>>>>>> testing -->
   </div>
 </template>
 

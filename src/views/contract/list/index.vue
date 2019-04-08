@@ -24,22 +24,22 @@
       </div>
       <Table :columns="columns" :data="tableData" :loading="loading"
         border stripe disabled-hover size="small" class="table">
-          <template slot="spaction" slot-scope="{row}">
+          <template slot="spaction" slot-scope="{row}" class='divs'>
 
-          <router-link v-show='row.approveStatus == 1' v-auth="'customer.contracts:change-status'" :to="{ name: 'contract-list-detail', params: { id: row.id , approveStatus : row.approveStatus }}">审批</router-link>&nbsp;&nbsp;
-          <router-link v-show='row.approveStatus == 1' v-auth="'customer.contracts:modify'" :to="{ name: 'contract-list-edit', params: { id: row.id } }">编辑</router-link>&nbsp;&nbsp;
-          <router-link v-show='row.approveStatus == 1' v-auth="'customer.contracts:add'" :to="{ name: 'contract-list-edit', params: { id: row.id ,copy : -1 } }">复制</router-link>&nbsp;&nbsp;
-          <router-link v-show='row.approveStatus == 1' v-auth="'customer.contracts:info'" :to="{ name: 'contract-list-detail', params: { id: row.id , edi : 1  } }">详情</router-link>
+          <router-link v-show='row.approveStatus == 1' style='display: inline-block;margin-top: 15px;' v-auth="'customer.contracts:change-status'" :to="{ name: 'contract-list-detail', params: { id: row.id , approveStatus : row.approveStatus }}">审批</router-link>&nbsp;&nbsp;
+          <router-link v-show='row.approveStatus == 1' style='display: inline-block;margin-top: 15px;' v-auth="'customer.contracts:modify'" :to="{ name: 'contract-list-edit', params: { id: row.id } }">编辑</router-link>&nbsp;&nbsp;
+          <router-link v-show='row.approveStatus == 1' style='display: inline-block;margin-top: 15px;' v-auth="'customer.contracts:add'" :to="{ name: 'contract-list-edit', params: { id: row.id ,copy : -1 } }">复制</router-link>&nbsp;&nbsp;
+          <router-link v-show='row.approveStatus == 1' style='display: inline-block;margin-top: 15px;' v-auth="'customer.contracts:info'" :to="{ name: 'contract-list-detail', params: { id: row.id , approveStatus : row.approveStatus , edi : 1  } }">详情</router-link>
 
           <a v-show='row.approveStatus == 2' @click="zuofei(row.id, row)">作废</a>&nbsp;&nbsp;
-          <router-link v-show='row.approveStatus == 2' v-auth="'customer.contracts:add'" :to="{ name: 'contract-list-edit', params: { id: row.id ,copy : -1} }">复制</router-link>&nbsp;&nbsp;
-          <router-link v-show='row.approveStatus == 2' v-auth="'customer.contracts:info'" :to="{ name: 'contract-list-detail', params: { id: row.id , edi : 0  } }">详情</router-link>
+          <router-link v-show='row.approveStatus == 2' style='display: inline-block;margin-top: 15px;' v-auth="'customer.contracts:add'" :to="{ name: 'contract-list-edit', params: { id: row.id ,copy : -1} }">复制</router-link>&nbsp;&nbsp;
+          <router-link v-show='row.approveStatus == 2' style='display: inline-block;margin-top: 15px;' v-auth="'customer.contracts:info'" :to="{ name: 'contract-list-detail', params: { id: row.id , approveStatus : row.approveStatus , edi : 0  } }">详情</router-link>
 
-          <router-link v-show='row.approveStatus == 3' v-auth="'customer.contracts:add'" :to="{ name: 'contract-list-edit', params: { id: row.id,copy : -1 } }">复制</router-link>&nbsp;&nbsp;
-          <router-link v-show='row.approveStatus == 3' v-auth="'customer.contracts:info'" :to="{ name: 'contract-list-detail', params: { id: row.id , edi : 0  } }">详情</router-link>
+          <router-link v-show='row.approveStatus == 3' style='display: inline-block;margin-top: 15px;' v-auth="'customer.contracts:add'" :to="{ name: 'contract-list-edit', params: { id: row.id,copy : -1 } }">复制</router-link>&nbsp;&nbsp;
+          <router-link v-show='row.approveStatus == 3' style='display: inline-block;margin-top: 15px;' v-auth="'customer.contracts:info'" :to="{ name: 'contract-list-detail', params: { id: row.id , approveStatus : row.approveStatus , edi : 0  } }">详情</router-link>
 
-          <router-link v-show='row.approveStatus == 4' v-auth="'customer.contracts:add'" :to="{ name: 'contract-list-edit', params: { id: row.id ,copy : -1} }">复制</router-link>&nbsp;&nbsp;
-          <router-link v-show='row.approveStatus == 4' v-auth="'customer.contracts:info'" :to="{ name: 'contract-list-detail', params: { id: row.id , edi : 0  } }">详情</router-link>
+          <router-link v-show='row.approveStatus == 4' style='display: inline-block;margin-top: 15px;' v-auth="'customer.contracts:add'" :to="{ name: 'contract-list-edit', params: { id: row.id ,copy : -1} }">复制</router-link>&nbsp;&nbsp;
+          <router-link v-show='row.approveStatus == 4' style='display: inline-block;margin-top: 15px;' v-auth="'customer.contracts:info'" :to="{ name: 'contract-list-detail', params: { id: row.id , approveStatus : row.approveStatus , edi : 0  } }">详情</router-link>
 
         </template>
         </Table>
@@ -308,7 +308,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   // }
   edit(id: number) {
     const params: any = id > 0 ? { id } : {}
-    this.$router.push({ name: 'contract-list-edit', params })
+    this.$router.push({ name: 'contract-list-edits', params })
   }
 
   // 作废

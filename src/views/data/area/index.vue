@@ -17,6 +17,10 @@
 
     <Table :columns="columns" :data="tableData" :loading="loading"
       border stripe disabled-hover size="small" class="table">
+      <template slot="area" slot-scope="{row}">
+        <PoptipSelect v-auth="'basis.districts:modify'" :value='rows(row)' @change="editStatus"/>
+        <span v-auth-not="'basis.districts:modify'">{{row.areaName}}</span>
+      </template>
       <template slot="action" slot-scope="{row}">
         <a v-auth="'basis.districts:modify'" @click="edit(row.id, row, 1)">编辑</a>
         <a style="margin-left: 8px" v-auth="'basis.districts:delete'" @click="deletes(edit.id)">删除</a>
@@ -102,26 +106,27 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         title: '所属区域',
         key: 'areaName',
         width: 120,
+        slot: 'area',
         align: 'center',
-        render: (hh: any, { row : { id , areaCode, areaName } }: any) => {
-          /* tslint:disable */
-          const list = this.statusList.map((value) => {
-            return {
-              key: value.code,
-              text: value.name
-            }
-          })
-          const h = jsxReactToVue(hh)
-          const value = {
-            id,
-            text: areaName,
-            value: areaCode,
-            list
-          }
-          return <PoptipSelect v-model={value}
-            on-change={this.editStatus.bind(this)}/>
-          /* tslint:enable */
-        }
+        // render: (hh: any, { row : { id , areaCode, areaName } }: any) => {
+        //   /* tslint:disable */
+        //   const list = this.statusList.map((value) => {
+        //     return {
+        //       key: value.code,
+        //       text: value.name
+        //     }
+        //   })
+        //   const h = jsxReactToVue(hh)
+        //   const value = {
+        //     id,
+        //     text: areaName,
+        //     value: areaCode,
+        //     list
+        //   }
+        //   return <PoptipSelect v-model={value}
+        //     on-change={this.editStatus.bind(this)}/>
+        //   /* tslint:enable */
+        // }
       },
       {
         title: '排序',
@@ -158,6 +163,19 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     this.query.pageIndex = 1
   }
 
+  rows(row: any) {
+    return {
+      id: row.id,
+      text: row.areaName,
+      value: row.areaCode,
+      list: this.statusList.map(value => {
+        return {
+          key: value.code,
+          text: value.name
+        }
+      })
+    }
+  }
   goBack() {
     this.query.pageIndex = this.pageIndex[this.pageIndex.length - 1]
     this.query.parentIds = this.saveId[this.saveId.length - 2] || 0

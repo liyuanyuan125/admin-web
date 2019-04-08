@@ -15,7 +15,7 @@
           <!-- <Date-picker type="date" v-model="query.UpdateTime" placeholder="更新时间" on-change="selectTime"  class="input" style="width: 200px"></Date-picker>           -->
           <Select v-model="query.status" placeholder="启用状态" clearable>
             <Option v-for="it in statusList" :key="it.key" :value="it.key"
-              :label="it.text == '是' ? '启用' : '停用'">{{it.text == '是' ? '启用' : '停用'}}</Option>
+              :label="it.text">{{it.text}}</Option>
           </Select>
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </form>
@@ -27,7 +27,7 @@
         border stripe disabled-hover size="small" class="table">
           <template slot="spaction" slot-scope="{row}" >
           <a v-show='row.status != 1' v-auth="'customer.accounts:change-status'" @click="change(row.id, row)">启用</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <a v-show='row.status == 1' v-auth="'customer.accounts:change-status'" @click="change(row.id, row)">停用</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a v-show='row.status == 1' v-auth="'customer.accounts:change-status'" @click="change(row.id, row)">禁用</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <router-link v-auth="'customer.accounts:info'" :to="{ name: 'client-account-detail', params: { id: row.id } }">详情</router-link>
         </template>
         </Table>
@@ -122,6 +122,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   company2 = []
 
+  stats: any = ''
+
 
   columns = [
     { title: '账号ID', key: 'id', align: 'center' },
@@ -158,7 +160,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       render: (hh: any, { row: { status, statusText } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        return <span class={`status-${status}`}>{statusText}</span>
+        if (status == 1) {
+          return <span class={`status-${status}`}>启用</span>
+        } else if (status == 2) {
+          return <span class={`status-${status}`}>停用</span>
+        } else if (status == 3) {
+          return <span class={`status-${status}`}>待激活</span>
+        }
         /* tslint:enable */
       }
     },
@@ -179,7 +187,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     const list = (this.list || []).map((it: any) => {
       return {
         ...it,
-        statusText: it.status == 1 ? '启用' : '停用',
+        // statusText: it.status == 1 ? '启用' : '禁用',
       }
     })
     return list
@@ -267,7 +275,15 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   // 修改状态
   async change(id: number, row: any) {
     try {
-      await confirm('您确定' + (row.statusText == '启用' ? '停用' : '启用') + '当前状态信息吗？')
+      if (row.status == 1) {
+        this.stats = '禁用'
+      } else if (row.status == 2) {
+        this.stats = '启用'
+      } else if (row.status == 3) {
+        this.stats = '激活'
+      }
+
+      await confirm('您确定' + this.stats + '当前状态信息吗？')
       await setList ({
         id,
         status: row.status == 1 ? 2 : 1
