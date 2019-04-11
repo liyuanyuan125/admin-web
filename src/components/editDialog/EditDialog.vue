@@ -1,5 +1,8 @@
 <template>
-  <Modal v-model="visible" :width="770" :loading="submitLoading" @on-ok="submit">
+  <Modal v-model="visible" :width="width" :loading="submitLoading" @on-ok="submit">
+    <Form :model="item" :label-width="labelWidth" :rules="rules" class="form" ref="form"
+      v-show="!loading">
+    </Form>
     <div class="inner-loading flex-mid" v-if="loading">
       <TinyLoading :size="38"/>
     </div>
@@ -14,19 +17,26 @@ import TinyLoading from '@/components/TinyLoading.vue'
 
 @Component({
   components: {
-    TinyLoading,
+    TinyLoading
   }
 })
-export default class Dialog extends ViewBase {
+export default class EditDialog extends ViewBase {
+  @Prop({ type: Number, default: 770 }) width!: number
+
+  @Prop({ type: Number, default: 76 }) labelWidth!: number
+
   visible = false
 
-  loading = false
-
   submitLoading = true
+
+  loading = false
 
   resetSubmitLoading() {
     this.submitLoading = false
     this.$nextTick(() => this.submitLoading = true)
+  }
+
+  async submit() {
   }
 }
 </script>
@@ -35,18 +45,6 @@ export default class Dialog extends ViewBase {
 .form {
   margin-top: 18px;
   padding-right: 28px;
-}
-.row-address {
-  /deep/ .area-select {
-    width: 100%;
-  }
-  .form-item-address {
-    position: relative;
-    padding-left: 8px;
-    /deep/ .ivu-form-item-content {
-      margin-left: 0 !important;
-    }
-  }
 }
 .inner-loading {
   min-height: 302px;
