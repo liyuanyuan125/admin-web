@@ -95,6 +95,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   // 公司列表
   company: any = []
 
+
+  newend = ''
+  count = 0
+
   columns = [
     { title: '序号', key: 'id', width: 100 , align: 'center' },
     { title: '公司名称', key: 'companyName', align: 'center' },
@@ -103,8 +107,17 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       render: (hh: any, { row: { amount } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        // const html = moment(amount).format(timeFormat)
-        return amount == null ? <span class='datetime' v-html='-'></span> : <span class='datetime' v-html={amount + '.00'}></span>
+        const html = String(amount)
+        if (amount == null) {
+          return <span class='datetime' v-html='-'></span>
+        } else {
+          if (html.indexOf('.') == -1) {
+            return <span class='datetime' v-html={amount + '.00'}></span>
+          } else {
+            return <span class='datetime' v-html={amount}></span>
+          }
+        }
+        // return amount == null ? <span class='datetime' v-html='-'></span> : <span class='datetime' v-html={amount}></span>
         /* tslint:enable */
       }
     },
@@ -181,11 +194,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   mounted() {
 
     this.updateQueryByParam()
-    // this.showTime = [new Date(`${years}/${months}/1`), new Date(nextMonthFirstDay.getTime() - oneDay)]
-    // !!this.query.beginDate ? this.showTime[0] =
-    // moment(this.query.beginDate).format(timeFormat) : this.showTime[0] = ''
-    // !!this.query.endDate ? this.showTime[1] =
-    // moment(this.query.endDate).format(timeFormat) : this.showTime[1] = ''
+
     !!this.query.beginDate ? this.$set(this.showTime, 0, new Date(moment(this.query.beginDate).format(timeFormat)))
      : ''
     !!this.query.endDate ? this.$set(this.showTime, 1,  new Date(moment(this.query.endDate).format(timeFormat)))

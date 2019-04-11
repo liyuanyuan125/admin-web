@@ -14,7 +14,7 @@
       border stripe disabled-hover size="small" class="table">
         <template slot="spaction" slot-scope="{row}">
           <a v-auth="'basis.calendars:modify'" @click="edit(row.id, row)">编辑</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <a v-auth="'basis.calendars:delete'" @click="delete(row.id)">删除</a>
+          <a v-auth="'basis.calendars:delete'" @click="deletes(row.id)">删除</a>
         </template>
       </Table>
 
@@ -169,7 +169,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     this.doSearch()
   }
 
-  async delete(id: any) {
+  async deletes(id: any) {
     try {
       await confirm('您确定删除当前档期信息吗？')
       await dels({id})
