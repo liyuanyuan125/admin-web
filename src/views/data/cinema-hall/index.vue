@@ -70,7 +70,7 @@
 <script lang="tsx">
 import { Component, Prop, Watch, Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import ListPage, { Filter, ColumnExtra, ListMapParam } from '@/layout/listPage'
+import ListPage, { Filter, ColumnExtra, ListMapParam } from '@/components/listPage'
 import { toMap } from '@/fn/array'
 import { clean, slice } from '@/fn/object'
 import { queryItem } from '@/api/cinema'

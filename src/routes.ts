@@ -1,6 +1,6 @@
 import home from './views/home.vue'
 import login from './views/login.vue'
-import MainLayout from './layout/mainLayout'
+import MainLayout from '@/components/mainLayout'
 import Error from './views/error/index.vue'
 
 import { RouteConfig, Route } from 'vue-router'

@@ -23,7 +23,7 @@
 <script lang="ts">
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import ListPage, { Filter, ColumnExtra, ListMapParam } from '@/layout/listPage'
+import ListPage, { Filter, ColumnExtra, ListMapParam } from '@/components/listPage'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import AreaSelect from '@/components/AreaSelect.vue'
 import { queryList, updateStatus, updateControlStatus,
