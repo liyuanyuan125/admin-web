@@ -208,6 +208,9 @@ export default class Main extends ViewBase {
 <style lang="less" scoped>
 @import '../../../site/lib.less';
 
+.page {
+  margin-right: 14px;
+}
 .header {
   margin-top: 5px;
   margin-bottom: 10px;
@@ -227,15 +230,9 @@ export default class Main extends ViewBase {
     line-height: 50px;
   }
 }
-
-.detail-box {
-  padding-top: 10px;
-  border: 1px solid #dcdee2;
-}
 .file-detail-header,.file-detail-center {
   background: #fff;
-  margin-left: 14px;
-  margin-right: 14px;
+  border: 1px solid #dcdee2;
   dl {
     padding: 10px 14px;
     display: flex;
@@ -264,6 +261,6 @@ export default class Main extends ViewBase {
   }
 }
 .file-detail-center {
-  margin-top: 14px;
+  margin-top: 10px;
 }
 </style>
