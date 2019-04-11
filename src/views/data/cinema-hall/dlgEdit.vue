@@ -1,6 +1,5 @@
 <template>
-  <Modal v-model="inner.show" :width="700"
-    :loading="submitLoading" @on-ok="submit">
+  <Modal v-model="inner.show" :width="700" :loading="submitLoading" @on-ok="submit">
     <Form :model="item" :label-width="98" :rules="rules" class="form" ref="form"
       v-show="!loading">
       <Row>

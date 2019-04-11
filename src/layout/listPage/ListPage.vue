@@ -1,35 +1,40 @@
 <template>
-  <div class="page">
-    <div class="act-bar flex-box">
-      <form class="form flex-1" @submit.prevent="search">
-        <component v-for="it in normalFilter" :key="it.name" :is="it.component"
-          v-model="query[it.name]" :placeholder="it.placeholder"
-          :class="it.class" :style="it.style">
-          <Option v-for="sub in enumType[it.enumKey]" :key="sub.key" :value="sub.key"
-            v-if="it.type == 'select'">{{sub.text}}</Option>
-        </component>
+  <div class="list-page">
+    <slot name="act-bar">
+      <div class="act-bar flex-box">
+        <form class="form flex-1" @submit.prevent="search">
+          <component v-for="it in normalFilter" :key="it.name" :is="it.component"
+            v-model="query[it.name]" :placeholder="it.placeholder"
+            :class="it.class" :style="it.style">
+            <Option v-for="sub in enumType[it.enumKey]" :key="sub.key" :value="sub.key"
+              v-if="it.type == 'select'">{{sub.text}}</Option>
+          </component>
 
-        <Button type="default" @click="resetQuery()" class="btn-reset">清空</Button>
-      </form>
-      <div class="acts">
-        <slot name="acts"></slot>
+          <Button type="default" @click="resetQuery()" class="btn-reset">清空</Button>
+        </form>
+        <div class="acts">
+          <slot name="acts"></slot>
+        </div>
       </div>
-    </div>
+    </slot>
 
     <Table :columns="tableColumns" :data="tableData" :loading="loading"
       border stripe disabled-hover size="small" class="table">
     </Table>
 
-    <div class="page-wrap" v-if="total > 0">
-      <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
-        show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-        @on-change="page => query.pageIndex = page"
-        @on-page-size-change="pageSize => query.pageSize = pageSize"/>
-    </div>
+    <slot name="page-wrap">
+      <div class="page-wrap" v-if="total > 0">
+        <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
+          show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
+          @on-change="page => query.pageIndex = page"
+          @on-page-size-change="pageSize => query.pageSize = pageSize"/>
+      </div>
+    </slot>
   </div>
 </template>
 
 <script lang="ts">
+// doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop, Watch, Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
@@ -47,7 +52,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
   @Prop({ type: Function, required: true }) fetch!: (query?: any) => Promise<AjaxResult>
 
   /** 查询条件 */
-  @Prop({ type: Array, default: () => [], required: true }) filters!: Filter[]
+  @Prop({ type: Array, default: () => [] }) filters!: Filter[]
 
   /** 查询条件或表格中要用到的枚举 Key 列表，将从 fetch 返回的 data 中提取 */
   @Prop({ type: Array, default: () => [] }) enums!: string[]
@@ -192,7 +197,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
 <style lang="less" scoped>
 @import '../../site/lib.less';
 
-.page {
+.list-page {
   margin-bottom: 88px;
 }
 

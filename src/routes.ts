@@ -244,6 +244,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     path: '/data/cinema-hall/:id',
     name: 'data-cinema-hall',
     component: () => import('./views/data/cinema-hall/index.vue'),
+    props: true,
     meta: {
       authKey: 'theater.halls:list',
       title: '影厅列表',

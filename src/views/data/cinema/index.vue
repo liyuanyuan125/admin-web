@@ -1,6 +1,7 @@
 <template>
   <div>
-    <ListPage :fetch="fetch" :filters="filters" :enums="enums" :columns="columns" ref="listPage">
+    <ListPage :fetch="fetch" :filters="filters" :enums="enums"
+      :columns="columns" :listMap="listMap" ref="listPage">
       <template slot="acts">
         <Button type="success" icon="md-add-circle" @click="edit(0)"
           v-auth="'theater.cinemas:add'">新建影院</Button>
@@ -14,6 +15,7 @@
         </div>
       </template>
     </ListPage>
+
     <DlgEdit v-model="dlgEditModel" @done="dlgEditDone"/>
   </div>
 </template>
@@ -24,10 +26,8 @@ import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra, ListMapParam } from '@/layout/listPage'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import AreaSelect from '@/components/AreaSelect.vue'
-
 import { queryList, updateStatus, updateControlStatus,
   updatePricingLevelCode, updateBoxLevelCode } from '@/api/cinema'
-
 import DlgEdit from './dlgEdit.vue'
 
 @Component({
@@ -170,7 +170,7 @@ export default class Main extends ViewBase {
     (this.$refs.listPage as any).fetchList()
   }
 
-  listMap = (item: any, { enumMap }: ListMapParam) => {
+  listMap(item: any, { enumMap }: ListMapParam) {
     const gradeItem = enumMap.grade[item.gradeCode] || {}
     return {
       ...item,
