@@ -298,6 +298,7 @@ export default class Main extends ViewBase {
   line-height: 34px;
   color: rgb(61, 156, 235);
   font-size: 16px;
+  margin-bottom: 10px;
 }
 .shou {
   /deep/ .btn-back {

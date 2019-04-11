@@ -6,38 +6,37 @@
     <div class="Inp-Group-res">
       <Button class="bth" icon="md-return-left" @click="goback">返回上一页</Button>
       <div class="n-main">主账号详情</div>
-      <div class="Inps-res">
+      <div class="Inps-res" style='margin-top: 16px;'>
         <div class="res-num">
-          <p>用户账号</p>
+          <p>用户账号：</p>
           <div class="res-num-item change-item">
-            <span>{{list.email}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;【主账号】</span>
-            <!-- <s class="blu1 les" @click="viewlog(2)">查看操作日志</span> -->
-            <router-link :to="{path:'/client/account/viewLog/'+ list.id, query: {nus: '主账号', companyId: list.companyId, id: list.id, createTime: list.createTime, lastLoginTime: list.lastLoginTime, companyName: list.companyName, email: list.email, name: list.name, mobile: list.mobile}}" tag="span" class="blu1 les">查看操作日志</router-link>
-            <span  v-auth="'customer.accounts:set-main-account'" class="blu2" @click="change(0)">变更主账号</span>
+            <span class='chcol item1'>{{list.email}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;【主账号】</span>
+            <router-link :to="{path:'/client/account/viewLog/'+ list.id, query: {nus: '主账号', companyId: list.companyId, id: list.id, createTime: list.createTime, lastLoginTime: list.lastLoginTime, companyName: list.companyName, email: list.email, name: list.name, mobile: list.mobile}}" tag="span" class="blu1">查看操作日志</router-link>
+            <span  v-auth="'customer.accounts:set-main-account'" style='margin-left: 4%;' class="blu2" @click="change(0)">变更主账号</span>
             <!-- <span>变更主账号</span> -->
           </div>
         </div>
         <div class="res-num">
-          <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;姓名</p>
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;姓名：</p>
           <div class="res-num-item">
-            <span class='item1'>{{list.name}}</span>
-            <span class="res-date les">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;手机号</span>
-            <span>{{list.mobile}}</span>
+            <span class='item1 chcol'>{{list.name}}</span>
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;手机号：</span>
+            <span  class='chcol'>{{list.mobile}}</span>
           </div>
         </div>
         <div class="res-num">
-          <p>注册时间</p>
+          <p>注册时间：</p>
           <div class="res-num-item">
-            <span class='item1'>{{createTime}}</span>
-            <span class="res-date les">最后登录时间</span>
-            <span>{{lastLoginTime}}</span>
+            <span class='item1 chcol'>{{createTime}}</span>
+            <span>最后登录时间：</span>
+            <span class='chcol'>{{lastLoginTime}}</span>
           </div>
         </div>
         <div class="res-num">
-          <p>所属公司</p>
+          <p>所属公司：</p>
           <div class="res-num-item">
-            <span>{{list.companyName}}</span>
-            <router-link v-auth="'customer.companies:info'" :to="{path:'/client/corp/detail/'+ list.companyId}" tag="span" class="blu1 les">查看公司详情</router-link>
+            <span class='chcol item1'>{{list.companyName}}</span>
+            <router-link v-auth="'customer.companies:info'" :to="{path:'/client/corp/detail/'+ list.companyId}" tag="span" class="blu1">查看公司详情</router-link>
           </div>
         </div>
       </div>
@@ -338,7 +337,7 @@ export default class Main extends ViewBase {
 .res-num {
   display: flex;
   width: 100%;
-  line-height: 60px;
+  line-height: 53px;
 }
 .res-num p {
   flex-direction: column-reverse;
@@ -346,9 +345,8 @@ export default class Main extends ViewBase {
   justify-content: flex-start;
   display: block;
   float: left;
-  max-height: 60px;
   text-align: left;
-  margin-left: 0.5%;
+  margin-left: 14px;
 }
 .res-num-item {
   display: flex;
@@ -358,10 +356,11 @@ export default class Main extends ViewBase {
 }
 .res-num-item span {
   display: inline-block;
-  margin-left: 5%;
+  margin-left: 3%;
 }
-.item1 {
-  // width: 12%;
+.item1,
+.les {
+  width: 26.5%;
 }
 .blu1,
 .blu2 {
@@ -370,7 +369,7 @@ export default class Main extends ViewBase {
 }
 .new-number {
   // background: #ecf0f4;
-  padding: 2px;
+  padding: 10px;
   margin: 1px -10px 0 -10px;
 }
 .new-num {
@@ -389,11 +388,15 @@ export default class Main extends ViewBase {
 }
 .n-main {
   display: inline-block;
-  margin: 0 0 5px 5px;
+  margin: 0 0 5px 15px;
   line-height: 35px;
   font-size: 16px;
   color: #2d8cf0;
   // border-bottom: 2px solid #ecf0f4;
+}
+.chcol {
+  // color: #19be6b;
+  font-style: normal;
 }
 .table {
   /deep/ .ivu-table-cell > span:only-child:empty {

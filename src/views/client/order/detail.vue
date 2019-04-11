@@ -343,7 +343,6 @@ export default class Main extends ViewBase {
   padding-bottom: 7px;
   padding-left: 7px;
   font-size: 13px;
-  background: #fff;
   border: 1px solid #dcdee2;
   font-weight: bold;
 }

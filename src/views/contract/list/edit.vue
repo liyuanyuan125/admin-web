@@ -716,5 +716,6 @@ export default class Main extends ViewBase {
   line-height: 28px;
   color: rgb(61, 156, 235);
   font-size: 16px;
+  margin-bottom: 10px;
 }
 </style>

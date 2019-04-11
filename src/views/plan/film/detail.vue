@@ -524,6 +524,10 @@ export default class Main extends ViewBase {
   line-height: 35px;
   color: rgb(61, 156, 235);
   font-size: 16px;
+  margin-bottom: 10px;
+}
+.logs-item {
+  height: 35px;
 }
 /deep/ .ivu-btn:hover {
   color: #000;
