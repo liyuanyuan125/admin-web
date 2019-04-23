@@ -1,10 +1,17 @@
 <template>
-  <Cascader v-model='inValue' :data='data' :load-data='loadData' :clearable='clearable'
-    class='area-select' :render-format='format' ref="ui"></Cascader>
+  <Cascader
+    v-model="inner"
+    class="area-select"
+    :data="data"
+    :load-data="loadData"
+    :clearable="clearable"
+    :placeholder="placeholder"
+    :render-format="format"
+    ref="ui"
+  />
 </template>
 
 <script lang="ts">
-// doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { getSubList, isValidArea } from '@/api/area'
@@ -30,11 +37,16 @@ export default class AreaSelect extends ViewBase {
   @Prop({ type: Boolean, default: true }) clearable!: boolean
 
   /**
+   * Placeholder
+   */
+  @Prop({ type: String, default: '请选择' }) placeholder!: string
+
+  /**
    * 是否去掉本区域，默认不去掉（即显示本区域）
    */
   @Prop({ type: Boolean, default: false }) noSelf!: boolean
 
-  inValue: number[] = []
+  inner: number[] = []
 
   data: any[] = []
 
@@ -53,7 +65,7 @@ export default class AreaSelect extends ViewBase {
       const item: any = {
         value: it.id,
         label: it.nameCn,
-        level: subLevel,
+        level: subLevel
       }
       if (subLevel < this.maxLevel) {
         item.loading = false
@@ -62,9 +74,10 @@ export default class AreaSelect extends ViewBase {
       return item
     })
 
-    const result = level > 0 && !this.noSelf
-      ? [{ value: 0, label: '本区域', isFake: true }].concat(tlist)
-      : tlist
+    const result =
+      level > 0 && !this.noSelf
+        ? [{ value: 0, label: '本区域', isFake: true }].concat(tlist)
+        : tlist
 
     return result
   }
@@ -103,7 +116,7 @@ export default class AreaSelect extends ViewBase {
 
   fillList(list: number[]) {
     const zeroList: number[] = new Array(this.maxLevel).fill(0)
-    return zeroList.map((it, i) => i in list ? list[i] : it)
+    return zeroList.map((it, i) => (i in list ? list[i] : it))
   }
 
   @Watch('value')
@@ -111,13 +124,11 @@ export default class AreaSelect extends ViewBase {
     // 检查传入的 value 值，是否合法，不合法直接清空
     const isValid = await this.checkValid(val)
     const value = isValid ? val : []
-    this.inValue = value
-    // 触发 form item 验证
-    isValid && (this.$refs.ui as any).dispatch('FormItem', 'on-form-change', value)
+    this.inner = value
   }
 
-  @Watch('inValue')
-  watchInValue(val: number[]) {
+  @Watch('inner')
+  watchInner(val: number[]) {
     const value = val.length < this.maxLevel ? this.fillList(val) : val
     this.$emit('input', value)
   }

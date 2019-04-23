@@ -39,7 +39,7 @@ import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
 import {confirm , warning , success, toast } from '@/ui/modal'
-import AreaSelect from '@/components/AreaSelect.vue'
+import AreaSelect from '@/components/areaSelect'
 import singDlg from './singDlg.vue'
 import imgModel from './imgDlg.vue'
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')

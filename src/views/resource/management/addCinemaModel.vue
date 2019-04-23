@@ -82,7 +82,7 @@
 <script lang="ts">
 import { Component, Watch, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import AreaSelect from '@/components/AreaSelect.vue'
+import AreaSelect from '@/components/areaSelect'
 import MovieHall from './moviehall.vue'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import { slice, clean } from '@/fn/object'

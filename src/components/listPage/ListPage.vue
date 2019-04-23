@@ -3,31 +3,56 @@
     <slot name="act-bar">
       <div class="act-bar flex-box">
         <form class="form flex-1" @submit.prevent="search">
-          <component v-for="it in normalFilter" :key="it.name" :is="it.component"
-            v-model="query[it.name]" :placeholder="it.placeholder"
-            :class="it.class" :style="it.style">
-            <Option v-for="sub in enumType[it.enumKey]" :key="sub.key" :value="sub.key"
-              v-if="it.type == 'select'">{{sub.text}}</Option>
+          <component
+            v-for="it in normalFilter"
+            v-model="query[it.name]"
+            :is="it.component"
+            :key="it.name"
+            :class="it.class"
+            :style="it.style"
+            :placeholder="it.placeholder"
+          >
+            <Option
+              v-for="sub in enumType[it.enumKey]"
+              :key="sub.key"
+              :value="sub.key"
+              v-if="it.type == 'select'"
+            >{{sub.text}}</Option>
           </component>
 
           <Button type="default" @click="resetQuery()" class="btn-reset">清空</Button>
         </form>
+
         <div class="acts">
           <slot name="acts"></slot>
         </div>
       </div>
     </slot>
 
-    <Table :columns="tableColumns" :data="tableData" :loading="loading"
-      border stripe disabled-hover size="small" class="table">
-    </Table>
+    <Table
+      :columns="tableColumns"
+      :data="tableData"
+      :loading="loading"
+      border
+      stripe
+      disabled-hover
+      size="small"
+      class="table"
+    />
 
     <slot name="page-wrap">
       <div class="page-wrap" v-if="total > 0">
-        <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
-          show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
+        <Page
+          :total="total"
+          :current="query.pageIndex"
+          :page-size="query.pageSize"
+          :page-size-opts="[10, 20, 50, 100]"
           @on-change="page => query.pageIndex = page"
-          @on-page-size-change="pageSize => query.pageSize = pageSize"/>
+          @on-page-size-change="pageSize => query.pageSize = pageSize"
+          show-total
+          show-sizer
+          show-elevator
+        />
       </div>
     </slot>
   </div>
@@ -39,10 +64,17 @@ import { Component, Prop, Watch, Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { MapType, AjaxResult } from '@/util/types'
-import { Filter, normalizeFilter, DealParams, ColumnExtra, normalizeColumns, ListMapParam } from './types'
+import {
+  Filter,
+  normalizeFilter,
+  ColumnExtra,
+  normalizeColumns,
+  ListMapParam
+} from './types'
 import { devInfo, devError } from '@/util/dev'
 import { toMap } from '@/fn/array'
 import { clean } from '@/fn/object'
+import { defaultParams, dealParams } from '@/util/param'
 
 const makeMap = (list: any[]) => toMap(list, 'key')
 
@@ -69,21 +101,9 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
     return result
   }
 
-  // 收集 filters 中含有 dealParams 的项，组成一个 map，以 name 为 key
-  get dealParamsMap() {
-    const result = this.filters.reduce((map, it) => {
-      it.dealParams && (map[it.name] = it.dealParams)
-      return map
-    }, {} as MapType<DealParams>)
-    return result
-  }
-
   // 根据 filters 中的配置，生成默认查询条件
   get defQuery() {
-    const result = this.filters.reduce((map: any, it) => {
-      map[it.name] = it.defaultValue
-      return map
-    }, {})
+    const result = defaultParams(this.filters)
     return result
   }
 
@@ -121,7 +141,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
       enumType: this.enumType,
       enumMap: this.enumMap,
       list: this.list,
-      handleError: this.handleError.bind(this),
+      handleError: this.handleError.bind(this)
     })
     return result
   }
@@ -138,23 +158,10 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
     this.updateQueryByParam()
   }
 
-  // 对查询参数进行加工处理，通过 filters 中的 dealParams 可以自定义参数处理方式
-  dealQuery() {
-    let query = { ...this.query }
-    Object.entries(this.dealParamsMap).forEach(([key, dealParams]) => {
-      const value = query[key]
-      const params = dealParams(value)
-      query = { ...query, ...params }
-      delete query[key]
-    })
-    const result = clean(query)
-    return result
-  }
-
   /**
    * 请求列表数据，明确公开，可供外部组件调用
    */
-  public async fetchList() {
+  public async update() {
     if (this.loading) {
       return
     }
@@ -164,17 +171,20 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
     this.updateUrl()
 
     this.loading = true
-    const query = this.dealQuery()
+    const query = dealParams(this.filters, this.query)
     try {
       const { data } = await this.fetch(query)
 
       this.list = data.items || []
       this.total = data.totalCount || 0
 
-      const enumType = this.enums.reduce((map, key) => {
-        map[key] = data[key] || []
-        return map
-      }, {} as MapType<any[]>)
+      const enumType = this.enums.reduce(
+        (map, key) => {
+          map[key] = data[key] || []
+          return map
+        },
+        {} as MapType<any[]>
+      )
       this.enumType = enumType
     } catch (ex) {
       this.handleError(ex)
@@ -189,7 +199,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
       this.query.pageIndex = 1
     }
 
-    this.fetchList()
+    this.update()
   }
 }
 </script>

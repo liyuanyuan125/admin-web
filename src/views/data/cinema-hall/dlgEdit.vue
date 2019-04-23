@@ -105,16 +105,11 @@ import TinyLoading from '@/components/TinyLoading.vue'
 import { slice } from '@/fn/object'
 import { toast } from '@/ui/modal'
 import { filterItemInList, filterListByControlStatus } from '@/util/dealData'
+import { KeyTextControlStatus } from '@/util/types'
 
 interface Value {
   show: boolean
   id: number
-}
-
-interface KeyTextControlStatus {
-  key: string | number
-  text: string
-  controlStatus: number
 }
 
 interface KeyTextControlStatusMap {

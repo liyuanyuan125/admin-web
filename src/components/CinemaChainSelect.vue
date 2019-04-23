@@ -1,8 +1,19 @@
 <template>
-  <Select v-model="inValue" :placeholder="placeholder" filterable
-    clearable class="cinema-chain-select" ref="ui">
-    <Option v-for="it in list" :key="it.id" :value="it.id"
-      :label="it.shortName || it.name" class="flex-box">
+  <Select
+    v-model="inner"
+    :placeholder="placeholder"
+    filterable
+    clearable
+    class="cinema-chain-select"
+    ref="ui"
+  >
+    <Option
+      v-for="it in list"
+      :key="it.id"
+      :value="it.id"
+      :label="it.shortName || it.name"
+      class="flex-box"
+    >
       <span class="flex-1">{{it.shortName || it.name}}</span>
       <i v-if="it.chainControlStatus == 2" class="offline">下架</i>
     </Option>
@@ -10,7 +21,6 @@
 </template>
 
 <script lang="ts">
-// doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { queryList } from '@/api/cinemaChain'
@@ -34,7 +44,7 @@ export default class CinemaChainSelect extends ViewBase {
 
   @Prop({ type: Boolean, default: true }) clearable!: boolean
 
-  inValue: number = this.value
+  inner: number = this.value
 
   list: any[] = []
 
@@ -54,15 +64,13 @@ export default class CinemaChainSelect extends ViewBase {
   }
 
   @Watch('value')
-  watchValue(val: number) {
-    this.inValue = val
-    // 触发 form item 验证
-    ; (this.$refs.ui as any).dispatch('FormItem', 'on-form-change', val)
+  watchValue(value: number) {
+    this.inner = value
   }
 
-  @Watch('inValue')
-  watchInValue(val: number) {
-    this.$emit('input', val)
+  @Watch('inner')
+  watchInner(value: number) {
+    this.$emit('input', value)
   }
 }
 </script>
@@ -70,7 +78,12 @@ export default class CinemaChainSelect extends ViewBase {
 <style lang="less" scoped>
 .cinema-chain-select {
   min-width: 188px;
+  /deep/ .ivu-select-input {
+    position: relative;
+    top: -1px;
+  }
 }
+
 .offline {
   color: #bbb;
   font-style: normal;

@@ -25,7 +25,7 @@
     </header>
 
     <Layout class="site-center">
-      <Sider collapsible hide-trigger :width="168" theme="dark" class="site-sider light-scroll">
+      <Sider collapsible hide-trigger :width="158" theme="dark" class="site-sider light-scroll">
         <Menu width="auto" class="sider-menu" :active-name="siderActiveName" theme="dark"
           :open-names="siderOpenNames" v-if="siderMenuList.length > 0">
           <Submenu v-for="menu in siderMenuList" :key="menu.name" :name="menu.name">
@@ -207,9 +207,10 @@ export default class MainLayout extends ViewBase {
 }
 
 .logo {
-  width: 168px;
+  width: 158px;
   font-weight: 400;
   font-size: 18px;
+  user-select: none;
 }
 
 .logo-link {
@@ -266,7 +267,7 @@ export default class MainLayout extends ViewBase {
 
 .site-content {
   position: relative;
-  padding-left: 168px;
+  padding-left: 158px;
   overflow-x: auto !important;
   transition: padding-left .2s;
 }
@@ -307,7 +308,7 @@ export default class MainLayout extends ViewBase {
       padding: 0 !important;
       & > a {
         display: block;
-        padding: 10px 24px 10px 46px;
+        padding: 10px 0 10px 44px;
         color: rgba(255, 255, 255, .7);
         &:hover {
           color: #fff;
@@ -322,14 +323,14 @@ export default class MainLayout extends ViewBase {
     }
 
     .ivu-menu-submenu-title {
-      padding: 10px 24px;
+      padding: 10px 15px 10px 22px;
     }
   }
 }
 
 .site-layout-menu-fold {
   .site-sider {
-    transform: translateX(-158px);
+    transform: translateX(-148px);
     &:hover {
       transform: translateX(0);
     }

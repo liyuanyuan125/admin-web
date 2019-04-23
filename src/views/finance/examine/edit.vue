@@ -110,7 +110,7 @@
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { queryList , companysList , dataFrom , addList , types , authinfos , userqueryItem} from '@/api/examine'
-import AreaSelect from '@/components/AreaSelect.vue'
+import AreaSelect from '@/components/areaSelect'
 import Upload from '@/components/Upload.vue'
 import { toMap } from '@/fn/array'
 import { slice, clean } from '@/fn/object'

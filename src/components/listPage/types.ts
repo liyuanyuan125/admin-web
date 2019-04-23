@@ -6,6 +6,7 @@ import { kebabCase } from 'lodash'
 import Deprecated from '@/components/Deprecated.vue'
 import PoptipSelect from '@/components/PoptipSelect.vue'
 import { devError } from '@/util/dev'
+import { Param } from '@/util/param'
 
 /**
  * 固定类型列表
@@ -21,11 +22,6 @@ const innateTypeMap: MapType<Component> = {
 }
 
 /**
- * 处理 fetch 参数
- */
-export type DealParams = (value: any) => object
-
-/**
  * fetch 动作
  */
 export type FetchAction = (query: any) => Promise<AjaxResult>
@@ -33,13 +29,7 @@ export type FetchAction = (query: any) => Promise<AjaxResult>
 /**
  * 查询项
  */
-export interface Filter {
-  /** 名称 */
-  name: string
-
-  /** 默认值 */
-  defaultValue: any,
-
+export interface Filter extends Param {
   /** 要使用 component 类型 */
   type?: InnateTypes | Component
 
@@ -55,12 +45,9 @@ export interface Filter {
   /** maxWidth */
   maxWidth?: number
 
-  /** 自定义处理参数的函数 */
-  dealParams?: DealParams
-
   /**
    * 当 enumKey 为 select 时，渲染 select 的枚举列表的 key
-   * 如果没有明确设置，则 enumKey 会被设置为 `${name}List`
+   * 如果没有明确设置，则 enumKey 会被设置为 name.replace(/Code$|$/, 'List')
    */
   enumKey?: string
 }
@@ -99,7 +86,7 @@ export function normalizeFilter(list: Filter[]) {
         minWidth: it.minWidth ? `${it.minWidth}px` : '',
         maxWidth: it.maxWidth ? `${it.maxWidth}px` : '',
       },
-      enumKey: it.enumKey || `${it.name}List`,
+      enumKey: it.enumKey || it.name.replace(/Code$|$/, 'List'),
     }
 
     return item
@@ -160,10 +147,10 @@ export interface ColumnExtra extends Column {
 
   /**
    * enumType 字段的 key，PoptipSelect 组件使用
-   * 大部分情况下，都不需要传，只要字段名 fn 与 enumListKey 符合以下规则
-   * => enumListKey = fn.replace(/Code$|$/, 'List')
+   * 大部分情况下，都不需要传，只要字段名 fn 与 enumKey 符合以下规则
+   * => enumKey = fn.replace(/Code$|$/, 'List')
    */
-  enumListKey?: string
+  enumKey?: string
 
   /**
    * 更新字段的函数，PoptipSelect 组件使用
@@ -217,9 +204,9 @@ const editorMap: MapType<(column: ColumnExtra, param: ColumnParam) => RenderFunc
   },
 
   poptipSelect(column: ColumnExtra, { enumType, list, handleError }) {
-    const { key, enumListKey, auth = '', updateField } = column
+    const { key, enumKey, auth = '', updateField } = column
     return (h: any, { row }: any) => {
-      const listKey = enumListKey || key!.replace(/Code$|$/, 'List')
+      const listKey = enumKey || key!.replace(/Code$|$/, 'List')
       const model = {
         id: row.id,
         value: row[key!],

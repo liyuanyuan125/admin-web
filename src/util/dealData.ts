@@ -1,4 +1,4 @@
-import { MapType } from '@/util/types'
+import { MapType, KeyTextControlStatus } from '@/util/types'
 import { parse } from '@/fn/array'
 
 /**
@@ -72,12 +72,6 @@ export function toThousands(nums: any) {
   return result
 }
 
-interface KeyTextControlStatus {
-  key: string | number
-  text: string
-  controlStatus: number
-}
-
 /**
  * 根据 controlStatus 的值，过滤列表（只保留 controlStatus 为 1 的项）
  * @param list 列表
@@ -106,7 +100,7 @@ interface InListDefValMap {
 }
 
 /**
- * 根据 listMap 中的对象值，过滤对象 item 中的值
+ * 根据 listMap 中的对象值，过滤掉对象 item 中的废弃的值（使用默认值取代）
  * @param item 对象
  * @param listMap list 集合
  * @param defValMap 默认值集合
@@ -122,7 +116,8 @@ export function filterItemInList(
       const found = list.find(t => val == t.key)
       const defVal = defValMap[key]
       // 若 val 在 list 中能找到，则 val 是合法的值，否则使用 defVal
-      newItem[key] = found != null && found.controlStatus == 1 ? val : defVal
+      newItem[key] = found != null &&
+        (found.controlStatus == null || found.controlStatus == 1) ? val : defVal
     }
   })
   return newItem

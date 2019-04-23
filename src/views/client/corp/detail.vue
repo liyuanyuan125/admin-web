@@ -128,7 +128,7 @@ import { Component } from 'vue-property-decorator'
 import moment from 'moment'
 import ViewBase from '@/util/ViewBase'
 import { queryId } from '@/api/corpReal'
-import AreaSelect from '@/components/AreaSelect.vue'
+import AreaSelect from '@/components/areaSelect'
 import PartBindCinema from './partBindCinema.vue'
 import DlgEdit from '../account/dlgEdit.vue'
 import Upload from '@/components/Upload.vue'
@@ -295,6 +295,7 @@ export default class Main extends ViewBase {
 .page {
   margin-right: 14px;
 }
+
 .header {
   margin-top: 5px;
   margin-bottom: 10px;
@@ -308,6 +309,7 @@ export default class Main extends ViewBase {
     color: @c-base;
   }
 }
+
 .detail-number {
   /deep/ .btn-add {
     margin-left: 8px;
@@ -318,6 +320,7 @@ export default class Main extends ViewBase {
 .btn-back {
   margin-right: 10px;
 }
+
 .detail-check {
   margin-bottom: 10px;
   border: 1px solid #dcdee2;
@@ -325,6 +328,7 @@ export default class Main extends ViewBase {
   background: #fff;
   padding-left: 14px;
 }
+
 .detail-header, .detail-content, .detail-footer, .detail-number {
   margin-bottom: 10px;
   border: 1px solid #dcdee2;
@@ -353,6 +357,7 @@ export default class Main extends ViewBase {
     margin-bottom: 20px;
   }
 }
+
 .check-select-group {
   display: inline-flex;
   width: 90%;
@@ -373,6 +378,7 @@ export default class Main extends ViewBase {
     }
   }
 }
+
 .upload {
   padding-bottom: 40px;
   /deep/ .uplaod-slot {
@@ -380,6 +386,7 @@ export default class Main extends ViewBase {
     color: #19be6b;
   }
 }
+
 .detail-edit {
   text-align: center;
   padding-bottom: 20px;
@@ -414,16 +421,19 @@ export default class Main extends ViewBase {
     color: red;
   }
 }
+
 .upload-wrap {
   background-color: #ecf0f4;
   padding-bottom: 6px;
   margin-top: 6px;
 }
+
 .upload-info {
   line-height: 18px;
   padding: 10px 0 0 8px;
   margin-bottom: 6px;
 }
+
 .show-img {
   width: 120px;
   height: 80px;
