@@ -33,7 +33,7 @@
 
     <Table
       :columns="tableColumns"
-      :data="tableData"
+      :data="list"
       :loading="loading"
       border
       stripe
@@ -137,14 +137,6 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
       handleError: this.handleError.bind(this)
     })
     return result
-  }
-
-  // 加工 table 数据，此处用到 listMap，以便对数据进行特殊处理
-  get tableData() {
-    const map = this.listMap || ((item: any) => item)
-    const param = { enumMap: this.enumMap }
-    const list = (this.list || []).map(it => map(it, param))
-    return list
   }
 
   mounted() {
