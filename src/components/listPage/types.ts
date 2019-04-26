@@ -22,6 +22,15 @@ const innateTypeMap: MapType<Component> = {
 }
 
 /**
+ * 默认的 props
+ */
+const defaultPropsMap: MapType<object> = {
+  select: {
+    clearable: true
+  }
+}
+
+/**
  * fetch 动作
  */
 export type FetchAction = (query: any) => Promise<AjaxResult>
@@ -50,6 +59,16 @@ export interface Filter extends Param {
    * 如果没有明确设置，则 enumKey 会被设置为 name.replace(/Code$|$/, 'List')
    */
   enumKey?: string
+
+  /**
+   * 传递给组件的 props
+   */
+  props?: MapType<any>
+
+  /**
+   * 权限配置
+   */
+  auth?: string
 }
 
 /**
@@ -72,7 +91,9 @@ export interface NormalFilter extends Filter {
  */
 export function normalizeFilter(list: Filter[]) {
   const result = list.filter(it => it.type != null).map(it => {
-    const component = typeof it.type === 'string' ? innateTypeMap[it.type] : it.type!
+    const isStringType = typeof it.type === 'string'
+    const stringType = it.type as string
+    const component = isStringType ? innateTypeMap[stringType] : it.type as Component
 
     const item: NormalFilter = {
       ...it,
@@ -87,6 +108,8 @@ export function normalizeFilter(list: Filter[]) {
         maxWidth: it.maxWidth ? `${it.maxWidth}px` : '',
       },
       enumKey: it.enumKey || it.name.replace(/Code$|$/, 'List'),
+      auth: it.auth || '',
+      props: it.props || (isStringType ? defaultPropsMap[stringType] : {}) || {},
     }
 
     return item
@@ -166,40 +189,50 @@ export interface ColumnExtra extends Column {
 /**
  * 固定编辑器列表
  */
-export type Editors = 'deprecated' | 'poptipSelect'
-
-/**
- * 传递给 listMap 的参数
- */
-export interface ListMapParam {
-  enumMap: MapType<any>
-}
+export type Editors = 'deprecated' | 'poptipSelect' | 'enum'
 
 /**
  * 传递给 normalizeColumns 与 editorMap 的参数
  */
-export interface ColumnParam extends ListMapParam {
+export interface ColumnParam {
   scopedSlots: any
   enumType: MapType<any[]>
+  enumMap: MapType<any>
   list: any[]
   handleError: (ex: any) => any
+}
+
+const getEnum = (column: ColumnExtra, enumMap: MapType<any>, row: any) => {
+  const { key, enumKey } = column
+  const mapKey = (enumKey || key!).replace(/Code$|$/, '')
+  const textMap = enumMap[mapKey]
+  if (textMap == null) {
+    return
+  }
+  const dataKey = row[key!]
+  const enumItem = textMap[dataKey]
+  return enumItem
 }
 
 /**
  * 编辑器到 RenderFunction 的 Map
  */
 const editorMap: MapType<(column: ColumnExtra, param: ColumnParam) => RenderFunction> = {
-  deprecated(column: ColumnExtra) {
+  deprecated(column: ColumnExtra, { enumMap }) {
     const { key, controlStatusKey } = column
     return (h: any, { row }: any) => {
-      const statusKey = controlStatusKey || key!.replace(/Name$|$/, 'ControlStatus')
-      const statusVal = row[statusKey]
-      const value = row[key!]
+      // 先假设是一个枚举，若 getEnum 返回 null，说明不是一个枚举，然后根据函数中的规则进行推断
+      const enumItem = getEnum(column, enumMap, row) || (() => {
+        const statusKey = controlStatusKey || key!.replace(/Name$|$/, 'ControlStatus')
+        const controlStatus = row[statusKey]
+        const text = row[key!] || ''
+        return { text, controlStatus }
+      })()
       return h(Deprecated, {
         props: {
-          controlStatus: statusVal
+          controlStatus: enumItem.controlStatus
         }
-      }, value)
+      }, enumItem.text)
     }
   },
 
@@ -234,6 +267,13 @@ const editorMap: MapType<(column: ColumnExtra, param: ColumnParam) => RenderFunc
       })
     }
   },
+
+  enum(column: ColumnExtra, { enumMap }) {
+    return (h: any, { row }: any) => {
+      const { text } = getEnum(column, enumMap, row)
+      return h('span', text || '')
+    }
+  }
 }
 
 /**

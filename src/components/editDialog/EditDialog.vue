@@ -1,5 +1,10 @@
 <template>
-  <Modal v-model="visible" :width="width" :loading="submitLoading" @on-ok="onSubmit">
+  <Modal
+    v-model="visible"
+    :width="width"
+    :loading="submitLoading"
+    @on-ok="onSubmit"
+  >
     <main class="modal-main">
       <Form
         :model="item"
@@ -15,8 +20,14 @@
           :key="it.name"
           :span="it.span"
           :class="{ 'col-no-label': !it.label }"
+          :style="it.style"
         >
-          <FormItem :label="it.label" :prop="it.name" :error="errorMap[it.name]">
+          <FormItem
+            :label="it.label"
+            :prop="it.name"
+            :error="errorMap[it.name]"
+            v-auth="it.auth"
+          >
             <component
               v-model="item[it.name]"
               :is="it.component"
@@ -60,23 +71,23 @@ import { random } from '@/fn/string'
   }
 })
 export default class EditDialog extends ViewBase {
-  /** 字段配置 */
-  @Prop({ type: Array, default: () => [], required: true }) fields!: Field[]
-
   /** 加载编辑项的请求函数 */
   @Prop({ type: Function, required: true }) fetch!: (query?: any) => Promise<AjaxResult>
 
+  /** 查询字段列表，默认为 id，可以使用以逗号分隔的字符串，指定多个字段，例如：key1,key2 */
+  @Prop({ type: String, default: 'id' }) queryKeys!: string
+
   /** 提交请求函数 */
   @Prop({ type: Function, required: true }) submit!: (data: any) => Promise<AjaxResult>
+
+  /** 字段配置 */
+  @Prop({ type: Array, default: () => [], required: true }) fields!: Field[]
 
   /** 对话框宽度 */
   @Prop({ type: Number, default: 770 }) width!: number
 
   /** 表单 label 宽度 */
   @Prop({ type: Number, default: 76 }) labelWidth!: number
-
-  /** 查询字段列表，默认为 id，可以使用以逗号分隔的字符串，指定多个字段，例如：key1,key2 */
-  @Prop({ type: String, default: 'id' }) queryKeys!: string
 
   /** 过滤器，对字段进一步加工 */
   @Prop({ type: Function }) filter!: (item: any) => any
@@ -108,15 +119,17 @@ export default class EditDialog extends ViewBase {
       (map, it) => {
         if ((it.rules == null || it.rules.length == 0) && it.required) {
           const defaultValue = it.defaultValue
-          it.rules = [{
-            required: true,
-            message: '不能为空',
-            trigger: it.type == 'input' ? 'blur' : 'change',
-            transform(value: any[]) {
-              const equal = isEqual(value, defaultValue)
-              return equal ? '' : 'not-empty'
+          it.rules = [
+            {
+              required: true,
+              message: '不能为空',
+              trigger: it.type == 'input' ? 'blur' : 'change',
+              transform(value: any[]) {
+                const equal = isEqual(value, defaultValue)
+                return equal ? '' : 'not-empty'
+              }
             }
-          }]
+          ]
         }
         map[it.name] = it.rules || []
         return map
@@ -191,13 +204,14 @@ export default class EditDialog extends ViewBase {
       )
 
       // 处理自动选中
-      this.fields.filter(it => it.defaultEnumIndex != null)
-      .map(({ name, defaultValue, defaultEnumIndex }) => {
-        // 如果没有被选中，则执行自动选中
-        if (item[name] == defaultValue) {
-          item[name] = enumMap[name][defaultEnumIndex!].key
-        }
-      })
+      this.fields
+        .filter(it => it.defaultEnumIndex != null)
+        .map(({ name, defaultValue, defaultEnumIndex }) => {
+          // 如果没有被选中，则执行自动选中
+          if (item[name] == defaultValue) {
+            item[name] = enumMap[name][defaultEnumIndex!].key
+          }
+        })
 
       const finalItem = this.filter ? this.filter(item) : item
       this.item = finalItem
@@ -246,6 +260,10 @@ export default class EditDialog extends ViewBase {
     content: '';
     display: block;
     clear: both;
+  }
+  /deep/ .ivu-col {
+    display: inline-block;
+    float: none;
   }
   /deep/ .ivu-form-item-label {
     user-select: none;

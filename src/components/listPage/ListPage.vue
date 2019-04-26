@@ -11,6 +11,8 @@
             :class="it.class"
             :style="it.style"
             :placeholder="it.placeholder"
+            v-bind="it.props"
+            v-auth="it.auth"
           >
             <Option
               v-for="sub in enumType[it.enumKey]"
@@ -64,13 +66,7 @@ import { Component, Prop, Watch, Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { MapType, AjaxResult } from '@/util/types'
-import {
-  Filter,
-  normalizeFilter,
-  ColumnExtra,
-  normalizeColumns,
-  ListMapParam
-} from './types'
+import { Filter, normalizeFilter, ColumnExtra, normalizeColumns } from './types'
 import { devInfo, devError } from '@/util/dev'
 import { toMap } from '@/fn/array'
 import { clean } from '@/fn/object'
@@ -91,9 +87,6 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
 
   /** 增强的列配置，增加了一些字段，参见 ColumnExtra 类型 */
   @Prop({ type: Array, default: () => [] }) columns!: ColumnExtra[]
-
-  /** 列表数据项加工函数 */
-  @Prop({ type: Function }) listMap!: (item: any, param: ListMapParam) => any
 
   // 对 Filter 进行规范化处理
   get normalFilter() {

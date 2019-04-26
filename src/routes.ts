@@ -187,6 +187,26 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  // 客户管理 - 影片关联 - 列表
+  {
+    path: '/client/film/',
+    name: 'client-film',
+    component: () => import('./views/client/film/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 客户管理 - 影片关联 - 详情
+  {
+    path: '/client/film/detail/:id?',
+    name: 'client-film-detail',
+    component: () => import('./views/client/film/detail.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
   // 基础数据 - 系统字典 - 分类列表
   {
     path: '/data/dict/',

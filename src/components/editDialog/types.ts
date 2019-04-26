@@ -72,6 +72,15 @@ export interface Field extends Param {
    */
   placeholder?: string
 
+  /** width */
+  width?: number
+
+  /** minWidth */
+  minWidth?: number
+
+  /** maxWidth */
+  maxWidth?: number
+
   /**
    * 是否为必填的
    * 若为必填，且 rules 为空，则 rules 默认为
@@ -149,11 +158,12 @@ export function normalizeField(list: Field[]) {
         kebabCase(component.name + '-' + it.name),
       ],
       style: {
-        // width: it.width ? `${it.width}px` : '',
-        // minWidth: it.minWidth ? `${it.minWidth}px` : '',
-        // maxWidth: it.maxWidth ? `${it.maxWidth}px` : '',
+        width: it.width ? `${it.width}px` : '',
+        minWidth: it.minWidth ? `${it.minWidth}px` : '',
+        maxWidth: it.maxWidth ? `${it.maxWidth}px` : '',
       },
       enumKey: it.enumKey || it.name.replace(/Code$|$/, 'List'),
+      auth: it.auth || '',
       props: it.props || {},
     }
 

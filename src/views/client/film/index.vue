@@ -5,6 +5,7 @@
       :filters="filters"
       :enums="enums"
       :columns="columns"
+      :listMap="listMap"
       ref="listPage"
     >
       <template slot="acts">
@@ -35,25 +36,17 @@
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
-import AreaSelect, { areaParam } from '@/components/areaSelect'
 import {
   queryList,
-  updateStatus,
-  updateControlStatus,
-  updatePricingLevelCode,
-  updateBoxLevelCode,
-  queryItem,
-  addItem,
-  updateItem
-} from '@/api/cinema'
+  // queryItem,
+  // addItem,
+  // updateItem
+} from '@/api/clientFilm'
 import EditDialog, { Field } from '@/components/editDialog'
 
 @Component({
   components: {
     ListPage,
-    CinemaChainSelect,
-    AreaSelect,
     EditDialog
   }
 })
@@ -62,67 +55,35 @@ export default class Main extends ViewBase {
 
   filters: Filter[] = [
     {
-      name: 'name',
+      name: 'email',
       defaultValue: '',
       type: 'input',
-      width: 85,
-      placeholder: '影院名称'
+      width: 100,
+      placeholder: '申请人邮箱'
     },
 
     {
-      name: 'chainId',
-      defaultValue: 0,
-      type: CinemaChainSelect,
-      width: 168,
-      minWidth: 168
+      name: 'corpName',
+      defaultValue: '',
+      type: 'input',
+      width: 100,
+      placeholder: '申请人公司名称'
     },
 
     {
-      ...areaParam,
-      type: AreaSelect,
-      width: 160
+      name: 'filmName',
+      defaultValue: '',
+      type: 'input',
+      width: 100,
+      placeholder: '申请人公司名称'
     },
 
     {
       name: 'status',
       defaultValue: 0,
       type: 'select',
-      width: 85,
-      placeholder: '营业状态'
-    },
-
-    {
-      name: 'controlStatus',
-      defaultValue: 0,
-      type: 'select',
-      width: 85,
-      placeholder: '控制状态'
-    },
-
-    {
-      name: 'hallDataStatus',
-      defaultValue: 0,
-      type: 'select',
-      width: 85,
-      placeholder: '影厅数据'
-    },
-
-    {
-      name: 'pricingLevelCode',
-      defaultValue: '',
-      type: 'select',
-      width: 85,
-      placeholder: '定价级别',
-      enumKey: 'pricingLevelList'
-    },
-
-    {
-      name: 'boxLevelCode',
-      defaultValue: '',
-      type: 'select',
-      width: 85,
-      placeholder: '票房级别',
-      enumKey: 'boxLevelList'
+      width: 100,
+      placeholder: '关联状态'
     },
 
     {
@@ -138,55 +99,15 @@ export default class Main extends ViewBase {
 
   enums = [
     'statusList',
-    'controlStatusList',
-    'hallDataStatusList',
-    'pricingLevelList',
-    'boxLevelList',
-    'gradeList'
   ]
 
   get columns() {
     return [
       { title: '序号', key: 'id', width: 65 },
-      { title: '专资ID', key: 'code', width: 80 },
-      { title: '影院名称', key: 'shortName', minWidth: 90 },
-      { title: '院线', key: 'chainName', minWidth: 90, editor: 'deprecated' },
-      { title: '省份', key: 'provinceName', width: 80 },
-      { title: '城市', key: 'cityName', width: 80 },
-      { title: '区县', key: 'countyName', width: 80 },
-      { title: '级别', key: 'gradeCode', width: 60, editor: 'deprecated' },
-      {
-        title: '营业状态',
-        key: 'status',
-        width: 70,
-        editor: 'poptipSelect',
-        updateField: updateStatus,
-        auth: 'theater.cinemas:change-status'
-      },
-      {
-        title: '控制状态',
-        key: 'controlStatus',
-        width: 75,
-        editor: 'poptipSelect',
-        updateField: updateControlStatus,
-        auth: 'theater.cinemas:change-control-status'
-      },
-      {
-        title: '定价级别',
-        key: 'pricingLevelCode',
-        width: 75,
-        editor: 'poptipSelect',
-        updateField: updatePricingLevelCode,
-        auth: 'theater.cinemas:change-pricing-level'
-      },
-      {
-        title: '票房级别',
-        key: 'boxLevelCode',
-        width: 75,
-        editor: 'poptipSelect',
-        updateField: updateBoxLevelCode,
-        auth: 'theater.cinemas:change-box-level'
-      },
+      { title: '申请人邮箱', key: 'email', width: 180 },
+      { title: '申请人公司名称', key: 'corpName', minWidth: 180 },
+      { title: '影片名称', key: 'filmName', minWidth: 180 },
+      { title: '状态', key: 'status', width: 80 },
       { title: '操作', slot: 'action', width: 100 }
     ] as ColumnExtra[]
   }
@@ -233,36 +154,11 @@ export default class Main extends ViewBase {
     },
 
     {
-      name: 'chainId',
-      defaultValue: 0,
-      type: CinemaChainSelect,
-      label: '院线',
-      span: 16,
-      required: true,
-      backfillParam({ chainId, chainControlStatus }: any, { defaultValue }) {
-        // 只有 chainControlStatus 为 1 是，chainId 的值，才是正确的
-        return chainControlStatus == 1 ? chainId : defaultValue
-      }
-    },
-
-    {
       name: 'softwareCode',
       defaultValue: '',
       type: 'select',
       label: '售票系统',
       span: 8
-    },
-
-    {
-      ...areaParam,
-      type: AreaSelect,
-      label: '公司地址',
-      span: 10,
-      width: 305,
-      required: true,
-      props: {
-        noSelf: true
-      }
     },
 
     {
@@ -321,18 +217,18 @@ export default class Main extends ViewBase {
     }
   ]
 
-  editFetch = queryItem
+  // editFetch = queryItem
 
-  editShow(id = 0) {
-    const editor = this.$refs.editDlg as EditDialog
-    editor.show({ id }).done((data: any) => {
-      (this.$refs.listPage as any).update()
-    })
-  }
+  // editShow(id = 0) {
+  //   const editor = this.$refs.editDlg as EditDialog
+  //   editor.show({ id }).done((data: any) => {
+  //     (this.$refs.listPage as any).update()
+  //   })
+  // }
 
-  editSubmit(data: any) {
-    return data.id ? updateItem(data) : addItem(data)
-  }
+  // editSubmit(data: any) {
+  //   return data.id ? updateItem(data) : addItem(data)
+  // }
 
   mounted() {}
 }
