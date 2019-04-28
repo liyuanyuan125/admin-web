@@ -57,6 +57,8 @@ export default class CinemaChainSelect extends ViewBase {
   @Watch('inValue')
   watchInValue(val: number) {
     this.$emit('input', val)
+    const row = this.list.filter((item: any) => item.id == val)
+    this.$emit('row', row)
   }
 }
 </script>

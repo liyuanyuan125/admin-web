@@ -14,7 +14,7 @@
           icon="md-add-circle"
           @click="editShow()"
           v-auth="'theater.cinemas:add'"
-        >新建影院</Button>
+        >新建影片关联</Button>
       </template>
 
       <template slot="action" slot-scope="{ row: { id } }">
@@ -22,13 +22,29 @@
           <router-link
             :to="{ name: 'data-cinema-hall', params: { id } }"
             v-auth="'theater.cinemas:info'"
-          >查看影厅</router-link>
-          <a @click="editShow(id)" v-auth="'theater.cinemas:modify'">编辑</a>
+          >详情</router-link>
+        </div>
+      </template>
+
+      <template slot="operationTime" slot-scope="{ row: { operationTime } }">
+        <span>{{timeFormat(operationTime)}}</span>
+      </template>
+
+      <template slot="applyTime" slot-scope="{ row: { applyTime } }">
+        <span>{{timeFormat(applyTime)}}</span>
+      </template>
+
+      <template slot="action" slot-scope="{ row: { id } }">
+        <div class="row-acts">
+          <router-link
+            :to="{ name: 'data-cinema-hall', params: { id } }"
+            v-auth="'theater.cinemas:info'"
+          >详情</router-link>
         </div>
       </template>
     </ListPage>
 
-    <EditDialog :fields="fields" :fetch="editFetch" :submit="editSubmit" ref="editDlg"/>
+    <!-- <EditDialog :fields="fields" :fetch="editFetch" :submit="editSubmit" ref="editDlg"/> -->
   </div>
 </template>
 
@@ -36,13 +52,12 @@
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
+import moment from 'moment'
 import {
-  queryList,
-  // queryItem,
-  // addItem,
-  // updateItem
+  queryList
 } from '@/api/clientFilm'
 import EditDialog, { Field } from '@/components/editDialog'
+const timeFormat = 'YYYY/MM/DD HH:mm:ss'
 
 @Component({
   components: {
@@ -55,7 +70,7 @@ export default class Main extends ViewBase {
 
   filters: Filter[] = [
     {
-      name: 'email',
+      name: 'applyEmail',
       defaultValue: '',
       type: 'input',
       width: 100,
@@ -63,7 +78,7 @@ export default class Main extends ViewBase {
     },
 
     {
-      name: 'corpName',
+      name: 'companyName',
       defaultValue: '',
       type: 'input',
       width: 100,
@@ -71,11 +86,19 @@ export default class Main extends ViewBase {
     },
 
     {
-      name: 'filmName',
+      name: 'movieName',
       defaultValue: '',
       type: 'input',
       width: 100,
-      placeholder: '申请人公司名称'
+      placeholder: '影片名称'
+    },
+
+    {
+      name: 'createrUser',
+      defaultValue: 0,
+      type: 'select',
+      width: 100,
+      placeholder: '操作人'
     },
 
     {
@@ -83,7 +106,8 @@ export default class Main extends ViewBase {
       defaultValue: 0,
       type: 'select',
       width: 100,
-      placeholder: '关联状态'
+      placeholder: '关联状态',
+      enumKey: 'statusList'
     },
 
     {
@@ -104,10 +128,13 @@ export default class Main extends ViewBase {
   get columns() {
     return [
       { title: '序号', key: 'id', width: 65 },
-      { title: '申请人邮箱', key: 'email', width: 180 },
-      { title: '申请人公司名称', key: 'corpName', minWidth: 180 },
-      { title: '影片名称', key: 'filmName', minWidth: 180 },
+      { title: '申请人邮箱', key: 'applyEmail', width: 180 },
+      { title: '申请人公司名称', key: 'companyName', minWidth: 180 },
+      { title: '影片名称', key: 'movieName', minWidth: 180 },
+      { title: '申请人时间', key: 'applyTime', slot: 'applyTime', minWidth: 140 },
       { title: '状态', key: 'status', width: 80 },
+      { title: '操作人', key: 'operationUser', width: 100 },
+      { title: '操作时间', key: 'operationTime', slot: 'operationTime', width: 140 },
       { title: '操作', slot: 'action', width: 100 }
     ] as ColumnExtra[]
   }
@@ -217,18 +244,14 @@ export default class Main extends ViewBase {
     }
   ]
 
-  // editFetch = queryItem
+  timeFormat(time: any) {
+    const createdTime = time ? moment(time).format(timeFormat) : ''
+    return createdTime
+  }
 
-  // editShow(id = 0) {
-  //   const editor = this.$refs.editDlg as EditDialog
-  //   editor.show({ id }).done((data: any) => {
-  //     (this.$refs.listPage as any).update()
-  //   })
-  // }
-
-  // editSubmit(data: any) {
-  //   return data.id ? updateItem(data) : addItem(data)
-  // }
+  editShow() {
+    this.$router.push({ name: 'client-film-edit'})
+  }
 
   mounted() {}
 }

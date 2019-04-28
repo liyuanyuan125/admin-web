@@ -15,7 +15,11 @@
           v-auth="'theater.cinemas:add'"
         >新建影院</Button>
       </template>
-
+      <template slot="companies" slot-scope="{ row: { companies } }">
+        <div class="companies">
+          <p v-for="(item, index) in companies" :key="index">{{ item.name }}</p> 
+        </div>
+      </template>
       <template slot="action" slot-scope="{ row: { id } }">
         <div class="row-acts">
           <router-link
@@ -31,12 +35,13 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="tsx">
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import AreaSelect, { areaParam } from '@/components/areaSelect'
+import jsxReactToVue from '@/util/jsxReactToVue'
 import {
   queryList,
   updateStatus,
@@ -47,6 +52,7 @@ import {
   addItem,
   updateItem
 } from '@/api/cinema'
+import Companies from './companies.vue'
 import EditDialog, { Field } from '@/components/editDialog'
 
 @Component({
@@ -75,6 +81,14 @@ export default class Main extends ViewBase {
       type: CinemaChainSelect,
       width: 168,
       minWidth: 168
+    },
+
+    {
+      name: 'companyIds',
+      defaultValue: '',
+      type: Companies,
+      width: 120,
+      placeholder: '影投'
     },
 
     {
@@ -142,7 +156,7 @@ export default class Main extends ViewBase {
     'hallDataStatusList',
     'pricingLevelList',
     'boxLevelList',
-    'gradeList'
+    'gradeList',
   ]
 
   get columns() {
@@ -150,6 +164,7 @@ export default class Main extends ViewBase {
       { title: '序号', key: 'id', width: 65 },
       { title: '专资ID', key: 'code', width: 80 },
       { title: '影院名称', key: 'shortName', minWidth: 90 },
+      { title: '影投', width: 100, slot: 'companies' },
       { title: '院线', key: 'chainName', minWidth: 90, editor: 'deprecated' },
       { title: '省份', key: 'provinceName', width: 80 },
       { title: '城市', key: 'cityName', width: 80 },
@@ -275,6 +290,22 @@ export default class Main extends ViewBase {
     },
 
     {
+      name: 'companyIds',
+      label: '影投',
+      defaultValue: '',
+      type: Companies,
+      span: 16,
+      placeholder: '影投',
+      props: {
+        multiple: true,
+      },
+      backfillParam({ companies }: any, { defaultValue }) {
+        const value =  (companies || []).map((item: any) => item.id)
+        return value
+      }
+    },
+
+    {
       name: 'zipCode',
       defaultValue: '',
       type: 'input',
@@ -339,4 +370,7 @@ export default class Main extends ViewBase {
 </script>
 
 <style lang="less" scoped>
+.companies:only-child:empty::before {
+  content: "-";
+}
 </style>

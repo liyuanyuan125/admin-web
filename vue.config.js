@@ -10,7 +10,7 @@ module.exports = {
     },
     proxy: {
       '/': {
-        target: 'http://mapi.aiads-dev.com',
+        target: 'http://172.19.64.190',
         changeOrigin: true,
         ws: false,
         bypass(req) {

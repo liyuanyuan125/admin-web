@@ -197,6 +197,16 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  // 客户管理 - 影片关联 - 添加
+  {
+    path: '/client/film/edit',
+    name: 'client-film-edit',
+    component: () => import('./views/client/film/detail.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
   // 客户管理 - 影片关联 - 详情
   {
     path: '/client/film/detail/:id?',
