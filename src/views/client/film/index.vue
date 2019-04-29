@@ -5,7 +5,6 @@
       :filters="filters"
       :enums="enums"
       :columns="columns"
-      :listMap="listMap"
       ref="listPage"
     >
       <template slot="acts">
@@ -37,8 +36,7 @@
       <template slot="action" slot-scope="{ row: { id } }">
         <div class="row-acts">
           <router-link
-            :to="{ name: 'data-cinema-hall', params: { id } }"
-            v-auth="'theater.cinemas:info'"
+            :to="{ name: 'client-film-detail', params: { id } }"
           >详情</router-link>
         </div>
       </template>
@@ -53,6 +51,8 @@ import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import moment from 'moment'
+import CompanyList from '@/components/companyList.vue'
+import Director from './director.vue'
 import {
   queryList
 } from '@/api/clientFilm'
@@ -62,7 +62,8 @@ const timeFormat = 'YYYY/MM/DD HH:mm:ss'
 @Component({
   components: {
     ListPage,
-    EditDialog
+    EditDialog,
+    Director
   }
 })
 export default class Main extends ViewBase {
@@ -94,9 +95,9 @@ export default class Main extends ViewBase {
     },
 
     {
-      name: 'createrUser',
+      name: 'approvalId',
       defaultValue: 0,
-      type: 'select',
+      type: Director,
       width: 100,
       placeholder: '操作人'
     },
@@ -132,117 +133,12 @@ export default class Main extends ViewBase {
       { title: '申请人公司名称', key: 'companyName', minWidth: 180 },
       { title: '影片名称', key: 'movieName', minWidth: 180 },
       { title: '申请人时间', key: 'applyTime', slot: 'applyTime', minWidth: 140 },
-      { title: '状态', key: 'status', width: 80 },
+      { title: '状态', key: 'status', width: 80, editor: 'enum'},
       { title: '操作人', key: 'operationUser', width: 100 },
       { title: '操作时间', key: 'operationTime', slot: 'operationTime', width: 140 },
       { title: '操作', slot: 'action', width: 100 }
     ] as ColumnExtra[]
   }
-
-  fields: Field[] = [
-    {
-      name: 'id',
-      defaultValue: 0
-    },
-
-    {
-      name: 'shortName',
-      defaultValue: '',
-      type: 'input',
-      label: '影城名称',
-      span: 16,
-      required: true
-    },
-
-    {
-      name: 'code',
-      defaultValue: '',
-      type: 'input',
-      label: '专资ID',
-      span: 8,
-      required: true
-    },
-
-    {
-      name: 'officialName',
-      defaultValue: '',
-      type: 'input',
-      label: '官方名称',
-      span: 16,
-      required: true
-    },
-
-    {
-      name: 'gradeCode',
-      defaultValue: '',
-      type: 'select',
-      label: '影院等级',
-      span: 8
-    },
-
-    {
-      name: 'softwareCode',
-      defaultValue: '',
-      type: 'select',
-      label: '售票系统',
-      span: 8
-    },
-
-    {
-      name: 'address',
-      defaultValue: '',
-      type: 'input',
-      span: 14,
-      placeholder: '详细地址',
-      width: 405
-    },
-
-    {
-      name: 'zipCode',
-      defaultValue: '',
-      type: 'input',
-      label: '邮编',
-      span: 8
-    },
-
-    {
-      name: 'status',
-      defaultValue: 0,
-      type: 'select',
-      label: '营业状态',
-      span: 8,
-      defaultEnumIndex: 0,
-      auth: 'theater.cinemas:change-status'
-    },
-
-    {
-      name: 'controlStatus',
-      defaultValue: 0,
-      type: 'select',
-      label: '控制状态',
-      span: 8,
-      defaultEnumIndex: 0,
-      auth: 'theater.cinemas:change-control-status'
-    },
-
-    {
-      name: 'pricingLevelCode',
-      defaultValue: '',
-      type: 'select',
-      label: '定价级别',
-      span: 8,
-      auth: 'theater.cinemas:change-pricing-level'
-    },
-
-    {
-      name: 'boxLevelCode',
-      defaultValue: '',
-      type: 'select',
-      label: '票房级别',
-      span: 8,
-      auth: 'theater.cinemas:change-box-level'
-    }
-  ]
 
   timeFormat(time: any) {
     const createdTime = time ? moment(time).format(timeFormat) : ''

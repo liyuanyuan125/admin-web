@@ -3,32 +3,34 @@
     <header class="header flex-box">
       <Button icon="md-return-left" @click="back" class="btn-back">返回上一页</Button>
       <div class="flex-1">
-        <em>新建影片关联</em>
+        <em>{{title}}</em>
       </div>
     </header>
-    <Form  :model='query' :label-width='88' :rules='rules' label-position="left" class='form page detail-box' ref='dataForms'>
+    <Form :model='query' :label-width='88' :rules='rules' label-position="left" class='form page detail-box' ref='dataForms'>
       <div class='titop'>申请主体</div>
       <Row class="detail-content">
         <Row>
-          <Col span="2"><div>公司名称</div></Col>
-          <Col span="8">
-            <CompanyList v-model="query.companyId" @row="rowName" />
+          <Col span="10">
+            <FormItem label="公司名称" prop="companyId">
+              <CompanyList v-if="!$route.params.id" v-model="query.companyId" @row="rowName" />
+              <span v-else>{{companyName}}</span>
+            </FormItem>
           </Col>
         </Row>
-         <Row>
-          <Col span="2"><div>联系人</div></Col>
-          <Col span="8"><span>{{contact}}</span></Col>
-        </Row>
-         <Row>
-          <Col span="2"><div>申请人</div></Col>
-          <Col span="8"><span>{{proposer}}</span></Col>
-        </Row>
+        <FormItem label="联系人">
+          <span>{{contact}}</span>
+        </FormItem> 
+        <FormItem label="申请人">
+          <span>{{proposer}}</span>
+        </FormItem> 
         <Row>
-          <Col span="2"><div>凭证</div></Col>
-          <Col span="8">
-            <div>
-              <Upload v-model="query.certificate" multiple :maxCount="5" accept="image/*"/>
-            </div>
+          <Col span="10">
+            <FormItem label="凭证" prop="certificate" :show-message="!(query.certificate.length>0)">
+              <div class="imgPing">
+                <Upload v-if="!$route.params.id" v-model="query.certificate" multiple :maxCount="5" accept="image/*"/>
+                <Upload readonly v-model="query.certificate" />
+              </div>
+            </FormItem> 
           </Col>
         </Row>
       </Row>
@@ -36,70 +38,149 @@
       <div class='titop'>关联主体</div>
       <Row class="detail-content">
         <Row>
-          <Col span="2"><div>影片名称</div></Col>
-          <Col span="8"><span></span></Col>
-          <Col span="2"><div>上映日期</div></Col>
-          <Col span="8"><span></span></Col>
+          <Col span="10">
+            <FormItem label="影片名称" prop="movieId">
+              <Select  v-if="!$route.params.id" v-model="query.movieId" filterable
+                clearable class="component" ref="ui">
+                <Option v-for="it in fileList" :key="it.id" :value="it.id"
+                  :label="it.name" class="flex-box">
+                  <span>{{it.name}}</span>
+                </Option>
+              </Select>
+              <span v-else>{{movieName}}</span>
+            </FormItem>
+          </Col>
+          <Col span="10" offset="2">
+            <FormItem label="上映日期">
+              <span>{{openTime}}</span>
+            </FormItem> 
+          </Col>
         </Row>
         <Row>
-          <Col span="2"><div>影片主图</div></Col>
-          <Col span="8"><span></span></Col>
-          <Col span="2"><div>影片类型</div></Col>
-          <Col span="8"><span></span></Col>
+          <Col span="10">
+            <FormItem label="影片主图" v-if="!$route.params.id">
+              <div v-if="show" class="mainImgHeight">
+                <ImgModel v-if="mainPicUrl"  :uploadList="mainPicUrl" :type=1 />
+              </div>
+              <span v-else></span>
+            </FormItem> 
+            <FormItem label="影片主图" v-else>
+              
+            </FormItem> 
+          </Col>
+          <Col span="10" offset="2">
+            <FormItem label="影片类型">
+              <span>{{fileType}}</span>
+            </FormItem> 
+          </Col>
         </Row>
       </Row>
 
-      <div class='titop'>备注</div>
-      <Row class="detail-content">
+      <div class='titop' v-if="!$route.params.id">备注</div>
+      <Row class="detail-content" v-if="!$route.params.id">
         <Row>
-          <Col span="2"><div>备注</div></Col>
-          <Col span="8"><span></span></Col>
+          <Col span="10">
+            <FormItem label="备注">
+              <Input v-model="query.remark"/>
+            </FormItem> 
+          </Col>
         </Row>
-      </Row>
-
-      <Row>
       </Row>
     </Form>
+    <div v-if="!$route.params.id" class="edit-button">
+      <Button type="info" size="large" @click="addfilms('dataForms')">关联</Button>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
-import { Component } from 'vue-property-decorator'
+import { Component, Watch } from 'vue-property-decorator'
 import moment from 'moment'
 import ViewBase from '@/util/ViewBase'
 import { queryId } from '@/api/corpReal'
 import Upload from '@/components/Upload.vue'
-import { toMap } from '@/fn/array'
 import CompanyList from '@/components/companyList.vue'
+import ImgModel from '@/views/data/film/imgModel.vue'
 import { getUser } from '@/store'
-const makeMap = (list: any[]) => toMap(list, 'key', 'text')
+import { queryList, getIdDetal } from '@/api/film'
+import { addfilm, filmId } from '@/api/clientFilm'
 
-
-const timeFormatDate = 'YYYY/MM/DD HH:mm:ss'
 const timeFormat = 'YYYY/MM/DD'
 
 @Component({
   components: {
     Upload,
-    CompanyList
+    CompanyList,
+    ImgModel,
   }
 })
 export default class Main extends ViewBase {
 
+  title = ''
   contact: string = ''
+  fileList: any = null
+  openTime = ''
+  fileType = ''
+  mainPicUrl = ''
+  show = false
   query: any = {
     companyId: null,
     movieId: null,
     certificate: [],
+    remark: ''
   }
+  companyName: any = ''
+  movieName: any = ''
 
-  rules: any = [
-  ]
+  get rules() {
+    return {
+      companyId: [
+        { required: true, message: '请选择公司名称', type: 'number', trigger: 'change' }
+      ],
+      movieId: [
+        { required: true, message: '请选择影片名称', type: 'number', trigger: 'change' }
+      ],
+      certificate: [
+         { required: true, message: '请选择上传凭证', type: 'array', trigger: 'change' }
+      ]
+    }
+  }
 
   get proposer() {
     const name = getUser()!.name
     return name
+  }
+
+  created() {
+    if (this.$route.params.id) {
+      this.title = '影片关联'
+      this.fileDetail()
+    } else {
+      this.title = '新建影片关联'
+      this.fileLists()
+    }
+  }
+
+  async fileDetail() {
+    try {
+      const { data } = await filmId(Number(this.$route.params.id))
+      this.companyName = data.companyName || ''
+      this.openTime = data.openTime ? moment(data.operationTime).format(timeFormat) : ''
+      this.contact = data.contactName
+      this.movieName = data.movieName
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
+  async fileLists() {
+    try {
+      const { data: { items } } = await queryList({pageIndex: 1, pageSize: 999999, controlStatus: 1})
+      this.fileList = items.filter((item: any) => item.releaseStatus != 4)
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
 
   back() {
@@ -113,6 +194,49 @@ export default class Main extends ViewBase {
   goSet() {
     const id = this.$route.params.id
     this.$router.replace({ name: 'client-corp-edit', params: { id }} )
+  }
+
+  async filmIddetils(value: number) {
+    try {
+
+      const res = await getIdDetal({id: value})
+      this.openTime = res.data.openTime ? moment(res.data.openTime).format(timeFormat) : ''
+      this.fileType = (res.data.type || []).join('/')
+      this.mainPicUrl = res.data.mainPicUrl || ''
+      if (this.mainPicUrl) {
+        this.show = true
+      } else {
+        this.show = false
+      }
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
+  async addfilms(dataForms: string) {
+    const flag = await (this.$refs[dataForms] as any).validate()
+    if (flag) {
+      (this.$Spin as any).show()
+      await addfilm({
+        ...this.query,
+        certificate: this.query.certificate.map((it: any) => it.fileId)
+      })
+      ; (this.$Spin as any).hide()
+      this.$router.push({ name: 'client-film' })
+    }
+  }
+
+  @Watch('query.movieId')
+  watchQueryMoieId(val: number) {
+    if (val) {
+      this.mainPicUrl = ''
+      this.filmIddetils(val)
+    } else {
+      this.show = false
+      this.openTime = ''
+      this.fileType = ''
+      this.mainPicUrl = ''
+    }
   }
 }
 </script>
@@ -161,6 +285,7 @@ export default class Main extends ViewBase {
   margin-bottom: 10px;
   border: 1px solid #dcdee2;
   background: #fff;
+  padding-top: 22px;
   padding-left: 14px;
   /deep/ .ivu-col-span-2 {
     div {
@@ -173,7 +298,6 @@ export default class Main extends ViewBase {
   }
   span {
     display: inline-block;
-    line-height: 50px;
     color: #717975;
   }
   span:only-child:empty {
@@ -187,6 +311,9 @@ export default class Main extends ViewBase {
   /deep/ .ivu-col-span-8 > div {
     padding-top: 8px;
   }
+  .mainImgHeight {
+    height: 116px;
+  }
 }
 
 .upload {
@@ -197,6 +324,9 @@ export default class Main extends ViewBase {
   }
 }
 
+.edit-button {
+  text-align: center;
+}
 .titop {
   line-height: 28px;
   color: rgb(61, 156, 235);
