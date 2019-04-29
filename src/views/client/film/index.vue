@@ -134,7 +134,7 @@ export default class Main extends ViewBase {
       { title: '影片名称', key: 'movieName', minWidth: 180 },
       { title: '申请人时间', key: 'applyTime', slot: 'applyTime', minWidth: 140 },
       { title: '状态', key: 'status', width: 80, editor: 'enum'},
-      { title: '操作人', key: 'operationUser', width: 100 },
+      { title: '操作人', key: 'operationEmail', width: 100 },
       { title: '操作时间', key: 'operationTime', slot: 'operationTime', width: 140 },
       { title: '操作', slot: 'action', width: 100 }
     ] as ColumnExtra[]

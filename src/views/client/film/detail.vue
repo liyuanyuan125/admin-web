@@ -70,7 +70,8 @@
               <span v-else></span>
             </FormItem> 
             <FormItem label="影片主图" v-else>
-              
+              <ImgModel v-if="mainPicUrl"  :uploadList="mainPicUrl" :type=1 />
+              <span v-else></span>
             </FormItem> 
           </Col>
           <Col span="10" offset="2">
@@ -174,6 +175,14 @@ export default class Main extends ViewBase {
       this.openTime = data.openTime ? moment(data.operationTime).format(timeFormat) : ''
       this.contact = data.contactName
       this.movieName = data.movieName
+      this.mainPicUrl = data.mainPicUrl
+      this.fileType = (data.movieType || []).join('/')
+      this.query.certificate = (data.certificate || []).map((it: any) => {
+        return {
+          ...it,
+          url: it.fileUrl
+        }
+      })
     } catch (ex) {
       this.handleError(ex)
     }
