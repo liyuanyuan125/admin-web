@@ -28,7 +28,12 @@
             <FormItem label="凭证" prop="certificate" :show-message="!(query.certificate.length>0)">
               <div class="imgPing">
                 <Upload v-if="!$route.params.id" v-model="query.certificate" multiple :maxCount="5" accept="image/*"/>
-                <Upload readonly v-model="query.certificate" />
+                <div v-else>
+                  <div v-if="query.certificate.length == 0" class="show-img">
+                    <img src="~@/assets/imgerror.png"/>
+                  </div>
+                  <Upload v-else readonly v-model="query.certificate" />
+                </div>
               </div>
             </FormItem> 
           </Col>

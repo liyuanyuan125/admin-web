@@ -95,7 +95,7 @@ export default class Main extends ViewBase {
     },
 
     {
-      name: 'approvalId',
+      name: 'operatorId',
       defaultValue: 0,
       type: Director,
       width: 100,
