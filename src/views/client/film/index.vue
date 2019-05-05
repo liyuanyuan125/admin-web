@@ -19,23 +19,6 @@
       <template slot="action" slot-scope="{ row: { id } }">
         <div class="row-acts">
           <router-link
-            :to="{ name: 'data-cinema-hall', params: { id } }"
-            v-auth="'theater.cinemas:info'"
-          >详情</router-link>
-        </div>
-      </template>
-
-      <template slot="operationTime" slot-scope="{ row: { operationTime } }">
-        <span>{{timeFormat(operationTime)}}</span>
-      </template>
-
-      <template slot="applyTime" slot-scope="{ row: { applyTime } }">
-        <span>{{timeFormat(applyTime)}}</span>
-      </template>
-
-      <template slot="action" slot-scope="{ row: { id } }">
-        <div class="row-acts">
-          <router-link
             :to="{ name: 'client-film-detail', params: { id } }"
           >详情</router-link>
         </div>
@@ -129,14 +112,14 @@ export default class Main extends ViewBase {
   get columns() {
     return [
       { title: '序号', key: 'id', width: 65 },
-      { title: '申请人邮箱', key: 'applyEmail', width: 180 },
+      { title: '申请人邮箱', key: 'applyEmail', width: 160 },
       { title: '申请人公司名称', key: 'companyName', minWidth: 180 },
       { title: '影片名称', key: 'movieName', minWidth: 180 },
-      { title: '申请人时间', key: 'applyTime', slot: 'applyTime', minWidth: 140 },
-      { title: '状态', key: 'status', width: 80, editor: 'enum'},
+      { title: '申请人时间', key: 'applyTime', editor: 'dateTime', width: 135 },
+      { title: '状态', key: 'status', width: 60, editor: 'enum'},
       { title: '操作人', key: 'operationEmail', width: 100 },
-      { title: '操作时间', key: 'operationTime', slot: 'operationTime', width: 140 },
-      { title: '操作', slot: 'action', width: 100 }
+      { title: '操作时间', key: 'operationTime', editor: 'dateTime', width: 135 },
+      { title: '操作', slot: 'action', width: 55 }
     ] as ColumnExtra[]
   }
 
