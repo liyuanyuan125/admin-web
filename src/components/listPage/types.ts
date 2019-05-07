@@ -7,6 +7,7 @@ import Deprecated from '@/components/Deprecated.vue'
 import PoptipSelect from '@/components/PoptipSelect.vue'
 import { devError } from '@/util/dev'
 import { Param } from '@/util/param'
+import moment from 'moment'
 
 /**
  * 固定类型列表
@@ -210,8 +211,22 @@ const getEnum = (column: ColumnExtra, enumMap: MapType<any>, row: any) => {
     return
   }
   const dataKey = row[key!]
+  if (dataKey == null) {
+    devError(`dataKey 为 null`)
+  }
   const enumItem = textMap[dataKey]
   return enumItem
+}
+
+const getTimeEditor = (format: string) => {
+  return (column: ColumnExtra) => {
+    return (h: any, { row }: any) => {
+      const { key } = column
+      const value = row[key!]
+      const text = value ? moment(value).format(format) : ''
+      return h('span', text || '')
+    }
+  }
 }
 
 /**
@@ -270,10 +285,16 @@ const editorMap: MapType<(column: ColumnExtra, param: ColumnParam) => RenderFunc
 
   enum(column: ColumnExtra, { enumMap }) {
     return (h: any, { row }: any) => {
-      const { text } = getEnum(column, enumMap, row)
+      const { text } = getEnum(column, enumMap, row) || { text: '' }
       return h('span', text || '')
     }
-  }
+  },
+
+  date: getTimeEditor('YYYY-MM-DD'),
+
+  time: getTimeEditor('HH:mm:ss'),
+
+  dateTime:  getTimeEditor('YYYY-MM-DD HH:mm:ss'),
 }
 
 /**
