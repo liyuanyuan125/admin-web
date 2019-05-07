@@ -13,7 +13,7 @@
           icon="md-add-circle"
           @click="editShow()"
           v-auth="'theater.cinemas:add'"
-        >新建影院</Button>
+        >新建</Button>
       </template>
       <template slot="companies" slot-scope="{ row: { companies } }">
         <div class="companies">
