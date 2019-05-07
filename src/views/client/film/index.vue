@@ -51,7 +51,7 @@ export default class Main extends ViewBase {
 
   filters: Filter[] = [
     {
-      name: 'applyEmail',
+      name: 'email',
       defaultValue: '',
       type: 'input',
       width: 140,
