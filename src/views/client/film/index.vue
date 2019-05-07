@@ -12,7 +12,6 @@
           type="success"
           icon="md-add-circle"
           @click="editShow()"
-          v-auth="'theater.cinemas:add'"
         >新建影片关联</Button>
       </template>
 
@@ -24,8 +23,6 @@
         </div>
       </template>
     </ListPage>
-
-    <!-- <EditDialog :fields="fields" :fetch="editFetch" :submit="editSubmit" ref="editDlg"/> -->
   </div>
 </template>
 
