@@ -54,7 +54,7 @@ export default class Main extends ViewBase {
       name: 'applyEmail',
       defaultValue: '',
       type: 'input',
-      width: 100,
+      width: 140,
       placeholder: '申请人邮箱'
     },
 
@@ -62,7 +62,7 @@ export default class Main extends ViewBase {
       name: 'companyName',
       defaultValue: '',
       type: 'input',
-      width: 100,
+      width: 140,
       placeholder: '申请人公司名称'
     },
 
@@ -70,7 +70,7 @@ export default class Main extends ViewBase {
       name: 'movieName',
       defaultValue: '',
       type: 'input',
-      width: 100,
+      width: 140,
       placeholder: '影片名称'
     },
 
@@ -78,7 +78,7 @@ export default class Main extends ViewBase {
       name: 'operatorId',
       defaultValue: 0,
       type: Director,
-      width: 100,
+      width: 240,
       placeholder: '操作人'
     },
 
