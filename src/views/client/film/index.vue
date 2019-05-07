@@ -30,14 +30,12 @@
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import moment from 'moment'
 import CompanyList from '@/components/companyList.vue'
 import Director from './director.vue'
 import {
   queryList
 } from '@/api/clientFilm'
 import EditDialog, { Field } from '@/components/editDialog'
-const timeFormat = 'YYYY/MM/DD HH:mm:ss'
 
 @Component({
   components: {
@@ -118,11 +116,6 @@ export default class Main extends ViewBase {
       { title: '操作时间', key: 'operationTime', editor: 'dateTime', width: 135 },
       { title: '操作', slot: 'action', width: 55 }
     ] as ColumnExtra[]
-  }
-
-  timeFormat(time: any) {
-    const createdTime = time ? moment(time).format(timeFormat) : ''
-    return createdTime
   }
 
   editShow() {
