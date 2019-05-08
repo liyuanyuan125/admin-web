@@ -177,7 +177,7 @@ export default class Main extends ViewBase {
   }
 
   mounted() {
-    if ( this.$route.params.approveStatus == '1' ) {
+    if ( this.$route.params.approveStatus == '1' && this.$route.params.edi != '1') {
       this.showStatus = true
       this.showedit = true
     }
