@@ -123,11 +123,9 @@ import Upload from '@/components/Upload.vue'
 import CompanyList from '@/components/companyList.vue'
 import ImgModel from '@/views/data/film/imgModel.vue'
 import { getUser } from '@/store'
-import { toMap } from '@/fn/array'
 import { queryList, getIdDetal } from '@/api/film'
 import { addfilm, filmId, relevanceNot, relevance } from '@/api/clientFilm'
 
-const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY/MM/DD'
 
 @Component({
