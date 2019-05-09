@@ -17,12 +17,21 @@
             </FormItem>
           </Col>
         </Row>
-        <FormItem label="联系人">
-          <span>{{contact}}</span>
-        </FormItem> 
-        <FormItem label="申请人">
-          <span>{{proposer}}</span>
-        </FormItem> 
+        <Row>
+           <Col span="10">
+            <FormItem label="联系人">
+              <span>{{contact}}</span>
+            </FormItem> 
+           </Col>
+           <Col v-if="$route.params.id" span="10">
+            <FormItem label="关联状态">
+              <span>{{statusName}}</span>
+            </FormItem> 
+           </Col>
+        </Row>
+        <FormItem v-if="$route.params.id" label="申请时间">
+          <span>{{applyTime}}</span>
+        </FormItem>
         <Row>
           <Col span="10">
             <FormItem label="凭证" prop="certificate" :show-message="!(query.certificate.length>0)">
@@ -81,21 +90,26 @@
           </Col>
         </Row>
       </Row>
-
-      <div class='titop' v-if="!$route.params.id">备注</div>
-      <Row class="detail-content" v-if="!$route.params.id">
-        <Row>
-          <Col span="10">
-            <FormItem label="备注">
-              <Input v-model="query.remark"/>
-            </FormItem> 
-          </Col>
+      <div v-if="status != 3">
+        <div class='titop'>备注</div>
+        <Row class="detail-content">
+          <Row>
+            <Col span="10">
+              <FormItem label="备注">
+                <Input v-model="query.remark"/>
+              </FormItem> 
+            </Col>
+          </Row>
         </Row>
-      </Row>
+        <div v-if="!$route.params.id" class="edit-button">
+          <Button type="info" size="large" @click="addfilms('dataForms')">关联</Button>
+        </div>
+        <div v-else  class="edit-button">
+          <Button type="info" size="large" style="margin-right: 20px" @click="addrelevance('dataForms')">关联</Button>
+          <Button size="large" @click="cancel('dataForms')">取消关联</Button>
+        </div>
+      </div>
     </Form>
-    <div v-if="!$route.params.id" class="edit-button">
-      <Button type="info" size="large" @click="addfilms('dataForms')">关联</Button>
-    </div>
   </div>
 </template>
 
@@ -109,9 +123,11 @@ import Upload from '@/components/Upload.vue'
 import CompanyList from '@/components/companyList.vue'
 import ImgModel from '@/views/data/film/imgModel.vue'
 import { getUser } from '@/store'
+import { toMap } from '@/fn/array'
 import { queryList, getIdDetal } from '@/api/film'
-import { addfilm, filmId } from '@/api/clientFilm'
+import { addfilm, filmId, relevanceNot, relevance } from '@/api/clientFilm'
 
+const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY/MM/DD'
 
 @Component({
@@ -136,8 +152,11 @@ export default class Main extends ViewBase {
     certificate: [],
     remark: ''
   }
+  status = ''
+  statusName = ''
   companyName: any = ''
   movieName: any = ''
+  applyTime = ''
 
   get rules() {
     return {
@@ -177,6 +196,9 @@ export default class Main extends ViewBase {
       this.movieName = data.movieName
       this.mainPicUrl = data.mainPicUrl
       this.fileType = (data.movieType || []).join('/')
+      this.status = data.status
+      this.statusName = data.statusList.filter((it: any) => it.key == data.status)[0].text
+      this.applyTime = data.applyTime ? moment(data.applyTime).format(timeFormat) : ''
       this.query.certificate = (data.certificate || []).map((it: any) => {
         return {
           ...it,
@@ -237,6 +259,28 @@ export default class Main extends ViewBase {
       })
       ; (this.$Spin as any).hide()
       this.$router.push({ name: 'client-film' })
+    }
+  }
+
+  async addrelevance() {
+    try {
+      (this.$Spin as any).show()
+      await relevanceNot(Number(this.$route.params.id), { remark: this.query.remark })
+      ; (this.$Spin as any).hide()
+      this.$router.push({ name: 'client-film' })
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
+  async cancel() {
+    try {
+      (this.$Spin as any).show()
+      await relevanceNot(Number(this.$route.params.id), { remark: this.query.remark })
+      ; (this.$Spin as any).hide()
+      this.$router.push({ name: 'client-film' })
+    } catch (ex) {
+      this.handleError(ex)
     }
   }
 

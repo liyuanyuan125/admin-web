@@ -25,3 +25,21 @@ export async function filmId(id: number) {
   const res = await get(url)
   return res
 }
+
+/**
+ * 绑定管连
+ */
+export async function relevance(id: number, query: any) {
+  const url = `/customer/movie-relations/${id}/setup`
+  const res = await put(url, query)
+  return res
+}
+
+/**
+ * 取消关联
+ */
+export async function relevanceNot(id: number, query: any) {
+  const url = `/customer/movie-relations/${id}/cancel`
+  const res = await put(url, query)
+  return res
+}
