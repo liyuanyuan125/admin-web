@@ -12,7 +12,7 @@
         <Row>
           <Col span="10">
             <FormItem label="公司名称" prop="companyId">
-              <CompanyList v-if="!$route.params.id" v-model="query.companyId" @row="rowName" />
+              <CompanyList v-if="!$route.params.id" approveStatus='2' v-model="query.companyId" @row="rowName" />
               <span v-else>{{companyName}}</span>
             </FormItem>
           </Col>
@@ -36,8 +36,7 @@
           <Col span="10">
             <FormItem label="凭证" prop="certificate" :show-message="!(query.certificate.length>0)">
               <div class="imgPing">
-                <Upload v-if="!$route.params.id" v-model="query.certificate" multiple :maxCount="5" accept="image/*"/>
-                <div v-else>
+                <div>
                   <div v-if="query.certificate.length == 0" class="show-img">
                     <img src="~@/assets/imgerror.png"/>
                   </div>
@@ -282,6 +281,15 @@ export default class Main extends ViewBase {
     }
   }
 
+  async imgFind(val: number) {
+    try {
+      const { data } = await queryId({ id: val})
+      this.query.certificate = data.imageList || []
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
   @Watch('query.movieId')
   watchQueryMoieId(val: number) {
     if (val) {
@@ -293,6 +301,11 @@ export default class Main extends ViewBase {
       this.fileType = ''
       this.mainPicUrl = ''
     }
+  }
+
+  @Watch('query.companyId')
+  watchQueryCompanyId(val: number) {
+    this.imgFind(val)
   }
 }
 </script>

@@ -30,8 +30,9 @@
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import CompanyList from '@/components/companyList.vue'
+import CompanyList from './filename.vue'
 import Director from './director.vue'
+
 import {
   queryList
 } from '@/api/clientFilm'
@@ -57,19 +58,19 @@ export default class Main extends ViewBase {
     },
 
     {
-      name: 'companyName',
-      defaultValue: '',
-      type: 'input',
+      name: 'companyId',
+      defaultValue: 0,
+      type: CompanyList,
       width: 140,
       placeholder: '申请人公司名称'
     },
 
     {
-      name: 'movieName',
-      defaultValue: '',
-      type: 'input',
+      name: 'movieId',
+      defaultValue: 0,
+      type: CompanyList,
       width: 140,
-      placeholder: '影片名称'
+      placeholder: '影片名称',
     },
 
     {

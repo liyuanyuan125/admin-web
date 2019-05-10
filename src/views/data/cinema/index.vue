@@ -94,7 +94,8 @@ export default class Main extends ViewBase {
     {
       ...areaParam,
       type: AreaSelect,
-      width: 160
+      width: 160,
+      placeholder: '地区名称'
     },
 
     {

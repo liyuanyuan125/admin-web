@@ -1,18 +1,25 @@
 <template>
-  <Select v-model="inValue" :placeholder="placeholder" filterable
-    clearable class="component" ref="ui">
-    <Option v-for="it in list" :key="it.id" :value="it.id"
-      :label="it.name" class="flex-box">
-      <span>{{it.name}}</span>
-    </Option>
-  </Select>
+    <Select v-if="placeholder != '影片名称'"  v-model="inValue" :placeholder="placeholder" filterable
+      clearable class="component" ref="ui">
+      <Option v-for="it in list" :key="it.id" :value="it.companyId"
+        :label="it.companyName" class="flex-box">
+        <span>{{it.companyName}}</span>
+      </Option>
+    </Select>
+    <Select v-else v-model="inValue" :placeholder="placeholder" filterable
+      clearable class="component" ref="ui">
+      <Option v-for="it in list" :key="it.id" :value="it.movieId"
+        :label="it.movieName" class="flex-box">
+        <span>{{it.movieName}}</span>
+      </Option>
+    </Select>
 </template>
 
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import { queryList } from '@/api/corpReal'
+import { queryList } from '@/api/clientFilm'
 import { clean } from '@/fn/object'
 
 @Component
@@ -22,11 +29,11 @@ export default class CinemaChainSelect extends ViewBase {
    */
   @Prop({ type: Number, default: 0 }) value!: number
   @Prop({ default: '' }) typeCode!: string
+  @Prop({ default: true }) type!: boolean
   /**
    * 提示文字
    */
-  @Prop({ type: String, default: '公司列表' }) placeholder!: string
-  @Prop({ default: 0 }) approveStatus!: number
+  @Prop({ type: String, default: '申请人公司名称' }) placeholder!: string
   @Prop({ type: Boolean, default: true }) clearable!: boolean
 
   inValue: number = this.value
@@ -35,15 +42,8 @@ export default class CinemaChainSelect extends ViewBase {
 
   async mounted() {
     try {
-      const { data } = this.approveStatus == 0 ? await queryList(clean({
+      const { data } =  await queryList(clean({
         pageSize: 888888,
-        status: 1,
-        typeCode: this.typeCode
-      })) :  await queryList(clean({
-        pageSize: 888888,
-        status: 1,
-        approveStatus: this.approveStatus,
-        typeCode: this.typeCode
       }))
       const list: any[] = data.items || []
       this.list = list
