@@ -285,11 +285,6 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 财务管理 - 充值审核 - 列表
   {
-<<<<<<< HEAD
-    path: '/finance/examine/',
-    name: 'finance-examine',
-    component: () => import('./views/finance/examine/index.vue'),
-=======
     path: '/contract/list/edit/:id?',
     name: 'contract-list-edits',
     component: () => import('./views/contract/list/edit.vue'),
@@ -301,7 +296,6 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     path: '/contract/list/edit/:id/:copy?',
     name: 'contract-list-edit',
     component: () => import('./views/contract/list/edit.vue'),
->>>>>>> testing
     meta: {
       authKey: 'finance.recharges:list'
     }
@@ -309,15 +303,9 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 财务管理 - 充值审核 - 详情
   {
-<<<<<<< HEAD
-    path: '/finance/examine/detail/:id',
-    name: 'finance-examine-detail',
-    component: () => import('./views/finance/examine/detail.vue'),
-=======
     path: '/contract/list/detail/:id/:approveStatus/:edi?',
     name: 'contract-list-detail',
     component: () => import('./views/contract/list/detail.vue'),
->>>>>>> testing
     meta: {
       authKey: 'finance.recharges:info'
     }
@@ -430,15 +418,9 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 合同管理 - 新建、编辑合同
   {
-<<<<<<< HEAD
-    path: '/contract/list/edit/:id?',
-    name: 'contract-list-edit',
-    component: () => import('./views/contract/list/edit.vue'),
-=======
     path: '/finance/examine/detail/:id/:approvalStatus',
     name: 'finance-examine-detail',
     component: () => import('./views/finance/examine/detail.vue'),
->>>>>>> testing
     meta: {
       authKey(route) {
         const isEdit = parseInt(route.params.id, 10) > 0
