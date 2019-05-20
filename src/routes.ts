@@ -557,6 +557,24 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     }
   },
+  // 订单 - kol
+  {
+    path: '/order/kollist',
+    name: 'order-kollist',
+    component: () => import('./views/order/kollist/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+  // 订单 - kol
+  {
+    path: '/order/kollist/detail/:id/:status?',
+    name: 'order-kollist-detail',
+    component: () => import('./views/order/kollist/detail.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
 ] // end of mainLayoutRoutes
 
 const errorRoutes: RouteConfigEnhance[] = [
