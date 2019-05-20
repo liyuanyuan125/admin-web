@@ -30,8 +30,6 @@ import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import CompanyList from './filename.vue'
-import dateDicker from './dateDicker.vue'
-
 
 import {
   queryList
@@ -41,8 +39,7 @@ import EditDialog, { Field } from '@/components/editDialog'
 @Component({
   components: {
     ListPage,
-    EditDialog,
-    dateDicker
+    EditDialog
   }
 })
 export default class Main extends ViewBase {
@@ -58,11 +55,18 @@ export default class Main extends ViewBase {
     },
 
     {
-      name: 'startDate',
+      name: 'dateRange',
       defaultValue: '',
-      type: dateDicker,
+      type: 'dateRange',
       width: 200,
-      placeholder: '选择时间'
+      placeholder: '选择时间',
+      dealParam(value: string) {
+        const [startDate, endDate] = value ? value.split('-') : [null, null]
+        return {
+          startDate,
+          endDate
+        }
+      }
     },
 
     {
