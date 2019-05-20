@@ -1,16 +1,11 @@
 import { MapType } from './types'
 import { clean } from '@/fn/object'
+import { isObject } from '@/fn/type'
 
 /**
- * 参数
+ * 参数处理
  */
-export interface Param {
-  /** 名称 */
-  name: string
-
-  /** 默认值 */
-  defaultValue: any
-
+export interface ParamDeal {
   /** 自定义处理参数的函数 */
   dealParam?: DealParam
 
@@ -19,9 +14,20 @@ export interface Param {
 }
 
 /**
- * 处理参数
+ * 参数
  */
-export type DealParam = (value: any, param: Param) => object
+export interface Param extends ParamDeal {
+  /** 名称 */
+  name: string
+
+  /** 默认值 */
+  defaultValue: any
+}
+
+/**
+ * 处理参数，既可以返回一个对象，也可以返回原值
+ */
+export type DealParam = (value: any, param: Param) => object | any
 
 /**
  * 回填参数，与处理参数相反
@@ -50,7 +56,13 @@ export function dealParams(params: Param[], data: any) {
   const tdata = params.reduce((ret, param) => {
     const { name, dealParam, defaultValue } = param
     const value = name in store ? store[name] : defaultValue
-    const replaced = dealParam ? dealParam(value, param) : { [name]: value }
+    const replaced = dealParam
+      ? (() => {
+        // 增强 dealParam 的能力，若 dealParam 返回非 object 值，则被当作 { [name]: dealt }
+        const dealt = dealParam(value, param)
+        return isObject(dealt) ? dealt : { [name]: dealt }
+      })()
+      : { [name]: value }
     return { ...ret, ...replaced }
   }, {} as MapType<any>)
   const result = clean(tdata)

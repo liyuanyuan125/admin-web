@@ -12,6 +12,7 @@ declare module 'iview' {
   export const Input: any       // tslint:disable-line
   export const InputNumber: any // tslint:disable-line
   export const Select: any      // tslint:disable-line
+  export const DatePicker: any  // tslint:disable-line
 }
 
 declare module 'iview/dist/locale/zh-CN' {

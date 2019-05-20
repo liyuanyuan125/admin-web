@@ -1,25 +1,79 @@
 import { Component } from 'vue'
 import { MapType, AjaxResult } from '@/util/types'
-import { Select } from 'iview'
+import { Select, DatePicker } from 'iview'
 import LazyInput from '@/components/LazyInput'
 import { kebabCase } from 'lodash'
 import Deprecated from '@/components/Deprecated.vue'
 import PoptipSelect from '@/components/PoptipSelect.vue'
 import { devError } from '@/util/dev'
-import { Param } from '@/util/param'
+import { ParamDeal, Param } from '@/util/param'
 import moment from 'moment'
 
 /**
  * 固定类型列表
  */
-export type InnateTypes = 'input' | 'select'
+export type InnateTypes = 'input' | 'select' | 'date' | 'dateRange'
+
+const formatDate = (value: string | Date | null, format = 'YYYYMMDD') =>
+  value ? moment(value).format(format) : ''
 
 /**
  * 固定类型 Map
  */
 const innateTypeMap: MapType<Component> = {
   input: LazyInput,
+
   select: Select,
+
+  date: {
+    extends: DatePicker,
+
+    model: {
+      // 重置 model 的触发事件
+      event: 'value-change'
+    },
+
+    created() {
+      const self = this as any
+      self.$on('input', (value: string | Date | null) => {
+        const strValue = formatDate(value)
+        self.$emit('value-change', strValue)
+      })
+    }
+  },
+
+  dateRange: {
+    extends: DatePicker,
+
+    props: {
+      type: {
+        type: String,
+        default: 'daterange'
+      },
+      format: {
+        type: String,
+        default: 'yyyyMMdd'
+      },
+      separator: {
+        type: String,
+        default: '-'
+      }
+    },
+
+    model: {
+      // 重置 model 的触发事件
+      event: 'value-change'
+    },
+
+    created() {
+      const self = this as any
+      self.$on('input', (list: Array<(string | Date | null)>) => {
+        const [start, end] = list.map(it => formatDate(it))
+        const strValue = start && end ? [start, end].join('-') : ''
+        self.$emit('value-change', strValue)
+      })
+    }
+  }
 }
 
 /**
