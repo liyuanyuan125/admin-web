@@ -557,7 +557,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     }
   },
-  // 订单 - kol
+  // 订单列表 - kol
   {
     path: '/order/kollist',
     name: 'order-kollist',
@@ -566,11 +566,29 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     }
   },
-  // 订单 - kol
+  // 订单列表详情 - kol
   {
     path: '/order/kollist/detail/:id/:status?',
     name: 'order-kollist-detail',
     component: () => import('./views/order/kollist/detail.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+  // 影片资源合作订单 - 列表
+  {
+    path: '/order/filmorder',
+    name: 'order-filmorder',
+    component: () => import('./views/order/filmorder/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+  // 影片资源合作订单 - 上传资源
+  {
+    path: '/order/filmorder/addfile',
+    name: 'order-filmorder-addfile',
+    component: () => import('./views/order/filmorder/addfile.vue'),
     meta: {
       authKey: ''
     }

@@ -65,29 +65,13 @@ export default class Main extends ViewBase {
       placeholder: '选择时间'
     },
 
-    {
-      name: 'ordername',
-      defaultValue: '',
-      type: 'input',
-      width: 140,
-      placeholder: '项目名称'
-    },
-
-    {
-      name: 'status1',
-      defaultValue: 0,
-      type: 'select',
-      width: 100,
-      placeholder: '平台',
-      enumKey: 'statusList'
-    },
 
     {
       name: 'companyId',
-      defaultValue: '',
-      type: 'input',
+      defaultValue: 0,
+      type: CompanyList,
       width: 140,
-      placeholder: '订单编号'
+      placeholder: '影片名称'
     },
 
     {
@@ -95,7 +79,7 @@ export default class Main extends ViewBase {
       defaultValue: 0,
       type: 'select',
       width: 100,
-      placeholder: '订单状态',
+      placeholder: '单据状态',
       enumKey: 'statusList'
     },
 
@@ -104,7 +88,7 @@ export default class Main extends ViewBase {
       defaultValue: 0,
       type: 'select',
       width: 100,
-      placeholder: '发票状态',
+      placeholder: '资源类型',
       enumKey: 'statusList'
     },
 
@@ -126,17 +110,15 @@ export default class Main extends ViewBase {
   get columns() {
     return [
       { title: '订单编号', slot: 'id', width: 65 },
-      { title: '订单名称', key: 'movieName', minWidth: 160 },
       { title: '公司ID', slot: 'id', width: 65 },
       { title: '公司名称', key: 'movieName', minWidth: 160 },
-      { title: '平台', key: 'applyTime', editor: 'dateTime', width: 135 },
-      { title: '推广品牌', key: 'status', width: 100, editor: 'enum'},
+      { title: '项目名称', key: 'applyTime', editor: 'dateTime', width: 135 },
+      { title: '关联影片id', key: 'status', width: 100, editor: 'enum'},
+      { title: '关联影片名称', key: 'status', width: 100, editor: 'enum'},
       { title: '下单时间', key: 'operationTime', editor: 'dateTime', width: 135 },
-      { title: '下单金额', key: 'status', width: 100 , editor: 'enum' },
-      { title: '商务确认金额', key: 'status', width: 100 , editor: 'enum' },
-      { title: '已支付金额', key: 'status', width: 100 , editor: 'enum' },
-      { title: '订单状态', key: 'status', width: 100 , editor: 'enum' },
-      { title: '发票状态', key: 'status', width: 100 , editor: 'enum' },
+      { title: '影片资源类型', key: 'status', width: 100 , editor: 'enum' },
+      { title: '品牌方线上资源', key: 'status', width: 100 , editor: 'enum' },
+      { title: '品牌方线下资源', key: 'status', width: 100 , editor: 'enum' },
       { title: '操作', slot: 'action', width: 55 }
     ] as ColumnExtra[]
   }
