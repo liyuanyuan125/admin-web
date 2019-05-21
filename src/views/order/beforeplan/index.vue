@@ -30,8 +30,6 @@ import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import CompanyList from './filename.vue'
-import dateDicker from './dateDicker.vue'
-
 
 import {
   queryList
@@ -41,8 +39,7 @@ import EditDialog, { Field } from '@/components/editDialog'
 @Component({
   components: {
     ListPage,
-    EditDialog,
-    dateDicker
+    EditDialog
   }
 })
 export default class Main extends ViewBase {
@@ -72,13 +69,29 @@ export default class Main extends ViewBase {
       }
     },
 
+    {
+      name: 'ordername',
+      defaultValue: '',
+      type: 'input',
+      width: 140,
+      placeholder: '项目名称'
+    },
+
+    {
+      name: 'status1',
+      defaultValue: 0,
+      type: 'select',
+      width: 100,
+      placeholder: '平台',
+      enumKey: 'statusList'
+    },
 
     {
       name: 'companyId',
-      defaultValue: 0,
-      type: CompanyList,
+      defaultValue: '',
+      type: 'input',
       width: 140,
-      placeholder: '影片名称'
+      placeholder: '订单编号'
     },
 
     {
@@ -86,7 +99,7 @@ export default class Main extends ViewBase {
       defaultValue: 0,
       type: 'select',
       width: 100,
-      placeholder: '单据状态',
+      placeholder: '订单状态',
       enumKey: 'statusList'
     },
 
@@ -95,7 +108,7 @@ export default class Main extends ViewBase {
       defaultValue: 0,
       type: 'select',
       width: 100,
-      placeholder: '资源类型',
+      placeholder: '发票状态',
       enumKey: 'statusList'
     },
 
@@ -117,16 +130,17 @@ export default class Main extends ViewBase {
   get columns() {
     return [
       { title: '订单编号', slot: 'id', width: 65 },
+      { title: '订单名称', key: 'movieName', minWidth: 160 },
       { title: '公司ID', slot: 'id', width: 65 },
       { title: '公司名称', key: 'movieName', minWidth: 160 },
-      { title: '项目名称', key: 'applyTime', editor: 'dateTime', width: 135 },
-      { title: '关联影片id', key: 'status', width: 100, editor: 'enum'},
-      { title: '关联影片名称', key: 'status', width: 100, editor: 'enum'},
+      { title: '平台', key: 'applyTime', editor: 'dateTime', width: 135 },
+      { title: '推广品牌', key: 'status', width: 100, editor: 'enum'},
       { title: '下单时间', key: 'operationTime', editor: 'dateTime', width: 135 },
-      { title: '影片资源类型', key: 'status', width: 100 , editor: 'enum' },
-      { title: '品牌方线上资源', key: 'status', width: 100 , editor: 'enum' },
-      { title: '品牌方线下资源', key: 'status', width: 100 , editor: 'enum' },
+      { title: '下单金额', key: 'status', width: 100 , editor: 'enum' },
+      { title: '商务确认金额', key: 'status', width: 100 , editor: 'enum' },
+      { title: '已支付金额', key: 'status', width: 100 , editor: 'enum' },
       { title: '订单状态', key: 'status', width: 100 , editor: 'enum' },
+      { title: '发票状态', key: 'status', width: 100 , editor: 'enum' },
       { title: '操作', slot: 'action', width: 55 }
     ] as ColumnExtra[]
   }

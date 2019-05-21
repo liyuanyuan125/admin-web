@@ -49,7 +49,7 @@ export default class Main extends ViewBase {
     {
       name: 'companyId1',
       defaultValue: 0,
-      type: CompanyList,
+      type: 'select',
       width: 140,
       placeholder: '公司名称'
     },
