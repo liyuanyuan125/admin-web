@@ -593,6 +593,24 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     }
   },
+  // 付款单管理 - 列表
+  {
+    path: '/payment/order',
+    name: 'payment-order',
+    component: () => import('./views/payment/order/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+  // 付款单管理 - 收款 详情
+  {
+    path: '/payment/order/:edit/:id',
+    name: 'payment-order-edit',
+    component: () => import('./views/payment/order/edit.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
 ] // end of mainLayoutRoutes
 
 const errorRoutes: RouteConfigEnhance[] = [
