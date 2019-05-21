@@ -616,6 +616,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     path: '/payment/order',
     name: 'payment-order',
     component: () => import('./views/payment/order/index.vue'),
+  },
   // 影片资源合作订单 - 影片审核/详情
   {
     path: '/order/filmorder/filmexamine',
@@ -630,6 +631,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     path: '/payment/order/:edit/:id',
     name: 'payment-order-edit',
     component: () => import('./views/payment/order/edit.vue'),
+  },
   // 映前广告单 - 列表
   {
     path: '/order/beforeplan',
