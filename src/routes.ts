@@ -12,7 +12,7 @@ import { devInfo, devError } from './util/dev'
 // tslint:disable-next-line:no-empty-interface
 interface RouteMetaBase {
   /** 页面标题 */
-  title?: string
+  title?: string | ((route: Route) => string)
   [key: string]: any
 }
 
