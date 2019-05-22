@@ -23,8 +23,8 @@
         <Row class='row-list'>
             <Col span='3' class='hui'>广告主</Col>
             <Col span='9'>【{{item.advertiserId}}】{{item.advertiserName}}</Col>
-            <Col span='3' class='hui'>订单类型</Col>
-            <Col span='9'><span v-for='it in planTypeList' :key='it.key' v-if='it.key == item.planType'>{{it.text}}单</span></Col>
+            <!-- <Col span='3' class='hui'>订单类型</Col>
+            <Col span='9'><span v-for='it in planTypeList' :key='it.key' v-if='it.key == item.planType'>{{it.text}}单</span></Col> -->
         </Row>
         <Row class='row-list'>
             <Col span='3' class='hui'>广告计划</Col>
@@ -54,6 +54,7 @@
         <Row class='row-list pb20'>
             <Col span='3' class='hui'>接单影院</Col>
             <Col span='16'>
+              <Row>已接单影院: {{cinemasList.length}}</Row>
               <singleCinema :cinemas="cinemasList" />
             </Col>
         </Row>
@@ -162,7 +163,7 @@ export default class Main extends ViewBase {
     this.doSearch()
     // this.begin = moment(this.item.beginDate).format(timeFormats)
     // this.end = moment(this.item.endDate).format(timeFormats)
-    this.createTime = moment(this.item.createTime).format(timeFormat)
+    // this.createTime = moment(this.item.createTime).format(timeFormat)
     // this.settlementTime = moment(this.item.settlementTime).format(timeFormat)
     this.settlementAmount = this.addNumber(String(this.item.settlementAmount))
   }

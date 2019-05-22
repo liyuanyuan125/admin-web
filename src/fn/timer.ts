@@ -17,9 +17,9 @@ export function delay(ms: number) {
  * 执行倒计时
  *
  * @param seconds 倒计时秒数
- * @param tick 倒计时每个滴答执行的回调
+ * @param tick    倒计时每个滴答执行的回调
  * @param options 配置参数，默认值 { span = 1, to = 0 }，其中：
- *              span 滴答间隔秒数，默认为 1，即 1 秒；to 结束秒数，默认为 0
+ *                span 滴答间隔秒数，默认为 1，即 1 秒；to 结束秒数，默认为 0
  *
  * @return {Promise} 倒计时结束 resolve，从不 reject
  */

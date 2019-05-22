@@ -93,7 +93,7 @@ export function getMenuList(permMenu: PermPage[]) {
 let routeTitleMap: MapType<BreadcrumbConfig> | null = null
 
 // 获取 route 到页面标题的 Map
-const getBreadcrumbConfigMap = (permMenu: PermPage[]) => {
+const getBreadcrumbConfigMap = (route: Route, permMenu: PermPage[]) => {
   if (routeTitleMap != null) {
     return routeTitleMap
   }
@@ -102,7 +102,11 @@ const getBreadcrumbConfigMap = (permMenu: PermPage[]) => {
 
   // 将所有的 routeMap 转换成 name => label
   const result = Object.entries(routeMap).reduce((map, [ name, config ]) => {
-    const text = config.meta && config.meta.title || ''
+    const text = config.meta && config.meta.title
+      ? typeof config.meta.title == 'function'
+        ? config.meta.title(route)
+        : config.meta.title
+      : ''
     map[name.toLowerCase()] = { name, text, isRoute: true }
     return map
   }, {} as MapType<BreadcrumbConfig>)
@@ -116,7 +120,13 @@ const getBreadcrumbConfigMap = (permMenu: PermPage[]) => {
         return
       }
       const isRoute = name in routeMap
-      result[name] = { name, text: menu.name, isRoute }
+      const { text = '' } = result[name] || {}
+      result[name] = {
+        name,
+        // 确保配置中的 title 的优先级最高
+        text: text || menu.name,
+        isRoute
+      }
     }
   })
 
@@ -134,7 +144,7 @@ const lastHyphen = /-[^\-]+$/
  * @param route Route 项
  */
 export function getBreadcrumbListFromRoute(route: Route, permMenu: PermPage[]) {
-  const configMap = getBreadcrumbConfigMap(permMenu)
+  const configMap = getBreadcrumbConfigMap(route, permMenu)
 
   const { name } = route
 
