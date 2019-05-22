@@ -38,7 +38,7 @@ export default class ComponentMain extends ViewBase {
 
   loading = false
   showDlg = false
-  id = 0
+  id: any = 0
   title = ''
   dataForm = {
     closeReason: '',
@@ -60,6 +60,16 @@ export default class ComponentMain extends ViewBase {
     }
   }
 
+  inits(id: any) {
+    this.showDlg = true
+    this.title = id.length + '条'
+    this.id = id || []
+    ; (this.$refs.dataForm as any).resetFields()
+    if (this.id) {
+        // console.log(this.id)
+    }
+  }
+
   cancel() {
     this.showDlg = false
     ; (this.$refs.dataForm as any).resetFields()
@@ -73,8 +83,8 @@ export default class ComponentMain extends ViewBase {
       return
     }
     try {
-      // const res = await cinemaCancel (this.$route.params.id ,
-      // {cinemaId: this.id, closeReason: this.dataForm.closeReason})
+      const res = await cinemaCancel (this.$route.params.id ,
+      {cinemaId: this.id, closeReason: this.dataForm.closeReason})
       toast('操作成功')
       this.showDlg = false
       this.$emit('done', this.id)
