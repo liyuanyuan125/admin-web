@@ -48,7 +48,7 @@
             <Input v-model="desc" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入备注"></Input>
           </p>
       </div>
-      <div class="batch-btn">
+      <div class="batch-btn text-center">
         <Button type="primary" class="btn"> 提交</Button>
         <Button> 取消</Button>
       </div>

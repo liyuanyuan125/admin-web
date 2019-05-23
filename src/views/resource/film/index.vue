@@ -16,7 +16,7 @@
       </form>
       <div class="batch-btn">
         <Button type="primary" @click="handleAudit" class="btn">批量审核</Button>
-        <Button type="primary" @click="$router.push({name: 'resource-film-edit'})" class="btn">新建影片资源</Button>
+        <Button type="primary" @click="$router.push({name: 'resource-film-index-edit'})" class="btn">新建影片资源</Button>
       </div>
 
       <Table :columns="columns" :data="list" :loading="loading"  border stripe disabled-hover size="small"
@@ -26,9 +26,9 @@
       </template>
       <template slot="operate" slot-scope="{row}">
           <div class="operate-btn">
-              <span>审核</span>
-              <span>编辑</span>
-              <span>查看</span>
+              <span @click="$router.push({name: 'resource-film-index-detail', params: {id: row.id, audit: 1}})">审核</span>
+              <span @click="$router.push({name: 'resource-film-index-edit', params: {id: row.id}})">编辑</span>
+              <span @click="$router.push({name: 'resource-film-index-detail', params: {id: row.id}})">查看</span>
           </div>
       </template>
       </Table>

@@ -588,17 +588,38 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   // 影片资源管理 新建 和编辑
   {
     path: '/resource/film/edit/:id?',
-    name: 'resource-film-edit',
+    name: 'resource-film-index-edit',
     component: () => import('./views/resource/film/edit.vue'),
     meta: {
       authKey: '',
-      title: '新建',
-      // editFunction(route: Route) {
-      //   const id = parseInt(route.params.id, 10) || 0
-      //   return id > 0 ? '编辑' : '新建'
-      // }
+      title({params}) {
+        return params.id as any > 0 ? '编辑' : '新建'
+      }
     }
   },
+  // 影片资源管理 - 查看 和 审核
+  {
+    path: '/resource/film/detail/:id/:audit?',
+    name: 'resource-film-index-detail',
+    component: () => import('./views/resource/film/detail.vue'),
+    meta: {
+      authKey: '',
+      title({params}) {
+        return params.audit ? '审核' : '查看'
+      }
+    }
+  },
+
+  // 影片资源管理 - 审核
+  // {
+  //   path: '/resource/film/audit',
+  //   name: 'resource-film-index-audit',
+  //   component: () => import('./views/resource/film/audit.vue'),
+  //   meta: {
+  //     authKey: '',
+  //     title: '审核'
+  //   }
+  // },
 
   {
     path: '/system/setup',
