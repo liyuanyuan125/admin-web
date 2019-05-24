@@ -7,12 +7,17 @@ import { RouteConfig, Route } from 'vue-router'
 import { devInfo, devError } from './util/dev'
 
 /**
+ * meta对象 title属性参数 新建和编辑切换
+ */
+// export type editFunction = (route: Route) => string
+
+/**
  * meta 类型：基础类型，可以放一些别的成员
  */
 // tslint:disable-next-line:no-empty-interface
 interface RouteMetaBase {
   /** 页面标题 */
-  title?: string
+  title?: string | ((route: Route) => string)
   [key: string]: any
 }
 
@@ -65,6 +70,8 @@ export interface RouteConfigEnhance extends RouteConfig {
   /** 增强 children 的类型 */
   children?: RouteConfigEnhance[]
 }
+
+
 
 /**
  * 单独的 routes
@@ -524,7 +531,6 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       },
     ]
   },
-
   {
     path: '/resource/management/edit/:id?',
     name: 'resource-management-edit',
@@ -533,6 +539,67 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     }
   },
+
+  // kol平台账号资源管理
+  {
+    path: '/resource/kolplatform/list',
+    name: 'resource-kolplatform-list',
+    component: () => import('./views/resource/kolPlatform/index.vue'),
+    meta: {
+      authKey: '',
+      title: 'KOL平台账号资源管理',
+      fixed: true
+    }
+  },
+
+  //  kol平台账号资源管理 - 查看
+  {
+    path: '/resource/kolplatform/detail/:id',
+    name: 'resource-kolplatform-list-detail',
+    component: () => import('./views/resource/kolPlatform/details.vue'),
+    meta: {
+      authKey: '',
+      title: '查看',
+    }
+  },
+
+  //  kol平台账号资源管理 - 审核
+  {
+    path: '/resource/kolplatform/audit/:id',
+    name: 'resource-kolplatform-list-audit',
+    component: () => import('./views/resource/kolPlatform/audit.vue'),
+    meta: {
+      authKey: '',
+      title: '审核',
+    }
+  },
+
+  // 影片资源管理
+  {
+    path: '/resource/film/index',
+    name: 'resource-film-index',
+    component: () => import('./views/resource/film/index.vue'),
+    meta: {
+      authKey: '',
+      title: '影片资源管理'
+    }
+  },
+
+  // 影片资源管理 新建 和编辑
+  {
+    path: '/resource/film/edit/:id?',
+    name: 'resource-film-edit',
+    component: () => import('./views/resource/film/edit.vue'),
+    meta: {
+      authKey: '',
+      title: '新建',
+      // editFunction(route: Route) {
+      //   const id = parseInt(route.params.id, 10) || 0
+      //   return id > 0 ? '编辑' : '新建'
+      // }
+    }
+  },
+
   {
     path: '/system/setup',
     name: 'system-setup',
