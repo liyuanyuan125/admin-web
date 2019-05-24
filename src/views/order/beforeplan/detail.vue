@@ -1,105 +1,90 @@
 <template>
-  <div>
-    <header class="header flex-box">
+  <div class='page'>
+    <header>
       <Button icon="md-return-left" @click="back" class="btn-back">返回上一页</Button>
-      <div class="flex-1" style='margin-left:20px;'>
-        <em>订单基本信息</em>
-      </div>
+      <Button v-if='$route.params.status != 4' class="bth" style='float: right' @click="edit($route.params.id)">关闭订单</Button><br>
+      <!-- <div class="flex-1" style='margin-left:20px;'>
+        <em>基础信息</em>
+      </div> -->
     </header>
-
-    <!-- 订单基本信息 -->
-    <Table :columns="columns" :data='itemlist' border stripe disabled-hover size="small" class="table">
-     </Table>
-
-     <!-- 商务确认信息 -->
-    <div class='title'>商务审核</div>
-    <div class='title'>订单金额信息</div>
-    <Table :columns="okcolumns" :data='oklist' border stripe disabled-hover size="small" class="table">
-    </Table>
-    <!-- 商务确认 -->
-    <div class='title'>商务审核</div>
-    <Table :columns="editokcolumns" :data="editoklist">
-
-      <template slot-scope="{ row, index }" slot="editmoney">
-        <Input type="text" v-model="editAddress" v-if="editIndex === index" @on-blur="handleSave(index)" />
-        <span v-else @click="handleEdit(row, index)">{{ row.address }}</span>
-      </template>
-
-      <template slot-scope="{ row, index }" slot="beizhu">
-        <Input type="text" v-model="beizhu" v-if="editIndex === index" @on-blur="handleSave(index)" />
-        <span v-else @click="handleEdit(row, index)">{{ row.address }}</span>
-      </template>
-
-      <template slot-scope="{ row, index }" slot="action">
-        删除
-      </template>
-    </Table>
-
-     <!-- 接单信息 -->
-    <div class='title'>订单支付信息</div>
-    <div style="border: 1px solid #ccc; padding: 15px;">
-      <Row class='row-li'>支付类型：首款/尾款</Row>
-      <Row class='row-li'>
-        <Col :span='8'>剩余待支付金额：￥100.100</Col>
-        <Col :span='8'>订单总金额 ￥20000 <span style='color: #ccc;'>(显示商务确认的金额)</span></Col>
-        <Col :span='8'>已付金额：￥100.000</Col>
+    <div class='title'>基础信息</div>
+    <div class='bos'>
+      <Row>
+        <Col :span='12'>计划名称&nbsp;：&nbsp;嘻嘻嘻嘻嘻嘻嘻嘻嘻嘻嘻嘻</Col>
+        <Col :span='12'>广告片&nbsp;：&nbsp;年轻有WEY.MP4（45s）【WEY汽车】   / --（45s）【--】</Col>
       </Row>
-      <Form ref="dataForm" :model="dataForm"  label-position="left" :label-width="100" style='margin-top: 7px;'>
-        <FormItem  label="支付金额" prop="reason">
-        <Input style="width:240px" v-model="dataForm.refuseReason"></Input>
-      </FormItem>
-      <FormItem  label="备注" prop="reason">
-        <Input style="width:240px" v-model="dataForm.refuseReason"></Input>
-      </FormItem>
-      </Form>
-      <Button style='margin-left:20px;' type="primary"  @click="change('dataForm')">提交</Button>
-      <Button style='margin-left:20px;' @click="back">取消</Button>
+      <Row>
+        <Col :span='12'>投放排期&nbsp;：&nbsp;2019/02/02 ~ 2019-05-05</Col>
+        <Col :span='12'>推广预算&nbsp;：&nbsp;200元</Col>
+      </Row>
+      <Row>
+        <Col :span='12'>覆盖城市&nbsp;：&nbsp;票仓城市Top20 | 一线城市 / 自定义城市 <span>查看城市列表</span></Col>
+        <Col :span='12'>影院星级&nbsp;：&nbsp;5星</Col>
+      </Row>
+      <Row>
+        <Col :span='12'>受众性别&nbsp;：&nbsp;男性为主</Col>
+        <Col :span='12'>受众年龄&nbsp;：&nbsp;20岁以下 | 20~24岁</Col>
+      </Row>
+      <Row>
+        <Col :span='12'>影片类型&nbsp;：&nbsp;悬疑 | 爱情 | 科幻</Col>
+        <Col :span='12'></Col>
+      </Row>
+      <Row>
+        <Col :span='12'>创建时间&nbsp;：&nbsp;2019-02-05 20:20:50</Col>
+        <Col :span='12'>创建人&nbsp;：&nbsp;zhiping.zhao@aiads.com【老麦】</Col>
+      </Row>
     </div>
-
-    <!-- 接单信息 -->
-    <div class='title'>接单信息</div>
-    <div style="border: 1px solid #ccc; padding: 15px;">
-      <Form ref="dataForm" :model="dataForm"  label-position="left" :label-width="100">
-        <FormItem label="接单信息" prop="status">
-          <RadioGroup v-model='dataForm.approveStatus'>
-            <Radio v-for="it in approveStatusList" v-if="it.key!=0" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
-          </RadioGroup>
+    <div class='title'>投放影片(系统推荐 / 用户自选)</div>
+    <div class='bos'>
+      <Table :columns="itemcolumns" :data='itemlist' border stripe disabled-hover size="small" class="table">
+        <template slot="action" slot-scope="{row}" >
+          <a  @click="change(row.id, row)">删除</a>
+        </template>
+     </Table>
+     <div>添加影片</div>
+    </div>
+    <div class='title'>投放影院(532家)
+      <span style='float: right' @click='chgRes'>导出影院列表</span>
+    </div>
+    <div class='bos'>
+      <!-- <Cinema :value="it.cinemaList"/> -->
+      <Cinema  />
+    </div>
+    <div class='title'>备注</div>
+    <div class='bos'>
+      <Row>2019/02/11 12:21:22  zhiping.zhao@aiads.com【老麦】 已联系资源方，天街物业暂时不接单，需要更换资源方</Row>
+      <Row>2019/02/11 12:21:22  zhiping.zhao@aiads.com【老麦】 已联系资源方，天街物业暂时不接单，需要更换资源方</Row>
+      <Row>2019/02/11 12:21:22  zhiping.zhao@aiads.com【老麦】 已联系资源方，天街物业暂时不接单，需要更换资源方</Row>
+      <Form ref="databeizhu" :model="databeizhu" label-position="left"  :label-width="50">
+        <FormItem label="备注" prop="closeReason">
+          <Input type='textarea' v-model="databeizhu.closeReason"></Input>
         </FormItem>
-        <FormItem  label="备注" prop="reason">
-        <Input style="width:240px" v-model="dataForm.refuseReason"></Input>
-      </FormItem>
-      </Form>
-      <Button style='margin-left:20px;' type="primary"  @click="change('dataForm')">提交</Button>
-      <Button style='margin-left:20px;' @click="back">取消</Button>
+        <Button style='margin-left: 49%;' type="primary" @click="dataFormSubmit">提交备注</Button>
+    </Form>
     </div>
-
-     <!-- 财务审核 -->
-    <div class='title'>财务审核</div>
-    <div style="border: 1px solid #ccc; padding: 15px;">
-      <Form ref="dataForm" :model="dataForm"  label-position="left" :label-width="100">
-        <FormItem label="接单信息" prop="status">
-          <RadioGroup v-model='moneydataForm.approveStatus'>
-            <Radio v-for="it in moneyList" v-if="it.key!=0" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
-          </RadioGroup>
-        </FormItem>
-        <FormItem  label="备注" prop="reason">
-        <Input style="width:240px" v-model="dataForm.refuseReason"></Input>
-      </FormItem>
-      </Form>
-      <Button style='margin-left:20px;' type="primary"  @click="change('dataForm')">提交</Button>
-      <Button style='margin-left:20px;' @click="back">取消</Button>
+    <div class='title'>操作记录</div>
+    <div class='bos'>
+      <Row>2019/02/11 12:21:22  zhiping.zhao@aiads.com【老麦】 已联系资源方，天街物业暂时不接单，需要更换资源方</Row>
+      <Row>2019/02/11 12:21:22  zhiping.zhao@aiads.com【老麦】 已联系资源方，天街物业暂时不接单，需要更换资源方</Row>
+      <Row>2019/02/11 12:21:22  zhiping.zhao@aiads.com【老麦】 已联系资源方，天街物业暂时不接单，需要更换资源方</Row>
     </div>
-
-
-    <!-- 订单支付信息 -->
-    <div class='title'>订单支付信息</div>
-    <Table :columns="ordercolumns" :data='orderlist' border stripe disabled-hover size="small" class="table">
-    </Table>
-
-    <!-- 操作日志 -->
-    <div class='title'>操作日志</div>
-    <Table :columns="logcolumns" :data='loglist' border stripe disabled-hover size="small" class="table">
-    </Table>
+    <div style='padding: 20px 0 30px 0'>
+        <Form ref="dataplan" :model="dataplan" label-position="left" :label-width="100">
+          <Col :span='11'>预估曝光人次【1,982,734】预估曝光场次【2,312】预估花费【32,123,345.00】</Col>
+          <Col :span='5'>
+            <FormItem label="应收金额" prop="closeReason">
+              <Input style="width:100px" v-model="dataplan.money"></Input>
+            </FormItem>
+          </Col>
+          <Col :span='7'>
+              <Button type="primary" @click="dataFormSubmit">保存并发送方案至广告主</Button>
+            <Button style='margin-left: 30px;' @click="back">取消</Button>
+          </Col>
+      </Form>
+    </div>
+    <close  ref="over"   v-if="overVisible" @done="dlgEditDone"/>
+    <changeResource  ref="changeres" v-if='changeresVisible' @done="dlgEditDone"/>
+    <singDlg ref="addOrUpdate" @done="dlgEditDone" />
   </div>
 </template>
 
@@ -108,7 +93,16 @@ import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
+import { cinemaCancel , cinemaList } from '@/api/orderSys'
+import { toMap } from '@/fn/array'
 import moment from 'moment'
+import close from './closeorder.vue'
+import AreaSelect from '@/components/areaSelect'
+import singDlg from './singDlg.vue'
+import changeResource from './changeResource.vue'
+import { warning , success, toast , info } from '@/ui/modal'
+import { slice , clean } from '@/fn/object'
+import Cinema from './cinema.vue'
 
 
 import {
@@ -118,45 +112,50 @@ import EditDialog, { Field } from '@/components/editDialog'
 
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
-const dataForm = {
-  refuseReason: '',
-  approveStatus: 2
-}
 
-const moneydataForm = {
-  refuseReason: '',
-  approveStatus: 2
-}
 
 @Component({
   components: {
+    close,
+    AreaSelect,
+    singDlg,
+    changeResource,
+    Cinema
   }
 })
 export default class Main extends ViewBase {
-  editIndex = -1  // 当前聚焦的输入框的行数
-  editmoney = '' // 修改金额
-  beizhu = '' // 修改备注
-  // 订单基本信息
-  itemlist: any = []
-  // 商务审核 && 订单金额
-  oklist: any = []
-  // 商务确认
-  editoklist: any = []
-  // 订单支付信息
-  orderlist: any = []
-  // 操作日志
-  loglist: any = []
+  overVisible = false
+  addOrUpdateVisible = false
+  changeresVisible = false
+  query: any = {
+    pageIndex: 1,
+    pageSize: 10,
+    name: '',
+    provinceId: 0,
+    cityId: 0,
+    countyId: 0,
+    resourceCompanyId: 0,
+  }
+  databeizhu: any = {
+    closeReason : ''
+  }
+  dataplan: any = {
+    money : ''
+  }
+  loading = false
+  area: any = []
+  list = []
+  total = 0
+  cinemaArray: any = []
+  checkId: any = []
 
-  // 订单基本信息
-  columns = [
-    { title: '订单编号', width: 70, key: 'id', align: 'center' },
-    { title: '订单名称', key: 'email', align: 'center' },
-    { title: '公司id', width: 70, key: 'companyName', align: 'center' },
-    { title: '公司名称', key: 'companyName', align: 'center' },
-    { title: '平台', width: 70, key: 'companyName', align: 'center' },
-    { title: '推广平台', width: 70, key: 'companyName', align: 'center' },
+
+  // 投放影片
+  itemlist: any = []
+  itemcolumns = [
+    { title: '影片名称', key: 'email', align: 'center' },
     {
-      title: '下单时间',
+      title: '上映日期',
       width: 120,
       key: 'createTime',
       align: 'center',
@@ -168,137 +167,220 @@ export default class Main extends ViewBase {
         /* tslint:enable */
       }
     },
-    { title: '下单金额', width: 70,  key: 'companyName', align: 'center' },
-    { title: '商务确认金额', width: 90,  key: 'companyName', align: 'center' },
     {
-      title: '订单状态',
-      width: 70,
-      key: 'statusText',
+      title: '投放排期',
+      width: 120,
+      key: 'createTime',
       align: 'center',
-      render: (hh: any, { row: { status, statusText } }: any) => {
+      render: (hh: any, { row: { createTime } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        if (status == 1) {
-          return <span class={`status-${status}`}>启用</span>
-        } else if (status == 2) {
-          return <span class={`status-${status}`}>停用</span>
-        } else if (status == 3) {
-          return <span class={`status-${status}`}>待激活</span>
-        }
+        const html = moment(createTime).format(timeFormat)
+        return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
     },
     {
-      title: '支付状态',
-      width: 70,
-      key: 'statusText',
+      title: '操作',
+      slot: 'action',
       align: 'center',
-      render: (hh: any, { row: { status, statusText } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        if (status == 1) {
-          return <span class={`status-${status}`}>启用</span>
-        } else if (status == 2) {
-          return <span class={`status-${status}`}>停用</span>
-        } else if (status == 3) {
-          return <span class={`status-${status}`}>待激活</span>
-        }
-        /* tslint:enable */
-      }
-    },
-  ]
-  // 商务确认订单
-  okcolumns = [
-    { title: 'kol平台账号',  key: 'id', align: 'center' },
-    { title: 'kol平台账号名称', key: 'email', align: 'center' },
-    { title: '平台', width: 70, key: 'companyName', align: 'center' },
-    { title: '任务类型', key: 'companyName', align: 'center' },
-    { title: '下单金额',  key: 'companyName', align: 'center' },
-    { title: '商务修改金额',  key: 'companyName', align: 'center' },
-    { title: '备注',  key: 'companyName', align: 'center' },
-  ]
-  // 商务确认
-  editokcolumns = [
-    { title: 'kol平台账号',  key: 'id', align: 'center' },
-    { title: 'kol平台账号名称', key: 'email', align: 'center' },
-    { title: '平台', width: 70, key: 'companyName', align: 'center' },
-    { title: '任务类型', key: 'companyName', align: 'center' },
-    { title: '下单金额',  key: 'companyName', align: 'center' },
-    { title: '商务修改金额',  slot: 'editmoney', align: 'center' },
-    { title: '备注',  slot: 'beizhu', align: 'center' },
-    { title: '操作',  slot: 'action', align: 'center' },
-  ]
-  // 订单支付信息
-  ordercolumns = [
-    { title: '类型',  key: 'id', align: 'center' },
-    { title: '支付金额', key: 'email', align: 'center' },
-    { title: '支付时间', key: 'companyName', align: 'center' },
-    { title: '支付操作人',  key: 'companyName', align: 'center' },
-    { title: '备注',  key: 'companyName', align: 'center' }
-  ]
-  // 操作日志
-  logcolumns = [
-    { title: '序号',  key: 'id', align: 'center' },
-    { title: '操作类型', key: 'email', align: 'center' },
-    { title: '操作时间', width: 70, key: 'companyName', align: 'center' },
-    { title: '操作人', key: 'companyName', align: 'center' },
-    { title: '字段',  key: 'companyName', align: 'center' },
-    { title: '原值',  key: 'companyName', align: 'center' },
-    { title: '新值',  key: 'companyName', align: 'center' },
-  ]
-  // 接单信息
-  approveStatusList: any = [
-    {
-      key: 1,
-      text: '接单'
-    },
-    {
-      key: 2,
-      text: '不接单'
     }
   ]
-  // 财务信息
-  moneyList: any = [
-    {
-      key: 1,
-      text: '审核通过'
-    },
-    {
-      key: 2,
-      text: '审核不通过'
-    }
-  ]
-
-  dataForm: any = { ...dataForm }
-  moneydataForm: any = { ...moneydataForm }
-
   mounted() {
-    // console.log(this.$route.name)
   }
+
+  dlgEditDone() {
+    // this.doSearch()
+  }
+
+  // get columns() {
+    // const data: any = [
+    //   { title: '影院名称', key: 'shortName',  align: 'center' },
+    //   { title: '影厅数量', key: 'hallCount', align: 'center' },
+    //   { title: '场次数量', key: 'seatCount', align: 'center' },
+    //   { title: '专资编码',  key: 'code', align: 'center' },
+    //   {
+    //     title: '所在地',
+    //     key: 'status',
+    //     align: 'center',
+    //     render: (hh: any, { row: { areaName, provinceName, cityName } }: any) => {
+    //       /* tslint:disable */
+    //       const h = jsxReactToVue(hh)
+    //       const area = areaName ? areaName + ' , ' : ''
+    //       const province = provinceName ? provinceName + ' , ' : ''
+    //       const city = cityName ? cityName : ''
+    //       return <span>{area}{province}{city}</span>
+    //       /* tslint:enable */
+    //     }
+    //   }
+    // ]
+  //   const check = [
+  //      {
+  //       type: 'selection',
+  //       title: '全选',
+  //       width: 60,
+  //       align: 'center'
+  //     }
+  //   ]
+  //   const opernation = [
+  //      {
+  //       title: '操作',
+  //       key: 'status',
+  //       align: 'center',
+  //       width: 80,
+  //       slot: 'action'
+  //     }
+  //   ]
+  //   return this.$route.params.status == '2' ? [...check, ...data, ...opernation] : data
+  // }
+
+  // check(data: any) {
+  //   const ids = this.tableData.map((it: any) => it.id)
+  //   const dataId = data.map((it: any) => it.id)
+  //   data.forEach((item: any) => {
+  //     if (!this.checkId.includes(item.id)) {
+  //       this.checkId.push(item.id)
+  //     }
+  //   })
+  //   const filterId = ids.filter((it: any) => !dataId.includes(it))
+  //   this.checkId = this.checkId.filter((it: any) => !filterId.includes(it))
+  // }
+
+  // get cachedMap() {
+  //   return {
+  //   }
+  // }
+
+  // get tableData() {
+  //   if (this.cinemaArray.length == 0) {
+  //     return []
+  //   }
+  //   const cachedMap = this.cachedMap
+  //   const list = (this.list || []).map((it: any) => {
+  //     return {
+  //       ...it
+  //     }
+  //   })
+  //   const list1 = (this.list || []).map((it: any) => {
+  //     if (this.checkId.includes(it.id)) {
+  //       return {
+  //         ...it,
+  //         _checked: true
+  //       }
+  //     } else {
+  //       return {
+  //         ...it,
+  //       }
+  //     }
+  //   })
+  //   return this.$route.params.status == '2' ? list1 : list
+  // }
 
   // 返回上一页 && 接单取消按钮
   back() {
     this.$router.go(-1)
   }
-
-  // 商务修改金额
-  handleEdit(row: any, index: any) {
-    this.editmoney = row.address
-    this.editIndex = index
-  }
-  handleSave(index: any) {
-    this.editoklist[index].address = this.editmoney
-    this.editIndex = -1
+  // 关闭订单
+  edit(id: any) {
+    this.overVisible = true
+    this.$nextTick(() => {
+      const myThis: any = this
+      myThis.$refs.over.init(id)
+    })
   }
 
-  // 商务修改备注
-  beiEdit(row: any, index: any) {
-    this.beizhu = row.address
-    this.editIndex = index
+  // 修改资源方
+  chgRes(id: any) {
+    this.changeresVisible = true
+    this.$nextTick(() => {
+      const myThis: any = this
+      myThis.$refs.changeres.init(id)
+    })
   }
-  beiSave(index: any) {
-    this.editoklist[index].address = this.beizhu
-    this.editIndex = -1
+
+
+  async search() {
+    if (this.loading) {
+      return
+    }
+    if (this.cinemaArray.length == 0) {
+      return
+    }
+    this.loading = true
+    const query = clean({ ...this.query, ids: this.cinemaArray.join(',') })
+    try {
+        // 订单列表
+      const { data: {
+        items: list,
+        totalCount: total,
+        statusList: statusList,
+        planTypeList: planTypeList
+      } } = await cinemaList(this.$route.params.id, query)
+      this.list = list
+      this.total = total
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      this.loading = false
+    }
+  }
+
+  // 备注提交
+  async dataFormSubmit(dataForms: any) {
+    const valid = await (this.$refs.databeizhu as any).validate()
+    if (!valid) {
+      return
+    }
+    // try {
+    //   const res = await set (this.$route.params.id, this.databeizhu)
+    //   toast('成功')
+    //   this.$emit('done')
+    //   this.$router.push({ name: 'order-list'})
+    // } catch (ex) {
+    //   this.handleError(ex)
+    // }
+  }
+
+  @Watch('area', {immediate : true})
+
+  watchArea(val: number[]) {
+    this.query.provinceId = !!val[0] ? val[0] : ''
+    this.query.cityId = !!val[1] ? val[1] : ''
+    this.query.countyId = !!val[2] ? val[2] : ''
+  }
+
+  change(id: number, shortName: any) {
+    this.addOrUpdateVisible = true
+    this.$nextTick(() => {
+      (this.$refs.addOrUpdate as any).init(id, shortName)
+    })
+  }
+
+  changeAll() {
+    this.addOrUpdateVisible = true
+    this.$nextTick(() => {
+      (this.$refs.addOrUpdate as any).inits(this.checkId)
+    })
+  }
+
+  @Watch('cinemaArray', {deep: true})
+
+  watchcinemaArray(val: number[]) {
+    if (val.length > 0) {
+      this.search()
+    }
+  }
+
+  // 每页数
+  sizeChangeHandle(val: any) {
+    this.query.pageIndex = val
+    this.search()
+  }
+
+  // 当前页
+  currentChangeHandle(val: any) {
+    this.query.pageSize = val
+    this.search()
   }
 
 
@@ -307,6 +389,10 @@ export default class Main extends ViewBase {
 
 <style lang="less" scoped>
 @import '../../../site/lib.less';
+.page {
+  line-height: 40px;
+  font-size: 14px;
+}
 .header {
   margin-top: 5px;
   margin-bottom: 10px;
@@ -323,7 +409,11 @@ export default class Main extends ViewBase {
 .title {
   font-size: 16px;
   color: @c-base;
-  line-height: 40px;
+  line-height: 50px;
+}
+.bos {
+  border: 1px solid #ccc;
+  padding: 15px;
 }
 .row-li {
   line-height: 40px;

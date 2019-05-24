@@ -650,7 +650,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   },
   // 订单列表详情 - kol
   {
-    path: '/order/kollist/detail/:id/:status?',
+    path: '/order/kollist/detail/:id/:orders/:fapiao',
     name: 'order-kollist-detail',
     component: () => import('./views/order/kollist/detail.vue'),
     meta: {
@@ -720,7 +720,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     }
   },
-  // 映前广告单 - 列表
+  // 映前广告计划 - 列表
   {
     path: '/order/beforeplan',
     name: 'order-beforeplan',
@@ -729,11 +729,29 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     }
   },
-  // 映前广告单 - 详情
+  // 映前广告计划 - 详情
   {
     path: '/order/beforeplan/detail',
     name: 'order-beforeplan-detail',
     component: () => import('./views/order/beforeplan/detail.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+  // 映前广告监播 - 列表
+  {
+    path: '/order/supervision',
+    name: 'order-supervision',
+    component: () => import('./views/order/supervision/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+  // 映前广告监播 - 列表
+  {
+    path: '/order/supervision/detail',
+    name: 'order-supervision-detail',
+    component: () => import('./views/order/supervision/detail.vue'),
     meta: {
       authKey: ''
     }
