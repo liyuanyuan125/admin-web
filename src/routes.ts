@@ -568,7 +568,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   },
   // 订单列表详情 - kol
   {
-    path: '/order/kollist/detail/:id/:status?',
+    path: '/order/kollist/detail/:id/:orders/:fapiao',
     name: 'order-kollist-detail',
     component: () => import('./views/order/kollist/detail.vue'),
     meta: {

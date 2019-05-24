@@ -47,46 +47,15 @@
       <span style='float: right' @click='chgRes'>导出影院列表</span>
     </div>
     <div class='bos'>
-      <Row class="shouDlg-header">
-        <Col span="7">
-          <AreaSelect v-model="area"/>
-        </Col>
-        <Col span="5" offset="1">
-          <Input v-model="query.name" placeholder="【专资编码】或 影院名称" />
-        </Col>
-        <Col span='5' offset="1">
-          <Select v-model="query.resourceCompanyId" placeholder="资源方公司名称" style='width: 200px;'  filterable>
-            <Option v-for="it in []" :key="it.id" :value="it.id"
-              :label="it.name">{{it.name}}</Option>
-          </Select>
-        </Col>
-        <Col span="3" offset="1">
-          <Button type="primary" @click="search">搜索</Button>
-        </Col>
-      </Row>
-      <div v-if="checkId">
-        <Button type="primary" @click="changeAll">批量删除</Button>
-      </div>
-      <Table :columns="columns" @on-selection-change="check" :data="tableData" :loading="loading"
-        border stripe disabled-hover size="small" class="table">
-        <template v-if="$route.params.status == '2'" slot="action" slot-scope="{row}" >
-          <a v-auth="'advert.executeOrder:cancelCinema'" @click="change( row.id, row.shortName )">取消执行</a>
-        </template>
-      </Table>
-      <div class="page-wrap" v-if="total > 0">
-         <Page class="page" :total="total" :current="query.pageIndex" :page-size="query.pageSize"
-            show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-            @on-change="sizeChangeHandle"
-            @on-page-size-change="currentChangeHandle"/>
-      </div>
-      <div>添加影院 +</div>
+      <!-- <Cinema :value="it.cinemaList"/> -->
+      <Cinema  />
     </div>
     <div class='title'>备注</div>
     <div class='bos'>
       <Row>2019/02/11 12:21:22  zhiping.zhao@aiads.com【老麦】 已联系资源方，天街物业暂时不接单，需要更换资源方</Row>
       <Row>2019/02/11 12:21:22  zhiping.zhao@aiads.com【老麦】 已联系资源方，天街物业暂时不接单，需要更换资源方</Row>
       <Row>2019/02/11 12:21:22  zhiping.zhao@aiads.com【老麦】 已联系资源方，天街物业暂时不接单，需要更换资源方</Row>
-      <Form ref="databeizhu" :model="databeizhu" label-position="left"  :label-width="100">
+      <Form ref="databeizhu" :model="databeizhu" label-position="left"  :label-width="50">
         <FormItem label="备注" prop="closeReason">
           <Input type='textarea' v-model="databeizhu.closeReason"></Input>
         </FormItem>
@@ -133,6 +102,7 @@ import singDlg from './singDlg.vue'
 import changeResource from './changeResource.vue'
 import { warning , success, toast , info } from '@/ui/modal'
 import { slice , clean } from '@/fn/object'
+import Cinema from './cinema.vue'
 
 
 import {
@@ -150,6 +120,7 @@ const timeFormat = 'YYYY-MM-DD HH:mm:ss'
     AreaSelect,
     singDlg,
     changeResource,
+    Cinema
   }
 })
 export default class Main extends ViewBase {
@@ -222,88 +193,88 @@ export default class Main extends ViewBase {
     // this.doSearch()
   }
 
-  get columns() {
-    const data: any = [
-      { title: '影院名称', key: 'shortName',  align: 'center' },
-      { title: '影厅数量', key: 'hallCount', align: 'center' },
-      { title: '场次数量', key: 'seatCount', align: 'center' },
-      { title: '专资编码',  key: 'code', align: 'center' },
-      {
-        title: '所在地',
-        key: 'status',
-        align: 'center',
-        render: (hh: any, { row: { areaName, provinceName, cityName } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          const area = areaName ? areaName + ' , ' : ''
-          const province = provinceName ? provinceName + ' , ' : ''
-          const city = cityName ? cityName : ''
-          return <span>{area}{province}{city}</span>
-          /* tslint:enable */
-        }
-      }
-    ]
-    const check = [
-       {
-        type: 'selection',
-        title: '全选',
-        width: 60,
-        align: 'center'
-      }
-    ]
-    const opernation = [
-       {
-        title: '操作',
-        key: 'status',
-        align: 'center',
-        width: 80,
-        slot: 'action'
-      }
-    ]
-    return this.$route.params.status == '2' ? [...check, ...data, ...opernation] : data
-  }
+  // get columns() {
+    // const data: any = [
+    //   { title: '影院名称', key: 'shortName',  align: 'center' },
+    //   { title: '影厅数量', key: 'hallCount', align: 'center' },
+    //   { title: '场次数量', key: 'seatCount', align: 'center' },
+    //   { title: '专资编码',  key: 'code', align: 'center' },
+    //   {
+    //     title: '所在地',
+    //     key: 'status',
+    //     align: 'center',
+    //     render: (hh: any, { row: { areaName, provinceName, cityName } }: any) => {
+    //       /* tslint:disable */
+    //       const h = jsxReactToVue(hh)
+    //       const area = areaName ? areaName + ' , ' : ''
+    //       const province = provinceName ? provinceName + ' , ' : ''
+    //       const city = cityName ? cityName : ''
+    //       return <span>{area}{province}{city}</span>
+    //       /* tslint:enable */
+    //     }
+    //   }
+    // ]
+  //   const check = [
+  //      {
+  //       type: 'selection',
+  //       title: '全选',
+  //       width: 60,
+  //       align: 'center'
+  //     }
+  //   ]
+  //   const opernation = [
+  //      {
+  //       title: '操作',
+  //       key: 'status',
+  //       align: 'center',
+  //       width: 80,
+  //       slot: 'action'
+  //     }
+  //   ]
+  //   return this.$route.params.status == '2' ? [...check, ...data, ...opernation] : data
+  // }
 
-  check(data: any) {
-    const ids = this.tableData.map((it: any) => it.id)
-    const dataId = data.map((it: any) => it.id)
-    data.forEach((item: any) => {
-      if (!this.checkId.includes(item.id)) {
-        this.checkId.push(item.id)
-      }
-    })
-    const filterId = ids.filter((it: any) => !dataId.includes(it))
-    this.checkId = this.checkId.filter((it: any) => !filterId.includes(it))
-  }
+  // check(data: any) {
+  //   const ids = this.tableData.map((it: any) => it.id)
+  //   const dataId = data.map((it: any) => it.id)
+  //   data.forEach((item: any) => {
+  //     if (!this.checkId.includes(item.id)) {
+  //       this.checkId.push(item.id)
+  //     }
+  //   })
+  //   const filterId = ids.filter((it: any) => !dataId.includes(it))
+  //   this.checkId = this.checkId.filter((it: any) => !filterId.includes(it))
+  // }
 
-  get cachedMap() {
-    return {
-    }
-  }
+  // get cachedMap() {
+  //   return {
+  //   }
+  // }
 
-  get tableData() {
-    if (this.cinemaArray.length == 0) {
-      return []
-    }
-    const cachedMap = this.cachedMap
-    const list = (this.list || []).map((it: any) => {
-      return {
-        ...it
-      }
-    })
-    const list1 = (this.list || []).map((it: any) => {
-      if (this.checkId.includes(it.id)) {
-        return {
-          ...it,
-          _checked: true
-        }
-      } else {
-        return {
-          ...it,
-        }
-      }
-    })
-    return this.$route.params.status == '2' ? list1 : list
-  }
+  // get tableData() {
+  //   if (this.cinemaArray.length == 0) {
+  //     return []
+  //   }
+  //   const cachedMap = this.cachedMap
+  //   const list = (this.list || []).map((it: any) => {
+  //     return {
+  //       ...it
+  //     }
+  //   })
+  //   const list1 = (this.list || []).map((it: any) => {
+  //     if (this.checkId.includes(it.id)) {
+  //       return {
+  //         ...it,
+  //         _checked: true
+  //       }
+  //     } else {
+  //       return {
+  //         ...it,
+  //       }
+  //     }
+  //   })
+  //   return this.$route.params.status == '2' ? list1 : list
+  // }
 
   // 返回上一页 && 接单取消按钮
   back() {

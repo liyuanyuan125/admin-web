@@ -7,21 +7,29 @@
       :columns="columns"
       ref="listPage"
     >
-    <template slot="id" slot-scope="{ row: { id } }">
+    <template slot="acts">
+        <Button
+          type="success"
+          icon="md-add-circle"
+          @click="editShow()"
+        >创建退款单</Button>
+      </template>
+    <template slot="orderNo" slot-scope="{ row: { orderNo } }">
         <div class="row-acts">
           <router-link
-            :to="{ name: 'order-kollist-detail', params: { id } }"
-          >{{id}}</router-link>
+            :to="{ name: 'order-kollist-detail', params: { orderNo } }"
+          >{{orderNo}}</router-link>
         </div>
       </template>
-      <template slot="action" slot-scope="{ row: { id , status  } }">
+      <template slot="action" slot-scope="{ row: { orderNo , status  } }">
         <div class="row-acts">
           <router-link
-            :to="{ name: 'order-kollist-detail', params: { id } }"
+            :to="{ name: 'order-kollist-detail', params: { orderNo } }"
           >详情{{status}}</router-link>
         </div>
       </template>
     </ListPage>
+    <reDlg  ref="re"   v-if="reVisible" @done="dlgEditDone"/>
   </div>
 </template>
 
@@ -30,24 +38,24 @@ import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import CompanyList from './filename.vue'
-
-import {
-  queryList
-} from '@/api/orderkol'
+import reDlg from './reDlg.vue'
+import { queryList } from '@/api/refund'
 import EditDialog, { Field } from '@/components/editDialog'
+
 
 @Component({
   components: {
     ListPage,
-    EditDialog
+    EditDialog,
+    reDlg
   }
 })
 export default class Main extends ViewBase {
   fetch = queryList
-
+  reVisible = false
   filters: Filter[] = [
     {
-      name: 'companyId1',
+      name: 'companyName',
       defaultValue: 0,
       type: CompanyList,
       width: 140,
@@ -61,16 +69,16 @@ export default class Main extends ViewBase {
       width: 200,
       placeholder: '选择时间',
       dealParam(value: string) {
-        const [startDate, endDate] = value ? value.split('-') : [null, null]
+        const [startTime, endTime] = value ? value.split('-') : [null, null]
         return {
-          startDate,
-          endDate
+          startTime,
+          endTime
         }
       }
     },
 
     {
-      name: 'ordername',
+      name: 'projectName',
       defaultValue: '',
       type: 'input',
       width: 140,
@@ -78,7 +86,7 @@ export default class Main extends ViewBase {
     },
 
     {
-      name: 'status1',
+      name: 'channelCode',
       defaultValue: 0,
       type: 'select',
       width: 100,
@@ -87,7 +95,7 @@ export default class Main extends ViewBase {
     },
 
     {
-      name: 'companyId',
+      name: 'orderNo',
       defaultValue: '',
       type: 'input',
       width: 140,
@@ -119,10 +127,10 @@ export default class Main extends ViewBase {
 
   get columns() {
     return [
-      { title: '退款单编号', slot: 'id', width: 65 },
-      { title: '订单编号', slot: 'id', width: 65 },
+      { title: '退款单编号', slot: 'orderNo', width: 65 },
+      { title: '订单编号', slot: 'orderNo', width: 65 },
       { title: '项目名称', key: 'movieName', minWidth: 160 },
-      { title: '公司ID', slot: 'id', width: 65 },
+      { title: '公司ID', slot: 'orderNo', width: 65 },
       { title: '公司名称', key: 'movieName', minWidth: 160 },
       { title: '平台', key: 'applyTime', editor: 'dateTime', width: 135 },
       { title: '下单时间', key: 'operationTime', editor: 'dateTime', width: 135 },
@@ -133,12 +141,48 @@ export default class Main extends ViewBase {
     ] as ColumnExtra[]
   }
 
-  editShow() {
-    this.$router.push({ name: 'client-film-edit'})
+  editShow(id: any) {
+    this.reVisible = true
+    this.$nextTick(() => {
+      const myThis: any = this
+      myThis.$refs.re.init(id)
+    })
   }
 
   mounted() {
   }
+
+  dlgEditDone() {
+    // this.doSearch()
+  }
+
+  // 删除退款单
+  async cancel(id: any) {
+    try {
+      await confirm('您确定删除退款单吗？')
+      // await dels({id})
+      this.$Message.success({
+        content: `删除订单成功`,
+      })
+      this.$router.go(0)
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
+  async refund(id: any) {
+    try {
+      await confirm('本次退款金额￥100000, 确定后资金会返回到客户端的账户余额中，请确认是否退款？')
+      // await dels({id})
+      this.$Message.success({
+        content: `退款成功`,
+      })
+      this.$router.go(0)
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
 
 
   @Watch('$route')
