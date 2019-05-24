@@ -310,7 +310,22 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     }
   },
-
+  {
+    path: '/data/kol-account/',
+    name: 'kol-account-list',
+    component: () => import('./views/data/kol-account/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+  {
+    path: '/data/kol-account/detail/:id/:status',
+    name: 'kol-account-detail',
+    component: () => import('./views/data/kol-account/detail.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
   {
     path: '/contract/list/',
     name: 'contract-list',
