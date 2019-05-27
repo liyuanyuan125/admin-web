@@ -2,7 +2,7 @@ import Mock from 'mockjs'
 import { get, post, put, del } from '@/fn/ajax'
 
 const ajaxOpts = {
-  baseURL: '//yapi.aiads.com'
+  baseURL: '//yapi.aiads-dev.com'
 }
 
 const mockData = (mockOpts: any) => {

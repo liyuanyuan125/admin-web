@@ -1,16 +1,9 @@
 <template>
-    <Select v-if="placeholder != '影片名称'"  v-model="inValue" :placeholder="placeholder" filterable
+    <Select v-model="inValue" placeholder="公司名称" filterable
       clearable class="component" ref="ui">
       <Option v-for="it in list" :key="it.id" :value="it.companyId"
         :label="it.companyName" class="flex-box">
         <span>{{it.companyName}}</span>
-      </Option>
-    </Select>
-    <Select v-else v-model="inValue" :placeholder="placeholder" filterable
-      clearable class="component" ref="ui">
-      <Option v-for="it in list" :key="it.id" :value="it.movieId"
-        :label="it.movieName" class="flex-box">
-        <span>{{it.movieName}}</span>
       </Option>
     </Select>
 </template>

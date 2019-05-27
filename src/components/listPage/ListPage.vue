@@ -29,9 +29,15 @@
           <slot name="acts"></slot>
         </div>
       </div>
+      <div class="act-bar flex-box">
+        <div class='flex-1'>
+          <slot name="acts-2"></slot>
+        </div>
+      </div>
     </slot>
 
     <Table
+      ref="selection"
       :columns="tableColumns"
       :data="list"
       :loading="loading"
@@ -40,6 +46,7 @@
       disabled-hover
       size="small"
       class="table"
+      @on-selection-change="selectionChangeHandle"
     />
 
     <slot name="page-wrap">
@@ -177,7 +184,9 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
       this.loading = false
     }
   }
-
+  public selectionChangeHandle(ev: any) {
+    this.$emit('selectionChange', ev)
+  }
   @Watch('query', { deep: true })
   watchQuery() {
     if (this.query.pageIndex == this.oldQuery.pageIndex) {
@@ -194,6 +203,9 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
 
 .list-page {
   margin-bottom: 88px;
+  .act-bar:first-child {
+    margin-bottom: 8px;
+  }
 }
 
 .ui-filter,

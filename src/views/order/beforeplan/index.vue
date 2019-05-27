@@ -51,7 +51,23 @@ export default class Main extends ViewBase {
       defaultValue: 0,
       type: CompanyList,
       width: 140,
-      placeholder: '公司名称'
+      placeholder: '广告主公司名称'
+    },
+
+    {
+      name: 'companyId2',
+      defaultValue: 0,
+      type: CompanyList,
+      width: 140,
+      placeholder: '广告计划名称'
+    },
+
+    {
+      name: 'companyId1',
+      defaultValue: 0,
+      type: CompanyList,
+      width: 140,
+      placeholder: '广告片名称'
     },
 
     {
@@ -72,26 +88,9 @@ export default class Main extends ViewBase {
     {
       name: 'ordername',
       defaultValue: '',
-      type: 'input',
+      type: 'date',
       width: 140,
-      placeholder: '项目名称'
-    },
-
-    {
-      name: 'status1',
-      defaultValue: 0,
-      type: 'select',
-      width: 100,
-      placeholder: '平台',
-      enumKey: 'statusList'
-    },
-
-    {
-      name: 'companyId',
-      defaultValue: '',
-      type: 'input',
-      width: 140,
-      placeholder: '订单编号'
+      placeholder: '提交时间'
     },
 
     {
@@ -100,15 +99,6 @@ export default class Main extends ViewBase {
       type: 'select',
       width: 100,
       placeholder: '订单状态',
-      enumKey: 'statusList'
-    },
-
-    {
-      name: 'status5',
-      defaultValue: 0,
-      type: 'select',
-      width: 100,
-      placeholder: '发票状态',
       enumKey: 'statusList'
     },
 

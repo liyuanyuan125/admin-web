@@ -9,16 +9,16 @@
 
     <!-- 订单基本信息 -->
     <Table :columns="columns" :data='itemlist' border stripe disabled-hover size="small" class="table">
-     </Table>
+    </Table>
 
      <!-- 商务确认信息 -->
-    <div class='title'>商务审核</div>
-    <div class='title'>订单金额信息</div>
-    <Table :columns="okcolumns" :data='oklist' border stripe disabled-hover size="small" class="table">
+    <div class='title' v-if='$route.params.orders == 4 || $route.params.orders == 8'>订单金额信息</div>
+    <div v-if='$route.params.orders == 2 || $route.params.orders == 3 || $route.params.orders == 0 || $route.params.orders == 5' class='title'>商务确认</div>
+    <!-- 商务确认不可编辑 -->
+    <Table v-if='$route.params.orders != 2' :columns="okcolumns" :data='oklist' border stripe disabled-hover size="small" class="table">
     </Table>
-    <!-- 商务确认 -->
-    <div class='title'>商务审核</div>
-    <Table :columns="editokcolumns" :data="editoklist">
+    <!-- 商务确认可编辑 -->
+    <Table v-if='$route.params.orders == 2' :columns="editokcolumns" :data="editoklist">
 
       <template slot-scope="{ row, index }" slot="editmoney">
         <Input type="text" v-model="editAddress" v-if="editIndex === index" @on-blur="handleSave(index)" />
@@ -35,10 +35,19 @@
       </template>
     </Table>
 
-     <!-- 接单信息 -->
-    <div class='title'>订单支付信息</div>
-    <div style="border: 1px solid #ccc; padding: 15px;">
-      <Row class='row-li'>支付类型：首款/尾款</Row>
+    <Button v-if='$route.params.orders == 2' style='margin-left: 45%;margin-top: 10px;'>提交</Button>
+    <Button v-if='$route.params.orders == 2' style='margin-left: 10px;margin-top: 10px;'>取消</Button>
+
+    <!-- 订单支付信息 -->
+    <div class='title' v-if='$route.params.orders == 8 || $route.params.orders == 0'>订单支付信息</div>
+    <Table v-if='$route.params.orders == 8 || $route.params.orders == 0' :columns="ordercolumns" :data='orderlist' border stripe disabled-hover size="small" class="table">
+    </Table>
+
+     <!-- 支付信息 -->
+    <div class='title' v-if='$route.params.orders == 4 || $route.params.orders == 8'>支付操作</div>
+    <div v-if='$route.params.orders == 4 || $route.params.orders == 8' style="border: 1px solid #ccc; padding: 15px;">
+      <Row class='row-li' v-if='$route.params.orders == 4'>支付类型：首款</Row>
+      <Row class='row-li' v-if='$route.params.orders == 8'>支付类型：尾款</Row>
       <Row class='row-li'>
         <Col :span='8'>剩余待支付金额：￥100.100</Col>
         <Col :span='8'>订单总金额 ￥20000 <span style='color: #ccc;'>(显示商务确认的金额)</span></Col>
@@ -57,48 +66,43 @@
     </div>
 
     <!-- 接单信息 -->
-    <div class='title'>接单信息</div>
-    <div style="border: 1px solid #ccc; padding: 15px;">
-      <Form ref="dataForm" :model="dataForm"  label-position="left" :label-width="100">
+    <div v-if='$route.params.orders == 5' class='title'>接单信息</div>
+    <div v-if='$route.params.orders == 5' style="border: 1px solid #ccc; padding: 15px;">
+      <Form ref="dataForm" :model="orderdataForm"  label-position="left" :label-width="100">
         <FormItem label="接单信息" prop="status">
-          <RadioGroup v-model='dataForm.approveStatus'>
+          <RadioGroup v-model='orderdataForm.approveStatus'>
             <Radio v-for="it in approveStatusList" v-if="it.key!=0" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
           </RadioGroup>
         </FormItem>
         <FormItem  label="备注" prop="reason">
-        <Input style="width:240px" v-model="dataForm.refuseReason"></Input>
+        <Input style="width:240px" v-model="orderdataForm.refuseReason"></Input>
       </FormItem>
       </Form>
-      <Button style='margin-left:20px;' type="primary"  @click="change('dataForm')">提交</Button>
+      <Button style='margin-left:20px;' type="primary"  @click="changeorder('dataForm')">提交</Button>
       <Button style='margin-left:20px;' @click="back">取消</Button>
     </div>
 
      <!-- 财务审核 -->
-    <div class='title'>财务审核</div>
-    <div style="border: 1px solid #ccc; padding: 15px;">
-      <Form ref="dataForm" :model="dataForm"  label-position="left" :label-width="100">
-        <FormItem label="接单信息" prop="status">
+    <div v-if='$route.params.orders == 3' class='title'>财务审核</div>
+    <div v-if='$route.params.orders == 3' style="border: 1px solid #ccc; padding: 15px;">
+      <Form ref="dataForm" :model="moneydataForm"  label-position="left" :label-width="100">
+        <FormItem label="审核" prop="status">
           <RadioGroup v-model='moneydataForm.approveStatus'>
             <Radio v-for="it in moneyList" v-if="it.key!=0" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
           </RadioGroup>
         </FormItem>
         <FormItem  label="备注" prop="reason">
-        <Input style="width:240px" v-model="dataForm.refuseReason"></Input>
+        <Input style="width:240px" v-model="moneydataForm.refuseReason"></Input>
       </FormItem>
       </Form>
-      <Button style='margin-left:20px;' type="primary"  @click="change('dataForm')">提交</Button>
+      <Button style='margin-left:20px;' type="primary"  @click="changemoney('dataForm')">提交</Button>
       <Button style='margin-left:20px;' @click="back">取消</Button>
     </div>
 
 
-    <!-- 订单支付信息 -->
-    <div class='title'>订单支付信息</div>
-    <Table :columns="ordercolumns" :data='orderlist' border stripe disabled-hover size="small" class="table">
-    </Table>
-
     <!-- 操作日志 -->
-    <div class='title'>操作日志</div>
-    <Table :columns="logcolumns" :data='loglist' border stripe disabled-hover size="small" class="table">
+    <div v-if='$route.params.orders == 0' class='title'>操作日志</div>
+    <Table v-if='$route.params.orders == 0' :columns="logcolumns" :data='loglist' border stripe disabled-hover size="small" class="table">
     </Table>
   </div>
 </template>
@@ -128,11 +132,17 @@ const moneydataForm = {
   approveStatus: 2
 }
 
+const orderdataForm = {
+  refuseReason: '',
+  approveStatus: 2
+}
+
 @Component({
   components: {
   }
 })
 export default class Main extends ViewBase {
+
   editIndex = -1  // 当前聚焦的输入框的行数
   editmoney = '' // 修改金额
   beizhu = '' // 修改备注
@@ -146,6 +156,8 @@ export default class Main extends ViewBase {
   orderlist: any = []
   // 操作日志
   loglist: any = []
+
+  id = 0
 
   // 订单基本信息
   columns = [
@@ -271,6 +283,7 @@ export default class Main extends ViewBase {
 
   dataForm: any = { ...dataForm }
   moneydataForm: any = { ...moneydataForm }
+  orderdataForm: any = { ...orderdataForm }
 
   mounted() {
     // console.log(this.$route.name)
@@ -279,6 +292,10 @@ export default class Main extends ViewBase {
   // 返回上一页 && 接单取消按钮
   back() {
     this.$router.go(-1)
+  }
+
+  search() {
+
   }
 
   // 商务修改金额
@@ -300,6 +317,67 @@ export default class Main extends ViewBase {
     this.editoklist[index].address = this.beizhu
     this.editIndex = -1
   }
+
+  // 提交支付信息
+  change(dataForms: any) {
+    const myThis: any = this
+    myThis.$refs[dataForms].validate(async ( valid: any ) => {
+      if (valid) {
+        const query =  !this.id ? this.dataForm : {
+          id: this.id,
+          ...this.dataForm
+        }
+        // const title = '添加'
+        try {
+          // const res =  await setList (this.$route.params.id , query)
+          // this.$router.push({ name : 'client-order' })
+        } catch (ex) {
+          this.handleError(ex)
+        }
+      }
+    })
+  }
+
+  // 提交接单信息
+  changeorder(dataForms: any) {
+    const myThis: any = this
+    myThis.$refs[dataForms].validate(async ( valid: any ) => {
+      if (valid) {
+        const query =  !this.id ? this.dataForm : {
+          id: this.id,
+          ...this.orderdataForm
+        }
+        try {
+          // const res =  await setList (this.$route.params.id , query)
+          // this.$router.push({ name : 'client-order' })
+        } catch (ex) {
+          this.handleError(ex)
+        }
+      }
+    })
+  }
+
+  // 提交财务信息
+  changemoney(dataForms: any) {
+    const myThis: any = this
+    myThis.$refs[dataForms].validate(async ( valid: any ) => {
+      if (valid) {
+        const query =  !this.id ? this.dataForm : {
+          id: this.id,
+          ...this.moneydataForm
+        }
+        // const title = '添加'
+        try {
+          // const res =  await setList (this.$route.params.id , query)
+          // this.$router.push({ name : 'client-order' })
+        } catch (ex) {
+          this.handleError(ex)
+        }
+      }
+    })
+  }
+
+
 
 
 }
