@@ -58,21 +58,21 @@ export async function queryList(query: any) {
 // }
 
 //  查看详情
-export async function itemlist(orderId: any) {
-  const data = await get('/kol/refunds/${orderId}')
+export async function itemlist(id: any) {
+  const data = await get(`/kol/refunds/${id}`)
   return data
 }
 
 
 //  申请退款
 export async function finance(orderId: any , query: any) {
-  const data = await put(`/kol/refunds/apply-refund/${orderId}`, query)
+  const data = await put(`/kol/refunds/{orderId}/apply`, query)
   return data
 }
 
-//  支付首款
-export async function advance(orderId: any , query: any) {
-  const data = await del(`/kol/refunds/${orderId}`, query)
+//  删除退款单
+export async function delorder(id: any) {
+  const data = await del(`/kol/refunds/{id}/delete`)
   return data
 }
 

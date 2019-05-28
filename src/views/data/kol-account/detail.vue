@@ -91,11 +91,11 @@ export default class Main extends ViewBase {
     // const index = typecode.indexOf(typetext)
     // if (index != -1) {
       try {
-        await addvideo (this.$route.params.id , {
-                                                name: files[0].clientName,
-                                                fileId: files[0].fileId,
-                                                typeCode: key
-                                              })
+        // await addvideo (this.$route.params.id , {
+        //                                         name: files[0].clientName,
+        //                                         fileId: files[0].fileId,
+        //                                         typeCode: key
+        //                                       })
         toast('操作成功')
         this.doSearch()
       } catch (ex) {
@@ -214,12 +214,12 @@ export default class Main extends ViewBase {
       })
 
 
-      this.logList = res.data.logList.map((item: any) => {
-        return {
-          ...item,
-          createTime: item.createTime == null ? '暂无时间' : moment(item.createTime).format(timeFormatDate)
-        }
-      })
+      // this.logList = res.data.logList.map((item: any) => {
+      //   return {
+      //     ...item,
+      //     createTime: item.createTime == null ? '暂无时间' : moment(item.createTime).format(timeFormatDate)
+      //   }
+      // })
       setTimeout(() => {
         (this.$Spin as any).hide()
       }, 1000)

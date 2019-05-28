@@ -668,7 +668,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   },
    // 退款订单添加 - kol
   {
-    path: '/order/refund/detail',
+    path: '/order/refund/detail/:id',
     name: 'order-refund/detail',
     component: () => import('./views/order/refund/detail.vue'),
     meta: {
@@ -747,9 +747,9 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     }
   },
-  // 映前广告监播 - 列表
+  // 映前广告监播 - 列表详情
   {
-    path: '/order/supervision/detail',
+    path: '/order/supervision/detail/:id',
     name: 'order-supervision-detail',
     component: () => import('./views/order/supervision/detail.vue'),
     meta: {

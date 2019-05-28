@@ -57,11 +57,7 @@ import ViewBase from '@/util/ViewBase'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import moment from 'moment'
-
-
-import {
-  queryList
-} from '@/api/orderkol'
+import { queryList , delorder , itemlist } from '@/api/refund'
 import EditDialog, { Field } from '@/components/editDialog'
 
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
@@ -90,6 +86,9 @@ export default class Main extends ViewBase {
   oklist: any = []
   // 订单支付信息
   orderlist: any = []
+
+  list: any = []
+  total: any = 0
 
   // 订单基本信息
   columns = [
@@ -187,11 +186,26 @@ export default class Main extends ViewBase {
 
   mounted() {
     // console.log(this.$route.name)
+    this.seach()
   }
 
   // 返回上一页 && 接单取消按钮
   back() {
     this.$router.go(-1)
+  }
+
+  async seach() {
+    try {
+      const { data: {
+        items: list,
+        totalCount: total,
+      } } = await itemlist(this.$route.params.id)
+      this.list = list
+      this.total = total
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+    }
   }
 
 

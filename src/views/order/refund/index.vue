@@ -39,7 +39,7 @@ import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import CompanyList from './filename.vue'
 import reDlg from './reDlg.vue'
-import { queryList } from '@/api/refund'
+import { queryList , delorder } from '@/api/refund'
 import EditDialog, { Field } from '@/components/editDialog'
 
 
@@ -160,7 +160,7 @@ export default class Main extends ViewBase {
   async cancel(id: any) {
     try {
       await confirm('您确定删除退款单吗？')
-      // await dels({id})
+      await delorder(id)
       this.$Message.success({
         content: `删除订单成功`,
       })
@@ -170,10 +170,11 @@ export default class Main extends ViewBase {
     }
   }
 
+  // 退款
   async refund(id: any) {
     try {
       await confirm('本次退款金额￥100000, 确定后资金会返回到客户端的账户余额中，请确认是否退款？')
-      // await dels({id})
+      // await delorder({id})
       this.$Message.success({
         content: `退款成功`,
       })

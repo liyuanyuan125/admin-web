@@ -33,7 +33,7 @@ import CompanyList from './filename.vue'
 
 import {
   queryList
-} from '@/api/orderkol'
+} from '@/api/beforeplan'
 import EditDialog, { Field } from '@/components/editDialog'
 
 @Component({
@@ -47,7 +47,7 @@ export default class Main extends ViewBase {
 
   filters: Filter[] = [
     {
-      name: 'companyId1',
+      name: 'companyName',
       defaultValue: 0,
       type: CompanyList,
       width: 140,
@@ -55,7 +55,7 @@ export default class Main extends ViewBase {
     },
 
     {
-      name: 'companyId2',
+      name: 'name',
       defaultValue: 0,
       type: CompanyList,
       width: 140,
@@ -63,7 +63,7 @@ export default class Main extends ViewBase {
     },
 
     {
-      name: 'companyId1',
+      name: 'videoName',
       defaultValue: 0,
       type: CompanyList,
       width: 140,
@@ -77,24 +77,24 @@ export default class Main extends ViewBase {
       width: 200,
       placeholder: '选择时间',
       dealParam(value: string) {
-        const [startDate, endDate] = value ? value.split('-') : [null, null]
+        const [beginDate, endDate] = value ? value.split('-') : [null, null]
         return {
-          startDate,
+          beginDate,
           endDate
         }
       }
     },
 
-    {
-      name: 'ordername',
-      defaultValue: '',
-      type: 'date',
-      width: 140,
-      placeholder: '提交时间'
-    },
+    // {
+    //   name: 'ordername',
+    //   defaultValue: '',
+    //   type: 'date',
+    //   width: 140,
+    //   placeholder: '提交时间'
+    // },
 
     {
-      name: 'status3',
+      name: 'status',
       defaultValue: 0,
       type: 'select',
       width: 100,

@@ -161,17 +161,23 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         if (status == 1) {
-          return <span class={`status-1`}>待执行</span>
+          return <span class={`status-1`}>待接单</span>
         } else if (status == 2) {
-          return <span class={`status-2`}>执行中</span>
+          return <span class={`status-2`}>待执行</span>
         }
          else if (status == 3) {
-          return <span class={`status-3`}>已完成</span>
+          return <span class={`status-3`}>执行中</span>
         }
          else if (status == 4) {
-          return <span class={`status-4`}>已关闭</span>
+          return <span class={`status-4`}>已拒绝</span>
         }else if (status == 5) {
-          return <span class={`status-5`}>已结算</span>
+          return <span class={`status-5`}>已失效</span>
+        }else if (status == 6) {
+          return <span class={`status-6`}>待结算</span>
+        }else if (status == 7) {
+          return <span class={`status-7`}>已完成</span>
+        }else if (status == 8) {
+          return <span class={`status-8`}>已关闭</span>
         }
         /* tslint:enable */
       }
