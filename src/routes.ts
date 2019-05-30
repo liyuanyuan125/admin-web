@@ -731,7 +731,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   },
   // 映前广告计划 - 详情
   {
-    path: '/order/beforeplan/detail',
+    path: '/order/beforeplan/detail/:id/:status',
     name: 'order-beforeplan-detail',
     component: () => import('./views/order/beforeplan/detail.vue'),
     meta: {

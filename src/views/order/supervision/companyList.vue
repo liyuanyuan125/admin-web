@@ -1,5 +1,5 @@
 <template>
-  <Select v-model="inValue" :placeholder="placeholder" filterable
+  <Select v-model="inValue" placeholder="资源方公司" filterable
     clearable class="component" ref="ui">
     <Option v-for="it in list" :key="it.id" :value="it.id"
       :label="it.name" class="flex-box">

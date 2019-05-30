@@ -1,5 +1,5 @@
 <template>
-    <Select  v-model="inValue" placeholder="广告计划名称" filterable
+    <Select  v-model="inValue" placeholder="广告主公司名称" filterable
       clearable class="component" ref="ui">
       <Option v-for="it in list" :key="it.id" :value="it.id"
         :label="it.name" class="flex-box">
@@ -35,8 +35,8 @@ export default class CinemaChainSelect extends ViewBase {
 
   async mounted() {
     try {
-      const plandata = await planlist({pageSize: 100000})
-      this.list = plandata.data.items
+      const adscmy = await company({typeCode: 'ads' , pageSize: 100000})
+      this.list = adscmy.data.items
     } catch (ex) {
       this.handleError(ex)
     }
