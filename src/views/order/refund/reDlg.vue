@@ -5,14 +5,20 @@
     :width='420'
     :title="'创建退款单'"
     @on-cancel="cancel" >
-    <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
+    <Form ref="dataForm" :model="dataForm" label-position="left"  :label-width="100">
       <FormItem label="订单编号" prop="closeReason">
-        <Input v-model="dataForm.closeReason"></Input>
+        <Select v-model="dataForm.orderNo" placeholder="退款单编号" filterable
+          clearable class="component" ref="ui">
+          <Option v-for="it in relist" :key="it.orderNo" :value="it.orderNo"
+            :label="it.orderNo" class="flex-box">
+            <span>{{it.orderNo}}</span>
+          </Option>
+        </Select>
       </FormItem>
     </Form>
     <div slot="footer" class="dialog-footer">
       <Button @click="cancel">取消</Button>
-      <Button type="primary" @click="dataFormSubmit">确定</Button>
+      <Button type="primary" @click="dataFormSubmit('dataForm')">确定</Button>
     </div>
   </Modal>
 </template>
@@ -23,10 +29,11 @@ import { Component, Prop } from 'vue-property-decorator'
 import { set } from '@/api/orderSys'
 import { warning , success, toast , info } from '@/ui/modal'
 import moment from 'moment'
+import { queryList , delorder , finance } from '@/api/refund'
 import ViewBase from '@/util/ViewBase'
 const timeFormat = 'YYYY-MM-DD'
 const dataForm = {
-  closeReason: '',
+  orderNo: '',
 }
 
 @Component
@@ -37,11 +44,7 @@ export default class ComponentMain extends ViewBase {
   showDlg = false
   id = 0
 
-  ruleValidate = {
-    closeReason: [
-      { required: true,  message: '请输入订单编号' },
-    ],
-  }
+  relist: any = []
 
   dataForm: any = { ...dataForm }
 
@@ -68,14 +71,23 @@ export default class ComponentMain extends ViewBase {
       return
     }
     try {
-      const res = await set (this.$route.params.id, this.dataForm)
+      const res = await finance ( this.dataForm.orderNo, {})
       toast('成功')
       this.showDlg = false
       this.$emit('done')
-      this.$router.push({ name: 'order-list'})
+      this.$router.push({ name: 'order-refund-detail' , params : {}})
     } catch (ex) {
       this.handleError(ex)
       this.showDlg = false
+    }
+  }
+
+  async mounted() {
+    try {
+      const relist = await queryList({})
+      this.relist = relist.data.items
+    } catch (ex) {
+      this.handleError(ex)
     }
   }
 

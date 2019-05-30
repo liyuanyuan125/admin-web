@@ -666,10 +666,10 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     }
   },
-   // 退款订单添加 - kol
+   // 退款订单添加/详情 - kol
   {
-    path: '/order/refund/detail/:id',
-    name: 'order-refund/detail',
+    path: '/order/refund/detail/:id/:order/:status',
+    name: 'order-refund-detail',
     component: () => import('./views/order/refund/detail.vue'),
     meta: {
       authKey: ''

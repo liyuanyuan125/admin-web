@@ -27,7 +27,7 @@
         <Col :span='12'></Col>
       </Row>
       <Row>
-        <Col :span='12'>创建时间&nbsp;：&nbsp;{{listitem.applyTime.split('T')[0] +' '+ listitem.applyTime.split('T')[1]}}</Col>
+        <Col :span='12'>创建时间&nbsp;：&nbsp;{{listitem.applyTime.split('T')[0] +' '+ listitem.applyTime.split('T')[1].split('.')[0]}}</Col>
         <Col :span='12'>创建人&nbsp;：&nbsp;{{listitem.applyName}}</Col>
       </Row>
     </div>
@@ -38,7 +38,7 @@
           <a  @click="deletefilm(row.movieId)">删除</a>
         </template>
      </Table>
-     <div v-if='$route.params.status == 0 || $route.params.status == 1 || $route.params.status == 2 '>添加影片</div>
+     <div v-if='$route.params.status == 0 || $route.params.status == 1 || $route.params.status == 2 ' @click='addfilm()'>添加影片</div>
     </div>
     <!-- <div class='title'>投放影院(532家)
       <span style='float: right' @click='chgRes'>导出影院列表</span>
@@ -49,9 +49,9 @@
     <!-- </div> -->
     <div class='title'>备注</div>
     <div class='bos' >
-      <Row v-if='listitem.length != 0 && listitem.remarks.length == 0'>暂无备注</Row>
+      <Row v-if='(listitem.remarks == null)'>暂无备注</Row>
       <Row v-for='(it,index) in listitem.remarks' :key='index'>
-          {{it.operationTime.split('T')[0] + ' ' + it.operationTime.split('T')[1]}} 
+          {{it.operationTime.split('T')[0] + ' ' + it.operationTime.split('T')[1].split('.')[0]}} 
           {{it.operationEmail}}【{{it.operationName}}】 
           {{it.remarks}}
     </Row>
@@ -84,7 +84,7 @@
       </Form>
     </div>
     <close  ref="over"   v-if="overVisible" @done="dlgEditDone"/>
-    <changeResource  ref="changeres" v-if='changeresVisible' @done="dlgEditDone"/>
+    <addfilm  ref="adds" v-if='addVisible' @done="dlgEditDone"/>
   </div>
 </template>
 
@@ -98,10 +98,10 @@ import { toMap } from '@/fn/array'
 import moment from 'moment'
 import close from './closeorder.vue'
 import AreaSelect from '@/components/areaSelect'
-import changeResource from './changeResource.vue'
 import { warning , success, toast , info } from '@/ui/modal'
 import { slice , clean } from '@/fn/object'
 import Cinema from './cinema.vue'
+import addfilm from './addfilm.vue'
 import { confirm } from '@/ui/modal'
 
 
@@ -118,14 +118,14 @@ const timeFormat = 'YYYY-MM-DD'
   components: {
     close,
     AreaSelect,
-    changeResource,
-    Cinema
+    Cinema,
+    addfilm
   }
 })
 export default class Main extends ViewBase {
   overVisible = false
   addOrUpdateVisible = false
-  changeresVisible = false
+  addVisible = false
   query: any = {
     pageIndex: 1,
     pageSize: 10,
@@ -217,6 +217,15 @@ export default class Main extends ViewBase {
   //     myThis.$refs.over.init(id)
   //   })
   // }
+
+  // 关闭订单
+  addfilm() {
+    this.addVisible = true
+    this.$nextTick(() => {
+      const myThis: any = this
+      myThis.$refs.adds.init()
+    })
+  }
 
   async close(id: any) {
     try {

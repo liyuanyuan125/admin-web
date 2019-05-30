@@ -1,208 +1,248 @@
 <template>
-  <div class="pages">
-    <Row class="shouDlg-header">
-      <form class="form flex-1" @submit.prevent="search">
-          <Col span='5'>
-            <compangList v-model='query.companyId' @done="dlgEditDone"/>
-          </Col>
-          <Col span='5' >
-            <videoList v-model='query.videoId'/>
-          </Col>
-          <Col span='5' >
-            <cinemaList v-model='query.cinemaId'/>
-          </Col>
-          <Col span='5' >
-            <Select v-model="query.status" placeholder="状态" style='width: 200px;'  filterable>
-              <Option v-for="it in statusList" :key="it.key" :value="it.key"
-                :label="it.text">{{it.text}}</Option>
-            </Select>
-          </Col>
-          <Col span='3'>
-            <Button type="default" @click="reset" class="btn-reset">清空</Button>
-          </Col>
+  <Modal
+    v-model='showDlg'
+    :transfer='true'
+    :width='600'
+    :title="'添加影片'"
+    @on-cancel="cancel" >
+    <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
+       <div class="act-bar flex-box">
+        <form class="form flex-1" @submit.prevent="search">
+          <LazyInput v-model="query.name" placeholder="影片名称" class="input"/>
         </form>
-    </Row>
-      <Button type="primary" @click="changeAll">批量审核</Button>
-    <Table ref="selection" :columns="columns" @on-selection-change="onselect" :data="list" :loading="loading"
-      border stripe disabled-hover size="small" class="table">
-      <template  slot="action" slot-scope="{row}" >
-        <a style='margin-right: 6px;' v-show='row.approvalStatus == 2' @click="change( row.id , row )">审核</a>
-        <router-link  :to="{ name: 'order-supervision-detail', params: { id: row.id} }">详情</router-link>
-      </template>
-      <template  slot="video" slot-scope="{row}" >
-        <a style='margin-left: 5px;' v-for='(item,index) in row.videoDetails' :key='index'>{{item.videoName}} ({{item.videoLength}})s</a>
-        <!-- <a href="#">{{row}}}</a> -->
-      </template>
-    </Table>
-    <div class="page-wrap" v-if="total > 0">
-       <Page class="page" :total="total" :current="query.pageIndex" :page-size="query.pageSize"
-          show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-          @on-change="sizeChangeHandle"
-          @on-page-size-change="currentChangeHandle"/>
+      </div>
+      <Table ref="selection" :columns="columns" @on-select="onselect" :data="tableDatauser" v-if="showDlg" :loading="loading"
+        border stripe disabled-hover size="small" class="table"></Table>
+
+      <div class="page-wrap" v-if="total > 0">
+        <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
+          show-total show-sizer show-elevator :page-size-opts="[5, 10]"
+          @on-change="page => query.pageIndex = page"
+          @on-page-size-change="pageSize => query.pageSize = pageSize"/>
+      </div>
+      <FormItem label="影片类型" prop="userIds">
+        <Checkbox v-model="dataForm.admin"></Checkbox>
+        <CheckboxGroup v-model="dataForm.roleIds" v-if="showDlg">
+          <Checkbox :label='it.id' v-for='it in list' :key='it.id' :value='it.id'>{{it.name}}</Checkbox>
+        </CheckboxGroup>
+      </FormItem>
+    </Form>
+    <div slot="footer" class="dialog-footer">
+      <Button @click="cancel">取消</Button>
+      <Button type="primary" @click="dataFormSubmit('dataForm')">确定</Button>
     </div>
-    <singDlg ref="addOrUpdate" v-if="addOrUpdateVisible"  @done="dlgEditDone" />
-    <singvideoDlg ref="addOrUpdatevideo" v-if='videoVisible' @done="dlgEditDone" />
-  </div>
+  </Modal>
 </template>
 
 <script lang="tsx">
-import { Component, Watch , Mixins } from 'vue-property-decorator'
+// doc: https://github.com/kaorun343/vue-property-decorator
+import { Component, Prop , Watch , Mixins} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { queryList , okpass ,  refuse } from '@/api/supervision'
+import { filmList , addfilm } from '@/api/beforeplan'
+import { warning , success, toast } from '@/ui/modal'
+import UrlManager from '@/util/UrlManager'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
-import moment from 'moment'
 import { slice, clean } from '@/fn/object'
-import {confirm , warning , success, toast } from '@/ui/modal'
-import singDlg from './singDlg.vue'
-import singvideoDlg from './singvideoDlg.vue'
-import compangList from './companyList.vue'
-import videoList from './videoList.vue'
-import cinemaList from './cinemaList.vue'
+import moment from 'moment'
+const timeFormat = 'YYYY-MM-DD'
+// const defQuery = {
+//   id: '',
+//   userName: '',
+//   loginName: '',
+//   pageIndex: 1,
+//   pageSize: 5,
+// }
+const dataForm = {
+  userIds: [],
+  roleIds: [],
+  appId: null,
+  admin: null
+}
 
-
-const makeMap = (list: any[]) => toMap(list, 'id', 'name')
-const timeFormat = 'YYYY-MM-DD HH:mm:ss'
-
-@Component({
-  components: {
-    singDlg,
-    singvideoDlg,
-    compangList,
-    videoList,
-    cinemaList
-  }
-})
-export default class Main extends Mixins(ViewBase, UrlManager) {
-  query: any = {
-    companyId: null,
-    cinemaId: null,
-    videoId: null,
-    status: null,
+@Component
+export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
+  query = {
+    name: '',
+    startTime: null,
+    endTime: null,
+    types: '',
     pageIndex: 1,
-    pageSize: 20,
+    pageSize: 5,
   }
-
-  addOrUpdateVisible = false
-  changeVisible = false
-  videoVisible = false
   loading = false
-  list = []
+  showDlg = false
+  id = 0
   total = 0
-
-  ids: any = []
-
-  statusList: any = []
+  roles: any = []
+  // query = { ...defQuery }
+  // query: any = {}
   oldQuery: any = {}
+  list: any = []
+  userlist: any = []
+  data: any = {}
+  checkdata: any = {}
 
-   columns = [
+  columns = [
     {
       type: 'selection',
-      title: '全选',
+      title: ' ',
       width: 60,
-      align: 'center'
-    },
-    { title: '影片名称', key: 'companyId',  align: 'center' },
-    { title: '影片类型', key: 'cinemaName', align: 'center' },
-    { title: '导演', slot: 'video', align: 'center' },
-    { title: '主演', slot: 'video', align: 'center' },
-    {
-      title: '上映时间',
-      key: 'beginDate',
-      width: 150,
+      key: 'id',
       align: 'center',
-      render: (hh: any, { row: { beginDate , endDate} }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const a = String(beginDate)
-        const start = a.slice(0, 4) + '-' + a.slice(4, 6) + '-' + a.slice(6, 8)
-        const b = String(beginDate)
-        const end = b.slice(0, 4) + '-' + b.slice(4, 6) + '-' + b.slice(6, 8)
-        return <span> {start} ~ {end}</span>
-        /* tslint:enable */
+      render: (hh: any, { row: { id } , row}: any) => {
+      //   /* tslint:disable */
+      //   const h = jsxReactToVue(hh)
+      //   return row.id
+      //   /* tslint:enable */
       }
     },
-    { title: '想看人数', width: '80',  slot: 'action', align: 'center' },
+    { title: 'ID', key: 'id', align: 'center' },
+    { title: '账号', key: 'loginName', align: 'center' },
+    { title: '用户姓名', key: 'userName', align: 'center' },
+    { title: '邮箱', key: 'email', align: 'center' },
   ]
 
+  ruleValidate = {
+  }
+
+  dataForm: any = { ...dataForm }
+
+  async init(id: number) {
+    this.dataForm.userIds = []
+    this.dataForm.roleIds = []
+    this.dataForm.admin = null
+    this.showDlg = true
+    this.id = id || 0
+    ; (this.$refs.dataForm as any).resetFields()
+    // if (this.id) {
+    //   try {
+    //     //  获取用户详情
+    //     const { data } = await getappuserlist(this.$route.params.appId, this.id)
+    //     this.dataForm.admin = data.admin
+    //     this.dataForm.roleIds = data.roles
+    //     this.dataForm.userIds.push(data.id)
+    //     // this.query.pageIndex = 3
+    //     // console.log(this.$route)
+    //     //  实现默认勾选
+    //     // console.log((this.$refs.selection as any).$refs.tbody.objData[2]._isChecked)
+    //     // (this.$refs.selection).$refs.tbody.objData[1]._isChecked = true
+    //   } catch (ex) {
+    //     // this.handleError(ex)
+    //   } finally {
+    //   }
+    // }
+    return this.id
+  }
+
   onselect(row: any , selection: any) {
-    this.ids = row.map((it: any) => {
-      return it.id
+    this.dataForm.userIds.push(selection.id)
+  }
+
+
+  cancel() {
+    this.showDlg = false
+    ; (this.$refs.dataForm as any).resetFields()
+  }
+  // 表单提交
+  async dataFormSubmit(dataForms: any) {
+    const valid = await (this.$refs.dataForm as any).validate()
+    if (!valid) {
+      return
+    }
+    const query = !this.id ? {
+      ...this.dataForm,
+    } : {
+      id: this.id,
+      ...this.dataForm,
+    }
+    const title = !this.id ? '添加' : '编辑'
+    try {
+      // const res = !this.id ? await addList (query) : await setList (query)
+      toast('操作成功')
+      this.showDlg = false
+      this.$emit('done')
+    } catch (ex) {
+      this.handleError(ex)
+      this.showDlg = false
+    }
+  }
+
+  get cachedMap() {
+    return {
+    }
+  }
+
+  get tableData() {
+    const cachedMap = this.cachedMap
+    const list = (this.list || []).map((it: any) => {
+      return {
+        ...it,
+      }
     })
+    return list
   }
 
-  dlgEditDone(id: any) {
-    this.doSearch()
+  get tableDatauser() {
+    const cachedMap = this.cachedMap
+    const userlist = (this.userlist || []).map((it: any) => {
+      if (this.id == it.id) {
+        return {
+          ...it,
+          _checked: true
+        }
+      } else {
+        return {
+          ...it
+        }
+      }
+    })
+    return userlist
   }
 
-  // 每页数
-  sizeChangeHandle(val: any) {
-    this.query.pageIndex = val
-    this.doSearch()
-  }
-  // 当前页
-  currentChangeHandle(val: any) {
-    this.query.pageSize = val
-    this.doSearch()
-  }
-  search() {
-    this.query.pageIndex = 1
-  }
-  reloadSearch() {
-    this.doSearch()
+  reset() {
+    this.resetQuery()
   }
 
   mounted() {
-    this.doSearch()
+    // console.log(this.$refs.selection)
     this.updateQueryByParam()
+    const { id } = this.$route.params
+    this.dataForm.appId = Number(this.$route.params.appId)
+    this.doSearch()
+  }
+
+  search() {
+    this.query.pageIndex = 1
   }
 
   async doSearch() {
     if (this.loading) {
       return
     }
-    this.oldQuery = { ...this.query }
-    this.updateUrl()
+    // this.oldQuery = { ...this.query }
     this.loading = true
+    // const query = clean({ ...this.query })
     try {
-        // 订单列表
+      // 获取角色详情
       const { data: {
         items: list,
         totalCount: total,
-        statusList: statusList,
-      } } = await queryList(this.query)
+      } } = await filmList(this.query)
       this.list = list
+      // //  获取用户详情
+      // const { data: {
+      //   items: userlist,
+      //   totalCount: total,
+      // } } = await userqueryList(query)
+      // this.userlist = userlist
       this.total = total
-      this.statusList = statusList
     } catch (ex) {
       this.handleError(ex)
     } finally {
       this.loading = false
     }
-  }
-
-
-
-  changeAll() {
-    this.videoVisible = true
-    this.$nextTick(() => {
-      const myThis: any = this
-      myThis.$refs.addOrUpdatevideo.init(this.ids)
-    })
-  }
-
-  change(id: number, row: any) {
-    this.addOrUpdateVisible = true
-    this.$nextTick(() => {
-      const myThis: any = this
-      myThis.$refs.addOrUpdate.init(id , row)
-    })
-  }
-
-  reset() {
-    this.resetQuery()
   }
   @Watch('query', { deep: true })
   watchQuery() {
@@ -224,6 +264,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       margin-left: 0;
     }
   }
+
   .input-corp-id {
     width: 80px;
   }
@@ -265,63 +306,19 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   background: #fff;
   padding: 5px;
 }
-.info {
-  width: 35%;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  position: absolute;
-  top: 20%;
-  left: 20%;
-  font-size: 14px;
-  z-index: 10;
-}
-.info-ver {
-  width: 100%;
-  height: 43px;
-  line-height: 43px;
-  padding-left: 3%;
-  border-bottom: 1px solid #ccc;
-}
-.info-ver .info-Icon {
-  float: right;
-  margin-right: 3%;
-  font-weight: bold;
-  margin-top: 10px;
-}
-.info-type {
-  padding: 17px;
-}
-.info-type-t {
-  width: 100%;
-  height: 50px;
-  line-height: 50px;
-}
-.info-type-t div {
-  display: inline-block;
-  width: 50%;
-}
-.info-type-t div span {
-  margin-left: 10%;
-}
-.info-type-t .ivu-radio-group {
-  margin-left: 5%;
-}
-.info-inp {
-  margin-left: 5%;
-}
 .table {
   margin-top: 16px;
-  /deep/ .status-2 {
+  /deep/ .status-2,
+  /deep/ .aptitude-status-2 {
     color: #19be6b;
+  }
+  /deep/ .aptitude-status-3 {
+    color: #ed4014;
   }
   /deep/ .ivu-table-cell > span:only-child:empty {
     &::before {
       content: '-';
     }
   }
-}
-.pages {
-  padding: 20px 10px 2px 10px;
 }
 </style>
