@@ -35,7 +35,6 @@
         </div>
       </div>
     </slot>
-
     <Table
       ref="selection"
       :columns="tableColumns"

@@ -293,13 +293,14 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       title: '影厅列表',
     }
   },
-
+  // 基础数据 - 影片管理（修改原有功能）
   {
     path: '/data/film/',
     name: 'data-film',
     component: () => import('./views/data/film/index.vue'),
     meta: {
-      authKey: ''
+      authKey: '',
+      title: '影片管理'
     }
   },
   {
@@ -307,9 +308,54 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'data-film-detail',
     component: () => import('./views/data/film/detail.vue'),
     meta: {
-      authKey: ''
+      authKey: '',
+      title: '详情'
     }
   },
+  {
+    path: 'data/film/edit/:id',
+    name: 'data-film-edit',
+    component: () => import('./views/data/film/edit.vue'),
+    meta: {
+      authKey: '',
+      title: '编辑'
+    }
+  },
+
+  // 基础数据 - 影人管理
+  {
+    path: 'data/person',
+    name: 'data-person',
+    component: () => import('./views/data/person/index.vue'),
+    meta: {
+      authKey: '',
+      title: '影人管理'
+    }
+  },
+
+  // 基础数据 - 影人管理 - 详情
+  {
+    path: 'data/person/detail/:id',
+    name: 'data-person-detail',
+    component: () => import('./views/data/person/detail.vue'),
+    meta: {
+      authKey: '',
+      title: '查看'
+    }
+  },
+
+  // 基础数据 - 影人管理 - 编辑
+  {
+    path: 'data/person/edit/:id',
+    name: 'data-person-edit',
+    component: () => import('./views/data/person/edit.vue'),
+    meta: {
+      authKey: '',
+      title: '编辑'
+    }
+  },
+
+
   {
     path: '/data/kol-account/',
     name: 'kol-account-list',
