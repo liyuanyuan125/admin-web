@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Form class="create-form form-item" :accept="accept" ref="refform"
+    <Form class="create-form form-item" :accept="accept" enctype="multipart/form-data" ref="refform"
     :model="form" :label-width="120">
       <div class="modal-item">
         <FormItem label="选择影片1:" >
@@ -88,9 +88,6 @@ export default class Main extends ViewBase {
     const input = ev.target as HTMLInputElement
     const files = input.files
     this.form.file = files
-    // if (files == null || files.length === 0) {
-    //   return
-    // }
   }
   async relevanceFilm() {
     try {

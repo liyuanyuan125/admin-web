@@ -25,3 +25,9 @@ export async function createResource(data: any) {
   const res = await get('movie/resource/', data)
   return res
 }
+
+// 编辑影片资源
+export async function editFlim(id: any, data: any) {
+  const res = await put(`/movie/resource/${id}`, data)
+  return res
+}
