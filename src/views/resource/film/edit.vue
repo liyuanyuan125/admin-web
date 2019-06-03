@@ -35,7 +35,7 @@
           <Button> 取消</Button>
       </div>
     </Form>
-    
+
   </div>
 </template>
 
@@ -43,19 +43,23 @@
 import {Component, Prop} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { relevanceFilm, createResource } from '@/api/resourceFilm'
-import Upload from '@/components/Upload.vue'
+import Uploader from '@/util/Uploader'
 
-@Component({
-  components: {
-    Upload
-  }
+const uploader = new Uploader({
+  filePostUrl: '/file/miscs',
+  fileFieldName: 'file',
 })
+
+@Component
 export default class Main extends ViewBase {
   @Prop({ type: String, default: '*' }) accept!: string
+
   form: any = {
-    file: '',
+    // file: '',
     movieId: ''
   }
+
+  file: File | null = null
 
   filmList = []
 
@@ -67,6 +71,7 @@ export default class Main extends ViewBase {
     { title: '已占用数量', key: 'usedQuantity', align: 'center'},
     { title: '剩余可用数量', key: 'remainingQuantity', align: 'center'},
   ]
+
   dataList = []
 
   // get rule() {
@@ -84,14 +89,12 @@ export default class Main extends ViewBase {
     this.editID = this.$route.params.id
     this.relevanceFilm()
   }
+
   onChange(ev: Event) {
     const input = ev.target as HTMLInputElement
-    const files = input.files
-    this.form.file = files
-    // if (files == null || files.length === 0) {
-    //   return
-    // }
+    this.file = input.files && input.files[0]
   }
+
   async relevanceFilm() {
     try {
       const { data: {items} } = await relevanceFilm({
@@ -103,10 +106,20 @@ export default class Main extends ViewBase {
       this.handleError(ex)
     }
   }
+
   // 提交数据
-  async handleSubmit(form: any) {
+  async handleSubmit() {
+    if (this.file == null) {
+      // TODO: 如果文件是必选的，提示选择文件
+      return
+    }
+
+    // TODO: 加 loading 等操作
+
     try {
-      const { data} = await createResource(this.form)
+      const data = await uploader.upload(this.file, { movieId: 88888 })
+      debugger
+      // const { data} = await createResource(this.form)
       // this.$router.push({name: 'resource-film-index'})
     } catch (ex) {
       this.handleError(ex)
