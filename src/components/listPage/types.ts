@@ -52,7 +52,7 @@ const innateTypeMap: MapType<Component> = {
       },
       format: {
         type: String,
-        default: 'yyyyMMdd'
+        default: 'yyyy/MM/dd'
       },
       separator: {
         type: String,

@@ -1,18 +1,18 @@
 <template>
-    <Select  v-model="inValue" placeholder="广告计划名称" filterable
-      clearable class="component" ref="ui">
-      <Option v-for="it in list" :key="it.id" :value="it.id"
-        :label="it.name" class="flex-box">
-        <span>{{it.name}}</span>
-      </Option>
-    </Select>
+  <Select v-model="inValue" placeholder="资源方公司" filterable
+    clearable class="component" ref="ui">
+    <Option v-for="it in list" :key="it.id" :value="it.id"
+      :label="it.name" class="flex-box">
+      <span>{{it.name}}</span>
+    </Option>
+  </Select>
 </template>
 
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import { queryList , planlist , company } from '@/api/orderSys'
+import { queryList } from '@/api/corpReal'
 import { clean } from '@/fn/object'
 
 @Component
@@ -20,23 +20,28 @@ export default class CinemaChainSelect extends ViewBase {
   /**
    * 值本身，可以使用 v-model 进行双向绑定
    */
-  @Prop({ type: Number, default: 0 }) value!: number
-  @Prop({ default: '' }) typeCode!: string
-  @Prop({ default: true }) type!: boolean
+  @Prop({ type: Object, default: {} }) value!: object
+  // @Prop({ default: 'resource' }) typeCode!: string
   /**
    * 提示文字
    */
-  @Prop({ type: String, default: '申请人公司名称' }) placeholder!: string
-  @Prop({ type: Boolean, default: true }) clearable!: boolean
+  @Prop({ type: String, default: '公司列表' }) placeholder!: string
+  // @Prop({ default: 0 }) approveStatus!: number
+  // @Prop({ type: Boolean, default: true }) clearable!: boolean
 
-  inValue: number = this.value
+  inValue: any = this.value
 
-  list: any[] = []
+  list: any = []
 
   async mounted() {
     try {
-      const plandata = await planlist({pageSize: 100000})
-      this.list = plandata.data.items
+      const { data } =  await queryList(clean({
+        pageSize: 888888,
+        status: 1,
+        typeCode: 'resource'
+      }))
+      const list: any[] = data.items || []
+      this.list = list
     } catch (ex) {
       this.handleError(ex)
     }

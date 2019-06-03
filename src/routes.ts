@@ -733,10 +733,10 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     }
   },
-   // 退款订单添加 - kol
+   // 退款订单添加/详情 - kol
   {
-    path: '/order/refund/detail',
-    name: 'order-refund/detail',
+    path: '/order/refund/detail/:id/:order/:status',
+    name: 'order-refund-detail',
     component: () => import('./views/order/refund/detail.vue'),
     meta: {
       authKey: ''
@@ -798,7 +798,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   },
   // 映前广告计划 - 详情
   {
-    path: '/order/beforeplan/detail',
+    path: '/order/beforeplan/detail/:id/:status',
     name: 'order-beforeplan-detail',
     component: () => import('./views/order/beforeplan/detail.vue'),
     meta: {
@@ -814,9 +814,9 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     }
   },
-  // 映前广告监播 - 列表
+  // 映前广告监播 - 列表详情
   {
-    path: '/order/supervision/detail',
+    path: '/order/supervision/detail/:id',
     name: 'order-supervision-detail',
     component: () => import('./views/order/supervision/detail.vue'),
     meta: {
