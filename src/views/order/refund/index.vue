@@ -140,13 +140,13 @@ export default class Main extends ViewBase {
       { title: '退款单编号', slot: 'refundNo', width: 100 },
       { title: '订单编号', slot: 'orderNo', width: 100 },
       { title: '项目名称', key: 'projectName'  },
-      { title: '公司ID', key: 'companyId', width: 100 },
+      { title: '公司ID', key: 'companyId', width: 80 },
       { title: '公司名称', key: 'companyName' },
       { title: '平台', key: 'projectName', width: 100 },
       { title: '下单时间', key: 'placeOrderTime', editor: 'dateTime', width: 135 },
       { title: '退款金额', key: 'refundFee', width: 100 },
       { title: '已支付金额', key: 'payFee', width: 100 },
-      { title: '退款单状态', key: 'refundStatus', width: 100 , editor: 'enum'},
+      { title: '退款单状态', key: 'refundStatus', width: 80 , editor: 'enum'},
       { title: '操作', slot: 'action', width: 100 }
     ] as ColumnExtra[]
   }

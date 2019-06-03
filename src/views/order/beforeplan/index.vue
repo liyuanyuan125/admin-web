@@ -31,7 +31,7 @@ import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import planList from './filename.vue'
 import CompanyList from './fileplan.vue'
-import videoList from '../supervision/videoList.vue'
+import videoList from './videoList.vue'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import moment from 'moment'
 

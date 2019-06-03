@@ -27,7 +27,7 @@
         <Col :span='12'></Col>
       </Row>
       <Row>
-        <Col :span='12'>创建时间&nbsp;：&nbsp;{{listitem.applyTime.split('T')[0] +' '+ listitem.applyTime.split('T')[1].split('.')[0]}}</Col>
+        <Col :span='12'>创建时间&nbsp;：&nbsp;{{applyTime}}</Col>
         <Col :span='12'>创建人&nbsp;：&nbsp;{{listitem.applyName}}</Col>
       </Row>
     </div>
@@ -78,7 +78,7 @@
             </FormItem>
           </Col>
           <Col :span='7'>
-              <Button type="primary" @click="dataFormSubmit">保存并发送方案至广告主</Button>
+              <Button type="primary" @click="save()">保存并发送方案至广告主</Button>
             <Button style='margin-left: 30px;' @click="back">取消</Button>
           </Col>
       </Form>
@@ -93,7 +93,7 @@ import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { itemlist , delfilm , beizhu  , closeid  } from '@/api/beforeplan'
+import { itemlist , delfilm , beizhu  , closeid , save  } from '@/api/beforeplan'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import close from './closeorder.vue'
@@ -161,41 +161,87 @@ export default class Main extends ViewBase {
   // 电影类型
   tags: any = []
 
+  // 申请人
+  applyTime: any = ''
+  // 备注
+  remarks: any = []
+
   // 投放影片
   itemlist: any = []
-  itemcolumns = [
-    { title: '影片名称', key: 'movieName', align: 'center' },
-    {
-      title: '上映日期',
-      key: 'beginDate',
-      align: 'center',
-      render: (hh: any, { row: { beginDate } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = moment(beginDate).format(timeFormat)
-        return <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
+  get itemcolumns() {
+    const data: any = [
+      { title: '影片名称', key: 'movieName', align: 'center' },
+      {
+        title: '上映日期',
+        key: 'beginDate',
+        align: 'center',
+        render: (hh: any, { row: { beginDate } }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          const html = moment(beginDate).format(timeFormat)
+          return <span class='datetime' v-html={html}></span>
+          /* tslint:enable */
+        }
+      },
+      {
+        title: '投放排期',
+        key: 'beginDate',
+        align: 'center',
+        render: (hh: any, { row: { beginDate , endDate } }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          const html = moment(beginDate).format(timeFormat)
+          const html2 = moment(endDate).format(timeFormat)
+          return <span class='datetime' >{html} ~ {html2}</span>
+          /* tslint:enable */
+        }
+      },
+    ]
+    const opernation = [
+       {
+        title: '操作',
+        key: 'status',
+        align: 'center',
+        width: 80,
+        slot: 'action'
       }
-    },
-    {
-      title: '投放排期',
-      key: 'beginDate',
-      align: 'center',
-      render: (hh: any, { row: { beginDate , endDate } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = moment(beginDate).format(timeFormat)
-        const html2 = moment(endDate).format(timeFormat)
-        return <span class='datetime' >{html} ~ {html2}</span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '操作',
-      slot: 'action',
-      align: 'center',
-    }
-  ]
+    ]
+    return this.$route.params.status == '0' || this.$route.params.status == '1' ||
+    this.$route.params.status == '2' ? [...data, ...opernation] : data
+  }
+  // itemcolumns = [
+  //   { title: '影片名称', key: 'movieName', align: 'center' },
+  //   {
+  //     title: '上映日期',
+  //     key: 'beginDate',
+  //     align: 'center',
+  //     render: (hh: any, { row: { beginDate } }: any) => {
+  //       /* tslint:disable */
+  //       const h = jsxReactToVue(hh)
+  //       const html = moment(beginDate).format(timeFormat)
+  //       return <span class='datetime' v-html={html}></span>
+  //       /* tslint:enable */
+  //     }
+  //   },
+  //   {
+  //     title: '投放排期',
+  //     key: 'beginDate',
+  //     align: 'center',
+  //     render: (hh: any, { row: { beginDate , endDate } }: any) => {
+  //       /* tslint:disable */
+  //       const h = jsxReactToVue(hh)
+  //       const html = moment(beginDate).format(timeFormat)
+  //       const html2 = moment(endDate).format(timeFormat)
+  //       return <span class='datetime' >{html} ~ {html2}</span>
+  //       /* tslint:enable */
+  //     }
+  //   },
+  //   {
+  //     title: '操作',
+  //     slot: 'action',
+  //     align: 'center',
+  //   }
+  // ]
   mounted() {
     this.search()
   }
@@ -252,6 +298,9 @@ export default class Main extends ViewBase {
       this.listitem = data.item
       this.start = moment(this.listitem.beginDate).format(timeFormat)
       this.end = moment(this.listitem.endDate).format(timeFormat)
+      this.applyTime = this.listitem.applyTime.split('T')[0]
+      + ' ' + this.listitem.applyTime.split('T')[1].split('.')[0]
+      // this.remarks = this.listitem.remarks || []
       this.logList = data.logList
       this.films = data.item.deliveryMovies
       this.cinemaGradeList = data.cinemaGradeList
@@ -288,6 +337,16 @@ export default class Main extends ViewBase {
       const res = await beizhu (this.$route.params.id, this.databeizhu)
       toast('成功')
       this.$router.go(0)
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
+  // 保存方案
+  async save() {
+    try {
+      const res = await save (this.$route.params.id)
+      this.$router.go(-1)
     } catch (ex) {
       this.handleError(ex)
     }
