@@ -27,7 +27,7 @@ export default class CinemaChainSelect extends ViewBase {
   /**
    * 值本身，可以使用 v-model 进行双向绑定
    */
-  @Prop({ type: Number, default: 0 }) value!: number
+  // @Prop({ type: any, default: null }) value!: any
   @Prop({ default: '' }) typeCode!: string
   @Prop({ default: true }) type!: boolean
   /**
@@ -36,7 +36,7 @@ export default class CinemaChainSelect extends ViewBase {
   @Prop({ type: String, default: '申请人公司名称' }) placeholder!: string
   @Prop({ type: Boolean, default: true }) clearable!: boolean
 
-  inValue: number = this.value
+  inValue: any = null
 
   list: any[] = []
 

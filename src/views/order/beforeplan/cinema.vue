@@ -46,7 +46,7 @@
       </div>
       <singDlg ref="addOrUpdate" v-if='addOrUpdateVisible' @done="dlgEditDone" />
       <changeDlg ref="change" v-if='changeVisible' @done="dlgEditDone" />
-      <AddCinemaModel v-if="type != 'detail'" ref="addCinemaModel" :cinemaend = "incinematype" :addData="inValue" @done="columndata" />
+      <AddCinemaModel v-if="type != 'detail'" ref="addCinemaModel" :cinemaend = "incinematype" :addData="inValue" @done="dlgEditDone" />
     </div>
     </div>
   </div>
@@ -234,7 +234,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       }))
       this.reslist = data.items
     } catch (ex) {
-      this.handleError(ex)
+      // this.handleError(ex)
     } finally {
       this.loading = false
     }

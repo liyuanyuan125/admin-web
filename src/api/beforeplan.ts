@@ -121,8 +121,15 @@ export async function filmList(query: any) {
 
 // 添加影片
 export async function addfilm(id: any , query: any) {
-  const data = await get(`/xadvert/v1/plans/${id}/movies` , query)
+  const data = await post(`/xadvert/v1/plans/${id}/movies` , query)
   return data
 }
+
+// 保存方案
+export async function save(id: any) {
+  const data = await post(`/xadvert/v1/plans/${id}/save`)
+  return data
+}
+
 
 
