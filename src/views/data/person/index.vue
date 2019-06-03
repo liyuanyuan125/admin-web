@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ListPage
+      <ListPage
       :fetch="fetch"
       :filters="filters"
       :enums="enums"
@@ -14,13 +14,14 @@
             <Button @click="handleDownShelf()">批量下架</Button>
         </div>
       </template>
-      <template slot="operate" slot-scope="{row}">
-        <span @click="$router.push({name: 'data-film-edit', params: {id: row.id}})">编辑</span>
-        <span @click="uploadCurrent">刷新</span>
-        <span @click="handleUpShelf(row.id)">上架</span>
-        <span @click="handleDownShelf(row,id)">下架</span>
-        <span>浏览前台</span>
-        <span @click="$router.push({name: 'data-film-detail', params: {id: row.id}})">查看</span>
+      <template slot="action" slot-scope="{row}">
+        <div class="operate-btn">
+          <span @click="$router.push({name: 'data-person-edit', params: {id: row.id}})" >编辑</span>
+          <span v-if="row.status == 1 || row.status == 3" @click="handleUpShelf(row.id)">上架</span>
+          <span v-if="row.status == 2" @click="handleDownShelf(row,id)">下架</span>
+          <span @click="$router.push({name: 'data-person-detail', params: {id: row.id}})">查看</span>
+          <span @click="uploadCurrent">刷新</span>
+        </div>
       </template>
     </ListPage>
     <getFilmDlg v-model="visFilmid" v-if="visFilmid.visible" @input="filmonOK"></getFilmDlg>
@@ -32,21 +33,23 @@ import {Component} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { confirm, info, alert } from '@/ui/modal.ts'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { queryList } from '@/api/film-ed'
+import { queryList, personStatus } from '@/api/person'
+import Country from './country.vue'
 import getFilmDlg from './components/getFilmDlg.vue'
 
-
 @Component({
-  components: {
-    ListPage,
-    getFilmDlg
-  }
+    components: {
+        ListPage,
+        Country,
+        getFilmDlg
+    }
 })
+
 export default class Main extends ViewBase {
   fetch = queryList
   filters: Filter[] = [
     {
-      name: 'ids',
+      name: 'id',
       defaultValue: '',
       type: 'input',
       width: 140,
@@ -57,39 +60,45 @@ export default class Main extends ViewBase {
       defaultValue: '',
       type: 'input',
       width: 140,
-      placeholder: '影片名称'
+      placeholder: '中文名'
     },
-    // {
-    //   name: 'types',
-    //   defaultValue: '',
-    //   type: 'select',
-    //   width: 140,
-    //   placeholder: '影片类型',
-    //   enumKey: 'type',
-    // },
     {
-      name: 'categoryCode',
+      name: 'nameEn',
+      defaultValue: '',
+      type: 'input',
+      width: 140,
+      placeholder: '英文名'
+    },
+    {
+      name: 'profession',
       defaultValue: '',
       type: 'select',
       width: 140,
-      placeholder: '分类',
-      enumKey: 'categoryList',
+      placeholder: '职业状态',
+      enumKey: 'professions'
     },
     {
-      name: 'releaseStatus',
-      defaultValue: '',
-      type: 'select',
-      width: 140,
-      placeholder: '上映状态',
-      enumKey: 'releaseStatusList',
-    },
-    {
-      name: 'controlStatus',
+      name: 'status',
       defaultValue: '',
       type: 'select',
       width: 140,
       placeholder: '状态',
-      enumKey: 'controlStatusList',
+      enumKey: 'status'
+    },
+    {
+      name: 'gender',
+      defaultValue: '',
+      type: 'select',
+      width: 140,
+      placeholder: '性别',
+      enumKey: 'genders'
+    },
+    {
+      name: 'nationality',
+      defaultValue: '',
+      type: Country,
+      width: 140,
+      placeholder: '国籍'
     },
     {
       name: 'pageIndex',
@@ -100,37 +109,32 @@ export default class Main extends ViewBase {
       defaultValue: 20
     }
   ]
+
   enums = [
-    'categoryList',
-    'releaseStatusList',
-    'controlStatusList'
+     'professions',
+     'status',
+     'genders'
   ]
+
+  get columns() {
+     return [
+        {type: 'selection', width: 50},
+        { key: 'id', title: '影人id', align: 'center'},
+        { key: 'name', title: '中文名', align: 'center'},
+        { key: 'nameEn', title: '英文名', align: 'center'},
+        { title: '性别', key: 'gender', align: 'center', editor: 'enum'}, // editor: 'enum'
+        { key: 'nationality', title: '国籍', align: 'center', editor: 'enum'},
+        { key: 'professions', title: '主要职业', align: 'center'},
+        { key: 'status', title: '状态', align: 'center', editor: 'enum'},
+        { slot: 'action', title: '操作', align: 'center'},
+     ] as ColumnExtra[]
+  }
 
   // select ids
   idsList: any[] = []
   statusIds: any[] = []
 
-  get columns() {
-    return [
-      {type: 'selection', width: 50},
-      {title: '影片id', key: 'id', minWidth: 85},
-      {title: '专资id', key: 'specialId', minWidth: 85},
-      {title: '影片名称', key: 'englishName', minWidth: 85},
-      {title: '上映时间', key: 'openTime', minWidth: 85, editor: 'dateTime'},
-      {title: '今日票房', key: 'todayBox', minWidth: 85},
-      {title: '累计票房', key: 'sumBox', minWidth: 85},
-      {title: '演员', key: 'performers', minWidth: 85},
-      {title: '导演', key: 'director', minWidth: 85},
-      {title: '产地', key: 'fromPlace', minWidth: 85},
-      {title: '类型', key: 'type', minWidth: 85},
-      {title: '分类', key: 'categoryCode', minWidth: 85, editor: 'enum'},
-      {title: '上映状态', key: 'releaseStatus', minWidth: 85, editor: 'enum'},
-      {title: '状态', key: 'controlStatus', minWidth: 85, editor: 'enum'},
-      {title: '操作', slot: 'operate', minWidth: 120},
-    ] as ColumnExtra[]
-  }
-
-  // 抓取票神影片
+  // 抓取票神
   visFilmid = {
     visible: false
   }
@@ -139,7 +143,7 @@ export default class Main extends ViewBase {
     this.idsList = ids.map( item => item.id)
     this.statusIds = ids.map( item => item.status)
   }
-  // 上架
+  // 上架 (上架的是状态置为已发布)
   async handleUpShelf(id?: any[]) {
     if (!this.idsList.length) {
       await alert('请选择上架数据', {
@@ -154,8 +158,17 @@ export default class Main extends ViewBase {
     // ids = [] 后台传入参数
     const ids = id ? Array.of(id) : this.idsList
     // 接口操作
+    try {
+      const { data} = await personStatus({
+        ids,
+        status: 1
+      });
+      (this.$refs.listPage as any).update()
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
-  // 下架
+  // 下架(把状态置为  待发布)
   async handleDownShelf(id?: any[]) {
     if (!this.idsList.length) {
       await alert('请选择下架数据', {
@@ -170,6 +183,15 @@ export default class Main extends ViewBase {
     // ids = [] 后台传入参数
     const ids = id ? Array.of(id) : this.idsList
     // 接口操作
+    try {
+      const { data} = await personStatus({
+        ids,
+        status: 2
+      });
+      (this.$refs.listPage as any).update()
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
 
   // 刷新
@@ -177,7 +199,7 @@ export default class Main extends ViewBase {
     // 刷新数据接口成功
     await info('影片信息已经刷新，10分钟后查看刷新后的信息。', {title: '刷新'})
   }
-  async handleGetFilm() {
+  handleGetFilm() {
     this.visFilmid.visible = true
   }
   filmonOK(val: any) {
@@ -185,13 +207,12 @@ export default class Main extends ViewBase {
     (this.$refs.listPage as any).update()
   }
 }
-
 </script>
 <style lang='less' scoped>
-.table-btn {
-  padding: 10px 0;
-  .ivu-btn {
-    margin-right: 15px;
+.operate-btn {
+  span {
+    padding: 5px 6px;
+    cursor: pointer;
   }
 }
 </style>

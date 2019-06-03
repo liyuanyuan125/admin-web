@@ -293,13 +293,14 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       title: '影厅列表',
     }
   },
-
+  // 基础数据 - 影片管理（修改原有功能）
   {
     path: '/data/film/',
     name: 'data-film',
     component: () => import('./views/data/film/index.vue'),
     meta: {
-      authKey: ''
+      authKey: '',
+      title: '影片管理'
     }
   },
   {
@@ -307,9 +308,54 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'data-film-detail',
     component: () => import('./views/data/film/detail.vue'),
     meta: {
-      authKey: ''
+      authKey: '',
+      title: '详情'
     }
   },
+  {
+    path: 'data/film/edit/:id',
+    name: 'data-film-edit',
+    component: () => import('./views/data/film/edit.vue'),
+    meta: {
+      authKey: '',
+      title: '编辑'
+    }
+  },
+
+  // 基础数据 - 影人管理
+  {
+    path: 'data/person',
+    name: 'data-person',
+    component: () => import('./views/data/person/index.vue'),
+    meta: {
+      authKey: '',
+      title: '影人管理'
+    }
+  },
+
+  // 基础数据 - 影人管理 - 详情
+  {
+    path: 'data/person/detail/:id',
+    name: 'data-person-detail',
+    component: () => import('./views/data/person/detail.vue'),
+    meta: {
+      authKey: '',
+      title: '查看'
+    }
+  },
+
+  // 基础数据 - 影人管理 - 编辑
+  {
+    path: 'data/person/edit/:id',
+    name: 'data-person-edit',
+    component: () => import('./views/data/person/edit.vue'),
+    meta: {
+      authKey: '',
+      title: '编辑'
+    }
+  },
+
+
   {
     path: '/data/kol-account/',
     name: 'kol-account-list',
@@ -603,17 +649,38 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   // 影片资源管理 新建 和编辑
   {
     path: '/resource/film/edit/:id?',
-    name: 'resource-film-edit',
+    name: 'resource-film-index-edit',
     component: () => import('./views/resource/film/edit.vue'),
     meta: {
       authKey: '',
-      title: '新建',
-      // editFunction(route: Route) {
-      //   const id = parseInt(route.params.id, 10) || 0
-      //   return id > 0 ? '编辑' : '新建'
-      // }
+      title({params}) {
+        return params.id as any > 0 ? '编辑' : '新建'
+      }
     }
   },
+  // 影片资源管理 - 查看 和 审核
+  {
+    path: '/resource/film/detail/:id/:audit?',
+    name: 'resource-film-index-detail',
+    component: () => import('./views/resource/film/detail.vue'),
+    meta: {
+      authKey: '',
+      title({params}) {
+        return params.audit ? '审核' : '查看'
+      }
+    }
+  },
+
+  // 影片资源管理 - 审核
+  // {
+  //   path: '/resource/film/audit',
+  //   name: 'resource-film-index-audit',
+  //   component: () => import('./views/resource/film/audit.vue'),
+  //   meta: {
+  //     authKey: '',
+  //     title: '审核'
+  //   }
+  // },
 
   {
     path: '/system/setup',

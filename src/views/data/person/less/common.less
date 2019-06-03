@@ -1,0 +1,51 @@
+.base-mess {
+    font-size: 14px;
+    border: solid 1px #ededed;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    background: #fff;
+    .title {
+      font-size: 14px;
+      padding-bottom: 20px;
+    }
+    .ivu-col {
+      p {
+        padding-bottom: 15px;
+        display: flex;
+        label {
+          display: block;
+          width: 90px;
+        }
+      }
+    }
+    .hot-word {
+      display: -webkit-box;
+    }
+  }
+  /deep/ .ivu-form {
+    .ivu-form-item-label {
+        font-size: 14px;
+    }
+    .ivu-input {
+        width: 340px;
+    }
+}
+.brand-table {
+    width: 362px;
+    margin-top: 15px;
+    /deep/ .ivu-table {
+        background: none;
+        &::before {
+            background-color: none;
+        }
+    }
+    .del-col {
+        cursor: pointer;
+        color: #2d8cf0;
+    }
+}
+.brand-select {
+    /deep/ .ivu-select {
+        margin-right: 10px;
+    }
+}
