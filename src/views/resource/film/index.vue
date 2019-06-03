@@ -7,16 +7,18 @@
       :columns="columns"
       @selectionChange="selectionChange"
       ref="listPage">
-      <template slot="acts">
+      <template slot="acts-2">
         <div class="table-btn">
-          <Button  type="success" icon="md-add-circle" @click="handleAudit">批量审核</Button>
-          <Button  type="success" icon="md-add-circle" @click="$router.push({name: 'resource-film-index-edit'})">新建影片资源</Button>
+          <Button  type="primary" class="btn" @click="handleAudit">批量审核</Button>
+          <Button  type="primary"  @click="$router.push({name: 'resource-film-index-edit'})">新建影片资源</Button>
         </div>
       </template>
       <template slot="operate" slot-scope="{row}">
-        <span @click="$router.push({name: 'resource-film-index-detail', params: {id: row.id, audit: 1}})">审核</span>
-        <span @click="$router.push({name: 'resource-film-index-edit', params: {id: row.id}})">编辑</span>
-        <span @click="$router.push({name: 'resource-film-index-detail', params: {id: row.id}})">查看</span>
+        <div class="operate-btn">
+          <span v-if="row.status == 1" @click="$router.push({name: 'resource-film-index-detail', params: {id: row.id, audit: 1}})">审核</span>
+          <span @click="$router.push({name: 'resource-film-index-edit', params: {id: row.id}})">编辑</span>
+          <span @click="$router.push({name: 'resource-film-index-detail', params: {id: row.id}})">查看</span>
+        </div>
       </template>
     </ListPage>
     
@@ -36,7 +38,7 @@ import {Component, Watch} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { confirm, info } from '@/ui/modal.ts'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { queryList } from '@/api/cinema'
+import { queryList } from '@/api/resourceFilm'
 
 @Component({
   components: {
@@ -54,27 +56,19 @@ export default class Main extends ViewBase {
       placeholder: '影院名称'
     },
     {
-      name: 'id',
+      name: 'govId',
       defaultValue: '',
       type: 'input',
       width: 140,
-      placeholder: '影院专资id'
+      placeholder: '影片专资id'
     },
     {
-      name: 'pricingLevelCode',
+      name: 'releaseStatus',
       defaultValue: '',
       type: 'select',
       width: 140,
       placeholder: '影片上映情况',
-      enumKey: 'pricingLevelCode'
-    },
-    {
-      name: 'controlStatus',
-      defaultValue: '',
-      type: 'select',
-      width: 140,
-      placeholder: '资源形式',
-      enumKey: 'controlStatusList'
+      enumKey: 'releaseStatusList'
     },
     {
       name: 'status',
@@ -95,18 +89,18 @@ export default class Main extends ViewBase {
   ]
 
   enums = [
-    'pricingLevelList', // 影片客厅
-    'controlStatusList', // 上下架
+    'releaseStatusList', // 影片上映情况
     'statusList',
   ]
 
   get columns() {
     return [
       {type: 'selection', width: 50},
-      {title: '影片名称', key: 'shortName', minWidth: 150},
+      {title: '影片名称', key: 'name', minWidth: 150},
       {title: '影片专资id', key: 'id', minWidth: 100},
-      {title: '影片上映情况', key: 'pricingLevelCode', minWidth: 100, editor: 'enum'},
-      {title: '资源形式', key: 'controlStatus', minWidth: 80, editor: 'enum'},
+      {title: '影片上映情况', key: 'releaseStatus', minWidth: 100, editor: 'enum'},
+      {title: '海报资源地址', key: 'materialUrl', minWidth: 80},
+      {title: '电子券资源总数量', key: '', minWidth: 80},
       {title: '创建时间', key: 'createTime', minWidth: 100, editor: 'dateTime'},
       {title: '状态', key: 'status', minWidth: 100, editor: 'enum'},
       {title: '操作', slot: 'operate', minWidth: 120},
@@ -143,5 +137,16 @@ export default class Main extends ViewBase {
 .label-dese {
   display: block;
   width: 40px;
+}
+.table-btn {
+  .btn {
+    margin-right: 15px;
+  }
+}
+.operate-btn {
+  span {
+    cursor: pointer;
+    margin: 0 6px;
+  }
 }
 </style>

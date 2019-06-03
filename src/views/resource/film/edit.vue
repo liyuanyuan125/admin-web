@@ -1,20 +1,21 @@
 <template>
   <div>
-    <Form class="create-form form-item" ref="refform" :model="form" :rules="rule" :label-width="120">
+    <Form class="create-form form-item" :accept="accept" ref="refform"
+    :model="form" :label-width="120">
       <div class="modal-item">
-        <FormItem label="选择影片:" prop="cinemaName">
-          <Select v-model="form.cinemaName" filterable remote :remote-method="remoteMethod" :loading="loading" placeholder="请选择资源关联的影片" >
-            <option v-for="item in filmList" :key="item.key" :value="item.key">{{item.text}}</option>
+        <FormItem label="选择影片1:" >
+          <Select v-model="form.movieId" filterable clearable  placeholder="请选择资源关联的影片" >
+            <Option v-for="item in filmList" :key="item.id" :value="item.id">{{item.companyName}}</Option>
           </Select>
         </FormItem>
       </div>
       <div class="modal-item">
           <h2>图片/视频类无聊</h2>
           <FormItem label="物料下载地址：">
-            <Input v-model="form.downUrl" placeholder="下载地址" class="input"/>
+            <Input v-model="form.materialUrl" placeholder="下载地址" class="input"/>
           </FormItem>
           <FormItem label="资源使用说明：">
-            <Input v-model="form.desc" type="textarea" :rows="4" placeholder="使用说明" />
+            <Input v-model="form.materialDescription" type="textarea" :rows="4" placeholder="使用说明" />
           </FormItem>
       </div>
       <div class="modal-item">
@@ -23,14 +24,14 @@
             <Table :columns="columns" :data="dataList" border stripe disabled-hover size="small" class="table" ></Table>
           </FormItem>
           <FormItem label="导入电子券：">
-            上传execl
+            <input type="file" @change="onChange" />
           </FormItem>
           <FormItem label="资源使用说明：">
-            <Input v-model="form.desc" type="textarea" :rows="4" placeholder="使用说明" />
+            <Input v-model="form.couponDescription" type="textarea" :rows="4" placeholder="使用说明" />
           </FormItem>
       </div>
       <div class="batch-btn text-center">
-          <Button type="primary" class="btn" @click="handleSubmit('form')"> 提交</Button>
+          <Button type="primary" class="btn" @click="handleSubmit()"> 提交</Button>
           <Button> 取消</Button>
       </div>
     </Form>
@@ -39,21 +40,24 @@
 </template>
 
 <script lang='ts'>
-import {Component} from 'vue-property-decorator'
+import {Component, Prop} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-@Component
-export default class Main extends ViewBase {
-  form = {
-    cinemaName: ''
-  }
-  loading = false
+import { relevanceFilm, createResource } from '@/api/resourceFilm'
+import Upload from '@/components/Upload.vue'
 
-  filmList = [
-    {key: 1, text: '影片1'},
-    {key: 2, text: '影片2'},
-    {key: 3, text: '影片3'},
-    {key: 4, text: '影片4'},
-  ]
+@Component({
+  components: {
+    Upload
+  }
+})
+export default class Main extends ViewBase {
+  @Prop({ type: String, default: '*' }) accept!: string
+  form: any = {
+    file: '',
+    movieId: ''
+  }
+
+  filmList = []
 
   editID = ''
 
@@ -65,31 +69,48 @@ export default class Main extends ViewBase {
   ]
   dataList = []
 
-  get rule() {
-    return {
-      cinemaName: [
-        {
-          required: true,
-          message: '请选择',
-          trigger: 'blur',
-        }
-      ]
-    }
-  }
+  // get rule() {
+  //   return {
+  //     movieId: [
+  //       {
+  //         required: true,
+  //         message: '请选择',
+  //         trigger: 'change',
+  //       }
+  //     ]
+  //   }
+  // }
   mounted() {
     this.editID = this.$route.params.id
+    this.relevanceFilm()
   }
-  // 模糊查询关联影片
-  remoteMethod(query: string) {
-    if (query != '') {
-      this.loading = true
-      // 模糊查询 从新赋值给filmList
+  onChange(ev: Event) {
+    const input = ev.target as HTMLInputElement
+    const files = input.files
+    this.form.file = files
+    // if (files == null || files.length === 0) {
+    //   return
+    // }
+  }
+  async relevanceFilm() {
+    try {
+      const { data: {items} } = await relevanceFilm({
+        pageIndex: 1,
+        pageSize: 999999
+      })
+      this.filmList = items
+    } catch (ex) {
+      this.handleError(ex)
     }
   }
-
   // 提交数据
   async handleSubmit(form: any) {
-    const validate = await (this.$refs.refform as any).validate()
+    try {
+      const { data} = await createResource(this.form)
+      // this.$router.push({name: 'resource-film-index'})
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
 }
 

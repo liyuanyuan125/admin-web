@@ -1,26 +1,20 @@
 <template>
   <div>
-    <Form class="create-form form-item" ref="refform" :model="form" :label-width="120">
+    <Form class="create-form form-item" :label-width="120">
       <div class="modal-item">
-        <FormItem label="选择影片:" prop="cinemaName">xxxxxxx</FormItem>
+        <FormItem label="选择影片:" prop="cinemaName">{{detailList.name}}</FormItem>
       </div>
       <div class="modal-item">
           <h2>图片/视频类无聊</h2>
-          <FormItem label="物料下载地址：">
-            <Input v-model="form.downUrl" readonly placeholder="下载地址" class="input"/>
-          </FormItem>
-          <FormItem label="资源使用说明：">
-            <Input v-model="form.desc" readonly type="textarea" :rows="4" placeholder="使用说明" />
-          </FormItem>
+          <FormItem label="物料下载地址：">{{detailList.materialUrl}} </FormItem>
+          <FormItem label="资源使用说明：">{{detailList.materialDescription}}</FormItem>
       </div>
       <div class="modal-item">
           <h2>导入券资源</h2>
           <FormItem label="已有的电子券">
             <Table :columns="columns" :data="dataList" border stripe disabled-hover size="small" class="table" ></Table>
           </FormItem>
-          <FormItem label="资源使用说明：">
-            <Input v-model="form.desc" type="textarea" readonly :rows="4" placeholder="使用说明" />
-          </FormItem>
+          <FormItem label="资源使用说明："></FormItem>
       </div>
       <div class="modal-item">
           <h2>审核意见</h2>
@@ -48,11 +42,13 @@
 <script lang='ts'>
 import {Component} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
+import { queryDetail } from '@/api/resourceFilm'
+
 @Component
 export default class Main extends ViewBase {
-  form = {
-    desc: 'xxxxxxxxxxxxxxxxxxx'
-  }
+  // 详情id
+  detailId = ''
+  detailList: any = {}
 
   columns = [
     { title: '导入时间', key: 'importTime', align: 'center'},
@@ -80,8 +76,17 @@ export default class Main extends ViewBase {
 
   mounted() {
     this.isAudit = this.$route.params.audit
+    this.detailId = this.$route.params.id
+    this.queryDetailList()
   }
-
+  async queryDetailList() {
+    try {
+      const { data } = await queryDetail(this.detailId)
+      this.detailList = data
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
   handleSubmit() {}
 }
 
