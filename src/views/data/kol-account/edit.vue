@@ -373,53 +373,53 @@ export default class Main extends ViewBase {
   edit(dataForms: string) {
     (this.$refs[dataForms] as any).validate(async (valid: any) => {
       if (valid) {
-        if (this.cinematype == 1 && this.cinemas.length > 1) {
-          this.showError('因资源方类型为影院，因此仅能关联一家影院')
-          return
-        }
-        const route: any = this.$route.params.id || 0
-        let times: any = ''
-        const timesfomat = moment(this.item.validityPeriodDate)
-          .format(timeFormat)
-          .split('-')
-        times = Number(timesfomat[0] + timesfomat[1] + timesfomat[2])
-        !this.item.validityPeriodDate ? (times = '') : times
-        const oldQuery = {
-          ...this.item,
-          validityPeriodDate: times,
-          provinceId: Number(this.item.provinceId),
-          cityId: Number(this.item.cityId),
-          countyId: Number(this.item.countyId)
-        }
-        const query = clean(oldQuery)
-        const array = Object.keys(query).slice(2)
-        const newqQuery = slice(query, array)
-        const types: any = []
-        this.item.types.forEach((it: any) => {
-          it.typeCode &&
-            types.push({
-              ...it,
-              typeCategoryCode: it.typeCategoryCode ? it.typeCategoryCode : ''
-            })
-        })
-        try {
-          let data: any = {}
-          route == 0
-            ? (data = await addQuery({
-                ...newqQuery,
-                cinemas: this.item.typearr[1] ? this.cinemas : [],
-                types
-              }))
-            : (data = await setQuery(route, {
-                ...newqQuery,
-                cinemas: this.item.typearr[1] ? this.cinemas : [],
-                types
-              }))
-          toast(data.msg)
-          this.$router.go(-1)
-        } catch (ex) {
-          this.handleError(ex)
-        }
+        // if (this.cinematype == 1 && this.cinemas.length > 1) {
+        //   this.showError('因资源方类型为影院，因此仅能关联一家影院')
+        //   return
+        // }
+        // const route: any = this.$route.params.id || 0
+        // let times: any = ''
+        // const timesfomat = moment(this.item.validityPeriodDate)
+        //   .format(timeFormat)
+        //   .split('-')
+        // times = Number(timesfomat[0] + timesfomat[1] + timesfomat[2])
+        // !this.item.validityPeriodDate ? (times = '') : times
+        // const oldQuery = {
+        //   ...this.item,
+        //   validityPeriodDate: times,
+        //   provinceId: Number(this.item.provinceId),
+        //   cityId: Number(this.item.cityId),
+        //   countyId: Number(this.item.countyId)
+        // }
+        // const query = clean(oldQuery)
+        // const array = Object.keys(query).slice(2)
+        // const newqQuery = slice(query, array)
+        // const types: any = []
+        // this.item.types.forEach((it: any) => {
+        //   it.typeCode &&
+        //     types.push({
+        //       ...it,
+        //       typeCategoryCode: it.typeCategoryCode ? it.typeCategoryCode : ''
+        //     })
+        // })
+        // try {
+          // let data: any = {}
+          // route == 0
+          //   ? (data = await addQuery({
+          //       ...newqQuery,
+          //       cinemas: this.item.typearr[1] ? this.cinemas : [],
+          //       types
+          //     }))
+          //   : (data = await setQuery(route, {
+          //       ...newqQuery,
+          //       cinemas: this.item.typearr[1] ? this.cinemas : [],
+          //       types
+          //     }))
+          // toast(data.msg)
+          // this.$router.go(-1)
+        // } catch (ex) {
+        //   this.handleError(ex)
+        // }
       }
     })
   }
