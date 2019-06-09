@@ -10,6 +10,7 @@ build:
   image: $REGISTRY_ADDRESS/devops/nodejs/build
   stage: build
   only:
+    - develop
     - testing
     - release
   script:
@@ -28,6 +29,7 @@ package:
   variables:
     GIT_STRATEGY: none
   only:
+    - develop
     - testing
     - release
   script:
@@ -42,6 +44,7 @@ deploy:
     GIT_STRATEGY: none
   dependencies: []
   only:
+    - develop
     - testing
     - release
   script:
