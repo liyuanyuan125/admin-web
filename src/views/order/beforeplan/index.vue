@@ -7,13 +7,6 @@
       :columns="columns"
       ref="listPage"
     >
-    <template slot="id" slot-scope="{ row: { id , status } }">
-        <div class="row-acts">
-          <router-link
-            :to="{ name: 'order-beforeplan-detail', params: { id , status } }"
-          >{{id}}</router-link>
-        </div>
-      </template>
       <template slot="action" slot-scope="{ row: { id , status  } }">
         <div class="row-acts">
           <router-link
@@ -127,7 +120,7 @@ export default class Main extends ViewBase {
 
   get columns() {
     return [
-      { title: '计划id', slot: 'id', width: 65 },
+      { title: '计划id', key: 'id', width: 65 },
       { title: '计划名称', key: 'name', minWidth: 160 },
       { title: '广告主公司名称', key: 'companyName', width: 65 },
       { title: '广告片', key: 'videoName', minWidth: 160 },

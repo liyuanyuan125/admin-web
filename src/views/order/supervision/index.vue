@@ -55,7 +55,9 @@ import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
-import {confirm , warning , success, toast } from '@/ui/modal'
+import {confirm , warning , success, toast , info } from '@/ui/modal'
+import { numberify, numberKeys } from '@/fn/typeCast'
+import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import singDlg from './singDlg.vue'
 import singvideoDlg from './singvideoDlg.vue'
 import compangList from './companyList.vue'
@@ -76,7 +78,7 @@ const timeFormat = 'YYYY-MM-DD HH:mm:ss'
   }
 })
 export default class Main extends Mixins(ViewBase, UrlManager) {
-  query: any = {
+  query = {
     companyId: null,
     cinemaId: null,
     videoId: null,
@@ -148,6 +150,18 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     { title: '操作', width: '80',  slot: 'action', align: 'center' },
   ]
 
+  mounted() {
+    this.doSearch()
+    this.updateQueryByParam()
+  }
+
+  search() {
+    this.query.pageIndex = 1
+  }
+  reloadSearch() {
+    this.doSearch()
+  }
+
   onselect(row: any , selection: any) {
     this.ids = row.map((it: any) => {
       return it.id
@@ -168,23 +182,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     this.query.pageSize = val
     this.doSearch()
   }
-  search() {
-    this.query.pageIndex = 1
-  }
-  reloadSearch() {
-    this.doSearch()
-  }
 
-  mounted() {
-    this.doSearch()
-    this.updateQueryByParam()
-  }
+
 
   async doSearch() {
     if (this.loading) {
       return
     }
-    this.oldQuery = { ...this.query }
     this.updateUrl()
     this.loading = true
     try {
@@ -207,6 +211,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
 
   changeAll() {
+    if (this.ids.length == 0) {
+      info('请先选择')
+      return
+    }
     this.videoVisible = true
     this.$nextTick(() => {
       const myThis: any = this

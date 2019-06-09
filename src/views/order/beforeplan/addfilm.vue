@@ -8,24 +8,23 @@
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
        <div class="act-bar flex-box">
         <form class="form flex-1" @submit.prevent="search">
-          <LazyInput v-model="query.name" placeholder="影片名称" class="input"/>
+          <span style='margin-left: 7.5%;'>影片名称</span><LazyInput v-model="query.name" placeholder="影片名称" class="input"/>
         </form>
       </div>
-      <Table ref="selection" :columns="columns" @on-select="onselect" :data="tableDatauser" v-if="showDlg" :loading="loading"
+      <FormItem label="影片类型" prop="userIds">
+        <Checkbox  :indeterminate="indeterminate" :value="checkAll"  @click.prevent.native="handleCheckAll">不限</Checkbox>
+        <CheckboxGroup v-model="type" v-if="showDlg">
+          <Checkbox :label='it.key' v-for='it in typelist' :key='it.key' :value='it.key'>{{it.text}}</Checkbox>
+        </CheckboxGroup>
+      </FormItem>
+      <Table ref="selection" :columns="columns" @on-selection-change="onselect" :data="list" v-if="showDlg"  
         border stripe disabled-hover size="small" class="table"></Table>
-
       <div class="page-wrap" v-if="total > 0">
         <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
           show-total show-sizer show-elevator :page-size-opts="[5, 10]"
           @on-change="page => query.pageIndex = page"
           @on-page-size-change="pageSize => query.pageSize = pageSize"/>
       </div>
-      <FormItem label="影片类型" prop="userIds">
-        <Checkbox v-model="dataForm.admin"></Checkbox>
-        <CheckboxGroup v-model="dataForm.roleIds" v-if="showDlg">
-          <Checkbox :label='it.id' v-for='it in list' :key='it.id' :value='it.id'>{{it.name}}</Checkbox>
-        </CheckboxGroup>
-      </FormItem>
     </Form>
     <div slot="footer" class="dialog-footer">
       <Button @click="cancel">取消</Button>
@@ -47,42 +46,27 @@ import { toMap } from '@/fn/array'
 import { slice, clean } from '@/fn/object'
 import moment from 'moment'
 const timeFormat = 'YYYY-MM-DD'
-// const defQuery = {
-//   id: '',
-//   userName: '',
-//   loginName: '',
-//   pageIndex: 1,
-//   pageSize: 5,
-// }
+
 const dataForm = {
-  userIds: [],
-  roleIds: [],
-  appId: null,
-  admin: null
 }
 
 @Component
 export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
   query = {
     name: '',
-    startTime: null,
-    endTime: null,
     types: '',
     pageIndex: 1,
-    pageSize: 5,
+    pageSize: 10,
   }
-  loading = false
   showDlg = false
   id = 0
   total = 0
-  roles: any = []
-  // query = { ...defQuery }
-  // query: any = {}
-  oldQuery: any = {}
   list: any = []
-  userlist: any = []
-  data: any = {}
-  checkdata: any = {}
+  typelist: any = []
+  type: any = []
+  checkAll: any = false
+  indeterminate: any = true
+  ids: any = []
 
   columns = [
     {
@@ -98,10 +82,42 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
       //   /* tslint:enable */
       }
     },
-    { title: 'ID', key: 'id', align: 'center' },
-    { title: '账号', key: 'loginName', align: 'center' },
-    { title: '用户姓名', key: 'userName', align: 'center' },
-    { title: '邮箱', key: 'email', align: 'center' },
+    { title: '影片名称', key: 'nameCn', align: 'center' },
+    { title: '上映时间', key: 'releaseDate', align: 'center' ,
+      render: (hh: any, { row: { releaseDate } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        const a = String(releaseDate)
+        const html = a.slice(0 , 4) + '-' + a.slice(4 , 6) + '-' + a.slice(6 , 8)
+        return <span class='datetime' v-html={html}></span>
+        /* tslint:enable */
+      }
+    },
+    { title: '剧情类型', key: 'type', align: 'center',
+      render: (hh: any, { row: { type } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        return <span class='datetime' >{type + ' '}</span>
+        /* tslint:enable */
+      }
+    },
+    { title: '导演', key: 'director', align: 'center',
+      render: (hh: any, { row: { director } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        return <span class='datetime' >{director + ' '}</span>
+        /* tslint:enable */
+      }
+    },
+    { title: '主演', key: 'actor', align: 'center',
+      render: (hh: any, { row: { actor } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        return <span class='datetime' >{actor + ' '}</span>
+        /* tslint:enable */
+      }
+    },
+    { title: '想看人数', key: 'wish', align: 'center' },
   ]
 
   ruleValidate = {
@@ -110,34 +126,33 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
   dataForm: any = { ...dataForm }
 
   async init(id: number) {
-    this.dataForm.userIds = []
-    this.dataForm.roleIds = []
-    this.dataForm.admin = null
     this.showDlg = true
     this.id = id || 0
     ; (this.$refs.dataForm as any).resetFields()
-    // if (this.id) {
-    //   try {
-    //     //  获取用户详情
-    //     const { data } = await getappuserlist(this.$route.params.appId, this.id)
-    //     this.dataForm.admin = data.admin
-    //     this.dataForm.roleIds = data.roles
-    //     this.dataForm.userIds.push(data.id)
-    //     // this.query.pageIndex = 3
-    //     // console.log(this.$route)
-    //     //  实现默认勾选
-    //     // console.log((this.$refs.selection as any).$refs.tbody.objData[2]._isChecked)
-    //     // (this.$refs.selection).$refs.tbody.objData[1]._isChecked = true
-    //   } catch (ex) {
-    //     // this.handleError(ex)
-    //   } finally {
-    //   }
-    // }
     return this.id
   }
 
   onselect(row: any , selection: any) {
-    this.dataForm.userIds.push(selection.id)
+    this.ids = row.map((it: any) => {
+      return it.id
+    })
+  }
+
+  handleCheckAll() {
+    if (this.indeterminate) {
+        this.checkAll = false
+    } else {
+        this.checkAll = !this.checkAll
+    }
+    this.indeterminate = false
+
+    if (this.checkAll) {
+        this.type = (this.typelist || []).map((it: any ) => {
+          return it.key
+        })
+    } else {
+        this.type = []
+    }
   }
 
 
@@ -147,19 +162,8 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
   }
   // 表单提交
   async dataFormSubmit(dataForms: any) {
-    const valid = await (this.$refs.dataForm as any).validate()
-    if (!valid) {
-      return
-    }
-    const query = !this.id ? {
-      ...this.dataForm,
-    } : {
-      id: this.id,
-      ...this.dataForm,
-    }
-    const title = !this.id ? '添加' : '编辑'
     try {
-      // const res = !this.id ? await addList (query) : await setList (query)
+      const res =  await addfilm (this.$route.params.id , {movieId: this.ids , beginDate : 0 , endDate: 0 })
       toast('操作成功')
       this.showDlg = false
       this.$emit('done')
@@ -169,47 +173,11 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
     }
   }
 
-  get cachedMap() {
-    return {
-    }
-  }
-
-  get tableData() {
-    const cachedMap = this.cachedMap
-    const list = (this.list || []).map((it: any) => {
-      return {
-        ...it,
-      }
-    })
-    return list
-  }
-
-  get tableDatauser() {
-    const cachedMap = this.cachedMap
-    const userlist = (this.userlist || []).map((it: any) => {
-      if (this.id == it.id) {
-        return {
-          ...it,
-          _checked: true
-        }
-      } else {
-        return {
-          ...it
-        }
-      }
-    })
-    return userlist
-  }
-
   reset() {
     this.resetQuery()
   }
 
   mounted() {
-    // console.log(this.$refs.selection)
-    this.updateQueryByParam()
-    const { id } = this.$route.params
-    this.dataForm.appId = Number(this.$route.params.appId)
     this.doSearch()
   }
 
@@ -218,37 +186,26 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
   }
 
   async doSearch() {
-    if (this.loading) {
-      return
-    }
-    // this.oldQuery = { ...this.query }
-    this.loading = true
-    // const query = clean({ ...this.query })
+    this.query.types = this.type.join(',')
     try {
       // 获取角色详情
-      const { data: {
-        items: list,
-        totalCount: total,
-      } } = await filmList(this.query)
-      this.list = list
-      // //  获取用户详情
-      // const { data: {
-      //   items: userlist,
-      //   totalCount: total,
-      // } } = await userqueryList(query)
-      // this.userlist = userlist
-      this.total = total
+      const { data } = await filmList(this.query)
+      this.list = data.items
+      this.total = data.totalCount
+      this.typelist = data.movieTypeList
     } catch (ex) {
       this.handleError(ex)
     } finally {
-      this.loading = false
     }
   }
   @Watch('query', { deep: true })
   watchQuery() {
-    if (this.query.pageIndex == this.oldQuery.pageIndex) {
-      this.query.pageIndex = 1
-    }
+    this.doSearch()
+  }
+
+
+  @Watch('type', { deep: true })
+  watchType() {
     this.doSearch()
   }
 }

@@ -20,7 +20,7 @@
       </Row>
       <Row>
         <Col :span='12'>受众性别&nbsp;：&nbsp;男性为主</Col>
-        <Col v-for='(item , index) in listitem.deliveryGroups' :key='index' :span='12'>受众年龄&nbsp;：&nbsp;<span v-for='(it) in tags[1].values' :key='item.key' v-if='item.text == it.key'>{{it.text}}</span></Col>
+        <Col v-if='listitem.deliveryGroups != null' v-for='(item , index) in listitem.deliveryGroups' :key='index' :span='12'>受众年龄&nbsp;：&nbsp;<span v-for='(it) in tags[1].values' :key='item.key' v-if='item.text == it.key'>{{it.text}}</span></Col>
       </Row>
       <Row>
         <Col :span='12'>影片类型&nbsp;：&nbsp;悬疑 | 爱情 | 科幻</Col>
@@ -28,7 +28,7 @@
       </Row>
       <Row>
         <Col :span='12'>创建时间&nbsp;：&nbsp;{{applyTime}}</Col>
-        <Col :span='12'>创建人&nbsp;：&nbsp;{{listitem.applyName}}</Col>
+        <Col :span='12'>创建人&nbsp;：&nbsp;{{listitem.applyName == null ? '暂无创建人' : listitem.applyName}}</Col>
       </Row>
     </div>
     <div class='title'>投放影片(系统推荐 / 用户自选)</div>
@@ -50,7 +50,7 @@
     <div class='title'>备注</div>
     <div class='bos' >
       <Row v-if='(listitem.remarks == null)'>暂无备注</Row>
-      <Row v-for='(it,index) in listitem.remarks' :key='index'>
+      <Row v-if='listitem.remarks != null' v-for='(it,index) in listitem.remarks' :key='index'>
           {{it.operationTime.split('T')[0] + ' ' + it.operationTime.split('T')[1].split('.')[0]}} 
           {{it.operationEmail}}【{{it.operationName}}】 
           {{it.remarks}}
@@ -209,39 +209,6 @@ export default class Main extends ViewBase {
     return this.$route.params.status == '0' || this.$route.params.status == '1' ||
     this.$route.params.status == '2' ? [...data, ...opernation] : data
   }
-  // itemcolumns = [
-  //   { title: '影片名称', key: 'movieName', align: 'center' },
-  //   {
-  //     title: '上映日期',
-  //     key: 'beginDate',
-  //     align: 'center',
-  //     render: (hh: any, { row: { beginDate } }: any) => {
-  //       /* tslint:disable */
-  //       const h = jsxReactToVue(hh)
-  //       const html = moment(beginDate).format(timeFormat)
-  //       return <span class='datetime' v-html={html}></span>
-  //       /* tslint:enable */
-  //     }
-  //   },
-  //   {
-  //     title: '投放排期',
-  //     key: 'beginDate',
-  //     align: 'center',
-  //     render: (hh: any, { row: { beginDate , endDate } }: any) => {
-  //       /* tslint:disable */
-  //       const h = jsxReactToVue(hh)
-  //       const html = moment(beginDate).format(timeFormat)
-  //       const html2 = moment(endDate).format(timeFormat)
-  //       return <span class='datetime' >{html} ~ {html2}</span>
-  //       /* tslint:enable */
-  //     }
-  //   },
-  //   {
-  //     title: '操作',
-  //     slot: 'action',
-  //     align: 'center',
-  //   }
-  // ]
   mounted() {
     this.search()
   }
@@ -255,16 +222,8 @@ export default class Main extends ViewBase {
   back() {
     this.$router.go(-1)
   }
-  // 关闭订单
-  // edit(id: any) {
-  //   this.overVisible = true
-  //   this.$nextTick(() => {
-  //     const myThis: any = this
-  //     myThis.$refs.over.init(id)
-  //   })
-  // }
 
-  // 关闭订单
+
   addfilm() {
     this.addVisible = true
     this.$nextTick(() => {
@@ -292,14 +251,15 @@ export default class Main extends ViewBase {
 
 
   async search() {
+    this.listitem = []
     try {
         // 订单列表
       const { data } = await itemlist(this.$route.params.id)
-      this.listitem = data.item
-      this.start = moment(this.listitem.beginDate).format(timeFormat)
-      this.end = moment(this.listitem.endDate).format(timeFormat)
-      this.applyTime = this.listitem.applyTime.split('T')[0]
-      + ' ' + this.listitem.applyTime.split('T')[1].split('.')[0]
+      this.listitem.push(data.item)
+      this.start = moment(data.item.beginDate).format(timeFormat)
+      this.end = moment(data.item.endDate).format(timeFormat)
+      this.applyTime = data.item.applyTime.split('T')[0]
+      + ' ' + data.item.applyTime.split('T')[1].split('.')[0]
       // this.remarks = this.listitem.remarks || []
       this.logList = data.logList
       this.films = data.item.deliveryMovies
