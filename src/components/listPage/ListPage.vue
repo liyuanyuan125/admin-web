@@ -184,8 +184,9 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
       this.loading = false
     }
   }
-  public selectionChangeHandle(ev: any) {
-    this.$emit('selectionChange', ev)
+  // 全选
+  public selectionChangeHandle(option: any) {
+    this.$emit('selectionChange', option)
   }
   @Watch('query', { deep: true })
   watchQuery() {
