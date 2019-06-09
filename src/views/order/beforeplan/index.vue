@@ -7,34 +7,42 @@
       :columns="columns"
       ref="listPage"
     >
-    <template slot="id" slot-scope="{ row: { id } }">
+    <template slot="id" slot-scope="{ row: { id , status } }">
         <div class="row-acts">
           <router-link
-            :to="{ name: 'order-kollist-detail', params: { id } }"
+            :to="{ name: 'order-beforeplan-detail', params: { id , status } }"
           >{{id}}</router-link>
         </div>
       </template>
       <template slot="action" slot-scope="{ row: { id , status  } }">
         <div class="row-acts">
           <router-link
-            :to="{ name: 'order-kollist-detail', params: { id } }"
-          >详情{{status}}</router-link>
+            :to="{ name: 'order-beforeplan-detail', params: { id , status } }"
+          >详情</router-link>
         </div>
       </template>
     </ListPage>
   </div>
 </template>
 
-<script lang="ts">
+<script lang="tsx">
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import CompanyList from './filename.vue'
+import planList from './filename.vue'
+import CompanyList from './fileplan.vue'
+import videoList from './videoList.vue'
+import jsxReactToVue from '@/util/jsxReactToVue'
+import moment from 'moment'
+
 
 import {
   queryList
 } from '@/api/beforeplan'
 import EditDialog, { Field } from '@/components/editDialog'
+
+const timeFormat = 'YYYY-MM-DD'
+
 
 @Component({
   components: {
@@ -48,7 +56,7 @@ export default class Main extends ViewBase {
   filters: Filter[] = [
     {
       name: 'companyName',
-      defaultValue: 0,
+      defaultValue: null,
       type: CompanyList,
       width: 140,
       placeholder: '广告主公司名称'
@@ -56,16 +64,16 @@ export default class Main extends ViewBase {
 
     {
       name: 'name',
-      defaultValue: 0,
-      type: CompanyList,
+      defaultValue: null,
+      type: planList,
       width: 140,
       placeholder: '广告计划名称'
     },
 
     {
       name: 'videoName',
-      defaultValue: 0,
-      type: CompanyList,
+      defaultValue: null,
+      type: videoList,
       width: 140,
       placeholder: '广告片名称'
     },
@@ -95,7 +103,7 @@ export default class Main extends ViewBase {
 
     {
       name: 'status',
-      defaultValue: 0,
+      defaultValue: null,
       type: 'select',
       width: 100,
       placeholder: '订单状态',
@@ -119,18 +127,27 @@ export default class Main extends ViewBase {
 
   get columns() {
     return [
-      { title: '订单编号', slot: 'id', width: 65 },
-      { title: '订单名称', key: 'movieName', minWidth: 160 },
-      { title: '公司ID', slot: 'id', width: 65 },
-      { title: '公司名称', key: 'movieName', minWidth: 160 },
-      { title: '平台', key: 'applyTime', editor: 'dateTime', width: 135 },
-      { title: '推广品牌', key: 'status', width: 100, editor: 'enum'},
-      { title: '下单时间', key: 'operationTime', editor: 'dateTime', width: 135 },
-      { title: '下单金额', key: 'status', width: 100 , editor: 'enum' },
-      { title: '商务确认金额', key: 'status', width: 100 , editor: 'enum' },
-      { title: '已支付金额', key: 'status', width: 100 , editor: 'enum' },
-      { title: '订单状态', key: 'status', width: 100 , editor: 'enum' },
-      { title: '发票状态', key: 'status', width: 100 , editor: 'enum' },
+      { title: '计划id', slot: 'id', width: 65 },
+      { title: '计划名称', key: 'name', minWidth: 160 },
+      { title: '广告主公司名称', key: 'companyName', width: 65 },
+      { title: '广告片', key: 'videoName', minWidth: 160 },
+      {
+      title: '投放周期',
+      key: 'beginDate',
+      width: 150,
+      align: 'center',
+      render: (hh: any, { row: { beginDate , endDate} }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        const start = moment(beginDate).format(timeFormat)
+        const end = moment(endDate).format(timeFormat)
+        return <span> {start} ~ {end}</span>
+        /* tslint:enable */
+      }
+    },
+      { title: '预算', key: 'budgetAmount', width: 100 },
+      { title: '提交时间', key: 'applyTime', editor: 'dateTime', width: 135 },
+      { title: '状态', key: 'status', width: 100 , editor: 'enum' },
       { title: '操作', slot: 'action', width: 55 }
     ] as ColumnExtra[]
   }

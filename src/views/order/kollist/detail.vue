@@ -14,25 +14,8 @@
      <!-- 商务确认信息 -->
     <div class='title' v-if='$route.params.orders == 4 || $route.params.orders == 8'>订单金额信息</div>
     <div v-if='$route.params.orders == 2 || $route.params.orders == 3 || $route.params.orders == 0 || $route.params.orders == 5' class='title'>商务确认</div>
-    <!-- 商务确认不可编辑 -->
-    <Table v-if='$route.params.orders != 2' :columns="okcolumns" :data='oklist' border stripe disabled-hover size="small" class="table">
-    </Table>
-    <!-- 商务确认可编辑 -->
-    <Table v-if='$route.params.orders == 2' :columns="editokcolumns" :data="editoklist">
 
-      <template slot-scope="{ row, index }" slot="editmoney">
-        <Input type="text" v-model="editAddress" v-if="editIndex === index" @on-blur="handleSave(index)" />
-        <span v-else @click="handleEdit(row, index)">{{ row.address }}</span>
-      </template>
-
-      <template slot-scope="{ row, index }" slot="beizhu">
-        <Input type="text" v-model="beizhu" v-if="editIndex === index" @on-blur="handleSave(index)" />
-        <span v-else @click="handleEdit(row, index)">{{ row.address }}</span>
-      </template>
-
-      <template slot-scope="{ row, index }" slot="action">
-        删除
-      </template>
+    <Table  :columns="okcolumns" :data='oklist' border stripe disabled-hover size="small" class="table">
     </Table>
 
     <Button v-if='$route.params.orders == 2' style='margin-left: 45%;margin-top: 10px;'>提交</Button>
@@ -55,13 +38,13 @@
       </Row>
       <Form ref="dataForm" :model="dataForm"  label-position="left" :label-width="100" style='margin-top: 7px;'>
         <FormItem  label="支付金额" prop="reason">
-        <Input style="width:240px" v-model="dataForm.refuseReason"></Input>
+        <Input style="width:240px" v-model="dataForm.fee"></Input>
       </FormItem>
       <FormItem  label="备注" prop="reason">
-        <Input style="width:240px" v-model="dataForm.refuseReason"></Input>
+        <Input style="width:240px" v-model="dataForm.remark"></Input>
       </FormItem>
       </Form>
-      <Button style='margin-left:20px;' type="primary"  @click="change('dataForm')">提交</Button>
+      <Button style='margin-left:20px;' type="primary"  @click="change()">提交</Button>
       <Button style='margin-left:20px;' @click="back">取消</Button>
     </div>
 
@@ -70,15 +53,15 @@
     <div v-if='$route.params.orders == 5' style="border: 1px solid #ccc; padding: 15px;">
       <Form ref="dataForm" :model="orderdataForm"  label-position="left" :label-width="100">
         <FormItem label="接单信息" prop="status">
-          <RadioGroup v-model='orderdataForm.approveStatus'>
-            <Radio v-for="it in approveStatusList" v-if="it.key!=0" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
+          <RadioGroup v-model='orderdataForm.receptType'>
+            <Radio v-for="it in approveStatusList"  :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem  label="备注" prop="reason">
-        <Input style="width:240px" v-model="orderdataForm.refuseReason"></Input>
+        <FormItem v-if='orderdataForm.receptType == 2' label="备注" prop="reason">
+        <Input style="width:240px" v-model="orderdataForm.receptRemark"></Input>
       </FormItem>
       </Form>
-      <Button style='margin-left:20px;' type="primary"  @click="changeorder('dataForm')">提交</Button>
+      <Button style='margin-left:20px;' type="primary"  @click="changeorder()">提交</Button>
       <Button style='margin-left:20px;' @click="back">取消</Button>
     </div>
 
@@ -87,15 +70,15 @@
     <div v-if='$route.params.orders == 3' style="border: 1px solid #ccc; padding: 15px;">
       <Form ref="dataForm" :model="moneydataForm"  label-position="left" :label-width="100">
         <FormItem label="审核" prop="status">
-          <RadioGroup v-model='moneydataForm.approveStatus'>
-            <Radio v-for="it in moneyList" v-if="it.key!=0" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
+          <RadioGroup v-model='moneydataForm.financeApprovalType'>
+            <Radio v-for="(it,index) in moneyList"  :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem  label="备注" prop="reason">
-        <Input style="width:240px" v-model="moneydataForm.refuseReason"></Input>
+        <FormItem v-if='moneydataForm.financeApprovalType == 2' label="备注" prop="reason">
+        <Input style="width:240px"  v-model="moneydataForm.financeRefuseReason"></Input>
       </FormItem>
       </Form>
-      <Button style='margin-left:20px;' type="primary"  @click="changemoney('dataForm')">提交</Button>
+      <Button style='margin-left:20px;' type="primary"  @click="changemoney()">提交</Button>
       <Button style='margin-left:20px;' @click="back">取消</Button>
     </div>
 
@@ -111,30 +94,29 @@
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import jsxReactToVue from '@/util/jsxReactToVue'
+import { itemlist , cancel , finance , advance , rest , recept  } from '@/api/kollist'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import moment from 'moment'
-
-
-import {
-  queryList
-} from '@/api/orderkol'
 import EditDialog, { Field } from '@/components/editDialog'
 
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
 const dataForm = {
-  refuseReason: '',
-  approveStatus: 2
+  fee: '',
+  remark: '',
+  orderId: null,
 }
 
-const moneydataForm = {
-  refuseReason: '',
-  approveStatus: 2
+const moneydataForm: any = {
+  financeRefuseReason: '',
+  financeApprovalType: 1,
+  orderId: null
 }
 
 const orderdataForm = {
-  refuseReason: '',
-  approveStatus: 2
+  receptRemark: '',
+  receptType: 1,
+  orderId: null
 }
 
 @Component({
@@ -150,8 +132,6 @@ export default class Main extends ViewBase {
   itemlist: any = []
   // 商务审核 && 订单金额
   oklist: any = []
-  // 商务确认
-  editoklist: any = []
   // 订单支付信息
   orderlist: any = []
   // 操作日志
@@ -159,14 +139,14 @@ export default class Main extends ViewBase {
 
   id = 0
 
-  // 订单基本信息
+ // 订单基本信息
   columns = [
-    { title: '订单编号', width: 70, key: 'id', align: 'center' },
-    { title: '订单名称', key: 'email', align: 'center' },
-    { title: '公司id', width: 70, key: 'companyName', align: 'center' },
-    { title: '公司名称', key: 'companyName', align: 'center' },
-    { title: '平台', width: 70, key: 'companyName', align: 'center' },
-    { title: '推广平台', width: 70, key: 'companyName', align: 'center' },
+    { title: '订单编号', width: 70, key: 'orderNo', align: 'center' },
+    { title: '项目名称', key: 'projectName', align: 'center' },
+    { title: '客户id', width: 70, key: 'companyId', align: 'center' },
+    { title: '客户名称', key: 'companyName', align: 'center' },
+    { title: '平台', width: 70, key: 'channelCode', align: 'center' },
+    { title: '推广品牌', width: 70, key: 'brandName', align: 'center' },
     {
       title: '下单时间',
       width: 120,
@@ -180,73 +160,60 @@ export default class Main extends ViewBase {
         /* tslint:enable */
       }
     },
-    { title: '下单金额', width: 70,  key: 'companyName', align: 'center' },
-    { title: '商务确认金额', width: 90,  key: 'companyName', align: 'center' },
+    { title: '下单金额', width: 70,  key: 'totalFee', align: 'center' },
+    { title: '商务确认金额', width: 90,  key: 'confirmFee', align: 'center' },
     {
       title: '订单状态',
       width: 70,
-      key: 'statusText',
+      key: 'status',
       align: 'center',
-      render: (hh: any, { row: { status, statusText } }: any) => {
+      render: (hh: any, { row: { status } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         if (status == 1) {
-          return <span class={`status-${status}`}>启用</span>
+          return <span class={`status-${status}`}>草稿</span>
         } else if (status == 2) {
-          return <span class={`status-${status}`}>停用</span>
+          return <span class={`status-${status}`}>待商务确认</span>
         } else if (status == 3) {
-          return <span class={`status-${status}`}>待激活</span>
+          return <span class={`status-${status}`}>待财务审核</span>
+        } else if (status == 4) {
+          return <span class={`status-${status}`}>待支付首款</span>
+        } else if (status == 5) {
+          return <span class={`status-${status}`}>派单中</span>
+        } else if (status == 6) {
+          return <span class={`status-${status}`}>待执行</span>
+        } else if (status == 7) {
+          return <span class={`status-${status}`}>执行中</span>
+        } else if (status == 8) {
+          return <span class={`status-${status}`}>待支付尾款</span>
+        } else if (status == 9) {
+          return <span class={`status-${status}`}>已完成</span>
+        } else if (status == 10) {
+          return <span class={`status-${status}`}>已取消</span>
+        } else if (status == 11) {
+          return <span class={`status-${status}`}>派单失败</span>
         }
         /* tslint:enable */
       }
-    },
-    {
-      title: '支付状态',
-      width: 70,
-      key: 'statusText',
-      align: 'center',
-      render: (hh: any, { row: { status, statusText } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        if (status == 1) {
-          return <span class={`status-${status}`}>启用</span>
-        } else if (status == 2) {
-          return <span class={`status-${status}`}>停用</span>
-        } else if (status == 3) {
-          return <span class={`status-${status}`}>待激活</span>
-        }
-        /* tslint:enable */
-      }
-    },
+    }
   ]
   // 商务确认订单
   okcolumns = [
-    { title: 'kol平台账号',  key: 'id', align: 'center' },
-    { title: 'kol平台账号名称', key: 'email', align: 'center' },
-    { title: '平台', width: 70, key: 'companyName', align: 'center' },
-    { title: '任务类型', key: 'companyName', align: 'center' },
-    { title: '下单金额',  key: 'companyName', align: 'center' },
-    { title: '商务修改金额',  key: 'companyName', align: 'center' },
-    { title: '备注',  key: 'companyName', align: 'center' },
-  ]
-  // 商务确认
-  editokcolumns = [
-    { title: 'kol平台账号',  key: 'id', align: 'center' },
-    { title: 'kol平台账号名称', key: 'email', align: 'center' },
-    { title: '平台', width: 70, key: 'companyName', align: 'center' },
-    { title: '任务类型', key: 'companyName', align: 'center' },
-    { title: '下单金额',  key: 'companyName', align: 'center' },
-    { title: '商务修改金额',  slot: 'editmoney', align: 'center' },
-    { title: '备注',  slot: 'beizhu', align: 'center' },
-    { title: '操作',  slot: 'action', align: 'center' },
+    { title: 'kol平台账号',  key: 'kolId', align: 'center' },
+    { title: 'kol平台账号名称', key: 'kolName', align: 'center' },
+    { title: '平台', width: 70, key: 'channelCode', align: 'center' },
+    { title: '任务类型', key: 'publishCategoryCode', align: 'center' },
+    { title: '下单金额',  key: 'salePrice', align: 'center' },
+    { title: '商务修改金额',  key: 'confirmPrice', align: 'center' },
+    { title: '备注',  key: 'confirmRemark', align: 'center' },
   ]
   // 订单支付信息
   ordercolumns = [
-    { title: '类型',  key: 'id', align: 'center' },
-    { title: '支付金额', key: 'email', align: 'center' },
-    { title: '支付时间', key: 'companyName', align: 'center' },
-    { title: '支付操作人',  key: 'companyName', align: 'center' },
-    { title: '备注',  key: 'companyName', align: 'center' }
+    { title: '类型',  key: 'name', align: 'center' },
+    { title: '支付金额', key: 'paymoney', align: 'center' },
+    { title: '支付时间', key: 'paydate', align: 'center' },
+    { title: '支付操作人',  key: 'payper', align: 'center' },
+    { title: '备注',  key: 'beizhu', align: 'center' }
   ]
   // 操作日志
   logcolumns = [
@@ -286,7 +253,7 @@ export default class Main extends ViewBase {
   orderdataForm: any = { ...orderdataForm }
 
   mounted() {
-    // console.log(this.$route.name)
+    this.search()
   }
 
   // 返回上一页 && 接单取消按钮
@@ -294,87 +261,99 @@ export default class Main extends ViewBase {
     this.$router.go(-1)
   }
 
-  search() {
-
+  async search() {
+    this.itemlist = []
+    this.orderlist = []
+    try {
+      const { data } = await itemlist(this.$route.params.id)
+      this.itemlist.push(data.order)
+      this.oklist = data.orderItemList == null ? [] : data.orderItemList
+      this.orderlist = [
+        {
+          name: '首款',
+          paymoney: data.order.advanceFee,
+          paydate: data.order.advancePayTime == null ? '-' : moment(data.order.advancePayTime).format(timeFormat),
+          payper: data.order.advancePayName,
+          beizhu: data.order.advanceRemark
+        },
+        {
+          name: '尾款',
+          paymoney: data.order.restFee,
+          paydate: data.order.restPayTime == null ? '-' : moment(data.order.restPayTime).format(timeFormat),
+          payper: data.order.restPayName,
+          beizhu: data.order.restRemark
+        }
+      ]
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
 
-  // 商务修改金额
-  handleEdit(row: any, index: any) {
-    this.editmoney = row.address
-    this.editIndex = index
-  }
-  handleSave(index: any) {
-    this.editoklist[index].address = this.editmoney
-    this.editIndex = -1
-  }
-
-  // 商务修改备注
-  beiEdit(row: any, index: any) {
-    this.beizhu = row.address
-    this.editIndex = index
-  }
-  beiSave(index: any) {
-    this.editoklist[index].address = this.beizhu
-    this.editIndex = -1
-  }
 
   // 提交支付信息
-  change(dataForms: any) {
-    const myThis: any = this
-    myThis.$refs[dataForms].validate(async ( valid: any ) => {
-      if (valid) {
-        const query =  !this.id ? this.dataForm : {
-          id: this.id,
-          ...this.dataForm
-        }
-        // const title = '添加'
-        try {
-          // const res =  await setList (this.$route.params.id , query)
-          // this.$router.push({ name : 'client-order' })
-        } catch (ex) {
-          this.handleError(ex)
-        }
+  async change() {
+    this.dataForm.orderId = this.$route.params.id
+    if (this.$route.params.status == '4') {
+      try {
+        const res =  await advance ({
+          orderId: this.dataForm.orderId  ,
+          advanceFee: this.dataForm.fee ,
+          advanceRemark: this.dataForm.remark
+        })
+        this.$router.push({ name : 'order-kollist' })
+      } catch (ex) {
+        this.handleError(ex)
       }
-    })
+    } else if (this.$route.params.status == '8') {
+      try {
+        const res =  await rest ({
+          orderId: this.dataForm.orderId  ,
+          restFee: this.dataForm.fee ,
+          restRemark: this.dataForm.remark
+        })
+        this.$router.push({ name : 'order-kollist' })
+      } catch (ex) {
+        this.handleError(ex)
+      }
+    }
+    try {
+      const res =  await finance (this.dataForm)
+      this.$router.push({ name : 'order-kollist' })
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
 
   // 提交接单信息
-  changeorder(dataForms: any) {
-    const myThis: any = this
-    myThis.$refs[dataForms].validate(async ( valid: any ) => {
-      if (valid) {
-        const query =  !this.id ? this.dataForm : {
-          id: this.id,
-          ...this.orderdataForm
-        }
-        try {
-          // const res =  await setList (this.$route.params.id , query)
-          // this.$router.push({ name : 'client-order' })
-        } catch (ex) {
-          this.handleError(ex)
-        }
-      }
-    })
+  async changeorder() {
+    this.orderdataForm.orderId = this.$route.params.id
+    if (this.orderdataForm.receptType == 1) {
+      this.orderdataForm.receptType = true
+    } else if (this.orderdataForm.receptType == 2) {
+      this.orderdataForm.receptType = false
+    }
+    try {
+      const res =  await recept (this.orderdataForm)
+      this.$router.push({ name : 'order-kollist' })
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
 
   // 提交财务信息
-  changemoney(dataForms: any) {
-    const myThis: any = this
-    myThis.$refs[dataForms].validate(async ( valid: any ) => {
-      if (valid) {
-        const query =  !this.id ? this.dataForm : {
-          id: this.id,
-          ...this.moneydataForm
-        }
-        // const title = '添加'
-        try {
-          // const res =  await setList (this.$route.params.id , query)
-          // this.$router.push({ name : 'client-order' })
-        } catch (ex) {
-          this.handleError(ex)
-        }
-      }
-    })
+  async changemoney() {
+    if (this.moneydataForm.financeApprovalType == 1) {
+      this.moneydataForm.financeApprovalType = true
+    } else if (this.moneydataForm.financeApprovalType == 2) {
+      this.moneydataForm.financeApprovalType = false
+    }
+    this.moneydataForm.orderId = this.$route.params.id
+    try {
+      const res =  await finance (this.moneydataForm)
+      this.$router.push({ name : 'order-kollist' })
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
 
 
@@ -409,5 +388,13 @@ export default class Main extends ViewBase {
 }
 /deep/ .ivu-form .ivu-form-item-label {
   font-size: 14px;
+}
+.table {
+  margin-top: 16px;
+  /deep/ .ivu-table-cell > span:only-child:empty {
+    &::before {
+      content: '-';
+    }
+  }
 }
 </style>

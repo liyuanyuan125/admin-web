@@ -14,18 +14,24 @@
           @click="editShow()"
         >创建退款单</Button>
       </template>
-    <template slot="orderNo" slot-scope="{ row: { orderNo } }">
+      <template slot="refundNo" slot-scope="{ row: { id , refundNo , orderNo , refundStatus} }">
         <div class="row-acts">
           <router-link
-            :to="{ name: 'order-kollist-detail', params: { orderNo } }"
+            :to="{ name: 'order-refund-detail', params: { 'id' : id , 'order': orderNo  } }"
+          >{{refundNo}}</router-link>
+        </div>
+      </template>
+      <template slot="orderNo" slot-scope="{ row: { id , orderNo , refundStatus } }">
+        <div class="row-acts">
+          <router-link
+            :to="{ name: 'order-refund-detail', params: { 'id' : id , 'order': orderNo   } }"
           >{{orderNo}}</router-link>
         </div>
       </template>
-      <template slot="action" slot-scope="{ row: { orderNo , status  } }">
+      <template slot="action" slot-scope="{ row: { id , orderNo , refundStatus , refundFee  } }">
         <div class="row-acts">
-          <router-link
-            :to="{ name: 'order-kollist-detail', params: { orderNo } }"
-          >详情{{status}}</router-link>
+          <a v-if='refundStatus == 1' @click='refund( id , refundFee)' style='margin-left: 6px;'>退款</a>
+          <a @click='dels( id )' style='margin-left: 6px;'>删除</a>
         </div>
       </template>
     </ListPage>
@@ -39,8 +45,9 @@ import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import CompanyList from './filename.vue'
 import reDlg from './reDlg.vue'
-import { queryList , delorder } from '@/api/refund'
+import { queryList , delorder , finance , oktui } from '@/api/refund'
 import EditDialog, { Field } from '@/components/editDialog'
+import { confirm } from '@/ui/modal'
 
 
 @Component({
@@ -55,8 +62,8 @@ export default class Main extends ViewBase {
   reVisible = false
   filters: Filter[] = [
     {
-      name: 'companyName',
-      defaultValue: 0,
+      name: 'companyId',
+      defaultValue: null,
       type: CompanyList,
       width: 140,
       placeholder: '公司名称'
@@ -71,8 +78,12 @@ export default class Main extends ViewBase {
       dealParam(value: string) {
         const [startTime, endTime] = value ? value.split('-') : [null, null]
         return {
-          startTime,
-          endTime
+          startTime : startTime ? Number(new Date(String(startTime).slice(0, 4) + '-'
+            + String(startTime).slice(4, 6) + '-' +
+            String(startTime).slice(6, 8)).getTime() - (8 * 60 * 60 * 1000 - 1)) : null,
+          endTime : endTime ? Number(new Date(String(endTime).slice(0, 4) + '-'
+            + String(endTime).slice(4, 6) + '-' +
+            String(endTime).slice(6, 8)).getTime() + (16 * 60 * 60 * 1000 - 1)) : null,
         }
       }
     },
@@ -87,11 +98,10 @@ export default class Main extends ViewBase {
 
     {
       name: 'channelCode',
-      defaultValue: 0,
-      type: 'select',
+      defaultValue: '',
+      type: 'input',
       width: 100,
       placeholder: '平台',
-      enumKey: 'statusList'
     },
 
     {
@@ -103,7 +113,7 @@ export default class Main extends ViewBase {
     },
 
     {
-      name: 'companyId2',
+      name: 'refundNo',
       defaultValue: '',
       type: 'input',
       width: 140,
@@ -122,30 +132,30 @@ export default class Main extends ViewBase {
   ]
 
   enums = [
-    'statusList',
+    'refundStatusList',
   ]
 
   get columns() {
     return [
-      { title: '退款单编号', slot: 'orderNo', width: 65 },
-      { title: '订单编号', slot: 'orderNo', width: 65 },
-      { title: '项目名称', key: 'movieName', minWidth: 160 },
-      { title: '公司ID', slot: 'orderNo', width: 65 },
-      { title: '公司名称', key: 'movieName', minWidth: 160 },
-      { title: '平台', key: 'applyTime', editor: 'dateTime', width: 135 },
-      { title: '下单时间', key: 'operationTime', editor: 'dateTime', width: 135 },
-      { title: '退款金额', key: 'status', width: 100 , editor: 'enum' },
-      { title: '已支付金额', key: 'status', width: 100 , editor: 'enum' },
-      { title: '退款单状态', key: 'status', width: 100 , editor: 'enum' },
-      { title: '操作', slot: 'action', width: 55 }
+      { title: '退款单编号', slot: 'refundNo', width: 100 },
+      { title: '订单编号', slot: 'orderNo', width: 100 },
+      { title: '项目名称', key: 'projectName'  },
+      { title: '公司ID', key: 'companyId', width: 80 },
+      { title: '公司名称', key: 'companyName' },
+      { title: '平台', key: 'projectName', width: 100 },
+      { title: '下单时间', key: 'placeOrderTime', editor: 'dateTime', width: 135 },
+      { title: '退款金额', key: 'refundFee', width: 100 },
+      { title: '已支付金额', key: 'payFee', width: 100 },
+      { title: '退款单状态', key: 'refundStatus', width: 80 , editor: 'enum'},
+      { title: '操作', slot: 'action', width: 100 }
     ] as ColumnExtra[]
   }
 
-  editShow(id: any) {
+  editShow() {
     this.reVisible = true
     this.$nextTick(() => {
       const myThis: any = this
-      myThis.$refs.re.init(id)
+      myThis.$refs.re.init()
     })
   }
 
@@ -157,7 +167,7 @@ export default class Main extends ViewBase {
   }
 
   // 删除退款单
-  async cancel(id: any) {
+  async dels(id: any) {
     try {
       await confirm('您确定删除退款单吗？')
       await delorder(id)
@@ -171,10 +181,10 @@ export default class Main extends ViewBase {
   }
 
   // 退款
-  async refund(id: any) {
+  async refund(id: any, money: any) {
     try {
-      await confirm('本次退款金额￥100000, 确定后资金会返回到客户端的账户余额中，请确认是否退款？')
-      // await delorder({id})
+      await confirm('本次退款金额￥' + money + ', 确定后资金会返回到客户端的账户余额中，请确认是否退款？')
+      await oktui(id)
       this.$Message.success({
         content: `退款成功`,
       })

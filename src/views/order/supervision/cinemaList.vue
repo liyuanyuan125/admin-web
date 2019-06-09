@@ -1,5 +1,5 @@
 <template>
-  <Select v-model="inValue" :placeholder="placeholder" filterable
+  <Select v-model="inValue" placeholder="资源方影院" filterable
     clearable class="component" ref="ui">
     <Option v-for="it in list" :key="it.id" :value="it.id"
       :label="it.shortName" class="flex-box">
@@ -20,7 +20,7 @@ export default class CinemaChainSelect extends ViewBase {
   /**
    * 值本身，可以使用 v-model 进行双向绑定
    */
-  @Prop({ type: Object, default: {} }) value!: object
+  @Prop({ type: Number, default: null }) value!: any
   /**
    * 提示文字
    */

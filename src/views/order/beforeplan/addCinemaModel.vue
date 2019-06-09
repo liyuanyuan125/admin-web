@@ -5,14 +5,21 @@
     title="添加关联影院"
     @on-cancel="cancel()"
     >
-    <p class="cinema-header">注：因资源方类型为影院，因此仅能关联一家影院</p>
+    <p class="cinema-header">仅能添加一个影院</p>
     <Row class="shouDlg-header">
       <Col span="7">
-        <Select v-model="chainId" placeholder="请输入院线名称" filterable
+        <!-- <Select v-model="chainId" placeholder="请输入院线名称" filterable
           clearable class="component" ref="ui">
           <Option v-if="!!it.chainName" v-for="it in options" :key="it.id" :value="it.chainId"
             :label="it.chainName" class="flex-box">
             <span class="flex-1">{{it.chainName}}</span>
+          </Option>
+        </Select> -->
+        <Select v-model='query.companyId' placeholder="资源方公司" filterable
+          clearable class="component">
+          <Option v-for="it in list" :key="it.id" :value="it.id"
+            :label="it.name" class="flex-box">
+            <span>{{it.name}}</span>
           </Option>
         </Select>
       </Col>
@@ -68,7 +75,7 @@
       </div>
     </div>
     <div  slot="footer" class="dialog-footer">
-      <Button type="primary" @click="done()">关联</Button>
+      <Button type="primary" @click="done()">添加</Button>
       <Button @click="cancel()">取消</Button>
     </div>
   </Modal>
@@ -80,7 +87,10 @@ import ViewBase from '@/util/ViewBase'
 import AreaSelect from '@/components/areaSelect'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import { slice, clean } from '@/fn/object'
-import { queryList } from '@/api/cinema'
+// import { queryList  } from '@/api/cinema'
+import { queryList } from '@/api/corpReal'
+import { conpanylist , addcinema } from '@/api/beforeplan'
+
 import { isEqual } from 'lodash'
 
 @Component({
@@ -115,10 +125,12 @@ export default class Main extends ViewBase {
   query: any = {
     provinceId: 0,
     cityId: 0,
-    countyId: 0
+    countyId: 0,
+    companyId: 91,
   }
   indeterminate = false
   checkAll = false
+  list: any = []
   init(val: any) {
     if ( val.length > 0 ) {
       this.form.check = val.map((item: any) => {
@@ -136,10 +148,24 @@ export default class Main extends ViewBase {
     this.seach()
   }
 
+  async mounted() {
+    try {
+      const { data } =  await queryList(clean({
+        pageSize: 888888,
+        status: 1,
+        typeCode: 'resource'
+      }))
+      this.list = data.items
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
   async authIdList() {
     try {
-      const { data } = await queryList({
-        pageSize: 888888
+      const { data } = await conpanylist({
+        pageSize: 888888,
+        companyId: this.query.companyId,
       })
       const list: any[] = data.items || []
       this.options = list
@@ -158,7 +184,7 @@ export default class Main extends ViewBase {
       pageIndex: id || this.pageIndex
     }
     try {
-      const res = await queryList(clean({...query}))
+      const res = await conpanylist(clean({...query}))
       this.items = res.data.items
       this.totalPage = res.data.totalCount
       setTimeout(() => {
@@ -183,7 +209,7 @@ export default class Main extends ViewBase {
     }
   }
 
-  done() {
+  async done() {
     if (this.cinemaend == 1 && this.checkCinema.length > 1) {
       this.showError('因资源方类型为影院，因此仅能关联一家影院')
       return
@@ -191,6 +217,18 @@ export default class Main extends ViewBase {
     const cinema = this.checkCinema.filter((item: any) => {
       return this.form.check.includes(item.id)
     })
+
+    // async delcinema(id: any) {
+      try {
+        await addcinema(this.$route.params.id , { cinemaId : [...cinema] , resourceId : this.query.companyId})
+        // this.$Message.success({
+        //   content: `删除成功`,
+        // })
+        this.$router.go(0)
+      } catch (ex) {
+        this.handleError(ex)
+      }
+  // }
 
     this.$emit('done', [...cinema])
     this.showDlg = false

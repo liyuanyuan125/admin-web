@@ -35,7 +35,6 @@
         </div>
       </div>
     </slot>
-
     <Table
       ref="selection"
       :columns="tableColumns"
@@ -204,9 +203,6 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
 
 .list-page {
   margin-bottom: 88px;
-  .act-bar:first-child {
-    margin-bottom: 8px;
-  }
 }
 
 .ui-filter,

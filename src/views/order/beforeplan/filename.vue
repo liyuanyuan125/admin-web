@@ -1,16 +1,9 @@
 <template>
-    <Select v-if="placeholder != '影片名称'"  v-model="inValue" :placeholder="placeholder" filterable
+    <Select  v-model="inValue" placeholder="广告计划名称" filterable
       clearable class="component" ref="ui">
-      <Option v-for="it in list" :key="it.id" :value="it.companyId"
-        :label="it.companyName" class="flex-box">
-        <span>{{it.companyName}}</span>
-      </Option>
-    </Select>
-    <Select v-else v-model="inValue" :placeholder="placeholder" filterable
-      clearable class="component" ref="ui">
-      <Option v-for="it in list" :key="it.id" :value="it.movieId"
-        :label="it.movieName" class="flex-box">
-        <span>{{it.movieName}}</span>
+      <Option v-for="it in list" :key="it.id" :value="it.id"
+        :label="it.name" class="flex-box">
+        <span>{{it.name}}</span>
       </Option>
     </Select>
 </template>
@@ -19,7 +12,7 @@
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import { queryList } from '@/api/clientFilm'
+import { queryList , planlist , company } from '@/api/orderSys'
 import { clean } from '@/fn/object'
 
 @Component
@@ -42,11 +35,8 @@ export default class CinemaChainSelect extends ViewBase {
 
   async mounted() {
     try {
-      const { data } =  await queryList(clean({
-        pageSize: 888888,
-      }))
-      const list: any[] = data.items || []
-      this.list = list
+      const plandata = await planlist({pageSize: 100000})
+      this.list = plandata.data.items
     } catch (ex) {
       this.handleError(ex)
     }

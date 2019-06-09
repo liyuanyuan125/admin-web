@@ -1,7 +1,7 @@
 <template>
   <Select v-model="inValue" placeholder="广告片" filterable
     clearable class="component" ref="ui">
-    <Option v-for="it in list" :key="it.id" :value="it.id"
+    <Option v-for="it in list" :key="it.name" :value="it.name"
       :label="it.name" class="flex-box">
       <span>{{it.name}}</span>
     </Option>
@@ -20,7 +20,7 @@ export default class CinemaChainSelect extends ViewBase {
   /**
    * 值本身，可以使用 v-model 进行双向绑定
    */
-  @Prop({ type: Number, default: null }) value!: any
+  @Prop({ type: String, default: '' }) value!: any
   /**
    * 提示文字
    */
@@ -87,7 +87,7 @@ export default class CinemaChainSelect extends ViewBase {
   @Watch('inValue')
   watchInValue(val: number) {
     this.$emit('input', val)
-    const row = this.list.filter((item: any) => item.id == val)
+    const row = this.list.filter((item: any) => item.name == val)
     this.$emit('row', row)
   }
 }

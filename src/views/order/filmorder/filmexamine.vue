@@ -7,48 +7,34 @@
         <div class='title'>订单基本信息</div>
         <div class='bos'>
           <Row>
-            <Col :span='6'>申请单编号：1111</Col>
-            <Col :span='6'>公司id：11123132</Col>
-            <Col :span='6'>公司名称：13213132</Col>
+            <Col :span='8'>申请单编号：{{list.id}}</Col>
+            <Col :span='8'>公司id：{{list.companyId}}</Col>
+            <Col :span='8'>公司名称：{{list.companyName}}</Col>
           </Row>
           <Row>
-            <Col :span='8'>项目名称：456465</Col>
-            <Col :span='8'>推广品牌：11123132</Col>
+            <Col :span='12'>项目名称：{{list.projectName}}</Col>
+            <Col :span='12'>推广品牌：{{list.id}}</Col>
           </Row>
           <Row>
-            <Col>推广内容：56465123561234562</Col>
+            <Col>推广内容：{{list.message}}</Col>
           </Row>
           <Row>
             <Col :span='3'>影片资源要求:</Col>
-            <Col :span='5'>
-              <CheckboxGroup v-model="query.fruit">
-                  <Checkbox label="授权海报"></Checkbox>
-                  <Checkbox label="电影票券"></Checkbox>
-              </CheckboxGroup>
-            </Col>
-            <Col>数量：100</Col>
+            <Col :span='9' v-if='list.movieResource.material.need == true'>授权海报</Col>
+            <Col :span='2' v-if='list.movieResource.coupon.need == true'>电子券</Col>
+            <Col :span='9' v-if='list.movieResource.coupon.need == true'>数量：{{list.movieResource.coupon.count}}</Col>
           </Row>
           <Row>
             <Col :span='3'>品牌方线上资源:</Col>
-            <Col :span='5'>
-              <CheckboxGroup v-model="query.fruit">
-                  <Checkbox label="微信"></Checkbox>
-                  <Checkbox label="微博"></Checkbox>
-              </CheckboxGroup>
-            </Col>
+            <Col :span='5'><span v-for='(it , index) in list.channelCodeList' :key='index' v-if='it.key == list.brandResource.onlines[0].channelCode'>{{it.text}}</span></Col>
           </Row>
           <Row>
-            <Col :span='3'>影片资源要求:</Col>
-            <Col :span='5'>
-              <CheckboxGroup v-model="query.fruit">
-                  <Checkbox label="易拉宝"></Checkbox>
-                  <Checkbox label="线下大屏"></Checkbox>
-              </CheckboxGroup>
-            </Col>
+            <Col :span='3'>品牌方线下资源:</Col>
+            <Col :span='5'><span v-for='(it , index) in list.offlineResourceTypeList' :key='index' v-if='it.key == list.brandResource.offlines[0].channelCode'>{{it.text}}</span></Col>
           </Row>
         </div>
-        <div class='title'>审核意见</div>
-        <div style="border: 1px solid #ccc; padding: 15px;">
+        <div v-if='$route.params.status == 1' class='title'>审核意见</div>
+        <div v-if='$route.params.status == 1' style="border: 1px solid #ccc; padding: 15px;">
           <Form ref="dataForm" :model="dataForm"  label-position="left" :label-width="100">
             <FormItem label="审核意见" prop="status">
               <RadioGroup v-model='dataForm.approveStatus'>
@@ -62,26 +48,26 @@
           <Button style='margin-left:20px;' type="primary"  @click="change('dataForm')">提交</Button>
           <Button style='margin-left:20px;' @click="back">取消</Button>
         </div>
-        <div class='title'>图片视频类物料</div>
-        <div class='bos'>
-          <Row>物料下载地址： http://www.baidu.com</Row>
-          <Row>资源使用说明：滴入酚酞遇古巴和你几门课烫染头发v共一百年后你们家门口日方提供v抱回家呢</Row>
+        <div v-if='$route.params.status == 0' class='title'>图片视频类物料</div>
+        <div v-if='$route.params.status == 0' class='bos'>
+          <Row>物料下载地址： {{detailList.materialUrl}}</Row>
+          <Row>资源使用说明：{{detailList.materialDescription}}</Row>
         </div>
         <!-- 电子券资源 -->
-        <div class='title'>电子券资源</div>
-        <div class='bos'>
+        <div v-if='$route.params.status == 0' class='title'>电子券资源</div>
+        <div v-if='$route.params.status == 0' class='bos'>
           <Table :columns="ticketcolumns" :data='ticketlist' border stripe disabled-hover size="small" class="table">
           </Table>
           <Row>资源使用说明：滴入酚酞遇古巴和你几门课烫染头发v共一百年后你们家门口日方提供v抱回家呢</Row>
         </div>
-        <div class='title'>效果图</div>
-        <div class='bos imgs'>
+        <div v-if='$route.params.status == 0' class='title'>效果图</div>
+        <div v-if='$route.params.status == 0' class='bos imgs'>
           <img src="//fanyi.bdstatic.com/static/translation/img/header/logo_40c4f13.svg" alt="">
           <img src="//fanyi.bdstatic.com/static/translation/img/header/logo_40c4f13.svg" alt="">
         </div>
         <!-- 操作日志 -->
-        <div class='title'>操作日志</div>
-        <Table :columns="logcolumns" :data='loglist' border stripe disabled-hover size="small" class="table">
+        <div v-if='$route.params.status == 0' class='title'>操作日志</div>
+        <Table v-if='$route.params.status == 0' :columns="logcolumns" :data='loglist' border stripe disabled-hover size="small" class="table">
         </Table>
     </div>
 
@@ -92,12 +78,12 @@
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import jsxReactToVue from '@/util/jsxReactToVue'
-import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import moment from 'moment'
 
 import {
-  queryList
-} from '@/api/orderkol'
+  itemlist
+} from '@/api/filmorder'
+import { queryDetail } from '@/api/resourceFilm'
 import EditDialog, { Field } from '@/components/editDialog'
 import UploadButton, { SuccessEvent } from '@/components/UploadButton.vue'
 
@@ -120,7 +106,9 @@ export default class Main extends ViewBase {
     fruit: [],
   }
 
-   // 操作日志
+  list: any = {}
+  detailList: any = {}
+  // 操作日志
   loglist: any = []
   ticketlist: any = []
   approveStatusList: any = [
@@ -153,8 +141,24 @@ export default class Main extends ViewBase {
 
   dataForm: any = { ...dataForm }
 
-  async onUploadSuccess({ files }: SuccessEvent, key: number) {
+  mounted() {
+    this.doSearch()
   }
+
+  async doSearch() {
+    try {
+        // 订单列表
+      const { data } = await itemlist(this.$route.params.id)
+      this.list = data
+
+      const datas = await queryDetail(this.$route.params.id)
+      this.detailList = datas.data
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+    }
+  }
+
 
   back() {
     this.$router.go(-1)

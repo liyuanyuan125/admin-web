@@ -34,6 +34,12 @@ em {
 .up-limit {
     width: 100px;
 }
+.form-item {
+    .input,
+    /deep/ .ivu-select {
+        width: 230px;
+    }
+}
 .form-list {
     .input,
     /deep/ .ivu-select {
@@ -50,7 +56,9 @@ em {
         margin-right: 20px;
     }
 }
-
+.text-center {
+    text-align: center;
+}
 .modal-item {
     border: solid 1px #ededed;
     background: #fff;
@@ -59,6 +67,7 @@ em {
     margin-bottom: 10px;
     h2 {
         padding-bottom: 15px;
+        font-size: 15px;
     }
     p {
         display: flex;
@@ -69,4 +78,7 @@ em {
             margin-right: 10px;  
         }
     }
+}
+/deep/ .ivu-form-item-label{
+    font-size: 13px;
 }

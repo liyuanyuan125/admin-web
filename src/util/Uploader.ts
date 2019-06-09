@@ -7,6 +7,7 @@ import EventClass from '@/fn/EventClass'
 import deepExtend from 'deep-extend'
 import exif from 'exif-js'
 import { post } from '@/fn/ajax'
+import { MapType } from '@/util/types'
 
 /** 图片类型 */
 export enum ImageType {
@@ -20,15 +21,15 @@ export enum ImageType {
 /** 上传选项  */
 export interface UploaderOptions {
   /** 图片上传地址 */
-  imagePostUrl: string
+  imagePostUrl?: string
   /** 图片上传字段名 */
-  imageFieldName: string
+  imageFieldName?: string
   /** 文件上传地址 */
-  filePostUrl: string
+  filePostUrl?: string
   /** 文件上传字段名 */
-  fileFieldName: string
+  fileFieldName?: string
   /** 图片压缩选项 */
-  imageCompress: {
+  imageCompress?: {
     /** 压缩限制 min width，为 null 则不限制 */
     minWidth: number | null
     /** 压缩限制 max width，为 null 则不限制 */
@@ -38,9 +39,9 @@ export interface UploaderOptions {
     /** 压缩限制 max height，为 null 则不限制 */
     maxHeight: number | null
     /** 压缩比，用于 canvas 转成 jpeg */
-    quality: number
+    quality?: number
     /** 保留图片类型列表 */
-    keepTypes: ImageType[]
+    keepTypes?: ImageType[]
   }
 }
 
@@ -168,7 +169,7 @@ export default class Uploader extends EventClass {
     this.options = deepExtend({}, defaultOptions, options)
   }
 
-  async upload(file: File) {
+  async upload(file: File, data: MapType<any> | FormData = {}) {
     let item: UploadItem
     try {
       item = await this.prepare(file)
@@ -178,8 +179,10 @@ export default class Uploader extends EventClass {
 
     try {
       this.emit('begin')
-      const { data: { items = [] } = {} } = await this.postFile(item)
+      const res = await this.postFile(item, data)
+      const items = res.data.items || []
       this.emit('done', items[0] || {})
+      return res.data
     } catch (ex) {
       this.emit('fail', ex)
     } finally {
@@ -187,16 +190,21 @@ export default class Uploader extends EventClass {
     }
   }
 
-  private async postFile({ file, type }: UploadItem) {
+  private async postFile({ file, type }: UploadItem, data: MapType<any> | FormData = {}) {
     const { imagePostUrl, imageFieldName, filePostUrl, fileFieldName } = this.options
     const isImage = type === 'image'
     const postUrl = isImage ? imagePostUrl : filePostUrl
     const fieldName = isImage ? imageFieldName : fileFieldName
 
     const form = new FormData
-    form.append(fieldName, file, file.name)
+    form.append(fieldName!, file, file.name)
 
-    return post(postUrl, form, {
+    const pairs = data instanceof FormData ? Array.from(data) : Object.entries(data)
+    pairs.forEach(([name, value]) => {
+      form.append(name, value)
+    })
+
+    return post(postUrl!, form, {
       onUploadProgress: (ev: ProgressEvent) => {
         this.emit('progress', ev)
       }
@@ -209,7 +217,7 @@ export default class Uploader extends EventClass {
     if (type === 'image') {
       return new Promise<UploadItem>((resolve, reject) => {
         const { minWidth, maxWidth, minHeight, maxHeight,
-                quality, keepTypes } = this.options.imageCompress
+                quality, keepTypes } = this.options.imageCompress!
 
         const thumb = URL.createObjectURL(file)
         const image = new Image
@@ -239,7 +247,7 @@ export default class Uploader extends EventClass {
           this.emit('thumb', { ...result })
 
           // 是否跳过限制长宽，所有在 keepTypes 的都要直接 PASS
-          const shouldPass = keepTypes.includes(subtype as ImageType)
+          const shouldPass = keepTypes!.includes(subtype as ImageType)
           if (shouldPass || (maxWidth == null && maxHeight == null)) {
             return resolve(result)
           }

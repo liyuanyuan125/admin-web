@@ -1,43 +1,54 @@
 <template>
-  <div class="pages" v-auth="'advert.executeOrder:cinemas'">
-    <Row class="shouDlg-header">
-      <Col span="5">
-        <AreaSelect v-model="area"/>
-      </Col>
-      <Col span="5" offset="1">
-        <Input v-model="dataForm.name" placeholder="【专资编码】或 影院名称" />
-      </Col>
-      <Col span='5' offset="1">
-        <Select v-model="dataForm.resourceCompanyId" placeholder="资源方公司名称" style='width: 200px;'  filterable>
-          <Option v-for="it in []" :key="it.id" :value="it.id"
-            :label="it.name">{{it.name}}</Option>
-        </Select>
-      </Col>
-      <Col span="4" offset="1">
-        <Button type="primary" @click="search">搜索</Button>
-      </Col>
-    </Row>
-    <div v-if="checkId">
+  <div class="pages" >
+    <div class='title'>投放影院({{list.length}}家)
+      <span style='float: right'>导出影院列表</span>
+    </div>
+    <div class='bos'>
+      <Row class="shouDlg-header">
+        <Col span="5">
+          <AreaSelect v-model="area"/>
+        </Col>
+        <Col span="5" offset="1">
+          <Input v-model="dataForm.cinemaName" placeholder="【专资编码】或 影院名称" />
+        </Col>
+        <Col span='5' offset="1">
+          <!-- <Select v-model="dataForm.resourceId" placeholder="资源方公司名称" style='width: 200px;'  filterable>
+            <Option v-for="it in []" :key="it.id" :value="it.id"
+              :label="it.name">{{it.name}}</Option>
+          </Select> -->
+          <compangList v-model='dataForm.resourceId' @done="dlgEditDone"/>
+        </Col>
+        <Col span="4" offset="1">
+          <Button type="primary" @click="search">搜索</Button>
+        </Col>
+      </Row>
       <Button type="primary" @click="changeAll">批量删除</Button>
+      <Table :columns="columns" @on-selection-change="onselect" :data="list" :loading="loading"
+        border stripe disabled-hover size="small" class="table">
+        <template slot="resourceId" slot-scope="{row}" >
+          <div v-for='(it, index) in reslist'>
+            <span v-if='row.resourceId == it.id'>{{it.name}}&nbsp;&nbsp;&nbsp;<a @click="change( row.cinemaId , row.cinemaName ,  it.name , it.id)">变更</a></span>
+          </div>
+          <!-- <a @click="delcinema( row.id )">变更</a> -->
+        </template>
+        <template v-if="$route.params.status == '2'" slot="action" slot-scope="{row}" >
+          <a @click="delcinema( row.id )">删除</a>
+        </template>
+      </Table>
+      <div class="page-wrap" v-if="total > 0">
+         <Page class="page" :total="total" :current="dataForm.pageIndex" :page-size="dataForm.pageSize"
+            show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
+            @on-change="sizeChangeHandle"
+            @on-page-size-change="currentChangeHandle"/>
+      </div>
+      <div class="act-bar">
+        <a @click="onAdd" v-if="!type" @done="dlgEditDone">添加影院</a>
+      </div>
+      <singDlg ref="addOrUpdate" v-if='addOrUpdateVisible' @done="dlgEditDone" />
+      <changeDlg ref="change" v-if='changeVisible' @done="dlgEditDone" />
+      <AddCinemaModel v-if="type != 'detail'" ref="addCinemaModel" :cinemaend = "incinematype" :addData="inValue" @done="dlgEditDone" />
     </div>
-    <Table :columns="columns" @on-selection-change="check" :data="tableData" :loading="loading"
-      border stripe disabled-hover size="small" class="table">
-      <template v-if="$route.params.status == '2'" slot="action" slot-scope="{row}" >
-        <a v-auth="'advert.executeOrder:cancelCinema'" @click="change( row.id, row.shortName )">取消执行</a>
-      </template>
-    </Table>
-    <div class="page-wrap" v-if="total > 0">
-       <Page class="page" :total="total" :current="dataForm.pageIndex" :page-size="dataForm.pageSize"
-          show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-          @on-change="sizeChangeHandle"
-          @on-page-size-change="currentChangeHandle"/>
     </div>
-    <div class="act-bar">
-      <a @click="onAdd" v-if="!type">添加影院</a>
-    </div>
-    <singDlg ref="addOrUpdate" @done="dlgEditDone" />
-    <AddCinemaModel v-if="type != 'detail'" ref="addCinemaModel" :cinemaend = "incinematype" :addData="inValue" @done="columndata" />
-  </div>
   </div>
 </template>
 
@@ -46,15 +57,18 @@ import { Component, Watch , Mixins, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { cinemaCancel , cinemaList } from '@/api/orderSys'
+import { cinemaList , delcin , aresids } from '@/api/beforeplan'
+import { queryList } from '@/api/corpReal'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
-import {confirm , warning , success, toast } from '@/ui/modal'
+import {confirm , warning , success, toast , info } from '@/ui/modal'
 import AreaSelect from '@/components/areaSelect'
 import singDlg from './singDlg.vue'
+import changeDlg from './changeDlg.vue'
 import AddCinemaModel from './addCinemaModel.vue'
+import compangList from '../supervision/companyList.vue'
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
@@ -66,7 +80,9 @@ const dataForm = {
   components: {
     AreaSelect,
     singDlg,
-    AddCinemaModel
+    changeDlg,
+    AddCinemaModel,
+    compangList,
   }
 })
 export default class Main extends Mixins(ViewBase, UrlManager) {
@@ -94,7 +110,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   dataForm: any = {
     pageIndex: 1,
     pageSize: 20,
-    name: '',
+    cinemaName: '',
+    resourceId: null,
     provinceId: 0,
     cityId: 0,
     countyId: 0,
@@ -111,28 +128,19 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   typeList = []
   showTime: any = []
   checkId: any = []
+  ids: any = []
+  reslist: any = []
 
   get columns() {
     const data: any = [
-      { title: '影院名称', key: 'shortName', align: 'center' },
-      { title: '专资编码', key: 'code', align: 'center' },
-      {
-        title: '所在地',
-        key: 'status',
-        align: 'center',
-        render: (hh: any, { row: { areaName, provinceName, cityName } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          const area = areaName ? areaName + ' , ' : ''
-          const province = provinceName ? provinceName + ' , ' : ''
-          const city = cityName ? cityName : ''
-          return <span>{area}{province}{city}</span>
-          /* tslint:enable */
-        }
-      },
-      { title: '所属资源方', width: 120, key: 'code', align: 'center' },
-      { title: '联系人', width: 120, key: 'code', align: 'center' },
-      { title: '联系电话', width: 120, key: 'code', align: 'center' },
+      { title: '影院名称', key: 'cinemaName', align: 'center' },
+      { title: '专资编码', key: 'code', align: 'center' , width: 80 },
+      { title: '所在省', key: 'provinceName', align: 'center', width: 80 },
+      { title: '所在市', key: 'cityName', align: 'center', width: 80 },
+      { title: '所在区', key: 'countyName', align: 'center', width: 80 },
+      { title: '所属资源方', slot: 'resourceId', align: 'center' },
+      { title: '联系人', width: 120, key: 'contract', align: 'center' },
+      { title: '联系电话', width: 120, key: 'contractTel', align: 'center' },
     ]
     const check = [
        {
@@ -151,68 +159,35 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         slot: 'action'
       }
     ]
-    return this.$route.params.status == '2' ? [...check, ...data, ...opernation] : data
-  }
-
-  check(data: any) {
-    const ids = this.tableData.map((it: any) => it.id)
-    const dataId = data.map((it: any) => it.id)
-    data.forEach((item: any) => {
-      if (!this.checkId.includes(item.id)) {
-        this.checkId.push(item.id)
-      }
-    })
-    const filterId = ids.filter((it: any) => !dataId.includes(it))
-    this.checkId = this.checkId.filter((it: any) => !filterId.includes(it))
-  }
-
-  get cachedMap() {
-    return {
-    }
+    return this.$route.params.status == '8' || this.$route.params.status == '9' ||
+    this.$route.params.status == '10' || this.$route.params.status == '11' ||
+    this.$route.params.status == '12' ? data : [...check, ...data, ...opernation]
   }
 
   dlgEditDone(id: any) {
-    // if (id.length > 0) {
-    //   id.map((it: any) => {
-    //     this.cinemaArray = this.cinemaArray.filter((its: any) => its != it)
-    //     this.checkId = this.checkId.filter((its: any) => its != it)
-    //   })
-    // } else {
-    //   this.cinemaArray = this.cinemaArray.filter((it: any) => it != id)
-    // }
     this.search()
   }
 
-  get tableData() {
-    if (this.cinemaArray.length == 0) {
-      return []
-    }
-    const cachedMap = this.cachedMap
-    const list = (this.list || []).map((it: any) => {
-      return {
-        ...it
-      }
+  onselect(row: any , selection: any) {
+    this.ids = row.map((it: any) => {
+      return it.id
     })
-    const list1 = (this.list || []).map((it: any) => {
-      if (this.checkId.includes(it.id)) {
-        return {
-          ...it,
-          _checked: true
-        }
-      } else {
-        return {
-          ...it,
-        }
-      }
-    })
-    return this.$route.params.status == '2' ? list1 : list
   }
 
-  find() {
-    this.$nextTick(() => {
-      (this.$refs.img as any).init()
-    })
+  // 删除影院
+  async delcinema(id: any) {
+    try {
+      await confirm('您确定删除当前影院信息吗？')
+      await delcin(this.$route.params.id , { cinemaIds : [id]})
+      this.$Message.success({
+        content: `删除成功`,
+      })
+      this.$router.go(0)
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
+
 
   // 每页数
   sizeChangeHandle(val: any) {
@@ -229,13 +204,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   onAdd() {
     this.addShow = true
     this.$nextTick(() => {
-      (this.$refs.addCinemaModel as any).init(this.tableData)
+      (this.$refs.addCinemaModel as any).init(this.list)
     })
   }
 
-  columndata(val: any) {
-    this.search()
-  }
 
 
   mounted() {
@@ -243,13 +215,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
 
   async search() {
-    if (this.loading) {
-      return
-    }
-    if (this.cinemaArray.length == 0) {
-      return
-    }
-    this.loading = true
     const query = clean({ ...this.dataForm, ids: this.cinemaArray.join(',') })
     try {
         // 订单列表
@@ -261,8 +226,15 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       } } = await cinemaList(this.$route.params.id, query)
       this.list = list
       this.total = total
+
+      const { data } =  await queryList(clean({
+        pageSize: 888888,
+        status: 1,
+        typeCode: 'resource'
+      }))
+      this.reslist = data.items
     } catch (ex) {
-      this.handleError(ex)
+      // this.handleError(ex)
     } finally {
       this.loading = false
     }
@@ -276,18 +248,32 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     this.dataForm.countyId = !!val[2] ? val[2] : ''
   }
 
-  change(id: number, shortName: any) {
-    this.addOrUpdateVisible = true
+  change(id: any, cName: any , name: any , idres: any) {
+    this.changeVisible = true
     this.$nextTick(() => {
-      (this.$refs.addOrUpdate as any).init(id, shortName)
+      (this.$refs.change as any).init(id, cName , name , idres)
     })
   }
 
-  changeAll() {
-    this.addOrUpdateVisible = true
-    this.$nextTick(() => {
-      (this.$refs.addOrUpdate as any).inits(this.checkId)
-    })
+  async changeAll() {
+    // this.addOrUpdateVisible = true
+    // this.$nextTick(() => {
+    //   (this.$refs.addOrUpdate as any).init(this.ids)
+    // })
+    if (this.ids.length == 0) {
+      info('请选择要删除的影院')
+      return
+    }
+    try {
+      await confirm('您确定删除这些影院信息吗？')
+      await delcin(this.$route.params.id , { cinemaIds : this.ids})
+      this.$Message.success({
+        content: `删除成功`,
+      })
+      this.$router.go(0)
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
 
   @Watch('cinemaArray', {deep: true})
@@ -307,6 +293,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 </script>
 
 <style lang="less" scoped>
+@import '../../../site/lib.less';
 .form {
   .input,
   /deep/ .ivu-select {
@@ -320,7 +307,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     width: 80px;
   }
 }
-
+.title {
+  font-size: 16px;
+  color: @c-base;
+  line-height: 50px;
+}
 .btn-search,
 .btn-reset {
   margin-left: 8px;
@@ -413,8 +404,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 }
-.pages {
-  background: #e4e4e4;
-  padding: 20px 10px 2px 10px;
+.bos {
+  border: 1px solid #ccc;
+  padding: 15px;
 }
 </style>
