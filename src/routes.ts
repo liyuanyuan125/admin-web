@@ -717,7 +717,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   },
   // 订单列表详情 - kol
   {
-    path: '/order/kollist/detail/:id/:orders/:fapiao',
+    path: '/order/kollist/detail/:id/:orders',
     name: 'order-kollist-detail',
     component: () => import('./views/order/kollist/detail.vue'),
     meta: {
@@ -735,7 +735,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   },
    // 退款订单添加/详情 - kol
   {
-    path: '/order/refund/detail/:id/:order/:status',
+    path: '/order/refund/detail/:id/:order',
     name: 'order-refund-detail',
     component: () => import('./views/order/refund/detail.vue'),
     meta: {
@@ -771,7 +771,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   },
   // 影片资源合作订单 - 影片审核/详情
   {
-    path: '/order/filmorder/filmexamine',
+    path: '/order/filmorder/filmexamine/:id/:status',
     name: 'order-filmorder-filmexamine',
     component: () => import('./views/order/filmorder/filmexamine.vue'),
     meta: {

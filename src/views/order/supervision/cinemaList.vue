@@ -20,7 +20,7 @@ export default class CinemaChainSelect extends ViewBase {
   /**
    * 值本身，可以使用 v-model 进行双向绑定
    */
-  @Prop({ type: Object, default: {} }) value!: object
+  @Prop({ type: Number, default: null }) value!: any
   /**
    * 提示文字
    */
