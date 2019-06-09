@@ -1,71 +1,148 @@
-import { get, put } from '@/fn/ajax'
+import { get, post, put } from '@/fn/ajax'
 import { mockGet, tid, title20, typeInt, dateRange } from './mock'
 
 export async function queryList(query: any) {
-  // const res = await get('/kol/accounts', query)
+  // const res = await get('/kol/channel-accounts', query)
   // return res
-  return await mockGet(query, {
+  const res = await mockGet(query, {
     totalCount: 10,
     'items|10': [{
-        accountCategoryCode: [
+      accountCategoryCode: typeInt(0, 4),
+      auth: true,
+      authName: title20,
+      channelCode: typeInt(0, 4),
+      channelDataId: title20,
+      cityId: tid,
+      controlStatus: tid,
+      createTime: {
+        chronology: {
+          calendarType: 'm',
+          id: 'dolor occaecat Duis'
+        },
+        dayOfMonth: -61532863.495152764,
+        dayOfWeek: 'irure sed anim',
+        dayOfYear: -66522474.20113273,
+        hour: -48020587.83438779,
+        minute: 9279436.570165515,
+        month: 'ea qui Duis',
+        monthValue: -31781840.163189262,
+        nano: -45892426.139039256,
+        second: -61733718.91071446,
+        year: 70187708.5136995
+      },
+      createUser: tid,
+      customFans: {
+        ages: [
           {
+            k: title20,
+            v: tid
+          },
+          {
+            k: title20,
+            v: tid
+          }
+        ],
+        cities: [
+          {
+            fansCount: tid,
+            id: tid,
             name: title20,
-            id: tid
-          }
-        ], // string	非必须
-        auth: true, // 	boolean	非必须
-        authName: title20, // string 非必须
-        channelCode: typeInt(1, 4), // 	string	非必须
-        channelDataId: title20, // 	string	非必须
-        cityId: tid, // 	integer	非必须
-        controlStatus: null, // 	integer	非必须
-        createTime: dateRange(), // 	object	非必须
-        createUser: tid, // 	number	非必须
-        customFans: null, // 	object	非必须
-        customIntroduction: title20, // 	string	非必须
-        id: tid, // 	integer	非必须
-        introduction: title20, // 	string	非必须
-        name: title20, // 	string	非必须
-        priceRemark: title20, // 	string	非必须
-        priceStatus: null, // 	integer	非必须
-        prices: null, // 	object []	非必须
-        provideInvoice: null, // 	boolean	非必须
-        provinceId: tid, // 	boolean	非必须
-        remark: title20, // 	string	非必须
-        settlementPrices: [
-          {
-            text: '多图文第1条',
-            price: 1000
           },
           {
-            text: '多图文第2条',
-            price: 800
+            fansCount: tid,
+            id: tid,
+            name: title20,
+          }
+        ],
+        femalePercent: tid,
+        malePercent: tid,
+        provinces: [
+          {
+            fansCount: tid,
+            id: tid,
+            name: title20,
           },
           {
-            text: '多图文第3条',
-            price: 500
+            fansCount: tid,
+            id: tid,
+            name: title20,
+          },
+          {
+            fansCount: tid,
+            id: tid,
+            name: title20,
+          },
+          {
+            fansCount: tid,
+            id: tid,
+            name: title20,
           }
-        ], // 	object []	非必须
-        status: null, // 	number	非必须
-        type: null, // 	number	非必须
-        updateTime: dateRange(), // 	object	非必须
-        updateUser: tid, // 	number	非必须
-        channelDataName: title20, // nxd mock补充
-        fansCount: tid, // nxd mock补充
-        kolId: tid, // nxd mock补充
-        kolName: title20, // nxd mock补充
-
+        ],
+        totalCount: tid
+      },
+      customIntroduction: 'Ut mollit',
+      id: -24511295,
+      introduction: 'nulla dolor consequat',
+      name: title20,
+      priceRemark: 'in sunt anim',
+      priceStatus: -1271969,
+      'prices|5': [
+        {
+          categoryCode: tid,
+          categoryName: title20,
+          costPrice: tid,
+          priceType: -33517531,
+          salePrice: tid,
+          value: tid
+        }
+      ],
+      provideInvoice: true,
+      provinceId: true,
+      remark: title20,
+      'settlementPrices|2': [
+        {
+          categoryCode: 1,
+          categoryName: title20,
+          effectiveDate: dateRange(),
+          settlementPrice: 18888
+        }
+      ],
+      status: typeInt(0, 3),
+      type: 42900539.22461575,
+      updateTime: {
+        chronology: {
+          calendarType: 'magna sed Duis quis ut',
+          id: 'ex do reprehenderit exercitation fugiat'
+        },
+        dayOfMonth: 97197318.60283446,
+        dayOfWeek: 'tem',
+        dayOfYear: -92092993.54311398,
+        hour: -17949722.458362237,
+        minute: 49530410.07896224,
+        month: 'sed dolor',
+        monthValue: 67337039.50187922,
+        nano: 80538975.35568231,
+        second: -79231601.65212147,
+        year: 54063643.21861598
+      },
+      updateUser: -1890733.713647738
+    }
+    ],
+    'accountCategoryList|6': [{
+      controlStatus: 1,
+      text: title20,
+      key: tid
     }],
-    accountCategoryList: [{
-      text: '母婴育儿',
-      key: 1
-    }, {
-      text: '美容美妆',
-      key: 2
-    }, {
-      text: '时尚穿搭',
-      key: 3
-    } ],
+    publishCategoryList: [
+      {
+        text: '直发',
+        key: 1
+      },
+      {
+        text: '转发',
+        key: 2
+      }
+    ],
     channelList: [{
       text: '微博',
       key: 'weibo'
@@ -82,13 +159,12 @@ export async function queryList(query: any) {
       text: '小红书',
       key: 'xiaohongshu'
     }],
-    statusList: [{
-      text: '正常',
-      key: 1
-    }, {
-      text: '停业',
-      key: 2
-    }],
+    statusList: [
+      { text: '未知', key: 0 },
+      { text: '待审核', key: 1 },
+      { text: '通过', key: 2 },
+      { text: '拒绝', key: 3 },
+    ],
     controlStatusList: [{
       text: '已上架',
       key: 1
@@ -104,68 +180,189 @@ export async function queryList(query: any) {
       key: 2
     }]
   })
-}
-// 获取平台分类 accountCategorysList
-export async function accountCategorysList(query: any) {
-  return await mockGet(query, {
-    items: [
-      {
-        id: 1,
-        name: '母婴育儿',
-        accountCategoryStatus: 1,
-        controlStatus: 1,
-        createTime: dateRange(),
-        createUser: tid,
-        modifyTime: dateRange(),
-        modifyUser: tid
-      },
-      {
-        id: 2,
-        name: '美容美妆',
-        accountCategoryStatus: 1,
-        controlStatus: 1,
-        createTime: dateRange(),
-        createUser: tid,
-        modifyTime: dateRange(),
-        modifyUser: tid
-      }, {
-        id: 3,
-        name: '时尚穿搭',
-        accountCategoryStatus: 1,
-        controlStatus: 1,
-        createTime: dateRange(),
-        createUser: tid,
-        modifyTime: dateRange(),
-        modifyUser: tid
-      }
-    ]
+  res.data.items.forEach((it: any, index: number) => {
+    if (it.status == 2 || it.status == 3) {
+      it._disabled = true
+    }
+    // statusList: [
+    //   { text: '未知', key: 0 },
+    //   { text: '待审核', key: 1 },
+    //   { text: '通过', key: 2 },
+    //   { text: '拒绝', key: 3 },
   })
-}
-
-
-
-/**
- * 更新状态
- * @param id 要操作的ID
- * @param status 新的状态值
- */
- export async function updateChannelCode(id: string, status: number) {
-  const res = await get('/theater/cinemas/status', { id, status })
   return res
 }
 
+/**
+ * 审核
+ * @param query 参数
+ */
+export async function approve(query: any) {
+  // const res = await post('/kol/channel-accounts/approve', query)
+  // return res
+  return await mockGet(query, {
+    data: {
+      res: 'ok'
+    }
+  })
+}
 
 /**
- * 更新状态
- * @param id 要操作的ID
- * @param status 新的状态值
+ * 创建
+ * @param query 参数
  */
- export async function updateStatus(id: string, status: number) {
-  // const res = await put('/theater/cinemas/status', { id, status })
+export async function create(query: any) {
+  const res = await post('/kol/channel-accounts', query)
+  return res
+  // return await mockGet(query, {
+  //   data: {
+  //     res : 'ok'
+  //   }
+  // })
+}
+
+/**
+ * 根据渠道编码和渠道数据ID查看详情
+ * @param query 参数
+ */
+export async function queryId(query: any) {
+  // const res = await get(`/kol/channel-accounts/${query.channelCode}/${query.id}`)
   // return res
-  return await mockGet(id, {
-    'items|20': [{
-      id: tid
-    }]
+  return await mockGet(query, {
+    item: {
+      imageList: [{
+        fileId: 'bgvg7fi893rg008003l0',
+        url: '//aiads-file.oss-cn-beijing.aliyuncs.com/IMAGE/MISC/bgvg7fi893rg008003l0.png'
+      }],
+      validityPeriodDate: 20190126,
+      // 上面的是造数据的
+      photo: 'bgvg7fi893rg008003l0',
+      photoUrl: 'http://img1.imgtn.bdimg.com/it/u=2814109303,2147705560&fm=26&gp=0.jpg',
+      accountCategoryCode: typeInt(0, 3),
+      auth: true,
+      authName: title20,
+      channelDataId: tid,
+      cityId: 375,
+      createTime: dateRange(),
+      createUser: tid,
+      customFans: {
+        ages: [
+          {
+            k: '0',
+            v: 22
+          },
+          {
+            k: '1',
+            v: 33
+          },
+          {
+            k: '2',
+            v: 44
+          },
+          {
+            k: '3',
+            v: 55
+          },
+        ],
+        'cities|10': [
+          {
+            fansCount: tid,
+            id: tid,
+            name: title20
+          }
+        ],
+        femalePercent: 11,
+        malePercent: 89,
+        'provinces:10': [
+          {
+            fansCount: tid,
+            id: tid,
+            name: title20
+          }
+        ],
+        totalCount: tid,
+      },
+      customIntroduction: 'pariatur reprehenderit nulla',
+      id: tid,
+      introduction: title20,
+      name: title20,
+      priceRemark: '定价审批备注111111',
+      priceStatus: 1,
+      'prices:3': [
+        {
+          categoryCode: 0,
+          categoryName: title20,
+          costPrice: 1111,
+          priceType: 1,
+          salePrice: 1110,
+          value: 1112
+        }
+      ],
+      provideInvoice: false,
+      provinceId: 31,
+      remark: title20,
+      'settlementPrices:4': [
+        {
+          categoryCode: typeInt(0, 4),
+          categoryName: '结算价详情1',
+          effectiveDate: dateRange(),
+          settlementPrice: 30001
+        }
+      ],
+      status: typeInt(0, 2),
+      type: typeInt(1, 2),
+      updateTime: dateRange(),
+      updateUser: dateRange()
+    },
+    priceStatusList: [{
+      key: 0,
+      text: '定价已审批'
+    },
+    {
+      key: 1,
+      text: '定价未审批'
+    }],
+    statusList: [
+      { text: '待审核', key: 0 },
+      { text: '通过', key: 1 },
+      { text: '拒绝', key: 2 }
+    ],
+    ageList: [
+      {
+        key: 0,
+        text: '18岁以下'
+      },
+      {
+        key: 1,
+        text: '18-25岁'
+      },
+      {
+        key: 2,
+        text: '26-30岁'
+      },
+      {
+        key: 3,
+        text: '31-40岁'
+      },
+      {
+        key: 4,
+        text: '40岁以上'
+      }
+    ],
+    publishCategoryList: [
+      {
+        text: '直发',
+        key: 1
+      },
+      {
+        text: '转发',
+        key: 2
+      }
+    ],
+    'accountCategoryList|6': [{
+      controlStatus: 1,
+      text: title20,
+      key: tid
+    }],
   })
 }
