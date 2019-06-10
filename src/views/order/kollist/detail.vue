@@ -16,10 +16,12 @@
     <div v-if='$route.params.orders == 2 || $route.params.orders == 3 || $route.params.orders == 0 || $route.params.orders == 5' class='title'>商务确认</div>
 
     <Table  :columns="okcolumns" :data='oklist' border stripe disabled-hover size="small" class="table">
+      <template v-if='$route.params.orders == 2 ' slot="action" slot-scope="{row}" >
+          <a  @click="deletefilm(row.id)">删除</a>&nbsp;
+          <a  @click="editShow(row.id , row.confirmPrice , row.confirmRemark)">编辑</a>
+        </template>
     </Table>
 
-    <Button v-if='$route.params.orders == 2' style='margin-left: 45%;margin-top: 10px;'>提交</Button>
-    <Button v-if='$route.params.orders == 2' style='margin-left: 10px;margin-top: 10px;'>取消</Button>
 
     <!-- 订单支付信息 -->
     <div class='title' v-if='$route.params.orders == 8 || $route.params.orders == 0'>订单支付信息</div>
@@ -87,6 +89,7 @@
     <div v-if='$route.params.orders == 0' class='title'>操作日志</div>
     <Table v-if='$route.params.orders == 0' :columns="logcolumns" :data='loglist' border stripe disabled-hover size="small" class="table">
     </Table>
+    <reDlg  ref="re"   v-if="reVisible" @done="dlgEditDone"/>
   </div>
 </template>
 
@@ -94,10 +97,12 @@
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import jsxReactToVue from '@/util/jsxReactToVue'
-import { itemlist , cancel , finance , advance , rest , recept  } from '@/api/kollist'
+import { itemlist , cancel , finance , advance , rest , recept , move  } from '@/api/kollist'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import moment from 'moment'
 import EditDialog, { Field } from '@/components/editDialog'
+import { confirm } from '@/ui/modal'
+import reDlg from './reDlg.vue'
 
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
@@ -121,10 +126,11 @@ const orderdataForm = {
 
 @Component({
   components: {
+    reDlg
   }
 })
 export default class Main extends ViewBase {
-
+  reVisible = false
   editIndex = -1  // 当前聚焦的输入框的行数
   editmoney = '' // 修改金额
   beizhu = '' // 修改备注
@@ -198,15 +204,36 @@ export default class Main extends ViewBase {
     }
   ]
   // 商务确认订单
-  okcolumns = [
-    { title: 'kol平台账号',  key: 'kolId', align: 'center' },
-    { title: 'kol平台账号名称', key: 'kolName', align: 'center' },
-    { title: '平台', width: 70, key: 'channelCode', align: 'center' },
-    { title: '任务类型', key: 'publishCategoryCode', align: 'center' },
-    { title: '下单金额',  key: 'salePrice', align: 'center' },
-    { title: '商务修改金额',  key: 'confirmPrice', align: 'center' },
-    { title: '备注',  key: 'confirmRemark', align: 'center' },
-  ]
+  get okcolumns() {
+    const data: any = [
+      { title: 'kol平台账号',  key: 'kolId', align: 'center' },
+      { title: 'kol平台账号名称', key: 'kolName', align: 'center' },
+      { title: '平台', width: 70, key: 'channelCode', align: 'center' },
+      { title: '任务类型', key: 'publishCategoryCode', align: 'center' },
+      { title: '下单金额',  key: 'salePrice', align: 'center' },
+      { title: '商务修改金额',  key: 'confirmPrice', align: 'center' },
+      { title: '备注',  key: 'confirmRemark', align: 'center' },
+    ]
+    const opernation = [
+       {
+        title: '操作',
+        key: 'status',
+        align: 'center',
+        width: 80,
+        slot: 'action'
+      }
+    ]
+    return this.$route.params.orders == '2' ? [...data, ...opernation] : data
+  }
+  // okcolumns = [
+  //   { title: 'kol平台账号',  key: 'kolId', align: 'center' },
+  //   { title: 'kol平台账号名称', key: 'kolName', align: 'center' },
+  //   { title: '平台', width: 70, key: 'channelCode', align: 'center' },
+  //   { title: '任务类型', key: 'publishCategoryCode', align: 'center' },
+  //   { title: '下单金额',  key: 'salePrice', align: 'center' },
+  //   { title: '商务修改金额',  key: 'confirmPrice', align: 'center' },
+  //   { title: '备注',  key: 'confirmRemark', align: 'center' },
+  // ]
   // 订单支付信息
   ordercolumns = [
     { title: '类型',  key: 'name', align: 'center' },
@@ -256,6 +283,18 @@ export default class Main extends ViewBase {
     this.search()
   }
 
+  dlgEditDone() {
+    this.search()
+  }
+
+  editShow(id: any , price: any , mark: any) {
+    this.reVisible = true
+    this.$nextTick(() => {
+      const myThis: any = this
+      myThis.$refs.re.init(id , price , mark)
+    })
+  }
+
   // 返回上一页 && 接单取消按钮
   back() {
     this.$router.go(-1)
@@ -289,6 +328,19 @@ export default class Main extends ViewBase {
     }
   }
 
+  // 商务金额删除
+  async deletefilm(id: any) {
+    try {
+      await confirm('您确定删除当前信息吗？')
+      await move(id)
+      this.$Message.success({
+        content: `删除成功`,
+      })
+      // this.$router.go(0)
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
 
   // 提交支付信息
   async change() {

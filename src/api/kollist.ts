@@ -60,8 +60,8 @@ export async function edit( query: any) {
 }
 
 //  商务确认删除
-export async function move(orderItemId: any ,  query: any) {
-  const data = await del(`/kol/orders/biz-move/${orderItemId}`, query)
+export async function move(orderItemId: any  ) {
+  const data = await del(`/kol/orders/biz-move/${orderItemId}` )
   return data
 }
 

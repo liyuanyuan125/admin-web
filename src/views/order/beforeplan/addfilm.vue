@@ -8,7 +8,7 @@
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
        <div class="act-bar flex-box">
         <form class="form flex-1" @submit.prevent="search">
-          <span style='margin-left: 7.5%;'>影片名称</span><LazyInput v-model="query.name" placeholder="影片名称" class="input"/>
+          <span style='margin-right: 7.5%;'>影片名称</span><LazyInput v-model="query.name" placeholder="影片名称" class="input"/>
         </form>
       </div>
       <FormItem label="影片类型" prop="userIds">
@@ -27,6 +27,7 @@
       </div>
     </Form>
     <div slot="footer" class="dialog-footer">
+      <span style='margin-right: 7.5%;'>已选{{ids.length}}</span>
       <Button @click="cancel">取消</Button>
       <Button type="primary" @click="dataFormSubmit('dataForm')">确定</Button>
     </div>
