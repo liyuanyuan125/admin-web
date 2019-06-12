@@ -67,7 +67,8 @@ export default class ComponentMain extends ViewBase {
   async dataFormSubmit() {
     try {
       this.showDlg = false
-      this.$router.push({ name: '/order/refund/detail/0/' + this.dataForm.orderNo})
+      this.$router.push({ name : 'order-refund-detail' , params: { id : '0' , order: this.dataForm.orderNo } })
+      // this.$router.push({ name: '/order/refund/detail/0/' + this.dataForm.orderNo})
     } catch (ex) {
       this.handleError(ex)
       this.showDlg = false

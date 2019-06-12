@@ -55,7 +55,7 @@ import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
 // import { numberify, numberKeys } from '@/fn/typeCast'
-// import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
+import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import DlgEdit from './dlgEdit.vue'
 // import dlgVerify from './dlgVerify.vue'
 
@@ -65,16 +65,16 @@ import {confirm , warning , success, toast } from '@/ui/modal'
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
-const defQuery = {
-  id: '',
-  email: '',
-  companyName: '',
-  status: null,
-  pageIndex: 1,
-  pageSize: 20,
-  beginCreateTime: 0,
-  endCreateTime: 0
-}
+// const defQuery = {
+//   id: '',
+//   email: '',
+//   companyName: '',
+//   status: null,
+//   pageIndex: 1,
+//   pageSize: 20,
+//   beginCreateTime: 0,
+//   endCreateTime: 0
+// }
 const dataForm = {
   status: 1
 }
@@ -88,16 +88,16 @@ const dataForm = {
 })
 // export default class Main extends ViewBase {
 export default class Main extends Mixins(ViewBase, UrlManager) {
-  // defQuery = {
-  //   id: '',
-  //   email: '',
-  //   companyName: '',
-  //   status: null,
-  //   pageIndex: 1,
-  //   pageSize: 20,
-  //   beginCreateTime: 0,
-  //   endCreateTime: 0
-  // }
+  defQuery = {
+    id: '',
+    email: '',
+    companyName: '',
+    status: null,
+    pageIndex: 1,
+    pageSize: 20,
+    beginCreateTime: 0,
+    endCreateTime: 0
+  }
   query: any = {}
   shows = true
   showDlg = false

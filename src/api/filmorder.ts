@@ -29,4 +29,10 @@ export async function film(query: any) {
   return data
 }
 
+//  修改状态
+export async function changestatus(id: any , query: any) {
+  const data = await put(`/movie/cooperation/${id}`, query)
+  return data
+}
+
 

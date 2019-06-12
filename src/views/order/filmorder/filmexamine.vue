@@ -13,7 +13,7 @@
           </Row>
           <Row>
             <Col :span='12'>项目名称：{{list.projectName}}</Col>
-            <Col :span='12'>推广品牌：{{list.id}}</Col>
+            <Col :span='12'>推广品牌：{{list.brandName}}</Col>
           </Row>
           <Row>
             <Col>推广内容：{{list.message}}</Col>
@@ -37,15 +37,15 @@
         <div v-if='$route.params.status == 1' style="border: 1px solid #ccc; padding: 15px;">
           <Form ref="dataForm" :model="dataForm"  label-position="left" :label-width="100">
             <FormItem label="审核意见" prop="status">
-              <RadioGroup v-model='dataForm.approveStatus'>
-                <Radio v-for="it in approveStatusList" v-if="it.key!=0" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
+              <RadioGroup v-model='dataForm.status'>
+                <Radio v-for="it in approveStatusList"   :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
               </RadioGroup>
             </FormItem>
-            <FormItem  label="备注" prop="reason">
+            <!-- <FormItem  label="备注" prop="reason">
             <Input style="width:240px" v-model="dataForm.refuseReason"></Input>
-          </FormItem>
+          </FormItem> -->
           </Form>
-          <Button style='margin-left:20px;' type="primary"  @click="change('dataForm')">提交</Button>
+          <Button style='margin-left:20px;' type="primary"  @click="change()">提交</Button>
           <Button style='margin-left:20px;' @click="back">取消</Button>
         </div>
         <div v-if='$route.params.status == 0' class='title'>图片视频类物料</div>
@@ -81,7 +81,7 @@ import jsxReactToVue from '@/util/jsxReactToVue'
 import moment from 'moment'
 
 import {
-  itemlist
+  itemlist, changestatus
 } from '@/api/filmorder'
 import { queryDetail } from '@/api/resourceFilm'
 import EditDialog, { Field } from '@/components/editDialog'
@@ -92,8 +92,7 @@ const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
 
 const dataForm = {
-  refuseReason: '',
-  approveStatus: 2
+  status: 2
 }
 
 @Component({
@@ -153,6 +152,16 @@ export default class Main extends ViewBase {
 
       const datas = await queryDetail(this.$route.params.id)
       this.detailList = datas.data
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+    }
+  }
+
+  async change() {
+    try {
+      const datas = await changestatus(this.$route.params.id , this.dataForm)
+      this.$router.go(-1)
     } catch (ex) {
       this.handleError(ex)
     } finally {

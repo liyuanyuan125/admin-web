@@ -86,13 +86,13 @@ export default class Main extends ViewBase {
       }
     },
 
-    // {
-    //   name: 'ordername',
-    //   defaultValue: '',
-    //   type: 'date',
-    //   width: 140,
-    //   placeholder: '提交时间'
-    // },
+    {
+      name: 'ordername',
+      defaultValue: '',
+      type: 'date',
+      width: 140,
+      placeholder: '提交时间'
+    },
 
     {
       name: 'status',

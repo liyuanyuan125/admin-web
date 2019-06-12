@@ -38,6 +38,7 @@
         <template slot="spaction" slot-scope="{row}">
           <router-link v-show='row.status == 1' :to="{ name: 'order-filmorder-filmexamine', params: { id: row.id , status: row.status } }">审核订单</router-link>
           <router-link v-show='row.status == 2' :to="{ name: 'resource-film-index-edit', params: { id: row.id } }">上传资源</router-link>
+          <span v-show='row.status != 1 && row.status != 2'>--</span>
         </template>
         </Table>
 
@@ -250,8 +251,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     const adscmy = await company({pageSize: 800000})
     this.company = adscmy.data.items
     // 影片列表
-    const filmdata = await film({pageSize: 800000})
-    this.filmdata = filmdata.data.items
+    // const filmdata = await film({pageSize: 800000})
+    // this.filmdata = filmdata.data.items
     } catch (ex) {
       this.handleError(ex)
     } finally {

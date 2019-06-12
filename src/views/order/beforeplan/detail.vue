@@ -15,7 +15,10 @@
         <Col :span='12'>推广预算&nbsp;：&nbsp;{{listitem.budgetAmount}}元</Col>
       </Row>
       <Row>
-        <Col :span='12'>覆盖城市&nbsp;：&nbsp;票仓城市Top20 | 一线城市 / <span v-if='listitem.cityCustom == 0'>查看城市列表</span></Col>
+        <Col :span='12'>覆盖城市&nbsp;：&nbsp;票仓城市Top20 | 一线城市   <router-link v-if='listitem.cityCustom == 0'
+            :to="{ name: 'order-beforeplan-detail-viewcity', params: { id : this.$route.params.id } }"
+          >查看城市列表</router-link><span></span></Col>
+        <!-- <Col :span='12'>覆盖城市&nbsp;：&nbsp;票仓城市Top20 | 一线城市 / <span v-if='listitem.cityCustom == 0'>查看城市列表</span></Col> -->
         <Col :span='12'>影院星级&nbsp;：&nbsp;5星</Col>
       </Row>
       <Row>
@@ -170,15 +173,15 @@ export default class Main extends ViewBase {
   itemlist: any = []
   get itemcolumns() {
     const data: any = [
-      { title: '影片名称', key: 'movieName', align: 'center' },
+      { title: '影片名称', key: 'moveName', align: 'center' },
       {
         title: '上映日期',
-        key: 'beginDate',
+        key: 'publishStartDate',
         align: 'center',
-        render: (hh: any, { row: { beginDate } }: any) => {
+        render: (hh: any, { row: { publishStartDate } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          const html = moment(beginDate).format(timeFormat)
+          const html = String(publishStartDate).slice(0, 4) + '-' + String(publishStartDate).slice(4, 6) + '-' + String(publishStartDate).slice(6, 8)
           return <span class='datetime' v-html={html}></span>
           /* tslint:enable */
         }
@@ -262,9 +265,9 @@ export default class Main extends ViewBase {
       + ' ' + data.item.applyTime.split('T')[1].split('.')[0]
       // this.remarks = this.listitem.remarks || []
       this.logList = data.logList
-      this.films = data.item.deliveryMovies
-      this.cinemaGradeList = data.cinemaGradeList
-      this.deliveryCityTypeList = data.deliveryCityTypeList
+      this.films = data.planMovies == null ? [] : data.planMovies
+      this.cinemaGradeList = data.cinemaGradeList == null ? [] : data.cinemaGradeList
+      this.deliveryCityTypeList = data.deliveryCityTypeList == null ? [] : data.deliveryCityTypeList
       this.tags = data.tags
     } catch (ex) {
       this.handleError(ex)
@@ -305,7 +308,7 @@ export default class Main extends ViewBase {
   // 保存方案
   async save() {
     try {
-      const res = await save (this.$route.params.id)
+      const res = await save (this.$route.params.id , {needPayAmount : this.dataplan.money})
       this.$router.go(-1)
     } catch (ex) {
       this.handleError(ex)

@@ -720,7 +720,8 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'order-kollist',
     component: () => import('./views/order/kollist/index.vue'),
     meta: {
-      authKey: ''
+      authKey: '',
+      title: 'kol订单列表'
     }
   },
   // 订单列表详情 - kol
@@ -729,7 +730,10 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'order-kollist-detail',
     component: () => import('./views/order/kollist/detail.vue'),
     meta: {
-      authKey: ''
+      authKey: '',
+      title({params}) {
+        return params.orders as any > 0 ? '审核信息' : '查看详情'
+      }
     }
   },
   // 退款订单列表 - kol
@@ -738,7 +742,8 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'order-refund',
     component: () => import('./views/order/refund/index.vue'),
     meta: {
-      authKey: ''
+      authKey: '',
+      title: 'kol退款单列表'
     }
   },
    // 退款订单添加/详情 - kol
@@ -747,7 +752,10 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'order-refund-detail',
     component: () => import('./views/order/refund/detail.vue'),
     meta: {
-      authKey: ''
+      authKey: '',
+      title({params}) {
+        return params.id as any <= 0 ? '创建退款单' : '查看详情'
+      }
     }
   },
   // 影片资源合作订单 - 列表
@@ -756,18 +764,19 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'order-filmorder',
     component: () => import('./views/order/filmorder/index.vue'),
     meta: {
-      authKey: ''
+      authKey: '',
+      title: '影片资源合作订单列表'
     }
   },
-  // 影片资源合作订单 - 上传资源
-  {
-    path: '/order/filmorder/addfile',
-    name: 'order-filmorder-addfile',
-    component: () => import('./views/order/filmorder/addfile.vue'),
-    meta: {
-      authKey: ''
-    }
-  },
+  // // 影片资源合作订单 - 上传资源
+  // {
+  //   path: '/order/filmorder/addfile',
+  //   name: 'order-filmorder-addfile',
+  //   component: () => import('./views/order/filmorder/addfile.vue'),
+  //   meta: {
+  //     authKey: ''
+  //   }
+  // },
   // 付款单管理 - 列表
   {
     path: '/payment/order',
@@ -783,7 +792,10 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'order-filmorder-filmexamine',
     component: () => import('./views/order/filmorder/filmexamine.vue'),
     meta: {
-      authKey: ''
+      authKey: '',
+      title({params}) {
+        return params.status as any > 0 ? '审核' : '查看详情'
+      }
     }
   },
   // 付款单管理 - 收款 详情
@@ -801,7 +813,8 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'order-beforeplan',
     component: () => import('./views/order/beforeplan/index.vue'),
     meta: {
-      authKey: ''
+      authKey: '',
+      title: '映前广告计划列表'
     }
   },
   // 映前广告计划 - 详情
@@ -810,7 +823,18 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'order-beforeplan-detail',
     component: () => import('./views/order/beforeplan/detail.vue'),
     meta: {
-      authKey: ''
+      authKey: '',
+      title: '映前广告计划详情'
+    }
+  },
+  // 映前广告计划 - 查看计划城市列表
+  {
+    path: '/order/beforeplan/detail/city/:id',
+    name: 'order-beforeplan-detail-viewcity',
+    component: () => import('./views/order/beforeplan/viewcity.vue'),
+    meta: {
+      authKey: '',
+      title: '查看计划城市列表'
     }
   },
   // 映前广告监播 - 列表
@@ -819,7 +843,8 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'order-supervision',
     component: () => import('./views/order/supervision/index.vue'),
     meta: {
-      authKey: ''
+      authKey: '',
+      title: '映前广告监播列表'
     }
   },
   // 映前广告监播 - 列表详情
@@ -828,7 +853,8 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'order-supervision-detail',
     component: () => import('./views/order/supervision/detail.vue'),
     meta: {
-      authKey: ''
+      authKey: '',
+      title: '映前广告监播详情'
     }
   },
 ] // end of mainLayoutRoutes

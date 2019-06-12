@@ -78,10 +78,14 @@ export async function addfilm(id: any , query: any) {
 }
 
 // 保存方案
-export async function save(id: any) {
-  const data = await post(`/xadvert/v1/plans/${id}/save`)
+export async function save(id: any, query: any) {
+  const data = await post(`/xadvert/v1/plans/${id}/business-approve`, query )
   return data
 }
 
-
+// 保存方案
+export async function viewcity(id: any ) {
+  const data = await get(`/xadvert/v1/plans/${id}/cities` )
+  return data
+}
 
