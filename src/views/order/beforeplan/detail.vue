@@ -7,12 +7,12 @@
     <div class='title'>基础信息</div>
     <div class='bos'>
       <Row>
-        <Col :span='12'>计划名称&nbsp;：&nbsp;{{listitem.name}}</Col>
+        <Col :span='12'>计划名称&nbsp;：&nbsp;{{listitem.name == null ? '暂无' : listitem.name}}</Col>
         <Col :span='12'>广告片&nbsp;：&nbsp;{{listitem.videoName == null ? '-' : listitem.videoName}}({{listitem.specification == null ? '-' : listitem.specification}}s)【{{listitem.customerName == null ? '-' : listitem.customerName}}】</Col>
       </Row>
       <Row>
-        <Col :span='12'>投放排期&nbsp;：&nbsp;{{start}} ~ {{end}}</Col>
-        <Col :span='12'>推广预算&nbsp;：&nbsp;{{listitem.budgetAmount}}元</Col>
+        <Col :span='12'>投放排期&nbsp;：&nbsp;{{listitem.beginDate == null ? '暂无' : start}} ~ {{listitem.endDate == null ? '暂无' : end}}</Col>
+        <Col :span='12'>推广预算&nbsp;：&nbsp;{{listitem.budgetAmount == null ? '0' : listitem.budgetAmount}}元</Col>
       </Row>
       <Row>
         <Col :span='12'>覆盖城市&nbsp;：&nbsp;票仓城市Top20 | 一线城市   <router-link v-if='listitem.cityCustom == 0'
@@ -41,7 +41,7 @@
           <a  @click="deletefilm(row.movieId)">删除</a>
         </template>
      </Table>
-     <div v-if='$route.params.status == 0 || $route.params.status == 1 || $route.params.status == 2 ' @click='addfilm()'>添加影片</div>
+     <div style='cursor: pointer;' v-if='$route.params.status == 0 || $route.params.status == 1 || $route.params.status == 2 ' @click='addfilm(listitem.beginDate , listitem.endDate)'>添加影片</div>
     </div>
     <!-- <div class='title'>投放影院(532家)
       <span style='float: right' @click='chgRes'>导出影院列表</span>
@@ -151,7 +151,7 @@ export default class Main extends ViewBase {
   cinemaArray: any = []
 
 
-  listitem: any = []
+  listitem: any = {}
   start: any = ''
   end: any = ''
   logList: any = []
@@ -193,8 +193,8 @@ export default class Main extends ViewBase {
         render: (hh: any, { row: { beginDate , endDate } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          const html = moment(beginDate).format(timeFormat)
-          const html2 = moment(endDate).format(timeFormat)
+          const html = beginDate == 0 ? '' : String(beginDate).slice(0, 4) + '-' + String(beginDate).slice(4, 6) + '-' + String(beginDate).slice(6, 8)
+          const html2 = endDate == 0 ? '' : String(endDate).slice(0, 4) + '-' + String(endDate).slice(4, 6) + '-' + String(endDate).slice(6, 8)
           return <span class='datetime' >{html} ~ {html2}</span>
           /* tslint:enable */
         }
@@ -218,7 +218,7 @@ export default class Main extends ViewBase {
 
 
   dlgEditDone() {
-    // this.doSearch()
+    this.search()
   }
 
   // 返回上一页 && 接单取消按钮
@@ -227,11 +227,11 @@ export default class Main extends ViewBase {
   }
 
 
-  addfilm() {
+  addfilm(start: any , end: any) {
     this.addVisible = true
     this.$nextTick(() => {
       const myThis: any = this
-      myThis.$refs.adds.init()
+      myThis.$refs.adds.init(start, end)
     })
   }
 
@@ -258,9 +258,11 @@ export default class Main extends ViewBase {
     try {
         // 订单列表
       const { data } = await itemlist(this.$route.params.id)
-      this.listitem.push(data.item)
-      this.start = moment(data.item.beginDate).format(timeFormat)
-      this.end = moment(data.item.endDate).format(timeFormat)
+      this.listitem = data.item
+      const a = String(data.item.beginDate)
+      const b = String(data.item.endDate)
+      this.start = a.slice(0, 4) + '-' + a.slice(4, 6) + '-' + a.slice(6, 8)
+      this.end =  b.slice(0, 4) + '-' + b.slice(4, 6) + '-' + b.slice(6, 8)
       this.applyTime = data.item.applyTime.split('T')[0]
       + ' ' + data.item.applyTime.split('T')[1].split('.')[0]
       // this.remarks = this.listitem.remarks || []

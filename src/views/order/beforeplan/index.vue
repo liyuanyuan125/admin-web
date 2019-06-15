@@ -7,6 +7,11 @@
       :columns="columns"
       ref="listPage"
     >
+      <template slot="budgetAmount" slot-scope="{ row: { budgetAmount   } }">
+        <div class="row-acts">
+          <Number :addNum='budgetAmount' />
+        </div>
+      </template>
       <template slot="action" slot-scope="{ row: { id , status  } }">
         <div class="row-acts">
           <router-link
@@ -27,6 +32,7 @@ import CompanyList from './fileplan.vue'
 import videoList from './videoList.vue'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import moment from 'moment'
+import Number from '@/components/number.vue'
 
 
 import {
@@ -40,7 +46,8 @@ const timeFormat = 'YYYY-MM-DD'
 @Component({
   components: {
     ListPage,
-    EditDialog
+    EditDialog,
+    Number
   }
 })
 export default class Main extends ViewBase {
@@ -87,7 +94,7 @@ export default class Main extends ViewBase {
     },
 
     {
-      name: 'ordername',
+      name: 'applyDate',
       defaultValue: '',
       type: 'date',
       width: 140,
@@ -125,20 +132,20 @@ export default class Main extends ViewBase {
       { title: '广告主公司名称', key: 'companyName', width: 65 },
       { title: '广告片', key: 'videoName', minWidth: 160 },
       {
-      title: '投放周期',
-      key: 'beginDate',
-      width: 150,
-      align: 'center',
-      render: (hh: any, { row: { beginDate , endDate} }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const start = moment(beginDate).format(timeFormat)
-        const end = moment(endDate).format(timeFormat)
-        return <span> {start} ~ {end}</span>
-        /* tslint:enable */
-      }
-    },
-      { title: '预算', key: 'budgetAmount', width: 100 },
+        title: '投放周期',
+        key: 'beginDate',
+        width: 150,
+        align: 'center',
+        render: (hh: any, { row: { beginDate , endDate} }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          const start = String(beginDate).slice(0, 4) + '-' + String(beginDate).slice(4, 6) + '-' + String(beginDate).slice(6, 8)
+          const end = String(endDate).slice(0, 4) + '-' + String(endDate).slice(4, 6) + '-' + String(endDate).slice(6, 8)
+          return <span> {start} ~ {end}</span>
+          /* tslint:enable */
+        }
+      },
+      { title: '预算', slot: 'budgetAmount', width: 100},
       { title: '提交时间', key: 'applyTime', editor: 'dateTime', width: 135 },
       { title: '状态', key: 'status', width: 100 , editor: 'enum' },
       { title: '操作', slot: 'action', width: 55 }

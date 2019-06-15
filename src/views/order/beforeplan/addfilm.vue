@@ -68,6 +68,8 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
   checkAll: any = false
   indeterminate: any = true
   ids: any = []
+  start: any = ''
+  end: any = ''
 
   columns = [
     {
@@ -126,16 +128,21 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
 
   dataForm: any = { ...dataForm }
 
-  async init(id: number) {
+  async init(start: any , end: any) {
     this.showDlg = true
-    this.id = id || 0
+    this.start = start
+    this.end = end
     ; (this.$refs.dataForm as any).resetFields()
     return this.id
   }
 
   onselect(row: any , selection: any) {
     this.ids = row.map((it: any) => {
-      return it.id
+      return {
+        movieId : Number(it.id),
+        beginDate : Number(this.start),
+        endDate: Number(this.end),
+      }
     })
   }
 
@@ -148,9 +155,10 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
     this.indeterminate = false
 
     if (this.checkAll) {
-        this.type = (this.typelist || []).map((it: any ) => {
-          return it.key
-        })
+        // this.type = (this.typelist || []).map((it: any ) => {
+        //   return it.key
+        // })
+        this.type = []
     } else {
         this.type = []
     }
@@ -164,7 +172,7 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
   // 表单提交
   async dataFormSubmit(dataForms: any) {
     try {
-      const res =  await addfilm (this.$route.params.id , {movieId: this.ids , beginDate : 0 , endDate: 0 })
+      const res =  await addfilm (this.$route.params.id , {items: this.ids })
       toast('操作成功')
       this.showDlg = false
       this.$emit('done')

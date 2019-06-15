@@ -22,16 +22,16 @@
           <Button type="primary" @click="search">搜索</Button>
         </Col>
       </Row>
-      <Button type="primary" @click="changeAll">批量删除</Button>
+      <Button type="primary" @click="changeAll" v-if='$route.params.status != 8 || $route.params.status != 9 || $route.params.status != 10 || $route.params.status != 11 || $route.params.status != 12'>批量删除</Button>
       <Table :columns="columns" @on-selection-change="onselect" :data="list" :loading="loading"
         border stripe disabled-hover size="small" class="table">
         <template slot="resourceId" slot-scope="{row}" >
           <div v-for='(it, index) in reslist'>
-            <span v-if='row.resourceId == it.id'>{{it.name}}&nbsp;&nbsp;&nbsp;<a @click="change( row.cinemaId , row.cinemaName ,  it.name , it.id)">变更</a></span>
+            <span v-if='row.resourceId == it.id'>{{it.name}}&nbsp;&nbsp;&nbsp;<a v-if='$route.params.status != 8 || $route.params.status != 9 || $route.params.status != 10 || $route.params.status != 11 || $route.params.status != 12' @click="change( row.cinemaId , row.cinemaName ,  it.name , it.id)">变更</a></span>
           </div>
           <!-- <a @click="delcinema( row.id )">变更</a> -->
         </template>
-        <template v-if="$route.params.status == '2'" slot="action" slot-scope="{row}" >
+        <template  slot="action" slot-scope="{row}" >
           <a @click="delcinema( row.id )">删除</a>
         </template>
       </Table>
