@@ -247,32 +247,31 @@ export default class Main extends ViewBase {
 
   editFetch = hallQueryItem
 
-  fetch(query: any) {
-    return queryItem(query).then(({ code, data, msg }) => {
-      const item = data.item || {}
-      const halls = item.halls || []
+  async fetch(query: any) {
+    const { code, data, msg } = await queryItem(query)
+    const item = data.item || {}
+    const halls = item.halls || []
 
-      const statusMap = makeMap(data.statusList)
-      const gradeMap = makeMap(data.gradeList)
-      this.cinema = {
-        ...item,
-        statusText: statusMap[item.status],
-        gradeName: gradeMap[item.gradeCode],
-        fullAddress: [item.provinceName, item.cityName, item.countyName, item.address]
-          .join(' ')
-          .trim()
-      }
+    const statusMap = makeMap(data.statusList)
+    const gradeMap = makeMap(data.gradeList)
+    this.cinema = {
+      ...item,
+      statusText: statusMap[item.status],
+      gradeName: gradeMap[item.gradeCode],
+      fullAddress: [item.provinceName, item.cityName, item.countyName, item.address]
+        .join(' ')
+        .trim()
+    }
 
-      return {
-        code,
-        data: {
-          ...data,
-          items: halls,
-          totalCount: halls.length
-        },
-        msg
-      } as AjaxResult
-    })
+    return {
+      code,
+      data: {
+        ...data,
+        items: halls,
+        totalCount: halls.length
+      },
+      msg
+    } as AjaxResult
   }
 
   editShow(id = 0) {
