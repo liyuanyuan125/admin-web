@@ -15,18 +15,18 @@
         <Col :span='12'>推广预算&nbsp;：&nbsp;{{listitem.budgetAmount == null ? '0' : listitem.budgetAmount}}元</Col>
       </Row>
       <Row>
-        <Col :span='12'>覆盖城市&nbsp;：&nbsp;票仓城市Top20 | 一线城市   <router-link v-if='listitem.cityCustom == 0'
+        <Col :span='12'>覆盖城市&nbsp;：&nbsp;<span v-if='listitem.deliveryCityTypes != null' v-for='(item , index) in deliveryCityTypeList' :key='index'><em v-for='(it,index) in listitem.deliveryCityTypes' :key='index' v-if='item.key == it'>{{item.text +' '}}</em></span>&nbsp; | &nbsp;  <router-link 
             :to="{ name: 'order-beforeplan-detail-viewcity', params: { id : this.$route.params.id } }"
           >查看城市列表</router-link><span></span></Col>
         <!-- <Col :span='12'>覆盖城市&nbsp;：&nbsp;票仓城市Top20 | 一线城市 / <span v-if='listitem.cityCustom == 0'>查看城市列表</span></Col> -->
-        <Col :span='12'>影院星级&nbsp;：&nbsp;5星</Col>
+        <Col :span='12'>影院星级&nbsp;：&nbsp;<span v-if='listitem.cinemaGradeCodes != null' v-for='(item , index) in cinemaGradeList' :key='index'><em v-for='(it,index) in listitem.cinemaGradeCodes' :key='index' v-if='item.key == it'>{{item.text +' '}}</em></span><span v-if='listitem.cinemaGradeCodes == null'>暂无</span></Col>
       </Row>
       <Row>
-        <Col :span='12'>受众性别&nbsp;：&nbsp;男性为主</Col>
-        <Col v-if='listitem.deliveryGroups != null' v-for='(item , index) in listitem.deliveryGroups' :key='index' :span='12'>受众年龄&nbsp;：&nbsp;<span v-for='(it) in tags[1].values' :key='item.key' v-if='item.text == it.key'>{{it.text}}</span></Col>
+        <Col :span='12' v-if='view'>影片类型&nbsp;：&nbsp;<span v-if='listitem.deliveryGroups != null' v-for='(item , index) in tags[0].values' :key='index'><em v-for='(it,index) in listitem.deliveryGroups' :key='index' v-if='item.key == it.text'>{{item.text +' '}}</em></span><span v-if='ifmovie'>暂无</span></Col>
+        <Col :span='12' v-if='view'>受众年龄&nbsp;：&nbsp;<span v-if='listitem.deliveryGroups != null' v-for='(item , index) in tags[1].values' :key='index'><em v-for='(it,index) in listitem.deliveryGroups' :key='index' v-if='item.key == it.text'>{{item.text +' '}}</em></span><span v-if='ifage'>暂无</span></Col>
       </Row>
       <Row>
-        <Col :span='12'>影片类型&nbsp;：&nbsp;悬疑 | 爱情 | 科幻</Col>
+        <Col :span='12' v-if='view'>受众性别(比例较多)&nbsp;：&nbsp;<span v-if='listitem.deliveryGroups != null' v-for='(item , index) in tags[2].values' :key='index'><em v-for='(it,index) in listitem.deliveryGroups' :key='index' v-if='item.key == it.text'>{{item.text +' '}}</em></span><span v-if='ifsex'>暂无</span></Col>
         <Col :span='12'></Col>
       </Row>
       <Row>
@@ -163,6 +163,11 @@ export default class Main extends ViewBase {
   deliveryCityTypeList: any = []
   // 电影类型
   tags: any = []
+  deliveryGroups: any = []
+  ifmovie = false
+  ifage = false
+  ifsex = false
+  view = false
 
   // 申请人
   applyTime: any = ''
@@ -271,6 +276,26 @@ export default class Main extends ViewBase {
       this.cinemaGradeList = data.cinemaGradeList == null ? [] : data.cinemaGradeList
       this.deliveryCityTypeList = data.deliveryCityTypeList == null ? [] : data.deliveryCityTypeList
       this.tags = data.tags
+      this.view = true
+      this.deliveryGroups = data.item.deliveryGroups
+      if (this.deliveryGroups == null) {
+        this.ifmovie = true
+        this.ifage = true
+        this.ifsex = true
+      } else if (this.deliveryGroups != null) {
+        const aaa = (this.deliveryGroups || []).map((it: any) => {
+          return it.tagTypeCode
+        })
+        if (aaa.indexOf('MOVIE_TYPE') == -1) {
+          this.ifmovie = true
+        }
+        if (aaa.indexOf('PLAN_GROUP_AGE') == -1) {
+          this.ifage = true
+        }
+        if (aaa.indexOf('PLAN_GROUP_SEX') == -1) {
+          this.ifsex = true
+        }
+      }
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -338,6 +363,9 @@ export default class Main extends ViewBase {
 .page {
   line-height: 40px;
   font-size: 14px;
+  em {
+    font-style: normal;
+  }
 }
 .header {
   margin-top: 5px;
