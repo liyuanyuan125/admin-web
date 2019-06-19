@@ -1,9 +1,9 @@
 <template>
   <div>
-    <Form class="create-form form-item" :accept="accept" ref="refform"
+    <Form class="create-form form-item" :rules="rule" enctype="multipart/form-data" ref="form"
     :model="form" :label-width="120">
       <div class="modal-item">
-        <FormItem label="选择影片1:" >
+        <FormItem label="选择影片:" prop="movieId" >
           <Select v-model="form.movieId" filterable clearable  placeholder="请选择资源关联的影片" >
             <Option v-for="item in filmList" :key="item.id" :value="item.id">{{item.companyName}}</Option>
           </Select>
@@ -24,14 +24,14 @@
             <Table :columns="columns" :data="dataList" border stripe disabled-hover size="small" class="table" ></Table>
           </FormItem>
           <FormItem label="导入电子券：">
-            <input type="file" @change="onChange" />
+            <input type="file" @change="onChange" :accept="accept" />
           </FormItem>
           <FormItem label="资源使用说明：">
             <Input v-model="form.couponDescription" type="textarea" :rows="4" placeholder="使用说明" />
           </FormItem>
       </div>
       <div class="batch-btn text-center">
-          <Button type="primary" class="btn" @click="handleSubmit()"> 提交</Button>
+          <Button type="primary" class="btn" @click="handleSubmit('form')"> 提交</Button>
           <Button> 取消</Button>
       </div>
     </Form>
@@ -42,11 +42,11 @@
 <script lang='ts'>
 import {Component, Prop} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import { relevanceFilm, createResource } from '@/api/resourceFilm'
+import { relevanceFilm } from '@/api/resourceFilm'
 import Uploader from '@/util/Uploader'
 
 const uploader = new Uploader({
-  filePostUrl: '/file/miscs',
+  filePostUrl: '/movie/resource',
   fileFieldName: 'file',
 })
 
@@ -55,7 +55,6 @@ export default class Main extends ViewBase {
   @Prop({ type: String, default: '*' }) accept!: string
 
   form: any = {
-    // file: '',
     movieId: ''
   }
 
@@ -73,18 +72,14 @@ export default class Main extends ViewBase {
   ]
 
   dataList = []
-
-  // get rule() {
-  //   return {
-  //     movieId: [
-  //       {
-  //         required: true,
-  //         message: '请选择',
-  //         trigger: 'change',
-  //       }
-  //     ]
-  //   }
+  // rule = {
+  //   movieId:  [{ required: true, message: 'Please select the city2', trigger: 'blur' }]
   // }
+  get rule() {
+    return {
+      movieId: [{ required: true, message: 'Please select the city4', type: 'number', trigger: 'change' }]
+    }
+  }
   mounted() {
     this.editID = this.$route.params.id
     this.relevanceFilm()
@@ -108,7 +103,8 @@ export default class Main extends ViewBase {
   }
 
   // 提交数据
-  async handleSubmit() {
+  async handleSubmit(dataForms: string) {
+    const vali = await (this.$refs[dataForms] as any).validate()
     if (this.file == null) {
       // TODO: 如果文件是必选的，提示选择文件
       return
@@ -117,8 +113,10 @@ export default class Main extends ViewBase {
     // TODO: 加 loading 等操作
 
     try {
-      const data = await uploader.upload(this.file, { movieId: 88888 })
-      debugger
+      const data = await uploader.upload(this.file, {
+        ...this.form
+      })
+      // debugger
       // const { data} = await createResource(this.form)
       // this.$router.push({name: 'resource-film-index'})
     } catch (ex) {
