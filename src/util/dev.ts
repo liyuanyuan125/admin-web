@@ -34,3 +34,14 @@ export function devError(...args: any[]) {
   // tslint:disable-next-line
   isDev && console.error(...cloneArgs(args))
 }
+
+/**
+ * 简单的断言，只在开发环境有效
+ * @param expression 表达式
+ * @param errorMessage 错误消息
+ */
+export function devAssert(expression: any, errorMessage: string = 'Error') {
+  if (isDev && !!expression === false) {
+    throw new Error(errorMessage)
+  }
+}

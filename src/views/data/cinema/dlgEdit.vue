@@ -115,22 +115,17 @@ import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { queryItem, addItem, updateItem } from '@/api/cinema'
 import TinyLoading from '@/components/TinyLoading.vue'
-import AreaSelect from '@/components/AreaSelect.vue'
+import AreaSelect from '@/components/areaSelect'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import { slice } from '@/fn/object'
 import { toast } from '@/ui/modal'
 import { filterItemInList, filterListByControlStatus } from '@/util/dealData'
 import { cloneDeep } from 'lodash'
+import { KeyTextControlStatus } from '@/util/types'
 
 interface Value {
   show: boolean
   id: number
-}
-
-interface KeyTextControlStatus {
-  key: string | number
-  text: string
-  controlStatus: number
 }
 
 interface KeyTextControlStatusMap {
@@ -143,16 +138,20 @@ const defItem: any = {
   code: '',
   officialName: '',
   controlStatus: 0,
+
   chainId: 0,
   gradeCode: '',
+
   provinceId: 0,
   cityId: 0,
   countyId: 0,
   address: '',
+
   softwareCode: '',
   zipCode: '',
   status: 0,
   pricingLevelCode: '',
+
   boxLevelCode: '',
 
   // 辅助字段，提交的时候，应该去掉
@@ -183,10 +182,10 @@ export default class DlgEdit extends ViewBase {
   item: any = cloneDeep(defItem)
 
   enumType: KeyTextControlStatusMap = {
-    gradeList: [],
-    softwareList: [],
-    statusList: [],
     controlStatusList: [],
+    gradeList: [],
+    statusList: [],
+    softwareList: [],
     pricingLevelList: [],
     boxLevelList: [],
   }
@@ -208,6 +207,7 @@ export default class DlgEdit extends ViewBase {
       officialName: [
         { required: true, message: '不能为空', trigger: 'blur' }
       ],
+
       chainId: [
         {
           required: true,
@@ -221,6 +221,7 @@ export default class DlgEdit extends ViewBase {
           }
         }
       ],
+
       area: [
         {
           required: true,

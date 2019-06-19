@@ -40,3 +40,12 @@ export interface PermPage {
   /** 子级页面 */
   children: PermPage[]
 }
+
+/**
+ * ajax 调用结果
+ */
+export interface AjaxResult {
+  code: number
+  data: any
+  msg: string
+}

@@ -2,9 +2,9 @@
   <div class="page">
     <div class="Inp-Group-res">
       <Button class="bth" icon="md-return-left" @click="goback">返回列表</Button>
-      <Button v-auth="'advert.executeOrder:closed'" v-if='$route.params.status != 4' class="bth" style='float: right' @click="edit($route.params.id)">关闭订单</Button><br>
-      <div v-if='$route.params.status == 5' class="n-main">结算信息</div>
-      <div v-if='$route.params.status == 5' class="Inps-res">
+      <Button v-auth="'advert.executeOrder:closed'" v-if='$route.params.status != 8' class="bth" style='float: right' @click="edit($route.params.id)">关闭订单</Button><br>
+      <div v-if='$route.params.status == 7' class="n-main">结算信息</div>
+      <div v-if='$route.params.status == 7' class="Inps-res">
         <Row class='row-list'>
             <Col span='3' class='hui'>结算金额</Col>
             <Col span='9'>{{settlementAmount}} 元</Col>
@@ -23,8 +23,8 @@
         <Row class='row-list'>
             <Col span='3' class='hui'>广告主</Col>
             <Col span='9'>【{{item.advertiserId}}】{{item.advertiserName}}</Col>
-            <Col span='3' class='hui'>订单类型</Col>
-            <Col span='9'><span v-for='it in planTypeList' :key='it.key' v-if='it.key == item.planType'>{{it.text}}单</span></Col>
+            <!-- <Col span='3' class='hui'>订单类型</Col>
+            <Col span='9'><span v-for='it in planTypeList' :key='it.key' v-if='it.key == item.planType'>{{it.text}}单</span></Col> -->
         </Row>
         <Row class='row-list'>
             <Col span='3' class='hui'>广告计划</Col>
@@ -40,7 +40,7 @@
         </Row>
         <Row class='row-list'>
             <Col span='3' class='hui'>影片列表</Col>
-            <Col span='20'><span v-for='(it,index) in item.movieList'>《{{it.name}}》</span><span v-if='this.movieList.length == 0'>暂无</span></Col>
+            <Col span='20'><span v-for='(it,index) in item.targetMovies'>《{{it.movieName}}》</span><span v-if='this.movieList.length == 0'>暂无</span></Col>
         </Row>
       </div>
       <div class="n-main">资源方信息</div>
@@ -54,6 +54,7 @@
         <Row class='row-list pb20'>
             <Col span='3' class='hui'>接单影院</Col>
             <Col span='16'>
+              <Row>已接单影院: {{cinemasList.length}}</Row>
               <singleCinema :cinemas="cinemasList" />
             </Col>
         </Row>
@@ -160,10 +161,6 @@ export default class Main extends ViewBase {
 
   mounted() {
     this.doSearch()
-    // this.begin = moment(this.item.beginDate).format(timeFormats)
-    // this.end = moment(this.item.endDate).format(timeFormats)
-    this.createTime = moment(this.item.createTime).format(timeFormat)
-    // this.settlementTime = moment(this.item.settlementTime).format(timeFormat)
     this.settlementAmount = this.addNumber(String(this.item.settlementAmount))
   }
 
@@ -199,12 +196,16 @@ export default class Main extends ViewBase {
 
       } } = await queryItem(this.$route.params.id)
       this.item = item
-      this.begin = moment(this.item.beginDate).format(timeFormats)
-      this.end = moment(this.item.endDate).format(timeFormats)
-      this.createTime = moment(this.item.createTime).format(timeFormat)
+      const a = String(this.item.beginDate)
+      const b = String(this.item.endDate)
+      const c = String(this.item.receiveTime)
+      this.begin = a.slice(0, 4) + '-' + a.slice(4, 6) + '-' + a.slice(6, 8)
+      this.end = b.slice(0, 4) + '-' + b.slice(4, 6) + '-' + b.slice(6, 8)
+      this.createTime = this.item.receiveTime == 0 ? '暂无接单时间' :
+      c.slice(0, 4) + '-' + c.slice(4, 6) + '-' + c.slice(6, 8)
       this.settlementTime = moment(this.item.settlementTime).format(timeFormat)
       this.settlementAmount = this.addNumber(String(this.item.settlementAmount))
-      this.movieList = this.item.movieList
+      this.movieList = this.item.targetMovies
       this.logList = (logList || []).map((it: any) => {
           return {
               ...it,

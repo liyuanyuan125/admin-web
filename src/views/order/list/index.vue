@@ -16,10 +16,10 @@
             <Option v-for="it in resourcescompany" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
           </Select>
-          <Select v-model="query.planType" placeholder="订单类型" style='width: 200px;' clearable>
+          <!-- <Select v-model="query.planType" placeholder="订单类型" style='width: 200px;' clearable>
             <Option v-for="it in planTypeList" v-if='it.key != 0' :key="it.key" :value="it.key"
               :label="it.text">{{it.text}}</Option>
-          </Select>
+          </Select> -->
           <Select v-model="query.status" placeholder="订单状态" style='width: 200px;' clearable>
             <Option v-for="it in statusList" v-if='it.key != 0' :key="it.key" :value="it.key"
               :label="it.text">{{it.text}}</Option>
@@ -125,20 +125,20 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     { title: '广告主公司名称', key: 'advertiserName', align: 'center' },
     { title: '广告计划',  key: 'planName', align: 'center' },
     { title: '资源方公司名称', key: 'resourceName', align: 'center' },
-    { title: '订单类型', key: 'planType', align: 'center', width: 90,
-      render: (hh: any, { row: { planType } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        if (planType == 1) {
-          return <span>标准单</span>
-        } else if (planType == 2) {
-          return <span>加速单</span>
-        } else if (planType == 3) {
-          return <span>优享单</span>
-        }
-        /* tslint:enable */
-      }
-    },
+    // { title: '订单类型', key: 'planType', align: 'center', width: 90,
+    //   render: (hh: any, { row: { planType } }: any) => {
+    //     /* tslint:disable */
+    //     const h = jsxReactToVue(hh)
+    //     if (planType == 1) {
+    //       return <span>标准单</span>
+    //     } else if (planType == 2) {
+    //       return <span>加速单</span>
+    //     } else if (planType == 3) {
+    //       return <span>优享单</span>
+    //     }
+    //     /* tslint:enable */
+    //   }
+    // },
     {
       title: '接单时间',
       key: 'createTime',
@@ -161,17 +161,23 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         if (status == 1) {
-          return <span class={`status-1`}>待执行</span>
+          return <span class={`status-1`}>待接单</span>
         } else if (status == 2) {
-          return <span class={`status-2`}>执行中</span>
+          return <span class={`status-2`}>待执行</span>
         }
          else if (status == 3) {
-          return <span class={`status-3`}>已完成</span>
+          return <span class={`status-3`}>执行中</span>
         }
          else if (status == 4) {
-          return <span class={`status-4`}>已关闭</span>
+          return <span class={`status-4`}>已拒绝</span>
         }else if (status == 5) {
-          return <span class={`status-5`}>已结算</span>
+          return <span class={`status-5`}>已失效</span>
+        }else if (status == 6) {
+          return <span class={`status-6`}>待结算</span>
+        }else if (status == 7) {
+          return <span class={`status-7`}>已完成</span>
+        }else if (status == 8) {
+          return <span class={`status-8`}>已关闭</span>
         }
         /* tslint:enable */
       }

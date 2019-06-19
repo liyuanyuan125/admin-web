@@ -1,6 +1,5 @@
 <template>
-  <Modal v-model="inner.show" :width="700"
-    :loading="submitLoading" @on-ok="submit">
+  <Modal v-model="inner.show" :width="700" :loading="submitLoading" @on-ok="submit">
     <Form :model="item" :label-width="98" :rules="rules" class="form" ref="form"
       v-show="!loading">
       <Row>
@@ -106,16 +105,11 @@ import TinyLoading from '@/components/TinyLoading.vue'
 import { slice } from '@/fn/object'
 import { toast } from '@/ui/modal'
 import { filterItemInList, filterListByControlStatus } from '@/util/dealData'
+import { KeyTextControlStatus } from '@/util/types'
 
 interface Value {
   show: boolean
   id: number
-}
-
-interface KeyTextControlStatus {
-  key: string | number
-  text: string
-  controlStatus: number
 }
 
 interface KeyTextControlStatusMap {

@@ -3,28 +3,18 @@
     <div class="inps">
       <Button class="bth" icon="md-return-left" @click="goback">返回上一页</Button>
       <div class="n-main">{{nus}}详情</div>
-      <div class="Inps-res" v-if='nus'>
+      <div class="Inps-res" style='margin-top: 16px;' v-if='nus'>
         <div class="res-num">
-          <p>注册账号</p>
+          <p>注册账号：</p>
           <div class="res-num-item">
             <span>{{email}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;【{{nus}}】</span>
           </div>
         </div>
         <div class="res-num">
-          <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;姓名</p>
-          <div class="res-num-item">
-            <span>{{name}}</span>
-            <span v-if='!name'>暂无</span>
-            <span style="margin-left:8%;" class="res-date">手机号</span>
-            <span style="margin-left:2%;">{{mobile}}</span>
-            <span v-if='!mobile'>暂无</span>
-          </div>
-        </div>
-        <div class="res-num">
-          <p>所属公司</p>
+          <p>所属公司：</p>
           <!-- <span class="coms">{{companyName}}</span> -->
           <div class="res-num-item">
-            <tooltip style="margin-left: 3%;height:60px;margin-right: 2%;" :content="companyName" placement="top">
+            <tooltip style="margin-left: 3.5%;height:60px;margin-right: 2%;" :content="companyName" placement="top">
               <span class="company-name">{{companyName}}</span>
             </tooltip>
             <div class="res-num" v-for="it in list" v-if="it.id==companyId" :key="it.id">
@@ -47,10 +37,20 @@
           </div> -->
         </div>
         <div class="res-num">
-          <p>注册时间</p>
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;姓名：</p>
           <div class="res-num-item">
-            <span>{{createTime}}</span>
-            <span style="margin-left:8%;" class="res-date">最后登录时间</span>
+            <span class='chcol'>{{name}}</span>
+            <span class='chcol' v-if='!name'>暂无</span>
+            <span style="margin-left:8%;" class="res-date">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;手机号：</span>
+            <span style="margin-left:2%;">{{mobile}}</span>
+            <span v-if='!mobile'>暂无</span>
+          </div>
+        </div>
+        <div class="res-num">
+          <p>注册时间：</p>
+          <div class="res-num-item">
+            <span class="chcol">{{createTime}}</span>
+            <span style="margin-left:8%;" class="res-date">最后登录时间：</span>
             <span style="margin-left:2%;">{{lastLoginTime}}</span>
           </div>
         </div>
@@ -196,7 +196,7 @@ export default class Main extends ViewBase {
 .res-num {
   display: flex;
   width: 100%;
-  line-height: 60px;
+  line-height: 53px;
 }
 .res-num p {
   flex-direction: column-reverse;
@@ -204,9 +204,8 @@ export default class Main extends ViewBase {
   justify-content: flex-start;
   display: block;
   float: left;
-  max-height: 60px;
   text-align: left;
-  margin-left: 0.5%;
+  margin-left: 16px;
   // white-space: nowrap;
   // text-overflow: ellipsis;
 }
@@ -234,7 +233,7 @@ export default class Main extends ViewBase {
 }
 .res-num-item span {
   display: inline-block;
-  margin-left: 4%;
+  margin-left: 3%;
 }
 .res-num-item .item-lis span {
   display: block;
@@ -261,10 +260,13 @@ export default class Main extends ViewBase {
 }
 .n-main {
   display: inline-block;
-  margin: -5px 0 8px 5px;
+  margin: -5px 0 8px 15px;
   line-height: 38px;
   font-size: 16px;
   color: #2d8cf0;
   // border-bottom: 2px solid #ecf0f4;
+}
+.chcol {
+  width: 16.5%;
 }
 </style>

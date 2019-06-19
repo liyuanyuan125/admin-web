@@ -1,16 +1,23 @@
 import home from './views/home.vue'
 import login from './views/login.vue'
-import MainLayout from './views/layout/MainLayout.vue'
+import MainLayout from '@/components/mainLayout'
 import Error from './views/error/index.vue'
 
 import { RouteConfig, Route } from 'vue-router'
 import { devInfo, devError } from './util/dev'
 
 /**
+ * meta对象 title属性参数 新建和编辑切换
+ */
+// export type editFunction = (route: Route) => string
+
+/**
  * meta 类型：基础类型，可以放一些别的成员
  */
 // tslint:disable-next-line:no-empty-interface
 interface RouteMetaBase {
+  /** 页面标题 */
+  title?: string | ((route: Route) => string)
   [key: string]: any
 }
 
@@ -63,6 +70,8 @@ export interface RouteConfigEnhance extends RouteConfig {
   /** 增强 children 的类型 */
   children?: RouteConfigEnhance[]
 }
+
+
 
 /**
  * 单独的 routes
@@ -185,6 +194,36 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  // 客户管理 - 影片关联 - 列表
+  {
+    path: '/client/film/',
+    name: 'client-film',
+    component: () => import('./views/client/film/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 客户管理 - 影片关联 - 添加
+  {
+    path: '/client/film/edit',
+    name: 'client-film-edit',
+    component: () => import('./views/client/film/detail.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 客户管理 - 影片关联 - 详情
+  {
+    path: '/client/film/detail/:id?',
+    name: 'client-film-detail',
+    component: () => import('./views/client/film/detail.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
   // 基础数据 - 系统字典 - 分类列表
   {
     path: '/data/dict/',
@@ -205,85 +244,150 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
-  // 基础数据 - 日历设置 - 列表
-  {
-    path: '/data/calendar/',
-    name: 'data-calendar',
-    component: () => import('./views/data/calendar/index.vue'),
-    meta: {
-      authKey: 'basis.calendars:list'
-    }
-  },
-
-  // 基础数据 - 院线管理 - 列表
-  {
-    path: '/data/cinema-chain/',
-    name: 'data-cinema-chain',
-    component: () => import('./views/data/cinema-chain/index.vue'),
-    meta: {
-      authKey: 'theater.chains:list'
-    }
-  },
-
-  // 基础数据 - 影院管理 - 列表
-  {
-    path: '/data/cinema/',
-    redirect: { name: 'data-cinema' },
-    component: () => import('./components/tabLayout'),
-    children: [
-      {
-        path: '/data/cinema/',
-        name: 'data-cinema',
-        component: () => import('./views/data/cinema/index.vue'),
-        meta: {
-          authKey: 'theater.cinemas:list',
-          title: '影院管理',
-          fixed: true,
-        }
-      },
-      {
-        path: '/data/cinema-hall/:id',
-        name: 'data-cinema-hall',
-        component: () => import('./views/data/cinema-hall/index.vue'),
-        meta: {
-          authKey: 'theater.halls:list',
-          title: '影厅列表',
-        }
-      },
-    ]
-  },
-
-  // 基础数据 - 影片管理 - 列表
-  {
-    path: '/data/film/',
-    name: 'data-film',
-    component: () => import('./views/data/film/index.vue'),
-    meta: {
-      authKey: 'theater.movies:list'
-    }
-  },
-
-  // 基础数据 - 影片管理 - 详情
-  {
-    path: '/data/film/detail/:id',
-    name: 'data-film-detail',
-    component: () => import('./views/data/film/detail.vue'),
-    meta: {
-      authKey: 'theater.movies:info'
-    }
-  },
-
-  // 基础数据 - 地区信息 - 列表
   {
     path: '/data/area/',
     name: 'data-area',
     component: () => import('./views/data/area/index.vue'),
     meta: {
-      authKey: 'basis.districts:list'
+      authKey: ''
     }
   },
 
-  // 财务管理 - 充值审核 - 列表
+  {
+    path: '/data/calendar/',
+    name: 'data-calendar',
+    component: () => import('./views/data/calendar/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  {
+    path: '/data/cinema-chain/',
+    name: 'data-cinema-chain',
+    component: () => import('./views/data/cinema-chain/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  {
+    path: '/data/cinema/',
+    name: 'data-cinema',
+    component: () => import('./views/data/cinema/index.vue'),
+    meta: {
+      authKey: 'theater.cinemas:list',
+      title: '影院管理',
+      fixed: true,
+    }
+  },
+
+  // 基础数据 - 影院管理 - 影厅列表
+  {
+    path: '/data/cinema-hall/:id',
+    name: 'data-cinema-hall',
+    component: () => import('./views/data/cinema-hall/index.vue'),
+    props: true,
+    meta: {
+      authKey: 'theater.halls:list',
+      title: '影厅列表',
+    }
+  },
+  // 基础数据 - 影片管理（修改原有功能）
+  {
+    path: '/data/film/',
+    name: 'data-film',
+    component: () => import('./views/data/film/index.vue'),
+    meta: {
+      authKey: '',
+      title: '影片管理'
+    }
+  },
+  {
+    path: '/data/film/detail/:id',
+    name: 'data-film-detail',
+    component: () => import('./views/data/film/detail.vue'),
+    meta: {
+      authKey: '',
+      title: '详情'
+    }
+  },
+  {
+    path: 'data/film/edit/:id',
+    name: 'data-film-edit',
+    component: () => import('./views/data/film/edit.vue'),
+    meta: {
+      authKey: '',
+      title: '编辑'
+    }
+  },
+
+  // 基础数据 - 影人管理
+  {
+    path: 'data/person',
+    name: 'data-person',
+    component: () => import('./views/data/person/index.vue'),
+    meta: {
+      authKey: '',
+      title: '影人管理'
+    }
+  },
+
+  // 基础数据 - 影人管理 - 详情
+  {
+    path: 'data/person/detail/:id',
+    name: 'data-person-detail',
+    component: () => import('./views/data/person/detail.vue'),
+    meta: {
+      authKey: '',
+      title: '查看'
+    }
+  },
+
+  // 基础数据 - 影人管理 - 编辑
+  {
+    path: 'data/person/edit/:id',
+    name: 'data-person-edit',
+    component: () => import('./views/data/person/edit.vue'),
+    meta: {
+      authKey: '',
+      title: '编辑'
+    }
+  },
+
+
+  {
+    path: '/data/kol-account/',
+    name: 'kol-account-list',
+    component: () => import('./views/data/kol-account/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+  {
+    path: '/data/kol-account/approve/:id',
+    name: 'kol-account-approve',
+    component: () => import('./views/data/kol-account/approve.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+  {
+    path: '/data/kol-account/edit/:channelCode/:id',
+    name: 'kol-account-edit',
+    component: () => import('./views/data/kol-account/edit.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+  {
+    path: '/contract/list/',
+    name: 'contract-list',
+    component: () => import('./views/contract/list/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
   {
     path: '/contract/list/edit/:id?',
     name: 'contract-list-edits',
@@ -297,15 +401,14 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'contract-list-edit',
     component: () => import('./views/contract/list/edit.vue'),
     meta: {
-      authKey: 'finance.recharges:list'
+      authKey: ''
     }
   },
-
-  // 财务管理 - 充值审核 - 详情
   {
     path: '/contract/list/detail/:id/:approveStatus/:edi?',
     name: 'contract-list-detail',
     component: () => import('./views/contract/list/detail.vue'),
+<<<<<<< HEAD
     meta: {
       authKey: 'finance.recharges:info'
     }
@@ -317,12 +420,13 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     path: '/finance/examine/edit/:id?',
     name: 'finance-examine-edit',
     component: () => import('./views/finance/examine/edit.vue'),
+=======
+>>>>>>> 23de7afb099e08660a1cfbe936ac666efa68f5fe
     meta: {
-      authKey: 'finance.recharges:add'
+      authKey: ''
     }
   },
 
-  // 资金管理
   {
     path: '/finance/capital/',
     name: 'finance-capital',
@@ -334,7 +438,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
         name: 'finance-capital-ggtiser',
         component: () => import('./views/finance/capital/ggtiser.vue'),
         meta: {
-          authKey: 'finance.advertiser:statistics',
+          authKey: '',
           title: '广告主系统',
           fixed: true,
         }
@@ -344,7 +448,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
         name: 'finance-capital-resource',
         component: () => import('./views/finance/capital/resource.vue'),
         meta: {
-          authKey: 'finance.resource:statistics',
+          authKey: '',
           title: '资源方系统',
           fixed: true,
         }
@@ -354,7 +458,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
         name: 'finance-capital-rechargeNum',
         component: () => import('./views/finance/capital/rechargeNum.vue'),
         meta: {
-          authKey: 'finance.recharges:list',
+          authKey: '',
           title: '充值记录'
         }
       },
@@ -363,17 +467,8 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
         name: 'finance-capital-payRank',
         component: () => import('./views/finance/capital/payRank.vue'),
         meta: {
-          authKey: 'finance.advertiser:consumes',
+          authKey: '',
           title: '消费记录'
-        }
-      },
-      {
-        path: 'consume/:companyId/:title',
-        name: 'finance-capital-consume',
-        component: () => import('./views/finance/capital/consume.vue'),
-        meta: {
-          authKey: 'finance.resource:settlements-list',
-          title: '结算记录'
         }
       },
       {
@@ -381,8 +476,17 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
         name: 'finance-capital-withdraw',
         component: () => import('./views/finance/capital/withdraw.vue'),
         meta: {
-          authKey: 'finance.resource:withdrawals-list',
+          authKey: '',
           title: '提现记录'
+        }
+      },
+      {
+        path: 'consume/:companyId/:title',
+        name: 'finance-capital-consume',
+        component: () => import('./views/finance/capital/consume.vue'),
+        meta: {
+          authKey: '',
+          title: '结算记录'
         }
       },
       {
@@ -390,7 +494,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
         name: 'finance-capital-withdrawDetail',
         component: () => import('./views/finance/capital/withdrawDetail.vue'),
         meta: {
-          authKey: 'finance.resource:withdrawals-info',
+          authKey: '',
           title: '提现详情'
         }
       },
@@ -399,70 +503,53 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
         name: 'finance-capital-withdrawalBill',
         component: () => import('./views/finance/capital/withdrawalBill.vue'),
         meta: {
-          authKey: 'finance.resource:withdrawals',
+          authKey: '',
           title: '添加提现账单'
         }
       }
     ]
   },
 
-  // 合同管理 - 合同列表
   {
-    path: '/contract/list/',
-    name: 'contract-list',
-    component: () => import('./views/contract/list/index.vue'),
+    path: '/finance/examine/',
+    name: 'finance-examine',
+    component: () => import('./views/finance/examine/index.vue'),
     meta: {
-      authKey: 'customer.contracts:list'
+      authKey: ''
     }
   },
-
-  // 合同管理 - 新建、编辑合同
   {
     path: '/finance/examine/detail/:id/:approvalStatus',
     name: 'finance-examine-detail',
     component: () => import('./views/finance/examine/detail.vue'),
     meta: {
-      authKey(route) {
-        const isEdit = parseInt(route.params.id, 10) > 0
-        return isEdit ? 'customer.contracts:modify' : 'customer.contracts:add'
-      }
+      authKey: ''
     }
   },
-
-  // 合同管理 - 详情
   {
-    path: '/contract/list/detail/:id?',
-    name: 'contract-list-detail',
-    component: () => import('./views/contract/list/detail.vue'),
+    path: '/finance/examine/edit/:id?',
+    name: 'finance-examine-edit',
+    component: () => import('./views/finance/examine/edit.vue'),
     meta: {
-      authKey: 'customer.contracts:info'
+      authKey: ''
     }
   },
-
-  // 广告管理 - 计划管理
   {
     path: '/plan/ggtising',
     name: 'plan-ggtising',
     component: () => import('./views/plan/plan/index.vue'),
     meta: {
-      authKey: 'advert.plans:list'
+      authKey: ''
     }
   },
-
-  // 广告管理 - 计划管理 - 详情、审核
   {
     path: '/plan/ggtising/edit/:edit/:id',
     name: 'plan-ggtising-edit',
     component: () => import('./views/plan/plan/detail.vue'),
     meta: {
-      authKey(route) {
-        const isDetail = route.params.edit == 'detail'
-        return isDetail ? 'advert.plans:info' : 'advert.plans:approval'
-      }
+      authKey: ''
     }
   },
-
-  // TODO: 可能没用，应该删掉
   {
     path: '/plan/ggtising/cinema/:id',
     name: 'plan-ggtising-cinema',
@@ -471,32 +558,24 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     }
   },
-
-  // 广告管理 - 广告片管理 - 列表
   {
     path: '/gg/film',
     name: 'gg-film',
     component: () => import('./views/plan/film/index.vue'),
     meta: {
-      authKey: 'advert.videos:list'
+      authKey: ''
     }
   },
-
-  // 广告片管理 - 列表
   {
     path: '/gg/film/detail/:id/:status',
     name: 'gg-film-detail',
     component: () => import('./views/plan/film/detail.vue'),
     meta: {
-      authKey(route) {
-        // 只有 1 才是待审核，才需要审核
-        const isDetail = parseInt(route.params.status, 10) > 1
-        return isDetail ? 'advert.videos:info' : 'advert.videos:approval'
-      }
+      authKey: ''
     }
   },
 
-  // 刊例价管理 - 列表
+  // 刊例价管理
   {
     path: '/resource/management',
     name: 'resource-management',
@@ -508,7 +587,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
         name: 'resource-management-platform',
         component: () => import('./views/resource/management/platform.vue'),
         meta: {
-          authKey: 'advert.cpms:list-for-platform',
+          authKey: '',
           title: '平台刊例价',
           fixed: true,
         }
@@ -518,7 +597,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
         name: 'resource-management-corp',
         component: () => import('./views/resource/management/corp.vue'),
         meta: {
-          authKey: 'advert.cpms:list-for-company',
+          authKey: '',
           title: '公司刊例价',
           fixed: true,
         }
@@ -528,54 +607,268 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
         name: 'resource-management-realtime',
         component: () => import('./views/resource/management/realtime.vue'),
         meta: {
-          authKey: 'advert.cpms:lowest',
+          authKey: '',
           title: '实时刊例价查询',
           fixed: true,
         }
       },
     ]
   },
-
-  // 刊例价管理 - 添加、编辑
   {
     path: '/resource/management/edit/:id?',
     name: 'resource-management-edit',
     component: () => import('./views/resource/management/edit.vue'),
     meta: {
-      authKey(route) {
-        const isEdit = parseInt(route.params.id, 10) > 0
-        return isEdit ? 'customer.contracts:modify' : 'customer.contracts:add'
+      authKey: ''
+    }
+  },
+
+  // kol平台账号资源管理
+  {
+    path: '/resource/kolplatform/list',
+    name: 'resource-kolplatform-list',
+    component: () => import('./views/resource/kolPlatform/index.vue'),
+    meta: {
+      authKey: '',
+      title: 'KOL平台账号资源管理',
+      fixed: true
+    }
+  },
+
+  //  kol平台账号资源管理 - 查看
+  {
+    path: '/resource/kolplatform/detail/:id',
+    name: 'resource-kolplatform-list-detail',
+    component: () => import('./views/resource/kolPlatform/details.vue'),
+    meta: {
+      authKey: '',
+      title: '查看',
+    }
+  },
+
+  //  kol平台账号资源管理 - 审核
+  {
+    path: '/resource/kolplatform/audit/:id',
+    name: 'resource-kolplatform-list-audit',
+    component: () => import('./views/resource/kolPlatform/audit.vue'),
+    meta: {
+      authKey: '',
+      title: '审核',
+    }
+  },
+
+  // 影片资源管理
+  {
+    path: '/resource/film/index',
+    name: 'resource-film-index',
+    component: () => import('./views/resource/film/index.vue'),
+    meta: {
+      authKey: '',
+      title: '影片资源管理'
+    }
+  },
+
+  // 影片资源管理 新建 和编辑
+  {
+    path: '/resource/film/edit/:id?',
+    name: 'resource-film-index-edit',
+    component: () => import('./views/resource/film/edit.vue'),
+    meta: {
+      authKey: '',
+      title({params}) {
+        return params.id as any > 0 ? '编辑' : '新建'
+      }
+    }
+  },
+  // 影片资源管理 - 查看 和 审核
+  {
+    path: '/resource/film/detail/:id/:audit?',
+    name: 'resource-film-index-detail',
+    component: () => import('./views/resource/film/detail.vue'),
+    meta: {
+      authKey: '',
+      title({params}) {
+        return params.audit ? '审核' : '查看'
       }
     }
   },
 
-  // 系统设置 - 财务设置
+  // 影片资源管理 - 审核
+  // {
+  //   path: '/resource/film/audit',
+  //   name: 'resource-film-index-audit',
+  //   component: () => import('./views/resource/film/audit.vue'),
+  //   meta: {
+  //     authKey: '',
+  //     title: '审核'
+  //   }
+  // },
+
   {
     path: '/system/setup',
     name: 'system-setup',
     component: () => import('./views/system/setup/index.vue'),
     meta: {
-      authKey: 'finance.settings:default'
+      authKey: ''
     }
   },
-
-  // 订单管理 - 订单列表
   {
     path: '/order/list',
     name: 'order-list',
     component: () => import('./views/order/list/index.vue'),
     meta: {
-      authKey: 'advert.executeOrder:list'
+      authKey: ''
     }
   },
-
-  // 订单管理 - 详情
   {
     path: '/order/list/:id/:status',
     name: 'order-list-detail',
     component: () => import('./views/order/list/detail.vue'),
     meta: {
-      authKey: 'advert.executeOrder:info'
+      authKey: ''
+    }
+  },
+  // 订单列表 - kol
+  {
+    path: '/order/kollist',
+    name: 'order-kollist',
+    component: () => import('./views/order/kollist/index.vue'),
+    meta: {
+      authKey: '',
+      title: 'kol订单列表'
+    }
+  },
+  // 订单列表详情 - kol
+  {
+    path: '/order/kollist/detail/:id/:orders',
+    name: 'order-kollist-detail',
+    component: () => import('./views/order/kollist/detail.vue'),
+    meta: {
+      authKey: '',
+      title({params}) {
+        return params.orders as any > 0 ? '审核信息' : '查看详情'
+      }
+    }
+  },
+  // 退款订单列表 - kol
+  {
+    path: '/order/refund',
+    name: 'order-refund',
+    component: () => import('./views/order/refund/index.vue'),
+    meta: {
+      authKey: '',
+      title: 'kol退款单列表'
+    }
+  },
+   // 退款订单添加/详情 - kol
+  {
+    path: '/order/refund/detail/:id/:order',
+    name: 'order-refund-detail',
+    component: () => import('./views/order/refund/detail.vue'),
+    meta: {
+      authKey: '',
+      title({params}) {
+        return params.id as any <= 0 ? '创建退款单' : '查看详情'
+      }
+    }
+  },
+  // 影片资源合作订单 - 列表
+  {
+    path: '/order/filmorder',
+    name: 'order-filmorder',
+    component: () => import('./views/order/filmorder/index.vue'),
+    meta: {
+      authKey: '',
+      title: '影片资源合作订单列表'
+    }
+  },
+  // // 影片资源合作订单 - 上传资源
+  // {
+  //   path: '/order/filmorder/addfile',
+  //   name: 'order-filmorder-addfile',
+  //   component: () => import('./views/order/filmorder/addfile.vue'),
+  //   meta: {
+  //     authKey: ''
+  //   }
+  // },
+  // 付款单管理 - 列表
+  {
+    path: '/payment/order',
+    name: 'payment-order',
+    component: () => import('./views/payment/order/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+  // 影片资源合作订单 - 影片审核/详情
+  {
+    path: '/order/filmorder/filmexamine/:id/:status',
+    name: 'order-filmorder-filmexamine',
+    component: () => import('./views/order/filmorder/filmexamine.vue'),
+    meta: {
+      authKey: '',
+      title({params}) {
+        return params.status as any > 0 ? '审核' : '查看详情'
+      }
+    }
+  },
+  // 付款单管理 - 收款 详情
+  {
+    path: '/payment/order/:edit/:id',
+    name: 'payment-order-edit',
+    component: () => import('./views/payment/order/edit.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+  // 映前广告计划 - 列表
+  {
+    path: '/order/beforeplan',
+    name: 'order-beforeplan',
+    component: () => import('./views/order/beforeplan/index.vue'),
+    meta: {
+      authKey: '',
+      title: '映前广告计划列表'
+    }
+  },
+  // 映前广告计划 - 详情
+  {
+    path: '/order/beforeplan/detail/:id/:status',
+    name: 'order-beforeplan-detail',
+    component: () => import('./views/order/beforeplan/detail.vue'),
+    meta: {
+      authKey: '',
+      title: '映前广告计划详情'
+    }
+  },
+  // 映前广告计划 - 查看计划城市列表
+  {
+    path: '/order/beforeplan/detail/city/:id',
+    name: 'order-beforeplan-detail-viewcity',
+    component: () => import('./views/order/beforeplan/viewcity.vue'),
+    meta: {
+      authKey: '',
+      title: '查看计划城市列表'
+    }
+  },
+  // 映前广告监播 - 列表
+  {
+    path: '/order/supervision',
+    name: 'order-supervision',
+    component: () => import('./views/order/supervision/index.vue'),
+    meta: {
+      authKey: '',
+      title: '映前广告监播列表'
+    }
+  },
+  // 映前广告监播 - 列表详情
+  {
+    path: '/order/supervision/detail/:id',
+    name: 'order-supervision-detail',
+    component: () => import('./views/order/supervision/detail.vue'),
+    meta: {
+      authKey: '',
+      title: '映前广告监播详情'
     }
   },
 ] // end of mainLayoutRoutes

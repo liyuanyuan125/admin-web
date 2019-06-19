@@ -26,9 +26,9 @@
       <Table :columns="columns" :data="tableData" :loading="loading"
         border stripe disabled-hover size="small" class="table">
           <template slot="spaction" slot-scope="{row}" >
-          <a v-show='row.status != 1' v-auth="'customer.accounts:change-status'" @click="change(row.id, row)">启用</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <a v-show='row.status == 1' v-auth="'customer.accounts:change-status'" @click="change(row.id, row)">禁用</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <router-link v-auth="'customer.accounts:info'" :to="{ name: 'client-account-detail', params: { id: row.id } }">详情</router-link>
+          <a v-show='row.status != 1' v-auth="'customer.accounts:change-status'" @click="change(row.id, row)">启用</a>
+          <a v-show='row.status == 1' v-auth="'customer.accounts:change-status'" @click="change(row.id, row)">禁用</a>
+          <router-link v-auth="'customer.accounts:info'" style='margin-left: 10px;' :to="{ name: 'client-account-detail', params: { id: row.id } }">详情</router-link>
         </template>
         </Table>
 
@@ -55,7 +55,7 @@ import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
 // import { numberify, numberKeys } from '@/fn/typeCast'
-// import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
+import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import DlgEdit from './dlgEdit.vue'
 // import dlgVerify from './dlgVerify.vue'
 

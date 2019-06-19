@@ -9,8 +9,8 @@
         <div slot="content">
           <div class="flex-box">
             <div class="flex-1">
-              <Select v-model="inValue.value" size="small">
-                <Option v-for="it in inValue.list" :key="it.key"
+              <Select v-model="inner.value" size="small">
+                <Option v-for="it in inner.list" :key="it.key"
                   :value="it.key">{{it.text}}</Option>
               </Select>
             </div>
@@ -29,16 +29,10 @@
 </template>
 
 <script lang="tsx">
-// doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { filterByControlStatus } from '@/util/dealData'
-
-interface KeyTextControlStatus {
-  key: number | string
-  text: string
-  controlStatus: number
-}
+import { KeyTextControlStatus } from '@/util/types'
 
 interface Value {
   id: string
@@ -56,7 +50,7 @@ export default class PoptipSelect extends ViewBase {
   /** 权限值，用来控制是否可以编辑 */
   @Prop({ type: String, default: '' }) auth!: string
 
-  inValue: Value = {} as Value
+  inner: Value = {} as Value
 
   show = false
 
@@ -64,14 +58,14 @@ export default class PoptipSelect extends ViewBase {
 
   // 是否是废弃的
   get isDeprecated() {
-    // inValue 里的 list 是过滤过的，若查找不到，则说明是废弃的
-    const { value, list = [] } = this.inValue
+    // inner 里的 list 是过滤过的，若查找不到，则说明是废弃的
+    const { value, list = [] } = this.inner
     const found = list.find(it => it.key == value)
     return found == null
   }
 
   get showText() {
-    const { value, list = [], text } = this.inValue
+    const { value, list = [], text } = this.inner
     const result = text || (list.find(it => it.key == value) || { text: '' }).text
     return result
   }
@@ -90,7 +84,7 @@ export default class PoptipSelect extends ViewBase {
   }
 
   syncValue() {
-    this.inValue = this.filterList(this.value)
+    this.inner = this.filterList(this.value)
   }
 
   filterList(val: Value) {
@@ -101,7 +95,7 @@ export default class PoptipSelect extends ViewBase {
 
   onOk() {
     this.show = false
-    const { id, value } = this.inValue
+    const { id, value } = this.inner
     const { value: oldValue } = this.value
     if (value != oldValue) {
       this.$emit('change', {
@@ -132,16 +126,20 @@ export default class PoptipSelect extends ViewBase {
     font-size: 18px;
   }
 }
+
 .btn-ok {
   margin-left: 5px;
 }
+
 .loading-box {
   display: inline-block;
 }
+
 .loading {
   font-size: 16px;
   animation: ring 1s linear infinite;
 }
+
 @keyframes ring {
   from {
     transform: rotate(0deg);

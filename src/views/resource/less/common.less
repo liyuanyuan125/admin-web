@@ -1,0 +1,84 @@
+h2, h3, h4 {
+    font-weight: normal
+}
+em {
+    font-style: normal;
+}
+
+.page-list {
+    text-align: center;
+    margin: 30px auto 40px;
+}
+.input-display {
+    display: none;
+}
+.table {
+  /deep/ .ivu-table-cell > span:only-child:empty {
+    &::before {
+      content: '-';
+    }
+  }
+}
+.priceModal {
+    /deep/ .ivu-table-wrapper {
+        overflow: inherit
+    }
+}
+.operate-btn {
+    span {
+        cursor: pointer;
+        color: #2d8cf0;
+        padding: 0 5px;
+    }
+}
+.up-limit {
+    width: 100px;
+}
+.form-item {
+    .input,
+    /deep/ .ivu-select {
+        width: 230px;
+    }
+}
+.form-list {
+    .input,
+    /deep/ .ivu-select {
+        width: 150px;
+        margin-right: 20px;
+    }
+    .btn-reset {
+        margin-left: 20px;
+    }
+}
+.batch-btn {
+    margin: 20px 0 20px;
+    .btn {
+        margin-right: 20px;
+    }
+}
+.text-center {
+    text-align: center;
+}
+.modal-item {
+    border: solid 1px #ededed;
+    background: #fff;
+    padding: 10px 15px;
+    font-size: 14px;
+    margin-bottom: 10px;
+    h2 {
+        padding-bottom: 15px;
+        font-size: 15px;
+    }
+    p {
+        display: flex;
+        margin-bottom: 10px;
+        span {
+            display: block;
+            width: 100px;
+            margin-right: 10px;  
+        }
+    }
+}
+/deep/ .ivu-form-item-label{
+    font-size: 13px;
+}

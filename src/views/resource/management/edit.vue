@@ -491,6 +491,7 @@ export default class Main extends ViewBase {
   font-size: 16px;
 }
 .detail-content {
+  background: #fff;
   margin-bottom: 20px;
   border: 1px solid #dcdee2;
   padding-top: 6px;

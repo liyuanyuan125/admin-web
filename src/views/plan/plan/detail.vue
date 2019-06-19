@@ -425,6 +425,9 @@ export default class Main extends ViewBase {
 <style lang="less" scoped>
 @import '../../../site/lib.less';
 
+.page {
+  margin-right: 14px;
+}
 .header {
   margin-top: 5px;
   margin-bottom: 10px;
@@ -480,6 +483,7 @@ export default class Main extends ViewBase {
 .detail-header, .detail-content, .detail-footer, .detail-number {
   margin-bottom: 10px;
   border: 1px solid #dcdee2;
+  background: #fff;
   padding-left: 14px;
   /deep/ .ivu-col-span-2 {
     div {

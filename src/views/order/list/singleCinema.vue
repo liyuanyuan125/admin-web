@@ -7,11 +7,14 @@
       <Col span="5" offset="1">
         <Input v-model="dataForm.name" placeholder="【专资编码】或 影院名称" />
       </Col>
-      <Col span="2" offset="1">
+      <Col span="6" offset="1">
         <Button type="primary" @click="search">搜索</Button>
       </Col>
     </Row>
-    <Table :columns="columns" :data="tableData" :loading="loading"
+    <div v-if="checkId">
+      <Button type="primary" @click="changeAll">批量删除</Button>
+    </div>
+    <Table :columns="columns" @on-selection-change="check" :data="tableData" :loading="loading"
       border stripe disabled-hover size="small" class="table">
       <template v-if="$route.params.status == '2'" slot="action" slot-scope="{row}" >
         <a v-auth="'advert.executeOrder:cancelCinema'" @click="change( row.id, row.shortName )">取消执行</a>
@@ -39,7 +42,7 @@ import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
 import {confirm , warning , success, toast } from '@/ui/modal'
-import AreaSelect from '@/components/AreaSelect.vue'
+import AreaSelect from '@/components/areaSelect'
 import singDlg from './singDlg.vue'
 import imgModel from './imgDlg.vue'
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
@@ -78,6 +81,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   total = 0
   typeList = []
   showTime: any = []
+  checkId: any = []
 
   get columns() {
     const data: any = [
@@ -112,6 +116,14 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         }
       }
     ]
+    const check = [
+       {
+        type: 'selection',
+        title: '全选',
+        width: 60,
+        align: 'center'
+      }
+    ]
     const opernation = [
        {
         title: '操作',
@@ -121,7 +133,19 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         slot: 'action'
       }
     ]
-    return this.$route.params.status == '2' ? [...data, ...opernation] : data
+    return this.$route.params.status == '2' ? [...check, ...data, ...opernation] : data
+  }
+
+  check(data: any) {
+    const ids = this.tableData.map((it: any) => it.id)
+    const dataId = data.map((it: any) => it.id)
+    data.forEach((item: any) => {
+      if (!this.checkId.includes(item.id)) {
+        this.checkId.push(item.id)
+      }
+    })
+    const filterId = ids.filter((it: any) => !dataId.includes(it))
+    this.checkId = this.checkId.filter((it: any) => !filterId.includes(it))
   }
 
   get cachedMap() {
@@ -130,11 +154,19 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
 
   dlgEditDone(id: any) {
-    this.cinemaArray = this.cinemaArray.filter((it: any) => it != id)
+    // if (id.length > 0) {
+    //   id.map((it: any) => {
+    //     this.cinemaArray = this.cinemaArray.filter((its: any) => its != it)
+    //     this.checkId = this.checkId.filter((its: any) => its != it)
+    //   })
+    // } else {
+    //   this.cinemaArray = this.cinemaArray.filter((it: any) => it != id)
+    // }
+    this.search()
   }
 
   get tableData() {
-     if (this.cinemaArray.length == 0) {
+    if (this.cinemaArray.length == 0) {
       return []
     }
     const cachedMap = this.cachedMap
@@ -143,7 +175,19 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         ...it
       }
     })
-    return list
+    const list1 = (this.list || []).map((it: any) => {
+      if (this.checkId.includes(it.id)) {
+        return {
+          ...it,
+          _checked: true
+        }
+      } else {
+        return {
+          ...it,
+        }
+      }
+    })
+    return this.$route.params.status == '2' ? list1 : list
   }
 
   find() {
@@ -175,7 +219,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     if (this.cinemaArray.length == 0) {
       return
     }
-
     this.loading = true
     const query = clean({ ...this.dataForm, ids: this.cinemaArray.join(',') })
     try {
@@ -207,6 +250,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     this.addOrUpdateVisible = true
     this.$nextTick(() => {
       (this.$refs.addOrUpdate as any).init(id, shortName)
+    })
+  }
+
+  changeAll() {
+    this.addOrUpdateVisible = true
+    this.$nextTick(() => {
+      (this.$refs.addOrUpdate as any).inits(this.checkId)
     })
   }
 

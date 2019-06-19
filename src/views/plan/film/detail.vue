@@ -50,7 +50,7 @@
       </Row>
       <div v-if='showedit' class='titop'>转制</div>
       <Row v-if='showedit' >
-        <UploadButton style='margin-bottom:17px;' multiple @success="onUploadSuccess">上传</UploadButton>
+        <!-- <UploadButton style='margin-bottom:17px;' multiple @success="onUploadSuccess">上传</UploadButton> -->
         <Table :columns="columns" :data="tableData"
         border disabled-hover size="small" class="table">
           <template slot="spaction" slot-scope="{row}">
@@ -524,6 +524,10 @@ export default class Main extends ViewBase {
   line-height: 35px;
   color: rgb(61, 156, 235);
   font-size: 16px;
+  margin-bottom: 10px;
+}
+.logs-item {
+  height: 35px;
 }
 /deep/ .ivu-btn:hover {
   color: #000;

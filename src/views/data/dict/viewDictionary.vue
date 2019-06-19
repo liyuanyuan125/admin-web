@@ -22,7 +22,9 @@
         @on-change="page => query.pageIndex = page"
         @on-page-size-change="pageSize => query.pageSize = pageSize"/>
     </div>
-    <dlgViewEdit :cinemaOnes="editOne" :status="stas" ref="addOrUpdate" @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"></dlgViewEdit>
+
+    <dlgViewEdit :cinemaOnes="editOne" :status="stas" ref="addOrUpdate"
+      @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"></dlgViewEdit>
   </div>
 </template>
 
@@ -221,4 +223,4 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   margin: 20px 0 18px;
   text-align: center;
 }
-  </style>
+</style>

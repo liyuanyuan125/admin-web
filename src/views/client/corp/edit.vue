@@ -173,7 +173,7 @@
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { queryId, addSeach, addQuery, setQuery, directorList } from '@/api/corpReal'
-import AreaSelect from '@/components/AreaSelect.vue'
+import AreaSelect from '@/components/areaSelect'
 import Upload from '@/components/Upload.vue'
 import PartBindCinema from './partBindCinema.vue'
 import { toMap } from '@/fn/array'

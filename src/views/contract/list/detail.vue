@@ -67,7 +67,7 @@
         <Table :columns="columns" :data="tableData"
         border stripe disabled-hover size="small" class="table"></Table>
       </Row>
-      <div class='titop'>责任人</div>
+      <div class='titop' style="margin-top: 10px;">责任人</div>
       <Row class="detail-content">
         <Row>
           <Col span="2"><div>签订人</div></Col>
@@ -119,7 +119,7 @@ import { Component, Watch , Mixins  } from 'vue-property-decorator'
 import moment from 'moment'
 import ViewBase from '@/util/ViewBase'
 import { queryList , queryId , zuofei } from '@/api/list'
-import AreaSelect from '@/components/AreaSelect.vue'
+import AreaSelect from '@/components/areaSelect'
 import PartBindCinema from './partBindCinema.vue'
 // import DlgEdit from '../account/dlgEdit.vue'
 import Upload from '@/components/Upload.vue'
@@ -177,7 +177,7 @@ export default class Main extends ViewBase {
   }
 
   mounted() {
-    if ( this.$route.params.approveStatus == '1' ) {
+    if ( this.$route.params.approveStatus == '1' && this.$route.params.edi != '1') {
       this.showStatus = true
       this.showedit = true
     }
@@ -461,5 +461,6 @@ export default class Main extends ViewBase {
   line-height: 28px;
   color: rgb(61, 156, 235);
   font-size: 16px;
+  margin-bottom: 10px;
 }
 </style>

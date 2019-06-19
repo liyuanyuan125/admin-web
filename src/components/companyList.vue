@@ -26,7 +26,7 @@ export default class CinemaChainSelect extends ViewBase {
    * 提示文字
    */
   @Prop({ type: String, default: '公司列表' }) placeholder!: string
-
+  @Prop({ default: 0 }) approveStatus!: number
   @Prop({ type: Boolean, default: true }) clearable!: boolean
 
   inValue: number = this.value
@@ -35,9 +35,14 @@ export default class CinemaChainSelect extends ViewBase {
 
   async mounted() {
     try {
-      const { data } = await queryList(clean({
+      const { data } = this.approveStatus == 0 ? await queryList(clean({
         pageSize: 888888,
         status: 1,
+        typeCode: this.typeCode
+      })) :  await queryList(clean({
+        pageSize: 888888,
+        status: 1,
+        approveStatus: this.approveStatus,
         typeCode: this.typeCode
       }))
       const list: any[] = data.items || []
@@ -57,6 +62,8 @@ export default class CinemaChainSelect extends ViewBase {
   @Watch('inValue')
   watchInValue(val: number) {
     this.$emit('input', val)
+    const row = this.list.filter((item: any) => item.id == val)
+    this.$emit('row', row)
   }
 }
 </script>

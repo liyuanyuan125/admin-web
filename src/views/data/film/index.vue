@@ -1,487 +1,197 @@
 <template>
-  <div class="page">
-    <div class="act-bar flex-box">
-      <form class="form flex-1" @submit.prevent="search">
-        <LazyInput v-model="query.name" placeholder="影片名称" class="input input-id"/>
-        <DatePicker @on-change="dateChange" type="daterange" v-model="showTime" placement="bottom-end" placeholder="中国上映时间" class="input" style="width: 200px"></DatePicker>
-        <Button type="default" @click="reset" class="btn-reset">清空</Button>
-      </form>
-
-      <div class="acts" v-auth="'theater.movies:sync'">
-        <Button type="success" icon="md-add-circle" @click="edit()">新建影片</Button>
-      </div>
-    </div>
-    <Table  :columns="columns" :data="tableData" :loading="loading"
-      border stripe disabled-hover size="small" class="table">
-      <template slot="name" slot-scope="{row}">
-        <router-link v-auth="'theater.movies:info'" :to="{name: 'data-film-detail', params: { id: row.id }}">{{row.name}}</router-link>
-        <span v-auth-not="'theater.movies:info'">{{row.name}}</span>
+  <div>
+    <ListPage
+      :fetch="fetch"
+      :filters="filters"
+      :enums="enums"
+      :columns="columns"
+      @selectionChange="selectionChange"
+      ref="listPage">
+      <template slot="acts-2">
+        <div class="table-btn">
+            <Button @click="handleGetFilm" >抓取票神影片</Button>
+            <Button @click="handleUpShelf()" >批量上架</Button>
+            <Button @click="handleDownShelf()">批量下架</Button>
+        </div>
       </template>
-      <template slot="spaction" slot-scope="{row}" >
-        <a v-auth="'theater.chains:modify'"  @click="reloads(row.mtimeId)" class="operation" >刷新</a>
+      <template slot="operate" slot-scope="{row}">
+        <span @click="$router.push({name: 'data-film-edit', params: {id: row.id}})">编辑</span>
+        <span @click="uploadCurrent">刷新</span>
+        <span @click="handleUpShelf(row.id)">上架</span>
+        <span @click="handleDownShelf(row,id)">下架</span>
+        <span>浏览前台</span>
+        <span @click="$router.push({name: 'data-film-detail', params: {id: row.id}})">查看</span>
       </template>
-    </Table>
-
-    <div class="page-wrap" v-if="total > 0">
-      <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
-        show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-        @on-change="page => query.pageIndex = page"
-        @on-page-size-change="pageSize => query.pageSize = pageSize"/>
-    </div>
-    <DlgEdit  ref="addOrUpdate" @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" />
+    </ListPage>
+    <getFilmDlg v-model="visFilmid" v-if="visFilmid.visible" @input="filmonOK"></getFilmDlg>
   </div>
 </template>
 
-<script lang="tsx">
-// doc: https://github.com/kaorun343/vue-property-decorator
-import { Component, Watch, Mixins } from 'vue-property-decorator'
+<script lang='ts'>
+import {Component} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import UrlManager from '@/util/UrlManager'
-import jsxReactToVue from '@/util/jsxReactToVue'
-import { toMap } from '@/fn/array'
-import moment from 'moment'
-import { slice, clean } from '@/fn/object'
-import { numberify, numberKeys } from '@/fn/typeCast'
-import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
-import { queryList, updateControlStatus, updateStatus, updateSpecialId, reda, syncData, updateRel } from '@/api/film'
-import { toThousands } from '@/util/dealData'
-import PoptipSelect from '@/components/PoptipSelect.vue'
-import PoptipInput from '@/components/PoptipInput.vue'
-import DlgEdit from './dlgEdit.vue'
-import { loading, toast } from '@/ui/modal'
-const makeMap = (list: any[]) => toMap(list, 'key', 'text')
-const timeFormat = 'YYYY-MM-DD'
+import { confirm, info, alert } from '@/ui/modal.ts'
+import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
+import { queryList } from '@/api/film-ed'
+import getFilmDlg from './components/getFilmDlg.vue'
+
 
 @Component({
   components: {
-    DlgEdit,
-    PoptipSelect,
-    PoptipInput
+    ListPage,
+    getFilmDlg
   }
 })
-export default class Main extends Mixins(ViewBase, UrlManager) {
-  defQuery = {
-    id: null,
-    name: '',
-    pageIndex: 1,
-    pageSize: 20,
-    startTime: 0,
-    endTime: 0
-  }
+export default class Main extends ViewBase {
+  fetch = queryList
+  filters: Filter[] = [
+    {
+      name: 'ids',
+      defaultValue: '',
+      type: 'input',
+      width: 140,
+      placeholder: '影片id'
+    },
+    {
+      name: 'name',
+      defaultValue: '',
+      type: 'input',
+      width: 140,
+      placeholder: '影片名称'
+    },
+    // {
+    //   name: 'types',
+    //   defaultValue: '',
+    //   type: 'select',
+    //   width: 140,
+    //   placeholder: '影片类型',
+    //   enumKey: 'type',
+    // },
+    {
+      name: 'categoryCode',
+      defaultValue: '',
+      type: 'select',
+      width: 140,
+      placeholder: '分类',
+      enumKey: 'categoryList',
+    },
+    {
+      name: 'releaseStatus',
+      defaultValue: '',
+      type: 'select',
+      width: 140,
+      placeholder: '上映状态',
+      enumKey: 'releaseStatusList',
+    },
+    {
+      name: 'controlStatus',
+      defaultValue: '',
+      type: 'select',
+      width: 140,
+      placeholder: '状态',
+      enumKey: 'controlStatusList',
+    },
+    {
+      name: 'pageIndex',
+      defaultValue: 1
+    },
+    {
+      name: 'pageSize',
+      defaultValue: 20
+    }
+  ]
+  enums = [
+    'categoryList',
+    'releaseStatusList',
+    'controlStatusList'
+  ]
 
-  query: any = {}
-
-  oldQuery: any = {}
-
-  rolads = false
-  editOne: any = null
-  loading = false
-  addOrUpdateVisible = false
-  list: any[] = []
-  total = 0
-  showTime: any = []
-  categoryList = []
-  controlList = []
-  releaseStatusList = []
+  // select ids
+  idsList: any[] = []
+  statusIds: any[] = []
 
   get columns() {
     return [
-      {
-        title: '序号',
-        key: 'id',
-        width: 40,
-        align: 'center',
-        render: (hh: any, { row : { id } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          return <div class="row-hidden" title={id}>{id}</div>
-          /* tslint:enable */
-        }
-      },
-      { title: 'MtimeID', key: 'mtimeId', width: 60, align: 'center' },
-      {
-        title: '专资ID',
-        key: 'specialId',
-        width: 70,
-        align: 'center',
-        render: (hh: any, { row: { id, specialId } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          const value = {
-            id,
-            text: specialId,
-            value: specialId,
-          }
-          return <PoptipInput v-model={value}
-            on-change={this.editSpecialId.bind(this)}/>
-          /* tslint:enable */
-        }
-      },
-      {
-        title: '影片名称',
-        key: 'name',
-        width: 80,
-        slot: 'name',
-        align: 'center'
-      },
-      {
-        title: '中国上映时间', // tslint:disable-line
-        key: 'openTime',
-        width: 100,
-        align: 'center',
-        render: (hh: any, { row : { openTime } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          const html = openTime ? moment(openTime).format(timeFormat) : ''
-          return <span v-html={html}></span>
-          /* tslint:enable */
-        }
-      },
-      {
-        title: '今日票房', // tslint:disable-line
-        key: 'todayBox',
-        width: 70,
-        align: 'center',
-        render: (hh: any, { row : { todayBox } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          const add = toThousands(todayBox)
-          return <span>{add}</span>
-          /* tslint:enable */
-        }
-      },
-      {
-        title: '累计票房', // tslint:disable-line
-        key: 'sumBox',
-        width: 70,
-        align: 'center',
-        render: (hh: any, { row : { sumBox } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          const sun = toThousands(sumBox)
-          return <span class="row-hidden" title = { sun }>{sun}</span>
-          /* tslint:enable */
-        }
-      },
-      {
-        title: '演员', // tslint:disable-line
-        key: 'performers',
-        width: 80,
-        align: 'center',
-        render: (hh: any, { row : { performers } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          return <span class="row-hidden" title = { performers }>
-            { performers.join(',') }
-          </span>
-          /* tslint:enable */
-        }
-      },
-      {
-        title: '导演', // tslint:disable-line
-        key: 'director',
-        align: 'center'
-      },
-      {
-        title: '产地', // tslint:disable-line
-        key: 'fromPlace',
-        width: 70,
-        align: 'center'
-      },
-      {
-        title: '类型', // tslint:disable-line
-        key: 'type',
-        width: 70,
-        align: 'center',
-        render: (hh: any, { row : { type } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          const typeName = type ? type.join(',') : ''
-          return <span class="row-hidden" title = { type }>
-            { typeName }
-          </span>
-          /* tslint:enable */
-        }
-      },
-      {
-        title: '分类', // tslint:disable-line
-        key: 'categoryName',
-        width: 100,
-        align: 'center',
-        render: (hh: any, { row: { id, categoryName, categoryCode,  } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          const value = {
-            id,
-            text: categoryName,
-            value: categoryCode,
-            list: this.categoryList,
-          }
-          // console.log(categoryCode)
-          return <PoptipSelect v-model={value}
-            on-change={this.editCategory.bind(this)}/>
-          /* tslint:enable */
-        }
-      },
-      {
-        title: '上映状态', // tslint:disable-line
-        key: 'shows',
-        width: 100,
-        align: 'center',
-        render: (hh: any, { row: { id, releaseStatusListString, releaseStatus,  } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          const value = {
-            id,
-            text: releaseStatusListString,
-            value: releaseStatus,
-            list: this.releaseStatusList.slice(1),
-          }
-          // console.log(categoryCode)
-          return <PoptipSelect v-model={value}
-            on-change={this.editRel.bind(this)}/>
-          /* tslint:enable */
-        }
-      },
-      {
-        title: '控制状态', // tslint:disable-line
-        key: 'controlStatus',
-        width: 80,
-        align: 'center',
-        render: (hh: any, { row: { id, controlStatusString, controlStatus } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          const value = {
-              id,
-              text: controlStatusString,
-              value: controlStatus,
-              list: this.controlList.slice(1),
-          }
-          return <PoptipSelect v-model={value}
-              on-change={this.editControlStatus.bind(this)}/>
-          /* tslint:enable */
-        }
-      },
-      {
-        title: '操作', // tslint:disable-line
-        slot: 'spaction',
-        width: 80,
-        align: 'center'
-      }
-    ]
+      {type: 'selection', width: 50},
+      {title: '影片id', key: 'id', minWidth: 85},
+      {title: '专资id', key: 'specialId', minWidth: 85},
+      {title: '影片名称', key: 'englishName', minWidth: 85},
+      {title: '上映时间', key: 'openTime', minWidth: 85, editor: 'dateTime'},
+      {title: '今日票房', key: 'todayBox', minWidth: 85},
+      {title: '累计票房', key: 'sumBox', minWidth: 85},
+      {title: '演员', key: 'performers', minWidth: 85},
+      {title: '导演', key: 'director', minWidth: 85},
+      {title: '产地', key: 'fromPlace', minWidth: 85},
+      {title: '类型', key: 'type', minWidth: 85},
+      {title: '分类', key: 'categoryCode', minWidth: 85, editor: 'enum'},
+      {title: '上映状态', key: 'releaseStatus', minWidth: 85, editor: 'enum'},
+      {title: '状态', key: 'controlStatus', minWidth: 85, editor: 'enum'},
+      {title: '操作', slot: 'operate', minWidth: 120},
+    ] as ColumnExtra[]
   }
 
-  get cachedMap() {
-    return {
-      categoryList: makeMap(this.categoryList),
-      controlList: makeMap(this.controlList),
-      releaseStatusList: makeMap(this.releaseStatusList)
-    }
+  // 抓取票神影片
+  visFilmid = {
+    visible: false
   }
 
-  get tableData() {
-    const cachedMap = this.cachedMap
-    const list = (this.list || []).map((it: any) => {
-      return {
-        ...it,
-        // category: cachedMap.categoryList[it.categoryName],
-        categoryName: cachedMap.categoryList[it.categoryCode],
-        controlStatusString: cachedMap.controlList[it.controlStatus],
-        releaseStatusListString: cachedMap.releaseStatusList[it.releaseStatus]
-      }
-    })
-    return list
+  selectionChange(ids: any[]) {
+    this.idsList = ids.map( item => item.id)
+    this.statusIds = ids.map( item => item.status)
   }
-
-  mounted() {
-    this.updateQueryByParam()
-    // 时间赋值
-    !!this.query.startTime ? this.showTime[0] = moment(this.query.startTime).format(timeFormat) : this.showTime[0] = ''
-    !!this.query.endTime ? this.showTime[1] = moment(this.query.endTime).format(timeFormat) : this.showTime[1] = ''
-  }
-
-  search() {
-    this.query.pageIndex = 1
-  }
-
-  reset() {
-    // 时间清空
-    this.showTime = []
-    this.resetQuery()
-  }
-
-  dateChange(data: any) {
-     // 获取时间戳
-     !!data[0] ? (this.query.startTime = new Date(data[0]).getTime()) : this.query.startTime = 0
-     !!data[1] ? (this.query.endTime = new Date(data[1]).getTime()) : this.query.endTime = 0
-  }
-
-  async editSpecialId({ id, value, showLoading, hideLoading }: any) {
-    const item = this.list.find(it => it.id == id)
-    try {
-      showLoading()
-      await updateSpecialId(id, value)
-      item.specialId = value
-    } catch (ex) {
-      this.handleError(ex)
-    } finally {
-      hideLoading()
-    }
-  }
-
-  reloadSearch() {
-    this.doSearch()
-  }
-
-  async editCategory({ id, value, showLoading, hideLoading }: any) {
-    const item = this.list.find(it => it.id == id)
-    try {
-      showLoading()
-      await updateStatus(id, value)
-      item.categoryCode = value
-    } catch (ex) {
-      this.handleError(ex)
-    } finally {
-      hideLoading()
-    }
-  }
-
-  async editRel({ id, value, showLoading, hideLoading }: any) {
-    const item = this.list.find(it => it.id == id)
-    try {
-      showLoading()
-      await updateRel(id, value)
-      item.releaseStatus = value
-    } catch (ex) {
-      this.handleError(ex)
-    } finally {
-      hideLoading()
-    }
-  }
-
-  async editControlStatus({ id, value, showLoading, hideLoading }: any) {
-    const item = this.list.find(it => it.id == id)
-    try {
-      showLoading()
-      await updateControlStatus(id, value)
-      item.controlStatus = value
-    } catch (ex) {
-      this.handleError(ex)
-    } finally {
-      hideLoading()
-    }
-  }
-
-  async doSearch() {
-    if (this.loading) {
+  // 上架
+  async handleUpShelf(id?: any[]) {
+    if (!this.idsList.length) {
+      await alert('请选择上架数据', {
+        title: '提示'
+      })
       return
     }
-    this.updateUrl()
-    this.oldQuery = { ...this.query }
-    this.loading = true
-    const query: any = {}
-    for (const [key, value] of Object.entries(this.oldQuery)) {
-      if (key != 'startTime' && value != 0) {
-        query[key] = value
-      }
-      if (key != 'endTime' && value != 0) {
-        query[key] = value
-      }
-    }
-    try {
-      const { data: {
-        items: list,
-        totalCount: total,
-        categoryList = [],
-        controlStatusList = [],
-        releaseStatusList = []
-      } } = await queryList(clean(query))
-      this.list = list
-      this.total = total
-      this.categoryList = categoryList
-      this.controlList = controlStatusList
-      this.releaseStatusList = releaseStatusList
-    } catch (ex) {
-      this.handleError(ex)
-    } finally {
-      this.loading = false
-    }
-  }
-
-  // 新增 / 修改
-  edit() {
-    this.addOrUpdateVisible = true
-    this.$nextTick(() => {
-      (this.$refs.addOrUpdate as any).init()
+    const length = id ? Array.of(id).length : this.idsList.length
+    await confirm(`您选择了${length}条影片进行上架`, {
+      title: '上架操作'
     })
+    // ids = [] 后台传入参数
+    const ids = id ? Array.of(id) : this.idsList
+    // 接口操作
+  }
+  // 下架
+  async handleDownShelf(id?: any[]) {
+    if (!this.idsList.length) {
+      await alert('请选择下架数据', {
+        title: '提示'
+      })
+      return
+    }
+    const length = id ? Array.of(id).length : this.idsList.length
+     await confirm(`您选择了${length}条影片进行下架`, {
+      title: '下架操作'
+    })
+    // ids = [] 后台传入参数
+    const ids = id ? Array.of(id) : this.idsList
+    // 接口操作
   }
 
-  async reloads(mtimeId: any) {
-    try {
-        (this.$Spin as any).show()
-        const res = await syncData (mtimeId, 1)
-        this.$Message.success({
-        content: `刷新成功`,
-        })
-        ; (this.$Spin as any).hide()
-        if (this.query.pageIndex != 1) {
-          this.query.pageIndex = 1
-          return
-        }
-        this.doSearch()
-    } catch (ex) {
-      this.handleError(ex)
-      ; (this.$Spin as any).hide()
-    }
+  // 刷新
+  async uploadCurrent() {
+    // 刷新数据接口成功
+    await info('影片信息已经刷新，10分钟后查看刷新后的信息。', {title: '刷新'})
   }
-
-  @Watch('query', { deep: true })
-  watchQuery() {
-    if (this.query.pageIndex == this.oldQuery.pageIndex) {
-      this.query.pageIndex = 1
-    }
-    this.doSearch()
+  async handleGetFilm() {
+    this.visFilmid.visible = true
+  }
+  filmonOK(val: any) {
+    this.visFilmid.visible = false;
+    (this.$refs.listPage as any).update()
   }
 }
+
 </script>
-
-<style lang="less" scoped>
-.act-bar {
-  margin-top: 5px;
-}
-
-.form {
-  .input {
-    margin-right: 8px;
+<style lang='less' scoped>
+.table-btn {
+  padding: 10px 0;
+  .ivu-btn {
+    margin-right: 15px;
   }
-  .input-id {
-    width: 180px;
-  }
-}
-
-.table {
-  margin-top: 16px;
-  /deep/ .status-2,
-  /deep/ .aptitude-status-popular {
-    color: #ed4014;
-  }
-  /deep/ .row-hidden {
-    cursor: pointer;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  /deep/ .aptitude-status-super {
-    color: #19be6b;
-  }
-  /deep/ .ivu-table-cell > span:only-child:empty {
-    &::before {
-      content: '-';
-    }
-  }
-}
-.page-wrap {
-  margin: 20px 0 18px;
-  text-align: center;
 }
 </style>

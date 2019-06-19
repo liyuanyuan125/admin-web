@@ -79,4 +79,10 @@ export async function updateBoxLevelCode(id: string, boxLevelCode: number) {
   const res = await put('/theater/cinemas/change-box-level', { id, boxLevelCode })
   return res
 }
-
+/**
+ * 查询影投列表
+ */
+export async function companiesList() {
+  const res = await get('/theater/companies')
+  return res
+}
