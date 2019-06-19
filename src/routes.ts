@@ -408,6 +408,20 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     path: '/contract/list/detail/:id/:approveStatus/:edi?',
     name: 'contract-list-detail',
     component: () => import('./views/contract/list/detail.vue'),
+<<<<<<< HEAD
+    meta: {
+      authKey: 'finance.recharges:info'
+    }
+  },
+
+  // 财务管理 - 充值审核 - 新建充值
+  // TODO: id 不应该存在！
+  {
+    path: '/finance/examine/edit/:id?',
+    name: 'finance-examine-edit',
+    component: () => import('./views/finance/examine/edit.vue'),
+=======
+>>>>>>> 23de7afb099e08660a1cfbe936ac666efa68f5fe
     meta: {
       authKey: ''
     }
