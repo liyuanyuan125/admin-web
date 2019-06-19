@@ -17,14 +17,14 @@
       <template slot="refundNo" slot-scope="{ row: { id , refundNo , orderNo , refundStatus} }">
         <div class="row-acts">
           <router-link
-            :to="{ name: 'order-refund-detail', params: { 'id' : id , 'order': orderNo , 'status': refundStatus } }"
+            :to="{ name: 'order-refund-detail', params: { 'id' : id , 'order': orderNo  } }"
           >{{refundNo}}</router-link>
         </div>
       </template>
       <template slot="orderNo" slot-scope="{ row: { id , orderNo , refundStatus } }">
         <div class="row-acts">
           <router-link
-            :to="{ name: 'order-refund-detail', params: { 'id' : id , 'order': orderNo , 'status' :  refundStatus } }"
+            :to="{ name: 'order-refund-detail', params: { 'id' : id , 'order': orderNo   } }"
           >{{orderNo}}</router-link>
         </div>
       </template>

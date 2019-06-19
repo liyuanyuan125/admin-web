@@ -18,7 +18,7 @@
     </Form>
     <div slot="footer" class="dialog-footer">
       <Button @click="cancel">取消</Button>
-      <Button type="primary" @click="dataFormSubmit('dataForm')">确定</Button>
+      <Button type="primary" @click="dataFormSubmit()">确定</Button>
     </div>
   </Modal>
 </template>
@@ -29,7 +29,7 @@ import { Component, Prop } from 'vue-property-decorator'
 import { set } from '@/api/orderSys'
 import { warning , success, toast , info } from '@/ui/modal'
 import moment from 'moment'
-import { queryList , delorder , finance } from '@/api/refund'
+import { queryList   } from '@/api/kollist'
 import ViewBase from '@/util/ViewBase'
 const timeFormat = 'YYYY-MM-DD'
 const dataForm = {
@@ -64,18 +64,10 @@ export default class ComponentMain extends ViewBase {
   }
 
   // 表单提交
-  async dataFormSubmit(dataForms: any) {
-
-    const valid = await (this.$refs.dataForm as any).validate()
-    if (!valid) {
-      return
-    }
+  async dataFormSubmit() {
     try {
-      const res = await finance ( this.dataForm.orderNo, {})
-      toast('成功')
       this.showDlg = false
-      this.$emit('done')
-      this.$router.push({ name: 'order-refund-detail' , params : {}})
+      this.$router.push({ name: '/order/refund/detail/0/' + this.dataForm.orderNo})
     } catch (ex) {
       this.handleError(ex)
       this.showDlg = false
@@ -84,7 +76,7 @@ export default class ComponentMain extends ViewBase {
 
   async mounted() {
     try {
-      const relist = await queryList({})
+      const relist = await queryList({orderStatus : 9})
       this.relist = relist.data.items
     } catch (ex) {
       this.handleError(ex)

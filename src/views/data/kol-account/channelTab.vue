@@ -2,20 +2,11 @@
   <Tabs v-model="channelCode" type="card" class="tabs">
     <TabPane v-for='item in channelList' :name="item.key" :key='item.key' :label="item.text" />
   </Tabs>
-  <!-- <Tabs v-model="channelCode" type="card" class="tabs">
-    <TabPane name="1" label="待审核"/>
-    <TabPane name="2" label="待支付"/>
-    <TabPane name="3" label="待转码"/>
-    <TabPane name="4" label="已完成"/>
-    <TabPane name="5" label="审核已拒绝"/>
-    <TabPane name="6" label="已取消"/>
-  </Tabs> -->
 </template>
 
 <script lang="ts">
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import { accountCategorysList } from '@/api/kolAccount'
 
 @Component
 export default class ChannelTab extends ViewBase {
@@ -40,23 +31,8 @@ export default class ChannelTab extends ViewBase {
     text: '小红书',
     key: 'xiaohongshu'
   }]
-  mounted() {
-    // this.getCaabbs()
-  }
-
-  async getCaabbs() {
-    try {
-      const {
-        data: {
-          items
-        }
-      } = await accountCategorysList('')
-      this.channelList = items
-      // console.log(items, 'items333')
-    } catch (ex) {
-      this.handleError(ex)
-    }
-  }
+  mounted() {  }
+  created() {  }
 
   @Watch('channelCode')
   watchInner(val: any) {
