@@ -14,10 +14,15 @@
           >{{orderNo}}</router-link>
         </div>
       </template>
+      <template slot="channelCode" slot-scope="{ row: { channelCode , orderId , status } }">
+        <div class="row-acts">
+          <span v-for='(it,index) in channelCodeList' :kry='index' v-if='it.key == channelCode'>{{it.text}}</span>
+        </div>
+      </template>
       <template slot="action" slot-scope="{ row: { orderNo , orderId , status  } }">
         <div class="row-acts" v-if='status == 2'>
           <router-link :to="{ name: 'order-kollist-detail', params: { id: orderId , orders : status   } }">商务确认订单</router-link>
-          <a href="javascript:;"  @click='cancel(orderNo)'> 取消订单</a>
+          <a href="javascript:;"  @click='cancel(orderId)'> 取消订单</a>
         </div>
         <div class="row-acts" v-if='status == 3'>
           <router-link :to="{ name: 'order-kollist-detail', params: { id: orderId , orders : status  } }">财务审核订单</router-link>
@@ -95,7 +100,7 @@ export default class Main extends ViewBase {
       type: 'select',
       width: 100,
       placeholder: '平台',
-      enumKey: 'pingtaiList'
+      enumKey: 'channelCodeList'
     },
 
     {
@@ -128,9 +133,14 @@ export default class Main extends ViewBase {
 
   enums = [
     'pingtaiList',
+    'channelCodeList',
     'statusList',
     'ordersList',
-    'billStatusList'
+    'billStatusList',
+  ]
+
+  channelCodeList: any = [
+    {text: '微博', key: 'weibo'}
   ]
 
   get columns() {
@@ -139,8 +149,8 @@ export default class Main extends ViewBase {
       { title: '项目名称', key: 'projectName', },
       { title: '公司ID', key: 'companyId', width: 65 },
       { title: '公司名称', key: 'companyName',   },
-      { title: '平台', key: 'channelCode', width: 70, editor: 'enum'},
-      { title: '推广品牌', key: 'brandId', width: 70, editor: 'enum'},
+      { title: '平台', slot: 'channelCode', width: 70 },
+      { title: '推广品牌', key: 'brandName', width: 70, },
       { title: '下单时间', key: 'createTime', editor: 'dateTime', width: 135 },
       { title: '下单金额', key: 'totalFee', width: 100  },
       { title: '商务确认金额', key: 'confirmFee', width: 100 },

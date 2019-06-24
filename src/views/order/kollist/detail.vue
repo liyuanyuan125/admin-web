@@ -1,7 +1,7 @@
 <template>
   <div>
     <header class="header flex-box">
-      <Button icon="md-return-left" @click="back" class="btn-back">返回上一页</Button>
+      <Button icon="md-return-left" @click="back()" class="btn-back">返回上一页</Button>
       <div class="flex-1" style='margin-left:20px;'>
         <em>订单基本信息</em>
       </div>
@@ -9,6 +9,11 @@
 
     <!-- 订单基本信息 -->
     <Table :columns="columns" :data='itemlist' border stripe disabled-hover size="small" class="table">
+      <template slot="channelCode" slot-scope="{ row: { channelCode , orderId , status } }">
+        <div class="row-acts">
+          <span v-for='(it,index) in channelCodeList' :key='index' v-if='it.key == channelCode'>{{it.text}}</span>
+        </div>
+      </template>
     </Table>
 
      <!-- 商务确认信息 -->
@@ -16,12 +21,25 @@
     <div v-if='$route.params.orders == 2 || $route.params.orders == 3 || $route.params.orders == 0 || $route.params.orders == 5' class='title'>商务确认</div>
 
     <Table  :columns="okcolumns" :data='oklist' border stripe disabled-hover size="small" class="table">
+      <template slot="channelCode" slot-scope="{ row: { channelCode  } }">
+        <div class="row-acts">
+          <span v-for='(it,index) in channelCodeList' :key='index' v-if='it.key == channelCode'>{{it.text}}</span>
+        </div>
+      </template>
+      <template slot="publishCategoryCode" slot-scope="{ row: { publishCategoryCode , orderId , status } }">
+        <div class="row-acts">
+          <span v-for='(it,index) in publishCategoryList' :key='index' v-if='it.key == publishCategoryCode'>{{it.text}}</span>
+        </div>
+      </template>
       <template v-if='$route.params.orders == 2 ' slot="action" slot-scope="{row}" >
           <a  @click="deletefilm(row.id)">删除</a>&nbsp;
           <a  @click="editShow(row.id , row.confirmPrice , row.confirmRemark)">编辑</a>
         </template>
     </Table>
-
+    <div v-if='$route.params.orders == 2' style='text-align: center;margin-top: 50px;'>
+      <Button class="btn-back" @click='okdata()'>提交</Button>
+      <Button class="btn-back" style='margin-left: 35px;' @click="back()">取消</Button>
+    </div>
 
     <!-- 订单支付信息 -->
     <div class='title' v-if='$route.params.orders == 8 || $route.params.orders == 0'>订单支付信息</div>
@@ -97,7 +115,7 @@
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import jsxReactToVue from '@/util/jsxReactToVue'
-import { itemlist , cancel , finance , advance , rest , recept , move  } from '@/api/kollist'
+import { itemlist , cancel , finance , advance , rest , recept , move , biz  } from '@/api/kollist'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import moment from 'moment'
 import EditDialog, { Field } from '@/components/editDialog'
@@ -145,13 +163,18 @@ export default class Main extends ViewBase {
 
   id = 0
 
+  channelCodeList: any = [
+    {text: '微博', key: 'weibo'}
+  ]
+  publishCategoryList: any = []
+
  // 订单基本信息
   columns = [
     { title: '订单编号', width: 70, key: 'orderNo', align: 'center' },
     { title: '项目名称', key: 'projectName', align: 'center' },
     { title: '客户id', width: 70, key: 'companyId', align: 'center' },
     { title: '客户名称', key: 'companyName', align: 'center' },
-    { title: '平台', width: 70, key: 'channelCode', align: 'center' },
+    { title: '平台', width: 70, slot: 'channelCode', align: 'center'},
     { title: '推广品牌', width: 70, key: 'brandName', align: 'center' },
     {
       title: '下单时间',
@@ -167,7 +190,7 @@ export default class Main extends ViewBase {
       }
     },
     { title: '下单金额', width: 70,  key: 'totalFee', align: 'center' },
-    { title: '商务确认金额', width: 90,  key: 'confirmFee', align: 'center' },
+    { title: '商务确认金额', width: 90,  key: 'totalFee', align: 'center' },
     {
       title: '订单状态',
       width: 70,
@@ -207,11 +230,11 @@ export default class Main extends ViewBase {
   get okcolumns() {
     const data: any = [
       { title: 'kol平台账号',  key: 'kolId', align: 'center' },
-      { title: 'kol平台账号名称', key: 'kolName', align: 'center' },
-      { title: '平台', width: 70, key: 'channelCode', align: 'center' },
-      { title: '任务类型', key: 'publishCategoryCode', align: 'center' },
+      { title: 'kol平台账号名称', key: 'accountName', align: 'center' },
+      { title: '平台', width: 70, slot: 'channelCode', align: 'center' },
+      { title: '任务类型', slot: 'publishCategoryCode', align: 'center' },
       { title: '下单金额',  key: 'salePrice', align: 'center' },
-      { title: '商务修改金额',  key: 'confirmPrice', align: 'center' },
+      { title: '商务修改金额',  key: 'salePrice', align: 'center' },
       { title: '备注',  key: 'confirmRemark', align: 'center' },
     ]
     const opernation = [
@@ -227,7 +250,7 @@ export default class Main extends ViewBase {
   }
   // okcolumns = [
   //   { title: 'kol平台账号',  key: 'kolId', align: 'center' },
-  //   { title: 'kol平台账号名称', key: 'kolName', align: 'center' },
+  //   { title: 'kol平台账号名称', key: 'accountName', align: 'center' },
   //   { title: '平台', width: 70, key: 'channelCode', align: 'center' },
   //   { title: '任务类型', key: 'publishCategoryCode', align: 'center' },
   //   { title: '下单金额',  key: 'salePrice', align: 'center' },
@@ -295,6 +318,7 @@ export default class Main extends ViewBase {
     })
   }
 
+
   // 返回上一页 && 接单取消按钮
   back() {
     this.$router.go(-1)
@@ -307,6 +331,7 @@ export default class Main extends ViewBase {
       const { data } = await itemlist(this.$route.params.id)
       this.itemlist.push(data.order)
       this.oklist = data.orderItemList == null ? [] : data.orderItemList
+      this.publishCategoryList = data.publishCategoryList
       this.orderlist = [
         {
           name: '首款',
@@ -336,7 +361,30 @@ export default class Main extends ViewBase {
       this.$Message.success({
         content: `删除成功`,
       })
-      // this.$router.go(0)
+      this.search()
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
+  // 商务提交审核
+  async okdata() {
+    this.oklist = (this.oklist || []).map((it: any) => {
+      return {
+        orderId: it.orderId,
+        kolId: it.kolId,
+        channelCode: it.channelCode,
+        channelDataId: it.channelDataId,
+        confirmPrice: it.confirmPrice,
+        confirmRemark: it.confirmRemark,
+      }
+    })
+    try {
+      await biz({orderId: this.$route.params.id, items: this.oklist})
+      this.$Message.success({
+        content: `提交成功`,
+      })
+      this.$router.go(-1)
     } catch (ex) {
       this.handleError(ex)
     }
