@@ -190,7 +190,7 @@ export default class Main extends ViewBase {
       }
     },
     { title: '下单金额', width: 70,  key: 'totalFee', align: 'center' },
-    { title: '商务确认金额', width: 90,  key: 'totalFee', align: 'center' },
+    { title: '商务确认金额', width: 90,  key: 'confirmFee', align: 'center' },
     {
       title: '订单状态',
       width: 70,
@@ -234,7 +234,7 @@ export default class Main extends ViewBase {
       { title: '平台', width: 70, slot: 'channelCode', align: 'center' },
       { title: '任务类型', slot: 'publishCategoryCode', align: 'center' },
       { title: '下单金额',  key: 'salePrice', align: 'center' },
-      { title: '商务修改金额',  key: 'salePrice', align: 'center' },
+      { title: '商务修改金额',  key: 'confirmPrice', align: 'center' },
       { title: '备注',  key: 'confirmRemark', align: 'center' },
     ]
     const opernation = [
