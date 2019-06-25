@@ -36,7 +36,7 @@
       </Row>
       <Form ref="dataForm" :model="dataForm"  label-position="left" :label-width="100" style='margin-top: 7px;'>
         <FormItem  label="本次退款金额" prop="reason">
-        <InputNumber style="width:240px"  :min="1" v-model="dataForm.refundFee"></InputNumber>
+        <InputNumber style="width:240px"  :min="0" v-model="dataForm.refundFee"></InputNumber>
       </FormItem>
       <FormItem  label="备注" prop="reason">
         <Input style="width:240px" v-model="dataForm.refundRemark"></Input>
@@ -250,9 +250,10 @@ export default class Main extends ViewBase {
   @Watch('dataForm' , {deep: true})
 
   watchDataForm(val: any) {
-    if (this.dataForm.refundFee > this.ms.toRefundTotalFee) {
+    if (this.dataForm.refundFee > ((this.ms.orderTotalFee - this.ms.refundedTotalFee) - this.ms.toRefundTotalFee)) {
+      this.dataForm.refundFee = null
       info('退款金额超出，请重新输入')
-      this.dataForm.refundFee = this.ms.toRefundTotalFee
+      return
     }
   }
 
