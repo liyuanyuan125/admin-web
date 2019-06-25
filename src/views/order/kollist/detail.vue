@@ -58,7 +58,7 @@
       </Row>
       <Form ref="dataForm" :model="dataForm"  label-position="left" :label-width="100" style='margin-top: 7px;'>
         <FormItem  label="支付金额" prop="reason">
-        <InputNumber style="width:240px"  :min='0' v-model="dataForm.fee"></InputNumber>
+        <InputNumber style="width:240px"  :min='0' :max='this.itemlist[0].confirmFee - this.itemlist[0].advanceFee' v-model="dataForm.fee"></InputNumber>
       </FormItem>
       <FormItem  label="备注" prop="reason">
         <Input style="width:240px" v-model="dataForm.remark"></Input>
@@ -462,6 +462,15 @@ export default class Main extends ViewBase {
     } catch (ex) {
       this.handleError(ex)
     }
+  }
+
+  @Watch('dataForm', { deep: true })
+  watchDataForm() {
+    // if (this.dataForm.fee > this.itemlist[0].confirmFee - this.itemlist[0].advanceFee) {
+    //   this.dataForm.fee = 789
+    //   info('金额输入有误，请重新输入')
+    // }
+    // this.search()
   }
 
 }
