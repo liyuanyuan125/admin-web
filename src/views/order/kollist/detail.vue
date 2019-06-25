@@ -64,7 +64,7 @@
         <Input style="width:240px" v-model="dataForm.remark"></Input>
       </FormItem>
       </Form>
-      <Button style='margin-left:20px;' type="primary"  @click="change()">提交</Button>
+      <Button style='margin-left:20px;' type="primary"  @click="change">提交</Button>
       <Button style='margin-left:20px;' @click="back">取消</Button>
     </div>
 
@@ -81,7 +81,7 @@
         <Input style="width:240px" v-model="orderdataForm.receptRemark"></Input>
       </FormItem>
       </Form>
-      <Button style='margin-left:20px;' type="primary"  @click="changeorder()">提交</Button>
+      <Button style='margin-left:20px;' type="primary"  @click="changeorder">提交</Button>
       <Button style='margin-left:20px;' @click="back">取消</Button>
     </div>
 
@@ -98,7 +98,7 @@
         <Input style="width:240px"  v-model="moneydataForm.financeRefuseReason"></Input>
       </FormItem>
       </Form>
-      <Button style='margin-left:20px;' type="primary"  @click="changemoney()">提交</Button>
+      <Button style='margin-left:20px;' type="primary"  @click="changemoney">提交</Button>
       <Button style='margin-left:20px;' @click="back">取消</Button>
     </div>
 
@@ -332,10 +332,10 @@ export default class Main extends ViewBase {
       const { data } = await itemlist(this.$route.params.id)
       this.itemlist.push(data.order)
       this.dataForm.fee = this.itemlist[0].confirmFee * 0.5
-      if (this.$route.params.status == '4') {
+      if (this.$route.params.orders == '4') {
         this.feemoney = this.itemlist[0].confirmFee
       }
-      if (this.$route.params.status == '8') {
+      if (this.$route.params.orders == '8') {
         this.feemoney = this.itemlist[0].confirmFee - this.itemlist[0].advanceFee
       }
       this.oklist = data.orderItemList == null ? [] : data.orderItemList
@@ -401,7 +401,8 @@ export default class Main extends ViewBase {
   // 提交支付信息
   async change() {
     this.dataForm.orderId = this.$route.params.id
-    if (this.$route.params.status == '4') {
+    if (this.$route.params.orders == '4') {
+      alert(1)
       try {
         const res =  await advance ({
           orderId: this.dataForm.orderId  ,
@@ -412,7 +413,7 @@ export default class Main extends ViewBase {
       } catch (ex) {
         this.handleError(ex)
       }
-    } else if (this.$route.params.status == '8') {
+    } else if (this.$route.params.orders == '8') {
       try {
         const res =  await rest ({
           orderId: this.dataForm.orderId  ,
