@@ -332,6 +332,12 @@ export default class Main extends ViewBase {
       const { data } = await itemlist(this.$route.params.id)
       this.itemlist.push(data.order)
       this.dataForm.fee = this.itemlist[0].confirmFee * 0.5
+      if (this.$route.params.status == '4') {
+        this.feemoney = this.itemlist[0].confirmFee
+      }
+      if (this.$route.params.status == '8') {
+        this.feemoney = this.itemlist[0].confirmFee - this.itemlist[0].advanceFee
+      }
       this.oklist = data.orderItemList == null ? [] : data.orderItemList
       this.publishCategoryList = data.publishCategoryList
       this.orderlist = [
@@ -457,20 +463,6 @@ export default class Main extends ViewBase {
       this.handleError(ex)
     }
   }
-
-  @Watch('dataForm', { deep: true })
-  watchDataForm() {
-    if (this.dataForm.fee > (this.itemlist[0].confirmFee - this.itemlist[0].advanceFee)) {
-      info('金额超出，请重新输入')
-      return this.dataForm.fee = this.feemoney = 0
-    }
-    if (this.feemoney < (this.itemlist[0].confirmFee - this.itemlist[0].advanceFee)) {
-      info('金额输入有误，请重新输入')
-      return this.dataForm.fee = this.feemoney = 0
-    }
-    this.feemoney = this.itemlist[0].confirmFee - this.dataForm.fee
-  }
-
 
 }
 </script>
