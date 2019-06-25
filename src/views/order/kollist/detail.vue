@@ -52,13 +52,13 @@
       <Row class='row-li' v-if='$route.params.orders == 4'>支付类型：首款</Row>
       <Row class='row-li' v-if='$route.params.orders == 8'>支付类型：尾款</Row>
       <Row class='row-li'>
-        <Col :span='8'>剩余待支付金额：￥100.100</Col>
-        <Col :span='8'>订单总金额 ￥20000 <span style='color: #ccc;'>(显示商务确认的金额)</span></Col>
-        <Col :span='8'>已付金额：￥100.000</Col>
+        <Col :span='8'>剩余待支付金额：￥{{feemoney}}</Col>
+        <Col :span='8'>订单总金额 ￥{{itemlist[0].confirmFee}} <span style='color: #ccc;'>(显示商务确认的金额)</span></Col>
+        <Col :span='8'>已付金额：￥{{itemlist[0].advanceFee}}</Col>
       </Row>
       <Form ref="dataForm" :model="dataForm"  label-position="left" :label-width="100" style='margin-top: 7px;'>
         <FormItem  label="支付金额" prop="reason">
-        <Input style="width:240px" v-model="dataForm.fee"></Input>
+        <InputNumber style="width:240px"  :min='0' v-model="dataForm.fee"></InputNumber>
       </FormItem>
       <FormItem  label="备注" prop="reason">
         <Input style="width:240px" v-model="dataForm.remark"></Input>
@@ -119,13 +119,13 @@ import { itemlist , cancel , finance , advance , rest , recept , move , biz  } f
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import moment from 'moment'
 import EditDialog, { Field } from '@/components/editDialog'
-import { confirm } from '@/ui/modal'
+import { confirm , info } from '@/ui/modal'
 import reDlg from './reDlg.vue'
 
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
-const dataForm = {
-  fee: '',
+const dataForm: any = {
+  fee: 0,
   remark: '',
   orderId: null,
 }
@@ -160,6 +160,7 @@ export default class Main extends ViewBase {
   orderlist: any = []
   // 操作日志
   loglist: any = []
+  feemoney: any = 0
 
   id = 0
 
@@ -330,6 +331,7 @@ export default class Main extends ViewBase {
     try {
       const { data } = await itemlist(this.$route.params.id)
       this.itemlist.push(data.order)
+      this.dataForm.fee = this.itemlist[0].confirmFee * 0.5
       this.oklist = data.orderItemList == null ? [] : data.orderItemList
       this.publishCategoryList = data.publishCategoryList
       this.orderlist = [
@@ -416,12 +418,12 @@ export default class Main extends ViewBase {
         this.handleError(ex)
       }
     }
-    try {
-      const res =  await finance (this.dataForm)
-      this.$router.push({ name : 'order-kollist' })
-    } catch (ex) {
-      this.handleError(ex)
-    }
+    // try {
+    //   const res =  await finance (this.dataForm)
+    //   this.$router.push({ name : 'order-kollist' })
+    // } catch (ex) {
+    //   this.handleError(ex)
+    // }
   }
 
   // 提交接单信息
@@ -456,7 +458,18 @@ export default class Main extends ViewBase {
     }
   }
 
-
+  @Watch('dataForm', { deep: true })
+  watchDataForm() {
+    if (this.dataForm.fee > (this.itemlist[0].confirmFee - this.itemlist[0].advanceFee)) {
+      info('金额超出，请重新输入')
+      return this.dataForm.fee = this.feemoney = 0
+    }
+    if (this.feemoney < (this.itemlist[0].confirmFee - this.itemlist[0].advanceFee)) {
+      info('金额输入有误，请重新输入')
+      return this.dataForm.fee = this.feemoney = 0
+    }
+    this.feemoney = this.itemlist[0].confirmFee - this.dataForm.fee
+  }
 
 
 }
