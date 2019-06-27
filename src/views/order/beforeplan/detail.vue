@@ -178,7 +178,7 @@ export default class Main extends ViewBase {
   itemlist: any = []
   get itemcolumns() {
     const data: any = [
-      { title: '影片名称', key: 'moveName', align: 'center' },
+      { title: '影片名称', key: 'movieName', align: 'center' },
       {
         title: '上映日期',
         key: 'publishStartDate',
