@@ -2,7 +2,7 @@
   <Modal
     v-model='showDlg'
     :transfer='true'
-    :width='600'
+    :width='750'
     :title="'添加影片'"
     @on-cancel="cancel" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
@@ -18,7 +18,16 @@
         </CheckboxGroup>
       </FormItem>
       <Table ref="selection" :columns="columns" @on-selection-change="onselect" :data="list" v-if="showDlg"  
-        border stripe disabled-hover size="small" class="table"></Table>
+        border stripe disabled-hover size="small" class="table">
+        <template  slot="type" slot-scope="{row}" >
+          <span v-for='(it,index) in typelist' :key='index'>
+            <em v-for='(item,index) in row.type' :key='index' v-if='it.key == item'>{{it.text + ' '}}</em>
+          </span>
+        </template>
+        <template  slot="wish" slot-scope="{row}" >
+          <number :addNum='row.wish'></number>
+        </template>
+        </Table>
       <div class="page-wrap" v-if="total > 0">
         <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
           show-total show-sizer show-elevator :page-size-opts="[5, 10]"
@@ -46,12 +55,17 @@ import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import { slice, clean } from '@/fn/object'
 import moment from 'moment'
+import number from '@/components/number.vue'
 const timeFormat = 'YYYY-MM-DD'
 
 const dataForm = {
 }
 
-@Component
+@Component({
+  components: {
+    number
+  }
+})
 export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
   query = {
     name: '',
@@ -96,14 +110,7 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
         /* tslint:enable */
       }
     },
-    { title: '剧情类型', key: 'type', align: 'center',
-      render: (hh: any, { row: { type } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        return <span class='datetime' >{type + ' '}</span>
-        /* tslint:enable */
-      }
-    },
+    { title: '剧情类型', slot: 'type', align: 'center'},
     { title: '导演', key: 'director', align: 'center',
       render: (hh: any, { row: { director } }: any) => {
         /* tslint:disable */
@@ -116,11 +123,17 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
       render: (hh: any, { row: { actor } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        return <span class='datetime' >{actor + ' '}</span>
+        return (
+            <div>
+              <tooltip max-width="200" transfer content={actor + ' '} placement="top">
+                <span class="bei" v-html={actor + ' '} />
+              </tooltip>
+            </div>
+          )
         /* tslint:enable */
       }
     },
-    { title: '想看人数', key: 'wish', align: 'center' },
+    { title: '想看人数', slot: 'wish', align: 'center'},
   ]
 
   ruleValidate = {
@@ -234,6 +247,9 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
   .input-corp-id {
     width: 80px;
   }
+}
+em {
+  font-style: normal;
 }
 
 .btn-search,

@@ -72,16 +72,16 @@
     <div class='title'>操作记录</div>
     <div class='bos'>
       <Row v-if='logList.length == 0'>暂无操作日志</Row>
-      <!-- <Row>2019/02/11 12:21:22  zhiping.zhao@aiads.com【老麦】 已联系资源方，天街物业暂时不接单，需要更换资源方</Row>
-      <Row>2019/02/11 12:21:22  zhiping.zhao@aiads.com【老麦】 已联系资源方，天街物业暂时不接单，需要更换资源方</Row>
-      <Row>2019/02/11 12:21:22  zhiping.zhao@aiads.com【老麦】 已联系资源方，天街物业暂时不接单，需要更换资源方</Row> -->
+      <Row  v-if='logList.length > 0' v-for='(it,index) in logList' :key='index'>
+        <Row>{{it.createTime}}  {{it.email}}【{{it.userName}}】 {{it.description}}</Row>
+      </Row>
     </div>
     <div style='padding: 20px 0 30px 0'>
         <Form ref="dataplan" :model="dataplan" label-position="left" :label-width="100">
-          <Col :span='11'>预估曝光人次【{{listitem.estimatePersonCount}}】预估曝光场次【{{listitem.estimateShowCount}}】预估花费【{{listitem.estimateCostAmount}}】</Col>
+          <Col :span='11'>预估曝光人次【￥{{listitem.estimatePersonCount}}】预估曝光场次【{{listitem.estimateShowCount}}】预估花费【￥{{listitem.estimateCostAmount}}】</Col>
           <Col :span='5'>
             <FormItem label="应收金额" prop="closeReason">
-              <Input style="width:100px" v-model="dataplan.money"></Input>
+              <Input style="width:100px" v-model="dataplan.money"></Input><span style='font-size: 17px;margin-left: 6px;display:inline-block;'>￥</span>
             </FormItem>
           </Col>
           <Col :span='7'>
@@ -118,7 +118,7 @@ import {
 } from '@/api/orderkol'
 import EditDialog, { Field } from '@/components/editDialog'
 
-const timeFormat = 'YYYY-MM-DD'
+const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
 
 
@@ -277,7 +277,12 @@ export default class Main extends ViewBase {
       this.applyTime = data.item.applyTime.split('T')[0]
       + ' ' + data.item.applyTime.split('T')[1].split('.')[0]
       // this.remarks = this.listitem.remarks || []
-      this.logList = data.logList
+      this.logList = (data.logList || []).map((it: any) => {
+        return {
+          ...it,
+          createTime : moment(it.createTime).format(timeFormat)
+        }
+      })
       this.films = data.planMovies == null ? [] : data.planMovies
       this.cinemaGradeList = data.cinemaGradeList == null ? [] : data.cinemaGradeList
       this.deliveryCityTypeList = data.deliveryCityTypeList == null ? [] : data.deliveryCityTypeList
