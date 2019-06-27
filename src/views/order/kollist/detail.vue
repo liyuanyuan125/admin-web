@@ -53,7 +53,7 @@
       <Row class='row-li' v-if='$route.params.orders == 8'>支付类型：尾款</Row>
       <Row class='row-li'>
         <Col :span='8'>剩余待支付金额：￥{{feemoney}}</Col>
-        <Col :span='8'>订单总金额 ￥{{itemlist[0].confirmFee}} <span style='color: #ccc;'>(显示商务确认的金额)</span></Col>
+        <Col :span='8'>订单总金额 ￥{{itemlist[0].totalFee}}</Col>
         <Col :span='8'>已付金额：￥{{itemlist[0].advanceFee}}</Col>
       </Row>
       <Form ref="dataForm" :model="dataForm"  label-position="left" :label-width="100" style='margin-top: 7px;'>
@@ -191,7 +191,7 @@ export default class Main extends ViewBase {
       }
     },
     { title: '下单金额', width: 70,  key: 'totalFee', align: 'center' },
-    { title: '商务确认金额', width: 90,  key: 'confirmFee', align: 'center' },
+    { title: '商务确认金额', width: 90,  key: 'totalFee', align: 'center' },
     {
       title: '订单状态',
       width: 70,
@@ -235,7 +235,7 @@ export default class Main extends ViewBase {
       { title: '平台', width: 70, slot: 'channelCode', align: 'center' },
       { title: '任务类型', slot: 'publishCategoryCode', align: 'center' },
       { title: '下单金额',  key: 'salePrice', align: 'center' },
-      { title: '商务修改金额',  key: 'confirmPrice', align: 'center' },
+      { title: '商务修改金额',  key: 'salePrice', align: 'center' },
       { title: '备注',  key: 'confirmRemark', align: 'center' },
     ]
     const opernation = [
