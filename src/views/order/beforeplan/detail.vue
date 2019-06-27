@@ -12,14 +12,18 @@
       </Row>
       <Row>
         <Col :span='12'>投放排期&nbsp;：&nbsp;{{listitem.beginDate == null ? '暂无' : start}} ~ {{listitem.endDate == null ? '暂无' : end}}</Col>
-        <Col :span='12'>推广预算&nbsp;：&nbsp;{{listitem.budgetAmount == null ? '0' : listitem.budgetAmount}}元</Col>
+        <Col :span='12'>推广预算&nbsp;：&nbsp;<Number :addNum='listitem.budgetAmount'></Number>元</Col>
       </Row>
       <Row>
-        <Col :span='12'>覆盖城市&nbsp;：&nbsp;<span v-if='listitem.deliveryCityTypes != null' v-for='(item , index) in deliveryCityTypeList' :key='index'><em v-for='(it,index) in listitem.deliveryCityTypes' :key='index' v-if='item.key == it'>{{item.text +' '}}</em></span>&nbsp; | &nbsp;  <router-link 
+        <Col :span='12'>覆盖城市&nbsp;：&nbsp;
+        <span v-if='listitem.deliveryCityTypes == null'>暂无城市类型</span>
+        <span v-if='listitem.deliveryCityTypes != null' v-for='(item , index) in deliveryCityTypeList' :key='index'>
+          <em v-for='(it,index) in listitem.deliveryCityTypes' :key='index' v-if='item.key == it'>{{item.text +' '}}</em>
+        </span>&nbsp; | &nbsp;  <router-link 
             :to="{ name: 'order-beforeplan-detail-viewcity', params: { id : this.$route.params.id } }"
           >查看城市列表</router-link><span></span></Col>
         <!-- <Col :span='12'>覆盖城市&nbsp;：&nbsp;票仓城市Top20 | 一线城市 / <span v-if='listitem.cityCustom == 0'>查看城市列表</span></Col> -->
-        <Col :span='12'>影院星级&nbsp;：&nbsp;<span v-if='listitem.cinemaGradeCodes != null' v-for='(item , index) in cinemaGradeList' :key='index'><em v-for='(it,index) in listitem.cinemaGradeCodes' :key='index' v-if='item.key == it'>{{item.text +' '}}</em></span><span v-if='listitem.cinemaGradeCodes == null'>暂无</span></Col>
+        <!-- <Col :span='12'>影院星级&nbsp;：&nbsp;<span v-if='listitem.cinemaGradeCodes != null' v-for='(item , index) in cinemaGradeList' :key='index'><em v-for='(it,index) in listitem.cinemaGradeCodes' :key='index' v-if='item.key == it'>{{item.text +' '}}</em></span><span v-if='listitem.cinemaGradeCodes == null'>暂无</span></Col> -->
       </Row>
       <Row>
         <Col :span='12' v-if='view'>影片类型&nbsp;：&nbsp;<span v-if='listitem.deliveryGroups != null' v-for='(item , index) in tags[0].values' :key='index'><em v-for='(it,index) in listitem.deliveryGroups' :key='index' v-if='item.key == it.text'>{{item.text +' '}}</em></span><span v-if='ifmovie'>暂无</span></Col>
@@ -106,6 +110,7 @@ import { slice , clean } from '@/fn/object'
 import Cinema from './cinema.vue'
 import addfilm from './addfilm.vue'
 import { confirm } from '@/ui/modal'
+import Number from '@/components/number.vue'
 
 
 import {
@@ -122,7 +127,8 @@ const timeFormat = 'YYYY-MM-DD'
     close,
     AreaSelect,
     Cinema,
-    addfilm
+    addfilm,
+    Number
   }
 })
 export default class Main extends ViewBase {
