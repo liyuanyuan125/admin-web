@@ -20,9 +20,11 @@
       <Table ref="selection" :columns="columns" @on-selection-change="onselect" :data="list" v-if="showDlg"  
         border stripe disabled-hover size="small" class="table">
         <template  slot="type" slot-scope="{row}" >
-          <span v-for='(it,index) in typelist' :key='index'>
-            <span v-for='(item,index) in row.type' class="types" :key='index' v-if='it.key == item'>{{it.text}}</span>
-          </span>
+          <span>{{typelists(typelist, row.type)}}</span>
+          <!-- <span class="type-box" v-for='(it,index) in typelist' :key='index'>
+            <em v-for='(item,index) in row.type' class="types" :key='index' v-if='it.key == item'>{{it.text}}
+            </em>
+          </span> -->
         </template>
         <template  slot="wish" slot-scope="{row}" >
           {{formatNumber(row.wish , 2)}}
@@ -192,6 +194,19 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
     return this.id
   }
 
+  typelists(val: any, type: any) {
+    const maps: any = []
+    ; (val || []).forEach((item: any) => {
+      if (item) {
+        (type || []).forEach((it: any) => {
+          if (item.key == it) {
+            maps.push(item.text)
+          }
+        })
+      }
+    })
+    return maps.join(' / ')
+  }
   onselect(row: any , selection: any) {
     this.ids = row.map((it: any) => {
       return {
@@ -349,7 +364,7 @@ em {
   content: '/';
   display: inline-block;
 }
-.types:last-child {
+.type-box:only-child .types:not(:last-of-type)::after {
   content: '';
   display: inline-block;
 }
