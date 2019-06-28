@@ -21,18 +21,18 @@
         border stripe disabled-hover size="small" class="table">
         <template  slot="type" slot-scope="{row}" >
           <span v-for='(it,index) in typelist' :key='index'>
-            <em v-for='(item,index) in row.type' :key='index' v-if='it.key == item'>{{it.text + ' '}}</em>
+            <span v-for='(item,index) in row.type' class="types" :key='index' v-if='it.key == item'>{{it.text}}</span>
           </span>
         </template>
         <template  slot="wish" slot-scope="{row}" >
-          <number :addNum='row.wish'></number>
+          {{formatNumber(row.wish , 2)}}
         </template>
         </Table>
       <div class="page-wrap" v-if="total > 0">
         <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
           show-total show-sizer show-elevator :page-size-opts="[5, 10]"
-          @on-change="page => query.pageIndex = page"
-          @on-page-size-change="pageSize => query.pageSize = pageSize"/>
+          @on-change="sizeChangeHandle"
+          @on-page-size-change="currentChangeHandle"/>
       </div>
     </Form>
     <div slot="footer" class="dialog-footer">
@@ -55,7 +55,8 @@ import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import { slice, clean } from '@/fn/object'
 import moment from 'moment'
-import number from '@/components/number.vue'
+import number from './number.vue'
+import { formatNumber } from '@/util/validateRules'
 const timeFormat = 'YYYY-MM-DD'
 
 const dataForm = {
@@ -73,6 +74,8 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
     pageIndex: 1,
     pageSize: 10,
   }
+
+  asd: any = false
   showDlg = false
   id = 0
   total = 0
@@ -178,6 +181,9 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
 
   dataForm: any = { ...dataForm }
 
+  get formatNumber() {
+    return formatNumber
+  }
   async init(start: any , end: any) {
     this.showDlg = true
     this.start = start
@@ -257,10 +263,24 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
     } finally {
     }
   }
-  @Watch('query', { deep: true })
-  watchQuery() {
+
+  // 每页数
+  sizeChangeHandle(val: any) {
+    this.query.pageIndex = val
     this.doSearch()
   }
+
+  // 当前页
+  currentChangeHandle(val: any) {
+    this.query.pageSize = val
+    this.doSearch()
+  }
+
+
+  // @Watch('query', { deep: true })
+  // watchQuery() {
+  //   this.doSearch()
+  // }
 
 
   @Watch('type', { deep: true })
@@ -324,6 +344,14 @@ em {
 .bge {
   background: #fff;
   padding: 5px;
+}
+.types::after {
+  content: '/';
+  display: inline-block;
+}
+.types:last-child {
+  content: '';
+  display: inline-block;
 }
 .table {
   margin-top: 16px;

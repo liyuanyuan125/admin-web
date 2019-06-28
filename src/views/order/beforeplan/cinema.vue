@@ -32,7 +32,7 @@
           <!-- <a @click="delcinema( row.id )">变更</a> -->
         </template>
         <template  slot="action" slot-scope="{row}" >
-          <a @click="delcinema( row.id )">删除</a>
+          <a @click="delcinema( row.cinemaId )">删除</a>
         </template>
       </Table>
       <div class="page-wrap" v-if="total > 0">
