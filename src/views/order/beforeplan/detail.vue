@@ -78,10 +78,10 @@
     </div>
     <div style='padding: 20px 0 30px 0'>
         <Form ref="dataplan" :model="dataplan" label-position="left" :label-width="100">
-          <Col :span='11'>预估曝光人次【￥{{listitem.estimatePersonCount}}】预估曝光场次【{{listitem.estimateShowCount}}】预估花费【￥{{listitem.estimateCostAmount}}】</Col>
+          <Col :span='11'>预估曝光人次【<Number :addNum='listitem.estimatePersonCount'></Number>】预估曝光场次【{{listitem.estimateShowCount}}】预估花费【<Number :addNum='listitem.estimateCostAmount'></Number>】</Col>
           <Col :span='5'>
             <FormItem label="应收金额" prop="closeReason">
-              <Input style="width:100px" v-model="dataplan.money"></Input><span style='font-size: 17px;margin-left: 6px;display:inline-block;'>￥</span>
+              <Input style="width:100px" v-model="dataplan.money"></Input>
             </FormItem>
           </Col>
           <Col :span='7'>
