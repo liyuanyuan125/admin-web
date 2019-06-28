@@ -217,10 +217,9 @@ export default class Main extends ViewBase {
     const cinema = this.checkCinema.filter((item: any) => {
       return this.form.check.includes(item.id)
     })
-
     // async delcinema(id: any) {
       try {
-        await addcinema(this.$route.params.id , { cinemaId : [...cinema] , resourceId : this.query.companyId})
+        await addcinema(this.$route.params.id , { cinemaId : cinema[0].id , resourceId : this.query.companyId})
         // this.$Message.success({
         //   content: `删除成功`,
         // })
@@ -279,7 +278,7 @@ export default class Main extends ViewBase {
       if (this.form.check.indexOf(itemes.id) > -1 && !checkCinemaId.includes(itemes.id)) {
         this.checkCinema.push({
           id: itemes.id,
-          cinemaName: itemes.shortName
+          // cinemaName: itemes.shortName
         })
       }
       if (this.form.check.indexOf(itemes.id) == -1 && checkCinemaId.includes(itemes.id)) {

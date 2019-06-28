@@ -2,7 +2,7 @@
   <Modal
     v-model='showDlg'
     :transfer='true'
-    :width='750'
+    :width='760'
     :title="'添加影片'"
     @on-cancel="cancel" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
@@ -99,7 +99,26 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
       //   /* tslint:enable */
       }
     },
-    { title: '影片名称', key: 'nameCn', align: 'center' },
+    { title: '影片名称', key: 'nameCn', align: 'center',
+      render: (hh: any, { row: { nameCn } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        if (nameCn.length >= 7) {
+        return (
+            <div>
+              <tooltip max-width="200" transfer content={nameCn} placement="top">
+                <span class="bei" v-html={nameCn} />
+              </tooltip>
+            </div>
+          )
+        } else {
+          return (
+              <span class="bei" v-html={nameCn} />
+          )
+        }
+        /* tslint:enable */
+      }
+    },
     { title: '上映时间', key: 'releaseDate', align: 'center' ,
       render: (hh: any, { row: { releaseDate } }: any) => {
         /* tslint:disable */
@@ -115,7 +134,19 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
       render: (hh: any, { row: { director } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        return <span class='datetime' >{director + ' '}</span>
+        if (director.length >= 2) {
+        return (
+            <div>
+              <tooltip max-width="200" transfer content={director + ' '} placement="top">
+                <span class="bei" v-html={director + ' '} />
+              </tooltip>
+            </div>
+          )
+        } else {
+          return (
+              <span class="bei" v-html={director + ' '} />
+          )
+        }
         /* tslint:enable */
       }
     },
@@ -123,6 +154,7 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
       render: (hh: any, { row: { actor } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
+        if (actor.length >= 2) {
         return (
             <div>
               <tooltip max-width="200" transfer content={actor + ' '} placement="top">
@@ -130,6 +162,11 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
               </tooltip>
             </div>
           )
+        } else {
+          return (
+              <span class="bei" v-html={actor + ' '} />
+          )
+        }
         /* tslint:enable */
       }
     },
@@ -302,5 +339,19 @@ em {
       content: '-';
     }
   }
+  /deep/ .bei {
+    display: block;
+    width: 86%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
+// /deep/ .ivu-table-cell {
+//   padding-left: 4px;
+//   padding-right: 4px;
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+//   white-space: nowrap;
+// }
 </style>

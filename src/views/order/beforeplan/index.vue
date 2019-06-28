@@ -129,7 +129,7 @@ export default class Main extends ViewBase {
     return [
       { title: '计划id', key: 'id', width: 65 },
       { title: '计划名称', key: 'name', minWidth: 160 },
-      { title: '广告主公司名称', key: 'companyName', width: 65 },
+      { title: '广告主公司名称', key: 'companyName'},
       { title: '广告片', key: 'videoName', minWidth: 160 },
       {
         title: '投放周期',
