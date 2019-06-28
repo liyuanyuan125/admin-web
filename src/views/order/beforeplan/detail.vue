@@ -24,14 +24,11 @@
           >查看城市列表</router-link><span></span></Col>
         <!-- <Col :span='12'>覆盖城市&nbsp;：&nbsp;票仓城市Top20 | 一线城市 / <span v-if='listitem.cityCustom == 0'>查看城市列表</span></Col> -->
         <!-- <Col :span='12'>影院星级&nbsp;：&nbsp;<span v-if='listitem.cinemaGradeCodes != null' v-for='(item , index) in cinemaGradeList' :key='index'><em v-for='(it,index) in listitem.cinemaGradeCodes' :key='index' v-if='item.key == it'>{{item.text +' '}}</em></span><span v-if='listitem.cinemaGradeCodes == null'>暂无</span></Col> -->
-      </Row>
-      <Row>
         <Col :span='12' v-if='view'>影片类型&nbsp;：&nbsp;<span v-if='listitem.deliveryGroups != null' v-for='(item , index) in tags[0].values' :key='index'><em v-for='(it,index) in listitem.deliveryGroups' :key='index' v-if='item.key == it.text'>{{item.text +' '}}</em></span><span v-if='ifmovie'>暂无</span></Col>
-        <Col :span='12' v-if='view'>受众年龄&nbsp;：&nbsp;<span v-if='listitem.deliveryGroups != null' v-for='(item , index) in tags[1].values' :key='index'><em v-for='(it,index) in listitem.deliveryGroups' :key='index' v-if='item.key == it.text'>{{item.text +' '}}</em></span><span v-if='ifage'>暂无</span></Col>
       </Row>
       <Row>
         <Col :span='12' v-if='view'>受众性别(比例较多)&nbsp;：&nbsp;<span v-if='listitem.deliveryGroups != null' v-for='(item , index) in tags[2].values' :key='index'><em v-for='(it,index) in listitem.deliveryGroups' :key='index' v-if='item.key == it.text'>{{item.text +' '}}</em></span><span v-if='ifsex'>暂无</span></Col>
-        <Col :span='12'></Col>
+        <Col :span='12' v-if='view'>受众年龄&nbsp;：&nbsp;<span v-if='listitem.deliveryGroups != null' v-for='(item , index) in tags[1].values' :key='index'><em v-for='(it,index) in listitem.deliveryGroups' :key='index' v-if='item.key == it.text'>{{item.text +' '}}</em></span><span v-if='ifage'>暂无</span></Col>
       </Row>
       <Row>
         <Col :span='12'>创建时间&nbsp;：&nbsp;{{applyTime}}</Col>

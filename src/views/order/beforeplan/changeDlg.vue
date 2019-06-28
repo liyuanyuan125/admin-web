@@ -57,26 +57,20 @@ export default class ComponentMain extends ViewBase {
   name: any = ''
   list: any = []
 
-  async mounted() {
-    try {
-      const { data } =  await queryList(clean({
-        pageSize: 888888,
-        status: 1,
-        typeCode: 'resource'
-      }))
-      this.list = data.items
-    } catch (ex) {
-      this.handleError(ex)
-    }
-  }
 
 
-  init(id: any, cName: any , name: any , idres: any) {
+  async init(id: any, cName: any , name: any , idres: any) {
     this.showDlg = true
     this.dataForm.cinemaId = id
     this.dataForm.resourceId = idres
     this.cName = cName
     this.name = name
+    const { data } =  await queryList(clean({
+        pageSize: 888888,
+        status: 1,
+        cinemaId: this.dataForm.cinemaId
+      }))
+      this.list = data.items
     ; (this.$refs.dataForm as any).resetFields()
     if (this.id) {
         // console.log(this.id)
