@@ -17,7 +17,7 @@
         </Select> -->
         <Select v-model='query.companyId' placeholder="资源方公司" filterable
           clearable class="component">
-          <Option v-for="it in list" :key="it.id" :value="it.id"
+          <Option v-for="it in list" :key="it.id" :value="it.id" @on-change='seach()'
             :label="it.name" class="flex-box">
             <span>{{it.name}}</span>
           </Option>
@@ -126,7 +126,7 @@ export default class Main extends ViewBase {
     provinceId: 0,
     cityId: 0,
     countyId: 0,
-    companyId: 91,
+    companyId: null,
   }
   indeterminate = false
   checkAll = false
@@ -140,13 +140,14 @@ export default class Main extends ViewBase {
       this.form.check = []
     }
     this.showDlg = true
-    this.seach()
-    this.authIdList()
+    // this.seach()
+    // this.authIdList()
+    this.dataLoading = false
   }
 
-  created() {
-    this.seach()
-  }
+  // created() {
+  //   this.seach()
+  // }
 
   async mounted() {
     try {

@@ -75,13 +75,16 @@
     </div>
     <div style='padding: 20px 0 30px 0'>
         <Form ref="dataplan" :model="dataplan" label-position="left" :label-width="100">
-          <Col :span='11'>预估曝光人次【<Number :addNum='listitem.estimatePersonCount'></Number>】预估曝光场次【{{listitem.estimateShowCount}}】预估花费【<Number :addNum='listitem.estimateCostAmount'></Number>】</Col>
-          <Col :span='5'>
+          <Col :span='11'>预估曝光人次【<Number :addNum='listitem.estimatePersonCount'></Number>】预估曝光场次【{{listitem.estimateShowCount}}】预估花费【<Number :addNum='listitem.estimateCostAmount'></Number>】
+            <Button type="primary" @click="shuaxin()">刷新</Button>
+        </Col>
+          
+          <Col :span='4'>
             <FormItem label="应收金额" prop="closeReason">
               <Input style="width:100px" v-model="dataplan.money"></Input>
             </FormItem>
           </Col>
-          <Col :span='7'>
+          <Col :span='6'>
               <Button type="primary" @click="save()">保存并发送方案至广告主</Button>
             <Button style='margin-left: 30px;' @click="back">取消</Button>
           </Col>
@@ -97,7 +100,7 @@ import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { itemlist , delfilm , beizhu  , closeid , save  } from '@/api/beforeplan'
+import { itemlist , delfilm , beizhu  , closeid , save , revuew  } from '@/api/beforeplan'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import close from './closeorder.vue'
@@ -224,6 +227,9 @@ export default class Main extends ViewBase {
     this.search()
   }
 
+  async shuaxin() {
+    await revuew(this.$route.params.id)
+  }
 
   dlgEditDone() {
     this.search()

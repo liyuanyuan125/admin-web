@@ -1,6 +1,6 @@
 <template>
   <div class="pages" >
-    <div class='title'>投放影院({{list.length}}家)
+    <div class='title'>投放影院({{total}}家)
       <span style='float: right'>导出影院列表</span>
     </div>
     <div class='bos'>
@@ -29,6 +29,7 @@
           <div v-for='(it, index) in reslist'>
             <span v-if='row.resourceId == it.id'>{{it.name}}&nbsp;&nbsp;&nbsp;<a v-if='$route.params.status != 8 || $route.params.status != 9 || $route.params.status != 10 || $route.params.status != 11 || $route.params.status != 12' @click="change( row.cinemaId , row.cinemaName ,  it.name , it.id)">变更</a></span>
           </div>
+          <div v-if='reasd.indexOf(row.resourceId) == -1'>暂无资源方公司</div>
           <!-- <a @click="delcinema( row.id )">变更</a> -->
         </template>
         <template  slot="action" slot-scope="{row}" >
@@ -130,6 +131,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   checkId: any = []
   ids: any = []
   reslist: any = []
+  reasd: any = []
+  aaa = false
 
   get columns() {
     const data: any = [
@@ -233,6 +236,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         typeCode: 'resource'
       }))
       this.reslist = data.items
+      this.reasd = (this.reslist || []).map((it: any) => {
+        return it.id
+      })
+
     } catch (ex) {
       // this.handleError(ex)
     } finally {

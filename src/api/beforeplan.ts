@@ -83,9 +83,17 @@ export async function save(id: any, query: any) {
   return data
 }
 
-// 保存方案
+// 查看城市
 export async function viewcity(id: any ) {
   const data = await get(`/xadvert/v1/plans/${id}/cities` )
   return data
 }
+
+// 刷新
+export async function revuew(id: any ) {
+  const data = await get(`/xadvert/v1/plans/${id}/recommend` )
+  return data
+}
+
+
 
