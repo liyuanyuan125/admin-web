@@ -74,22 +74,23 @@
       </Row>
     </div>
     <div style='padding: 20px 0 30px 0'>
-        <Form ref="dataplan" :model="dataplan" label-position="left" :label-width="100">
+        <Form ref="dataplan" :model="dataplan"  :rules="ruleValidate" label-position="left" :label-width="100">
           <Col :span='11'>预估曝光人次【<Number :addNum='listitem.estimatePersonCount'></Number>】预估曝光场次【{{listitem.estimateShowCount}}】预估花费【<Number :addNum='listitem.estimateCostAmount'></Number>】
             <Button type="primary" :loading="loading2" @click="shuaxin()">刷新</Button>
         </Col>
           
           <Col :span='4'>
-            <FormItem label="应收金额" prop="closeReason">
+            <FormItem label="应收金额" prop="money">
               <Input style="width:100px" v-model="dataplan.money"></Input>
             </FormItem>
           </Col>
+          </Form>
           <Col :span='6'>
               <Button v-if='viewfilm == true || viewcinema == true ' type="primary" disabled>保存并发送方案至广告主</Button>
-              <Button v-if='viewfilm == false && viewcinema == false ' type="primary" @click="save()">保存并发送方案至广告主</Button>
+              <Button v-if='viewfilm == false && viewcinema == false ' type="primary" @click="save('dataplan')">保存并发送方案至广告主</Button>
             <Button style='margin-left: 30px;' @click="back">取消</Button>
           </Col>
-      </Form>
+      
     </div>
     <close  ref="over"   v-if="overVisible" @done="dlgEditDone"/>
     <addfilm  ref="adds" v-if='addVisible' @done="dlgEditDones"/>
@@ -227,6 +228,15 @@ export default class Main extends ViewBase {
     ]
     return this.$route.params.status == '0' || this.$route.params.status == '1' ||
     this.$route.params.status == '2' ? [...data, ...opernation] : data
+  }
+
+  get ruleValidate() {
+    const rules = {
+      money: [
+          { required: true, message: '请输入金额', trigger: 'blur' }
+      ],
+    }
+    return rules
   }
   mounted() {
     this.search()
@@ -375,13 +385,18 @@ export default class Main extends ViewBase {
   }
 
   // 保存方案
-  async save() {
-    try {
-      const res = await save (this.$route.params.id , {needPayAmount : this.dataplan.money})
-      this.$router.go(-1)
-    } catch (ex) {
-      this.handleError(ex)
-    }
+  async save(dataplan: any) {
+    const myThis: any = this
+    myThis.$refs[dataplan].validate(async ( valid: any ) => {
+      if (valid) {
+        try {
+          const res = await save (this.$route.params.id , {needPayAmount : this.dataplan.money})
+          this.$router.go(-1)
+        } catch (ex) {
+          this.handleError(ex)
+        }
+      }
+    })
   }
 
   // 每页数

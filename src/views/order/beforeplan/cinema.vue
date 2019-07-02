@@ -191,6 +191,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       })
       this.search
       this.viewcinema = true
+      this.$emit('getcine', this.viewcinema)
     } catch (ex) {
       this.handleError(ex)
     }
@@ -284,6 +285,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       })
       this.search
       this.viewcinema = true
+      this.$emit('getcine', this.viewcinema)
     } catch (ex) {
       this.handleError(ex)
     }
