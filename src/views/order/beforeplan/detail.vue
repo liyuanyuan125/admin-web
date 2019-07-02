@@ -76,7 +76,7 @@
     <div style='padding: 20px 0 30px 0'>
         <Form ref="dataplan" :model="dataplan" label-position="left" :label-width="100">
           <Col :span='11'>预估曝光人次【<Number :addNum='listitem.estimatePersonCount'></Number>】预估曝光场次【{{listitem.estimateShowCount}}】预估花费【<Number :addNum='listitem.estimateCostAmount'></Number>】
-            <Button type="primary" @click="shuaxin()">刷新</Button>
+            <Button type="primary" :loading="loading2" @click="shuaxin()">刷新</Button>
         </Col>
           
           <Col :span='4'>
@@ -85,13 +85,15 @@
             </FormItem>
           </Col>
           <Col :span='6'>
-              <Button type="primary" @click="save()">保存并发送方案至广告主</Button>
+          {{viewcinema}}
+              <Button v-if='viewfilm == true || viewcinema == true ' type="primary" disabled>保存并发送方案至广告主</Button>
+              <Button v-if='viewfilm == false || viewcinema == false ' type="primary" @click="save()">保存并发送方案至广告主</Button>
             <Button style='margin-left: 30px;' @click="back">取消</Button>
           </Col>
       </Form>
     </div>
     <close  ref="over"   v-if="overVisible" @done="dlgEditDone"/>
-    <addfilm  ref="adds" v-if='addVisible' @done="dlgEditDone"/>
+    <addfilm  ref="adds" v-if='addVisible' @done="dlgEditDones"/>
   </div>
 </template>
 
@@ -175,6 +177,9 @@ export default class Main extends ViewBase {
   ifsex = false
   view = false
 
+  viewfilm = false
+  loading2 = false
+
   // 申请人
   applyTime: any = ''
   // 备注
@@ -228,10 +233,27 @@ export default class Main extends ViewBase {
   }
 
   async shuaxin() {
-    await revuew(this.$route.params.id)
+    this.loading2 = true
+    try {
+      await revuew(this.$route.params.id)
+      this.$Message.success({
+        content: `刷新成功`,
+      })
+      this.search()
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      this.loading2 = false
+      this.viewfilm = false
+    }
   }
 
   dlgEditDone() {
+    this.search()
+  }
+
+  dlgEditDones() {
+    this.viewfilm = true
     this.search()
   }
 
@@ -325,7 +347,8 @@ export default class Main extends ViewBase {
       this.$Message.success({
         content: `删除成功`,
       })
-      this.$router.go(0)
+      this.viewfilm = true
+      this.search()
     } catch (ex) {
       this.handleError(ex)
     }

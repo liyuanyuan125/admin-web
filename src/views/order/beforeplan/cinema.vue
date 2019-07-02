@@ -133,6 +133,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   reslist: any = []
   reasd: any = []
   aaa = false
+  viewcinema = false
+
 
   get columns() {
     const data: any = [
@@ -168,6 +170,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
 
   dlgEditDone(id: any) {
+    this.viewcinema = true
     this.search()
   }
 
@@ -185,7 +188,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       this.$Message.success({
         content: `删除成功`,
       })
-      this.$router.go(0)
+      this.search
+      this.viewcinema = true
     } catch (ex) {
       this.handleError(ex)
     }
@@ -277,7 +281,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       this.$Message.success({
         content: `删除成功`,
       })
-      this.$router.go(0)
+      this.search
+      this.viewcinema = true
     } catch (ex) {
       this.handleError(ex)
     }

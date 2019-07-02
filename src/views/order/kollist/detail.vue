@@ -53,7 +53,7 @@
       <Row class='row-li' v-if='$route.params.orders == 8'>支付类型：尾款</Row>
       <Row class='row-li'>
         <Col :span='8'>剩余待支付金额：￥{{feemoney}}</Col>
-        <Col :span='8'>订单总金额 ￥{{itemlist[0].totalFee}}</Col>
+        <Col :span='8'>订单总金额 ￥{{itemlist[0].confirmPrice}}</Col>
         <Col :span='8'>已付金额：￥{{itemlist[0].advanceFee}}</Col>
       </Row>
       <Form ref="dataForm" :model="dataForm"  label-position="left" :label-width="100" style='margin-top: 7px;'>
