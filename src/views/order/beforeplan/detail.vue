@@ -70,7 +70,7 @@
     <div class='bos'>
       <Row v-if='logList.length == 0'>暂无操作日志</Row>
       <Row  v-if='logList.length > 0' v-for='(it,index) in logList' :key='index'>
-        <Row>{{it.createTime}}  {{it.createUserEmail}}【{{it.createUserName}}】 {{it.description}}</Row>
+        <Row>{{it.createTime}}  {{it.createUserEmail}}【{{it.createUserName}}】 {{it.eventName}}{{it.description}}</Row>
       </Row>
     </div>
     <div style='padding: 20px 0 30px 0'>
@@ -253,6 +253,7 @@ export default class Main extends ViewBase {
       this.$Message.success({
         content: `刷新成功`,
       })
+      // this.$router.go(0)
       this.search()
     } catch (ex) {
       this.handleError(ex)
