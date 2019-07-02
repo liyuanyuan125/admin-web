@@ -16,7 +16,7 @@ import { queryList  } from '@/api/planfilm'
 import { clean } from '@/fn/object'
 
 @Component
-export default class CinemaChainSelect extends ViewBase {
+export default class VideoList extends ViewBase {
   /**
    * 值本身，可以使用 v-model 进行双向绑定
    */
