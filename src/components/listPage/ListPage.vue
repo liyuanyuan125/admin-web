@@ -68,7 +68,6 @@
 </template>
 
 <script lang="ts">
-// doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop, Watch, Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
@@ -205,6 +204,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
 @import '../../site/lib.less';
 
 .list-page {
+  min-height: 288px;
   margin-bottom: 88px;
 }
 
