@@ -35,6 +35,7 @@
         </div>
       </div>
     </slot>
+
     <Table
       ref="selection"
       :columns="tableColumns"
@@ -183,10 +184,12 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
       this.loading = false
     }
   }
+
   // 全选
-  public selectionChangeHandle(option: any) {
+  selectionChangeHandle(option: any) {
     this.$emit('selectionChange', option)
   }
+
   @Watch('query', { deep: true })
   watchQuery() {
     if (this.query.pageIndex == this.oldQuery.pageIndex) {
