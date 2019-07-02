@@ -41,6 +41,21 @@
       <Button class="btn-back" style='margin-left: 35px;' @click="back()">取消</Button>
     </div>
 
+    <!-- 接单信息 -->
+    <div class='title'  v-if='$route.params.orders == 0'>接单信息</div>
+    <Table  v-if='$route.params.orders == 0' :columns="overordercolumns" :data='overorder' border stripe disabled-hover size="small" class="table">
+      <template slot="channelCode" slot-scope="{ row: { channelCode } }">
+        <div class="row-acts">
+          <span v-for='(it,index) in channelCodeList' :key='index' v-if='it.key == channelCode'>{{it.text}}</span>
+        </div>
+      </template>
+      <template slot="subStatus" slot-scope="{ row: { subStatus } }">
+        <div class="row-acts">
+          <span v-for='(it,index) in subStatusList' :key='index' v-if='it.key == subStatus'>{{it.text}}</span>
+        </div>
+      </template>
+    </Table>
+
     <!-- 订单支付信息 -->
     <div class='title' v-if='$route.params.orders == 8 || $route.params.orders == 0'>订单支付信息</div>
     <Table v-if='$route.params.orders == 8 || $route.params.orders == 0' :columns="ordercolumns" :data='orderlist' border stripe disabled-hover size="small" class="table">
@@ -104,9 +119,13 @@
 
 
     <!-- 操作日志 -->
-    <div v-if='$route.params.orders == 0' class='title'>操作日志</div>
-    <Table v-if='$route.params.orders == 0' :columns="logcolumns" :data='loglist' border stripe disabled-hover size="small" class="table">
-    </Table>
+    <div v-if='$route.params.orders == 0' class='title'>操作记录</div>
+    <div v-if='$route.params.orders == 0' class='bos'>
+      <Row v-if='loglist.length == 0'>暂无操作日志</Row>
+      <Row  v-if='loglist.length > 0' v-for='(it,index) in loglist' :key='index'>
+        <Row>{{it.createTime}}  {{it.createUserEmail}}【{{it.createUserName}}】 {{it.eventName}}{{it.description}}</Row>
+      </Row>
+    </div>
     <reDlg  ref="re"   v-if="reVisible" @done="dlgEditDone"/>
   </div>
 </template>
@@ -164,22 +183,42 @@ export default class Main extends ViewBase {
 
   id = 0
 
-  channelCodeList: any = [
-    {text: '微博', key: 'weibo'}
-  ]
+  channelCodeList: any = []
   publishCategoryList: any = []
+  overorder: any = []
+  // 接单状态信息表
+  subStatusList: any = []
 
  // 订单基本信息
   columns = [
     { title: '订单编号', width: 70, key: 'orderNo', align: 'center' },
-    { title: '项目名称', key: 'projectName', align: 'center' },
+    { title: '项目名称', key: 'projectName', align: 'center',
+      render: (hh: any, { row: { projectName } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        if (projectName.length >= 7) {
+        return (
+            <div>
+              <tooltip max-width="200" transfer content={projectName} placement="top">
+                <span class="bei" v-html={projectName} />
+              </tooltip>
+            </div>
+          )
+        } else {
+          return (
+              <span class="bei" v-html={projectName} />
+          )
+        }
+        /* tslint:enable */
+      }
+    },
     { title: '客户id', width: 70, key: 'companyId', align: 'center' },
     { title: '客户名称', key: 'companyName', align: 'center' },
     { title: '平台', width: 70, slot: 'channelCode', align: 'center'},
     { title: '推广品牌', width: 70, key: 'brandName', align: 'center' },
     {
       title: '下单时间',
-      width: 120,
+      width: 130,
       key: 'createTime',
       align: 'center',
       render: (hh: any, { row: { createTime } }: any) => {
@@ -258,6 +297,16 @@ export default class Main extends ViewBase {
   //   { title: '商务修改金额',  key: 'confirmPrice', align: 'center' },
   //   { title: '备注',  key: 'confirmRemark', align: 'center' },
   // ]
+
+  // 接单列表信息
+  overordercolumns = [
+    { title: 'kol平台账号',  key: 'channelDataId', align: 'center' },
+    { title: 'kol平台账号名称', key: 'accountName', align: 'center' },
+    { title: '平台', slot: 'channelCode', align: 'center' },
+    { title: '接单状态',  slot: 'subStatus', align: 'center' },
+    { title: '备注',  key: 'businessReceptRemark', align: 'center' }
+  ]
+
   // 订单支付信息
   ordercolumns = [
     { title: '类型',  key: 'name', align: 'center' },
@@ -266,16 +315,18 @@ export default class Main extends ViewBase {
     { title: '支付操作人',  key: 'payper', align: 'center' },
     { title: '备注',  key: 'beizhu', align: 'center' }
   ]
+
   // 操作日志
   logcolumns = [
     { title: '序号',  key: 'id', align: 'center' },
-    { title: '操作类型', key: 'email', align: 'center' },
-    { title: '操作时间', width: 70, key: 'companyName', align: 'center' },
-    { title: '操作人', key: 'companyName', align: 'center' },
-    { title: '字段',  key: 'companyName', align: 'center' },
+    { title: '操作类型', key: 'description', align: 'center' },
+    { title: '操作时间', width: 70, key: 'createTime', align: 'center' },
+    { title: '操作人', key: 'createUserName', align: 'center' },
+    { title: '字段',  key: 'eventName', align: 'center' },
     { title: '原值',  key: 'companyName', align: 'center' },
     { title: '新值',  key: 'companyName', align: 'center' },
   ]
+
   // 接单信息
   approveStatusList: any = [
     {
@@ -330,16 +381,26 @@ export default class Main extends ViewBase {
     this.orderlist = []
     try {
       const { data } = await itemlist(this.$route.params.id)
+      this.channelCodeList = data.channelCodeList
       this.itemlist.push(data.order)
-      this.dataForm.fee = this.itemlist[0].confirmFee * 0.5
       if (this.$route.params.orders == '4') {
         this.feemoney = this.itemlist[0].confirmFee
+        this.dataForm.fee = this.itemlist[0].confirmFee * 0.5
       }
       if (this.$route.params.orders == '8') {
         this.feemoney = this.itemlist[0].confirmFee - this.itemlist[0].advanceFee
+        this.dataForm.fee = this.feemoney
       }
       this.oklist = data.orderItemList == null ? [] : data.orderItemList
       this.publishCategoryList = data.publishCategoryList
+      this.loglist = (data.operateLogList || []).map((it: any) => {
+        return {
+          ...it,
+          createTime : moment(it.createTime).format(timeFormat)
+        }
+      })
+      this.overorder = data.subOrderList
+      this.subStatusList = data.subStatusList
       this.orderlist = [
         {
           name: '首款',
@@ -402,7 +463,6 @@ export default class Main extends ViewBase {
   async change() {
     this.dataForm.orderId = this.$route.params.id
     if (this.$route.params.orders == '4') {
-      alert(1)
       try {
         const res =  await advance ({
           orderId: this.dataForm.orderId  ,
@@ -497,6 +557,10 @@ export default class Main extends ViewBase {
   color: @c-base;
   line-height: 40px;
 }
+.bos {
+  border: 1px solid #ccc;
+  padding: 15px;
+}
 .row-li {
   line-height: 40px;
   font-size: 14px;
@@ -511,5 +575,15 @@ export default class Main extends ViewBase {
       content: '-';
     }
   }
+  /deep/ .bei {
+    display: block;
+    width: 86%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+/deep/ .ivu-tooltip {
+  width: 100%;
 }
 </style>

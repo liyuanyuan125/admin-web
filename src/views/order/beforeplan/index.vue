@@ -56,7 +56,7 @@ export default class Main extends ViewBase {
   filters: Filter[] = [
     {
       name: 'companyName',
-      defaultValue: null,
+      defaultValue: 0,
       type: CompanyList,
       width: 140,
       placeholder: '广告主公司名称'
@@ -64,7 +64,7 @@ export default class Main extends ViewBase {
 
     {
       name: 'name',
-      defaultValue: null,
+      defaultValue: 0,
       type: planList,
       width: 140,
       placeholder: '广告计划名称'
@@ -72,7 +72,7 @@ export default class Main extends ViewBase {
 
     {
       name: 'videoName',
-      defaultValue: null,
+      defaultValue: '',
       type: videoList,
       width: 140,
       placeholder: '广告片名称'
@@ -103,7 +103,7 @@ export default class Main extends ViewBase {
 
     {
       name: 'status',
-      defaultValue: null,
+      defaultValue: 0,
       type: 'select',
       width: 100,
       placeholder: '订单状态',
