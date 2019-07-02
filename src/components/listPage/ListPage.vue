@@ -163,7 +163,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
     this.updateUrl()
 
     this.loading = true
-    const query = dealParams(this.filters, this.query)
+    const query = dealParams(this.filters, this.query, true)
     try {
       const { data } = await this.fetch(query)
 

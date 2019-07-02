@@ -1,6 +1,7 @@
 import { MapType } from './types'
 import { clean } from '@/fn/object'
 import { isObject } from '@/fn/type'
+import { isEqual } from 'lodash'
 
 /**
  * 参数处理
@@ -22,6 +23,9 @@ export interface Param extends ParamDeal {
 
   /** 默认值 */
   defaultValue: any
+
+  /** 加工查询参数时，是否保留默认值 */
+  keepDefaultValue?: boolean
 }
 
 /**
@@ -46,13 +50,32 @@ export function defaultParams(params: Param[]) {
   return result
 }
 
+const fixedParamKeys = ['name', 'defaultValue'].sort()
+
+/**
+ * 是否为固有参数，即：只含有 name、defaultValue 的参数，
+ * 这种参数，一般是诸如 pageIndex、pageSize 的，只是简单参与查询，并不参与 filter
+ */
+const isFixedParam = (param: Param) => {
+  // 明确标记 keepDefaultValue 为 true 的参数，总是「固有参数」
+  if (param.keepDefaultValue === true) {
+    return true
+  }
+
+  // 判断是否为只含 name、defaultValue 的参数
+  const keys = Object.keys(param).sort()
+  return isEqual(keys, fixedParamKeys)
+}
+
 /**
  * 根据 params 处理 data
  * @param params 参数列表
  * @param data 数据
+ * @param cleanDefault 是否清理默认值
  */
-export function dealParams(params: Param[], data: any) {
+export function dealParams(params: Param[], data: any, cleanDefault = false) {
   const store = data || {}
+
   const tdata = params.reduce((ret, param) => {
     const { name, dealParam, defaultValue } = param
     const value = name in store ? store[name] : defaultValue
@@ -65,6 +88,15 @@ export function dealParams(params: Param[], data: any) {
       : { [name]: value }
     return { ...ret, ...replaced }
   }, {} as MapType<any>)
+
+  // 清理默认值
+  cleanDefault && params.forEach(param => {
+    const { name, defaultValue } = param
+    if (tdata[name] === defaultValue && !isFixedParam(param)) {
+      delete tdata[name]
+    }
+  })
+
   const result = clean(tdata)
   return result
 }
