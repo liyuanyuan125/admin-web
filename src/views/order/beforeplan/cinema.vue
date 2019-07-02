@@ -171,6 +171,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   dlgEditDone(id: any) {
     this.viewcinema = true
+    this.$emit('getcine', this.viewcinema)
     this.search()
   }
 

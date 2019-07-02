@@ -49,7 +49,7 @@
     </div> -->
     <!-- <div class='bos'> -->
       <!-- <Cinema :value="it.cinemaList"/> -->
-      <Cinema  />
+      <Cinema  @getcine="getcinemas" />
     <!-- </div> -->
     <div class='title'>备注</div>
     <div class='bos' >
@@ -85,9 +85,8 @@
             </FormItem>
           </Col>
           <Col :span='6'>
-          {{viewcinema}}
               <Button v-if='viewfilm == true || viewcinema == true ' type="primary" disabled>保存并发送方案至广告主</Button>
-              <Button v-if='viewfilm == false || viewcinema == false ' type="primary" @click="save()">保存并发送方案至广告主</Button>
+              <Button v-if='viewfilm == false && viewcinema == false ' type="primary" @click="save()">保存并发送方案至广告主</Button>
             <Button style='margin-left: 30px;' @click="back">取消</Button>
           </Col>
       </Form>
@@ -179,6 +178,7 @@ export default class Main extends ViewBase {
 
   viewfilm = false
   loading2 = false
+  viewcinema = false
 
   // 申请人
   applyTime: any = ''
@@ -232,6 +232,10 @@ export default class Main extends ViewBase {
     this.search()
   }
 
+  async getcinemas(asd: any) {
+    this.viewcinema = true
+  }
+
   async shuaxin() {
     this.loading2 = true
     try {
@@ -245,6 +249,7 @@ export default class Main extends ViewBase {
     } finally {
       this.loading2 = false
       this.viewfilm = false
+      this.viewcinema = false
     }
   }
 
