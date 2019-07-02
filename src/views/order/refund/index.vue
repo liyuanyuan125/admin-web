@@ -31,7 +31,8 @@
       <template slot="action" slot-scope="{ row: { id , orderNo , refundStatus , refundFee  } }">
         <div class="row-acts">
           <a v-if='refundStatus == 1' @click='refund( id , refundFee)' style='margin-left: 6px;'>退款</a>
-          <a @click='dels( id )' style='margin-left: 6px;'>删除</a>
+          <a v-if='refundStatus == 1' @click='dels( id )' style='margin-left: 6px;'>删除</a>
+          <span v-if='refundStatus == 2'>--</span>
         </div>
       </template>
     </ListPage>
