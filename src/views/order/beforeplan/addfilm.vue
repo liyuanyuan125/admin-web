@@ -390,6 +390,9 @@ em {
     white-space: nowrap;
   }
 }
+/deep/ .ivu-tooltip {
+  width: 100%;
+}
 // /deep/ .ivu-table-cell {
 //   padding-left: 4px;
 //   padding-right: 4px;

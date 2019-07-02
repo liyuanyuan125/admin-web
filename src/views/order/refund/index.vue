@@ -24,7 +24,7 @@
       <template slot="orderNo" slot-scope="{ row: { id , orderNo , refundStatus } }">
         <div class="row-acts">
           <router-link
-            :to="{ name: 'order-refund-detail', params: { 'id' : id , 'order': orderNo   } }"
+            :to="{ name: 'order-kollist-detail', params: { 'id' : id , 'orders': 0   } }"
           >{{orderNo}}</router-link>
         </div>
       </template>

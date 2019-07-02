@@ -7,7 +7,7 @@
     @on-cancel="cancel" >
     <Form ref="dataForm" :model="dataForm" label-position="left"  :label-width="100">
       <FormItem label="订单编号" prop="closeReason">
-        <Select v-model="dataForm.orderNo" placeholder="退款单编号" filterable
+        <Select v-model="dataForm.orderNo" placeholder="退款单编号"
           clearable class="component" ref="ui">
           <Option v-for="it in relist" :key="it.orderNo" :value="it.orderNo"
             :label="it.orderNo" class="flex-box">
@@ -66,6 +66,10 @@ export default class ComponentMain extends ViewBase {
   // 表单提交
   async dataFormSubmit() {
     try {
+      if (this.dataForm.orderNo == '') {
+        info('请选择要退款的订单')
+        return
+      }
       this.showDlg = false
       this.$router.push({ name : 'order-refund-detail' , params: { id : '0' , order: this.dataForm.orderNo } })
       // this.$router.push({ name: '/order/refund/detail/0/' + this.dataForm.orderNo})
