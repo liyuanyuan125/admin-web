@@ -70,7 +70,7 @@
     <div class='bos'>
       <Row v-if='logList.length == 0'>暂无操作日志</Row>
       <Row  v-if='logList.length > 0' v-for='(it,index) in logList' :key='index'>
-        <Row>{{it.createTime}}  {{it.email}}【{{it.userName}}】 {{it.description}}</Row>
+        <Row>{{it.createTime}}  {{it.createUserEmail}}【{{it.createUserName}}】 {{it.description}}</Row>
       </Row>
     </div>
     <div style='padding: 20px 0 30px 0'>
