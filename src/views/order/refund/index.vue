@@ -21,7 +21,7 @@
           >{{refundNo}}</router-link>
         </div>
       </template>
-      <template slot="orderNo" slot-scope="{ row: { id , orderNo , refundStatus } }">
+      <template slot="orderNo" slot-scope="{ row: { orderId , orderNo , refundStatus } }">
         <div class="row-acts">
           <router-link
             :to="{ name: 'order-kollist-detail', params: { 'id' : orderId , 'orders': 0   } }"
