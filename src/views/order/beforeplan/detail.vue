@@ -12,7 +12,7 @@
       </Row>
       <Row>
         <Col :span='12'>投放排期&nbsp;：&nbsp;{{listitem.beginDate == null ? '暂无' : start}} ~ {{listitem.endDate == null ? '暂无' : end}}</Col>
-        <Col :span='12'>推广预算&nbsp;：&nbsp;<Number :addNum='listitem.budgetAmount'></Number>元</Col>
+        <Col :span='12'>推广预算&nbsp;：&nbsp;{{formatNumber(listitem.budgetAmount)}}元</Col>
       </Row>
       <Row>
         <Col :span='12'>覆盖城市&nbsp;：&nbsp;
@@ -75,7 +75,7 @@
     </div>
     <div style='padding: 20px 0 30px 0'>
         <Form ref="dataplan" :model="dataplan"  :rules="ruleValidate" label-position="left" :label-width="100">
-          <Col :span='11'>预估曝光人次【<Number :addNum='listitem.estimatePersonCount'></Number>】预估曝光场次【{{listitem.estimateShowCount}}】预估花费【<Number :addNum='listitem.estimateCostAmount'></Number>】
+          <Col :span='11'>预估曝光人次【{{formatNumber(listitem.estimatePersonCount , 2)}}】预估曝光场次【{{formatNumber(listitem.estimateShowCount , 2)}}】预估花费【{{formatNumber(listitem.estimateCostAmount)}}】
             <Button type="primary" :loading="loading2" @click="shuaxin()">刷新</Button>
         </Col>
           
@@ -113,6 +113,7 @@ import Cinema from './cinema.vue'
 import addfilm from './addfilm.vue'
 import { confirm } from '@/ui/modal'
 import Number from '@/components/number.vue'
+import { formatNumber } from '@/util/validateRules'
 
 
 import {
@@ -186,6 +187,8 @@ export default class Main extends ViewBase {
   // 备注
   remarks: any = []
 
+  overload: any = {}
+
   // 投放影片
   itemlist: any = []
   get itemcolumns() {
@@ -238,6 +241,11 @@ export default class Main extends ViewBase {
     }
     return rules
   }
+
+  get formatNumber() {
+    return formatNumber
+  }
+
   mounted() {
     this.search()
   }
@@ -246,21 +254,32 @@ export default class Main extends ViewBase {
     this.viewcinema = true
   }
 
+  async overloading() {
+    const { data } = await itemlist(this.$route.params.id)
+    this.overload = data.item
+    if (this.overload.recommend == false) {
+      this.overloading()
+    }
+    if (this.overload.recommend == true) {
+      this.search()
+      this.$Message.success({
+        content: `刷新成功`,
+      })
+      this.loading2 = false
+      this.viewfilm = false
+      this.viewcinema = false
+    }
+
+  }
+
   async shuaxin() {
     this.loading2 = true
     try {
       await revuew(this.$route.params.id)
-      this.$Message.success({
-        content: `刷新成功`,
-      })
-      // this.$router.go(0)
-      this.search()
+      this.overloading()
     } catch (ex) {
       this.handleError(ex)
     } finally {
-      this.loading2 = false
-      this.viewfilm = false
-      this.viewcinema = false
     }
   }
 

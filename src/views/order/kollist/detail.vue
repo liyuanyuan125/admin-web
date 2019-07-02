@@ -402,7 +402,6 @@ export default class Main extends ViewBase {
   async change() {
     this.dataForm.orderId = this.$route.params.id
     if (this.$route.params.orders == '4') {
-      alert(1)
       try {
         const res =  await advance ({
           orderId: this.dataForm.orderId  ,
