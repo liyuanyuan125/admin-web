@@ -4,15 +4,16 @@
     :model="form" :label-width="120">
       <div class="modal-item">
         <FormItem label="选择影片:" prop="movieId" >
-          <Select v-model="form.movieId" filterable clearable  placeholder="请选择资源关联的影片" >
-            <Option v-for="item in filmList" :key="item.id" :value="item.id">{{item.companyName}}</Option>
+          <Select v-model="form.movieId" filterable clearable  placeholder="请选择资源关联的影片" v-if="!editID" >
+            <Option v-for="item in filmList" :key="item.id" :value="item.id">{{item.name}}</Option>
           </Select>
+          <span v-else>{{detailList.name}}</span>
         </FormItem>
       </div>
       <div class="modal-item">
-          <h2>图片/视频类无聊</h2>
+          <h2>图片/视频类物料</h2>
           <FormItem label="物料下载地址：">
-            <Input v-model="form.materialUrl" placeholder="下载地址" class="input"/>
+            <Input v-model="form.materialUrl" style="width: 90%" placeholder="下载地址" class="input"/>
           </FormItem>
           <FormItem label="资源使用说明：">
             <Input v-model="form.materialDescription" type="textarea" :rows="4" placeholder="使用说明" />
@@ -42,7 +43,7 @@
 <script lang='ts'>
 import {Component, Prop} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import { relevanceFilm } from '@/api/resourceFilm'
+import { relevanceFilm, queryDetail } from '@/api/resourceFilm'
 import Uploader from '@/util/Uploader'
 
 const uploader = new Uploader({
@@ -63,12 +64,12 @@ export default class Main extends ViewBase {
   filmList = []
 
   editID = ''
-
+  detailList: any = {}
   columns = [
-    { title: '导入时间', key: 'importTime', align: 'center'},
-    { title: '导入数量', key: 'importNum', align: 'center'},
-    { title: '已占用数量', key: 'usedQuantity', align: 'center'},
-    { title: '剩余可用数量', key: 'remainingQuantity', align: 'center'},
+    { title: '导入时间', key: 'uploadTime', align: 'center'},
+    { title: '导入数量', key: 'totalCount', align: 'center'},
+    { title: '已占用数量', key: 'usedCount', align: 'center'},
+    { title: '剩余可用数量', key: 'remainingCount', align: 'center'},
   ]
 
   dataList = []
@@ -82,9 +83,26 @@ export default class Main extends ViewBase {
   }
   mounted() {
     this.editID = this.$route.params.id
-    this.relevanceFilm()
+    if (this.editID) { // 编辑
+      this.queryDetail()
+    } else {
+      this.relevanceFilm()
+    }
   }
-
+  async queryDetail() {
+    try {
+      const { data } = await queryDetail(this.editID)
+      this.detailList = data || {}
+      this.form = {
+        materialUrl: this.detailList.material.url,
+        materialDescription: this.detailList.material.description,
+        couponDescription: this.detailList.coupon.description  // batches
+      }
+      this.dataList = this.detailList.coupon.batches || [] // 已有的电子券
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
   onChange(ev: Event) {
     const input = ev.target as HTMLInputElement
     this.file = input.files && input.files[0]
@@ -92,11 +110,8 @@ export default class Main extends ViewBase {
 
   async relevanceFilm() {
     try {
-      const { data: {items} } = await relevanceFilm({
-        pageIndex: 1,
-        pageSize: 999999
-      })
-      this.filmList = items
+      const { data } = await relevanceFilm()
+      this.filmList = data || []
     } catch (ex) {
       this.handleError(ex)
     }
@@ -118,7 +133,7 @@ export default class Main extends ViewBase {
       })
       // debugger
       // const { data} = await createResource(this.form)
-      // this.$router.push({name: 'resource-film-index'})
+      this.$router.push({name: 'resource-film-index'})
     } catch (ex) {
       this.handleError(ex)
     }
