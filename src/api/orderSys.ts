@@ -56,7 +56,7 @@ export async function cinemaList(id: any , query: any) {
 }
 
 // 取消执行
-export async function cinemaCancel(id: any , query: any) {
+export async function cinemaCancel(query: any) {
   const res = await put(`/xadvert/v1/orders/cinema-cancel`, query)
   return res
 }
