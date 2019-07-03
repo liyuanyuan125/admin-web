@@ -69,7 +69,7 @@ export default class Main extends ViewBase {
   filters: Filter[] = [
     {
       name: 'companyId',
-      defaultValue: null,
+      defaultValue: 0,
       type: CompanyList,
       width: 140,
       placeholder: '公司名称'
