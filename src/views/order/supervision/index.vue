@@ -106,7 +106,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       width: 60,
       align: 'center'
     },
-    { title: '资源方公司名称', key: 'companyId',  align: 'center' },
+    { title: '资源方公司名称', key: 'resourceName',  align: 'center' },
     { title: '影院名称', key: 'cinemaName', align: 'center' },
     { title: '广告片', slot: 'video', align: 'center' },
     {
@@ -119,7 +119,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         const h = jsxReactToVue(hh)
         const a = String(beginDate)
         const start = a.slice(0, 4) + '-' + a.slice(4, 6) + '-' + a.slice(6, 8)
-        const b = String(beginDate)
+        const b = String(endDate)
         const end = b.slice(0, 4) + '-' + b.slice(4, 6) + '-' + b.slice(6, 8)
         return <span> {start} ~ {end}</span>
         /* tslint:enable */
