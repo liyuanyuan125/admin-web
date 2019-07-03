@@ -1,6 +1,15 @@
 <template>
-  <Select v-model="inValue" placeholder="资源方影院" filterable
-    clearable class="component" ref="ui">
+  <Select 
+    v-model="inValue" 
+    placeholder="资源方影院" 
+    filterable
+    clearable 
+    class="component"
+    remote
+    :loading="loading"
+    :remote-method="remoteMethod"
+    @on-clear="list = []"
+    ref="ui">
     <Option v-for="it in list" :key="it.id" :value="it.id"
       :label="it.shortName" class="flex-box">
       <span>{{it.shortName}}</span>
@@ -12,7 +21,7 @@
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import { cinames  } from '@/api/supervision'
+import { queryList  } from '@/api/cinema'
 import { clean } from '@/fn/object'
 
 @Component
@@ -30,14 +39,34 @@ export default class CinemaChainSelect extends ViewBase {
   inValue: any = this.value
 
   list: any = []
+  loading = false
 
   async mounted() {
+    // try {
+    //   const { data } =  await queryList({pageSize: 666666})
+    //   const list: any[] = data.items || []
+    //   this.list = list
+    // } catch (ex) {
+    //   this.handleError(ex)
+    // }
+    this.remoteMethod('')
+  }
+
+  async remoteMethod(querys: any) {
     try {
-      const { data } =  await cinames({ pageSize: 888888 })
-      const list: any[] = data.items || []
-      this.list = list
+      if (querys) {
+        this.loading = true
+        const {
+          data: { items }
+        } = await queryList({
+          name: querys,
+        })
+        this.list = items || []
+      }
+      this.loading = false
     } catch (ex) {
       this.handleError(ex)
+      this.loading = false
     }
   }
 

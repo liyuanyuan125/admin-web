@@ -12,7 +12,7 @@
       </Col>
     </Row>
     <div v-if="checkId">
-      <Button type="primary" @click="changeAll">批量删除</Button>
+      <Button type="primary" @click="changeAll">批量取消执行</Button>
     </div>
     <Table :columns="columns" @on-selection-change="check" :data="tableData" :loading="loading"
       border stripe disabled-hover size="small" class="table">
@@ -41,7 +41,7 @@ import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
-import {confirm , warning , success, toast } from '@/ui/modal'
+import {confirm , warning , success, toast , info } from '@/ui/modal'
 import AreaSelect from '@/components/areaSelect'
 import singDlg from './singDlg.vue'
 import imgModel from './imgDlg.vue'
@@ -254,6 +254,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
 
   changeAll() {
+    if (this.checkId.length == 0) {
+      info('请先选择需要审核的信息')
+      return
+    }
     this.addOrUpdateVisible = true
     this.$nextTick(() => {
       (this.$refs.addOrUpdate as any).inits(this.checkId)

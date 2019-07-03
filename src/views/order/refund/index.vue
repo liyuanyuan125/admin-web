@@ -28,6 +28,11 @@
           >{{orderNo}}</router-link>
         </div>
       </template>
+      <template slot="channelCode" slot-scope="{ row: { channelCode } }">
+        <div class="row-acts">
+          <span v-for='(it,index) in channelCodeList' :key='index' v-if='it.key == channelCode'>{{it.text}}</span>
+        </div>
+      </template>
       <template slot="action" slot-scope="{ row: { id , orderNo , refundStatus , refundFee  } }">
         <div class="row-acts">
           <a v-if='refundStatus == 1' @click='refund( id , refundFee)' style='margin-left: 6px;'>退款</a>
@@ -99,10 +104,11 @@ export default class Main extends ViewBase {
 
     {
       name: 'channelCode',
-      defaultValue: '',
-      type: 'input',
+      defaultValue: null,
+      type: 'select',
       width: 100,
       placeholder: '平台',
+      enumKey: 'channelCodeList'
     },
 
     {
@@ -134,7 +140,10 @@ export default class Main extends ViewBase {
 
   enums = [
     'refundStatusList',
+    'channelCodeList'
   ]
+
+  channelCodeList: any = []
 
   get columns() {
     return [
@@ -143,7 +152,7 @@ export default class Main extends ViewBase {
       { title: '项目名称', key: 'projectName'  },
       { title: '公司ID', key: 'companyId', width: 80 },
       { title: '公司名称', key: 'companyName' },
-      { title: '平台', key: 'projectName', width: 100 },
+      { title: '平台', slot: 'channelCode', width: 80},
       { title: '下单时间', key: 'placeOrderTime', editor: 'dateTime', width: 135 },
       { title: '退款金额', key: 'refundFee', width: 100 },
       { title: '已支付金额', key: 'payFee', width: 100 },
@@ -160,7 +169,9 @@ export default class Main extends ViewBase {
     })
   }
 
-  mounted() {
+  async mounted() {
+    const { data } = await queryList({})
+    this.channelCodeList = data.channelCodeList
   }
 
   dlgEditDone() {

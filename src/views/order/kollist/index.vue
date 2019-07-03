@@ -65,7 +65,7 @@ export default class Main extends ViewBase {
   filters: Filter[] = [
     {
       name: 'companyName',
-      defaultValue: null,
+      defaultValue: '',
       type: CompanyList,
       width: 140,
       placeholder: '公司名称'
@@ -80,8 +80,12 @@ export default class Main extends ViewBase {
       dealParam(value: string) {
         const [startTime, endTime] = value ? value.split('-') : [null, null]
         return {
-          startTime,
-          endTime
+          startTime : startTime ? Number(new Date(String(startTime).slice(0, 4) + '-'
+            + String(startTime).slice(4, 6) + '-' +
+            String(startTime).slice(6, 8)).getTime() - (8 * 60 * 60 * 1000 - 1)) : null,
+          endTime : endTime ? Number(new Date(String(endTime).slice(0, 4) + '-'
+            + String(endTime).slice(4, 6) + '-' +
+            String(endTime).slice(6, 8)).getTime() + (16 * 60 * 60 * 1000 - 1)) : null,
         }
       }
     },
@@ -139,9 +143,7 @@ export default class Main extends ViewBase {
     'billStatusList',
   ]
 
-  channelCodeList: any = [
-    {text: '微博', key: 'weibo'}
-  ]
+  channelCodeList: any = []
 
   get columns() {
     return [
@@ -163,7 +165,9 @@ export default class Main extends ViewBase {
   // reloadSearch() {
 
   // }
-  mounted() {
+  async mounted() {
+    const { data } = await queryList({})
+    this.channelCodeList = data.channelCodeList
   }
 
   async cancel(id: any) {

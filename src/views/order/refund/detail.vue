@@ -9,11 +9,21 @@
 
     <!-- 订单基本信息 -->
     <Table :columns="columns" :data='itemlist' border stripe disabled-hover size="small" class="table">
+      <template slot="channelCode" slot-scope="{ row: { channelCode } }">
+        <div class="row-acts">
+          <span v-for='(it,index) in channelCodeList' :key='index' v-if='it.key == channelCode'>{{it.text}}</span>
+        </div>
+      </template>
      </Table>
 
     <!-- 订单金额信息 -->
     <div class='title'>订单金额信息</div>
     <Table :columns="okcolumns" :data='oklist' border stripe disabled-hover size="small" class="table">
+      <template slot="channelCode" slot-scope="{ row: { channelCode } }">
+        <div class="row-acts">
+          <span v-for='(it,index) in channelCodeList' :key='index' v-if='it.key == channelCode'>{{it.text}}</span>
+        </div>
+      </template>
     </Table>
 
     <!-- 订单支付信息 -->
@@ -22,8 +32,8 @@
     </Table>
 
     <!-- 退款信息 -->
-    <div v-if='$route.params.status == 2' class='title'>退款信息</div>
-    <Table v-if='$route.params.status == 2' :columns="outcolumns" :data='outlist' border stripe disabled-hover size="small" class="table">
+    <div v-if='$route.params.id != 0' class='title'>退款信息</div>
+    <Table  v-if='$route.params.id != 0' :columns="outcolumns" :data='outlist' border stripe disabled-hover size="small" class="table">
     </Table>
 
     <!-- 退款 -->
@@ -90,6 +100,7 @@ export default class Main extends ViewBase {
   list: any = []
   total: any = 0
   moneyList: any = []
+  channelCodeList: any = []
 
   // 订单基本信息
   columns = [
@@ -97,7 +108,7 @@ export default class Main extends ViewBase {
     { title: '项目名称', key: 'projectName', align: 'center' },
     { title: '客户id', width: 70, key: 'companyId', align: 'center' },
     { title: '客户名称', key: 'companyName', align: 'center' },
-    { title: '平台', width: 70, key: 'channelCode', align: 'center' },
+    { title: '平台', width: 70, slot: 'channelCode', align: 'center' },
     { title: '推广品牌', width: 70, key: 'brandName', align: 'center' },
     {
       title: '下单时间',
@@ -151,8 +162,8 @@ export default class Main extends ViewBase {
   okcolumns = [
     { title: 'kol平台账号',  key: 'kolId', align: 'center' },
     { title: 'kol平台账号名称', key: 'kolName', align: 'center' },
-    { title: '平台', width: 70, key: 'channelCode', align: 'center' },
-    { title: '任务类型', key: 'publishCategoryCode', align: 'center' },
+    { title: '平台', width: 70, slot: 'channelCode', align: 'center' },
+    { title: '任务类型', key: 'publishCategoryName', align: 'center' },
     { title: '下单金额',  key: 'salePrice', align: 'center' },
     { title: '商务修改金额',  key: 'confirmPrice', align: 'center' },
     { title: '备注',  key: 'confirmRemark', align: 'center' },
@@ -211,8 +222,11 @@ export default class Main extends ViewBase {
     this.orderlist = []
     this.moneyList = []
     try {
-      const { data } = await item(this.$route.params.order)
-      this.ms = data.item
+      const datalist = await queryList({})
+      this.channelCodeList = datalist.data.channelCodeList
+      if (this.$route.params.id == '0') {
+        const { data } = await item(this.$route.params.order)
+        this.ms = data.item
       this.itemlist.push(data.item.order)
       this.oklist = data.item.orderItems == null ? [] : data.item.orderItems
       this.orderlist = [
@@ -232,6 +246,29 @@ export default class Main extends ViewBase {
         }
       ]
       this.outlist.push(data.item.refundBill)
+      } else {
+        const { data } = await itemlist(this.$route.params.id)
+        this.ms = data.item
+      this.itemlist.push(data.item.order)
+      this.oklist = data.item.orderItems == null ? [] : data.item.orderItems
+      this.orderlist = [
+        {
+          name: '首款',
+          paymoney: data.item.order.advanceFee,
+          paydate: moment(data.item.order.advancePayTime).format(timeFormat),
+          payper: data.item.order.advancePayName,
+          beizhu: data.item.order.advanceRemark
+        },
+        {
+          name: '尾款',
+          paymoney: data.item.order.restFee,
+          paydate: moment(data.item.order.restPayTime).format(timeFormat),
+          payper: data.item.order.restPayName,
+          beizhu: data.item.order.restRemark
+        }
+      ]
+      this.outlist.push(data.item.refundBill)
+      }
     } catch (ex) {
       this.handleError(ex)
     } finally {

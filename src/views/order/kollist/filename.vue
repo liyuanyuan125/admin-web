@@ -1,18 +1,19 @@
 <template>
-    <Select v-model="inValue" placeholder="公司名称" filterable
+    <!-- <Select v-model="inValue" placeholder="公司名称" filterable
       clearable class="component" ref="ui">
-      <Option v-for="it in list" :key="it.id" :value="it.companyId"
+      <Option v-for="it in list" :key="it.id" :value="it.companyName"
         :label="it.companyName" class="flex-box">
         <span>{{it.companyName}}</span>
       </Option>
-    </Select>
+    </Select> -->
+    <LazyInput v-model="inValue" placeholder="公司名称" class="input"/>
 </template>
 
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import { queryList } from '@/api/clientFilm'
+import { queryList } from '@/api/corpReal'
 import { clean } from '@/fn/object'
 
 @Component
@@ -20,7 +21,7 @@ export default class CinemaChainSelect extends ViewBase {
   /**
    * 值本身，可以使用 v-model 进行双向绑定
    */
-  @Prop({ type: Number, default: 0 }) value!: number
+  @Prop({ type: String, default: 0 }) value!: number
   @Prop({ default: '' }) typeCode!: string
   @Prop({ default: true }) type!: boolean
   /**
