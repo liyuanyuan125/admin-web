@@ -35,6 +35,7 @@
         </div>
       </div>
     </slot>
+
     <Table
       ref="selection"
       :columns="tableColumns"
@@ -67,7 +68,6 @@
 </template>
 
 <script lang="ts">
-// doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop, Watch, Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
@@ -162,7 +162,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
     this.updateUrl()
 
     this.loading = true
-    const query = dealParams(this.filters, this.query)
+    const query = dealParams(this.filters, this.query, true)
     try {
       const { data } = await this.fetch(query)
 
@@ -183,10 +183,12 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
       this.loading = false
     }
   }
+
   // 全选
-  public selectionChangeHandle(option: any) {
+  selectionChangeHandle(option: any) {
     this.$emit('selectionChange', option)
   }
+
   @Watch('query', { deep: true })
   watchQuery() {
     if (this.query.pageIndex == this.oldQuery.pageIndex) {
@@ -202,6 +204,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
 @import '../../site/lib.less';
 
 .list-page {
+  min-height: 288px;
   margin-bottom: 88px;
 }
 

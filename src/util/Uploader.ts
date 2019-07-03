@@ -6,7 +6,7 @@
 import EventClass from '@/fn/EventClass'
 import deepExtend from 'deep-extend'
 import exif from 'exif-js'
-import { post } from '@/fn/ajax'
+import { post, put } from '@/fn/ajax'
 import { MapType } from '@/util/types'
 
 /** 图片类型 */
@@ -28,6 +28,8 @@ export interface UploaderOptions {
   filePostUrl?: string
   /** 文件上传字段名 */
   fileFieldName?: string
+  /** 文件上传方式，支持 post、put，默认 post */
+  fileSubmitMethod: 'post' | 'put',
   /** 图片压缩选项 */
   imageCompress?: {
     /** 压缩限制 min width，为 null 则不限制 */
@@ -65,6 +67,7 @@ const defaultOptions: UploaderOptions = {
   imageFieldName: 'images',
   filePostUrl: '/file/miscs',
   fileFieldName: 'files',
+  fileSubmitMethod: 'post',
   imageCompress: {
     minWidth: null,
     maxWidth: 1800,
@@ -191,7 +194,7 @@ export default class Uploader extends EventClass {
   }
 
   private async postFile({ file, type }: UploadItem, data: MapType<any> | FormData = {}) {
-    const { imagePostUrl, imageFieldName, filePostUrl, fileFieldName } = this.options
+    const { imagePostUrl, imageFieldName, filePostUrl, fileSubmitMethod, fileFieldName } = this.options
     const isImage = type === 'image'
     const postUrl = isImage ? imagePostUrl : filePostUrl
     const fieldName = isImage ? imageFieldName : fileFieldName
@@ -204,7 +207,7 @@ export default class Uploader extends EventClass {
       form.append(name, value)
     })
 
-    return post(postUrl!, form, {
+    return (fileSubmitMethod == 'post' ? post : put)(postUrl!, form, {
       onUploadProgress: (ev: ProgressEvent) => {
         this.emit('progress', ev)
       }
