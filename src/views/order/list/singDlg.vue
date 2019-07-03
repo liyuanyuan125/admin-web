@@ -38,7 +38,8 @@ export default class ComponentMain extends ViewBase {
 
   loading = false
   showDlg = false
-  id: any = []
+  id: any = 0
+  ids: any = []
   title = ''
   dataForm = {
     closeReason: '',
@@ -53,7 +54,7 @@ export default class ComponentMain extends ViewBase {
   init(id: number, shortName: any) {
     this.showDlg = true
     this.title = shortName
-    this.id = [id] || []
+    this.id = id || 0
     ; (this.$refs.dataForm as any).resetFields()
     if (this.id) {
         // console.log(this.id)
@@ -63,7 +64,7 @@ export default class ComponentMain extends ViewBase {
   inits(id: any) {
     this.showDlg = true
     this.title = id.length + '条'
-    this.id = id || []
+    this.ids = id || []
     ; (this.$refs.dataForm as any).resetFields()
     if (this.id) {
         // console.log(this.id)
@@ -83,11 +84,26 @@ export default class ComponentMain extends ViewBase {
       return
     }
     try {
-      const res = await cinemaCancel (this.$route.params.id ,
-      {
-        cinemaIds: this.id,
-        // closeReason: this.dataForm.closeReason
-      })
+      if (this.ids.length == 0) {
+        const res = await cinemaCancel (
+          { id: this.$route.params.id ,
+            cinemas : {id: this.id, reasond: this.dataForm.closeReason}
+          }
+        )
+      } else {
+        const itemlist = (this.ids || []).map((it: any) => {
+          return {
+            id: it,
+            reasond: this.dataForm.closeReason
+          }
+        })
+        const res = await cinemaCancel (
+          { id: this.$route.params.id ,
+            cinemas : itemlist
+          }
+        )
+      }
+
       toast('操作成功')
       this.showDlg = false
       this.$emit('done', this.id)
