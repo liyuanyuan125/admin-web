@@ -196,7 +196,7 @@ export default class Main extends ViewBase {
       render: (hh: any, { row: { refundTime } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        const html = moment(refundTime).format(timeFormat)
+        const html = refundTime == null ? '-' : moment(refundTime).format(timeFormat)
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
