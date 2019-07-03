@@ -153,7 +153,7 @@ export default class Main extends ViewBase {
       { title: '公司ID', key: 'companyId', width: 80 },
       { title: '公司名称', key: 'companyName' },
       { title: '平台', slot: 'channelCode', width: 80},
-      { title: '下单时间', key: 'placeOrderTime', editor: 'dateTime', width: 135 },
+      { title: '退款申请时间', key: 'applyTime', editor: 'dateTime', width: 135 },
       { title: '退款金额', key: 'refundFee', width: 100 },
       { title: '已支付金额', key: 'payFee', width: 100 },
       { title: '退款单状态', key: 'refundStatus', width: 80 , editor: 'enum'},
