@@ -45,7 +45,7 @@
       <div class="act-bar">
         <a @click="onAdd" v-if="!type" @done="dlgEditDone">添加影院</a>
       </div>
-      <singDlg ref="addOrUpdate" v-if='addOrUpdateVisible' @done="dlgEditDone" />
+      <!-- <singDlg ref="addOrUpdate" v-if='addOrUpdateVisible' @done="dlgEditDone" /> -->
       <changeDlg ref="change" v-if='changeVisible' @done="dlgEditDone" />
       <AddCinemaModel v-if="type != 'detail'" ref="addCinemaModel" :cinemaend = "incinematype" :addData="inValue" @done="dlgEditDone" />
     </div>
