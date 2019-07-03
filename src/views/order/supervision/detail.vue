@@ -6,7 +6,7 @@
     <div class='title'>基础信息</div>
     <div class='bos'>
       <Row>
-        <Col :span='12'><span class='spons'>资源方公司&nbsp;：&nbsp;</span>{{listitem.companyName == null ? '暂无资源方公司' : listitem.companyName}}</Col>        
+        <Col :span='12'><span class='spons'>资源方公司&nbsp;：&nbsp;</span>{{listitem.resourceName == null ? '暂无资源方公司' : listitem.resourceName}}</Col>        
       </Row>
       <Row>      
         <Col :span='12'><span class='spons'>影院名称&nbsp;：&nbsp;</span>【{{listitem.cinemaCode == null ? '暂无影院专资编码' : listitem.cinemaCode}}】 {{listitem.cinemaName == null ? '暂无影院名称' : listitem.cinemaName}}</Col>
