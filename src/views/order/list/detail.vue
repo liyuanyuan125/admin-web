@@ -54,7 +54,6 @@
         <Row class='row-list pb20'>
             <Col span='3' class='hui'>接单影院</Col>
             <Col span='16'>
-              <Row>已接单影院: {{cinemasList.length}}</Row>
               <singleCinema  />
             </Col>
         </Row>
