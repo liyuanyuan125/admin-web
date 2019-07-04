@@ -98,7 +98,7 @@ export default class Main extends ViewBase {
       { title: '品牌中文名称', key: 'name', minWidth: 90 },
       { title: '品牌外文名称', key: 'enName', width: 100 },
       { title: '品牌logo', key: 'logo', minWidth: 90, editor: 'deprecated' },
-      { title: '所属行业', key: 'tradeCode', width: 80, editor: 'enum', enumKey: 'tradeCodeList' },
+      { title: '所属行业', key: 'tradeCode', width: 80, editor: 'enum', enumKey: 'tradeCodeCode' },
       { title: '搜索关键字', key: 'keyWords', width: 80 },
       { title: '社交平台', key: 'countyName', width: 80 },
       { title: '门店', key: 'gradeCode', width: 60, editor: 'deprecated' },
