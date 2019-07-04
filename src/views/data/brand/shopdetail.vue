@@ -20,45 +20,40 @@
         </div>
       </template>
 
-      <template slot="platform" slot-scope="{ row: { status, id } }">
-        <div class="keyWords">
-         <router-link v-if="status == 1" :to="{ name: 'data-brand-platformdetail', params: { brandId: id} }">
-           查看媒体平台</router-link>
-         <router-link v-if="status == 1 || status == 2" :to="{ name: 'data-brand-platformedit', params: { brandId: id} }">
-           编辑媒体平台</router-link>
+      <template slot="platform" slot-scope="{ row: { keyWords } }">
+        <div>
+         <router-link :to="{ name: 'data-cinema-hall', params: { id } }">查看影厅</router-link>
         </div>
       </template>
 
-      <template slot="shop" slot-scope="{ row: { status } }">
-        <div class="keyWords">
-          <router-link v-if="status == 1" :to="{ name: 'data-cinema-hall' }">查看门店</router-link>
-          <router-link v-if="status == 1 || status == 2" :to="{ name: 'data-cinema-hall' }">编辑门店</router-link>
+      <template slot="shop" slot-scope="{ row }">
+        <div>
+         <router-link :to="{ name: 'data-cinema-hall', params: { id } }">查看影厅</router-link>
         </div>
       </template>
 
-      <template slot="product" slot-scope="{ row: { status } }">
-        <div class="keyWords">
-          <router-link v-if="status == 1" :to="{ name: 'data-cinema-hall' }">查看产品</router-link>
-          <router-link v-if="status == 1 || status == 2" :to="{ name: 'data-cinema-hall' }">编辑产品</router-link>
+      <template slot="product" slot-scope="{ row }">
+        <div>
+         <router-link :to="{ name: 'data-cinema-hall', params: { id } }">查看影厅</router-link>
         </div>
       </template>
 
       <template slot="status" slot-scope="{ row }">
-        <div class="keyWords">
-         <a @click="start(row)" v-if="row.status == 1">禁用</a>
-         <a @click="start(row)" v-if="row.status == 2">启用</a>
+        <div>
+         <router-link :to="{ name: 'data-cinema-hall', params: { id } }">查看影厅</router-link>
         </div>
       </template>
 
-      <template slot="action" slot-scope="{ row }">
+      <template slot="action" slot-scope="{ row: { id } }">
         <div class="row-acts">
-          <a @click="start(row)" v-if="row.status == 1">禁用</a>
-          <a @click="start(row)" v-if="row.status == 2">启用</a>
-          <a @click="start(row)" v-if="row.status == 1">编辑</a>
+          <router-link
+            :to="{ name: 'data-cinema-hall', params: { id } }"
+            v-auth="'theater.cinemas:info'"
+          >查看影厅</router-link>
+          <a >编辑</a>
         </div>
       </template>
     </ListPage>
-  <Start @done='uplist' ref="start"></Start>
   </div>
 </template>
 
@@ -68,12 +63,10 @@ import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { brandList } from '@/api/brand'
-import Start from './start.vue'
 
 @Component({
   components: {
     ListPage,
-    Start
   }
 })
 export default class Main extends ViewBase {
@@ -137,22 +130,12 @@ export default class Main extends ViewBase {
       { title: '品牌logo', key: 'logo', minWidth: 90, editor: 'deprecated' },
       { title: '所属行业', key: 'tradeCode', width: 80, editor: 'enum', enumKey: 'tradeCodeCode' },
       { title: '搜索关键字', key: 'keyWords', width: 80, slot: 'keyWords' },
-      { title: '社交平台', key: 'countyName', width: 110, slot: 'platform' },
-      { title: '门店', key: 'gradeCode', width: 80, slot: 'shop' },
-      { title: '产品', key: 'gradeCode', width: 80, slot: 'product' },
-      { title: '状态', key: 'gradeCode', width: 80, slot: 'status' },
+      { title: '社交平台', key: 'countyName', width: 80, slot: 'platform' },
+      { title: '门店', key: 'gradeCode', width: 60, slot: 'shop' },
+      { title: '产品', key: 'gradeCode', width: 60, slot: 'product' },
+      { title: '状态', key: 'gradeCode', width: 60, slot: 'status' },
       { title: '操作', slot: 'action', width: 100 }
     ] as ColumnExtra[]
-  }
-
-  async start(row: any) {
-    this.$nextTick(() => {
-      (this.$refs.start as any).init(row)
-    })
-  }
-
-  uplist() {
-    (this.$refs.listPage as any).update()
   }
 
   mounted() {}
@@ -162,9 +145,5 @@ export default class Main extends ViewBase {
 <style lang="less" scoped>
 .keyWords:only-child:empty::before {
   content: "-";
-}
-.keyWords a {
-  display: block;
-  padding: 5px 0;
 }
 </style>

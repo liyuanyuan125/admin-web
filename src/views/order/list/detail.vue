@@ -28,15 +28,15 @@
         </Row>
         <Row class='row-list'>
             <Col span='3' class='hui'>广告计划</Col>
-            <Col span='9'>【{{item.planId}}】{{item.planName}}</Col>
+            <Col span='9'>【{{item.planId}}】{{item.planName == null ? '暂无广告计划名称' : item.planName}}</Col>
             <Col span='3' class='hui'>广告片</Col>
             <Col span='9'>【{{item.videoId}}】{{item.videoName}}</Col>
         </Row>
         <Row class='row-list'>
             <Col span='3' class='hui'>投放时间</Col>
             <Col span='9'>{{begin}} ~ {{end}} 【{{item.cycle}}天】</Col>
-            <Col span='3' class='hui'>广告片规格/时长</Col>
-            <Col span='9'>{{item.specification}}s/{{item.videoLength}}s</Col>
+            <Col span='3' class='hui'>广告片规格</Col>
+            <Col span='9'>{{item.specification}}s</Col>
         </Row>
         <Row class='row-list'>
             <Col span='3' class='hui'>影片列表</Col>
@@ -54,7 +54,7 @@
         <Row class='row-list pb20'>
             <Col span='3' class='hui'>接单影院</Col>
             <Col span='16'>
-              <singleCinema  />
+              <singleCinema  @dlgEditDone="dlgEditDone"/>
             </Col>
         </Row>
       </div>
@@ -70,7 +70,7 @@
         </Row>
       </div>
     </div>
-    <close  ref="addOrUpdate"   @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/>
+    <close  ref="addOrUpdate"   @refreshDataList="search" v-if="addOrUpdateVisible" @dlgEditDone="dlgEditDone"/>
   </div>
 </template>
 
@@ -188,7 +188,6 @@ export default class Main extends ViewBase {
     try {
       const { data: {
           item: item,
-          logList,
           statusList,
           planTypeList,
           planDirectionList
@@ -197,15 +196,14 @@ export default class Main extends ViewBase {
       this.item = item
       const a = String(this.item.beginDate)
       const b = String(this.item.endDate)
-      const c = String(this.item.receiveTime)
       this.begin = a.slice(0, 4) + '-' + a.slice(4, 6) + '-' + a.slice(6, 8)
       this.end = b.slice(0, 4) + '-' + b.slice(4, 6) + '-' + b.slice(6, 8)
       this.createTime = this.item.receiveTime == 0 ? '暂无接单时间' :
-      c.slice(0, 4) + '-' + c.slice(4, 6) + '-' + c.slice(6, 8)
+      moment(this.item.receiveTime).format(timeFormat)
       this.settlementTime = moment(this.item.settlementTime).format(timeFormat)
       this.settlementAmount = this.addNumber(String(this.item.settlementAmount))
       this.movieList = this.item.targetMovies
-      this.logList = (logList || []).map((it: any) => {
+      this.logList = (item.logList || []).map((it: any) => {
           return {
               ...it,
               createTime: moment(it.createTime).format(timeFormat)
