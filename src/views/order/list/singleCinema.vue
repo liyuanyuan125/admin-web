@@ -36,7 +36,7 @@ import { Component, Watch , Mixins, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { cinemaCancel , cinemaList } from '@/api/orderSys'
+import { cinemaCancel , cinemaList , set } from '@/api/orderSys'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
@@ -163,6 +163,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     //   this.cinemaArray = this.cinemaArray.filter((it: any) => it != id)
     // }
     this.search()
+    if (this.total == 0) {
+      const res = await set (this.$route.params.id, {closeReason : '无有效影院'})
+    }
   }
 
   get tableData() {
@@ -260,7 +263,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
     this.addOrUpdateVisible = true
     this.$nextTick(() => {
-      (this.$refs.addOrUpdate as any).inits(this.checkId)
+      (this.$refs.addOrUpdate as any).inits(this.checkId , this.total)
     })
   }
 

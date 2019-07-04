@@ -23,7 +23,7 @@
 import { Component, Prop } from 'vue-property-decorator'
 import { number } from '@/api/orderSys'
 import { warning , success, toast } from '@/ui/modal'
-import { cinemaCancel } from '@/api/orderSys'
+import { cinemaCancel , set } from '@/api/orderSys'
 import inputTextarea from '@/components/inputTextarea.vue'
 import moment from 'moment'
 import ViewBase from '@/util/ViewBase'
@@ -44,6 +44,7 @@ export default class ComponentMain extends ViewBase {
   dataForm = {
     closeReason: '',
   }
+  length: any = 0
 
   ruleValidate = {
     closeReason: [
@@ -61,7 +62,7 @@ export default class ComponentMain extends ViewBase {
     }
   }
 
-  inits(id: any) {
+  inits(id: any, length: any) {
     this.showDlg = true
     this.title = id.length + '条'
     this.ids = id || []
@@ -102,6 +103,10 @@ export default class ComponentMain extends ViewBase {
             cinemas : itemlist
           }
         )
+        // 若全部取消则关闭改订单
+        if (this.ids.length == this.length) {
+          const data = await set (this.$route.params.id, {closeReason : '无有效影院'})
+        }
       }
 
       toast('操作成功')
