@@ -4,15 +4,16 @@
     :model="form" :label-width="120">
       <div class="modal-item">
         <FormItem label="选择影片:" prop="movieId" >
-          <Select v-model="form.movieId" filterable clearable  placeholder="请选择资源关联的影片" >
-            <Option v-for="item in filmList" :key="item.id" :value="item.id">{{item.companyName}}</Option>
+          <Select v-model="form.movieId" filterable clearable  placeholder="请选择资源关联的影片" v-if="!id" >
+            <Option v-for="item in filmList" :key="item.id" :value="item.id">{{item.name}}</Option>
           </Select>
+          <span v-else>{{detailList.name}}</span>
         </FormItem>
       </div>
       <div class="modal-item">
-          <h2>图片/视频类无聊</h2>
+          <h2>图片/视频类物料</h2>
           <FormItem label="物料下载地址：">
-            <Input v-model="form.materialUrl" placeholder="下载地址" class="input"/>
+            <Input v-model="form.materialUrl" style="width: 90%" placeholder="下载地址" class="input"/>
           </FormItem>
           <FormItem label="资源使用说明：">
             <Input v-model="form.materialDescription" type="textarea" :rows="4" placeholder="使用说明" />
@@ -20,7 +21,7 @@
       </div>
       <div class="modal-item">
           <h2>导入券资源</h2>
-          <FormItem label="已有的电子券" v-if="editID">
+          <FormItem label="已有的电子券" v-if="id">
             <Table :columns="columns" :data="dataList" border stripe disabled-hover size="small" class="table" ></Table>
           </FormItem>
           <FormItem label="导入电子券：">
@@ -42,33 +43,30 @@
 <script lang='ts'>
 import {Component, Prop} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import { relevanceFilm } from '@/api/resourceFilm'
+import { relevanceFilm, queryDetail } from '@/api/resourceFilm'
 import Uploader from '@/util/Uploader'
-
-const uploader = new Uploader({
-  filePostUrl: '/movie/resource',
-  fileFieldName: 'file',
-})
 
 @Component
 export default class Main extends ViewBase {
   @Prop({ type: String, default: '*' }) accept!: string
+  @Prop({type: Number, default: 0}) id!: number
 
   form: any = {
     movieId: ''
   }
+  uploader: any = {}
+  uploaderEdit: any = {}
 
   file: File | null = null
 
   filmList = []
 
-  editID = ''
-
+  detailList: any = {}
   columns = [
-    { title: '导入时间', key: 'importTime', align: 'center'},
-    { title: '导入数量', key: 'importNum', align: 'center'},
-    { title: '已占用数量', key: 'usedQuantity', align: 'center'},
-    { title: '剩余可用数量', key: 'remainingQuantity', align: 'center'},
+    { title: '导入时间', key: 'uploadTime', align: 'center'},
+    { title: '导入数量', key: 'totalCount', align: 'center'},
+    { title: '已占用数量', key: 'usedCount', align: 'center'},
+    { title: '剩余可用数量', key: 'remainingCount', align: 'center'},
   ]
 
   dataList = []
@@ -77,14 +75,39 @@ export default class Main extends ViewBase {
   // }
   get rule() {
     return {
-      movieId: [{ required: true, message: 'Please select the city4', type: 'number', trigger: 'change' }]
+      // movieId: [{ required: true, message: 'Please select the city4', type: 'number', trigger: 'change' }]
     }
   }
   mounted() {
-    this.editID = this.$route.params.id
-    this.relevanceFilm()
+    if (this.id) { // 编辑
+      this.uploaderEdit = new Uploader({
+        filePostUrl: `/movie/resource/${this.id}`,
+        fileFieldName: 'file',
+        fileSubmitMethod: 'put'
+      })
+      this.queryDetail()
+    } else {
+      this.uploader = new Uploader({
+        filePostUrl: '/movie/resource',
+        fileFieldName: 'file'
+      })
+      this.relevanceFilm()
+    }
   }
-
+  async queryDetail() {
+    try {
+      const { data } = await queryDetail(this.id)
+      this.detailList = data || {}
+      this.form = {
+        materialUrl: this.detailList.material.url,
+        materialDescription: this.detailList.material.description,
+        couponDescription: this.detailList.coupon.description  // batches
+      }
+      this.dataList = this.detailList.coupon.batches || [] // 已有的电子券
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
   onChange(ev: Event) {
     const input = ev.target as HTMLInputElement
     this.file = input.files && input.files[0]
@@ -92,11 +115,8 @@ export default class Main extends ViewBase {
 
   async relevanceFilm() {
     try {
-      const { data: {items} } = await relevanceFilm({
-        pageIndex: 1,
-        pageSize: 999999
-      })
-      this.filmList = items
+      const { data } = await relevanceFilm()
+      this.filmList = data || []
     } catch (ex) {
       this.handleError(ex)
     }
@@ -113,12 +133,18 @@ export default class Main extends ViewBase {
     // TODO: 加 loading 等操作
 
     try {
-      const data = await uploader.upload(this.file, {
-        ...this.form
-      })
-      // debugger
-      // const { data} = await createResource(this.form)
-      // this.$router.push({name: 'resource-film-index'})
+      if (!this.id) { // 新建
+        const data = await this.uploader.upload(this.file, {
+          ...this.form
+        })
+      } else { // 编辑
+        const data = await this.uploaderEdit.upload(this.file, {
+          ...this.form,
+          status: this.detailList.status,
+          reviewMessage: this.detailList.reviewMessage
+        })
+      }
+      this.$router.push({name: 'resource-film-index'})
     } catch (ex) {
       this.handleError(ex)
     }

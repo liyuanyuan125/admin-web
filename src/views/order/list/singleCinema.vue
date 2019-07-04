@@ -27,7 +27,6 @@
           @on-page-size-change="currentChangeHandle"/>
     </div>
     <singDlg ref="addOrUpdate" @done="dlgEditDone" />
-    <imgModel ref="img" />
   </div>
 </template>
 
@@ -36,7 +35,7 @@ import { Component, Watch , Mixins, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { cinemaCancel , cinemaList } from '@/api/orderSys'
+import { cinemaCancel , cinemaList , set } from '@/api/orderSys'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
@@ -60,7 +59,7 @@ const dataForm = {
   }
 })
 export default class Main extends Mixins(ViewBase, UrlManager) {
-  @Prop({ type: Array, default: () => [] }) cinemas!: any[]
+  // @Prop({ type: Array, default: () => [] }) cinemas!: any[]
 
   dataForm: any = {
     pageIndex: 1,
@@ -87,7 +86,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     const data: any = [
       { title: '影院名称', key: 'shortName', width: 130, align: 'center' },
       { title: '影厅数量', width: 60, key: 'hallCount', align: 'center' },
-      { title: '场次数量', width: 60, key: 'seatCount', align: 'center' },
       { title: '专资编码', width: 120, key: 'code', align: 'center' },
       {
         title: '所在地',
@@ -100,18 +98,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           const province = provinceName ? provinceName + ' , ' : ''
           const city = cityName ? cityName : ''
           return <span>{area}{province}{city}</span>
-          /* tslint:enable */
-        }
-      },
-      {
-        title: '执行凭证',
-        key: 'status',
-        align: 'center',
-        width: 80,
-        render: (hh: any, { row: { status } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          return <a on-click={this.find.bind(this)}>-</a>
           /* tslint:enable */
         }
       }
@@ -153,22 +139,14 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 
-  dlgEditDone(id: any) {
-    // if (id.length > 0) {
-    //   id.map((it: any) => {
-    //     this.cinemaArray = this.cinemaArray.filter((its: any) => its != it)
-    //     this.checkId = this.checkId.filter((its: any) => its != it)
-    //   })
-    // } else {
-    //   this.cinemaArray = this.cinemaArray.filter((it: any) => it != id)
-    // }
+  async dlgEditDone(id: any) {
     this.search()
+    if (this.total == 0) {
+      const res = await set (this.$route.params.id, {closeReason : '无有效影院'})
+    }
   }
 
   get tableData() {
-    if (this.cinemaArray.length == 0) {
-      return []
-    }
     const cachedMap = this.cachedMap
     const list = (this.list || []).map((it: any) => {
       return {
@@ -188,12 +166,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       }
     })
     return this.$route.params.status == '2' ? list1 : list
-  }
-
-  find() {
-    this.$nextTick(() => {
-      (this.$refs.img as any).init()
-    })
   }
 
   // 每页数
@@ -216,11 +188,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     if (this.loading) {
       return
     }
-    if (this.cinemaArray.length == 0) {
-      return
-    }
     this.loading = true
-    const query = clean({ ...this.dataForm, ids: this.cinemaArray.join(',') })
+    const query = clean({ ...this.dataForm})
     try {
         // 订单列表
       const { data: {
@@ -260,23 +229,23 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
     this.addOrUpdateVisible = true
     this.$nextTick(() => {
-      (this.$refs.addOrUpdate as any).inits(this.checkId)
+      (this.$refs.addOrUpdate as any).inits(this.checkId , this.total)
     })
   }
 
-  @Watch('cinemaArray', {deep: true})
+  // @Watch('cinemaArray', {deep: true})
 
-  watchcinemaArray(val: number[]) {
-    if (val.length > 0) {
-      this.search()
-    }
-  }
+  // watchcinemaArray(val: number[]) {
+  //   if (val.length > 0) {
+  //     this.search()
+  //   }
+  // }
 
-  @Watch('cinemas', {deep: true})
+  // @Watch('cinemas', {deep: true})
 
-  watchcinemas(val: number[]) {
-    this.cinemaArray = val
-  }
+  // watchcinemas(val: number[]) {
+  //   this.cinemaArray = val
+  // }
 }
 </script>
 

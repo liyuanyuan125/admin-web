@@ -1,15 +1,16 @@
 <template>
   <div class="page">
       <Tabs v-model="query.status" type="card" class="tabs">
-        <TabPane name="1" label="微信公众号"/>
-        <TabPane name="2" label="新浪微博"/>
-        <TabPane name="3" label="小红书"/>
-        <TabPane name="4" label="抖音"/>
+        <TabPane name="wechat" label="微信公众号"/>
+        <TabPane name="weibo" label="新浪微博"/>
+        <TabPane name="kuaishou" label="快手"/>
+        <TabPane name="douyin" label="抖音"/>
+        <TabPane name="xiaohongshu" label="小红书"/>
       </Tabs>
 
       <div class="flex-box">
           <form class="form-list" @submit.prevent="search">
-              <Select v-model="query.accountClass" filterable clearable placeholder="平台账号分类" class="select-company">
+              <Select v-model="query.accountCategoryCode" filterable clearable placeholder="平台账号分类" class="select-company">
                 <Option v-for="it in accountClass" :key="it.key" :value="it.key">{{it.text}}</Option>
               </Select>
                <Select v-model="query.priceStatu" filterable clearable placeholder="定价状态" class="select-company">
@@ -18,9 +19,9 @@
                <Select v-model="query.upShelfStatu" filterable clearable placeholder="上架状态" class="select-company">
                 <Option v-for="it in upperShelfStatus" :key="it.key" :value="it.key">{{it.text}}</Option>
               </Select>
-              <LazyInput v-model="query.name" placeholder="账号名称" class="input"/>
-              <LazyInput v-model="query.downLimit" placeholder="粉丝区间下限" class="up-limit" /> 万 -
-              <LazyInput v-model="query.upLimit" placeholder="粉丝区间下限" class="up-limit" /> 万
+              <LazyInput v-model="query.channelDataName" placeholder="账号名称" class="input"/>
+              <LazyInput v-model="query.minFansCount" placeholder="粉丝区间下限" class="up-limit" /> -
+              <LazyInput v-model="query.maxFansCount" placeholder="粉丝区间下限" class="up-limit" />
               <Button type="default" class="btn-reset"  @click="reset">清空</Button>
           </form>
       </div>

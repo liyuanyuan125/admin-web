@@ -83,8 +83,8 @@ export default class ComponentMain extends ViewBase {
       return
     }
     try {
-      const res = await cinemaCancel (this.$route.params.id ,
-      {cinemaId: this.id, closeReason: this.dataForm.closeReason})
+      // const res = await cinemaCancel (this.$route.params.id ,
+      // {cinemaId: this.id, closeReason: this.dataForm.closeReason})
       toast('操作成功')
       this.showDlg = false
       this.$emit('done', this.id)

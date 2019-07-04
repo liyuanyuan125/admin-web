@@ -50,6 +50,7 @@ export async function addSeach() {
 /**
  * 新建公司
  * @param query 添加条件，参见接口文档
+ * https://yapi.aiads-dev.com/project/34/interface/api/299
  */
 export async function addQuery(query: any = {}) {
     const res = await post('/customer/companies', query)
@@ -59,6 +60,7 @@ export async function addQuery(query: any = {}) {
 /**
  * 修改公司信息
  * @param query 添加条件，参见接口文档
+ * https://yapi.aiads-dev.com/project/34/interface/api/359
  */
 export async function setQuery(id: number, query: any = {}) {
     const res = await put(`/customer/companies/${id}`, query)

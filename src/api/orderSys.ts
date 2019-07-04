@@ -52,6 +52,7 @@ export async function number(id: any , query: any) {
 // 影院列表
 export async function cinemaList(id: any , query: any) {
   const res = await get(`/xadvert/v1/orders/${id}/receive-cinemas`, query)
+
   return res
 }
 

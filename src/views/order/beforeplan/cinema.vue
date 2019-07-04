@@ -189,7 +189,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       this.$Message.success({
         content: `删除成功`,
       })
-      this.search
+      this.search()
       this.viewcinema = true
       this.$emit('getcine', this.viewcinema)
     } catch (ex) {
@@ -283,7 +283,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       this.$Message.success({
         content: `删除成功`,
       })
-      this.search
+      this.search()
       this.viewcinema = true
       this.$emit('getcine', this.viewcinema)
     } catch (ex) {

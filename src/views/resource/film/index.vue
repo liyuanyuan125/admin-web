@@ -13,9 +13,15 @@
           <Button  type="primary"  @click="$router.push({name: 'resource-film-index-edit'})">新建影片资源</Button>
         </div>
       </template>
+      <template slot="materialUrl" slot-scope="{row: {material}}">
+        <a :href="material.url" target="_brank">{{material.url}}</a>
+      </template>
+      <template slot="coupon" slot-scope="{row: {coupon}}">
+        <span>{{reduceCoupon(coupon.batches)}}</span>
+      </template>
       <template slot="operate" slot-scope="{row}">
         <div class="operate-btn">
-          <span v-if="row.status == 1" @click="$router.push({name: 'resource-film-index-detail', params: {id: row.id, audit: 1}})">审核</span>
+          <span v-if="row.status == 1" @click="handleSingAudit(row.id)" >审核</span>
           <span @click="$router.push({name: 'resource-film-index-edit', params: {id: row.id}})">编辑</span>
           <span @click="$router.push({name: 'resource-film-index-detail', params: {id: row.id}})">查看</span>
         </div>
@@ -23,9 +29,10 @@
     </ListPage>
     
     <Modal v-model="visibleAudit" width="500" title="批量审核操作" class="audit-modal" @on-ok="handleSubmit" >
-        <p>您选择了{{auditCheck.length}}条片商资源申请</p>
-        <RadioGroup class="audit-radio" v-model="auditOpinion"> <Radio label="1">审核通过</Radio> <Radio label="2">审核不通过</Radio> </RadioGroup>
-        <p class="flex-box"  v-if="auditOpinion == 2">
+        <p v-if="isSingFlag">您选择了1条片商资源申请</p>
+        <p v-else>您选择了{{auditCheck.length}}条片商资源申请</p>
+        <RadioGroup class="audit-radio" v-model="auditOpinion"> <Radio label="2">审核通过</Radio> <Radio label="3">审核不通过</Radio> </RadioGroup>
+        <p class="flex-box"  v-if="auditOpinion == 3">
           <span class="label-dese">备注：</span>
           <Input v-model="desc" type="textarea" placeholder="请输入备注"></Input>
         </p>
@@ -38,7 +45,7 @@ import {Component, Watch} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { confirm, info } from '@/ui/modal.ts'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { queryList } from '@/api/resourceFilm'
+import { queryList, batchUpdate } from '@/api/resourceFilm'
 
 @Component({
   components: {
@@ -99,8 +106,8 @@ export default class Main extends ViewBase {
       {title: '影片名称', key: 'name', minWidth: 150},
       {title: '影片专资id', key: 'id', minWidth: 100},
       {title: '影片上映情况', key: 'releaseStatus', minWidth: 100, editor: 'enum'},
-      {title: '海报资源地址', key: 'materialUrl', minWidth: 80},
-      {title: '电子券资源总数量', key: '', minWidth: 80},
+      {title: '海报资源地址', slot: 'materialUrl', minWidth: 80},
+      {title: '电子券资源总数量', slot: 'coupon', minWidth: 80},
       {title: '创建时间', key: 'createTime', minWidth: 100, editor: 'dateTime'},
       {title: '状态', key: 'status', minWidth: 100, editor: 'enum'},
       {title: '操作', slot: 'operate', minWidth: 120},
@@ -112,6 +119,9 @@ export default class Main extends ViewBase {
   visibleAudit = false
   auditOpinion = ''
   desc = ''
+  singAuditId: number = 0
+  isSingFlag = false // 是否单个审核
+
   // 批量审核
   async handleAudit() {
     if (this.auditCheck.length == 0) {
@@ -120,11 +130,42 @@ export default class Main extends ViewBase {
     }
     this.visibleAudit = true
   }
+  // 单个审核
+  handleSingAudit(id: number) {
+    this.visibleAudit = true
+    this.isSingFlag = true
+    this.singAuditId = id
+  }
+  // 电子卷总数量累加
+  reduceCoupon(ary: any[]) {
+    const reduceAry = ary.map((item: any) => {
+      return item.totalCount
+    })
+    const count = reduceAry.reduce((prev, next) => prev + next)
+    return count
+  }
   // table 全选
   async selectionChange(list: any) {
     this.auditCheck = list.map((item: any) => item.id)
   }
-  handleSubmit() {}
+  async handleSubmit() {
+    let checkIds: any[] = []
+    if (this.isSingFlag) {
+      checkIds = [this.singAuditId]
+    } else {
+      checkIds = this.auditCheck
+    }
+    try {
+      const { data } = await batchUpdate({
+        movieResourceIds: checkIds,
+        status: this.auditOpinion,
+        reviewMessage: this.desc
+      });
+      (this.$refs.listPage as any).update()
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
 }
 
 </script>
@@ -139,6 +180,7 @@ export default class Main extends ViewBase {
   width: 40px;
 }
 .table-btn {
+  margin-top: 15px;
   .btn {
     margin-right: 15px;
   }

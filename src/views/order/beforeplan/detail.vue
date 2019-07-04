@@ -269,14 +269,13 @@ export default class Main extends ViewBase {
       this.viewfilm = false
       this.viewcinema = false
     }
-
   }
 
   async shuaxin() {
     this.loading2 = true
     try {
       await revuew(this.$route.params.id)
-      this.overloading()
+      setTimeout(this.overloading() as any, 3000)
     } catch (ex) {
       this.handleError(ex)
     } finally {

@@ -56,3 +56,12 @@ export function arrayify(obj: object, refObj: any) {
   })
   return newObj
 }
+/**
+ * 字符串转换成 bool
+ * @param value 字符串
+ */
+const falseList = ['false', '0', 'null', 'undefined']
+export function stringToBoolean(value: string | null) {
+  const val = String(value).trim().toLowerCase()
+  return falseList.includes(val) ? false : Boolean(val)
+}

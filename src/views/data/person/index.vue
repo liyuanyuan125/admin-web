@@ -9,11 +9,18 @@
       ref="listPage">
       <template slot="acts-2">
         <div class="table-btn">
-            <Button @click="handleGetFilm" >抓取票神影片</Button>
-            <Button @click="handleUpShelf()" >批量上架</Button>
-            <Button @click="handleDownShelf()">批量下架</Button>
+            <Button type="primary" @click="handleGetFilm" >抓取票神影片</Button>
+            <Button type="primary"  @click="handleUpShelf()" >批量上架</Button>
+            <Button type="primary"  @click="handleDownShelf()">批量下架</Button>
         </div>
       </template>
+
+      <template slot="professions" slot-scope="{row: {professions}}">
+        <span v-for="(item, index) in professions" :key="index" v-if="item.primary">
+          <font v-for="(it, ind) in professionsList" :key="ind" v-if="it.key == item.code">{{it.text}}</font>
+        </span>
+      </template>
+
       <template slot="action" slot-scope="{row}">
         <div class="operate-btn">
           <span @click="$router.push({name: 'data-person-edit', params: {id: row.id}})" >编辑</span>
@@ -113,7 +120,8 @@ export default class Main extends ViewBase {
   enums = [
      'professions',
      'status',
-     'genders'
+     'genders',
+     'nationality'
   ]
 
   get columns() {
@@ -122,9 +130,9 @@ export default class Main extends ViewBase {
         { key: 'id', title: '影人id', align: 'center'},
         { key: 'name', title: '中文名', align: 'center'},
         { key: 'nameEn', title: '英文名', align: 'center'},
-        { title: '性别', key: 'gender', align: 'center', editor: 'enum'}, // editor: 'enum'
+        { key: 'gender', title: '性别',  align: 'center', editor: 'enum', enumKey: 'genders'}, // editor: 'enum'
         { key: 'nationality', title: '国籍', align: 'center', editor: 'enum'},
-        { key: 'professions', title: '主要职业', align: 'center'},
+        { slot: 'professions', title: '主要职业', align: 'center'},
         { key: 'status', title: '状态', align: 'center', editor: 'enum'},
         { slot: 'action', title: '操作', align: 'center'},
      ] as ColumnExtra[]
@@ -138,7 +146,20 @@ export default class Main extends ViewBase {
   visFilmid = {
     visible: false
   }
+  // 演员枚举
+  professionsList: any[] = []
 
+  mounted() {
+    this.handleQueryList()
+  }
+  async handleQueryList() {
+    try {
+      const { data: {professions} } = await queryList({})
+      this.professionsList = professions
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
   selectionChange(ids: any[]) {
     this.idsList = ids.map( item => item.id)
     this.statusIds = ids.map( item => item.status)
@@ -209,10 +230,23 @@ export default class Main extends ViewBase {
 }
 </script>
 <style lang='less' scoped>
+// .operate-btn {
+//   span {
+//     padding: 5px 6px;
+//     cursor: pointer;
+//   }
+// }
+.table-btn {
+  padding: 10px 0;
+  .ivu-btn {
+    margin-right: 15px;
+  }
+}
 .operate-btn {
   span {
-    padding: 5px 6px;
     cursor: pointer;
+    color: #2d8cf0;
+    margin: 2px 6px;
   }
 }
 </style>
