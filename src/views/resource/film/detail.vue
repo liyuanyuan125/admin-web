@@ -5,7 +5,7 @@
         <FormItem label="选择影片:" prop="cinemaName">{{detailList.name}}</FormItem>
       </div>
       <div class="modal-item">
-          <h2>图片/视频类无聊</h2>
+          <h2>图片/视频类物料2</h2>
           <FormItem label="物料下载地址：">{{detailList.materialUrl}} </FormItem>
           <FormItem label="资源使用说明：">{{detailList.materialDescription}}</FormItem>
       </div>

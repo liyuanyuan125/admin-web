@@ -15,8 +15,13 @@ export async function queryDetail(id: any) {
 }
 
 // 影片关联
-export async function relevanceFilm(data: any) {
-  const res = await get('/customer/movie-relations', data)
+export async function relevanceFilm() {
+  const res = await get('/movie/resource/movies')
+  return res
+}
+// 批量审核
+export async function batchUpdate(data: any) {
+  const res = await put('/movie/resource/batchUpdate/', data)
   return res
 }
 

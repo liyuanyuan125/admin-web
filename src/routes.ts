@@ -2,9 +2,34 @@ import home from './views/home.vue'
 import login from './views/login.vue'
 import MainLayout from '@/components/mainLayout'
 import Error from './views/error/index.vue'
-
+import { MapType } from '@/util/types'
+import { stringToBoolean } from '@/fn/typeCast'
 import { RouteConfig, Route } from 'vue-router'
 import { devInfo, devError } from './util/dev'
+
+/**
+ * 处理 route 中的参数类型
+ * @param config 配置
+ */
+const paramTypes = (
+  config: MapType<NumberConstructor | BooleanConstructor | StringConstructor>
+) => {
+  return ({ params }: Route) => {
+    const props = Object.entries(config).reduce((map, [key, type]) => {
+      const strVal = params[key]
+      const value = type === Number
+        ? (+strVal || 0)
+        : type === Boolean
+        ? stringToBoolean(strVal)
+        : strVal
+      map[key] = value
+      return map
+    }, {} as MapType<any>)
+    return props
+  }
+}
+
+const idProps = paramTypes({ id: Number })
 
 /**
  * meta对象 title属性参数 新建和编辑切换
@@ -310,7 +335,8 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     meta: {
       authKey: '',
       title: '详情'
-    }
+    },
+    props: idProps
   },
   {
     path: 'data/film/edit/:id',
@@ -319,7 +345,8 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     meta: {
       authKey: '',
       title: '编辑'
-    }
+    },
+    props: idProps
   },
 
   // 基础数据 - 影人管理
@@ -341,7 +368,8 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     meta: {
       authKey: '',
       title: '查看'
-    }
+    },
+    props: idProps
   },
 
   // 基础数据 - 影人管理 - 编辑
@@ -352,7 +380,8 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     meta: {
       authKey: '',
       title: '编辑'
-    }
+    },
+    props: idProps
   },
 
 
@@ -664,7 +693,8 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       title({params}) {
         return params.id as any > 0 ? '编辑' : '新建'
       }
-    }
+    },
+    props: idProps
   },
   // 影片资源管理 - 查看 和 审核
   {
@@ -676,7 +706,8 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       title({params}) {
         return params.audit ? '审核' : '查看'
       }
-    }
+    },
+    props: idProps
   },
 
   // 影片资源管理 - 审核

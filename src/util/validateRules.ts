@@ -64,44 +64,6 @@ export function validateEmail(email: string): string | undefined {
   }
 }
 
-/**
- * 时间戳格式转换年月日
- */
-export function formatTimes(value: any) {
-  if (!value) {
-    return ''
-  }
-  const date: any = new Date(value)
-  const y = date.getFullYear()
-  let MM = date.getMonth() + 1
-  MM = MM < 10 ? '0' + MM : MM
-  let d = date.getDate()
-  d = d < 10 ? '0' + d : d
-  let h = date.getHours()
-  h = h < 10 ? '0' + h : h
-  let m = date.getMinutes()
-  m = m < 10 ? '0' + m : m
-  let s = date.getSeconds()
-  s = s < 10 ? '0' + s : s
-  return y + '-' + MM + '-' + d + ' ' + h + ':' + m + ':' + s
-}
-
-export function formatYell(value: any, flag?: any) {
-  if (!value) {
-    return ''
-  }
-  const date: any = new Date(value)
-  const y = date.getFullYear()
-  let MM = date.getMonth() + 1
-  MM = MM < 10 ? '0' + MM : MM
-  let d = date.getDate()
-  d = d < 10 ? '0' + d : d
-  if (flag) {
-    return y + '-' + MM + '-' + d
-  } else {
-    return y + '/' + MM + '/' + d
-  }
-}
 
 /**
  * 年月日转换时间戳格式

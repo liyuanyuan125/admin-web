@@ -1,25 +1,33 @@
 <template>
-  <Form  :model='item' :label-width='88' :rules='rules' label-position="left" class='form page' ref='dataForms'>
+  <Form
+    :model="item"
+    :label-width="88"
+    :rules="rules"
+    label-position="left"
+    class="form page"
+    ref="dataForms"
+  >
     <header class="header flex-box">
       <Button icon="md-return-left" @click="back" class="btn-back">返回上一页</Button>
       <div class="flex-1">
         <em>{{title}}</em>
       </div>
     </header>
+
     <div class="edit-box">
       <!-- header -->
       <Row class="cinema-header">
         <FormItem label="公司名称" prop="name">
           <Row>
             <Col span="10">
-              <Input v-model="item.name" placeholder="请填写公司全称，与营业执照保持一致"/>
+              <Input v-model="item.name" placeholder="请填写公司全称，与营业执照保持一致" />
             </Col>
           </Row>
         </FormItem>
         <FormItem label="简称" prop="shortName">
           <Row>
             <Col span="8">
-              <Input v-model="item.shortName"/>
+              <Input v-model="item.shortName" />
             </Col>
           </Row>
         </FormItem>
@@ -27,30 +35,30 @@
           <FormItem label="公司地址" prop="provinceId">
             <Row>
               <Col span="8">
-                <AreaSelect v-model="area"/>
+                <AreaSelect v-model="area" />
               </Col>
               <Col span="10" offset="1">
                 <FormItem prop="addressDetail">
-                  <Input v-model="item.addressDetail" placeholder="详细地址" class="input-address"/>
+                  <Input v-model="item.addressDetail" placeholder="详细地址" class="input-address" />
                 </FormItem>
               </Col>
             </Row>
           </FormItem>
         </Row>
-         <Row>
+        <Row>
           <Col span="5">
-            <FormItem label="联系人" >
-              <Input v-model="item.contact"/>
+            <FormItem label="联系人">
+              <Input v-model="item.contact" />
             </FormItem>
           </Col>
           <Col span="6" offset="1">
             <FormItem label="联系电话" prop="contactPhone">
-              <Input v-model="item.contactTel"/>
+              <Input v-model="item.contactTel" />
             </FormItem>
           </Col>
           <Col span="7" offset="1">
             <FormItem label="邮箱" prop="email">
-              <Input v-model="item.email"/>
+              <Input v-model="item.email" />
             </FormItem>
           </Col>
         </Row>
@@ -58,34 +66,37 @@
           <Col span="5">
             <FormItem label="资质" prop="qualificationType">
               <Select v-model="item.qualificationType" clearable>
-                <Option v-for="it in qualificationTypeList" :key="it.key"
-                  :value="it.key">{{it.text}}</Option>
+                <Option
+                  v-for="it in qualificationTypeList"
+                  :key="it.key"
+                  :value="it.key"
+                >{{it.text}}</Option>
               </Select>
             </FormItem>
           </Col>
           <Col span="6" offset="1">
-          <FormItem label="资质编号" prop="qualificationCode">
-            <Input v-model="item.qualificationCode" placeholder="资质编号"/>
-          </FormItem>
+            <FormItem label="资质编号" prop="qualificationCode">
+              <Input v-model="item.qualificationCode" placeholder="资质编号" />
+            </FormItem>
           </Col>
         </Row>
         <Row class="upload">
           <Col span="12" style="margin-left: 88px">
-            <Upload v-model="imageList" multiple :maxCount="3" accept="image/*"
-              v-if="loadingShow"/>
+            <Upload v-model="imageList" multiple :maxCount="3" accept="image/*" v-if="loadingShow" />
           </Col>
         </Row>
       </Row>
+
       <!-- content -->
       <Row class="cinema-content">
         <FormItem label="审核意见" prop="approveStatus">
           <Row>
             <Col span="8">
               <RadioGroup v-model="item.approveStatus">
-                <Radio :label=2>
+                <Radio :label="2">
                   <span>通过</span>
                 </Radio>
-                <Radio :label=3>
+                <Radio :label="3">
                   <span>未通过</span>
                 </Radio>
               </RadioGroup>
@@ -93,83 +104,138 @@
           </Row>
         </FormItem>
         <div class="124" v-if="item.approveStatus==2">
-           <Row>
-          <Col span="8">
-            <FormItem label="有效期至" prop="validityPeriodDate">
-              <DatePicker :options="options1" type="date" v-model="item.validityPeriodDate" placeholder="选择有效期" style="width: 200px"></DatePicker>
-            </FormItem>
-          </Col>
-        </Row>
+          <Row>
+            <Col span="8">
+              <FormItem label="有效期至" prop="validityPeriodDate">
+                <DatePicker
+                  :options="options1"
+                  type="date"
+                  v-model="item.validityPeriodDate"
+                  placeholder="选择有效期"
+                  style="width: 200px"
+                ></DatePicker>
+              </FormItem>
+            </Col>
+          </Row>
         </div>
         <div class="123" v-else>
-        <Row>
-          <Col span="8">
-          <FormItem label="拒绝原因" prop="refusedReason">
-            <Input v-model="item.refusedReason" placeholder="拒绝原因"/>
-          </FormItem>
-          </Col>
-        </Row>
+          <Row>
+            <Col span="8">
+              <FormItem label="拒绝原因" prop="refusedReason">
+                <Input v-model="item.refusedReason" placeholder="拒绝原因" />
+              </FormItem>
+            </Col>
+          </Row>
         </div>
-       </Row>
+      </Row>
+
       <!-- footer -->
       <Row class="cinema-footer">
         <Row>
           <Col span="5">
             <FormItem label="客户等级" prop="levelCode">
               <Select v-model="item.levelCode" clearable>
-                <Option v-if="it.controlStatus == 1" v-for="it in levelList" :key="it.key"
-                  :value="it.key">{{it.text}}</Option>
+                <Option
+                  v-if="it.controlStatus == 1"
+                  v-for="it in levelList"
+                  :key="it.key"
+                  :value="it.key"
+                >{{it.text}}</Option>
               </Select>
             </FormItem>
           </Col>
           <Col span="8" offset="1">
             <FormItem label="负责商务" prop="businessDirector">
               <Select v-model="item.businessDirector" filterable clearable>
-                <Option v-if="it.status!=2" v-for="it in businessDirector" :key="it.id" :value="it.id"
-                  :label="it.email+'['+it.userName+']'">{{ it.email}}<b style="margin-left:5px">[{{it.userName}}]</b></Option>
+                <Option
+                  v-if="it.status!=2"
+                  v-for="it in businessDirector"
+                  :key="it.id"
+                  :value="it.id"
+                  :label="it.email+'['+it.userName+']'"
+                >
+                  {{ it.email}}
+                  <b style="margin-left:5px">[{{it.userName}}]</b>
+                </Option>
               </Select>
             </FormItem>
           </Col>
         </Row>
-        <Row>
-        <Row>
+
+        <Row class="client-type-row">
           <Col v-for="(it, index) in customerTypeList" :key="index" span="8">
-            <FormItem :label="index == 0 ? '客户类型' : ''" :prop="'typearr['+ index + ']'" :show-message="index == 0 ? show0 : true">
+            <FormItem
+              :label="index == 0 ? '客户类型' : ''"
+              :prop="'typearr['+ index + ']'"
+              :show-message="index == 0 ? show0 : true"
+            >
               <span class="check-select-group">
-                <div><Checkbox v-model="item.typearr[index]" :label="it.typeName">{{it.typeName}}</Checkbox></div>
-                <Select v-if="index == 0" v-model="item.typeCategoryCode0" :disabled="!item.typearr[index]"
-                    class="flex-1" clearable>
-                  <Option v-if="sub.controlStatus == 1" v-for="sub in it.typeCategoryList" :key="sub.typeCode"
-                    :value="sub.typeCode">{{sub.typeName}}</Option>
+                <div>
+                  <Checkbox v-model="item.typearr[index]" :label="it.typeName">{{it.typeName}}</Checkbox>
+                </div>
+                <Select
+                  v-if="index == 0"
+                  v-model="item.typeCategoryCode0"
+                  :disabled="!item.typearr[index]"
+                  class="flex-1"
+                  clearable
+                >
+                  <Option
+                    v-if="sub.controlStatus == 1"
+                    v-for="sub in it.typeCategoryList"
+                    :key="sub.typeCode"
+                    :value="sub.typeCode"
+                  >{{sub.typeName}}</Option>
                 </Select>
-                <Select v-else v-model="item.typeCategoryCode1" :disabled="!item.typearr[index]"
-                    class="flex-1" clearable>
-                  <Option v-if="sub.controlStatus == 1" v-for="sub in it.typeCategoryList" :key="sub.typeCode"
-                    :value="sub.typeCode">{{sub.typeName}}</Option>
+                <Select
+                  v-else
+                  v-model="item.typeCategoryCode1"
+                  :disabled="!item.typearr[index]"
+                  class="flex-1"
+                  clearable
+                >
+                  <Option
+                    v-if="sub.controlStatus == 1"
+                    v-for="sub in it.typeCategoryList"
+                    :key="sub.typeCode"
+                    :value="sub.typeCode"
+                  >{{sub.typeName}}</Option>
                 </Select>
               </span>
             </FormItem>
           </Col>
         </Row>
-        </Row>
-        <Row v-if="item.typearr[1]">
-          <FormItem label="关联影院" prop="cinemasList" :show-message="!(item.cinemasList.length>0)">
-            <PartBindCinema v-if="loadingShow" v-model="item.cinemasList" :unitList="profitUnitList"
-               :incinematype='cinematype' class="part-bind-cinema"/>
+
+        <Row v-if="item.typearr[0]">
+          <FormItem label="关联品牌">
+            <BrandPane
+              v-model="brandIds"
+              :bindList="item.brandList"
+            />
           </FormItem>
         </Row>
+
+        <Row v-if="item.typearr[1]">
+          <FormItem label="关联影院" prop="cinemasList" :show-message="!(item.cinemasList.length>0)">
+            <PartBindCinema
+              v-if="loadingShow"
+              v-model="item.cinemasList"
+              :unitList="profitUnitList"
+              :incinematype="cinematype"
+              class="part-bind-cinema"
+            />
+          </FormItem>
+        </Row>
+
         <div class="edit-button">
           <Button type="info" size="large" @click="edit('dataForms')">确定</Button>
         </div>
       </Row>
-
     </div>
-
   </Form>
 </template>
 
 <script lang="ts">
-// doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { queryId, addSeach, addQuery, setQuery, directorList } from '@/api/corpReal'
@@ -180,6 +246,7 @@ import { toMap } from '@/fn/array'
 import { slice, clean } from '@/fn/object'
 import moment from 'moment'
 import { toast } from '@/ui/modal'
+import BrandPane from './brandPane'
 
 const timeFormat = 'YYYY-MM-DD'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
@@ -206,14 +273,16 @@ const defItem = {
   qualificationType: 'BL',
   qualificationCode: '',
   images: [],
-  types: [{
-    typeCode: '',
-    typeCategoryCode: ''
-  },
-  {
-    typeCode: '',
-    typeCategoryCode: ''
-  }],
+  types: [
+    {
+      typeCode: '',
+      typeCategoryCode: ''
+    },
+    {
+      typeCode: '',
+      typeCategoryCode: ''
+    }
+  ],
   refusedReason: '',
   levelCode: '',
   businessDirector: '',
@@ -226,52 +295,73 @@ const defItem = {
   components: {
     AreaSelect,
     PartBindCinema,
-    Upload
+    Upload,
+    BrandPane
   }
 })
-
 export default class Main extends ViewBase {
   title = ''
+
   loading = false
+
   loadingShow = false
-  item: any = {...defItem}
+
+  item: any = { ...defItem }
+
   shows = true
+
   show0 = true
+
   b: any = {}
+
   levelList = []
+
   customerTypeList = []
+
   bizUserList = []
+
   typeList = []
+
   qualificationTypeList = []
+
   typeListSubMap = {}
+
   profitUnitList = []
+
   profitTypeList = []
+
   area: number[] = []
+
   businessDirector = []
+
   imageList = []
+
   options1 = {
     disabledDate(date: any) {
       return date && date.valueOf() < Date.now() - 86400000
     }
   }
 
+  brandIds: number[] = []
+
   get rules() {
-    const validateType1 = ( rule1: any, value: any, callback: any) => {
-        if (this.item.typearr[1]) {
-            callback()
+    const validateType1 = (rule1: any, value: any, callback: any) => {
+      if (this.item.typearr[1]) {
+        callback()
+      } else {
+        if (value == false) {
+          callback(new Error('请选择一种客户类型'))
         } else {
-          if (value == false) {
-            callback(new Error('请选择一种客户类型'))
+          if (!this.item.typeCategoryCode0) {
+            callback(new Error('请选择二级类型'))
           } else {
-            if (!this.item.typeCategoryCode0) {
-              callback(new Error('请选择二级类型'))
-            } else {
-              callback()
-            }
+            callback()
           }
         }
+      }
     }
-    const validateType2 = ( rules: any, value: any, callback: any) => {
+
+    const validateType2 = (rules: any, value: any, callback: any) => {
       if (value == false) {
         this.show0 = true
         callback()
@@ -284,22 +374,25 @@ export default class Main extends ViewBase {
         }
       }
     }
-    const cinemaVali = ( rules: any, value: any, callback: any) => {
+
+    const cinemaVali = (rules: any, value: any, callback: any) => {
       if (value.length > 0) {
         callback()
       } else {
         callback(new Error('请选择关联影院'))
       }
     }
+
     const rule: any = {
-      name: [
-        { required: true, message: '请填写公司名称', trigger: 'blur' }
-      ],
-      shortName: [
-        { required: true, message: '请填写公司简称', trigger: 'blur' }
-      ],
+      name: [{ required: true, message: '请填写公司名称', trigger: 'blur' }],
+      shortName: [{ required: true, message: '请填写公司简称', trigger: 'blur' }],
       provinceId: [
-        { required: true, pattern: /^[1-9][0-9]*$/, message: '请选择公司地址', trigger: 'change' }
+        {
+          required: true,
+          pattern: /^[1-9][0-9]*$/,
+          message: '请选择公司地址',
+          trigger: 'change'
+        }
       ],
       addressDetail: [
         { required: true, message: '请填写公司详细地址', trigger: 'blur' }
@@ -307,37 +400,32 @@ export default class Main extends ViewBase {
       approveStatus: [
         { required: true, message: '请选择审核状态', trigger: 'blur', type: 'number' }
       ],
-      cinemasList: [
-        { validator: cinemaVali }
-      ],
-      levelCode: [
-        { required: true, message: '请选择客户等级', trigger: 'change'}
-      ],
+      cinemasList: [{ validator: cinemaVali }],
+      levelCode: [{ required: true, message: '请选择客户等级', trigger: 'change' }],
       validityPeriodDate: [
-          { required: true, message: '请填写用户的资质到期日期', trigger: 'change', type: 'date'}
+        {
+          required: true,
+          message: '请填写用户的资质到期日期',
+          trigger: 'change',
+          type: 'date'
+        }
       ],
       refusedReason: [
-         { required: true, message: '请填写拒绝原因', trigger: 'blur'},
-         { max: 30, message: '拒绝原因不得超过30个字', trigger: 'change'},
+        { required: true, message: '请填写拒绝原因', trigger: 'blur' },
+        { max: 30, message: '拒绝原因不得超过30个字', trigger: 'change' }
       ],
       email: [
-         {
-           pattern: /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/,
-           message: '邮箱格式错误',
-           trigger: 'blur'
-         }
+        {
+          pattern: /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/,
+          message: '邮箱格式错误',
+          trigger: 'blur'
+        }
       ],
-      'typearr[0]': [
-        { validator: validateType1 }
-      ],
-      'typearr[1]': [
-        { validator: validateType2 }
-      ],
-      qualificationType: [
-        { required: true, message: '请选择资质', trigger: 'change'},
-      ],
+      'typearr[0]': [{ validator: validateType1 }],
+      'typearr[1]': [{ validator: validateType2 }],
+      qualificationType: [{ required: true, message: '请选择资质', trigger: 'change' }],
       qualificationCode: [
-        { required: true, message: '请输入资质编号', trigger: 'blur'}
+        { required: true, message: '请输入资质编号', trigger: 'blur' }
       ],
       businessDirector: [
         { required: true, message: '请选择负责商务', trigger: 'change', type: 'number' }
@@ -407,7 +495,7 @@ export default class Main extends ViewBase {
     const cachedMap = this.cachedMap
     return {
       qualificationType: cachedMap.qualificationTypeList[this.item.qualificationType],
-      levelText: cachedMap.levelList[this.item.levelCode],
+      levelText: cachedMap.levelList[this.item.levelCode]
     }
   }
 
@@ -420,13 +508,9 @@ export default class Main extends ViewBase {
     ; (this.$Spin as any).show()
     const query = { id: this.$route.params.id || 0 }
     try {
-      if ( !query.id ) {
+      if (!query.id) {
         const {
-          data: {
-            levelList,
-            customerTypeList,
-            qualificationTypeList
-          }
+          data: { levelList, customerTypeList, qualificationTypeList }
         } = await addSeach()
         this.loadingShow = true
         this.levelList = levelList
@@ -469,7 +553,8 @@ export default class Main extends ViewBase {
             qualificationTypeList,
             status,
             imageList,
-            cinemaList
+            cinemaList,
+            brandList
           }
         } = await queryId(query)
         this.item.name = name
@@ -486,6 +571,12 @@ export default class Main extends ViewBase {
         this.item.qualificationType = qualificationType
         this.item.images = images || []
         this.item.cinemasList = cinemaList || []
+
+        this.item.brandList = (brandList as any[] || []).map(it => ({
+          id: it.brandId,
+          name: it.brandName,
+        }))
+
         if (types.length == 1) {
           if (customerTypeList[0].typeCode == types[0].typeCode) {
             this.item.types[0] = types[0]
@@ -498,7 +589,7 @@ export default class Main extends ViewBase {
           }
         } else {
           this.item.types = types.sort((a: any, b: any) => {
-             return a.typeCode > b.typeCode ? 1 : -1
+            return a.typeCode > b.typeCode ? 1 : -1
           })
           this.item.typeCategoryCode0 = this.item.types[0].typeCategoryCode
           this.item.typeCategoryCode1 = this.item.types[1].typeCategoryCode
@@ -510,11 +601,13 @@ export default class Main extends ViewBase {
         this.imageList = imageList || []
         this.item.approveStatus = Number(approveStatus)
         this.customerTypeList = customerTypeList
-        this.item.validityPeriodDate = validityPeriodDate ? new Date(this.formatValid(validityPeriodDate)) : ''
+        this.item.validityPeriodDate = validityPeriodDate
+          ? new Date(this.formatValid(validityPeriodDate))
+          : ''
         this.levelList = levelList
         this.area = [provinceId || 0, cityId || 0, countyId || 0]
         this.loadingShow = true
-        approveStatus == 1 ? this.title = '审核公司' : this.title = '编辑公司'
+        approveStatus == 1 ? (this.title = '审核公司') : (this.title = '编辑公司')
         ; (this.$Spin as any).hide()
       }
     } catch (ex) {
@@ -538,51 +631,58 @@ export default class Main extends ViewBase {
   }
 
   edit(dataForms: string) {
-    (this.$refs[dataForms] as any).validate(async ( valid: any ) => {
-    if (valid) {
-      if (this.cinematype == 1 && this.cinemas.length > 1) {
-        this.showError('因资源方类型为影院，因此仅能关联一家影院')
-        return
-      }
-      const route: any = this.$route.params.id || 0
-      let times: any = ''
-      const timesfomat = moment(this.item.validityPeriodDate).format(timeFormat).split('-')
-      times = Number(timesfomat[0] + timesfomat[1] + timesfomat[2])
-      !this.item.validityPeriodDate ? times = '' : times
-      const oldQuery = {
-        ...this.item,
-        validityPeriodDate: times,
-        provinceId: Number(this.item.provinceId),
-        cityId: Number(this.item.cityId),
-        countyId: Number(this.item.countyId),
-      }
-      const query = clean(oldQuery)
-      const array = Object.keys(query).slice(2)
-      const newqQuery = slice(query, array)
-      const types: any = []
-      this.item.types.forEach((it: any) => {
-        it.typeCode && types.push({
-          ...it,
-          typeCategoryCode: it.typeCategoryCode ? it.typeCategoryCode : ''
+    (this.$refs[dataForms] as any).validate(async (valid: any) => {
+      if (valid) {
+        if (this.cinematype == 1 && this.cinemas.length > 1) {
+          this.showError('因资源方类型为影院，因此仅能关联一家影院')
+          return
+        }
+        const route: any = this.$route.params.id || 0
+        let times: any = ''
+        const timesfomat = moment(this.item.validityPeriodDate)
+          .format(timeFormat)
+          .split('-')
+        times = Number(timesfomat[0] + timesfomat[1] + timesfomat[2])
+        !this.item.validityPeriodDate ? (times = '') : times
+        const oldQuery = {
+          ...this.item,
+          validityPeriodDate: times,
+          provinceId: Number(this.item.provinceId),
+          cityId: Number(this.item.cityId),
+          countyId: Number(this.item.countyId)
+        }
+        const query = clean(oldQuery)
+        const array = Object.keys(query).slice(2)
+        const newqQuery = slice(query, array)
+        const types: any = []
+        this.item.types.forEach((it: any) => {
+          it.typeCode &&
+            types.push({
+              ...it,
+              typeCategoryCode: it.typeCategoryCode ? it.typeCategoryCode : ''
+            })
         })
-      })
-      try {
-        let data: any = {}
-        route == 0 ? data =  await addQuery({
+
+        const formData: any = {
           ...newqQuery,
+          types: (types as any[] || []).filter(it => it.typeCode != ''),
           cinemas: this.item.typearr[1] ? this.cinemas : [],
-          types
-        }) : data = await setQuery(route, {
-          ...newqQuery,
-          cinemas: this.item.typearr[1] ? this.cinemas : [],
-          types
-        })
-        toast(data.msg)
-        this.$router.go(-1)
-      } catch (ex) {
-        this.handleError(ex)
+          brandIds: this.item.typearr[0] ? this.brandIds : [],
+        }
+
+        // 删除某些多余的字段
+        delete formData.brandList
+
+        try {
+          const data: any = route == 0
+            ? await addQuery(formData)
+            : await setQuery(route, formData)
+          toast(data.msg)
+          this.$router.go(-1)
+        } catch (ex) {
+          this.handleError(ex)
+        }
       }
-    }
     })
   }
 
@@ -600,8 +700,8 @@ export default class Main extends ViewBase {
 
   @Watch('typeList', { deep: true })
   watchTypeList(val: any[]) {
-    this.item.typeIdList = val.map(it => it.checked ? it.id : 0)
-    this.item.subTypeIdList = val.map(it => it.checked ? it.subId || 0 : 0)
+    this.item.typeIdList = val.map(it => (it.checked ? it.id : 0))
+    this.item.subTypeIdList = val.map(it => (it.checked ? it.subId || 0 : 0))
   }
 
   @Watch('item', { deep: true })
@@ -651,7 +751,8 @@ export default class Main extends ViewBase {
   margin-top: 5px;
   margin-bottom: 10px;
   line-height: 30px;
-  em, i {
+  em,
+  i {
     font-style: normal;
     margin-right: 6px;
   }
@@ -673,12 +774,15 @@ export default class Main extends ViewBase {
   }
 }
 
-.cinema-header, .cinema-content, .cinema-footer {
+.cinema-header,
+.cinema-content,
+.cinema-footer {
   border: 1px solid #dcdee2;
   background: #fff;
   padding: 18px 0 0 18px;
   margin-bottom: 14px;
 }
+
 .check-select-group {
   display: inline-flex;
   width: 90%;
@@ -699,9 +803,11 @@ export default class Main extends ViewBase {
     }
   }
 }
+
 .upload {
   margin-bottom: 20px;
 }
+
 .part-bind-cinema {
   width: 660px;
 }

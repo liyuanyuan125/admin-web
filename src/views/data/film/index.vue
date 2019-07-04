@@ -9,21 +9,33 @@
       ref="listPage">
       <template slot="acts-2">
         <div class="table-btn">
-            <Button @click="handleGetFilm" >抓取票神影片</Button>
-            <Button @click="handleUpShelf()" >批量上架</Button>
-            <Button @click="handleDownShelf()">批量下架</Button>
+            <Button type="primary" @click="handleGetFilm" >抓取票神影片</Button>
+            <Button type="primary" @click="handleUpShelf(1)" >批量上架</Button>
+            <Button type="primary" @click="handleUpShelf(2)">批量下架</Button>
         </div>
       </template>
+      <template slot="releaseDate" slot-scope="{row}">
+        <span>{{formatConversion(row.releaseDate)}}</span>
+      </template>
+      <template slot="types" slot-scope="{row: {types}}">
+        <span v-if="types.length == 0 || types[0] == null">-</span>
+        <span v-for="(item, index) in types" :key="index" v-if="item != null">{{item}} </span>
+      </template>
+      <template slot="countries" slot-scope="{row}">
+        <span v-for="(item, index) in (row.countries || [])" :key="index">{{item}}</span>
+      </template>
       <template slot="operate" slot-scope="{row}">
-        <span @click="$router.push({name: 'data-film-edit', params: {id: row.id}})">编辑</span>
-        <span @click="uploadCurrent">刷新</span>
-        <span @click="handleUpShelf(row.id)">上架</span>
-        <span @click="handleDownShelf(row,id)">下架</span>
-        <span>浏览前台</span>
-        <span @click="$router.push({name: 'data-film-detail', params: {id: row.id}})">查看</span>
+        <div class="operate-btn">
+          <span v-if="row.controlStatus == 2" @click="handleUpShelf(1, row.id)">上架</span>
+          <span v-if="row.controlStatus == 1" @click="handleUpShelf(2, row.id)">下架</span>
+          <span  @click="$router.push({name: 'data-film-edit', params: {id: row.id}})">编辑</span>
+          <span v-if="[1].includes(row.controlStatus)" @click="uploadCurrent">刷新</span>
+          <span @click="$router.push({name: 'data-film-detail', params: {id: row.id}})">查看</span>
+          <span v-if="row.controlStatus == 1">浏览前台</span>
+        </div>
       </template>
     </ListPage>
-    <getFilmDlg v-model="visFilmid" v-if="visFilmid.visible" @input="filmonOK"></getFilmDlg>
+    <getFilmDlg v-model="visFilmid" v-if="visFilmid.visible" @passData="filmonOK"></getFilmDlg>
   </div>
 </template>
 
@@ -32,8 +44,9 @@ import {Component} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { confirm, info, alert } from '@/ui/modal.ts'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { queryList } from '@/api/film-ed'
+import { queryList, updateMovie, fetchMovie } from '@/api/film-ed'
 import getFilmDlg from './components/getFilmDlg.vue'
+import {formatConversion} from '@/util/validateRules'
 
 
 @Component({
@@ -43,6 +56,7 @@ import getFilmDlg from './components/getFilmDlg.vue'
   }
 })
 export default class Main extends ViewBase {
+  formatConversion = formatConversion
   fetch = queryList
   filters: Filter[] = [
     {
@@ -59,14 +73,14 @@ export default class Main extends ViewBase {
       width: 140,
       placeholder: '影片名称'
     },
-    // {
-    //   name: 'types',
-    //   defaultValue: '',
-    //   type: 'select',
-    //   width: 140,
-    //   placeholder: '影片类型',
-    //   enumKey: 'type',
-    // },
+    {
+      name: 'types',
+      defaultValue: '',
+      type: 'select',
+      width: 140,
+      placeholder: '影片类型',
+      enumKey: 'typeList',
+    },
     {
       name: 'categoryCode',
       defaultValue: '',
@@ -101,6 +115,7 @@ export default class Main extends ViewBase {
     }
   ]
   enums = [
+    'typeList',
     'categoryList',
     'releaseStatusList',
     'controlStatusList'
@@ -114,19 +129,19 @@ export default class Main extends ViewBase {
     return [
       {type: 'selection', width: 50},
       {title: '影片id', key: 'id', minWidth: 85},
-      {title: '专资id', key: 'specialId', minWidth: 85},
-      {title: '影片名称', key: 'englishName', minWidth: 85},
-      {title: '上映时间', key: 'openTime', minWidth: 85, editor: 'dateTime'},
+      // {title: '专资id', key: 'specialId', minWidth: 85},
+      {title: '影片名称', key: 'name', minWidth: 85},
+      {title: '上映时间', slot: 'releaseDate', minWidth: 85},
       {title: '今日票房', key: 'todayBox', minWidth: 85},
       {title: '累计票房', key: 'sumBox', minWidth: 85},
       {title: '演员', key: 'performers', minWidth: 85},
       {title: '导演', key: 'director', minWidth: 85},
-      {title: '产地', key: 'fromPlace', minWidth: 85},
-      {title: '类型', key: 'type', minWidth: 85},
+      {title: '产地', slot: 'countries', minWidth: 85},
+      {title: '类型', slot: 'types', minWidth: 85},
       {title: '分类', key: 'categoryCode', minWidth: 85, editor: 'enum'},
       {title: '上映状态', key: 'releaseStatus', minWidth: 85, editor: 'enum'},
       {title: '状态', key: 'controlStatus', minWidth: 85, editor: 'enum'},
-      {title: '操作', slot: 'operate', minWidth: 120},
+      {title: '操作', slot: 'operate', minWidth: 140},
     ] as ColumnExtra[]
   }
 
@@ -139,37 +154,31 @@ export default class Main extends ViewBase {
     this.idsList = ids.map( item => item.id)
     this.statusIds = ids.map( item => item.status)
   }
-  // 上架
-  async handleUpShelf(id?: any[]) {
-    if (!this.idsList.length) {
-      await alert('请选择上架数据', {
-        title: '提示'
-      })
-      return
+  // 上架 和 下架
+  async handleUpShelf(status: number, id?: number) {
+    const text = status == 1 ? '上架' : '下架'
+    if (!id) {
+      if (!this.idsList.length) {
+        await alert(`请选择${text}数据`, {
+          title: '提示'
+        })
+        return
+      }
     }
-    const length = id ? Array.of(id).length : this.idsList.length
-    await confirm(`您选择了${length}条影片进行上架`, {
-      title: '上架操作'
-    })
-    // ids = [] 后台传入参数
     const ids = id ? Array.of(id) : this.idsList
-    // 接口操作
-  }
-  // 下架
-  async handleDownShelf(id?: any[]) {
-    if (!this.idsList.length) {
-      await alert('请选择下架数据', {
-        title: '提示'
-      })
-      return
+    await confirm(`您选择了${ids.length}条影片进行${text }`, {
+      title: `${text}操作`
+    })
+    try {
+      const { data } = await updateMovie({
+        movieIds: ids,
+        controlStatus: status
+      });
+      (this.$refs.listPage as any).update()
+    } catch (ex) {
+      this.handleError(ex)
     }
-    const length = id ? Array.of(id).length : this.idsList.length
-     await confirm(`您选择了${length}条影片进行下架`, {
-      title: '下架操作'
-    })
-    // ids = [] 后台传入参数
-    const ids = id ? Array.of(id) : this.idsList
-    // 接口操作
+
   }
 
   // 刷新
@@ -180,9 +189,14 @@ export default class Main extends ViewBase {
   async handleGetFilm() {
     this.visFilmid.visible = true
   }
-  filmonOK(val: any) {
-    this.visFilmid.visible = false;
-    (this.$refs.listPage as any).update()
+  async filmonOK(val: any) {
+    this.visFilmid.visible = false
+    try {
+      const { data } = await fetchMovie(val.filmid);
+      (this.$refs.listPage as any).update()
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
 }
 
@@ -192,6 +206,13 @@ export default class Main extends ViewBase {
   padding: 10px 0;
   .ivu-btn {
     margin-right: 15px;
+  }
+}
+.operate-btn {
+  span {
+    cursor: pointer;
+    color: #2d8cf0;
+    margin: 2px 6px;
   }
 }
 </style>
