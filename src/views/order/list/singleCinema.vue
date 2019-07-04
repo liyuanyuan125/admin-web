@@ -124,7 +124,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         slot: 'action'
       }
     ]
-    return this.$route.params.status == '2' ? [...check, ...data, ...opernation] : data
+    // return this.$route.params.status == '2' ? [...check, ...data, ...opernation] : data
+    return [...check, ...data, ...opernation]
   }
 
   check(data: any) {
