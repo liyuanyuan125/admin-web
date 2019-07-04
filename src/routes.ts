@@ -650,14 +650,15 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // kol平台账号资源管理
   {
-    path: '/resource/kolplatform/list',
+    path: '/resource/kolplatform/list/:channel?',
     name: 'resource-kolplatform-list',
     component: () => import('./views/resource/kolPlatform/index.vue'),
     meta: {
       authKey: '',
       title: 'KOL平台账号资源管理',
       fixed: true
-    }
+    },
+    props: true,
   },
 
   //  kol平台账号资源管理 - 查看

@@ -37,7 +37,6 @@
     </slot>
 
     <Table
-      ref="selection"
       :columns="tableColumns"
       :data="list"
       :loading="loading"
@@ -46,7 +45,8 @@
       disabled-hover
       size="small"
       class="table"
-      @on-selection-change="selectionChangeHandle"
+      @on-selection-change="selectionChange"
+      ref="table"
     />
 
     <slot name="page-wrap">
@@ -94,6 +94,12 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
   /** 增强的列配置，增加了一些字段，参见 ColumnExtra 类型 */
   @Prop({ type: Array, default: () => [] }) columns!: ColumnExtra[]
 
+  /**
+   * 列可选择，若该字段为 true，则会触发
+   * selectionChange 事件，并且提供 selectAll 方法
+   */
+  @Prop({ type: Boolean, default: false }) canSelect!: boolean
+
   // 对 Filter 进行规范化处理
   get normalFilter() {
     const result = normalizeFilter(this.filters)
@@ -107,7 +113,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
   }
 
   // 查询参数
-  query: any = {}
+  public query: any = {}
 
   // 上一次查询参数
   oldQuery: any = {}
@@ -135,13 +141,20 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
 
   // 根据列配置 columns，规范化后，生成真正的，传给 iview Table 组件的 columns
   get tableColumns() {
-    const result = normalizeColumns(this.columns, {
+    const columns = normalizeColumns(this.columns, {
       scopedSlots: this.$scopedSlots,
       enumType: this.enumType,
       enumMap: this.enumMap,
       list: this.list,
       handleError: this.handleError.bind(this)
     })
+
+    const result = this.canSelect ? [{
+      type: 'selection',
+      width: 40,
+      align: 'center'
+    } as ColumnExtra ].concat(columns) : columns
+
     return result
   }
 
@@ -184,8 +197,17 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
   }
 
   // 全选
-  selectionChangeHandle(option: any) {
-    this.$emit('selectionChange', option)
+  selectionChange(selectedList: any[]) {
+    this.$emit('selectionChange', selectedList)
+  }
+
+  /**
+   * 全选表格内的当前页的所有行
+   * @param enable 是否选中
+   */
+  public selectAll(enable = true) {
+    const table = this.$refs.table as any
+    table && table.selectAll(enable)
   }
 
   @Watch('query', { deep: true })
