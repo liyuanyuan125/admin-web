@@ -105,7 +105,7 @@ export default class ComponentMain extends ViewBase {
         )
         // 若全部取消则关闭改订单
         if (this.ids.length == this.length) {
-          const data = await set (this.$route.params.id, {closeReason : '无有效影院'})
+          const data = await set ({id: this.$route.params.id, reasond: '无有效影院'})
         }
       }
 

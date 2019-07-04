@@ -19,7 +19,7 @@
     </div>
     <Table :columns="columns" @on-selection-change="check" :data="tableData" :loading="loading"
       border stripe disabled-hover size="small" class="table">
-      <template v-if="$route.params.status == '2'" slot="action" slot-scope="{row}" >
+      <template slot="action" slot-scope="{row}" >
         <a v-auth="'advert.executeOrder:cancelCinema'" @click="change( row.id, row.shortName )">取消执行</a>
       </template>
     </Table>
@@ -124,7 +124,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         slot: 'action'
       }
     ]
-    return this.$route.params.status == '2' ? [...check, ...data, ...opernation] : data
+    // return this.$route.params.status == '2' ? [...check, ...data, ...opernation] : data
+    return [...check, ...data, ...opernation]
   }
 
   check(data: any) {
@@ -147,7 +148,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   async dlgEditDone(id: any) {
     this.search()
     if (this.total == 0) {
-      const res = await set (this.$route.params.id, {closeReason : '无有效影院'})
+      const res = await set ({id: this.$route.params.id, reasond: '无有效影院'})
     }
   }
 

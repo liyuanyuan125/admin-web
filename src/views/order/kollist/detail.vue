@@ -140,6 +140,7 @@ import moment from 'moment'
 import EditDialog, { Field } from '@/components/editDialog'
 import { confirm , info } from '@/ui/modal'
 import reDlg from './reDlg.vue'
+// import Decimal from 'decimal'
 
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
@@ -376,6 +377,11 @@ export default class Main extends ViewBase {
     this.$router.go(-1)
   }
 
+  // formatnum(f: any, digit: any) {
+  //   const m = Math.pow(10, digit)
+  //   return parseInt(f * m, 10) / m
+  // }
+
   async search() {
     this.itemlist = []
     this.orderlist = []
@@ -388,7 +394,7 @@ export default class Main extends ViewBase {
         this.dataForm.fee = this.itemlist[0].confirmFee * 0.5
       }
       if (this.$route.params.orders == '8') {
-        this.feemoney = this.itemlist[0].confirmFee - this.itemlist[0].advanceFee
+        // this.feemoney = new Decimal(this.itemlist[0].confirmFee - this.itemlist[0].advanceFee)
         this.dataForm.fee = this.feemoney
       }
       this.oklist = data.orderItemList == null ? [] : data.orderItemList
