@@ -23,7 +23,7 @@
 import { Component, Prop } from 'vue-property-decorator'
 import { number } from '@/api/orderSys'
 import { warning , success, toast } from '@/ui/modal'
-import { cinemaCancel } from '@/api/orderSys'
+import { cinemaCancel , set } from '@/api/orderSys'
 import inputTextarea from '@/components/inputTextarea.vue'
 import moment from 'moment'
 import ViewBase from '@/util/ViewBase'
@@ -39,10 +39,12 @@ export default class ComponentMain extends ViewBase {
   loading = false
   showDlg = false
   id: any = 0
+  ids: any = []
   title = ''
   dataForm = {
     closeReason: '',
   }
+  length: any = 0
 
   ruleValidate = {
     closeReason: [
@@ -60,10 +62,10 @@ export default class ComponentMain extends ViewBase {
     }
   }
 
-  inits(id: any) {
+  inits(id: any, length: any) {
     this.showDlg = true
     this.title = id.length + '条'
-    this.id = id || []
+    this.ids = id || []
     ; (this.$refs.dataForm as any).resetFields()
     if (this.id) {
         // console.log(this.id)
@@ -83,8 +85,30 @@ export default class ComponentMain extends ViewBase {
       return
     }
     try {
-      const res = await cinemaCancel (this.$route.params.id ,
-      {cinemaId: this.id, closeReason: this.dataForm.closeReason})
+      if (this.ids.length == 0) {
+        const res = await cinemaCancel (
+          { id: this.$route.params.id ,
+            cinemas : {id: this.id, reasond: this.dataForm.closeReason}
+          }
+        )
+      } else {
+        const itemlist = (this.ids || []).map((it: any) => {
+          return {
+            id: it,
+            reasond: this.dataForm.closeReason
+          }
+        })
+        const res = await cinemaCancel (
+          { id: this.$route.params.id ,
+            cinemas : itemlist
+          }
+        )
+        // 若全部取消则关闭改订单
+        if (this.ids.length == this.length) {
+          const data = await set (this.$route.params.id, {closeReason : '无有效影院'})
+        }
+      }
+
       toast('操作成功')
       this.showDlg = false
       this.$emit('done', this.id)

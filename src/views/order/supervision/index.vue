@@ -22,7 +22,7 @@
           </Col>
         </form>
     </Row>
-      <Button type="primary" @click="changeAll">批量审核</Button>
+      <Button style='margin-top: 16px;' type="primary" @click="changeAll">批量审核</Button>
     <Table ref="selection" :columns="columns" @on-selection-change="onselect" :data="list" :loading="loading"
       border stripe disabled-hover size="small" class="table">
       <template  slot="action" slot-scope="{row}" >
@@ -78,7 +78,7 @@ const timeFormat = 'YYYY-MM-DD HH:mm:ss'
   }
 })
 export default class Main extends Mixins(ViewBase, UrlManager) {
-  query = {
+  defQuery = {
     companyId: null,
     cinemaId: null,
     videoId: null,
@@ -86,6 +86,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     pageIndex: 1,
     pageSize: 20,
   }
+
+  query: any = {}
 
   addOrUpdateVisible = false
   changeVisible = false
@@ -99,7 +101,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   statusList: any = []
   oldQuery: any = {}
 
-   columns = [
+  columns = [
     {
       type: 'selection',
       title: '全选',
@@ -151,7 +153,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   ]
 
   mounted() {
-    this.doSearch()
+    // this.doSearch()
     this.updateQueryByParam()
   }
 
@@ -172,15 +174,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     this.doSearch()
   }
 
-  // 每页数
-  sizeChangeHandle(val: any) {
-    this.query.pageIndex = val
-    this.doSearch()
-  }
-  // 当前页
-  currentChangeHandle(val: any) {
-    this.query.pageSize = val
-    this.doSearch()
+  reset() {
+    this.resetQuery()
   }
 
 
@@ -189,8 +184,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     if (this.loading) {
       return
     }
+    this.oldQuery = { ...this.query }
     this.updateUrl()
     this.loading = true
+    const query = clean({ ...this.query })
     try {
         // 订单列表
       const { data: {
@@ -208,11 +205,22 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 
+  // 每页数
+  sizeChangeHandle(val: any) {
+    this.query.pageIndex = val
+    this.doSearch()
+  }
+  // 当前页
+  currentChangeHandle(val: any) {
+    this.query.pageSize = val
+    this.doSearch()
+  }
+
 
 
   changeAll() {
     if (this.ids.length == 0) {
-      info('请先选择')
+      info('请先选择需要审核的信息')
       return
     }
     this.videoVisible = true
@@ -230,9 +238,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     })
   }
 
-  reset() {
-    this.resetQuery()
-  }
   @Watch('query', { deep: true })
   watchQuery() {
     if (this.query.pageIndex == this.oldQuery.pageIndex) {

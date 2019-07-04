@@ -3,7 +3,7 @@
       clearable class="component" ref="ui">
       <Option v-for="it in list" :key="it.id" :value="it.companyId"
         :label="it.companyName" class="flex-box">
-        <span>{{it.companyName}}</span>
+        <span>{{it.name}}</span>
       </Option>
     </Select>
     <Select v-else v-model="inValue" :placeholder="placeholder" filterable
@@ -19,7 +19,7 @@
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import { queryList } from '@/api/clientFilm'
+import { queryList } from '@/api/corpReal'
 import { clean } from '@/fn/object'
 
 @Component

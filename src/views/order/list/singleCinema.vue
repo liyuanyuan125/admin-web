@@ -12,7 +12,7 @@
       </Col>
     </Row>
     <div v-if="checkId">
-      <Button type="primary" @click="changeAll">批量删除</Button>
+      <Button type="primary" @click="changeAll">批量取消执行</Button>
     </div>
     <Table :columns="columns" @on-selection-change="check" :data="tableData" :loading="loading"
       border stripe disabled-hover size="small" class="table">
@@ -36,12 +36,12 @@ import { Component, Watch , Mixins, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { cinemaCancel , cinemaList } from '@/api/orderSys'
+import { cinemaCancel , cinemaList , set } from '@/api/orderSys'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
-import {confirm , warning , success, toast } from '@/ui/modal'
+import {confirm , warning , success, toast , info } from '@/ui/modal'
 import AreaSelect from '@/components/areaSelect'
 import singDlg from './singDlg.vue'
 import imgModel from './imgDlg.vue'
@@ -153,7 +153,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 
-  dlgEditDone(id: any) {
+  async dlgEditDone(id: any) {
     // if (id.length > 0) {
     //   id.map((it: any) => {
     //     this.cinemaArray = this.cinemaArray.filter((its: any) => its != it)
@@ -163,6 +163,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     //   this.cinemaArray = this.cinemaArray.filter((it: any) => it != id)
     // }
     this.search()
+    if (this.total == 0) {
+      const res = await set (this.$route.params.id, {closeReason : '无有效影院'})
+    }
   }
 
   get tableData() {
@@ -254,9 +257,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
 
   changeAll() {
+    if (this.checkId.length == 0) {
+      info('请先选择需要审核的信息')
+      return
+    }
     this.addOrUpdateVisible = true
     this.$nextTick(() => {
-      (this.$refs.addOrUpdate as any).inits(this.checkId)
+      (this.$refs.addOrUpdate as any).inits(this.checkId , this.total)
     })
   }
 

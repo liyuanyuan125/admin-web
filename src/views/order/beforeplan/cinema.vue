@@ -45,7 +45,7 @@
       <div class="act-bar">
         <a @click="onAdd" v-if="!type" @done="dlgEditDone">添加影院</a>
       </div>
-      <singDlg ref="addOrUpdate" v-if='addOrUpdateVisible' @done="dlgEditDone" />
+      <!-- <singDlg ref="addOrUpdate" v-if='addOrUpdateVisible' @done="dlgEditDone" /> -->
       <changeDlg ref="change" v-if='changeVisible' @done="dlgEditDone" />
       <AddCinemaModel v-if="type != 'detail'" ref="addCinemaModel" :cinemaend = "incinematype" :addData="inValue" @done="dlgEditDone" />
     </div>
@@ -189,7 +189,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       this.$Message.success({
         content: `删除成功`,
       })
-      this.search
+      this.search()
       this.viewcinema = true
       this.$emit('getcine', this.viewcinema)
     } catch (ex) {
@@ -283,7 +283,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       this.$Message.success({
         content: `删除成功`,
       })
-      this.search
+      this.search()
       this.viewcinema = true
       this.$emit('getcine', this.viewcinema)
     } catch (ex) {

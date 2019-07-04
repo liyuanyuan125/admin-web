@@ -33,45 +33,9 @@ export default class CinemaChainSelect extends ViewBase {
 
   async mounted() {
     try {
-      const { data } =  await queryList(clean({ pageSize: 888888, status: 1 }))
-      const  data2  =  await queryList(clean({ pageSize: 888888, status: 2 }))
-      const  data3  =  await queryList(clean({ pageSize: 888888, status: 3 }))
       const  data4  =  await queryList(clean({ pageSize: 888888, status: 4 }))
-      const  data5  =  await queryList(clean({ pageSize: 888888, status: 5 }))
-      const  data6  =  await queryList(clean({ pageSize: 888888, status: 6 }))
-      const list1: any[] = data.items || []
-      const list2: any[] = data2.data.items
-      const list3: any[] = data3.data.items || []
       const list4: any[] = data4.data.items || []
-      const list5: any[] = data5.data.items || []
-      const list6: any[] = data6.data.items || []
-      this.list = list1
-
-      for (const key in  list2) {
-        if (1 == 1) {
-          this.list.push(list2[key])
-        }
-      }
-      for (const key in  list3) {
-        if (1 == 1) {
-          this.list.push(list3[key])
-        }
-      }
-      for (const key in  list4) {
-        if (1 == 1) {
-          this.list.push(list4[key])
-        }
-      }
-      for (const key in  list5) {
-        if (1 == 1) {
-          this.list.push(list5[key])
-        }
-      }
-      for (const key in  list6) {
-        if (1 == 1) {
-          this.list.push(list6[key])
-        }
-      }
+      this.list = list4
     } catch (ex) {
       this.handleError(ex)
     }

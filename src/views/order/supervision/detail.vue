@@ -6,16 +6,16 @@
     <div class='title'>基础信息</div>
     <div class='bos'>
       <Row>
-        <Col :span='12'>资源方公司&nbsp;：&nbsp;{{listitem.companyName == null ? '暂无' : listitem.companyName}}</Col>        
+        <Col :span='12'><span class='spons'>资源方公司&nbsp;：&nbsp;</span>{{listitem.resourceName == null ? '暂无资源方公司' : listitem.resourceName}}</Col>        
       </Row>
       <Row>      
-        <Col :span='12'>影院名称&nbsp;：&nbsp;【{{listitem.cinemaCode == null ? '暂无影院专资编码' : listitem.cinemaCode}}】 {{listitem.cinemaName == null ? '暂无影院名称' : listitem.cinemaName}}</Col>
+        <Col :span='12'><span class='spons'>影院名称&nbsp;：&nbsp;</span>【{{listitem.cinemaCode == null ? '暂无影院专资编码' : listitem.cinemaCode}}】 {{listitem.cinemaName == null ? '暂无影院名称' : listitem.cinemaName}}</Col>
       </Row>
       <Row>
-        <Col :span='12'>投放周期&nbsp;：&nbsp;{{start}} ~ {{end}} &nbsp; 【{{day + 1}}天】</Col>
+        <Col :span='12'><span class='spons'>投放周期&nbsp;：&nbsp;</span>{{start}} ~ {{end}} &nbsp; 【{{day + 1}}天】</Col>
       </Row>
       <Row>
-        包含广告片&nbsp;：&nbsp;共计{{listitem.totalLength}}s
+        <span class='spons'>包含广告片&nbsp;：&nbsp;</span>共计{{listitem.totalLength}}s
         <a style='margin-left: 5px;' v-for='(item,index) in listitem.videoDetails' :key='index'>{{item.videoName}} ({{item.videoLength}})s</a>  
       </Row>
     </div>
@@ -50,9 +50,9 @@
     </div>
     <div class='title'>操作记录</div>
     <div class='bos' v-if='logList.length != 0'>
-      <Row>2018-10-01 11:22:22 zhiping.zhao@aiads.com【老麦】审核通过</Row>
-      <Row>2018-10-01 11:22:22 zhiping.zhao@aiads.com【老麦】审核通过</Row>
-      <Row>2018-10-01 11:22:22 zhiping.zhao@aiads.com【老麦】审核通过</Row>
+      <Row v-for='(logit,index) in logList' :key='index'>
+        {{logit.createTime}} {{logit.email}}【{{logit.userName}}】{{logit.description}}
+      </Row>
     </div>
     <div class='bos' v-if='logList.length == 0'>
       暂无操作日志
@@ -169,7 +169,12 @@ export default class Main extends ViewBase {
       this.end = b.slice(0 , 4) + '-' + b.slice(4 , 6) + '-' + b.slice(6 , 8)
       this.day = ((new Date(this.end).getTime() + 16 * 60 * 60 * 1000 - 1) -
         (new Date(this.start).getTime() + 16 * 60 * 60 * 1000 - 1)) / (24 * 60 * 60 * 1000)
-      this.logList = data.logList
+      this.logList = (data.logList || []).map((it: any) => {
+        return {
+          ...it,
+          createTime : moment(it.createTime).format(timeFormat)
+        }
+      })
     } catch (ex) {
       // this.handleError(ex)
     } finally {
@@ -226,6 +231,11 @@ export default class Main extends ViewBase {
 .row-li {
   line-height: 40px;
   font-size: 14px;
+}
+.spons {
+  display: inline-block;
+  width: 100px;
+  text-align: right;
 }
 /deep/ .ivu-form .ivu-form-item-label {
   font-size: 14px;
