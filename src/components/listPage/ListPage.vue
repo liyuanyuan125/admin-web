@@ -165,7 +165,6 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
     const query = dealParams(this.filters, this.query, true)
     try {
       const { data } = await this.fetch(query)
-
       this.list = data.items || []
       this.total = data.totalCount || 0
 

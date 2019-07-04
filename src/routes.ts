@@ -244,6 +244,16 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  // 基础数据 - 品牌管理 - 品牌列表
+  {
+    path: '/data/brand',
+    name: 'data-brand',
+    component: () => import('./views/data/brand/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
   {
     path: '/data/area/',
     name: 'data-area',
