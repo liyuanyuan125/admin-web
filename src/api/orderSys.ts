@@ -25,8 +25,8 @@ export async function queryItem(id: any ) {
 }
 
 // 关闭
-export async function set(id: any , query: any) {
-  const res = await put(`/xadvert/v1/orders/${id}/closed`, query)
+export async function set(query: any) {
+  const res = await put(`/xadvert/v1/orders/closed`, query)
   return res
 }
 
