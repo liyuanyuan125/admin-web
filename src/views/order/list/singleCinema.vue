@@ -1,11 +1,14 @@
 <template>
-  <div class="pages" v-auth="'advert.executeOrder:cinemas'">
+  <div v-auth="'advert.executeOrder:cinemas'">
+    <Row>已接单影院: {{total}}</Row>
+    <div  class="pages" >
+      
     <Row class="shouDlg-header">
       <Col span="7">
         <AreaSelect v-model="area"/>
       </Col>
       <Col span="5" offset="1">
-        <Input v-model="dataForm.name" placeholder="【专资编码】或 影院名称" />
+        <Input v-model="dataForm.query" placeholder="【专资编码】或 影院名称" />
       </Col>
       <Col span="6" offset="1">
         <Button type="primary" @click="search">搜索</Button>
@@ -27,6 +30,8 @@
           @on-page-size-change="currentChangeHandle"/>
     </div>
     <singDlg ref="addOrUpdate" @done="dlgEditDone" />
+    </div>
+
   </div>
 </template>
 
@@ -64,7 +69,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   dataForm: any = {
     pageIndex: 1,
     pageSize: 20,
-    name: '',
+    query: '',
     provinceId: 0,
     cityId: 0,
     countyId: 0,
