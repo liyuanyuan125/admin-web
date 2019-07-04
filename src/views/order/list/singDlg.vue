@@ -88,7 +88,7 @@ export default class ComponentMain extends ViewBase {
       if (this.ids.length == 0) {
         const res = await cinemaCancel (
           { id: this.$route.params.id ,
-            cinemas : {id: this.id, reasond: this.dataForm.closeReason}
+            cinemas : [{id: this.id, reasond: this.dataForm.closeReason}]
           }
         )
       } else {

@@ -188,7 +188,6 @@ export default class Main extends ViewBase {
     try {
       const { data: {
           item: item,
-          logList,
           statusList,
           planTypeList,
           planDirectionList
@@ -204,7 +203,7 @@ export default class Main extends ViewBase {
       this.settlementTime = moment(this.item.settlementTime).format(timeFormat)
       this.settlementAmount = this.addNumber(String(this.item.settlementAmount))
       this.movieList = this.item.targetMovies
-      this.logList = (logList || []).map((it: any) => {
+      this.logList = (item.logList || []).map((it: any) => {
           return {
               ...it,
               createTime: moment(it.createTime).format(timeFormat)

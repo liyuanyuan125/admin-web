@@ -85,11 +85,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   defQuery = {
     pageIndex: 1,
     pageSize: 20,
-    resourceId: 0,
-    resourceCompanyId: 0,
-    planId: 0,
-    planType: 0,
-    status: 0,
+    resourceId: null,
+    advertiserId: null,
+    planId: null,
+    planType: null,
+    status: null,
   }
   query: any = {}
   shows = true
