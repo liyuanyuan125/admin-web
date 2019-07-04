@@ -55,7 +55,7 @@
             <Col span='3' class='hui'>接单影院</Col>
             <Col span='16'>
               <Row>已接单影院: {{cinemasList.length}}</Row>
-              <singleCinema :cinemas="cinemasList" />
+              <singleCinema  />
             </Col>
         </Row>
       </div>
