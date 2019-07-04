@@ -14,10 +14,10 @@
         <Button type="primary" @click="search">搜索</Button>
       </Col>
     </Row>
-    <div v-if="checkId">
+    <div>
       <Button type="primary" @click="changeAll">批量取消执行</Button>
     </div>
-    <Table :columns="columns" @on-selection-change="check" :data="tableData" :loading="loading"
+    <Table ref="selection" :columns="columns" @on-selection-change="check" :data="list" :loading="loading"
       border stripe disabled-hover size="small" class="table">
       <template slot="action" slot-scope="{row}" >
         <a v-auth="'advert.executeOrder:cancelCinema'" @click="change( row.id, row.shortName )">取消执行</a>
@@ -89,6 +89,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   get columns() {
     const data: any = [
+      {
+        type: 'selection',
+        title: '全选',
+        width: 60,
+        align: 'center'
+      },
       { title: '影院名称', key: 'shortName', width: 130, align: 'center' },
       { title: '影厅数量', width: 60, key: 'hallCount', align: 'center' },
       { title: '专资编码', width: 120, key: 'code', align: 'center' },
@@ -107,14 +113,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         }
       }
     ]
-    const check = [
-       {
-        type: 'selection',
-        title: '全选',
-        width: 60,
-        align: 'center'
-      }
-    ]
     const opernation = [
        {
         title: '操作',
@@ -125,24 +123,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       }
     ]
     // return this.$route.params.status == '2' ? [...check, ...data, ...opernation] : data
-    return [...check, ...data, ...opernation]
+    return [...data, ...opernation]
   }
 
-  check(data: any) {
-    const ids = this.tableData.map((it: any) => it.id)
-    const dataId = data.map((it: any) => it.id)
-    data.forEach((item: any) => {
-      if (!this.checkId.includes(item.id)) {
-        this.checkId.push(item.id)
-      }
+  check(row: any , selection: any) {
+    this.checkId = row.map((it: any) => {
+      return it.id
     })
-    const filterId = ids.filter((it: any) => !dataId.includes(it))
-    this.checkId = this.checkId.filter((it: any) => !filterId.includes(it))
-  }
-
-  get cachedMap() {
-    return {
-    }
   }
 
   async dlgEditDone(id: any) {
@@ -150,29 +137,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     if (this.total == 0) {
       const res = await set ({id: this.$route.params.id, reasond: '无有效影院'})
     }
+    this.$emit('dlgEditDone')
   }
 
-  get tableData() {
-    const cachedMap = this.cachedMap
-    const list = (this.list || []).map((it: any) => {
-      return {
-        ...it
-      }
-    })
-    const list1 = (this.list || []).map((it: any) => {
-      if (this.checkId.includes(it.id)) {
-        return {
-          ...it,
-          _checked: true
-        }
-      } else {
-        return {
-          ...it,
-        }
-      }
-    })
-    return this.$route.params.status == '2' ? list1 : list
-  }
 
   // 每页数
   sizeChangeHandle(val: any) {

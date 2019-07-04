@@ -73,7 +73,7 @@ export default class ComponentMain extends ViewBase {
       const res = await set ({id: this.$route.params.id, reasond: this.dataForm.closeReason})
       toast('成功')
       this.showDlg = false
-      this.$emit('done')
+      this.$emit('dlgEditDone')
       this.$router.push({ name: 'order-list'})
     } catch (ex) {
       this.handleError(ex)
