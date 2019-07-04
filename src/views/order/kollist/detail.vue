@@ -140,7 +140,7 @@ import moment from 'moment'
 import EditDialog, { Field } from '@/components/editDialog'
 import { confirm , info } from '@/ui/modal'
 import reDlg from './reDlg.vue'
-// import Decimal from 'decimal'
+import Decimal from 'decimal.js'
 
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
@@ -395,6 +395,7 @@ export default class Main extends ViewBase {
       }
       if (this.$route.params.orders == '8') {
         // this.feemoney = new Decimal(this.itemlist[0].confirmFee - this.itemlist[0].advanceFee)
+        this.feemoney = new Decimal(this.itemlist[0].confirmFee).minus(this.itemlist[0].advanceFee)
         this.dataForm.fee = this.feemoney
       }
       this.oklist = data.orderItemList == null ? [] : data.orderItemList
