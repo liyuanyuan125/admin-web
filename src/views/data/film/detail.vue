@@ -7,15 +7,17 @@
     <div v-if="tab == 0">
       <div class="base-mess">
         <h2 class="title">基础信息</h2>
-        <Row>
-          <Col :span="6"><p><label>中文名称</label><em>xxxx</em></p></Col>
-          <Col :span="6"><p><label>英文名称</label><em>xxxx</em></p></Col>
-          <Col :span="6"><p><label>产地</label><em>xxxx</em></p></Col>
-          <Col :span="6"><p><label>上映时间</label><em>xxxx</em></p></Col>
+        <Row class="row-flex">
+          <Col :span="6"><p><label>中文名称</label><em>{{items.name}}</em></p></Col>
+          <Col :span="6"><p><label>英文名称</label><em>{{items.englishName}}</em></p></Col>
+          <Col :span="6"><p><label>产地</label><em v-for="(item, index) in items.countries" :key="index">{{item}}</em></p></Col>
         </Row>
         <Row>
-          <Col :span="6"><p><label>类型</label><em>xxxx</em></p></Col>
-          <Col :span="12"><p><label>剧情介绍</label><em>xxxx</em></p></Col>
+          <Col :span="6"><p><label>类型</label><em v-for="(item, index) in items.types" v-if="item != null">{{item}}</em></p></Col>
+          <Col :span="6"><p><label>上映时间</label><em>{{formatConversion(items.releaseDate)}}</em></p></Col>
+        </Row>
+        <Row >
+          <Col :span="22" class="flex-box"><label>剧情介绍</label><em class="information" >{{items.summary}}</em></Col>
         </Row>
       </div>
       <div class="base-mess">
@@ -23,7 +25,7 @@
         <Row>
           <Col :span="6"><p><label>搜索关键字</label><em>xxxx</em></p></Col>
           <Col :span="6"><p><label>预估票房</label><em>xxxx</em></p></Col>
-          <Col :span="6"><p><label>影片类型</label><em>xxxx</em></p></Col>
+          <Col :span="6"><p><label>影片分类</label><em>{{items.categoryName}}</em></p></Col>
           <Col :span="6"><p><label>演员</label><em>xxxx</em></p></Col>
         </Row>
         <Row>
@@ -65,10 +67,17 @@
 </template>
 
 <script lang='ts'>
-import {Component} from 'vue-property-decorator'
+import {Component, Prop} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
+import { movieDetail } from '@/api/film-ed'
+import {formatConversion} from '@/util/validateRules'
 @Component
 export default class Main extends ViewBase {
+  @Prop({type: Number, default: 0}) id!: number
+
+  items: any = {}
+  formatConversion = formatConversion
+
   tab = 0
   tabList = [
     {key: 1, text: '基本信息'},
@@ -133,10 +142,36 @@ export default class Main extends ViewBase {
     { key: 'newVal', title: '新值', align: 'center'},
   ]
   oprateList = []
+
+  mounted() {
+    this.queryList()
+  }
+  async queryList() {
+    try {
+      const { data } = await movieDetail(this.id)
+      this.items = data || {}
+      // 评论热词
+      this.tableList = data.customSearchKeywords || []
+      // 演员表
+      this.actorList = data.celebrities || []
+      // 相关图片
+      this.imgList = data.plotPics
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
 }
 
 </script>
 <style lang='less' scoped>
+.flex-box {
+  display: flex;
+}
+.information {
+  width: 85%;
+  padding-left: 25px;
+  text-align: justify;
+}
 em {
   font-style: normal;
 }

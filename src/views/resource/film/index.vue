@@ -21,7 +21,7 @@
       </template>
       <template slot="operate" slot-scope="{row}">
         <div class="operate-btn">
-          <span v-if="row.status == 1" @click="$router.push({name: 'resource-film-index-detail', params: {id: row.id, audit: 1}})">审核</span>
+          <span v-if="row.status == 1" @click="handleSingAudit(row.id)" >审核</span>
           <span @click="$router.push({name: 'resource-film-index-edit', params: {id: row.id}})">编辑</span>
           <span @click="$router.push({name: 'resource-film-index-detail', params: {id: row.id}})">查看</span>
         </div>
@@ -29,7 +29,8 @@
     </ListPage>
     
     <Modal v-model="visibleAudit" width="500" title="批量审核操作" class="audit-modal" @on-ok="handleSubmit" >
-        <p>您选择了{{auditCheck.length}}条片商资源申请</p>
+        <p v-if="isSingFlag">您选择了1条片商资源申请</p>
+        <p v-else>您选择了{{auditCheck.length}}条片商资源申请</p>
         <RadioGroup class="audit-radio" v-model="auditOpinion"> <Radio label="2">审核通过</Radio> <Radio label="3">审核不通过</Radio> </RadioGroup>
         <p class="flex-box"  v-if="auditOpinion == 3">
           <span class="label-dese">备注：</span>
@@ -118,6 +119,8 @@ export default class Main extends ViewBase {
   visibleAudit = false
   auditOpinion = ''
   desc = ''
+  singAuditId: number = 0
+  isSingFlag = false // 是否单个审核
 
   // 批量审核
   async handleAudit() {
@@ -126,6 +129,12 @@ export default class Main extends ViewBase {
         return
     }
     this.visibleAudit = true
+  }
+  // 单个审核
+  handleSingAudit(id: number) {
+    this.visibleAudit = true
+    this.isSingFlag = true
+    this.singAuditId = id
   }
   // 电子卷总数量累加
   reduceCoupon(ary: any[]) {
@@ -140,10 +149,15 @@ export default class Main extends ViewBase {
     this.auditCheck = list.map((item: any) => item.id)
   }
   async handleSubmit() {
-    // this.auditCheck
+    let checkIds: any[] = []
+    if (this.isSingFlag) {
+      checkIds = [this.singAuditId]
+    } else {
+      checkIds = this.auditCheck
+    }
     try {
       const { data } = await batchUpdate({
-        movieResourceIds: this.auditCheck,
+        movieResourceIds: checkIds,
         status: this.auditOpinion,
         reviewMessage: this.desc
       });

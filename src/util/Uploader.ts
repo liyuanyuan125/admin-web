@@ -29,7 +29,7 @@ export interface UploaderOptions {
   /** 文件上传字段名 */
   fileFieldName?: string
   /** 文件上传方式，支持 post、put，默认 post */
-  fileSubmitMethod: 'post' | 'put',
+  fileSubmitMethod?: 'post' | 'put',
   /** 图片压缩选项 */
   imageCompress?: {
     /** 压缩限制 min width，为 null 则不限制 */
