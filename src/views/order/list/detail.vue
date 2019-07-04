@@ -28,7 +28,7 @@
         </Row>
         <Row class='row-list'>
             <Col span='3' class='hui'>广告计划</Col>
-            <Col span='9'>【{{item.planId}}】{{item.planName}}</Col>
+            <Col span='9'>【{{item.planId}}】{{item.planName == null ? '暂无广告计划名称' : item.planName}}</Col>
             <Col span='3' class='hui'>广告片</Col>
             <Col span='9'>【{{item.videoId}}】{{item.videoName}}</Col>
         </Row>
@@ -54,7 +54,7 @@
         <Row class='row-list pb20'>
             <Col span='3' class='hui'>接单影院</Col>
             <Col span='16'>
-              <singleCinema  />
+              <singleCinema  @dlgEditDone="dlgEditDone"/>
             </Col>
         </Row>
       </div>
@@ -70,7 +70,7 @@
         </Row>
       </div>
     </div>
-    <close  ref="addOrUpdate"   @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/>
+    <close  ref="addOrUpdate"   @refreshDataList="search" v-if="addOrUpdateVisible" @dlgEditDone="dlgEditDone"/>
   </div>
 </template>
 

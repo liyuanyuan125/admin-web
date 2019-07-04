@@ -137,6 +137,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     if (this.total == 0) {
       const res = await set ({id: this.$route.params.id, reasond: '无有效影院'})
     }
+    this.$emit('dlgEditDone')
   }
 
 
