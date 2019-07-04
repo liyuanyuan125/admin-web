@@ -153,7 +153,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 
-  dlgEditDone(id: any) {
+  async dlgEditDone(id: any) {
     // if (id.length > 0) {
     //   id.map((it: any) => {
     //     this.cinemaArray = this.cinemaArray.filter((its: any) => its != it)
