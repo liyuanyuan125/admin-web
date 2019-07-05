@@ -14,47 +14,15 @@
           @click="editShow()"
         >新建账号平台</Button>
       </template>
-      <template slot="keyWords" slot-scope="{ row: { keyWords } }">
-        <div class="keyWords">
-         <span v-if="keyWords">{{keyWords.join(';')}}</span>
-        </div>
-      </template>
-
-      <template slot="platform" slot-scope="{ row: { keyWords } }">
-        <div>
-         <router-link :to="{ name: 'data-cinema-hall', params: { id } }">查看影厅</router-link>
-        </div>
-      </template>
-
-      <template slot="shop" slot-scope="{ row }">
-        <div>
-         <router-link :to="{ name: 'data-cinema-hall', params: { id } }">查看影厅</router-link>
-        </div>
-      </template>
-
-      <template slot="product" slot-scope="{ row }">
-        <div>
-         <router-link :to="{ name: 'data-cinema-hall', params: { id } }">查看影厅</router-link>
-        </div>
-      </template>
-
-      <template slot="status" slot-scope="{ row }">
-        <div>
-         <router-link :to="{ name: 'data-cinema-hall', params: { id } }">查看影厅</router-link>
-        </div>
-      </template>
 
       <template slot="action" slot-scope="{ row: { id } }">
         <div class="row-acts">
-          <router-link
-            :to="{ name: 'data-cinema-hall', params: { id } }"
-            v-auth="'theater.cinemas:info'"
-          >查看影厅</router-link>
-          <a >编辑</a>
+          <a @click="editShow(id)">编辑</a>
+          <a @click="del(id)">删除</a>
         </div>
       </template>
     </ListPage>
-    <EditDialog :fields="fields" :fetch="editFetch" :submit="editSubmit" ref="editDlg"/>
+    <EditDialog :fields="fields" :fetch="editFetch" queryKeys="brandId,id,channelCode" :submit="editSubmit" ref="editDlg"/>
   </div>
 </template>
 
@@ -65,6 +33,7 @@ import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { mediaslist, addmedias, editmedias, delmedias } from '@/api/brand'
 import EditDialog, { Field } from '@/components/editDialog'
+import { slice, clean } from '@/fn/object'
 
 @Component({
   components: {
@@ -74,6 +43,7 @@ import EditDialog, { Field } from '@/components/editDialog'
 })
 export default class Main extends ViewBase {
   fetch = mediaslist
+  id = 0
 
   get filters() {
     const brandId = this.$route.params.brandId
@@ -131,24 +101,25 @@ export default class Main extends ViewBase {
       { title: '账号ID', key: 'name' },
       { title: '账号名称', key: 'enName' },
       { title: '账号头像', key: 'logo', editor: 'deprecated' },
-      { title: '跳转URL链接', key: 'tradeCode', editor: 'enum', enumKey: 'tradeCodeCode' },
-      { title: '操作', key: 'keyWords', slot: 'keyWords' }
+      { title: '跳转URL链接', key: 'url', editor: 'enum', enumKey: 'tradeCodeCode' },
+      { title: '操作', key: 'keyWords', slot: 'action' }
     ] as ColumnExtra[]
   }
 
   get fields() {
+    const brandId = this.$route.params.brandId
     return [
       {
         name: 'brandId',
-        defaultValue: 0
+        defaultValue: brandId
       },
 
       {
-        name: 'channelCode',
+        name: 'channelCodeCode',
         defaultValue: '',
         type: 'select',
         label: '账号平台',
-        span: 16,
+        span: 12,
         required: true
       },
 
@@ -157,7 +128,7 @@ export default class Main extends ViewBase {
         defaultValue: '',
         type: 'input',
         label: '账号ID',
-        span: 8,
+        span: 12,
         required: true
       },
 
@@ -166,25 +137,76 @@ export default class Main extends ViewBase {
         defaultValue: '',
         type: 'input',
         label: '账号名称',
-        span: 16,
-        required: true
+        span: 12,
       },
 
       {
         name: 'url',
         defaultValue: '',
-        type: 'select',
-        label: '跳转URL链接',
-        span: 8
+        type: 'input',
+        label: 'URL链接',
+        span: 12
       }
     ]
   }
 
+  editFetch = async ( query: any) => {
+    const { data: {
+      items,
+      channelCodeList
+    }} = await mediaslist(query)
+
+    return {
+      data: {
+        channelCodeList,
+        item: {
+          url: items[0].url,
+          channelCodeCode: items[0].channelCode,
+          name: items[0].name,
+          channelDataId: items[0].channelDataId,
+        }
+      }
+    }
+  }
+
+  async del(id: any) {
+    try {
+      await delmedias(id)
+      ; (this.$refs.listPage as any).update()
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
   editShow(id = 0) {
     const editor = this.$refs.editDlg as EditDialog
-    editor.show({ id }).done((data: any) => {
+    const brandId = this.$route.params.brandId
+    this.id = id
+    let query: any = {}
+    if (this.id) {
+      query = {
+        brandId,
+        id
+      }
+    } else {
+      query = {
+        brandId,
+        channelCode: 1
+      }
+    }
+    editor.show({ ...query }).done((data: any) => {
       (this.$refs.listPage as any).update()
     })
+  }
+
+  editSubmit(data: any) {
+    const query = clean({
+      ...data,
+      channelCode: data.channelCodeCode,
+      channelCodeCode: '',
+      id: this.id
+    })
+    return this.id ? editmedias(query) : addmedias(query)
   }
 
   mounted() {}
