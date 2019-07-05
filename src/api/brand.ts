@@ -68,6 +68,6 @@ export async function editmedias(query: any) {
  * @param query 查询条件，http://yapi.aiads-dev.com/project/154/interface/api/4134
  */
 export async function delmedias(id: any) {
-  const data = await del(`/brand/medias/${id}`)
+  const data = await put(`/brand/medias/${id}`)
   return data
 }

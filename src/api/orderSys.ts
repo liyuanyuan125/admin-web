@@ -6,9 +6,9 @@ export async function queryList(query: any) {
   return data
 }
 
-// 广告计划列表
+//  列表
 export async function planlist(query: any) {
-  const data = await get('/xadvert/plans', query)
+  const data = await get('/xadvert/v1/plans', query)
   return data
 }
 
