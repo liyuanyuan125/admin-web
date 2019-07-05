@@ -64,8 +64,8 @@ export default class Main extends ViewBase {
 
     {
       name: 'name',
-      defaultValue: 0,
-      type: planList,
+      defaultValue: '',
+      type: 'input',
       width: 140,
       placeholder: '广告计划名称'
     },
