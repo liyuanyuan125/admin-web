@@ -7,52 +7,6 @@
       :columns="columns"
       ref="listPage"
     >
-      <template slot="acts">
-        <Button
-          type="success"
-          icon="md-add-circle"
-          @click="editShow()"
-        >新建</Button>
-      </template>
-      <template slot="keyWords" slot-scope="{ row: { keyWords } }">
-        <div class="keyWords">
-         <span v-if="keyWords">{{keyWords.join(';')}}</span>
-        </div>
-      </template>
-
-      <template slot="platform" slot-scope="{ row: { keyWords } }">
-        <div>
-         <router-link :to="{ name: 'data-cinema-hall', params: { id } }">查看影厅</router-link>
-        </div>
-      </template>
-
-      <template slot="shop" slot-scope="{ row }">
-        <div>
-         <router-link :to="{ name: 'data-cinema-hall', params: { id } }">查看影厅</router-link>
-        </div>
-      </template>
-
-      <template slot="product" slot-scope="{ row }">
-        <div>
-         <router-link :to="{ name: 'data-cinema-hall', params: { id } }">查看影厅</router-link>
-        </div>
-      </template>
-
-      <template slot="status" slot-scope="{ row }">
-        <div>
-         <router-link :to="{ name: 'data-cinema-hall', params: { id } }">查看影厅</router-link>
-        </div>
-      </template>
-
-      <template slot="action" slot-scope="{ row: { id } }">
-        <div class="row-acts">
-          <router-link
-            :to="{ name: 'data-cinema-hall', params: { id } }"
-            v-auth="'theater.cinemas:info'"
-          >查看影厅</router-link>
-          <a >编辑</a>
-        </div>
-      </template>
     </ListPage>
   </div>
 </template>
@@ -62,7 +16,9 @@ import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import jsxReactToVue from '@/util/jsxReactToVue'
-import { brandList } from '@/api/brand'
+import { mediaslist, addmedias, editmedias, delmedias } from '@/api/brand'
+import EditDialog, { Field } from '@/components/editDialog'
+import { slice, clean } from '@/fn/object'
 
 @Component({
   components: {
@@ -70,72 +26,171 @@ import { brandList } from '@/api/brand'
   }
 })
 export default class Main extends ViewBase {
-  fetch = brandList
+  fetch = mediaslist
+  id = 0
 
-  filters: Filter[] = [
-    {
-      name: 'id',
-      defaultValue: '',
-      type: 'input',
-      width: 85,
-      placeholder: '品牌ID'
-    },
+  get filters() {
+    const brandId = this.$route.params.brandId
+    return [
+      {
+        name: 'channelCode',
+        defaultValue: '',
+        type: 'select',
+        width: 85,
+        placeholder: '账号平台',
+        enumKey: 'channelCodeList'
+      },
 
-    {
-      name: 'name',
-      defaultValue: '',
-      type: 'input',
-      width: 85,
-      placeholder: '品牌中文名称'
-    },
-    {
-      name: 'enName',
-      defaultValue: '',
-      type: 'input',
-      width: 85,
-      placeholder: '品牌外文名称'
-    },
+      {
+        name: 'channelDataId',
+        defaultValue: '',
+        type: 'input',
+        width: 85,
+        placeholder: '账号ID'
+      },
 
-    {
-      name: 'tradeCode',
-      defaultValue: 0,
-      type: 'select',
-      width: 85,
-      placeholder: '品牌所属行业',
-      enumKey: 'tradeCodeList'
-    },
+      {
+        name: 'name',
+        defaultValue: '',
+        type: 'input',
+        width: 85,
+        placeholder: '账号名称'
+      },
 
-    {
-      name: 'pageIndex',
-      defaultValue: 1
-    },
+      {
+        name: 'brandId',
+        defaultValue: brandId,
+      },
 
-    {
-      name: 'pageSize',
-      defaultValue: 20
-    }
-  ]
+      {
+        name: 'pageIndex',
+        defaultValue: 1
+      },
+
+      {
+        name: 'pageSize',
+        defaultValue: 20
+      }
+    ]
+  }
 
   enums = [
-    'tradeCodeList',
-    'statusList'
+    'channelCodeList',
   ]
 
   get columns() {
     return [
-      { title: '序号', key: 'id', width: 65 },
-      { title: '品牌ID', key: 'id', width: 80 },
-      { title: '品牌中文名称', key: 'name', minWidth: 90 },
-      { title: '品牌外文名称', key: 'enName', width: 100 },
-      { title: '品牌logo', key: 'logo', minWidth: 90, editor: 'deprecated' },
-      { title: '所属行业', key: 'tradeCode', width: 80, editor: 'enum', enumKey: 'tradeCodeCode' },
-      { title: '搜索关键字', key: 'keyWords', width: 80, slot: 'keyWords' },
-      { title: '社交平台', key: 'countyName', width: 80, slot: 'platform' },
-      { title: '门店', key: 'gradeCode', width: 60, slot: 'shop' },
-      { title: '产品', key: 'gradeCode', width: 60, slot: 'product' },
-      { title: '状态', key: 'gradeCode', width: 60, slot: 'status' },
-      { title: '操作', slot: 'action', width: 100 }
+      { title: '序号', key: 'id' },
+      { title: '账号平台', key: 'id' },
+      { title: '账号ID', key: 'name' },
+      { title: '账号名称', key: 'enName' },
+      { title: '账号头像', key: 'logo', editor: 'deprecated' },
+      { title: '跳转URL链接', key: 'url', editor: 'enum', enumKey: 'tradeCodeCode' },
+      // { title: '操作', key: 'keyWords', slot: 'action' }
     ] as ColumnExtra[]
+  }
+
+  get fields() {
+    const brandId = this.$route.params.brandId
+    return [
+      {
+        name: 'brandId',
+        defaultValue: brandId
+      },
+
+      {
+        name: 'channelCodeCode',
+        defaultValue: '',
+        type: 'select',
+        label: '账号平台',
+        span: 12,
+        required: true
+      },
+
+      {
+        name: 'channelDataId',
+        defaultValue: '',
+        type: 'input',
+        label: '账号ID',
+        span: 12,
+        required: true
+      },
+
+      {
+        name: 'name',
+        defaultValue: '',
+        type: 'input',
+        label: '账号名称',
+        span: 12,
+      },
+
+      {
+        name: 'url',
+        defaultValue: '',
+        type: 'input',
+        label: 'URL链接',
+        span: 12
+      }
+    ]
+  }
+
+  editFetch = async ( query: any) => {
+    const { data: {
+      items,
+      channelCodeList
+    }} = await mediaslist(query)
+
+    return {
+      data: {
+        channelCodeList,
+        item: {
+          url: items[0].url,
+          channelCodeCode: items[0].channelCode,
+          name: items[0].name,
+          channelDataId: items[0].channelDataId,
+        }
+      }
+    }
+  }
+
+  async del(id: any) {
+    try {
+      await delmedias(id)
+      ; (this.$refs.listPage as any).update()
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
+  editShow(id = 0) {
+    const editor = this.$refs.editDlg as EditDialog
+    const brandId = this.$route.params.brandId
+    this.id = id
+    let query: any = {}
+    if (this.id) {
+      query = {
+        brandId,
+        id
+      }
+    } else {
+      query = {
+        brandId,
+        channelCode: 1
+      }
+    }
+    editor.show({ ...query }).done((data: any) => {
+      (this.$refs.listPage as any).update()
+    })
+  }
+
+  editSubmit(data: any) {
+    const query = clean({
+      ...data,
+      channelCode: data.channelCodeCode,
+      channelCodeCode: '',
+      id: this.id
+    })
+    return this.id ? editmedias(query) : addmedias(query)
   }
 
   mounted() {}

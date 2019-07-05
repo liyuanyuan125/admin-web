@@ -14,39 +14,11 @@
           @click="editShow()"
         >新建账号平台</Button>
       </template>
-      <template slot="keyWords" slot-scope="{ row: { keyWords } }">
-        <div class="keyWords">
-         <span v-if="keyWords">{{keyWords.join(';')}}</span>
-        </div>
-      </template>
-
-      <template slot="platform" slot-scope="{ row: { keyWords } }">
-        <div>
-         <router-link :to="{ name: 'data-cinema-hall', params: { id } }">查看影厅</router-link>
-        </div>
-      </template>
-
-      <template slot="shop" slot-scope="{ row }">
-        <div>
-         <router-link :to="{ name: 'data-cinema-hall', params: { id } }">查看影厅</router-link>
-        </div>
-      </template>
-
-      <template slot="product" slot-scope="{ row }">
-        <div>
-         <router-link :to="{ name: 'data-cinema-hall', params: { id } }">查看影厅</router-link>
-        </div>
-      </template>
-
-      <template slot="status" slot-scope="{ row }">
-        <div>
-         <router-link :to="{ name: 'data-cinema-hall', params: { id } }">查看影厅</router-link>
-        </div>
-      </template>
 
       <template slot="action" slot-scope="{ row: { id } }">
         <div class="row-acts">
           <a @click="editShow(id)">编辑</a>
+          <a @click="del(id)">删除</a>
         </div>
       </template>
     </ListPage>
@@ -178,7 +150,33 @@ export default class Main extends ViewBase {
     ]
   }
 
-  editFetch = mediaslist
+  editFetch = async ( query: any) => {
+    const { data: {
+      items,
+      channelCodeList
+    }} = await mediaslist(query)
+
+    return {
+      data: {
+        channelCodeList,
+        item: {
+          url: items[0].url,
+          channelCodeCode: items[0].channelCode,
+          name: items[0].name,
+          channelDataId: items[0].channelDataId,
+        }
+      }
+    }
+  }
+
+  async del(id: any) {
+    try {
+      await delmedias(id)
+      ; (this.$refs.listPage as any).update()
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
 
   editShow(id = 0) {
     const editor = this.$refs.editDlg as EditDialog
@@ -205,7 +203,8 @@ export default class Main extends ViewBase {
     const query = clean({
       ...data,
       channelCode: data.channelCodeCode,
-      channelCodeCode: ''
+      channelCodeCode: '',
+      id: this.id
     })
     return this.id ? editmedias(query) : addmedias(query)
   }
