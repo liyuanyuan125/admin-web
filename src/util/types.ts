@@ -49,3 +49,16 @@ export interface AjaxResult {
   data: any
   msg: string
 }
+
+/**
+ * 获取 KOL 平台列表
+ */
+export function getChannelList() {
+  return [
+    { name: '微信', value: 'wechat' },
+    { name: '微博', value: 'weibo' },
+    { name: '快手', value: 'kuaishou' },
+    { name: '抖音', value: 'douyin' },
+  ]
+}
+

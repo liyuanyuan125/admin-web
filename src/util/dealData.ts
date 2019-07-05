@@ -1,5 +1,6 @@
 import { MapType, KeyTextControlStatus } from '@/util/types'
 import { parse } from '@/fn/array'
+import { at } from 'lodash'
 
 /**
  * 提供一组处理数据的工具方法
@@ -135,4 +136,13 @@ export function makeMap(list: string | any[], ignoreCase = true): MapType<number
     return map
   }, {})
   return result
+}
+
+/**
+ * 通过 lodash at 访问对象的值
+ * @param object 对象
+ * @param path 路径
+ */
+export function dot(object: any, path: string) {
+  return at(object, path)[0]
 }

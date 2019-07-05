@@ -52,8 +52,8 @@ module.exports = {
       },
       {
         env: 'prd',
-        baseUrl: '//admin.aiads.com',
-        ajaxBaseUrl: '//mapi.aiads.com'
+        baseUrl: '//admin.jydata.com',
+        ajaxBaseUrl: '//mapi.jydata.com'
       }
     ].forEach(it => {
       const { env } = it
