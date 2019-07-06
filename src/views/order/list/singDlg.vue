@@ -66,6 +66,7 @@ export default class ComponentMain extends ViewBase {
     this.showDlg = true
     this.title = id.length + '条'
     this.ids = id || []
+    this.length = length
     ; (this.$refs.dataForm as any).resetFields()
     if (this.id) {
         // console.log(this.id)
@@ -111,7 +112,7 @@ export default class ComponentMain extends ViewBase {
 
       toast('操作成功')
       this.showDlg = false
-      this.$emit('done', this.id)
+      this.$emit('dlgEditDone', this.id)
       ; (this.$refs.dataForm as any).resetFields()
     } catch (ex) {
       this.handleError(ex)

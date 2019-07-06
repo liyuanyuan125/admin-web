@@ -29,7 +29,7 @@
           @on-change="sizeChangeHandle"
           @on-page-size-change="currentChangeHandle"/>
     </div>
-    <singDlg ref="addOrUpdate" @done="dlgEditDone" />
+    <singDlg ref="addOrUpdate" @dlgEditDone="dlgEditDone" />
     </div>
 
   </div>
@@ -134,7 +134,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   async dlgEditDone(id: any) {
     this.search()
-    if (this.total == 0) {
+    if ((this.total - 1) == 0) {
       const res = await set ({id: this.$route.params.id, reasond: '无有效影院'})
     }
     this.$emit('dlgEditDone')
