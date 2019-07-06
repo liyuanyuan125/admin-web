@@ -258,8 +258,11 @@ export default class Main extends ViewBase {
   async overloading() {
     const { data } = await itemlist(this.$route.params.id)
     this.overload = data.item
+    const _this = this
     if (this.overload.recommend == false) {
-      this.overloading()
+      setTimeout(() => {
+        _this.overloading()
+      }, 800)
     }
     if (this.overload.recommend == true) {
       this.search()
@@ -276,10 +279,11 @@ export default class Main extends ViewBase {
     this.loading2 = true
     try {
       await revuew(this.$route.params.id)
-      const _this = this
-      setTimeout(() => {
-        _this.overloading()
-      }, 3000)
+      this.overloading()
+      // const _this = this
+      // setInterval(() => {
+      //   _this.overloading()
+      // }, 800)
     } catch (ex) {
       this.handleError(ex)
     } finally {
