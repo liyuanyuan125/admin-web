@@ -3,7 +3,7 @@
     <div  v-if="shows">
       <div class="act-bar flex-box">
         <form class="form flex-1" @submit.prevent="search">
-          <Select v-model="query.adsCompanyId" placeholder="广告主公司名称" style='width: 200px;'  filterable>
+          <Select v-model="query.advertiserId" placeholder="广告主公司名称" style='width: 200px;'  filterable>
             <Option v-for="it in adscompany" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
           </Select>
@@ -12,7 +12,7 @@
             <Option v-for="it in planlist" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
           </Select>
-          <Select v-model="query.resourceCompanyId" placeholder="资源方公司名称" style='width: 200px;'  filterable>
+          <Select v-model="query.resourceId" placeholder="资源方公司名称" style='width: 200px;'  filterable>
             <Option v-for="it in resourcescompany" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
           </Select>
@@ -54,15 +54,12 @@ import { Component, Watch , Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { queryList , planlist , company } from '@/api/orderSys'
+import { queryList , company , planlist } from '@/api/orderSys'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
-// import { numberify, numberKeys } from '@/fn/typeCast'
-// import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import Dlgjie from './dlgjie.vue'
-// import dlgVerify from './dlgVerify.vue'
 
 import {confirm , warning , success, toast } from '@/ui/modal'
 
@@ -85,11 +82,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   defQuery = {
     pageIndex: 1,
     pageSize: 20,
-    adsCompanyId: 0,
-    resourceCompanyId: 0,
-    planId: 0,
-    planType: 0,
-    status: 0,
+    resourceId: null,
+    advertiserId: null,
+    planId: null,
+    planType: null,
+    status: null,
   }
   query: any = {}
   shows = true
@@ -217,7 +214,17 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     this.doSearch()
   }
   reset() {
-    this.resetQuery()
+    // this.resetQuery()
+    this.query = {
+      pageIndex: 1,
+      pageSize: 20,
+      resourceId: 0,
+      resourceCompanyId: 0,
+      planId: 0,
+      planType: 0,
+      status: 0,
+    }
+    this.doSearch()
   }
 
   async doSearch() {

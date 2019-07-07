@@ -2,11 +2,11 @@ import { get , post , put } from '@/fn/ajax'
 
 // 订单列表
 export async function queryList(query: any) {
-  const data = await get('/xadvert/v1/orders', query)
+  const data = await get('/xadvert/orders', query)
   return data
 }
 
-// 广告计划列表
+//  列表
 export async function planlist(query: any) {
   const data = await get('/xadvert/plans', query)
   return data
@@ -20,13 +20,13 @@ export async function company(query: any) {
 
 // 订单详情
 export async function queryItem(id: any ) {
-  const data = await get(`/xadvert/v1/orders/${id}`)
+  const data = await get(`/xadvert/orders/${id}`)
   return data
 }
 
 // 关闭
-export async function set(id: any , query: any) {
-  const res = await put(`/xadvert/v1/orders/${id}/closed`, query)
+export async function set(query: any) {
+  const res = await put(`/xadvert/orders/closed`, query)
   return res
 }
 
@@ -51,12 +51,13 @@ export async function number(id: any , query: any) {
 
 // 影院列表
 export async function cinemaList(id: any , query: any) {
-  const res = await get(`/xadvert/v1/orders/${id}/receive-cinemas`, query)
+  const res = await get(`/xadvert/orders/${id}/receive-cinemas`, query)
+
   return res
 }
 
 // 取消执行
 export async function cinemaCancel(query: any) {
-  const res = await put(`/xadvert/v1/orders/cinema-cancel`, query)
+  const res = await put(`/xadvert/orders/cinema-cancel`, query)
   return res
 }

@@ -269,6 +269,76 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  // 基础数据 - 品牌管理 - 品牌列表
+  {
+    path: '/data/brand',
+    name: 'data-brand',
+    component: () => import('./views/data/brand/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 基础数据 - 品牌管理 - 编辑社交平台
+  {
+    path: '/data/brand/platformedit/:brandId',
+    name: 'data-brand-platformedit',
+    component: () => import('./views/data/brand/platformedit.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 基础数据 - 品牌管理 - 查看社交平台
+  {
+    path: '/data/brand/platformdetail/:brandId',
+    name: 'data-brand-platformdetail',
+    component: () => import('./views/data/brand/platformdetail.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 基础数据 - 品牌管理 - 查看门店
+  {
+    path: '/data/brand/shopdetail',
+    name: 'data-brand-shopdetail',
+    component: () => import('./views/data/brand/shopdetail.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 基础数据 - 品牌管理 - 编辑门店
+  {
+    path: '/data/brand/shopedit',
+    name: 'data-brand-shopedit',
+    component: () => import('./views/data/brand/shopedit.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 基础数据 - 品牌管理 - 查看产品
+  {
+    path: '/data/brand/productdetail',
+    name: 'data-brand-productdetail',
+    component: () => import('./views/data/brand/productdetail.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 基础数据 - 品牌管理 - 查看产品
+  {
+    path: '/data/brand/productedit',
+    name: 'data-brand-productedit',
+    component: () => import('./views/data/brand/productedit.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
   {
     path: '/data/area/',
     name: 'data-area',
@@ -640,14 +710,15 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // kol平台账号资源管理
   {
-    path: '/resource/kolplatform/list',
+    path: '/resource/kolplatform/list/:channel?',
     name: 'resource-kolplatform-list',
     component: () => import('./views/resource/kolPlatform/index.vue'),
     meta: {
       authKey: '',
       title: 'KOL平台账号资源管理',
       fixed: true
-    }
+    },
+    props: true,
   },
 
   //  kol平台账号资源管理 - 查看

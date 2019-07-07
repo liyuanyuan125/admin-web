@@ -1,22 +1,25 @@
 <template>
-  <div class="pages" v-auth="'advert.executeOrder:cinemas'">
+  <div v-auth="'advert.executeOrder:cinemas'">
+    <Row>已接单影院: {{total}}</Row>
+    <div  class="pages" >
+      
     <Row class="shouDlg-header">
       <Col span="7">
         <AreaSelect v-model="area"/>
       </Col>
       <Col span="5" offset="1">
-        <Input v-model="dataForm.name" placeholder="【专资编码】或 影院名称" />
+        <Input v-model="dataForm.query" placeholder="【专资编码】或 影院名称" />
       </Col>
       <Col span="6" offset="1">
         <Button type="primary" @click="search">搜索</Button>
       </Col>
     </Row>
-    <div v-if="checkId">
+    <div>
       <Button type="primary" @click="changeAll">批量取消执行</Button>
     </div>
-    <Table :columns="columns" @on-selection-change="check" :data="tableData" :loading="loading"
+    <Table ref="selection" :columns="columns" @on-selection-change="check" :data="list" :loading="loading"
       border stripe disabled-hover size="small" class="table">
-      <template v-if="$route.params.status == '2'" slot="action" slot-scope="{row}" >
+      <template slot="action" slot-scope="{row}" >
         <a v-auth="'advert.executeOrder:cancelCinema'" @click="change( row.id, row.shortName )">取消执行</a>
       </template>
     </Table>
@@ -26,8 +29,9 @@
           @on-change="sizeChangeHandle"
           @on-page-size-change="currentChangeHandle"/>
     </div>
-    <singDlg ref="addOrUpdate" @done="dlgEditDone" />
-    <imgModel ref="img" />
+    <singDlg ref="addOrUpdate" @dlgEditDone="dlgEditDone" />
+    </div>
+
   </div>
 </template>
 
@@ -60,12 +64,12 @@ const dataForm = {
   }
 })
 export default class Main extends Mixins(ViewBase, UrlManager) {
-  @Prop({ type: Array, default: () => [] }) cinemas!: any[]
+  // @Prop({ type: Array, default: () => [] }) cinemas!: any[]
 
   dataForm: any = {
     pageIndex: 1,
     pageSize: 20,
-    name: '',
+    query: '',
     provinceId: 0,
     cityId: 0,
     countyId: 0,
@@ -85,9 +89,14 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   get columns() {
     const data: any = [
+      {
+        type: 'selection',
+        title: '全选',
+        width: 60,
+        align: 'center'
+      },
       { title: '影院名称', key: 'shortName', width: 130, align: 'center' },
       { title: '影厅数量', width: 60, key: 'hallCount', align: 'center' },
-      { title: '场次数量', width: 60, key: 'seatCount', align: 'center' },
       { title: '专资编码', width: 120, key: 'code', align: 'center' },
       {
         title: '所在地',
@@ -102,26 +111,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           return <span>{area}{province}{city}</span>
           /* tslint:enable */
         }
-      },
-      {
-        title: '执行凭证',
-        key: 'status',
-        align: 'center',
-        width: 80,
-        render: (hh: any, { row: { status } }: any) => {
-          /* tslint:disable */
-          const h = jsxReactToVue(hh)
-          return <a on-click={this.find.bind(this)}>-</a>
-          /* tslint:enable */
-        }
-      }
-    ]
-    const check = [
-       {
-        type: 'selection',
-        title: '全选',
-        width: 60,
-        align: 'center'
       }
     ]
     const opernation = [
@@ -133,71 +122,24 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         slot: 'action'
       }
     ]
-    return this.$route.params.status == '2' ? [...check, ...data, ...opernation] : data
+    // return this.$route.params.status == '2' ? [...check, ...data, ...opernation] : data
+    return [...data, ...opernation]
   }
 
-  check(data: any) {
-    const ids = this.tableData.map((it: any) => it.id)
-    const dataId = data.map((it: any) => it.id)
-    data.forEach((item: any) => {
-      if (!this.checkId.includes(item.id)) {
-        this.checkId.push(item.id)
-      }
+  check(row: any , selection: any) {
+    this.checkId = row.map((it: any) => {
+      return it.id
     })
-    const filterId = ids.filter((it: any) => !dataId.includes(it))
-    this.checkId = this.checkId.filter((it: any) => !filterId.includes(it))
-  }
-
-  get cachedMap() {
-    return {
-    }
   }
 
   async dlgEditDone(id: any) {
-    // if (id.length > 0) {
-    //   id.map((it: any) => {
-    //     this.cinemaArray = this.cinemaArray.filter((its: any) => its != it)
-    //     this.checkId = this.checkId.filter((its: any) => its != it)
-    //   })
-    // } else {
-    //   this.cinemaArray = this.cinemaArray.filter((it: any) => it != id)
-    // }
     this.search()
-    if (this.total == 0) {
-      const res = await set (this.$route.params.id, {closeReason : '无有效影院'})
+    if ((this.total - 1) == 0) {
+      const res = await set ({id: this.$route.params.id, reasond: '无有效影院'})
     }
+    this.$emit('dlgEditDone')
   }
 
-  get tableData() {
-    if (this.cinemaArray.length == 0) {
-      return []
-    }
-    const cachedMap = this.cachedMap
-    const list = (this.list || []).map((it: any) => {
-      return {
-        ...it
-      }
-    })
-    const list1 = (this.list || []).map((it: any) => {
-      if (this.checkId.includes(it.id)) {
-        return {
-          ...it,
-          _checked: true
-        }
-      } else {
-        return {
-          ...it,
-        }
-      }
-    })
-    return this.$route.params.status == '2' ? list1 : list
-  }
-
-  find() {
-    this.$nextTick(() => {
-      (this.$refs.img as any).init()
-    })
-  }
 
   // 每页数
   sizeChangeHandle(val: any) {
@@ -219,11 +161,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     if (this.loading) {
       return
     }
-    if (this.cinemaArray.length == 0) {
-      return
-    }
     this.loading = true
-    const query = clean({ ...this.dataForm, ids: this.cinemaArray.join(',') })
+    const query = clean({ ...this.dataForm})
     try {
         // 订单列表
       const { data: {
@@ -267,19 +206,19 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     })
   }
 
-  @Watch('cinemaArray', {deep: true})
+  // @Watch('cinemaArray', {deep: true})
 
-  watchcinemaArray(val: number[]) {
-    if (val.length > 0) {
-      this.search()
-    }
-  }
+  // watchcinemaArray(val: number[]) {
+  //   if (val.length > 0) {
+  //     this.search()
+  //   }
+  // }
 
-  @Watch('cinemas', {deep: true})
+  // @Watch('cinemas', {deep: true})
 
-  watchcinemas(val: number[]) {
-    this.cinemaArray = val
-  }
+  // watchcinemas(val: number[]) {
+  //   this.cinemaArray = val
+  // }
 }
 </script>
 

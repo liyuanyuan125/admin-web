@@ -27,7 +27,7 @@
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import planList from './filename.vue'
+// import planList from './filename.vue'
 import CompanyList from './fileplan.vue'
 import videoList from './videoList.vue'
 import jsxReactToVue from '@/util/jsxReactToVue'
@@ -64,8 +64,8 @@ export default class Main extends ViewBase {
 
     {
       name: 'name',
-      defaultValue: 0,
-      type: planList,
+      defaultValue: '',
+      type: 'input',
       width: 140,
       placeholder: '广告计划名称'
     },

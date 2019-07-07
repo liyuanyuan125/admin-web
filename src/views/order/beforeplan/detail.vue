@@ -7,6 +7,7 @@
     <div class='title'>基础信息</div>
     <div class='bos'>
       <Row>
+        {{listitem.name}}
         <Col :span='12'>计划名称&nbsp;：&nbsp;{{listitem.name == null ? '暂无' : listitem.name}}</Col>
         <Col :span='12'>广告片&nbsp;：&nbsp;{{listitem.videoName == null ? '-' : listitem.videoName}}({{listitem.specification == null ? '-' : listitem.specification}}s)【{{listitem.customerName == null ? '-' : listitem.customerName}}】</Col>
       </Row>
@@ -54,8 +55,8 @@
     <div class='title'>备注</div>
     <div class='bos' >
       <Row v-if='(listitem.remarks == null)'>暂无备注</Row>
-      <Row v-if='listitem.remarks != null' v-for='(it,index) in listitem.remarks' :key='index'>
-          {{it.operationTime.split('T')[0] + ' ' + it.operationTime.split('T')[1].split('.')[0]}} 
+      <Row v-if='listitem.remarks != null' v-for='(it,index) in remarks' :key='index'>
+          {{it.operationTime}} 
           {{it.operationEmail}}【{{it.operationName}}】 
           {{it.remarks}}
     </Row>
@@ -257,8 +258,11 @@ export default class Main extends ViewBase {
   async overloading() {
     const { data } = await itemlist(this.$route.params.id)
     this.overload = data.item
+    const _this = this
     if (this.overload.recommend == false) {
-      this.overloading()
+      setTimeout(() => {
+        _this.overloading()
+      }, 800)
     }
     if (this.overload.recommend == true) {
       this.search()
@@ -275,7 +279,11 @@ export default class Main extends ViewBase {
     this.loading2 = true
     try {
       await revuew(this.$route.params.id)
-      setTimeout(this.overloading() as any, 3000)
+      this.overloading()
+      // const _this = this
+      // setInterval(() => {
+      //   _this.overloading()
+      // }, 800)
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -335,7 +343,12 @@ export default class Main extends ViewBase {
       this.end =  b.slice(0, 4) + '-' + b.slice(4, 6) + '-' + b.slice(6, 8)
       this.applyTime = data.item.applyTime.split('T')[0]
       + ' ' + data.item.applyTime.split('T')[1].split('.')[0]
-      // this.remarks = this.listitem.remarks || []
+      this.remarks = (this.listitem.remarks || []).map((it: any) => {
+        return {
+          ...it,
+          operationTime: moment(it.operationTime).format(timeFormat)
+        }
+      })
       this.logList = (data.logList || []).map((it: any) => {
         return {
           ...it,
@@ -397,7 +410,8 @@ export default class Main extends ViewBase {
     try {
       const res = await beizhu (this.$route.params.id, this.databeizhu)
       toast('成功')
-      this.$router.go(0)
+      this.search()
+      this.databeizhu.remarks = ''
     } catch (ex) {
       this.handleError(ex)
     }

@@ -1,7 +1,8 @@
 stages:
   - build
   - package
-  - deploy
+  - deploy-dev
+  - deploy-prd
 
 variables:
   SERVICE_NAME: iadp-admin-web
@@ -10,6 +11,7 @@ build:
   image: $REGISTRY_ADDRESS/devops/nodejs/build
   stage: build
   only:
+    - tags
     - develop
     - testing
     - release
@@ -29,21 +31,25 @@ package:
   variables:
     GIT_STRATEGY: none
   only:
+    - tags
     - develop
     - testing
     - release
+  except:
+    - tags
   script:
     - package
   tags:
     - docker
 
-deploy:
+deploy-dev:
   image: $REGISTRY_ADDRESS/devops/docker/deploy
-  stage: deploy
+  stage: deploy-dev
   variables:
     GIT_STRATEGY: none
   dependencies: []
   only:
+    - tags
     - develop
     - testing
     - release
@@ -52,3 +58,20 @@ deploy:
   environment: aiads-dev
   tags:
     - docker
+
+deploy-prd:
+  image: $REGISTRY_ADDRESS/devops/docker/deploy
+  stage: deploy-prd
+  variables:
+    GIT_STRATEGY: none
+  dependencies: []
+  only:
+    - tags
+  except:
+    - branches
+  script:
+    - deploy -service $SERVICE_NAME -template web -vars port=8005
+  environment: aiads-prd
+  tags:
+    - docker
+  when: manual

@@ -302,6 +302,10 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
   watchType() {
     this.doSearch()
   }
+  @Watch('query', { deep: true })
+  watchQuery() {
+    this.doSearch()
+  }
 }
 </script>
 

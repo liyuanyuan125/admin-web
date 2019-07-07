@@ -5,7 +5,7 @@
     :width='420'
     :title="'关闭订单'"
     @on-cancel="cancel" >
-    <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
+    <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="0">
       <FormItem label="" prop="closeReason">
         <Input type='textarea' v-model="dataForm.closeReason"></Input>
       </FormItem>
@@ -70,10 +70,10 @@ export default class ComponentMain extends ViewBase {
       return
     }
     try {
-      const res = await set (this.$route.params.id, this.dataForm)
+      const res = await set ({id: this.$route.params.id, reasond: this.dataForm.closeReason})
       toast('成功')
       this.showDlg = false
-      this.$emit('done')
+      this.$emit('dlgEditDone')
       this.$router.push({ name: 'order-list'})
     } catch (ex) {
       this.handleError(ex)

@@ -1,7 +1,11 @@
 import { MapType, KeyTextControlStatus } from '@/util/types'
 import { parse } from '@/fn/array'
+<<<<<<< HEAD
 import moment from 'moment'
 import { keyBy, at } from 'lodash'
+=======
+import { at } from 'lodash'
+>>>>>>> 130ccec9dc463903f6a470306192062d1ff63a84
 
 /**
  * 提供一组处理数据的工具方法
@@ -139,12 +143,16 @@ export function makeMap(list: string | any[], ignoreCase = true): MapType<number
   return result
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 130ccec9dc463903f6a470306192062d1ff63a84
 /**
  * 通过 lodash at 访问对象的值
  * @param object 对象
  * @param path 路径
  */
+<<<<<<< HEAD
 // export function dot(object: any, path: string) {
 //   return at(object, path)[0]
 // }
@@ -204,4 +212,8 @@ export function intDate(date: number, format = 'YYYY-MM-DD') {
     return [RegExp.$1, RegExp.$2].join('-')
   }
   return date
+=======
+export function dot(object: any, path: string) {
+  return at(object, path)[0]
+>>>>>>> 130ccec9dc463903f6a470306192062d1ff63a84
 }
