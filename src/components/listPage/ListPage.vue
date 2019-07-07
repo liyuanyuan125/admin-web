@@ -107,7 +107,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
   /**
    * 已选择的项的 ids（不限于当前页，所有页），支持通过 .sync 双向绑定
    */
-  @Prop({ type: Array, default: () => [] }) selectedIds!: number[] | string[]
+  @Prop({ type: Array, default: () => [] }) selectedIds!: Array<number | string>
 
   allSelectedIds = this.selectedIds
 
@@ -246,12 +246,12 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
   }
 
   @Watch('selectedIds')
-  watchSelectedIds(value: number[] | string[]) {
+  watchSelectedIds(value: Array<number | string>) {
     this.allSelectedIds = value || []
   }
 
   @Watch('allSelectedIds')
-  watchAllSelectedIds(value: number[] | string[]) {
+  watchAllSelectedIds(value: Array<number | string>) {
     const uniqIds = uniq(value)
     // 当 uniqIds 的长度与 value 相同时，说明没有重复元素，
     // 那么应该直接使用传入的 value，否则会导致无限循环
