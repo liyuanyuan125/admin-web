@@ -5,11 +5,9 @@
       :filters="filters"
       :enums="enums"
       :columns="columns"
+      @selectionChange="selectionChange"
       ref="listPage"
     >
-    <template slot="master" slot-scope="{row: {master}}">
-      <span>{{master ? '是' : '否'}}</span>
-    </template>
     </ListPage>
   </div>
 </template>
@@ -70,15 +68,17 @@ export default class Main extends ViewBase {
     enums = []
     get columns() {
      return [
+        {type: 'selection', width: 60, align: 'center' },
         { type: 'index', width: 60, align: 'center', renderHeader: (h: any, params: any) => {
             return h('span', '序号')
         }},
         { title: '影片名称', key: 'name', align: 'center'},
         { title: '影片专资id', key: 'govId', align: 'center'},
         { title: '上映年份', key: 'year', align: 'center'},
-        { title: '代表作品', slot: 'master', align: 'center'},
      ] as ColumnExtra[]
     }
+
+    selectionChange(ids: any[]) {}
 }
 
 </script>
