@@ -211,6 +211,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     this.query.pageIndex = val
     this.doSearch()
   }
+
   // 当前页
   currentChangeHandle(val: any) {
     this.query.pageSize = val
@@ -224,6 +225,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       info('请先选择需要审核的信息')
       return
     }
+
     this.videoVisible = true
     this.$nextTick(() => {
       const myThis: any = this
