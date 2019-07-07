@@ -172,7 +172,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   dlgEditDone(id: any) {
     this.doSearch()
-    alert(123)
   }
 
   reset() {
