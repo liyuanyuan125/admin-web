@@ -47,10 +47,11 @@ deploy-dev:
     GIT_STRATEGY: none
   dependencies: []
   only:
-    - tags
     - develop
     - testing
     - release
+  except:
+    - tags
   script:
     - deploy -service $SERVICE_NAME
   environment: aiads-dev
