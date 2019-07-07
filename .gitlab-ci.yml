@@ -35,8 +35,6 @@ package:
     - develop
     - testing
     - release
-  except:
-    - tags
   script:
     - package
   tags:
