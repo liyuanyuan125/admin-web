@@ -82,7 +82,7 @@ export default class Main extends ViewBase {
         return {
           queryStartTime : startTime ? Number(new Date(String(startTime).slice(0, 4) + '-'
             + String(startTime).slice(4, 6) + '-' +
-            String(startTime).slice(6, 8)).getTime() - (8 * 60 * 60 * 1000 - 1)) : null,
+            String(startTime).slice(6, 8)).getTime() - (8 * 60 * 60 * 1000)) : null,
           queryEndTime : endTime ? Number(new Date(String(endTime).slice(0, 4) + '-'
             + String(endTime).slice(4, 6) + '-' +
             String(endTime).slice(6, 8)).getTime() + (16 * 60 * 60 * 1000 - 1)) : null,
