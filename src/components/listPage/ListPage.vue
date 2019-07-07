@@ -77,6 +77,7 @@ import { devInfo, devError } from '@/util/dev'
 import { toMap } from '@/fn/array'
 import { clean } from '@/fn/object'
 import { defaultParams, dealParams } from '@/util/param'
+import { uniq, difference, union } from 'lodash'
 
 const makeMap = (list: any[]) => toMap(list, 'key')
 
@@ -94,11 +95,21 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
   /** 增强的列配置，增加了一些字段，参见 ColumnExtra 类型 */
   @Prop({ type: Array, default: () => [] }) columns!: ColumnExtra[]
 
+  /** 每一项的 id 字段的名称，默认为 id */
+  @Prop({ type: String, default: 'id' }) idKey!: string
+
   /**
    * 列可选择，若该字段为 true，则会触发
    * selectionChange 事件，并且提供 selectAll 方法
    */
-  @Prop({ type: Boolean, default: false }) canSelect!: boolean
+  @Prop({ type: Boolean, default: false }) selectable!: boolean
+
+  /**
+   * 已选择的项的 ids（不限于当前页，所有页），支持通过 .sync 双向绑定
+   */
+  @Prop({ type: Array, default: () => [] }) selectedIds!: number[] | string[]
+
+  allSelectedIds = this.selectedIds
 
   // 对 Filter 进行规范化处理
   get normalFilter() {
@@ -149,7 +160,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
       handleError: this.handleError.bind(this)
     })
 
-    const result = this.canSelect ? [{
+    const result = this.selectable ? [{
       type: 'selection',
       width: 40,
       align: 'center'
@@ -178,7 +189,15 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
     const query = dealParams(this.filters, this.query, true)
     try {
       const { data } = await this.fetch(query)
-      this.list = data.items || []
+      const idKey = this.idKey
+      const selectable = this.selectable
+      const selectedMap = toMap(this.selectedIds)
+      this.list = (data.items as any[] || []).map(it => {
+        return {
+          ...it,
+          _checked: selectable ? it[idKey] in selectedMap : false
+        }
+      })
       this.total = data.totalCount || 0
 
       const enumType = this.enums.reduce(
@@ -199,6 +218,13 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
   // 全选
   selectionChange(selectedList: any[]) {
     this.$emit('selectionChange', selectedList)
+
+    const idKey = this.idKey
+    const pageIds = (this.list || []).map(it => it[idKey])
+    const ids = (selectedList || []).map(it => it[idKey])
+    const diffIds = difference(this.allSelectedIds, pageIds)
+    const allSelectedIds = union(diffIds, ids)
+    this.allSelectedIds = allSelectedIds
   }
 
   /**
@@ -217,6 +243,20 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
     }
 
     this.update()
+  }
+
+  @Watch('selectedIds')
+  watchSelectedIds(value: number[] | string[]) {
+    this.allSelectedIds = value || []
+  }
+
+  @Watch('allSelectedIds')
+  watchAllSelectedIds(value: number[] | string[]) {
+    const uniqIds = uniq(value)
+    // 当 uniqIds 的长度与 value 相同时，说明没有重复元素，
+    // 那么应该直接使用传入的 value，否则会导致无限循环
+    const ids = uniqIds.length == value.length ? value : uniqIds
+    this.$emit('update:selectedIds', ids)
   }
 }
 </script>
