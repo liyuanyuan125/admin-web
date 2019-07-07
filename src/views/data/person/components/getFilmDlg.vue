@@ -22,7 +22,7 @@ import ViewBase from '@/util/ViewBase'
 export default class Main extends ViewBase {
     @Prop({ type: Object}) value!: object
 
-    form = {}
+    form: any = {}
     rules = {
         filmid: [{required: true, message: '请输入影片id', trigger: 'blur'}]
     }
@@ -35,7 +35,7 @@ export default class Main extends ViewBase {
             return
         }
         this.modalLoading = true
-        this.$emit('input', this.value)
+        this.$emit('passDate', this.form.filmid)
         this.modalLoading = false
     }
 

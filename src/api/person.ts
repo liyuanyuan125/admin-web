@@ -25,8 +25,8 @@ export async function personDetail(id: any) {
 }
 
 // 关联影人
-export async function personMovies(id: any, data: any) {
-    const res = await get(`/person/${id}/movies`, data)
+export async function personMovies( date: any) {
+    const res = await get(`/person/${date.id}/movies`, date)
     return res
 }
 
@@ -43,5 +43,28 @@ export async function queryCtiy(data: any) {
 // 修改影人信息
 export async function editPersonal(id: any, data: any) {
     const res = await put(`/person/${id}`, data)
+    return res
+}
+
+// 同步票神影人信息
+export async function personTask(task: any, data: any) {
+    const res = await post(`/person/sync/${task}`, data)
+}
+
+// 影人操作日志
+export async function log(id: any) {
+    const res = get(`/person/${id}/logs`)
+    return res
+}
+// 品牌分类查询
+// https://yapi.aiads-dev.com/project/154/interface/api/3806
+export async function tradeCode(data: any) {
+    const res = await get('/brand/brands', data)
+    return res
+}
+// 根据code获取里列表
+// https://yapi.aiads-dev.com/project/16/interface/api/5282
+export async function dicItems(code: any) {
+    const res = get(`/basis/dictionary-categories/${code}/items`)
     return res
 }
