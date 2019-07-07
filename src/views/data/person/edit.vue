@@ -214,7 +214,7 @@
           </div>
       </Form>
       <div v-if="tab == 1">
-           <personMovies :id ="id" v-if="tab == 1"></personMovies>
+           <personMovies :id ="id" @selectIds = "selectIds" v-show="tab == 1"></personMovies>
             <div class="footer-btn">
               <Button type="primary" class="btn">浏览</Button>
               <Button type="primary">保存</Button>
@@ -322,6 +322,9 @@ export default class Main extends ViewBase {
         {title: '粉丝数占比%', key: 'rate', width: 120, align: 'center'},
         {title: '操作', slot: 'operate', width: 120, align: 'center'},
     ]
+
+    // 影人代表作品
+    movieIds: any[] = []
 
     mounted() {
       this.detaiId = this.$route.params.id
@@ -581,6 +584,10 @@ export default class Main extends ViewBase {
             row.v = 0
         }
         this.formFans.ages.splice(ind, 1, row)
+    }
+
+    selectIds(val: any) {
+      this.movieIds = val
     }
 
     @Watch('brandType')

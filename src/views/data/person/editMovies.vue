@@ -5,7 +5,8 @@
       :filters="filters"
       :enums="enums"
       :columns="columns"
-      @selectionChange="selectionChange"
+      selectable
+      :selectedIds.sync="selectedIds"
       ref="listPage"
     >
     </ListPage>
@@ -29,7 +30,7 @@ import DatePicker from './components/datePicker.vue'
 })
 export default class Main extends ViewBase {
     @Prop({type: Number}) id!: any
-    fetch = personMovies
+
     filters: Filter[] = [
       {
         name: 'id',
@@ -66,9 +67,9 @@ export default class Main extends ViewBase {
       }
     ]
     enums = []
+    selectedIds = [] as number[]
     get columns() {
      return [
-        {type: 'selection', width: 60, align: 'center' },
         { type: 'index', width: 60, align: 'center', renderHeader: (h: any, params: any) => {
             return h('span', '序号')
         }},
@@ -78,7 +79,16 @@ export default class Main extends ViewBase {
      ] as ColumnExtra[]
     }
 
-    selectionChange(ids: any[]) {}
+    async fetch(query: any) {
+      const res = await personMovies(query)
+      this.selectedIds = res.data.ids
+      return res
+    }
+
+    @Watch('selectedIds')
+    watchSelect(val: any) {
+      this.$emit('selectIds', val)
+    }
 }
 
 </script>
@@ -86,6 +96,12 @@ export default class Main extends ViewBase {
 .select-form {
   padding: 5px 0 15px;
   /deep/ .ivu-input-wrapper {
+    margin-right: 15px;
+  }
+}
+.footer-btn {
+  text-align: center;
+  .btn {
     margin-right: 15px;
   }
 }

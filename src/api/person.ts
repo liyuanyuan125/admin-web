@@ -26,8 +26,24 @@ export async function personDetail(id: any) {
 
 // 关联影人
 export async function personMovies( date: any) {
-    const res = await get(`/person/${date.id}/movies`, date)
-    return res
+    const { code, data, msg} = await get(`/person/${date.id}/movies`, date)
+    const items = data.items || []
+    const totalCount = data.totalCount || 0
+    const ids: any[] = []
+    items.filter((it: any) => {
+        if (it.master) {
+            ids.push(it.id)
+        }
+    })
+    return {
+        code,
+        data: {
+            items,
+            totalCount,
+            ids
+        },
+        msg
+    }
 }
 
 // 查询省
