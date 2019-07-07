@@ -33,7 +33,7 @@
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop } from 'vue-property-decorator'
 import { number } from '@/api/orderSys'
-import { warning , success, toast } from '@/ui/modal'
+import { warning , success, toast , info } from '@/ui/modal'
 import {
   queryList,
   itemlist,
@@ -107,12 +107,20 @@ export default class ComponentMain extends ViewBase {
     }
     if (valid) {
         if (this.statusform.status == 1) {
+          if (this.dataForm.orderIds.length == 0) {
+            info('请选择广告片')
+            return
+          }
           try {
             const res =  await okpass (this.id , {orderIds : this.dataForm.orderIds})
             toast('操作成功')
             this.showDlg = false
             this.$emit('done', this.id)
             ; (this.$refs.dataForm as any).resetFields()
+            this.dataForm = {
+              closeReason: '',
+              orderIds: []
+            }
           } catch (ex) {
             this.handleError(ex)
             this.showDlg = false
@@ -124,6 +132,10 @@ export default class ComponentMain extends ViewBase {
             this.showDlg = false
             this.$emit('done', this.id)
             ; (this.$refs.dataForm as any).resetFields()
+            this.dataForm = {
+              closeReason: '',
+              orderIds: []
+            }
           } catch (ex) {
             this.handleError(ex)
             this.showDlg = false
