@@ -84,3 +84,9 @@ export async function dicItems(code: any) {
     const res = get(`/basis/dictionary-categories/${code}/items`)
     return res
 }
+
+// 添加代表作品
+export async function masterMovies(data: any) {
+    const res = await post('/person/movies', data)
+    return res
+}

@@ -9,7 +9,7 @@
       ref="listPage">
       <template slot="acts-2">
         <div class="table-btn">
-            <Button type="primary" @click="handleGetFilm" >抓取票神影片</Button>
+            <Button type="primary" @click="handleGetFilm" >抓取票神影人</Button>
             <Button type="primary"  @click="handleUpShelf(2)" >批量上架</Button>
             <Button type="primary"  @click="handleUpShelf(3)">批量下架</Button>
         </div>
@@ -27,7 +27,7 @@
           <span v-if="row.status == 1 || row.status == 3" @click="handleUpShelf(2, row.id)">上架</span>
           <span v-if="row.status == 2" @click="handleUpShelf(3, row,id)">下架</span>
           <span @click="$router.push({name: 'data-person-detail', params: {id: row.id}})">查看</span>
-          <span @click="uploadCurrent">刷新</span>
+          <span @click="uploadCurrent(row.id)">刷新</span>
         </div>
       </template>
     </ListPage>
@@ -190,9 +190,18 @@ export default class Main extends ViewBase {
     }
   }
   // 刷新
-  async uploadCurrent() {
+  async uploadCurrent(id: number) {
     // 刷新数据接口成功
-    await info('影片信息已经刷新，10分钟后查看刷新后的信息。', {title: '刷新'})
+    const ids = Array.of(id)
+    try {
+      const data = await personTask('PiaoshenPersonDetailTask', {
+        ids
+      });
+      (this.$refs.listPage as any).update()
+      await info('影片信息已经刷新，10分钟后查看刷新后的信息。', {title: '刷新'})
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
   handleGetFilm() {
     this.visFilmid.visible = true
