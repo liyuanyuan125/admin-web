@@ -9,9 +9,9 @@
       ref="listPage">
       <template slot="acts-2">
         <div class="table-btn">
-            <Button type="primary" @click="handleGetFilm" >抓取票神影片</Button>
-            <Button type="primary"  @click="handleUpShelf()" >批量上架</Button>
-            <Button type="primary"  @click="handleDownShelf()">批量下架</Button>
+            <Button type="primary" @click="handleGetFilm" >抓取票神影人</Button>
+            <Button type="primary"  @click="handleUpShelf(2)" >批量上架</Button>
+            <Button type="primary"  @click="handleUpShelf(3)">批量下架</Button>
         </div>
       </template>
 
@@ -24,14 +24,14 @@
       <template slot="action" slot-scope="{row}">
         <div class="operate-btn">
           <span @click="$router.push({name: 'data-person-edit', params: {id: row.id}})" >编辑</span>
-          <span v-if="row.status == 1 || row.status == 3" @click="handleUpShelf(row.id)">上架</span>
-          <span v-if="row.status == 2" @click="handleDownShelf(row,id)">下架</span>
+          <span v-if="row.status == 1 || row.status == 3" @click="handleUpShelf(2, row.id)">上架</span>
+          <span v-if="row.status == 2" @click="handleUpShelf(3, row,id)">下架</span>
           <span @click="$router.push({name: 'data-person-detail', params: {id: row.id}})">查看</span>
-          <span @click="uploadCurrent">刷新</span>
+          <span @click="uploadCurrent(row.id)">刷新</span>
         </div>
       </template>
     </ListPage>
-    <getFilmDlg v-model="visFilmid" v-if="visFilmid.visible" @input="filmonOK"></getFilmDlg>
+    <getFilmDlg v-model="visFilmid" v-if="visFilmid.visible" @passDate="filmonOK"></getFilmDlg>
   </div>
 </template>
 
@@ -40,7 +40,7 @@ import {Component} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { confirm, info, alert } from '@/ui/modal.ts'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { queryList, personStatus } from '@/api/person'
+import { queryList, personStatus, personTask } from '@/api/person'
 import Country from './country.vue'
 import getFilmDlg from './components/getFilmDlg.vue'
 
@@ -164,68 +164,59 @@ export default class Main extends ViewBase {
     this.idsList = ids.map( item => item.id)
     this.statusIds = ids.map( item => item.status)
   }
-  // 上架 (上架的是状态置为已发布)
-  async handleUpShelf(id?: any[]) {
-    if (!this.idsList.length) {
-      await alert('请选择上架数据', {
-        title: '提示'
-      })
-      return
+  // 上架 / 下架
+  async handleUpShelf(status: number, id?: number) {
+    const text = status == 2 ? '上架' : '下架'
+    if (!id) {
+      if (!this.idsList.length) {
+        await alert(`请选择${text}数据`, {
+          title: '提示'
+        })
+        return
+      }
     }
-    const length = id ? Array.of(id).length : this.idsList.length
-    await confirm(`您选择了${length}条影片进行上架`, {
-      title: '上架操作'
-    })
-    // ids = [] 后台传入参数
     const ids = id ? Array.of(id) : this.idsList
-    // 接口操作
+    await confirm(`您选择了${ids.length}条影片进行${text }`, {
+      title: `${text}操作`
+    })
     try {
       const { data} = await personStatus({
         ids,
-        status: 1
+        status
       });
       (this.$refs.listPage as any).update()
     } catch (ex) {
       this.handleError(ex)
     }
   }
-  // 下架(把状态置为  待发布)
-  async handleDownShelf(id?: any[]) {
-    if (!this.idsList.length) {
-      await alert('请选择下架数据', {
-        title: '提示'
-      })
-      return
-    }
-    const length = id ? Array.of(id).length : this.idsList.length
-     await confirm(`您选择了${length}条影片进行下架`, {
-      title: '下架操作'
-    })
-    // ids = [] 后台传入参数
-    const ids = id ? Array.of(id) : this.idsList
-    // 接口操作
-    try {
-      const { data} = await personStatus({
-        ids,
-        status: 2
-      });
-      (this.$refs.listPage as any).update()
-    } catch (ex) {
-      this.handleError(ex)
-    }
-  }
-
   // 刷新
-  async uploadCurrent() {
+  async uploadCurrent(id: number) {
     // 刷新数据接口成功
-    await info('影片信息已经刷新，10分钟后查看刷新后的信息。', {title: '刷新'})
+    const ids = Array.of(id)
+    try {
+      const data = await personTask('PiaoshenPersonDetailTask', {
+        ids
+      });
+      (this.$refs.listPage as any).update()
+      await info('影片信息已经刷新，10分钟后查看刷新后的信息。', {title: '刷新'})
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
   handleGetFilm() {
     this.visFilmid.visible = true
   }
-  filmonOK(val: any) {
-    this.visFilmid.visible = false;
-    (this.$refs.listPage as any).update()
+  async filmonOK(val: any) {
+    this.visFilmid.visible = false
+    const ids = Array.of(val)
+    try {
+      const data = await personTask('PiaoshenPersonDetailTask', {
+        ids
+      });
+      (this.$refs.listPage as any).update()
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
 }
 </script>

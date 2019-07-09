@@ -5,11 +5,10 @@
       :filters="filters"
       :enums="enums"
       :columns="columns"
+      selectable
+      :selectedIds.sync="selectedIds"
       ref="listPage"
     >
-    <template slot="master" slot-scope="{row: {master}}">
-      <span>{{master ? '是' : '否'}}</span>
-    </template>
     </ListPage>
   </div>
 </template>
@@ -31,7 +30,7 @@ import DatePicker from './components/datePicker.vue'
 })
 export default class Main extends ViewBase {
     @Prop({type: Number}) id!: any
-    fetch = personMovies
+
     filters: Filter[] = [
       {
         name: 'id',
@@ -68,6 +67,7 @@ export default class Main extends ViewBase {
       }
     ]
     enums = []
+    selectedIds = [] as number[]
     get columns() {
      return [
         { type: 'index', width: 60, align: 'center', renderHeader: (h: any, params: any) => {
@@ -76,8 +76,19 @@ export default class Main extends ViewBase {
         { title: '影片名称', key: 'name', align: 'center'},
         { title: '影片专资id', key: 'govId', align: 'center'},
         { title: '上映年份', key: 'year', align: 'center'},
-        { title: '代表作品', slot: 'master', align: 'center'},
      ] as ColumnExtra[]
+    }
+
+    async fetch(query: any) {
+      const res = await personMovies(query)
+      const aryMerge = Array.from(new Set(this.selectedIds.concat(res.data.ids)))
+      this.selectedIds = aryMerge
+      return res
+    }
+
+    @Watch('selectedIds')
+    watchSelect(val: any) {
+      this.$emit('selectIds', val)
     }
 }
 
@@ -86,6 +97,12 @@ export default class Main extends ViewBase {
 .select-form {
   padding: 5px 0 15px;
   /deep/ .ivu-input-wrapper {
+    margin-right: 15px;
+  }
+}
+.footer-btn {
+  text-align: center;
+  .btn {
     margin-right: 15px;
   }
 }

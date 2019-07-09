@@ -29,10 +29,6 @@
         {{specification}}s
       </template>
 
-      <template slot="length" slot-scope="{ row: { length } }">
-        {{length}}s
-      </template>
-
       <template slot="transFee" slot-scope="{ row: { transFee } }">
         {{transFee}}.00
       </template>
@@ -123,7 +119,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       { title: '广告片名称', key: 'name' },
       { title: '客户', slot: 'customerName' },
       { title: '规格', slot: 'specification', width: 60 },
-      { title: '时长', slot: 'length', width: 60 },
       { title: '转制费(元)', slot: 'transFee', width: 110 },
       { title: '创建时间', slot: 'applyTime', width: 135 },
       status in { 2: 1, 5: 1 } && { title: '审核人', slot: 'approvalUser', width: 110 },

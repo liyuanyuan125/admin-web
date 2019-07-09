@@ -10,7 +10,7 @@
  *
  * 3、目前，所有函数必须为「同步」函数，异步验证稍后有需要再讨论
  */
-
+import moment from 'moment'
 /**
  * 验证密码
  * @param password 密码值
@@ -93,12 +93,19 @@ export function formatNumber(num: number, type?: any) {
  * type = 2 格式转化去除 -
  */
 type strFor = string | number
-export function formatConversion(str: strFor, type?: number) {
-  str = str + ''
-  if (type == 2) {
-    return str.replace(/-/g, '')
+export function formatConversion(date: strFor, type?: number) {
+  const format = 'YYYY-MM-DD'
+  const strDate = String(date).trim()
+  if (/^\d{4}\d{2}\d{2}$/.test(strDate)) {
+    return moment(strDate).format(format)
   }
-  return str.replace(/^(\d{4})(\d{2})(\d{2})/, '$1-$2-$3')
+  if (/^(\d{4})[-\/\.]?(\d{2})$/.test(strDate)) {
+    return [RegExp.$1, RegExp.$2].join('-')
+  }
+  if (type == 2) {
+    return strDate.replace(/-/g, '')
+  }
+  return date
 }
 
 /**

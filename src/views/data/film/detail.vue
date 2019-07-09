@@ -11,10 +11,18 @@
           <Col :span="6"><p><label>中文名称</label><em>{{items.name}}</em></p></Col>
           <Col :span="6"><p><label>英文名称</label><em>{{items.englishName}}</em></p></Col>
           <Col :span="6"><p><label>产地</label><em v-for="(item, index) in items.countries" :key="index">{{item}}</em></p></Col>
+          <Col :span="6"><p><label>上映时间</label><em>{{formatConversion(items.releaseDate)}}</em></p></Col>
         </Row>
         <Row>
-          <Col :span="6"><p><label>类型</label><em v-for="(item, index) in items.types" v-if="item != null">{{item}}</em></p></Col>
-          <Col :span="6"><p><label>上映时间</label><em>{{formatConversion(items.releaseDate)}}</em></p></Col>
+          <Col :span="6">
+          <div class="flex-box">
+            <label>类型</label>
+           <div>
+            <em v-for="(item, index) in items.types" v-if="item != null">{{item}}<i v-if="index != items.types.length-1">,</i></em>
+          </div>
+          </div>
+          </Col>
+         
         </Row>
         <Row >
           <Col :span="22" class="flex-box"><label>剧情介绍</label><em class="information" >{{items.summary}}</em></Col>
@@ -30,11 +38,19 @@
         </Row>
         <Row>
           <Col :span="10">
-            <div class="hot-word flex-box">
-              <div style="width: 100px">影片评论热词</div>
-              <div><Table ref="selection" :columns="columns" :data="tableList" border stripe disabled-hover></Table></div>
+            <div class=" flex-box">
+              <Col :span="6"><p><label>影片评论热词</label>
+                <em v-for="(item, index) in (items.customTags || [])" :key="index">{{item}}<i v-if="index != items.customTags.length-1">,</i></em></p>
+              </Col>
+              <!-- <div style="width: 100px">影片评论热词</div>
+              <div><Table ref="selection" :columns="columns" :data="tableList" border stripe disabled-hover></Table></div> -->
             </div>
           </Col>
+        </Row>
+        <Row>
+          <Col :span="6"><p><label>系统鲸娱指数</label><em>xxxx</em></p></Col>
+          <Col :span="6"><p><label>调整鲸娱指数</label><em>xxxx</em></p></Col>
+          <Col :span="6"><p><label>指数所占权重</label><em></em></p></Col>
         </Row>
       </div>
     </div>
@@ -178,8 +194,9 @@ em {
 .base-mess {
   font-size: 14px;
   border: solid 1px #ededed;
-  padding: 10px 15px;
+  padding: 15px;
   margin-bottom: 15px;
+  background: #fff;
   .title {
     font-size: 14px;
     padding-bottom: 20px;
