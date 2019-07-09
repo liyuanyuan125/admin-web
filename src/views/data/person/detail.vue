@@ -25,9 +25,9 @@
             <h2 class="title">扩展信息</h2>
             <Row>
               <Col :span="9">
-                 <p><label>影人标签</label><em>{{itemList.tip}}</em></p>
-                <p><label>擅长类型</label>
-                <!-- movieTypes -->
+                <p><label>影人标签</label><em>{{itemList.tip}}</em></p>
+                <p>
+                <label>擅长类型</label>
                 <em v-if="itemList.goodMovieTypes" v-for="(it, index) in itemList.goodMovieTypes" :key="index">
                   <i v-for="v in movieTypes" :key="v.key" v-if="v.key == it">{{v.value}}</i>
                 </em>

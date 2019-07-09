@@ -25,7 +25,7 @@
         <div class="operate-btn">
           <span @click="$router.push({name: 'data-person-edit', params: {id: row.id}})" >编辑</span>
           <span v-if="row.status == 1 || row.status == 3" @click="handleUpShelf(2, row.id)">上架</span>
-          <span v-if="row.status == 2" @click="handleUpShelf(3, row,id)">下架</span>
+          <span v-if="row.status == 2" @click="handleUpShelf(3, row.id)">下架</span>
           <span @click="$router.push({name: 'data-person-detail', params: {id: row.id}})">查看</span>
           <span @click="uploadCurrent(row.id)">刷新</span>
         </div>
@@ -60,7 +60,7 @@ export default class Main extends ViewBase {
       defaultValue: '',
       type: 'input',
       width: 140,
-      placeholder: '影片id'
+      placeholder: '影人id'
     },
     {
       name: 'name',
@@ -176,7 +176,7 @@ export default class Main extends ViewBase {
       }
     }
     const ids = id ? Array.of(id) : this.idsList
-    await confirm(`您选择了${ids.length}条影片进行${text }`, {
+    await confirm(`您选择了${ids.length}条影人进行${text }`, {
       title: `${text}操作`
     })
     try {
@@ -198,7 +198,7 @@ export default class Main extends ViewBase {
         ids
       });
       (this.$refs.listPage as any).update()
-      await info('影片信息已经刷新，10分钟后查看刷新后的信息。', {title: '刷新'})
+      await info('影人信息已经刷新，10分钟后查看刷新后的信息。', {title: '刷新'})
     } catch (ex) {
       this.handleError(ex)
     }

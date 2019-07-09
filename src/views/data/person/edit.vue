@@ -619,13 +619,7 @@ export default class Main extends ViewBase {
 .upload-box {
   background: none;
 }
-/deep/ .ivu-form {
-  .info-textarea {
-    .ivu-input {
-      width: 70%;
-    }
-  }
-}
+
 .flex-box {
   display: flex;
 }
