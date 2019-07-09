@@ -202,7 +202,7 @@ export interface UserSettings {
   siderMenuIsFold?: boolean
 }
 
-const userSettingsKeyPrefix = 'userSettings@admin.aiads.com'
+const userSettingsKeyPrefix = 'userSettings@admin.jydata.com#'
 
 const defaultUserSettings: UserSettings = {
   siderMenuIsFold: false
