@@ -79,7 +79,8 @@ export function hasLogin() {
  * 退出
  */
 export function logout() {
-  cookie.remove(KEY_TOKEN, { domain: location.hostname, path: '/' })
+  const fullHost = location.hostname.replace(/^(admin\.)?/, '.')
+  cookie.remove(KEY_TOKEN, { domain: fullHost, path: '/' })
 
   localStorage.removeItem(KEY_USER)
 
