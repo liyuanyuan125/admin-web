@@ -2,6 +2,7 @@
 <div>
   <Form  :model='dataForm' :label-width='93' :rules='rules' label-position="left" class='form page' ref='dataForm'>
     <div class="edit-box">
+      <!-- 充值信息 -->
       <div v-auth="'finance.settings:set-bank-account'" class='titop' v-if='showbank'>充值信息
         <Button type='success' style='float: right;' @click="editbank('dataForm')">保存</Button>
       </div>
@@ -45,6 +46,7 @@
           <Col span="8"><span>{{detail.accountNumber}}</span></Col>
         </Row>
       </div>
+      <!-- 交易信息 -->
       <div v-auth="'finance.settings:set-transaction-info'" class='titop' v-if='showmoney'>交易信息
         <Button type='success' style='float: right;' @click="edittransaction('dataForm')">保存</Button>
       </div>
@@ -55,7 +57,7 @@
               <Input v-model="dataForm.proportion" placeholder=""/>
             </FormItem>
           </Col>
-          <col span='14'>&nbsp;% ， <span style='color:red;'>注：未设置分成比例的资源方公司，在平台接单时将使用本项设置</span></Col>
+          <Col span='14' class='tex-al'>&nbsp;% ， <span style='color:red;'>注：未设置分成比例的资源方公司，在平台接单时将使用本项设置</span></Col>
         </Row>
         <Row>
           <Col span="3">
@@ -68,7 +70,7 @@
               <Input v-model="dataForm.stepCost" placeholder=""/>
             </FormItem>
           </Col>
-          <col span='14'>&nbsp;元 ， <span style='color:red;'>&nbsp;注：超出部分按照一整个阶梯收取费用</span></Col>
+          <Col span='14' class='tex-al'>&nbsp;元 ， <span style='color:red;'>&nbsp;注：超出部分按照一整个阶梯收取费用</span></Col>
         </Row>
       </Row>
       <div v-auth="'finance.settings:default'" class='titop' v-if='!showmoney'>交易信息
@@ -84,6 +86,90 @@
           <Col span="14"><span>每{{detail.timeStep}}秒，收取{{detail.stepCost}}元 </span><span style='color:red;margin-left:15px;'>注：超出部分按照一整个阶梯收取费用</span></Col>
         </Row>
       </Row>
+      <!-- 刊例价 -->
+      <div class='titop' v-if='showprice'>默认刊例价
+        <Button type='success' style='float: right;' @click="editprice('dataForm')">保存</Button>
+      </div>
+      <Row  class="cinema-header" v-if='showprice'>
+        <Row>
+          <Col span="3" class='tex-al'><div>按人次(CPM)</div></Col>
+          <Col span="4">
+            <FormItem label="30秒刊例价" prop="cpm">
+              <Input v-model="dataForm.cpm" placeholder="" />
+            </FormItem>
+          </Col>
+          <Col span='2' class='tex-al'>&nbsp;元/千人次</Col>
+          <Col span="3">
+            <FormItem label="15秒折扣" prop="discount">
+              <Input v-model="dataForm.discount" placeholder="" />
+            </FormItem>
+          </Col>
+          <Col span='1' class='tex-al'>&nbsp;%</Col>
+        </Row>
+        <Row>
+          <Col span="3" class='tex-al'><div>按场次</div></Col>
+          <Col span="4">
+            <FormItem label="30秒刊例价" prop="showPrice">
+              <Input v-model="dataForm.showPrice" placeholder=""  />
+            </FormItem>
+          </Col>
+          <Col span='2' class='tex-al'>&nbsp;元/场</Col>
+          <Col span="3">
+            <FormItem label="15秒折扣" prop="showDiscount">
+              <Input v-model="dataForm.showDiscount" placeholder=""/>
+            </FormItem>
+          </Col>
+          <Col span='1' class='tex-al'>&nbsp;%</Col>
+        </Row>
+        <Row>
+          <Col span="3" class='tex-al'><div>按时段(通投包厅)</div></Col>
+          <Col span="4">
+            <FormItem label="30秒刊例价" prop="timePrice">
+              <Input v-model="dataForm.timePrice" placeholder="" />
+            </FormItem>
+          </Col>
+          <Col span='2' class='tex-al'>&nbsp;元/周/厅</Col>
+          <Col span="3">
+            <FormItem label="15秒折扣" prop="timeDiscount">
+              <Input v-model="dataForm.timeDiscount" placeholder=""/>
+            </FormItem>
+          </Col>
+          <Col span='1' class='tex-al'>&nbsp;%</Col>
+          <Col span="3">
+            <FormItem label="每厅场次数" prop="timeShowCount">
+              <Input v-model="dataForm.timeShowCount" placeholder=""/>
+            </FormItem>
+          </Col>
+          <Col span='1' class='tex-al'>&nbsp;场/天</Col>
+        </Row>
+      </Row>
+      <div  class='titop' v-if='!showprice'>默认刊例价
+        <Button type='success' style='float: right;' @click='showpricetrue'>修改</Button>
+      </div>
+      <div  class="cinema-header" v-if='!showprice'>
+        <Row>
+          <Col span="3"><div>按人次(CPM)</div></Col>
+          <Col span="2"><div>30秒刊例价</div></Col>
+          <Col span="4"><span>{{detail.cpm}}</span> 元/千人次</Col>
+          <Col span="2"><div>15秒折扣</div></Col>
+          <Col span="3"><span>{{detail.discount}}%</span></Col>
+        </Row>
+        <Row>
+          <Col span="3"><div>按场次</div></Col>
+          <Col span="2"><div>30秒刊例价</div></Col>
+          <Col span="4"><span>{{detail.showPrice}}</span> 元/场</Col>
+          <Col span="2"><div>15秒折扣</div></Col>
+          <Col span="3"><span>{{detail.showDiscount}}%</span></Col>
+        </Row>
+         <Row>
+          <Col span="3"><div>按时段(通投包厅)</div></Col>
+          <Col span="2"><div>30秒刊例价</div></Col>
+          <Col span="4"><span>{{detail.timePrice}}</span> 元/周/厅</Col>
+          <Col span="2"><div>15秒折扣</div></Col>
+          <Col span="3"><span>{{detail.timeDiscount}}%</span></Col>
+          <Col span="6"><div>每厅场次数{{detail.timeShowCount}}场/天</div></Col>
+        </Row>
+      </div>
     </div>
   </Form>
 </div>
@@ -94,7 +180,7 @@
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import { queryList , bank , transaction , dataFrom} from '@/api/setup'
+import { queryList , bank , transaction , price ,  dataFrom} from '@/api/setup'
 import { directorList } from '@/api/corpReal'
 import jsxReactToVue from '@/util/jsxReactToVue'
 
@@ -118,6 +204,13 @@ const dataForm = {
   proportion: null,
   timeStep: null,
   stepCost: null,
+  cpm: null,
+  discount: null,
+  showPrice: null,
+  showDiscount: null,
+  timePrice: null,
+  timeDiscount: null,
+  timeShowCount: null,
 }
 
 @Component({
@@ -130,10 +223,12 @@ export default class Main extends ViewBase {
   oldQuery: any = {}
   detail: any = {}
 
+
   id = 0
 
   showbank = false
   showmoney = false
+  showprice = false
 
   dataForm: any = { ...dataForm }
 
@@ -166,6 +261,7 @@ export default class Main extends ViewBase {
     }
   }
 
+  // 交易
   showmoneytrue() {
     this.showmoney = true
     this.dataForm.proportion = this.detail.proportion
@@ -173,6 +269,7 @@ export default class Main extends ViewBase {
     this.dataForm.stepCost = this.detail.stepCost
   }
 
+  // 银行
   showbanktrue() {
     this.showbank = true
     this.dataForm.accountBank = this.detail.accountBank
@@ -180,8 +277,20 @@ export default class Main extends ViewBase {
     this.dataForm.accountNumber = this.detail.accountNumber
   }
 
+  // 刊例价
+  showpricetrue() {
+    this.showprice = true
+    this.dataForm.cpm = this.detail.cpm
+    this.dataForm.discount = this.detail.discount
+    this.dataForm.showPrice = this.detail.showPrice
+    this.dataForm.showDiscount = this.detail.showDiscount
+    this.dataForm.timePrice = this.detail.timePrice
+    this.dataForm.timeDiscount = this.detail.timeDiscount
+    this.dataForm.timeShowCount = this.detail.timeShowCount
+  }
 
 
+  // 提交银行信息
   editbank(dataForms: any) {
     const myThis: any = this
     myThis.$refs[dataForms].validate(async ( valid: any ) => {
@@ -193,7 +302,8 @@ export default class Main extends ViewBase {
           const res =  await bank (query)
           toast('充值信息操作成功')
           setTimeout(() => {
-            history.go(0)
+            this.doSearch()
+            this.showbank = false
           }, 1000)
         } catch (ex) {
           this.handleError(ex)
@@ -201,6 +311,8 @@ export default class Main extends ViewBase {
       }
     })
   }
+
+  // 提交交易信息
   edittransaction(dataForms: any) {
     const myThis: any = this
     myThis.$refs[dataForms].validate(async ( valid: any ) => {
@@ -213,7 +325,36 @@ export default class Main extends ViewBase {
           const res =  await transaction (query)
           toast('交易信息操作成功')
           setTimeout(() => {
-            history.go(0)
+            this.doSearch()
+            this.showmoney = false
+          }, 1000)
+        } catch (ex) {
+          this.handleError(ex)
+        }
+      }
+    })
+  }
+
+  // 提交刊例价信息
+  editprice(dataForms: any) {
+    const myThis: any = this
+    myThis.$refs[dataForms].validate(async ( valid: any ) => {
+      if (valid) {
+        const query = {
+          cpm: this.dataForm.cpm,
+          discount: this.dataForm.discount,
+          showPrice: this.dataForm.showPrice,
+          showDiscount: this.dataForm.showDiscount,
+          timePrice: this.dataForm.timePrice,
+          timeDiscount: this.dataForm.timeDiscount,
+          timeShowCount: this.dataForm.timeShowCount,
+        }
+        try {
+          const res =  await price (query)
+          toast('刊例价操作成功')
+          setTimeout(() => {
+            this.doSearch()
+            this.showprice = false
           }, 1000)
         } catch (ex) {
           this.handleError(ex)
@@ -309,5 +450,8 @@ export default class Main extends ViewBase {
   /deep/ .ivu-form-item-label {
     margin-top: 8px;
   }
+}
+.tex-al {
+  line-height: 34px;
 }
 </style>
