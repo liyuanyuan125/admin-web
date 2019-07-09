@@ -146,9 +146,9 @@ export function makeMap(list: string | any[], ignoreCase = true): MapType<number
  * @param object 对象
  * @param path 路径
  */
-// export function dot(object: any, path: string) {
-//   return at(object, path)[0]
-// }
+export function dot(object: any, path: string) {
+  return at(object, path)[0]
+}
 
 const isZero = (n: number | string) => {
   const num = parseInt(n as string, 10)
@@ -205,8 +205,4 @@ export function intDate(date: number, format = 'YYYY-MM-DD') {
     return [RegExp.$1, RegExp.$2].join('-')
   }
   return date
-}
-
-export function dot(object: any, path: string) {
-  return at(object, path)[0]
 }
