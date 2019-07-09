@@ -58,7 +58,6 @@
         </div>
       </template>
     </ListPage>
-  <Start @done='uplist' ref="start"></Start>
   </div>
 </template>
 
@@ -68,12 +67,10 @@ import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { brandList } from '@/api/brand'
-import Start from './start.vue'
 
 @Component({
   components: {
-    ListPage,
-    Start
+    ListPage
   }
 })
 export default class Main extends ViewBase {

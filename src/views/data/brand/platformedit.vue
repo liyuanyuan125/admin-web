@@ -97,9 +97,9 @@ export default class Main extends ViewBase {
   get columns() {
     return [
       { title: '序号', key: 'id' },
-      { title: '账号平台', key: 'id' },
-      { title: '账号ID', key: 'name' },
-      { title: '账号名称', key: 'enName' },
+      { title: '账号平台', key: 'channelCode' , editor: 'enum', enumKey: 'channelCodeCode'},
+      { title: '账号ID', key: 'id'},
+      { title: '账号名称', key: 'name' },
       { title: '账号头像', key: 'logo', editor: 'deprecated' },
       { title: '跳转URL链接', key: 'url', editor: 'enum', enumKey: 'tradeCodeCode' },
       { title: '操作', key: 'keyWords', slot: 'action' }
@@ -155,15 +155,23 @@ export default class Main extends ViewBase {
       items,
       channelCodeList
     }} = await mediaslist(query)
-
-    return {
-      data: {
-        channelCodeList,
-        item: {
-          url: items[0].url,
-          channelCodeCode: items[0].channelCode,
-          name: items[0].name,
-          channelDataId: items[0].channelDataId,
+    if (items.length > 0) {
+      return {
+        data: {
+          channelCodeList,
+          item: {
+            url: items[0].url,
+            channelCodeCode: items[0].channelCode,
+            name: items[0].name,
+            channelDataId: items[0].channelDataId,
+          }
+        }
+      }
+    } else {
+      return {
+        data: {
+          channelCodeList,
+          item: null
         }
       }
     }
