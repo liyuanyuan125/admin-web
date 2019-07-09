@@ -96,7 +96,7 @@
       <div class="base-mess">
           <h2 class="title">粉丝画像信息</h2>
             <Row>
-              <Col :span="6"><p><label>粉丝数:</label><em>{{readableNumber(fans.count)}}人</em></p></Col>
+              <!-- <Col :span="6"><p><label>粉丝数:</label><em>{{readableNumber(fans.count)}}人</em></p></Col> -->
               <Col :span="12">
                 <div class="cout">
                   <label>粉丝占比:</label>

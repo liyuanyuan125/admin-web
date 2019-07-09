@@ -70,7 +70,7 @@
                     <Select v-model="brandType" clearable style="width: 150px" placeholder="品牌分类">
                         <Option v-for="item in tradeCodeList" :key="item.key" :value="item.key">{{item.text}}</option>
                     </Select>
-                    <Select v-model="brandNameKey" style="width: 150px" placeholder="品牌名称" ref="refBrandName"
+                    <Select v-model="brandNameId" style="width: 150px" placeholder="品牌名称" ref="refBrandName"
                      clearable  filterable remote :remote-method="remoteMethod">
                         <Option v-for="it in brandNames" :key="it.id" :value="it.id">{{it.name}}</option>
                     </Select>
@@ -158,11 +158,11 @@
           <div class="base-mess">
               <h2 class="title">粉丝画像信息</h2>
                <Row>
-                    <Col :span="12">
+                    <!-- <Col :span="12">
                         <FormItem label="粉丝数(人)">
                             <Input v-model="formFans.count" placeholder=""/>
                         </FormItem>
-                    </Col>
+                    </Col> -->
                     <Col :span="12">
                         <FormItem label="粉丝性别占比" class="rest-input">
                             <div class="flex-box">
@@ -291,7 +291,8 @@ export default class Main extends ViewBase {
     tradeCodeList: any[] = []
     brandType: any = null
     brandNames: any[] = []
-    brandNameKey = ''
+    brandNameId = ''
+    brandTradeCode = null
     brandColumns = [
         {title: '品牌分类', slot: 'tradeCode', width: 120, align: 'center'},
         {title: '品牌名称', key: 'name', width: 120, align: 'center'},
@@ -452,19 +453,28 @@ export default class Main extends ViewBase {
     }
 
     async addList() {
-        const query = (this.$refs.refBrandName as any).query
-        if (this.brandType == '' || this.brandNameKey == '') {
-            await alert('请选择信息', { title: '提示'})
+        // 品牌id是唯一的，不能重复追加
+        if (!this.brandNameId) {
+            await info('请选择你要添加的品牌', { title: '提示'})
         } else {
+            const isHasBrand = this.brandData.some((item: any) => item.id == this.brandNameId)
+            if (isHasBrand) {
+               await info('你选择的品牌已存在', { title: '提示'})
+               this.brandType = ''
+               this.brandNameId = ''
+               this.brandNames = []
+               return
+            }
             const bType = this.tradeCodeList.find( item => item.key == this.brandType)
-            const bName = this.brandNames.find((item: any) => item.key == this.brandNameKey)
+            const bName = this.brandNames.find((item: any) => item.id == this.brandNameId)
             this.brandData.push({
-                id: this.brandNameKey,
-                name: query,
-                tradeCode: this.brandType
+                id: this.brandNameId,
+                name: bName.name,
+                tradeCode: this.brandType || this.brandTradeCode
             })
             this.brandType = ''
-            this.brandNameKey = ''
+            this.brandNameId = ''
+            this.brandNames = []
         }
     }
 
@@ -565,6 +575,7 @@ export default class Main extends ViewBase {
             })
         }
     }
+    // 模糊查询筛选出品牌名称
     async remoteMethod(query: any) {
         if (query) {
             const { data: {items} } = await tradeCode({
@@ -573,8 +584,13 @@ export default class Main extends ViewBase {
                 pageIndex: 1
             })
             this.brandNames = items || []
+            // const code = items.length == 1 ? items[0].tradeCode : null
+            if (items.length == 1) {
+              this.brandTradeCode = items[0].tradeCode
+            }
         }
     }
+    // 根据品牌分类筛选出品牌名称
     async tradeCode() {
         const { data: {items} } = await tradeCode({
             tradeCode: this.brandType,
