@@ -339,6 +339,16 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  // 基础数据 - kol平台关联 - 列表
+  {
+    path: '/data/kol/associated',
+    name: 'data-kol-associated',
+    component: () => import('./views/data/kol/associated.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
   {
     path: '/data/area/',
     name: 'data-area',

@@ -81,9 +81,9 @@ export default class Main extends ViewBase {
   get columns() {
     return [
       { title: '序号', key: 'id' },
-      { title: '账号平台', key: 'id' },
-      { title: '账号ID', key: 'name' },
-      { title: '账号名称', key: 'enName' },
+      { title: '账号平台', key: 'channelCode' , editor: 'enum', enumKey: 'channelCodeCode'},
+      { title: '账号ID', key: 'id'},
+      { title: '账号名称', key: 'name' },
       { title: '账号头像', key: 'logo', editor: 'deprecated' },
       { title: '跳转URL链接', key: 'url', editor: 'enum', enumKey: 'tradeCodeCode' },
       // { title: '操作', key: 'keyWords', slot: 'action' }

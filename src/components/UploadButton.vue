@@ -4,14 +4,14 @@
       <Icon type="ios-cloud-upload-outline" v-if="!isUploading" class="icon-prefix"/>
       <TinyLoading :size="12" v-if="isUploading" class="icon-prefix"/>
       <span class="button-text">
-        <slot>上传</slot>
+        <slot>{{titlename}}</slot>
       </span>
       <label class="upload-label" v-if="!isUploading">
         <input type="file" :accept="accept" :multiple="multiple" @change="onChange"/>
       </label>
       <Icon type="ios-arrow-down" class="icon-suffix" v-show="list.length > 0"/>
     </Button>
-    <DropdownMenu slot="list" class="progress-pane" v-if="list.length > 0">
+    <DropdownMenu v-if="accept != 'image/*' && list.length > 0" slot="list" class="progress-pane">
       <DropdownItem v-for="it in list" :key="it.uqid" disabled
         :class="{'has-error': !!it.error}">
         <div class="file-name">{{it.clientName}}</div>
@@ -19,6 +19,23 @@
         <div class="error" v-if="it.error">{{it.error}}</div>
       </DropdownItem>
     </DropdownMenu>
+
+    <DropdownMenu v-else-if="accept == 'image/*' && list.length > 0" slot="list" class="progress-pane">
+      <DropdownItem v-for="it in list" :key="it.uqid" disabled
+        :class="{'has-error': !!it.error}">
+        <div v-if="it.percent == 100">
+          <span class="file-name">{{it.clientName}}</span>
+          <a @click="onView(it.url)" style="margin-left: 10px">查看大图</a>
+        </div>
+        <Progress :percent="it.percent" :status="it.progressStatus"/>
+        <div class="error" v-if="it.error">{{it.error}}</div>
+      </DropdownItem>
+    </DropdownMenu>
+
+    <Modal v-model="viewerShow" title="查看图片" width="888">
+      <img :src="viewerImage" class="viewer-image">
+    </Modal>
+
   </Dropdown>
 </template>
 
@@ -91,6 +108,8 @@ export default class UploadButton extends ViewBase {
    */
   @Prop({ type: Boolean, default: false }) multiple!: boolean
 
+  @Prop({ type: String, default: '上传'}) titlename!: string
+
   /**
    * 接受的文件类型
    */
@@ -102,6 +121,9 @@ export default class UploadButton extends ViewBase {
   @Prop({ type: Number, default: 1 }) maxCount!: number
 
   list: UploadItem[] = []
+
+  viewerShow = false
+  viewerImage = ''
 
   get isUploading() {
     return !this.list.every(it => it.status == 'done' || it.status == 'fail')
@@ -180,6 +202,11 @@ export default class UploadButton extends ViewBase {
     this.checkComplete()
   }
 
+  onView(it: any) {
+    this.viewerImage = it
+    this.viewerShow = true
+  }
+
   checkComplete() {
     if (!this.isUploading) {
       const files = this.list.filter(it => it.status == 'done')
@@ -225,7 +252,8 @@ export default class UploadButton extends ViewBase {
 }
 .file-name {
   position: relative;
-  max-width: 80%;
+  display: inline-block;
+  max-width: 70%;
   margin-bottom: 3px;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -236,5 +264,8 @@ export default class UploadButton extends ViewBase {
   .error {
     color: #ed4014;
   }
+}
+.viewer-image {
+  width: 100%;
 }
 </style>
