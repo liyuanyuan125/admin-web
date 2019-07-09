@@ -71,8 +71,16 @@
 import { Component, Prop, Watch, Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
-import { MapType, AjaxResult } from '@/util/types'
-import { Filter, normalizeFilter, ColumnExtra, normalizeColumns } from './types'
+import { MapType } from '@/util/types'
+import {
+  Filter,
+  normalizeFilter,
+  ColumnExtra,
+  normalizeColumns,
+  ListFetchResult,
+  ListFetchData,
+  listFetchDataToResult,
+} from './types'
 import { devInfo, devError } from '@/util/dev'
 import { toMap } from '@/fn/array'
 import { clean } from '@/fn/object'
@@ -83,8 +91,13 @@ const makeMap = (list: any[]) => toMap(list, 'key')
 
 @Component
 export default class ListPage extends Mixins(ViewBase, UrlManager) {
-  /** 加载列表的请求函数 */
-  @Prop({ type: Function, required: true }) fetch!: (query?: any) => Promise<AjaxResult>
+  /**
+   * 加载列表的请求函数
+   * NOTE: 由于历史原因，采用的是上面的 ListFetchResult，但后来发现，直接用 items, totalCount 更加
+   * 方便，故而，有以下新的数据结构，组件本身屏蔽这种差异，提供一致性、无缝衔接式的体验
+   */
+  @Prop({ type: Function, required: true })
+  fetch!: (query?: any) => Promise<ListFetchData | ListFetchResult>
 
   /** 查询条件 */
   @Prop({ type: Array, default: () => [] }) filters!: Filter[]
@@ -173,6 +186,12 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
     this.updateQueryByParam()
   }
 
+  // 简单包装一下，以便适应两种数据结构
+  async fetchWrap(query: any) {
+    const res = await this.fetch(query)
+    return listFetchDataToResult(res)
+  }
+
   /**
    * 请求列表数据，明确公开，可供外部组件调用
    */
@@ -188,7 +207,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
     this.loading = true
     const query = dealParams(this.filters, this.query, true)
     try {
-      const { data } = await this.fetch(query)
+      const { data } = await this.fetchWrap(query)
       const idKey = this.idKey
       const selectable = this.selectable
       const selectedMap = toMap(this.selectedIds)
