@@ -81,7 +81,8 @@ export default class Main extends ViewBase {
 
     async fetch(query: any) {
       const res = await personMovies(query)
-      this.selectedIds = res.data.ids
+      const aryMerge = Array.from(new Set(this.selectedIds.concat(res.data.ids)))
+      this.selectedIds = aryMerge
       return res
     }
 

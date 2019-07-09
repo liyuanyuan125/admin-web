@@ -217,7 +217,7 @@
            <personMovies :id ="id" @selectIds = "selectIds" v-show="tab == 1"></personMovies>
             <div class="footer-btn">
               <Button type="primary" class="btn">浏览</Button>
-              <Button type="primary">保存</Button>
+              <Button type="primary" @click="handleMaterMoive">保存</Button>
           </div>
       </div>
   </div>
@@ -233,7 +233,8 @@ import {
     queryCtiy,
     editPersonal,
     tradeCode,
-    dicItems
+    dicItems,
+    masterMovies
     } from '@/api/person'
 import AreaSelect, { areaParam } from '@/components/areaSelect'
 import Upload from '@/components/Upload.vue'
@@ -367,7 +368,7 @@ export default class Main extends ViewBase {
         // 平台id
         this.exts = item.exts || []
         this.exts.map((it: any) => {
-            this.formId[it.channelCode] = item.channelDataId
+            this.formId[it.channelCode] = it.channelDataId
         })
         // 品牌分类
         this.tradeCodeList = brandTrades
@@ -462,6 +463,8 @@ export default class Main extends ViewBase {
                 name: query,
                 tradeCode: this.brandType
             })
+            this.brandType = ''
+            this.brandNameKey = ''
         }
     }
 
@@ -588,6 +591,18 @@ export default class Main extends ViewBase {
 
     selectIds(val: any) {
       this.movieIds = val
+      // console.log(this.movieIds)
+    }
+    async handleMaterMoive() {
+        try {
+            const { data } = await masterMovies({
+                personId: this.id,
+                movieIds: this.movieIds
+            })
+            this.$router.push({name: 'data-person'})
+        } catch (ex) {
+            this.handleError(ex)
+        }
     }
 
     @Watch('brandType')
@@ -604,13 +619,7 @@ export default class Main extends ViewBase {
 .upload-box {
   background: none;
 }
-/deep/ .ivu-form {
-  .info-textarea {
-    .ivu-input {
-      width: 70%;
-    }
-  }
-}
+
 .flex-box {
   display: flex;
 }

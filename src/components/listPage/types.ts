@@ -336,3 +336,37 @@ export function normalizeColumns(list: ColumnExtra[], param: ColumnParam) {
 
   return result
 }
+
+/**
+ * liet fetch 调用结果
+ */
+export interface ListFetchResult {
+  code: number
+  data: ListFetchData
+  msg: string
+}
+
+/**
+ * 新的接口数据：list fetch 接口实际数据
+ * NOTE: 由于历史原因，采用的是上面的 ListFetchResult，但后来发现，直接用 items、totalCount 更加
+ * 方便，故而，有以下新的数据结构，组件本身屏蔽这种差异，提供一致性、无缝衔接式的体验
+ */
+export interface ListFetchData {
+  items: any[]
+  totalCount: number
+  // 其他属性
+  [key: string]: any
+  [index: number]: any
+}
+
+/**
+ * 将新的数据结构，转换成老的数据结构
+ * @param data 传入的值
+ */
+export function listFetchDataToResult(data: ListFetchData | ListFetchResult) {
+  return 'code' in data && 'data' in data
+    // 已经是 listFetchResult 格式了，直接返回
+    ? data as ListFetchResult
+    // 进行简单包装
+    : { code: 0, data, msg: '' }
+}

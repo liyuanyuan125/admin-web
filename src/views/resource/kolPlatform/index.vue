@@ -14,7 +14,8 @@
       :filters="filters"
       :enums="enums"
       :columns="columns"
-      canSelect
+      selectable
+      :selectedIds.sync="selectedIds"
       @selectionChange="selectionChange"
       ref="listPage"
     >
@@ -44,10 +45,7 @@ import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import AreaSelect, { areaParam } from '@/components/areaSelect'
-
-import {
-  queryList
-} from './data'
+import { queryList } from './data'
 
 import {
   updateStatus,
@@ -82,6 +80,8 @@ export default class KolPlatformIndex extends ViewBase {
   channelList = channelList
 
   fetch = queryList
+
+  selectedIds = [] as number[]
 
   get filters(): Filter[] {
     return [
@@ -183,7 +183,9 @@ export default class KolPlatformIndex extends ViewBase {
       { title: '序号', key: 'id', width: 65 },
       { title: '平台账号', key: 'channelDataId', width: 80 },
       { title: '平台账号名称', key: 'name', width: 110 },
-      { title: '平台账号分类', key: 'accountCategoryCode', width: 100, editor: 'deprecated' },
+      { title: '平台账号分类', key: 'accountCategoryCode', width: 90, editor: 'deprecated' },
+      { title: '粉丝数', key: 'fansCount', width: 60 },
+
       // { title: '院线', key: 'chainName', minWidth: 90, editor: 'deprecated' },
       // { title: '省份', key: 'provinceName', width: 80 },
       // { title: '城市', key: 'cityName', width: 80 },
@@ -226,7 +228,7 @@ export default class KolPlatformIndex extends ViewBase {
   }
 
   selectionChange(list: any[]) {
-    debugger
+    // debugger
   }
 
   @Watch('channelCode')

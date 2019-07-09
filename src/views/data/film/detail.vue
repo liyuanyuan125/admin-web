@@ -11,10 +11,18 @@
           <Col :span="6"><p><label>中文名称</label><em>{{items.name}}</em></p></Col>
           <Col :span="6"><p><label>英文名称</label><em>{{items.englishName}}</em></p></Col>
           <Col :span="6"><p><label>产地</label><em v-for="(item, index) in items.countries" :key="index">{{item}}</em></p></Col>
+          <Col :span="6"><p><label>上映时间</label><em>{{formatConversion(items.releaseDate)}}</em></p></Col>
         </Row>
         <Row>
-          <Col :span="6"><p><label>类型</label><em v-for="(item, index) in items.types" v-if="item != null">{{item}}</em></p></Col>
-          <Col :span="6"><p><label>上映时间</label><em>{{formatConversion(items.releaseDate)}}</em></p></Col>
+          <Col :span="6">
+          <div class="flex-box">
+            <label>类型</label>
+           <div>
+            <em v-for="(item, index) in items.types" v-if="item != null">{{item}}<i v-if="index != items.types.length-1">,</i></em>
+          </div>
+          </div>
+          </Col>
+         
         </Row>
         <Row >
           <Col :span="22" class="flex-box"><label>剧情介绍</label><em class="information" >{{items.summary}}</em></Col>
@@ -23,24 +31,43 @@
       <div class="base-mess">
         <h2 class="title">扩展信息</h2>
         <Row>
-          <Col :span="6"><p><label>搜索关键字</label><em>xxxx</em></p></Col>
-          <Col :span="6"><p><label>预估票房</label><em>xxxx</em></p></Col>
+          <Col :span="6">
+          <p>
+            <label>搜索关键字</label>
+            <em v-for="(item, index) in (items.customSearchKeywords || [])" :key="index">{{item}}</em>
+          </p>
+          </Col>
+          <Col :span="6"><p><label>预估票房</label><em>{{items.customPredict || '-'}}</em></p></Col>
           <Col :span="6"><p><label>影片分类</label><em>{{items.categoryName}}</em></p></Col>
-          <Col :span="6"><p><label>演员</label><em>xxxx</em></p></Col>
+          <Col :span="6"><p><label>演员阵容</label><em>xxxx</em></p></Col>
         </Row>
         <Row>
-          <Col :span="10">
-            <div class="hot-word flex-box">
-              <div style="width: 100px">影片评论热词</div>
-              <div><Table ref="selection" :columns="columns" :data="tableList" border stripe disabled-hover></Table></div>
-            </div>
+          <Col :span="22">
+            <p><label>影片评论热词</label>
+                <em v-for="(item, index) in (items.customTags || [])" :key="index">{{item}}<i v-if="index != items.customTags.length-1">,</i></em></p>
           </Col>
+        </Row>
+        <Row>
+          <Col :span="6"><p><label>系统鲸娱指数</label><em>xxxx</em></p></Col>
+          <Col :span="6"><p><label>调整鲸娱指数</label><em>xxxx</em></p></Col>
+          <Col :span="6"><p><label>指数所占权重</label><em>xxx</em></p></Col>
         </Row>
       </div>
     </div>
     <!-- 演员表 -->
     <div v-if="tab == 1">
-      <Table :columns="actorColumns" :data="actorList" border stripe disabled-hover></Table>
+      <Table :columns="actorColumns" :data="actorList" border stripe disabled-hover>
+        <template slot="role" slot-scope="{row}">
+          <span v-for="(item, index) in (row.occupations || [])" :key="index" >
+            {{item.role}}
+            <i v-if="index != (row.occupations || []).length -1">,</i></span>
+        </template>
+        <template slot="actor" slot-scope="{row}">
+          <span v-for="(item, index) in (row.occupations || [])" :key="index" >
+             <em v-for="ro in occupationType" :key="ro.key" v-if="ro.key == item.occupationCode">{{ro.value}}</em>
+            <i v-if="index != (row.occupations || []).length -1">,</i></span>
+        </template>
+      </Table>
     </div>
     <!-- 相关视频 -->
     <div v-if="tab == 2">
@@ -70,6 +97,7 @@
 import {Component, Prop} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { movieDetail } from '@/api/film-ed'
+import {dicItems} from '@/api/person'
 import {formatConversion} from '@/util/validateRules'
 @Component
 export default class Main extends ViewBase {
@@ -100,10 +128,12 @@ export default class Main extends ViewBase {
     { type: 'index', title: '排序',  align: 'center'},
     { key: 'name', title: '中文名', align: 'center'},
     { key: 'englistName', title: '英文名', align: 'center'},
-    { key: 'actor', title: '角色', align: 'center'},
-    { key: 'type', title: '类型', align: 'center'},
+    { slot: 'role', title: '饰演角色', align: 'center'},
+    { slot: 'actor', title: '类型', align: 'center'},
   ]
   actorList = []
+  // 演员类型
+  occupationType: any[] = []
 
   // 相关视频
   videoColumns = [
@@ -144,6 +174,7 @@ export default class Main extends ViewBase {
   oprateList = []
 
   mounted() {
+    this.handleOccupation()
     this.queryList()
   }
   async queryList() {
@@ -156,6 +187,15 @@ export default class Main extends ViewBase {
       this.actorList = data.celebrities || []
       // 相关图片
       this.imgList = data.plotPics
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+  // 演员职业
+  async handleOccupation() {
+    try {
+      const { data } = await dicItems('MOVIE_OCCUPATION_TYPE')
+      this.occupationType = data
     } catch (ex) {
       this.handleError(ex)
     }
@@ -178,8 +218,9 @@ em {
 .base-mess {
   font-size: 14px;
   border: solid 1px #ededed;
-  padding: 10px 15px;
+  padding: 15px;
   margin-bottom: 15px;
+  background: #fff;
   .title {
     font-size: 14px;
     padding-bottom: 20px;
