@@ -348,7 +348,7 @@ export interface ListFetchResult {
 
 /**
  * 新的接口数据：list fetch 接口实际数据
- * NOTE: 由于历史原因，采用的是上面的 ListFetchResult，但后来发现，直接用 list、total 更加
+ * NOTE: 由于历史原因，采用的是上面的 ListFetchResult，但后来发现，直接用 items、totalCount 更加
  * 方便，故而，有以下新的数据结构，组件本身屏蔽这种差异，提供一致性、无缝衔接式的体验
  */
 export interface ListFetchData {
