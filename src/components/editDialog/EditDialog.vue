@@ -72,7 +72,7 @@ import { random } from '@/fn/string'
 })
 export default class EditDialog extends ViewBase {
   /** 加载编辑项的请求函数 */
-  @Prop({ type: Function, required: true }) fetch!: (query?: any) => Promise<AjaxResult>
+  @Prop({ type: Function }) fetch!: (query?: any) => Promise<AjaxResult>
 
   /** 查询字段列表，默认为 id，可以使用以逗号分隔的字符串，指定多个字段，例如：key1,key2 */
   @Prop({ type: String, default: 'id' }) queryKeys!: string
@@ -81,7 +81,7 @@ export default class EditDialog extends ViewBase {
   @Prop({ type: Function, required: true }) submit!: (data: any) => Promise<AjaxResult>
 
   /** 字段配置 */
-  @Prop({ type: Array, default: () => [], required: true }) fields!: Field[]
+  @Prop({ type: Array, default: () => [] }) fields!: Field[]
 
   /** 对话框宽度 */
   @Prop({ type: Number, default: 770 }) width!: number
@@ -171,6 +171,10 @@ export default class EditDialog extends ViewBase {
   }
 
   async load() {
+    if (this.fetch == null) {
+      return
+    }
+
     this.loading = true
     try {
       const query = slice(this.item, this.queryKeys)

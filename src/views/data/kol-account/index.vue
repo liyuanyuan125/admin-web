@@ -52,6 +52,9 @@
         </div>
       </template>
     </ListPage>
+
+    <!-- <EditDialog
+    /> -->
   </div>
 </template>
 
@@ -59,8 +62,6 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
-import AreaSelect, { areaParam } from '@/components/areaSelect'
 import { queryList } from './data'
 
 import {
@@ -83,8 +84,6 @@ const defaultChannel = channelList[0].value
 @Component({
   components: {
     ListPage,
-    CinemaChainSelect,
-    AreaSelect,
     EditDialog
   }
 })
