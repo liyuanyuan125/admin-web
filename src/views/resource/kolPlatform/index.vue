@@ -26,6 +26,22 @@
         >新建</Button>
       </template>
 
+      <template slot="settlementPrices" slot-scope="{ row: { settlementPrices } }">
+        <ul
+          class="settlement-price-list"
+          v-if="settlementPrices && settlementPrices.length > 0"
+        >
+          <li
+            v-for="(it, i) in settlementPrices"
+            :key="i"
+            class="settlement-price-item"
+          >
+            <label>{{it.categoryName}}</label>
+            <em>&yen; {{it.settlementPrice}}</em>
+          </li>
+        </ul>
+      </template>
+
       <template slot="action" slot-scope="{ row: { id } }">
         <div class="row-acts">
           <router-link
@@ -186,6 +202,11 @@ export default class KolPlatformIndex extends ViewBase {
       { title: '平台账号分类', key: 'accountCategoryCode', width: 90, editor: 'deprecated' },
       { title: '粉丝数', key: 'fansCount', width: 60 },
 
+      { title: '关联KOL编号', key: 'kolIdText', width: 90 },
+      { title: '关联KOL名称', key: 'kolName', width: 110 },
+      { title: '是否提供发票', key: 'provideInvoiceText', width: 90 },
+      { title: '结算价', slot: 'settlementPrices', width: 120 },
+
       // { title: '院线', key: 'chainName', minWidth: 90, editor: 'deprecated' },
       // { title: '省份', key: 'provinceName', width: 80 },
       // { title: '城市', key: 'cityName', width: 80 },
@@ -248,4 +269,7 @@ export default class KolPlatformIndex extends ViewBase {
 </script>
 
 <style lang="less" scoped>
+.settlement-price-list {
+  text-align: left;
+}
 </style>
