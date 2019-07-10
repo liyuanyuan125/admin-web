@@ -218,7 +218,7 @@
             <div class="footer-btn">
               <Button type="primary" class="btn">浏览</Button>
               <Button type="primary" @click="handleMaterMoive" class="btn">添加作品</Button>
-              <Button type="primary" @click="handleMaterMoive">取消作品</Button>
+              <Button type="primary" @click="handleCancelMoive">取消作品</Button>
           </div>
       </div>
   </div>

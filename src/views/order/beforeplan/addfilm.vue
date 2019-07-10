@@ -73,6 +73,7 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
   query = {
     name: '',
     types: '',
+    releaseStatus: 2,
     pageIndex: 1,
     pageSize: 10,
   }

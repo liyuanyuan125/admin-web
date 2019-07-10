@@ -2,7 +2,7 @@
   <div class="site-layout" :class="menuIsFold && 'site-layout-menu-fold'">
     <header class="site-header flex-box">
       <h1 class="logo">
-        <router-link to="/" class="logo-link">Aiads 广告投放</router-link>
+        <router-link to="/" class="logo-link">JYdata管理后台</router-link>
       </h1>
 
       <div class="flex-1 flex-box">

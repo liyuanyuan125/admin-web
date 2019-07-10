@@ -12,7 +12,9 @@ export async function queryList(query: any = {}) {
     ...data,
     items: (data.items as any[] || []).map(it => ({
       ...it,
-      fansCount: dot(it, 'customFans.totalCount')
+      fansCount: dot(it, 'customFans.totalCount'),
+      kolIdText: it.kolId || '-',
+      provideInvoiceText: it.provideInvoice ? '是' : '否',
     }))
   }
   return result
