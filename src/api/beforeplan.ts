@@ -73,7 +73,7 @@ export async function filmList(query: any) {
 
 // // 添加影片列表
 // export async function filmList(query: any) {
-//   const data = await get(`/movie/search/xadvert` , query)
+//   const data = await get(`/movie/` , query)
 //   return data
 // }
 
