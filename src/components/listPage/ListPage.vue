@@ -302,10 +302,11 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
   /deep/ .ivu-table-cell {
     padding-left: 4px;
     padding-right: 4px;
-  }
-  /deep/ .ivu-table-cell > span:only-child:empty {
-    &::before {
-      content: '-';
+    & > span,
+    & > div {
+      &:empty::before {
+        content: '-';
+      }
     }
   }
   /deep/ .row-acts > a {
