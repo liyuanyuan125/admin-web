@@ -33,7 +33,7 @@
       </div>
       <div class="batch-btn text-center">
           <Button type="primary" class="btn" @click="handleSubmit('form')"> 提交</Button>
-          <Button> 取消</Button>
+          <Button :to="{name: 'resource-film-index'}"> 取消</Button>
       </div>
     </Form>
 
