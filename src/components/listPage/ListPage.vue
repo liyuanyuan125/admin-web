@@ -2,7 +2,7 @@
   <div class="list-page">
     <slot name="act-bar">
       <div class="act-bar flex-box">
-        <form class="form flex-1" @submit.prevent="search">
+        <form class="form flex-1" @submit.prevent>
           <component
             v-for="it in normalFilter"
             v-model="query[it.name]"
