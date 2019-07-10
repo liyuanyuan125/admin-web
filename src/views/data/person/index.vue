@@ -131,7 +131,7 @@ export default class Main extends ViewBase {
         { key: 'name', title: '中文名', align: 'center'},
         { key: 'nameEn', title: '英文名', align: 'center'},
         { key: 'gender', title: '性别',  align: 'center', editor: 'enum', enumKey: 'genders'}, // editor: 'enum'
-        { key: 'nationality', title: '国籍', align: 'center', editor: 'enum'},
+        { key: 'nationality', title: '国籍', align: 'center'},
         { slot: 'professions', title: '主要职业', align: 'center'},
         { key: 'status', title: '状态', align: 'center', editor: 'enum'},
         { slot: 'action', title: '操作', align: 'center'},

@@ -217,7 +217,8 @@
            <personMovies :id ="id" @selectIds = "selectIds" v-show="tab == 1"></personMovies>
             <div class="footer-btn">
               <Button type="primary" class="btn">浏览</Button>
-              <Button type="primary" @click="handleMaterMoive">保存</Button>
+              <Button type="primary" @click="handleMaterMoive" class="btn">添加作品</Button>
+              <Button type="primary" @click="handleMaterMoive">取消作品</Button>
           </div>
       </div>
   </div>

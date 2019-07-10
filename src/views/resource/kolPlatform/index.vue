@@ -20,19 +20,31 @@
       ref="listPage"
     >
       <template slot="acts">
-        <Button
-          type="success"
-          icon="md-add-circle"
-        >新建</Button>
+        <Button type="primary" icon="md-add-circle" >新建</Button>
+      </template>
+      <template slot="acts-2" >
+        <div class="bulk-button">
+          <Button type="primary" >批量上架</Button>
+          <Button type="primary" >批量下架</Button>
+          <Button type="primary"  >批量定价</Button>
+        </div>
       </template>
 
+      <template slot="provideInvoice" slot-scope="{row: {provideInvoice}}">
+        <span>{{provideInvoice ? '是' : '否'}}</span>
+      </template>
+      <template slot="settlementPrices" slot-scope="{row: {settlementPrices}}">
+        <span v-for="(item, index) in (settlementPrices || [])" :key="index">
+          {{item.categoryName}}￥{{item.settlementPrice}}
+        </span>
+      </template>
       <template slot="action" slot-scope="{ row: { id } }">
         <div class="row-acts">
-          <router-link
-            :to="{ name: 'data-cinema-hall', params: { id } }"
-            v-auth="'theater.cinemas:info'"
-          >查看影厅</router-link>
-          <a @click="editShow(id)" v-auth="'theater.cinemas:modify'">编辑</a>
+          <a @click="">上架</a>
+          <a >下架</a>
+          <a >修改售价</a>
+          <router-link :to="{name: 'resource-kolplatform-list-detail', params: {id}}">审核价格</router-link>
+          <router-link :to="{name: 'resource-kolplatform-list-audit', params: {id}}">查看</router-link>
         </div>
       </template>
     </ListPage>
@@ -98,63 +110,46 @@ export default class KolPlatformIndex extends ViewBase {
         placeholder: '平台账号分类'
       },
 
-      // {
-      //   name: 'chainId',
-      //   defaultValue: 0,
-      //   type: CinemaChainSelect,
-      //   width: 168,
-      //   minWidth: 168
-      // },
+      {
+        name: 'channelDataName',
+        defaultValue: '',
+        type: 'input',
+        width: 128,
+        placeholder: '账号名称'
+      },
 
-      // {
-      //   ...areaParam,
-      //   type: AreaSelect,
-      //   width: 160,
-      //   placeholder: '地区名称'
-      // },
+      {
+        name: 'minFansCount',
+        defaultValue: '',
+        type: 'input',
+        width: 100,
+        placeholder: '粉丝数量下限'
+      },
+      {
+        name: 'maxFansCount',
+        defaultValue: '',
+        type: 'input',
+        width: 100,
+        placeholder: '粉丝数量上限'
+      },
 
-      // {
-      //   name: 'status',
-      //   defaultValue: 0,
-      //   type: 'select',
-      //   width: 85,
-      //   placeholder: '营业状态'
-      // },
+      {
+        name: 'priceStatus',
+        defaultValue: 0,
+        type: 'select',
+        width: 128,
+        placeholder: '定价状态',
+        enumKey: 'priceStatusList'
+      },
 
-      // {
-      //   name: 'controlStatus',
-      //   defaultValue: 0,
-      //   type: 'select',
-      //   width: 85,
-      //   placeholder: '控制状态'
-      // },
-
-      // {
-      //   name: 'hallDataStatus',
-      //   defaultValue: 0,
-      //   type: 'select',
-      //   width: 85,
-      //   placeholder: '影厅数据'
-      // },
-
-      // {
-      //   name: 'pricingLevelCode',
-      //   defaultValue: '',
-      //   type: 'select',
-      //   width: 85,
-      //   placeholder: '定价级别',
-      //   enumKey: 'pricingLevelList'
-      // },
-
-      // {
-      //   name: 'boxLevelCode',
-      //   defaultValue: '',
-      //   type: 'select',
-      //   width: 85,
-      //   placeholder: '票房级别',
-      //   enumKey: 'boxLevelList'
-      // },
-
+      {
+        name: 'controlStatus',
+        defaultValue: 0,
+        type: 'select',
+        width: 128,
+        placeholder: '上架状态',
+        enumKey: 'controlStatusList'
+      },
       {
         name: 'pageIndex',
         defaultValue: 1
@@ -169,13 +164,8 @@ export default class KolPlatformIndex extends ViewBase {
 
   enums = [
     'accountCategoryList',
-
-    'statusList',
     'controlStatusList',
-    'hallDataStatusList',
-    'pricingLevelList',
-    'boxLevelList',
-    'gradeList'
+    'priceStatusList'
   ]
 
   get columns() {
@@ -184,46 +174,16 @@ export default class KolPlatformIndex extends ViewBase {
       { title: '平台账号', key: 'channelDataId', width: 80 },
       { title: '平台账号名称', key: 'name', width: 110 },
       { title: '平台账号分类', key: 'accountCategoryCode', width: 90, editor: 'deprecated' },
-      { title: '粉丝数', key: 'fansCount', width: 60 },
-
-      // { title: '院线', key: 'chainName', minWidth: 90, editor: 'deprecated' },
-      // { title: '省份', key: 'provinceName', width: 80 },
-      // { title: '城市', key: 'cityName', width: 80 },
-      // { title: '区县', key: 'countyName', width: 80 },
-      // { title: '级别', key: 'gradeCode', width: 60, editor: 'deprecated' },
-      // {
-      //   title: '营业状态',
-      //   key: 'status',
-      //   width: 70,
-      //   editor: 'poptipSelect',
-      //   updateField: updateStatus,
-      //   auth: 'theater.cinemas:change-status'
-      // },
-      // {
-      //   title: '控制状态',
-      //   key: 'controlStatus',
-      //   width: 75,
-      //   editor: 'poptipSelect',
-      //   updateField: updateControlStatus,
-      //   auth: 'theater.cinemas:change-control-status'
-      // },
-      // {
-      //   title: '定价级别',
-      //   key: 'pricingLevelCode',
-      //   width: 75,
-      //   editor: 'poptipSelect',
-      //   updateField: updatePricingLevelCode,
-      //   auth: 'theater.cinemas:change-pricing-level'
-      // },
-      // {
-      //   title: '票房级别',
-      //   key: 'boxLevelCode',
-      //   width: 75,
-      //   editor: 'poptipSelect',
-      //   updateField: updateBoxLevelCode,
-      //   auth: 'theater.cinemas:change-box-level'
-      // },
-      // { title: '操作', slot: 'action', width: 100 }
+      { title: '粉丝数', key: 'fansCount', width: 100 },
+      { title: '关联的KOL编号', key: 'kolId', minWidth: 100 },
+      { title: '关联的KOL名称', key: 'kolName', minWidth: 100 },
+      { title: '是否提供发票', slot: 'provideInvoice', minWidth: 100 },
+      { title: '结算价', slot: 'settlementPrices', width: 140 },
+      { title: '成本价', key: 'prices', minWidth: 140 },
+      { title: '销售价', key: 'salePrice', minWidth: 140 },
+      { title: '上架状态', key: 'controlStatus', width: 100, editor: 'enum'},
+      { title: '定价状态', key: 'priceStatus', width: 100, editor: 'enum'},
+      { title: '操作', slot: 'action', width: 100 }
     ] as ColumnExtra[]
   }
 
@@ -248,4 +208,10 @@ export default class KolPlatformIndex extends ViewBase {
 </script>
 
 <style lang="less" scoped>
+/deep/ .bulk-button {
+  padding-top: 20px;
+  .ivu-btn {
+    margin-right: 15px;
+  }
+}
 </style>
