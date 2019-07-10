@@ -19,14 +19,11 @@
       @selectionChange="selectionChange"
       ref="listPage"
     >
-      <template slot="acts">
-        <Button type="primary" icon="md-add-circle" >新建</Button>
-      </template>
       <template slot="acts-2" >
         <div class="bulk-button">
-          <Button type="primary" >批量上架</Button>
-          <Button type="primary" >批量下架</Button>
-          <Button type="primary"  >批量定价</Button>
+          <Button type="primary" @click="batchUpper(1)" >批量上架</Button>
+          <Button type="primary" @click="batchUpper(2)" >批量下架</Button>
+          <Button type="primary" @click="editPrice" >批量定价</Button>
         </div>
       </template>
 
@@ -34,14 +31,25 @@
         <span>{{provideInvoice ? '是' : '否'}}</span>
       </template>
       <template slot="settlementPrices" slot-scope="{row: {settlementPrices}}">
-        <span v-for="(item, index) in (settlementPrices || [])" :key="index">
+        <p v-for="(item, index) in (settlementPrices || [])" :key="index">
           {{item.categoryName}}￥{{item.settlementPrice}}
-        </span>
+        </p>
       </template>
+      <template slot="costPrices" slot-scope="{row: {costPrices}}">
+         <p v-for="(item, index) in (costPrices || [])" :key="index">
+          {{item.categoryName}}￥{{item.price}}
+        </p>
+      </template>
+      <template slot="prices" slot-scope="{row: {prices}}">
+         <p v-for="(item, index) in (prices || [])" :key="index">
+          {{item.categoryName}}￥{{item.salePrice}}
+        </p>
+      </template>
+      
       <template slot="action" slot-scope="{ row: { id } }">
         <div class="row-acts">
-          <a @click="">上架</a>
-          <a >下架</a>
+          <a @click="batchUpper(1, id)">上架</a>
+          <a @click="batchUpper(2, id)">下架</a>
           <a >修改售价</a>
           <router-link :to="{name: 'resource-kolplatform-list-detail', params: {id}}">审核价格</router-link>
           <router-link :to="{name: 'resource-kolplatform-list-audit', params: {id}}">查看</router-link>
@@ -55,21 +63,8 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
-import AreaSelect, { areaParam } from '@/components/areaSelect'
-import { queryList } from './data'
-
-import {
-  updateStatus,
-  updateControlStatus,
-  updatePricingLevelCode,
-  updateBoxLevelCode,
-  queryItem,
-  addItem,
-  updateItem
-} from '@/api/cinema'
-
-import EditDialog, { Field } from '@/components/editDialog'
+import { confirm, info, alert } from '@/ui/modal.ts'
+import { queryList, kolUpper, kolOff } from './data'
 
 import { getChannelList } from '@/util/types'
 
@@ -79,9 +74,6 @@ const defaultChannel =  channelList[0].value
 @Component({
   components: {
     ListPage,
-    CinemaChainSelect,
-    AreaSelect,
-    EditDialog
   }
 })
 export default class KolPlatformIndex extends ViewBase {
@@ -101,7 +93,10 @@ export default class KolPlatformIndex extends ViewBase {
         name: 'channelCode',
         defaultValue: this.channel,
       },
-
+      {
+        name: 'status',
+        defaultValue: 2,
+      },
       {
         name: 'accountCategoryCode',
         defaultValue: 0,
@@ -179,8 +174,9 @@ export default class KolPlatformIndex extends ViewBase {
       { title: '关联的KOL名称', key: 'kolName', minWidth: 100 },
       { title: '是否提供发票', slot: 'provideInvoice', minWidth: 100 },
       { title: '结算价', slot: 'settlementPrices', width: 140 },
-      { title: '成本价', key: 'prices', minWidth: 140 },
-      { title: '销售价', key: 'salePrice', minWidth: 140 },
+      { title: '成本价', slot: 'costPrices', minWidth: 140 },
+      { title: '销售价', slot: 'prices', minWidth: 140 },
+      // { title: '审核状态', slot: 'status', minWidth: 140 },
       { title: '上架状态', key: 'controlStatus', width: 100, editor: 'enum'},
       { title: '定价状态', key: 'priceStatus', width: 100, editor: 'enum'},
       { title: '操作', slot: 'action', width: 100 }
@@ -191,8 +187,47 @@ export default class KolPlatformIndex extends ViewBase {
     // debugger
   }
 
+  async batchUpper(status: number, id?: number) {
+    // status 1, 2来区分上下架
+    const channelCode = this.channelCode
+    const text = status == 1 ? '上架' : '下架'
+    if (!id) {
+      if (!this.selectedIds.length) {
+        await alert(`请选择${text}数据`, {
+          title: '提示'
+        })
+        return
+      }
+    }
+    const ids = id ? Array.of(id) : this.selectedIds
+    await confirm(`您选择了${ids.length}条影人进行${text }`, {
+      title: `${text}操作`
+    })
+    try {
+      if (status == 1) { // 上架
+        const { data } = await kolUpper({
+          channelCode,
+          ids
+        })
+      } else { // 下架
+        const { data } = await kolOff({
+          channelCode,
+          ids
+        })
+      }
+      (this.$refs.listPage as any).update()
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
+  async batchDown() {}
+
+  async editPrice() {}
+
   @Watch('channelCode')
   watchChannelCode(channel: string) {
+    this.selectedIds = []
     this.$router.push({
       name: 'resource-kolplatform-list',
       params: channel == defaultChannel ? {} : { channel }

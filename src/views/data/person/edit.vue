@@ -216,9 +216,7 @@
       <div v-if="tab == 1">
            <personMovies :id ="id" @selectIds = "selectIds" v-show="tab == 1"></personMovies>
             <div class="footer-btn">
-              <Button type="primary" class="btn">浏览</Button>
-              <Button type="primary" @click="handleMaterMoive" class="btn">添加作品</Button>
-              <Button type="primary" @click="handleCancelMoive">取消作品</Button>
+              <Button type="primary" @click="handleMaterMoive" class="btn">添加设置作品</Button>
           </div>
       </div>
   </div>
@@ -585,7 +583,6 @@ export default class Main extends ViewBase {
                 pageIndex: 1
             })
             this.brandNames = items || []
-            // const code = items.length == 1 ? items[0].tradeCode : null
             if (items.length == 1) {
               this.brandTradeCode = items[0].tradeCode
             }
@@ -608,8 +605,8 @@ export default class Main extends ViewBase {
 
     selectIds(val: any) {
       this.movieIds = val
-      // console.log(this.movieIds)
     }
+    // 添加作品
     async handleMaterMoive() {
         try {
             const { data } = await masterMovies({

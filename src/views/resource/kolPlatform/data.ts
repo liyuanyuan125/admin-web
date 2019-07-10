@@ -25,7 +25,7 @@ export async function queryList(query: any = {}) {
  * http://yapi.aiads-dev.com/project/142/interface/api/3110
  */
 export async function kolUpper(query: any = {}) {
-  const res = await put('/kol/channel-accounts/upper')
+  const res = await put('/kol/channel-accounts/upper', query)
   return res
 }
 
@@ -34,6 +34,6 @@ export async function kolUpper(query: any = {}) {
  * http://yapi.aiads-dev.com/project/142/interface/api/3110
  */
 export async function kolOff(query: any = {}) {
-  const res = await put('/kol/channel-accounts/off')
+  const res = await put('/kol/channel-accounts/off', query)
   return res
 }

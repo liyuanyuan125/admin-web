@@ -63,7 +63,7 @@ export default class Main extends ViewBase {
       },
       {
         name: 'pageSize',
-        defaultValue: 20
+        defaultValue: 300
       }
     ]
     enums = []
@@ -73,9 +73,9 @@ export default class Main extends ViewBase {
         { type: 'index', width: 60, align: 'center', renderHeader: (h: any, params: any) => {
             return h('span', '序号')
         }},
-        { title: '影片名称', key: 'name', align: 'center'},
-        { title: '影片专资id', key: 'govId', align: 'center'},
-        { title: '上映年份', key: 'year', align: 'center'},
+        { title: '影片名称', key: 'name', minWidth: 140, align: 'center'},
+        { title: '影片专资id', key: 'govId',  minWidth: 140, align: 'center'},
+        { title: '上映年份', key: 'year',  minWidth: 140, align: 'center'},
      ] as ColumnExtra[]
     }
 
@@ -105,5 +105,14 @@ export default class Main extends ViewBase {
   .btn {
     margin-right: 15px;
   }
+}
+/deep/ .ivu-table-body {
+  max-height: 600px;
+  height: 600px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+/deep/ .page-wrap {
+  display: none;
 }
 </style>
