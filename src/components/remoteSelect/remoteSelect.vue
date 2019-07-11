@@ -3,6 +3,7 @@
     v-model="model"
     filterable
     clearable
+    transfer
     remote
     :remote-method="search"
     :loading="loading"
