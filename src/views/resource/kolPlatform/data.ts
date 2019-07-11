@@ -37,3 +37,12 @@ export async function kolOff(query: any = {}) {
   const res = await put('/kol/channel-accounts/off', query)
   return res
 }
+
+/**
+ * 修改定价
+ * http://yapi.aiads-dev.com/project/142/interface/api/3110
+ */
+export async function changePrice(query: any = {}) {
+  const res = await put('/kol/channel-accounts/change-price', query)
+  return res
+}

@@ -64,7 +64,7 @@ import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import { confirm, info, alert } from '@/ui/modal.ts'
-import { queryList, kolUpper, kolOff } from './data'
+import { queryList, kolUpper, kolOff, changePrice } from './data'
 
 import { getChannelList } from '@/util/types'
 
