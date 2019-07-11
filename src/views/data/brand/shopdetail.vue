@@ -145,10 +145,10 @@
       <div class="base-mess">
         <h2 class="title">推荐信息</h2>
         <FormItem label="推荐的KOL列表:">
-          <kol :edits="edit" :channelCodeList="channelCodeList" v-model="kollist"></kol>
+          <kol :editnums="edit" :channelCodeList="channelCodeList" v-model="kollist"></kol>
         </FormItem>
         <FormItem label="推荐的影片列表:">
-          <Film :edits="edit" v-model="filmlist"></Film>
+          <Film :editnums="edit" v-model="filmlist"></Film>
         </FormItem>
       </div>
       <div class="footer-btn">
@@ -171,7 +171,9 @@ import Upload from '@/components/Upload.vue'
 import kol from './kol/kolist.vue'
 import Film from './kol/film.vue'
 import { clean } from '@/fn/object'
+import { toMap } from '@/fn/array'
 
+const makeMap = (list: any[]) => toMap(list, 'code', 'name')
 const timeFormat = 'YYYYMMDD'
 @Component({
   components: {

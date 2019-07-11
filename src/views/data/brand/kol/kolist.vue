@@ -45,7 +45,8 @@ export default class Kol extends ViewBase {
 
   @Prop() channelCodeList: any
 
-  @Prop({ default: 'edit' }) eidts: any
+  @Prop({ default: 'edit' }) editnums: any
+
   channel: any = ''
   promodel: any = ''
   channelList: any = []
@@ -60,7 +61,7 @@ export default class Kol extends ViewBase {
     const edit = [
       { title: '操作', key: 'rate', slot: 'action', width: 120, align: 'center' }
     ]
-    return this.edits == 'edit' ? [...table, ...edit] : [ ...table ]
+    return this.editnums == 'edit' ? [...table, ...edit] : [ ...table ]
   }
 
   created() {

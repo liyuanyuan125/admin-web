@@ -35,13 +35,13 @@ import { confirm, info, alert } from '@/ui/modal.ts'
 @Component
 export default class Films extends ViewBase {
   @Prop() value: any
-  @Prop({ default: 'edit' }) eidts: any
+  @Prop({ default: 'edit' }) editnums: any
   channel: any = ''
   channelList: any = []
   movielist: any = []
 
   get kolcoluems() {
-    return this.edits == 'edit' ? [
+    return this.editnums == 'edit' ? [
       { title: '影片名称', key: 'name', align: 'center' },
       { title: '操作', key: 'rate', slot: 'action', align: 'center' },
     ] : [
