@@ -12,13 +12,13 @@
           type="success"
           icon="md-add-circle"
           :to="{
-            name: 'data-kol-edit'
+            name: 'data-kol-associated-edit'
           }"
         >新建</Button>
       </template>
 
       <template slot="id" slot-scope="{ row: { id } }">
-        <router-link :to="{ name: 'data-kol-edit-associated-detail', params: { id} }">
+        <router-link :to="{ name: 'data-kol-associated-detail', params: { id} }">
            {{id}}</router-link>
       </template>
 

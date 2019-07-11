@@ -6,7 +6,7 @@
     :title="'查看'"
     @on-cancel="cancel" >
     <!-- 微博 -->
-    <Row v-if='code == "weibo"'>
+    <Row v-if='code == "weibo" && weibostatus == "1"'>
       <Row class='title'>微博原发</Row>
       <Row class='rows'>
         <Col :span='3'>原发内容</Col>
@@ -25,6 +25,8 @@
         <Col :span='3'>推广链接</Col>
         <Col :span='20'>{{itemlist.url == null ? '暂无链接地址' : itemlist.url}}</Col>
       </Row>
+    </Row>
+    <Row v-if='code == "weibo" && weibostatus == "2"'>
       <Row class='title'>微博转发</Row>
       <Row class='rows'>
         <Col :span='3'>转发语</Col>
@@ -95,7 +97,7 @@
       </Row>
       <Row class='rows'>
         <Col :span='3'>正文内容</Col>
-        <Col :span='20'>{{itemlist.content == null ? '暂无内容' : itemlist.content}}</Col>
+        <Col :span='20'>{{itemlist.content == null ? '暂无内容' : (itemlist.content).split('>')[1].split('<')[0]}}</Col>
       </Row>
       <Row class='rows'>
         <Col :span='3'>原文链接</Col>
@@ -107,7 +109,7 @@
       <Row class='title'>抖音</Row>
       <Row class='rows'>
         <Col :span='3'>是否提供产品</Col>
-        <Col :span='20'>{{itemlist.provideProduct == true ? 'true' : 'false'}}</Col>
+        <Col :span='20'>{{itemlist.provideProduct == true ? '是' : '否'}}</Col>
       </Row>
       <Row class='rows'>
         <Col :span='3'>产品介绍</Col>
@@ -142,14 +144,16 @@ export default class ComponentMain extends ViewBase {
   showDlg = false
   id: any = 0
   code: any = ''
+  weibostatus: any = null
   itemlist: any = {}
 
 
 
-  async init(id: number , code: any) {
+  async init(id: number , code: any , status: any) {
     this.showDlg = true
     this.id = id
     this.code = code
+    this.weibostatus = status
     // console.log(id , code)
     const { data } = await view(id)
     this.itemlist = data.item

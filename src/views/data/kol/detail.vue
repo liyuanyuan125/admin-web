@@ -30,11 +30,7 @@
         <Row>
           <Col :span="12">
             <FormItem label="KOL类型:" prop="accountCategoryCode">
-              <RadioGroup v-model="form.accountCategoryCode">
-                <Radio :key="item.key" v-for="item in accountCategoryList" :label="item.key" >
-                  {{item.text}}
-                </Radio>
-            </RadioGroup>
+              {{form.accountCategoryCode}}
             </FormItem>
           </Col>
         </Row>
@@ -50,17 +46,24 @@
         <Row>
           <Col>
             <FormItem label="合作品牌信息:">
-              <Brand v-model="brandlist"></Brand>
+              <Brand :editnums="detail" v-model="brandlist"></Brand>
             </FormItem>
           </Col>
         </Row>
-
         <Row>
-          <!-- <Col :span="12">
+          <Col :span="12">
             <FormItem label="系统评论热词:">
-              <Brand v-model="brandlist"></Brand>
+              <Table
+                :columns="customcolunms"
+                :data="customTags"
+                class="brand-table"
+                style="width: 362px"
+                border
+                stripe
+                disabled-hover
+              ></Table>
             </FormItem>
-          </Col> -->
+          </Col>
 
           <Col :span="12">
             <FormItem label="编辑评论热词:">
@@ -93,7 +96,10 @@
           <kol :editnums="detail" :channelCodeList="channelCodeList" v-model="form.exts"></kol>
         </FormItem>
       </div>
-
+      <div class="footer-btn">
+        <Button type="primary" class="btn">浏览</Button>
+        <Button type="primary" @click="editSubmit">返回</Button>
+      </div>
     </Form>
   </div>
 </template>
@@ -133,9 +139,10 @@ export default class Main extends ViewBase {
     customIndexPercent: 1,
     description: '',
     customTags: '',
-    exts: []
+    exts: [],
+    tag: ''
   }
-
+  customTags: any = []
   tags: any = []
 
   get rule() {
@@ -190,6 +197,11 @@ export default class Main extends ViewBase {
   imageList: any = []
   brandlist: any = []
 
+  customcolunms: any = [
+    { title: '排序', key: 'index', align: 'center' },
+    { title: '评论热词', key: 'hot', align: 'center' },
+  ]
+
   created() {
     this.init()
     this.brandbeforelist()
@@ -226,11 +238,18 @@ export default class Main extends ViewBase {
         this.form.name = item.name
         this.kolid = item.kolid
         this.form.description = item.description
-        this.form.accountCategoryCode = item.accountCategoryCode
+        const accountCategoryCode = makeMap(this.accountCategoryList)
+        this.form.accountCategoryCode = accountCategoryCode[item.accountCategoryCode]
         this.form.customJyIndex = item.customJyIndex
         this.form.customIndexPercent = item.customIndexPercent
         this.form.description = item.description
-        this.form.customTags = item.customTags.join(';')
+        this.customTags = (item.customTags || []).map((it: any, index: number) => {
+          return {
+            hot: it,
+            index: index + 1
+          }
+        })
+        this.form.tag = (item.tags || []).join(';')
         this.form.exts = (item.exts || []).map((it: any) => {
           return {
             name: '',
@@ -281,39 +300,6 @@ export default class Main extends ViewBase {
   // 提交
   async editSubmit() {
     try {
-      const valid = await (this.$refs.form as any).validate()
-      if (!valid) {
-        return
-      }
-      const photo = this.form.photo.map((it: any) => it.fileId).join('')
-      const query = clean({
-        ...this.form,
-        cooperateBrands: this.brandlist.map((it: any) => {
-          return {
-            categoryCode: it.categoryCode,
-            brandId: it.brandId
-          }
-        }),
-        customIndexPercent: Number(this.form.customIndexPercent),
-        customJyIndex: Number(this.form.customJyIndex),
-        photo: this.form.photo.map((it: any) => it.fileId).join(''),
-        customTags: this.form.customTags ? this.form.customTags.split(';') : [],
-        exts: this.form.exts.map((it: any) => {
-          return {
-            channelCode: it.channelCode,
-            channelDataId: it.channelDataId
-          }
-        })
-      })
-      if (this.$route.params.id) {
-        await editkol(this.$route.params.id, {
-          ...query,
-        })
-      } else {
-        await addkol({
-          ...query
-        })
-      }
       this.$router.push({ name: 'data-kol-associated' })
     } catch (ex) {
       this.handleError(ex)
@@ -371,6 +357,11 @@ export default class Main extends ViewBase {
 .brand-select {
   /deep/ .ivu-select {
     margin-right: 10px;
+  }
+}
+/deep/ .ivu-form-item-content span:empty {
+  &::before {
+    content: '暂无';
   }
 }
 .footer-btn {

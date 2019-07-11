@@ -21,9 +21,9 @@
     <div v-if='$route.params.orders == 2 || $route.params.orders == 3 || $route.params.orders == 0 || $route.params.orders == 5' class='title'>商务确认</div>
 
     <Table  :columns="okcolumns" :data='oklist' border stripe disabled-hover size="small" class="table">
-      <template slot="view" slot-scope="{ row: { id , channelCode  } }">
+      <template slot="view" slot-scope="{ row: { id , channelCode , publishCategoryCode } }">
         <div class="row-acts">
-          <a href="javascript:;"  @click="view(id , channelCode)">查看</a>
+          <a href="javascript:;"  @click="view(id , channelCode , publishCategoryCode)">查看</a>
         </div>
       </template>
       <template slot="channelCode" slot-scope="{ row: { channelCode  } }">
@@ -381,11 +381,11 @@ export default class Main extends ViewBase {
     })
   }
 
-  view(id: any , code: any) {
+  view(id: any , code: any , status: any) {
     this.viewVisible = true
     this.$nextTick(() => {
       const myThis: any = this
-      myThis.$refs.view.init(id, code)
+      myThis.$refs.view.init(id, code , status)
     })
   }
 
