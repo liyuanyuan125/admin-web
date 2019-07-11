@@ -556,6 +556,7 @@ export default class Main extends ViewBase {
       } else {
         await editbrand(query)
       }
+      this.$router.push({ name: 'data-brand' })
       // this.$router.push({ name: 'data-person' })
     } catch (ex) {
       this.handleError(ex)
