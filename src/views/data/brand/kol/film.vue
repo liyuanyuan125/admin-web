@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="brand-select rest-input">
-      <Select @on-change="init" v-model="channel" filterable clearable style="width: 120px">
+    <div v-if="eidt != 'edit'" class="brand-select rest-input">
+      <Select ref="ul" @on-change="init" v-model="channel" filterable clearable style="width: 120px">
         <Option
           v-for="option in channelList"
           :value="option.id"
@@ -33,17 +33,21 @@ import { filmlist } from '@/api/brand'
 import { confirm, info, alert } from '@/ui/modal.ts'
 
 @Component
-export default class Main extends ViewBase {
+export default class Films extends ViewBase {
   @Prop() value: any
-
+  @Prop({ default: 'edit' }) eidts: any
   channel: any = ''
   channelList: any = []
   movielist: any = []
 
-  kolcoluems: any = [
-    { title: '影片名称', key: 'name', align: 'center' },
-    { title: '操作', key: 'rate', slot: 'action', align: 'center' },
-  ]
+  get kolcoluems() {
+    return this.edits == 'edit' ? [
+      { title: '影片名称', key: 'name', align: 'center' },
+      { title: '操作', key: 'rate', slot: 'action', align: 'center' },
+    ] : [
+      { title: '影片名称', key: 'name', align: 'center' },
+    ]
+  }
 
   created() {
     this.init()
@@ -64,7 +68,7 @@ export default class Main extends ViewBase {
   }
 
   async addProvinceList() {
-    if (this.channel != '') {
+    if (this.channel) {
       let channelname = ''
       this.channelList.map((item: any) => {
         if (item.id == this.channel) {
@@ -80,12 +84,18 @@ export default class Main extends ViewBase {
           name: channelname
         })
         this.$emit('input', this.movielist)
+        ; (this.$refs.ul as any).dispatch('FormItem', 'on-form-change', this.movielist)
       } else {
         await info('改账号已存在', { title: '提示' })
       }
     } else {
       await info('请选择账号平台', { title: '提示' })
     }
+  }
+
+  @Watch('value', { deep: true })
+  watchValue(val: any) {
+    this.movielist = val
   }
 }
 </script>
