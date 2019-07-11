@@ -3,10 +3,10 @@
     <Form ref="form" :model="form" :rules="rule" :label-width="125">
       <div class="base-mess">
         <h2 class="title">基础和扩展信息</h2>
-        <Row v-if='kolid'>
+        <Row v-if='$route.params.id'>
           <Col :span="12">
             <FormItem label="KOL编号:">
-              <span>{{kolid}}</span>
+              <span>{{$route.params.id}}</span>
             </FormItem>
           </Col>
         </Row>
@@ -59,11 +59,19 @@
         </Row>
 
         <Row>
-          <!-- <Col :span="12">
+          <Col :span="12">
             <FormItem label="系统评论热词:">
-              <Brand v-model="brandlist"></Brand>
+              <Table
+                :columns="customcolunms"
+                :data="customTags"
+                class="brand-table"
+                style="width: 362px"
+                border
+                stripe
+                disabled-hover
+              ></Table>
             </FormItem>
-          </Col> -->
+          </Col>
 
           <Col :span="12">
             <FormItem label="编辑评论热词:">
@@ -146,6 +154,11 @@ export default class Main extends ViewBase {
     exts: []
   }
 
+  customcolunms: any = [
+    { title: '排序', key: 'index', align: 'center' },
+    { title: '评论热词', key: 'hot', align: 'center' },
+  ]
+
   tags: any = []
 
   get rule() {
@@ -196,6 +209,7 @@ export default class Main extends ViewBase {
       ]
     }
   }
+  customTags: any = []
   jyIndex: any = ''
   imageList: any = []
   brandlist: any = []
@@ -240,7 +254,13 @@ export default class Main extends ViewBase {
         this.form.customJyIndex = item.customJyIndex
         this.form.customIndexPercent = item.customIndexPercent
         this.form.description = item.description
-        this.form.customTags = item.customTags.join(';')
+        this.form.customTags = (item.tags || []).join(';')
+        this.customTags = (item.customTags || []).map((it: any, index: number) => {
+          return {
+            hot: it,
+            index: index + 1
+          }
+        })
         this.form.exts = (item.exts || []).map((it: any) => {
           return {
             name: '',
@@ -260,6 +280,12 @@ export default class Main extends ViewBase {
           return {
             index,
             name: it
+          }
+        })
+        this.customTags = (item.customTags || []).map((it: any, index: number) => {
+          return {
+            hot: it,
+            index: index + 1
           }
         })
         const brand = makeMap(brandCategoryList)
@@ -307,13 +333,14 @@ export default class Main extends ViewBase {
         customIndexPercent: Number(this.form.customIndexPercent),
         customJyIndex: Number(this.form.customJyIndex),
         photo: this.form.photo.map((it: any) => it.fileId).join(''),
-        customTags: this.form.customTags ? this.form.customTags.split(';') : [],
+        tags: this.form.customTags ? this.form.customTags.split(';') : [],
         exts: this.form.exts.map((it: any) => {
           return {
             channelCode: it.channelCode,
             channelDataId: it.channelDataId
           }
-        })
+        }),
+        customTags: ''
       })
       if (this.$route.params.id) {
         await editkol(this.$route.params.id, {

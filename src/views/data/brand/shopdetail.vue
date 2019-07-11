@@ -313,13 +313,13 @@ export default class Main extends ViewBase {
         this.form.description = item.description
         this.form.femalePercent = item.femalePercent
         this.form.malePercent = item.malePercent
-        this.ageCodeList = this.ageCodeList.map((it: any, index: number) => {
+        this.ageCodeList = item.ages ? (this.ageCodeList || []).map((it: any, index: number) => {
           return {
             ...it,
             v: item.ages[index].v,
-            k: item.ages[index].k
+            k: item.ages[index].v
           }
-        })
+        }) : []
         this.fans.provinces = item.provinces || []
         this.fans.citys = item.citys || []
         // this.fans.citys = item.citys || []

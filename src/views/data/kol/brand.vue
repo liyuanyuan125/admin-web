@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="brand-select rest-input">
+    <div v-if="editnums == 'edit'" class="brand-select rest-input">
       <Select @on-change="init" v-model="promodel" filterable clearable style="width: 120px">
         <Option
           v-for="option in tradeCodeList"
@@ -44,17 +44,25 @@ import { brandbefore, brandList, kolchannel } from '@/api/brand'
 export default class Main extends ViewBase {
   @Prop() value: any
   @Prop() channelCodeList: any
-
+  @Prop({ default: 'edit' }) editnums: any
   channel: any = ''
   promodel: any = ''
   channelList: any = []
   kollist: any = []
   tradeCodeList: any = []
 
-  kolcoluems: any = [
-    { title: '品牌分类', key: 'name', width: 120, align: 'center' },
-    { title: '品牌名称', key: 'rate', width: 120, align: 'center' },
-    { title: '操作', key: 'rate', slot: 'action', width: 120, align: 'center' },
+  get kolcoluems() {
+    const tables = [
+      { title: '品牌分类', key: 'name', align: 'center' },
+      { title: '品牌名称', key: 'rate', align: 'center' },
+    ]
+    const action = [{ title: '操作', key: 'rate', slot: 'action', align: 'center' }]
+    return this.editnums == 'edit' ? [...tables, ...action] : [...tables]
+  }
+
+  customcolunms: any = [
+    { title: '排序', key: 'index', align: 'center' },
+    { title: '评论热词', key: 'hot', align: 'center' },
   ]
 
   created() {

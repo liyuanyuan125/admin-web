@@ -549,9 +549,9 @@ export default class Main extends ViewBase {
         movies: this.filmlist
       })
       if (this.$route.params.id) {
-        await addbrand(query)
-      } else {
         await editbrand(query)
+      } else {
+        await addbrand(query)
       }
       this.$router.push({ name: 'data-brand' })
       // this.$router.push({ name: 'data-person' })
