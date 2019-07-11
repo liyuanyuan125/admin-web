@@ -65,17 +65,17 @@ export async function conpanylist(query: any) {
   return data
 }
 
-// 添加影片列表
-export async function filmList(query: any) {
-  const data = await get(`/xadvert/plans/search-movie` , query)
-  return data
-}
-
 // // 添加影片列表
 // export async function filmList(query: any) {
-//   const data = await get(`/movie/` , query)
+//   const data = await get(`/xadvert/plans/search-movie` , query)
 //   return data
 // }
+
+// 添加影片列表
+export async function filmList(query: any) {
+  const data = await get(`/movie/` , query)
+  return data
+}
 
 
 // 添加影片

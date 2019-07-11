@@ -19,6 +19,11 @@
     <!-- 订单金额信息 -->
     <div class='title'>订单金额信息</div>
     <Table :columns="okcolumns" :data='oklist' border stripe disabled-hover size="small" class="table">
+      <template slot="view" slot-scope="{ row: { id , channelCode  } }">
+        <div class="row-acts">
+          <a href="javascript:;"  @click="view(id , channelCode)">查看</a>
+        </div>
+      </template>
       <template slot="channelCode" slot-scope="{ row: { channelCode } }">
         <div class="row-acts">
           <span v-for='(it,index) in channelCodeList' :key='index' v-if='it.key == channelCode'>{{it.text}}</span>
@@ -55,7 +60,8 @@
       <Button style='margin-left:20px;' type="primary"  @click="change('dataForm')">提交</Button>
       <Button style='margin-left:20px;' @click="back">取消</Button>
     </div>
-
+    <viewDlg  ref="view"   v-if="viewVisible" @done="dlgEditDone"/>
+  
 
 
   </div>
@@ -70,6 +76,8 @@ import moment from 'moment'
 import { queryList , delorder , itemlist , finance , item } from '@/api/refund'
 import EditDialog, { Field } from '@/components/editDialog'
 import {confirm , warning , success, toast , info } from '@/ui/modal'
+import viewDlg from '../kollist/viewDlg.vue'
+
 
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
@@ -81,9 +89,11 @@ const dataForm = {
 
 @Component({
   components: {
+    viewDlg
   }
 })
 export default class Main extends ViewBase {
+  viewVisible = false
   editIndex = -1  // 当前聚焦的输入框的行数
   editmoney = '' // 修改金额
   beizhu = '' // 修改备注
@@ -162,6 +172,7 @@ export default class Main extends ViewBase {
   okcolumns = [
     { title: 'kol平台账号',  key: 'kolId', align: 'center' },
     { title: 'kol平台账号名称', key: 'kolName', align: 'center' },
+    { title: '任务类型', width: 70, slot: 'view', align: 'center' },
     { title: '平台', width: 70, slot: 'channelCode', align: 'center' },
     { title: '任务类型', key: 'publishCategoryName', align: 'center' },
     { title: '下单金额',  key: 'salePrice', align: 'center' },
@@ -273,6 +284,14 @@ export default class Main extends ViewBase {
       this.handleError(ex)
     } finally {
     }
+  }
+
+  view(id: any , code: any ) {
+    this.viewVisible = true
+    this.$nextTick(() => {
+      const myThis: any = this
+      myThis.$refs.view.init(id, code)
+    })
   }
 
   async change() {

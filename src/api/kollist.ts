@@ -65,3 +65,12 @@ export async function move(orderItemId: any  ) {
   return data
 }
 
+
+//  查看详情
+export async function view(orderItemId: any) {
+  const data = await get(`/kol/orders/order-item/${orderItemId}`)
+  return data
+}
+
+
+

@@ -201,7 +201,7 @@ export default class Main extends ViewBase {
         render: (hh: any, { row: { publishStartDate } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          const html = String(publishStartDate).slice(0, 4) + '-' + String(publishStartDate).slice(4, 6) + '-' + String(publishStartDate).slice(6, 8)
+          const html = publishStartDate == 0 ? '-' : String(publishStartDate).slice(0, 4) + '-' + String(publishStartDate).slice(4, 6) + '-' + String(publishStartDate).slice(6, 8)
           return <span class='datetime' v-html={html}></span>
           /* tslint:enable */
         }
