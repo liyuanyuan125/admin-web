@@ -131,6 +131,11 @@ export default class Main extends ViewBase {
       await info('请选择品牌', { title: '提示' })
     }
   }
+
+  @Watch('value', { deep: true })
+  watchValue(val: any) {
+    this.kollist = val
+  }
 }
 </script>
 

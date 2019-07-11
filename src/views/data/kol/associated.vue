@@ -17,10 +17,15 @@
         >新建</Button>
       </template>
 
+      <template slot="id" slot-scope="{ row: { id } }">
+        <router-link :to="{ name: 'data-kol-edit-associated-detail', params: { id} }">
+           {{id}}</router-link>
+      </template>
+
       <template slot="action" slot-scope="{ row }">
         <div class="row-acts">
           <router-link :to="{
-            name: 'data-kol-edit',
+            name: 'data-kol-associated-edit',
             params: {
               id: row.id
             }
@@ -97,13 +102,16 @@ export default class Main extends ViewBase {
           ...item
         ],
         totalCount
-      }
+      },
+      items: [
+        ...item
+      ]
     }
   }
 
   get columns() {
     return [
-      { title: 'KOL编号', key: 'id' },
+      { title: 'KOL编号', key: 'id', slot: 'id' },
       { title: 'KOL名称', key: 'name' },
       { title: '鲸娱指数', key: 'jyIndex' },
       { title: '微博平台账号', key: 'weibo' },
