@@ -1,6 +1,6 @@
 <template>
   <Select v-model="countyId" placeholder="国籍" clearable filterable>
-      <Option v-for="item in countryList" :key="item.code" :value="item.code" :label="item.name"></Option>
+      <Option v-for="item in countryList" :key="item.code" :value="item.name" :label="item.name"></Option>
   </Select>
 </template>
 

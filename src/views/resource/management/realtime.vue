@@ -47,7 +47,7 @@
                 <em class="date-label">{{it.label}}</em>
                 <div :class="`date-data date-data-${it.data.rangeType}`" v-if="it.data"
                   @click="showReport(it)">
-                  <p class="date-cpm">{{it.data.cpm|centToYuan}}</p>
+                  <p class="date-cpm">{{it.data.cpm}}</p>
                   <p class="date-discount">{{it.data.discount}}%</p>
                 </div>
                 <div v-if="it.data && it.data.calendarId > 0"

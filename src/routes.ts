@@ -301,7 +301,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 基础数据 - 品牌管理 - 查看门店
   {
-    path: '/data/brand/shopdetail',
+    path: '/data/brand/shopdetail/:id',
     name: 'data-brand-shopdetail',
     component: () => import('./views/data/brand/shopdetail.vue'),
     meta: {
@@ -311,7 +311,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 基础数据 - 品牌管理 - 编辑门店
   {
-    path: '/data/brand/shopedit',
+    path: '/data/brand/shopedit/:id?',
     name: 'data-brand-shopedit',
     component: () => import('./views/data/brand/shopedit.vue'),
     meta: {
@@ -344,6 +344,16 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     path: '/data/kol/associated',
     name: 'data-kol-associated',
     component: () => import('./views/data/kol/associated.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 基础数据 - kol平台关联 - 列表
+  {
+    path: '/data/kol/edit/:id?',
+    name: 'data-kol-edit',
+    component: () => import('./views/data/kol/edit.vue'),
     meta: {
       authKey: ''
     }
@@ -464,31 +474,31 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: idProps
   },
 
-
+  // KOL 平台账号
   {
-    path: '/data/kol-account/',
-    name: 'kol-account-list',
+    path: '/data/kol-account/:channel?',
+    name: 'data-kol-account',
     component: () => import('./views/data/kol-account/index.vue'),
     meta: {
       authKey: ''
-    }
+    },
+    props: true,
   },
+
+  // KOL 平台账号 - 编辑、审核
   {
-    path: '/data/kol-account/approve/:id',
-    name: 'kol-account-approve',
-    component: () => import('./views/data/kol-account/approve.vue'),
-    meta: {
-      authKey: ''
-    }
-  },
-  {
-    path: '/data/kol-account/edit/:channelCode/:id',
-    name: 'kol-account-edit',
+    path: '/data/kol-account/edit/:id/:channel/:action',
+    name: 'data-kol-account-edit',
     component: () => import('./views/data/kol-account/edit.vue'),
     meta: {
-      authKey: ''
-    }
+      authKey: '',
+      title({ params: { action } }) {
+        return action == 'edit' ? '编辑' : '审核'
+      }
+    },
+    props: paramTypes({ id: Number, channel: String, action: String })
   },
+
   {
     path: '/contract/list/',
     name: 'contract-list',

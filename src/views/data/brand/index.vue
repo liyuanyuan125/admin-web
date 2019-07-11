@@ -11,13 +11,20 @@
         <Button
           type="success"
           icon="md-add-circle"
-          @click="editShow()"
+          :to="{ name: 'data-brand-shopedit' }"
         >新建</Button>
       </template>
+
       <template slot="keyWords" slot-scope="{ row: { keyWords } }">
         <div class="keyWords">
          <span v-if="keyWords">{{keyWords.join(';')}}</span>
         </div>
+      </template>
+
+  
+      <template slot="id" slot-scope="{ row: { id } }">
+        <router-link :to="{ name: 'data-brand-shopdetail', params: { id} }">
+           {{id}}</router-link>
       </template>
 
       <template slot="platform" slot-scope="{ row: { status, id } }">
@@ -54,7 +61,9 @@
         <div class="row-acts">
           <a @click="start(row)" v-if="row.status == 1">禁用</a>
           <a @click="start(row)" v-if="row.status == 2">启用</a>
-          <a @click="start(row)" v-if="row.status == 1">编辑</a>
+          <router-link @click="start(row)" v-if="row.status == 1"
+            :to="{ name: 'data-brand-shopedit', params: {id: row.id} }">
+            编辑</router-link>
         </div>
       </template>
     </ListPage>
@@ -131,7 +140,7 @@ export default class Main extends ViewBase {
   get columns() {
     return [
       { title: '序号', key: 'id', width: 65 },
-      { title: '品牌ID', key: 'id', width: 80 },
+      { title: '品牌ID', key: 'id', slot: 'id', width: 80 },
       { title: '品牌中文名称', key: 'name', minWidth: 90 },
       { title: '品牌外文名称', key: 'enName', width: 100 },
       { title: '品牌logo', key: 'logo', minWidth: 90, editor: 'deprecated' },
