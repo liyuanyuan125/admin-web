@@ -177,7 +177,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   onselect(row: any , selection: any) {
     this.ids = row.map((it: any) => {
-      return it.id
+      return it.cinemaId
     })
   }
 

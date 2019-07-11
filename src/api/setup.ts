@@ -17,6 +17,12 @@ export async function transaction(query: any) {
   return data
 }
 
+// 设置刊例价信息
+export async function price(query: any) {
+  const data = await put(`/finance/settings/set-default-cpm` , query)
+  return data
+}
+
 export async function dataFrom(query: any) {
   const data = await get('/finance/settings/default', query)
   return data

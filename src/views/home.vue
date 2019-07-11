@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <h1>Aiads 广告投放</h1>
+    <h1>JYdata管理后台</h1>
   </div>
 </template>
 
