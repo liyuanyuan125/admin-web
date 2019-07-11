@@ -119,7 +119,9 @@ import kol from '../brand/kol/kolist.vue'
 import Brand from './brand.vue'
 import { queryList, addkol, editkol, detailkol } from '@/api/associated'
 import { clean } from '@/fn/object'
+import { toMap } from '@/fn/array'
 
+const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 @Component({
   components: {
     AreaSelect,
@@ -225,6 +227,7 @@ export default class Main extends ViewBase {
       }
       const { data: {
         accountCategoryList,
+        brandCategoryList,
         item
       } } = await detailkol(this.$route.params.id)
       this.accountCategoryList = accountCategoryList
@@ -234,17 +237,38 @@ export default class Main extends ViewBase {
         this.kolid = item.kolid
         this.form.description = item.description
         this.form.accountCategoryCode = item.accountCategoryCode
-        this.form.photo = []
         this.form.customJyIndex = item.customJyIndex
         this.form.customIndexPercent = item.customIndexPercent
         this.form.description = item.description
         this.form.customTags = item.customTags.join(';')
-        this.form.exts = item.exts || []
+        this.form.exts = (item.exts || []).map((it: any) => {
+          return {
+            name: '',
+            channelCode: it.channelCode,
+            channelDataId: it.channelDataId,
+            rate: it.channelDataName
+          }
+        })
         this.jyIndex = item.jyIndex
+        this.form.photo = item.photo ? [
+          {
+            url: item.photoUrl,
+            fileId: item.photo
+          }
+        ] : []
         this.tags = (item.tags || []).map((it: any, index: number) => {
           return {
             index,
             name: it
+          }
+        })
+        const brand = makeMap(brandCategoryList)
+        this.brandlist = (item.cooperateBrands || []).map((it: any) => {
+          return {
+            name: brand[it.categoryCode],
+            categoryCode: it.categoryCode,
+            brandId: it.brandId,
+            rate: it.brandName
           }
         })
       }
@@ -357,6 +381,12 @@ export default class Main extends ViewBase {
 .brand-select {
   /deep/ .ivu-select {
     margin-right: 10px;
+  }
+}
+.footer-btn {
+  text-align: center;
+  .btn {
+    margin-right: 15px;
   }
 }
 </style>

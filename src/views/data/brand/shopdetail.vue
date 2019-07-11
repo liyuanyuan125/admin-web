@@ -141,7 +141,7 @@
       </div>
       <div class="footer-btn">
         <Button type="primary" class="btn">浏览</Button>
-        <Button type="primary" @click="editSubmit">保存</Button>
+        <Button type="primary" @click="editSubmit">返回</Button>
       </div>
     </Form>
   </div>
@@ -479,46 +479,7 @@ export default class Main extends ViewBase {
 
   // 提交
   async editSubmit() {
-    try {
-      const valid = await (this.$refs.form as any).validate()
-      if (!valid) {
-        return
-      }
-      const agetable = this.ageCodeList.map((it: any) => {
-        return {
-          k: it.key,
-          v: it.v
-        }
-      })
-      const kols = this.kollist.map((it: any) => {
-        return {
-          channelCode: it.channelCode,
-          channelDataId: it.channelDataId,
-          channelName: it.rate
-        }
-      })
-      const keyWords = this.form.keyWords.split(';')
-      const query = clean({
-        id: this.$route.params.id,
-        ...this.form,
-        ...this.fans,
-        keyWords,
-        headImgBig: this.form.headImgBig.map((it: any) => it.fileId).join(''),
-        logo: this.form.logo.map((it: any) => it.fileId).join(''),
-        ages: agetable,
-        kols,
-        foundDate: this.form.foundDate ? moment(this.form.foundDate).format(timeFormat) : '',
-        movies: this.filmlist
-      })
-      if (this.$route.params.id) {
-        await addbrand(query)
-      } else {
-        await editbrand(query)
-      }
-      // this.$router.push({ name: 'data-person' })
-    } catch (ex) {
-      this.handleError(ex)
-    }
+    this.$router.push({ name: 'data-brand' })
   }
 }
 </script>

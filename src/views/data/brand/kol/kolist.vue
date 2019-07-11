@@ -38,7 +38,9 @@ import ViewBase from '@/util/ViewBase'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { brandList, kolchannel } from '@/api/brand'
 import { confirm, info, alert } from '@/ui/modal.ts'
+import { toMap } from '@/fn/array'
 
+const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 @Component
 export default class Kol extends ViewBase {
   @Prop() value: any
@@ -123,7 +125,13 @@ export default class Kol extends ViewBase {
 
   @Watch('value', { deep: true })
   watchValue(val: any) {
-    this.kollist = val
+    this.kollist = val.map((it: any) => {
+      const channelCode = makeMap(this.channelCodeList)
+      return {
+        ...it,
+        name: channelCode[it.channelCode]
+      }
+    })
   }
 }
 </script>
