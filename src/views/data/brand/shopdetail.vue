@@ -18,36 +18,24 @@
         <Row>
           <Col :span="10">
             <FormItem :show-message="form.logo.length == 0" label="品牌logo:" prop="logo">
-              <Upload v-model="form.logo" :maxCount="1" accept="image/*" />
+              <Upload readonly v-model="form.logo" :maxCount="1" accept="image/*" />
             </FormItem>
           </Col>
           <Col :offset="2"  :span="6">
             <FormItem label="品牌大图:" prop="headImgBig">
-              <Upload v-model="form.headImgBig" :maxCount="1" accept="image/*" />
+              <Upload readonly v-model="form.headImgBig" :maxCount="1" accept="image/*" />
             </FormItem>
           </Col>
         </Row>
         <Row>
           <Col :span="10">
             <FormItem label="所属行业:" prop="tradeCode">
-              <Select v-model="form.tradeCode" filterable clearable>
-                <Option
-                  v-for="(item, index) in tradeCodeList"
-                  :value="item.key"
-                  :key="index"
-                >{{ item.text }}</Option>
-              </Select>
+              <span>{{form.tradeCode}}</span>
             </FormItem>
           </Col>
           <Col :offset="2"  :span="10">
             <FormItem label="所属国家:">
-              <Select v-model="form.countryCode" filterable clearable>
-                <Option
-                  v-for="(item, index) in countryCodeList"
-                  :value="item.key"
-                  :key="index"
-                >{{ item.text }}</Option>
-              </Select>
+              <span>{{form.countryCode}}</span>
             </FormItem>
           </Col>
         </Row>
@@ -173,7 +161,7 @@ import Film from './kol/film.vue'
 import { clean } from '@/fn/object'
 import { toMap } from '@/fn/array'
 
-const makeMap = (list: any[]) => toMap(list, 'code', 'name')
+const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 const timeFormat = 'YYYYMMDD'
 @Component({
   components: {
@@ -338,6 +326,10 @@ export default class Main extends ViewBase {
         //   provinces: item.provinces || [], // 省份分布
         //   citys: item.citys || []
         // }
+        const trade = makeMap(this.tradeCodeList)
+        const country = makeMap(this.countryCodeList)
+        this.form.countryCode = country[item.countryCode]
+        this.form.tradeCode = trade[item.tradeCode]
         this.form.keyWords = (item.keyWords || []).join(';')
         this.filmlist = item.movies || []
         this.form.headImgBig = item.headImgBig ? [
@@ -585,5 +577,9 @@ export default class Main extends ViewBase {
     margin-right: 15px;
   }
 }
-
+span:only-child:empty {
+  &::before {
+    content: '暂无';
+  }
+}
 </style>

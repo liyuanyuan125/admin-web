@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="eidt != 'edit'" class="brand-select rest-input">
+    <div v-if="editnums == 'edit'" class="brand-select rest-input">
       <Select @on-change="init" v-model="promodel" filterable clearable style="width: 120px">
         <Option
           v-for="option in channelCodeList"
