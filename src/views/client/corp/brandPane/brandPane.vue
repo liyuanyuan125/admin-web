@@ -40,7 +40,7 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { isEqual } from 'lodash'
-import { searchBrandByName } from './data'
+import { searchBrand } from './data'
 import { Brand, BrandBind } from './types'
 import { alert } from '@/ui/modal'
 import RemoteSelect from '@/components/remoteSelect'
@@ -74,8 +74,8 @@ export default class BrandPane extends ViewBase {
     ]
   }
 
-  async searchBrandByName(query: string) {
-    const list = await searchBrandByName(query)
+  async searchBrandByName(name: string) {
+    const list = await searchBrand({ name })
     this.selectList = list
     return list
   }

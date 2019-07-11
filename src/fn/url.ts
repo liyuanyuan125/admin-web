@@ -21,8 +21,6 @@ export function prettyQuery(data: any, defValMap: any = {}) {
   }, {})
 }
 
-/// buildUrl
-
 const rUrlParams = /^([^?]*)(?:\?)?(.*)$/
 
 const decode = (s: any) => s != null ? decodeURIComponent(s).trim() : null

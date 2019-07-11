@@ -11,7 +11,10 @@ import { ParamDeal, Param } from '@/util/param'
 import moment from 'moment'
 import DatePicker from './components/datePicker.vue'
 import DateRangePicker from './components/dateRangePicker.vue'
-import RemoteSelect, { Fetch as RemoteSelectFetch } from '@/components/remoteSelect'
+import RemoteSelect, {
+  Fetch as RemoteSelectFetch,
+  Backfill as RemoteSelectBackfill
+} from '@/components/remoteSelect'
 
 /**
  * 固定类型列表
@@ -100,7 +103,8 @@ export interface Filter extends Param {
    * 则说明会用 RemoteSelect 组件渲染该项
    */
   remoteSelect?: {
-    fetch: RemoteSelectFetch
+    fetch: RemoteSelectFetch,
+    backfill: RemoteSelectBackfill
   }
 }
 

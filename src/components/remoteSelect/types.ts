@@ -17,3 +17,8 @@ export interface IdName {
  * 请求函数类型
  */
 export type Fetch = (keyword: string) => Promise<IdName[]>
+
+/**
+ * 从 ID 解析项
+ */
+export type Backfill = (id: number | string) => Promise<IdName[]>
