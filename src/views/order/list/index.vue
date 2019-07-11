@@ -3,8 +3,8 @@
     <div  v-if="shows">
       <div class="act-bar flex-box">
         <form class="form flex-1" @submit.prevent="search">
-          <Select v-model="query.advertiserId" placeholder="广告主公司名称" style='width: 200px;'  filterable>
-            <Option v-for="it in xadscompany" :key="it.id" :value="it.id"
+          <Select v-model="query.xadvertiserId" placeholder="广告主公司名称" style='width: 200px;'  filterable>
+            <Option v-for="it in adscompany" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
           </Select>
           <!-- <LazyInput v-model="query.companyName" placeholder="广告计划名称" class="input"/> -->

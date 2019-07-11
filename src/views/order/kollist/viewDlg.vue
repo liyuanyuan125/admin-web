@@ -10,11 +10,12 @@
       <Row class='title'>微博原发</Row>
       <Row class='rows'>
         <Col :span='3'>原发内容</Col>
-        <Col :span='20'>{{itemlist.content}}</Col>
+        <Col :span='20'>{{itemlist.content == null ? '暂无内容' : itemlist.content}}</Col>
       </Row>
       <Row class='rows'>
         <Col :span='3'>原发图片</Col>
-        <Col :span='20'>
+        <Col :span='20' v-if='itemlist.pictureFileUrls == null'>暂无图片</Col>
+        <Col v-if='itemlist.pictureFileUrls != null' :span='20'>
           <div class='imgs' v-for='(it,index) in itemlist.pictureFileUrls' :key='index'>
             <img :src='it.url' alt="">
           </div>
@@ -22,16 +23,16 @@
       </Row>
       <Row class='rows'>
         <Col :span='3'>推广链接</Col>
-        <Col :span='20'>{{itemlist.url}}</Col>
+        <Col :span='20'>{{itemlist.url == null ? '暂无链接地址' : itemlist.url}}</Col>
       </Row>
       <Row class='title'>微博转发</Row>
       <Row class='rows'>
         <Col :span='3'>转发语</Col>
-        <Col :span='20'>{{itemlist.content}}</Col>
+        <Col :span='20'>{{itemlist.content == null ? '暂无内容' : itemlist.content}}</Col>
       </Row>
       <Row class='rows'>
         <Col :span='3'>转发链接</Col>
-        <Col :span='20'>{{itemlist.url}}</Col>
+        <Col :span='20'>{{itemlist.url == null ? '暂无链接地址' : itemlist.url}}</Col>
       </Row>
     </Row>
     <!-- 小红书 -->
@@ -47,7 +48,8 @@
       </Row>
       <Row class='rows'>
         <Col :span='3'>产品图片</Col>
-        <Col :span='20'>
+        <Col :span='20' v-if='itemlist.pictureFileUrls == null'>暂无图片</Col>
+        <Col v-if='itemlist.pictureFileUrls != null' :span='20'>
           <div class='imgs' v-for='(it,index) in itemlist.pictureFileUrls' :key='index'>
             <img :src='it.url' alt="">
           </div>
@@ -55,7 +57,7 @@
       </Row>
       <Row class='rows'>
         <Col :span='3'>推广链接</Col>
-        <Col :span='20'>{{itemlist.url}}</Col>
+        <Col :span='20'>{{itemlist.url == null ? '暂无链接地址' : itemlist.url}}</Col>
       </Row>
       <Row class='title'>小红书视频</Row>
       <Row class='rows'>
@@ -68,7 +70,7 @@
       </Row>
       <Row class='rows'>
         <Col :span='3'>推广链接</Col>
-        <Col :span='20'>{{itemlist.url}}</Col>
+        <Col :span='20'>{{itemlist.url == null ? '暂无链接地址' : itemlist.url}}</Col>
       </Row>
     </Row>
     <!-- 微信 -->
@@ -76,11 +78,12 @@
       <Row class='title'>微信</Row>
       <Row class='rows'>
         <Col :span='3'>文章标题</Col>
-        <Col :span='20'>{{itemlist.title}}</Col>
+        <Col :span='20'>{{itemlist.title == null ? '暂无标题' : itemlist.title}}</Col>
       </Row>
       <Row class='rows'>
         <Col :span='3'>封面图</Col>
-        <Col :span='20'>
+        <Col :span='20' v-if='itemlist.pictureFileUrls == null'>暂无图片</Col>
+        <Col v-if='itemlist.pictureFileUrls != null' :span='20'>
           <div class='imgs' v-for='(it,index) in itemlist.pictureFileUrls' :key='index'>
             <img :src='it.url' alt="">
           </div>
@@ -92,11 +95,11 @@
       </Row>
       <Row class='rows'>
         <Col :span='3'>正文内容</Col>
-        <Col :span='20'>{{itemlist.content}}</Col>
+        <Col :span='20'>{{itemlist.content == null ? '暂无内容' : itemlist.content}}</Col>
       </Row>
       <Row class='rows'>
         <Col :span='3'>原文链接</Col>
-        <Col :span='20'>{{itemlist.url}}</Col>
+        <Col :span='20'>{{itemlist.url == null ? '暂无链接地址' : itemlist.url}}</Col>
       </Row>
     </Row>
     <!-- 抖音 -->
@@ -112,7 +115,7 @@
       </Row>
       <Row class='rows'>
         <Col :span='3'>推广链接</Col>
-        <Col :span='20'>{{itemlist.url}}</Col>
+        <Col :span='20'>{{itemlist.url == null ? '暂无链接地址' : itemlist.url}}</Col>
       </Row>
     </Row>
     
