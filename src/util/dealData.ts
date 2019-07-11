@@ -3,7 +3,7 @@ import { parse } from '@/fn/array'
 
 import moment from 'moment'
 import { at } from 'lodash'
-
+import numeral from 'numeral'
 
 /**
  * 提供一组处理数据的工具方法
@@ -181,13 +181,18 @@ export function readableNumber(number: number | string, placeholder = '-') {
  * 将数字格式化成千分位，对于 0，做了特殊处理，显示占位
  * @param number 数字
  * @param placeholder 数字为 0 时的占位符，默认为 -
+ * @param format 数据格式
  */
-export function readableThousands(number: number | string, placeholder = '-') {
+export function readableThousands(
+  number: number | string,
+  placeholder = '-',
+  format = '0,0'
+) {
   if (isZero(number)) {
     return placeholder
   }
 
-  return toThousands(number)
+  return numeral(number).format(format)
 }
 
 /**

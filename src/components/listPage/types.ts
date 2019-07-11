@@ -2,6 +2,7 @@ import { Component } from 'vue'
 import { MapType, AjaxResult } from '@/util/types'
 import { Select } from 'iview'
 import LazyInput from '@/components/LazyInput'
+import NumberInput from '@/components/numberInput'
 import { kebabCase } from 'lodash'
 import Deprecated from '@/components/Deprecated.vue'
 import PoptipSelect from '@/components/PoptipSelect.vue'
@@ -14,7 +15,7 @@ import DateRangePicker from './components/dateRangePicker.vue'
 /**
  * 固定类型列表
  */
-export type InnateTypes = 'input' | 'select' | 'date' | 'dateRange'
+export type InnateTypes = 'input' | 'number' | 'select' | 'date' | 'dateRange'
 
 const formatDate = (value: string | Date | null, format = 'YYYYMMDD') =>
   value ? moment(value).format(format) : ''
@@ -24,6 +25,8 @@ const formatDate = (value: string | Date | null, format = 'YYYYMMDD') =>
  */
 const innateTypeMap: MapType<Component> = {
   input: LazyInput,
+
+  number: NumberInput,
 
   select: Select,
 

@@ -464,31 +464,31 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: idProps
   },
 
-
+  // KOL 平台账号
   {
-    path: '/data/kol-account/',
-    name: 'kol-account-list',
+    path: '/data/kol-account/:channel?',
+    name: 'data-kol-account',
     component: () => import('./views/data/kol-account/index.vue'),
     meta: {
       authKey: ''
-    }
+    },
+    props: true,
   },
+
+  // KOL 平台账号 - 编辑、审核
   {
-    path: '/data/kol-account/approve/:id',
-    name: 'kol-account-approve',
-    component: () => import('./views/data/kol-account/approve.vue'),
-    meta: {
-      authKey: ''
-    }
-  },
-  {
-    path: '/data/kol-account/edit/:channelCode/:id',
-    name: 'kol-account-edit',
+    path: '/data/kol-account/edit/:id/:channel/:action',
+    name: 'data-kol-account-edit',
     component: () => import('./views/data/kol-account/edit.vue'),
     meta: {
-      authKey: ''
-    }
+      authKey: '',
+      title({ params: { action } }) {
+        return action == 'edit' ? '编辑' : '审核'
+      }
+    },
+    props: paramTypes({ id: Number, channel: String, action: String })
   },
+
   {
     path: '/contract/list/',
     name: 'contract-list',
