@@ -18,7 +18,7 @@ import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import LazyInput from '@/components/LazyInput'
 
-import { IdName } from './types'
+import { IdName, Fetch } from './types'
 
 @Component({
   components: {
@@ -28,7 +28,7 @@ import { IdName } from './types'
 export default class RemoteSelect extends ViewBase {
   @Prop({ type: [ Number, String ] }) value!: number | string
 
-  @Prop({ type: Function, required: true }) fetch!: (keyword: string) => Promise<IdName[]>
+  @Prop({ type: Function, required: true }) fetch!: Fetch
 
   model: number | string = this.value
 

@@ -12,3 +12,8 @@ export interface IdName {
    */
   name: string
 }
+
+/**
+ * 请求函数类型
+ */
+export type Fetch = (keyword: string) => Promise<IdName[]>
