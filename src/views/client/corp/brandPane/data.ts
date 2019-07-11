@@ -6,15 +6,19 @@ import { get } from '@/fn/ajax'
  * https://yapi.aiads-dev.com/project/154/interface/api/3806
  */
 export async function searchBrandByName(name: string) {
-  const { data: { items } } = await get('/brand/brands', {
+  const {
+    data: {
+      items
+    }
+  } = await get('/brand/brands', {
     name,
     pageIndex: 1,
-    pageSize: 88,
+    pageSize: 88
   })
 
-  const list = (items as any[] || []).map(it => ({
-    id: it.id,
-    name: it.name
+  const list = ((items as any[]) || []).map(it => ({
+    id: it.id as number,
+    name: it.name as string
   }))
 
   return list

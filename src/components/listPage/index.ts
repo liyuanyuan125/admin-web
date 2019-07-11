@@ -1,4 +1,4 @@
-import ListPage from './ListPage.vue'
+import ListPage from './listPage.vue'
 
 export * from './types'
 
