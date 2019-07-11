@@ -205,7 +205,9 @@ import Upload from '@/components/Upload.vue'
 import kol from './kol/kolist.vue'
 import Film from './kol/film.vue'
 import { clean } from '@/fn/object'
+import { toMap } from '@/fn/array'
 
+const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 const timeFormat = 'YYYYMMDD'
 @Component({
   components: {
@@ -358,19 +360,15 @@ export default class Main extends ViewBase {
         this.form.description = item.description
         this.form.femalePercent = item.femalePercent
         this.form.malePercent = item.malePercent
-        this.ageCodeList = this.ageCodeList.map((it: any, index: number) => {
+        this.ageCodeList = item.ages ? (this.ageCodeList || []).map((it: any, index: number) => {
           return {
             ...it,
             v: item.ages[index].v,
-            k: item.ages[index].k
+            k: item.ages[index].v
           }
-        })
+        }) : []
         this.fans.provinces = item.provinces || []
         this.fans.citys = item.citys || []
-        // this.fans.citys = item.citys || []
-        //   provinces: item.provinces || [], // 省份分布
-        //   citys: item.citys || []
-        // }
         this.form.keyWords = (item.keyWords || []).join(';')
         this.filmlist = item.movies || []
         this.form.headImgBig = item.headImgBig ? [
@@ -379,12 +377,11 @@ export default class Main extends ViewBase {
             fileId: item.headImgBig
           }
         ] : []
+        const kols = makeMap(this.channelCodeList)
         this.kollist = (item.kols || []).map((it: any) => {
           return {
             ...it,
-            name: this.channelCodeList.filter((items: any) => {
-              return items.key == it.channelCode
-            })[0].text,
+            name: kols[it.channelCode],
             rate: it.channelName
           }
         })
@@ -548,7 +545,7 @@ export default class Main extends ViewBase {
         logo: this.form.logo.map((it: any) => it.fileId).join(''),
         ages: agetable,
         kols,
-        foundDate: this.form.foundDate ? moment(this.form.foundDate).format(timeFormat) : '',
+        foundDate: this.form.foundDate[0] ? moment(this.form.foundDate).format(timeFormat) : '',
         movies: this.filmlist
       })
       if (this.$route.params.id) {
