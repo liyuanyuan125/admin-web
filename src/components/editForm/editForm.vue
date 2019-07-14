@@ -11,29 +11,46 @@
       @submit.native.prevent="onSubmit"
       ref="form"
     >
-      <Col
-        v-for="it in normalFields"
-        :key="it.name"
-        :span="it.span"
-        :class="{ 'col-no-label': !it.label }"
-        :style="it.style"
+      <fieldset
+        v-for="group in groupFields"
+        :key="group.name"
+        class="form-group"
       >
-        <FormItem :label="it.label" :prop="it.name" :error="errorMap[it.name]" v-auth="it.auth">
-          <component
-            v-model="item[it.name]"
-            :is="it.component"
-            :placeholder="it.placeholder"
-            v-bind="it.props"
+        <h3 class="group-name" v-if="group.name">{{group.name}}</h3>
+        <section class="field-section">
+          <Col
+            v-for="it in group.list"
+            :key="it.name"
+            :span="it.span"
+            :offset="it.offset"
+            :class="{ 'col-no-label': !it.label }"
+            :style="it.style"
           >
-            <Option
-              v-for="sub in enumMap[it.name]"
-              :key="sub.key"
-              :value="sub.key"
-              v-if="it.type == 'select'"
-            >{{sub.text}}</Option>
-          </component>
-        </FormItem>
-      </Col>
+            <FormItem
+              :label="it.label"
+              :prop="it.name"
+              :error="errorMap[it.name]"
+              :class="it.class"
+              v-auth="it.auth"
+              v-if="it.visible(item)"
+            >
+              <component
+                v-model="item[it.name]"
+                :is="it.component"
+                :placeholder="it.placeholder"
+                v-bind="it.props"
+              >
+                <Option
+                  v-for="sub in enumMap[it.name]"
+                  :key="sub.key"
+                  :value="sub.key"
+                  v-if="it.type == 'select'"
+                >{{sub.text}}</Option>
+              </component>
+            </FormItem>
+          </Col>
+        </section>
+      </fieldset>
     </Form>
 
     <div class="inner-loading flex-mid" v-show="loading">
@@ -48,7 +65,15 @@ import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { MapType, AjaxResult, KeyTextControlStatus } from '@/util/types'
 import TinyLoading from '@/components/TinyLoading.vue'
-import { Field, normalizeField, Rule } from './types'
+import {
+  Field,
+  normalizeField,
+  normalizeAndGroupField,
+  Rule,
+  FetchData,
+  FetchResult,
+  fetchDataToResult
+} from './types'
 import { cloneDeep, isEqual } from 'lodash'
 import { defaultParams, dealParams, backfillParams } from '@/util/param'
 import { slice } from '@/fn/object'
@@ -61,20 +86,20 @@ import { random } from '@/fn/string'
   }
 })
 export default class EditForm extends ViewBase {
+  /** 字段配置 */
+  @Prop({ type: Array, default: () => [] }) fields!: Field[]
+
   /** 初始化数据 */
   @Prop({ type: Object, default: () => ({}) }) initData!: object
 
   /** 加载编辑项的请求函数 */
-  @Prop({ type: Function }) fetch!: (query?: any) => Promise<AjaxResult>
+  @Prop({ type: Function }) fetch!: (query?: any) => Promise<FetchData | FetchResult>
 
   /** 查询字段列表，默认为 id，可以使用以逗号分隔的字符串，指定多个字段，例如：key1,key2 */
   @Prop({ type: String, default: 'id' }) queryKeys!: string
 
   /** 提交请求函数 */
   @Prop({ type: Function }) submit!: (data: any) => Promise<AjaxResult>
-
-  /** 字段配置 */
-  @Prop({ type: Array, default: () => [] }) fields!: Field[]
 
   /** 表单 label 宽度 */
   @Prop({ type: Number, default: 76 }) labelWidth!: number
@@ -100,6 +125,11 @@ export default class EditForm extends ViewBase {
   get normalFields() {
     const list = normalizeField(this.fields)
     return list
+  }
+
+  get groupFields() {
+    const group = normalizeAndGroupField(this.fields)
+    return group
   }
 
   get rules() {
@@ -146,6 +176,12 @@ export default class EditForm extends ViewBase {
     )
   }
 
+  // 简单包装一下，以便适应两种数据结构
+  async fetchWrap(query: any) {
+    const res = await this.fetch(query)
+    return fetchDataToResult(res)
+  }
+
   async load() {
     if (this.fetch == null) {
       return
@@ -154,7 +190,7 @@ export default class EditForm extends ViewBase {
     this.loading = true
     try {
       const query = slice(this.item, this.queryKeys)
-      const { data } = await this.fetch(query)
+      const { data } = await this.fetchWrap(query)
 
       // 从 select 中推断出所用枚举
       const enumMap = this.normalFields
@@ -234,7 +270,7 @@ export default class EditForm extends ViewBase {
 <style lang="less" scoped>
 .edit-form {
   position: relative;
-  padding: 18px 28px 0 0;
+  padding: 0 0 38px 0;
 }
 
 .form {
@@ -245,6 +281,7 @@ export default class EditForm extends ViewBase {
   }
   /deep/ .ivu-col {
     display: inline-block;
+    vertical-align: top;
     float: none;
   }
   /deep/ .ivu-form-item-label {
@@ -253,7 +290,23 @@ export default class EditForm extends ViewBase {
   /deep/ .ivu-form-item-content {
     line-height: 1;
   }
+  /deep/ .form-text {
+    padding: 10px 12px 10px 0;
+  }
 }
+
+.form-group {
+  padding: 10px;
+  border: 1px solid #e8e8e8;
+  background-color: #fff;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.group-name {
+  font-size: 14px;
+}
+
 .inner-loading {
   position: absolute;
   top: 18px;

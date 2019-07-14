@@ -93,10 +93,9 @@ export interface Filter extends Param {
    */
   auth?: string
 
-  /*--------------------------------------------------
-   * 新的语法，参考 echarts 的配置语法，每个组件占用一个 key
-   * TODO: 新的语法，应支持 true 作为占位符
-   *--------------------------------------------------/
+  // --------------------------------------------------
+  // 新的语法，参考 echarts 的配置语法，每个组件占用一个 key
+  // --------------------------------------------------
 
   /**
    * 组件 remoteSelect 的选项，若设置了该项，
@@ -104,7 +103,7 @@ export interface Filter extends Param {
    */
   remoteSelect?: {
     fetch: RemoteSelectFetch,
-    backfill: RemoteSelectBackfill
+    backfill?: RemoteSelectBackfill
   }
 }
 
