@@ -1,4 +1,4 @@
-import EditDialog from './EditDialog.vue'
+import EditDialog from './editDialog.vue'
 
 export * from './types'
 

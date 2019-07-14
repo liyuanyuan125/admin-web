@@ -1,55 +1,45 @@
 <template>
-  <Modal
-    v-model="visible"
-    :width="width"
-    :loading="submitLoading"
-    @on-ok="onSubmit"
-  >
-    <main class="modal-main">
-      <Form
-        :model="item"
-        :key="formKey"
-        :label-width="labelWidth"
-        :rules="rules"
-        class="form"
-        :style="{ visibility: loading ? 'hidden' : 'visible' }"
-        ref="form"
+  <div class="edit-form">
+    <Form
+      :model="item"
+      :key="formKey"
+      :label-width="labelWidth"
+      :rules="rules"
+      class="form"
+      :style="{ visibility: loading ? 'hidden' : 'visible' }"
+      :loading="submitLoading"
+      @submit.native.prevent="onSubmit"
+      ref="form"
+    >
+      <Col
+        v-for="it in normalFields"
+        :key="it.name"
+        :span="it.span"
+        :class="{ 'col-no-label': !it.label }"
+        :style="it.style"
       >
-        <Col
-          v-for="it in normalFields"
-          :key="it.name"
-          :span="it.span"
-          :class="{ 'col-no-label': !it.label }"
-          :style="it.style"
-        >
-          <FormItem
-            :label="it.label"
-            :prop="it.name"
-            :error="errorMap[it.name]"
-            v-auth="it.auth"
+        <FormItem :label="it.label" :prop="it.name" :error="errorMap[it.name]" v-auth="it.auth">
+          <component
+            v-model="item[it.name]"
+            :is="it.component"
+            :placeholder="it.placeholder"
+            v-bind="it.props"
           >
-            <component
-              v-model="item[it.name]"
-              :is="it.component"
-              :placeholder="it.placeholder"
-              v-bind="it.props"
-            >
-              <Option
-                v-for="sub in enumMap[it.name]"
-                :key="sub.key"
-                :value="sub.key"
-                v-if="it.type == 'select'"
-              >{{sub.text}}</Option>
-            </component>
-          </FormItem>
-        </Col>
-      </Form>
+            <Option
+              v-for="sub in enumMap[it.name]"
+              :key="sub.key"
+              :value="sub.key"
+              v-if="it.type == 'select'"
+            >{{sub.text}}</Option>
+          </component>
+        </FormItem>
+      </Col>
+    </Form>
 
-      <div class="inner-loading flex-mid" v-show="loading">
-        <TinyLoading :size="38"/>
-      </div>
-    </main>
-  </Modal>
+    <div class="inner-loading flex-mid" v-show="loading">
+      <TinyLoading :size="38" />
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -70,7 +60,10 @@ import { random } from '@/fn/string'
     TinyLoading
   }
 })
-export default class EditDialog extends ViewBase {
+export default class EditForm extends ViewBase {
+  /** 初始化数据 */
+  @Prop({ type: Object, default: () => ({}) }) initData!: object
+
   /** 加载编辑项的请求函数 */
   @Prop({ type: Function }) fetch!: (query?: any) => Promise<AjaxResult>
 
@@ -78,21 +71,16 @@ export default class EditDialog extends ViewBase {
   @Prop({ type: String, default: 'id' }) queryKeys!: string
 
   /** 提交请求函数 */
-  @Prop({ type: Function, required: true }) submit!: (data: any) => Promise<AjaxResult>
+  @Prop({ type: Function }) submit!: (data: any) => Promise<AjaxResult>
 
   /** 字段配置 */
   @Prop({ type: Array, default: () => [] }) fields!: Field[]
-
-  /** 对话框宽度 */
-  @Prop({ type: Number, default: 770 }) width!: number
 
   /** 表单 label 宽度 */
   @Prop({ type: Number, default: 76 }) labelWidth!: number
 
   /** 过滤器，对字段进一步加工 */
   @Prop({ type: Function }) filter!: (item: any) => any
-
-  visible = false
 
   // 用来预防 form 被重用，确保每次都使用新的实例
   formKey = random('editDialog')
@@ -139,35 +127,23 @@ export default class EditDialog extends ViewBase {
     return result
   }
 
-  created() {
+  public done(handler: (data: any) => any) {
+    this.$once('done', handler)
+    return this
+  }
+
+  init(initData = {}) {
     const item = defaultParams(this.fields)
     this.defItem = cloneDeep(item)
-    this.item = cloneDeep(item)
-    this.errorMap = Object.keys(item).reduce(
+    this.item = cloneDeep({ ...item, ...initData })
+    this.formKey = random('editForm')
+    this.errorMap = Object.keys(this.item).reduce(
       (map, key) => {
         map[key] = ''
         return map
       },
       {} as MapType
     )
-  }
-
-  public show(data?: any) {
-    this.item = cloneDeep({ ...this.defItem, ...data })
-    this.visible = true
-    this.formKey = random('editDialog')
-    this.load()
-    return this
-  }
-
-  public hide() {
-    this.visible = false
-    return this
-  }
-
-  public done(handler: (data: any) => any) {
-    this.$once('done', handler)
-    return this
   }
 
   async load() {
@@ -226,15 +202,13 @@ export default class EditDialog extends ViewBase {
     }
   }
 
-  resetSubmitLoading() {
-    this.submitLoading = false
-    this.$nextTick(() => (this.submitLoading = true))
-  }
-
   async onSubmit() {
+    if (this.submit == null) {
+      return
+    }
+
     const valid = await (this.$refs.form as any).validate()
     if (!valid) {
-      this.resetSubmitLoading()
       return
     }
 
@@ -243,18 +217,22 @@ export default class EditDialog extends ViewBase {
       const data = dealParams(this.fields, item)
       const res = await this.submit(data)
       this.$emit('done', res && res.data)
-      this.visible = false
     } catch (ex) {
-      this.resetSubmitLoading()
       // TODO: custom error
       this.handleError(ex)
     }
+  }
+
+  @Watch('initData', { deep: true, immediate: true })
+  watchInitData(value: object) {
+    this.init(value)
+    this.load()
   }
 }
 </script>
 
 <style lang="less" scoped>
-.modal-main {
+.edit-form {
   position: relative;
   padding: 18px 28px 0 0;
 }
@@ -276,7 +254,6 @@ export default class EditDialog extends ViewBase {
     line-height: 1;
   }
 }
-
 .inner-loading {
   position: absolute;
   top: 18px;
