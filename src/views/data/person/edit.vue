@@ -14,7 +14,7 @@
                 </Col>
                 <Col :span="12">
                     <FormItem label="系统评论热词:">
-                        <Input type="textarea" v-model="form.tags" placeholder="词组之间以','隔开，按照顺序优先显示热词，数量不足再显示抓取的"></Input>
+                        <Input type="textarea" v-model="form.tags" placeholder="关键词‘；’隔开，按照顺序优先显示热词，数量不足再显示抓取的"></Input>
                     </FormItem>
                 </Col>
             </Row>
@@ -57,12 +57,15 @@
                 <Col :span="4">
                     <FormItem label="系统鲸娱指数:">{{form.biJyIndex}}</FormItem>
                 </Col>
-                <Col :span="10">
-                    <FormItem label="调整鲸娱指数:"><Input v-model="form.jyIndex" placeholder=""></Input></FormItem>
+                <Col :span="7">
+                    <FormItem label="调整鲸娱指数:" class="rest-input">
+                        <Input v-model="form.jyIndex" placeholder="" style="width: 150px"></Input>
+                    </FormItem>
                 </Col>
-                <Col :span="10">
-                    <FormItem label="调整鲸鱼指数所占权重:" :label-width="160" >
-                        <Input v-model="form.jyIndexWeight" placeholder="数字不可超过1"></Input></FormItem>
+                <Col :span="7">
+                    <FormItem label="调整鲸鱼指数所占权重" :label-width="180" class="rest-input" >
+                        <Input v-model="form.jyIndexWeight" style="width: 150px" placeholder="数字不可超过1"/>%
+                    </FormItem>
                 </Col>
             </Row>
             <FormItem label="合作品牌信息">
@@ -387,9 +390,9 @@ export default class Main extends ViewBase {
             tip: item.tip || '',
             tags: item.tags ? item.tags.join(',') : null,
             introduction: item.introduction,
-            biJyIndex: item.biJyIndex / 100,
-            jyIndex: item.jyIndex / 100,
-            jyIndexWeight: item.jyIndexWeight  / 100,
+            biJyIndex: item.biJyIndex,
+            jyIndex: item.jyIndex,
+            jyIndexWeight: item.jyIndexWeight,
             goodMovieTypes: item.goodMovieTypes ? item.goodMovieTypes[0] : null, // 擅长类型只有一个
             primaryPro: this.primaryPro[0] || null, // 主要职业
             restPro: this.restPro, // 其他职业
@@ -430,7 +433,8 @@ export default class Main extends ViewBase {
         // 标签转换
         const findIsCount = this.form.tags
         const noFlag = findIsCount == null ? [] : Array.of(findIsCount)
-        const tags = findIsCount && findIsCount.indexOf(',') ? findIsCount.split(',') : noFlag
+
+        const tags = findIsCount && findIsCount.indexOf('；') ? findIsCount.split('；') : noFlag
         delete this.form.primaryPro
         delete this.form.restPro
         delete this.form.biJyIndex
