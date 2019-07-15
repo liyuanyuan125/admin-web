@@ -105,7 +105,8 @@ export default class Main extends ViewBase {
       },
       items: [
         ...item
-      ]
+      ],
+      totalCount
     }
   }
 

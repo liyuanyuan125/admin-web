@@ -45,7 +45,7 @@
                     <FormItem label="调整鲸娱指数:" class="rest-input"><Input v-model="form.jyIndex" placeholder=""></Input></FormItem>
                 </Col>
                 <Col :span="10">
-                    <FormItem label="调整鲸鱼指数所占权重:" :label-width="160" class="rest-input"><Input v-model="form.jyIndexWeight" placeholder="数字不可超过1"></Input></FormItem>
+                    <FormItem label="调整鲸娱指数所占权重:" :label-width="160" class="rest-input"><Input v-model="form.jyIndexWeight" placeholder="数字不可超过1"></Input></FormItem>
                 </Col>
             </Row>
             <FormItem label="合作品牌信息">

@@ -116,7 +116,7 @@ export default class Kol extends ViewBase {
         this.$emit('input', this.kollist)
         ; (this.$refs.ul as any).dispatch('FormItem', 'on-form-change', this.kollist)
       } else {
-        await info('改账号已存在', { title: '提示' })
+        await info('该账号已存在', { title: '提示' })
       }
     } else {
       await info('请选择账号平台', { title: '提示' })

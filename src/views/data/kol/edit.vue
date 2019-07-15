@@ -85,7 +85,7 @@
 
         <Row>
           <Col v-if="$route.params.id" :span="6">
-            <FormItem label="系统鲸鱼指数:">
+            <FormItem label="系统鲸娱指数:">
               <span>{{jyIndex}}</span>
             </FormItem>
           </Col>
@@ -97,13 +97,13 @@
           </Col>
 
           <Col :span="6">
-            <FormItem :labelWidth="180" label="调整鲸鱼指数所占权重:" prop="customIndexPercent">
-              <Input v-model="form.customIndexPercent	" placeholder=""></Input>
+            <FormItem :labelWidth="180" label="调整鲸娱指数所占权重:" prop="customIndexPercent">
+              <Input v-model="form.customIndexPercent	" placeholder=""></Input>%
             </FormItem>
           </Col>
         </Row>
 
-        <FormItem label="推荐的KOL列表:" prop="exts">
+        <FormItem label="关联KOL账号:" prop="exts">
           <kol :channelCodeList="channelCodeList" v-model="form.exts"></kol>
         </FormItem>
       </div>
@@ -147,8 +147,8 @@ export default class Main extends ViewBase {
     name: '',
     accountCategoryCode: '1',
     photo: [],
-    customJyIndex: 1,
-    customIndexPercent: 1,
+    customJyIndex: null,
+    customIndexPercent: null,
     description: '',
     customTags: '',
     exts: []
