@@ -4,42 +4,42 @@
       <div class="base-mess">
         <h2 class="title">基础和扩展信息</h2>
         <Row>
-          <Col :span="12">
+          <Col :span="10">
             <FormItem label="品牌中文名称:" prop="name">
               <Input v-model="form.name" placeholder></Input>
             </FormItem>
           </Col>
-          <Col :span="12">
+          <Col :offset="2" :span="10">
             <FormItem label="品牌外文名称:" prop="enName">
               <Input v-model="form.enName" placeholder></Input>
             </FormItem>
           </Col>
         </Row>
         <Row>
-          <Col :span="6">
-            <FormItem label="品牌logo:" prop="logo">
-              <upload v-model="logo" titlename="上传logo" accept="image/*" @success="form.logo" ref="uploadbuttom" />
+          <Col :span="10">
+            <FormItem :show-message="form.logo.length == 0" label="品牌logo:" prop="logo">
+              <Upload v-model="form.logo" :maxCount="1" accept="image/*" />
             </FormItem>
           </Col>
-          <Col :span="6">
-            <FormItem prop="headImgBig">
-              <upload v-model="form.headImgBig" titlename="上传品牌大图" accept="image/*" @success="bigimage" ref="uploadbuttom" />
+          <Col :offset="2"  :span="6">
+            <FormItem label="品牌大图:" prop="headImgBig">
+              <Upload v-model="form.headImgBig" :maxCount="1" accept="image/*" />
             </FormItem>
           </Col>
         </Row>
         <Row>
-          <Col :span="12">
+          <Col :span="10">
             <FormItem label="所属行业:" prop="tradeCode">
               <Select v-model="form.tradeCode" filterable clearable>
                 <Option
-                  v-for="(item, index) in countryCodeList"
+                  v-for="(item, index) in tradeCodeList"
                   :value="item.key"
                   :key="index"
                 >{{ item.text }}</Option>
               </Select>
             </FormItem>
           </Col>
-          <Col :span="12">
+          <Col :offset="2"  :span="10">
             <FormItem label="所属国家:">
               <Select v-model="form.countryCode" filterable clearable>
                 <Option
@@ -52,19 +52,19 @@
           </Col>
         </Row>
         <Row>
-          <Col :span="12">
+          <Col :span="10" >
             <FormItem label="创始人:">
               <Input v-model="form.founder" placeholder></Input>
             </FormItem>
           </Col>
-          <Col :span="12">
+          <Col :span="10" :offset="2" >
             <FormItem label="创立时间:">
-              <Input v-model="form.foundDate" placeholder></Input>
+              <DatePicker type="date" v-model="form.foundDate" :options="options" placeholder="请选择创立时间"></DatePicker>
             </FormItem>
           </Col>
         </Row>
         <Row>
-          <Col :span="24">
+          <Col :span="12">
             <FormItem label="品牌口号:">
               <Input
                 type="textarea"
@@ -75,14 +75,14 @@
           </Col>
         </Row>
         <Row>
-          <Col :span="24">
+          <Col :span="12">
             <FormItem label="简介修改:" prop="description">
               <Input type="textarea" v-model="form.description" placeholder></Input>
             </FormItem>
           </Col>
         </Row>
         <Row>
-          <Col :span="12">
+          <Col :span="10" >
             <FormItem label="搜索关键字:">
               <Input v-model="form.keyWords" placeholder></Input>
             </FormItem>
@@ -94,7 +94,7 @@
         <h2 class="title">粉丝画像信息</h2>
         <Row>
           <Col :span="6">
-            <FormItem label="粉丝性别占比" class="rest-input">
+            <FormItem label="粉丝性别占比" prop="malePercent" class="rest-input">
               <div>
                 男性：
                 <Input v-model="form.malePercent" placeholder style="width: 100px"></Input>%
@@ -102,7 +102,7 @@
             </FormItem>
           </Col>
           <Col :span="6">
-            <FormItem label :labelWidth="0" class="rest-input">
+            <FormItem label prop="femalePercent" :labelWidth="0" class="rest-input">
               <div>
                 女性：
                 <Input v-model="form.femalePercent" placeholder style="width: 100px"></Input>%
@@ -163,14 +163,14 @@
           </div>
           <Table
             :columns="cityColumns"
-            :data="fans.cities"
+            :data="fans.citys"
             class="brand-table"
             border
             stripe
             disabled-hover
           >
             <template slot="operate" slot-scope="{row, index}">
-              <span class="del-col" @click="fans.cities.splice(index, 1)">删除</span>
+              <span class="del-col" @click="fans.citys.splice(index, 1)">删除</span>
             </template>
           </Table>
         </FormItem>
@@ -198,16 +198,21 @@ import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { confirm, info, alert } from '@/ui/modal.ts'
 import { personDetail, queryPro, queryCtiy, editPersonal } from '@/api/person'
-import { brandbefore } from '@/api/brand'
+import { brandbefore, editbrand, addbrand, brandDetail } from '@/api/brand'
+import moment from 'moment'
 import AreaSelect, { areaParam } from '@/components/areaSelect'
-import upload from '@/components/UploadButton.vue'
+import Upload from '@/components/Upload.vue'
 import kol from './kol/kolist.vue'
 import Film from './kol/film.vue'
+import { clean } from '@/fn/object'
+import { toMap } from '@/fn/array'
 
+const makeMap = (list: any[]) => toMap(list, 'key', 'text')
+const timeFormat = 'YYYYMMDD'
 @Component({
   components: {
     AreaSelect,
-    upload,
+    Upload,
     kol,
     Film
   }
@@ -216,6 +221,7 @@ export default class Main extends ViewBase {
   ass = []
   form: any = {
     name: '',
+    keyWords: '',
     enName: '',
     logo: [],
     foundDate: '',
@@ -227,24 +233,11 @@ export default class Main extends ViewBase {
     femalePercent: '',
     malePercent: '',
     headImgBig: [],
-    fans: {
-      count: '',
-      male: '',
-      female: '',
-      age: [
-        { k: '18一下', v: 1 },
-        { k: '18-32岁', v: 1 },
-        { k: '32-45岁', v: 1 },
-        { k: '40以上', v: 1 }
-      ], // 年龄分布
-      provinces: [], // 省份分布
-      cities: [] // 城市分布
-    }
   }
 
   fans: any = {
     provinces: [], // 省份分布
-    cities: [] // 城市分布
+    citys: [] // 城市分布
   }
 
   kollist: any = []
@@ -256,13 +249,45 @@ export default class Main extends ViewBase {
   detaiId = ''
   itemList = {}
 
+  options: any = {
+    disabledDate(date: any) {
+      return date && date.valueOf() > Date.now()
+    }
+  }
   get rule() {
+    const jinyu = (rule: any, value: any, callback: any) => {
+      const jinyurg: any = /^[0-9]+(.[0-9]{2})?$/
+      if (value == '') {
+        return callback()
+      }
+      if (!jinyurg.test((value + ''))) {
+        return callback(new Error('格式不对'))
+      } else {
+        if (value > 100) {
+          return callback(new Error('数字不能大于100'))
+        } else {
+          return callback()
+        }
+      }
+    }
     return {
       name: [
         { required: true, message: '品牌中文名称', trigger: 'blur' }
       ],
-      logo: [
-        { required: true, message: '品牌中文名称', trigger: 'blur' }
+      logo: [{
+        required: true, type: 'array', len: 1, message: '请上传图片', trigger: 'change'}
+      ],
+      tradeCode: [
+        { required: true, message: '请选择行业', trigger: 'change' }
+      ],
+      description: [
+        { required: true, message: '请输入描述', trigger: 'blur' }
+      ],
+      malePercent: [
+        { validator: jinyu, trigger: 'change' }
+      ],
+      femalePercent: [
+        { validator: jinyu, trigger: 'change' }
       ],
     }
   }
@@ -288,7 +313,7 @@ export default class Main extends ViewBase {
   // 城市分布
   citySearchList = []
   citymodel = ''
-  cityRatio = ''
+  cityRatio: any = ''
   cityColumns = [
     { title: '城市', key: 'name', width: 120, align: 'center' },
     { title: '粉丝数占比%', key: 'rate', width: 120, align: 'center' },
@@ -304,10 +329,69 @@ export default class Main extends ViewBase {
     this.detaiId = this.$route.params.id
     this.queryProvince()
     this.queryCity()
+    this.init()
   }
 
   created() {
     this.brandbeforelist()
+  }
+
+  async init() {
+    try {
+      if (!this.$route.params.id) {
+        return
+      }
+      const {
+        data: { item }
+      } = await brandDetail(this.$route.params.id)
+        this.form.name = item.name
+        this.form.enName = item.enName
+        this.form.logo = item.logo ? [
+          {
+            url: item.logoUrl,
+            fileId: item.logo
+          }
+        ] : []
+        this.form.foundDate = moment(this.formatDate(item.foundDate)).toDate()
+        this.form.countryCode = item.countryCode
+        this.form.tradeCode = item.tradeCode
+        this.form.founder = item.founder
+        this.form.companySlogan = (item.companySlogan || '')
+        this.form.description = item.description
+        this.form.femalePercent = item.femalePercent
+        this.form.malePercent = item.malePercent
+        this.ageCodeList = item.ages ? (this.ageCodeList || []).map((it: any, index: number) => {
+          return {
+            ...it,
+            v: item.ages[index].v,
+            k: item.ages[index].v
+          }
+        }) : []
+        this.fans.provinces = item.provinces || []
+        this.fans.citys = item.citys || []
+        this.form.keyWords = (item.keyWords || []).join(';')
+        this.filmlist = item.movies || []
+        this.form.headImgBig = item.headImgBig ? [
+          {
+            url: item.headImgBigUrl,
+            fileId: item.headImgBig
+          }
+        ] : []
+        const kols = makeMap(this.channelCodeList)
+        this.kollist = (item.kols || []).map((it: any) => {
+          return {
+            ...it,
+            name: kols[it.channelCode],
+            rate: it.channelName
+          }
+        })
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
+  formatDate(data: any) {
+    return data ? `${(data + '').slice(0, 4)}-${(data + '').substr(4, 2)}-${(data + '').substr(6, 2)}` : '暂无'
   }
 
   async brandbeforelist() {
@@ -320,7 +404,6 @@ export default class Main extends ViewBase {
           ...it,
           k: it.key,
           v: 0,
-          r: 0
         }
       })
       this.channelCodeList = channelCodeList
@@ -363,6 +446,11 @@ export default class Main extends ViewBase {
 
   async addProvinceList() {
     if (this.promodel != '' && this.provinceRatio != '') {
+      const jinyu: any = /^[0-9]{0,2}(.[0-9]{2})?$/
+      if (!jinyu.test((this.provinceRatio + ''))) {
+        info('粉丝占比应该为不大于100的数字')
+        return
+      }
       let proname: string = ''
       this.proSearchList.map((item: any) => {
         if (item.id == this.promodel) {
@@ -389,6 +477,11 @@ export default class Main extends ViewBase {
 
   async addCityList() {
     if (this.citymodel != '' && this.cityRatio != '') {
+      const jinyu: any = /^[0-9]{0,2}(.[0-9]{2})?$/
+      if (!jinyu.test((this.cityRatio + '')) && this.cityRatio > 100) {
+        info('粉丝占比应该为不大于100的数字')
+        return
+      }
       let proname: string = ''
       this.citySearchList.map((item: any) => {
         if (item.id == this.citymodel) {
@@ -396,9 +489,9 @@ export default class Main extends ViewBase {
         }
       })
       // 城市是否存在
-      const ishas = this.fans.cities.some((item: any) => item.id == this.citymodel)
+      const ishas = this.fans.citys.some((item: any) => item.id == this.citymodel)
       if (!ishas) {
-        this.fans.cities.push({
+        this.fans.citys.push({
           id: this.citymodel,
           name: proname,
           rate: this.cityRatio
@@ -425,8 +518,43 @@ export default class Main extends ViewBase {
   // 提交
   async editSubmit() {
     try {
-      const { data } = await editPersonal(this.detaiId, this.form)
-      this.$router.push({ name: 'data-person' })
+      const valid = await (this.$refs.form as any).validate()
+      if (!valid) {
+        return
+      }
+      const agetable = this.ageCodeList.map((it: any) => {
+        return {
+          k: it.key,
+          v: it.v
+        }
+      })
+      const kols = this.kollist.map((it: any) => {
+        return {
+          channelCode: it.channelCode,
+          channelDataId: it.channelDataId,
+          channelName: it.rate
+        }
+      })
+      const keyWords = (this.form.keyWords || '').split(';')
+      const query = clean({
+        id: this.$route.params.id,
+        ...this.form,
+        ...this.fans,
+        keyWords,
+        headImgBig: this.form.headImgBig.map((it: any) => it.fileId).join(''),
+        logo: this.form.logo.map((it: any) => it.fileId).join(''),
+        ages: agetable,
+        kols,
+        foundDate: this.form.foundDate[0] ? moment(this.form.foundDate).format(timeFormat) : '',
+        movies: this.filmlist
+      })
+      if (this.$route.params.id) {
+        await editbrand(query)
+      } else {
+        await addbrand(query)
+      }
+      this.$router.push({ name: 'data-brand' })
+      // this.$router.push({ name: 'data-person' })
     } catch (ex) {
       this.handleError(ex)
     }
@@ -480,6 +608,12 @@ export default class Main extends ViewBase {
 .brand-select {
   /deep/ .ivu-select {
     margin-right: 10px;
+  }
+}
+.footer-btn {
+  text-align: center;
+  .btn {
+    margin-right: 15px;
   }
 }
 </style>

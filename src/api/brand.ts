@@ -10,6 +10,24 @@ export async function brandList(query: any) {
 }
 
 /**
+ * 根据条件，品牌新建
+ * @param query 查询条件，http://yapi.aiads-dev.com/project/154/interface/api/3806
+ */
+export async function addbrand(query: any) {
+  const data = await post('/brand/brands', query)
+  return data
+}
+
+/**
+ * 根据条件，品牌修改
+ * @param query 查询条件，http://yapi.aiads-dev.com/project/154/interface/api/3806
+ */
+export async function editbrand(query: any) {
+  const data = await put('/brand/brands', query)
+  return data
+}
+
+/**
  * 根据条件 品牌详情
  * @param query 查询条件，http://yapi.aiads-dev.com/project/154/interface/api/3830
  */

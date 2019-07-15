@@ -301,7 +301,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 基础数据 - 品牌管理 - 查看门店
   {
-    path: '/data/brand/shopdetail',
+    path: '/data/brand/shopdetail/:id',
     name: 'data-brand-shopdetail',
     component: () => import('./views/data/brand/shopdetail.vue'),
     meta: {
@@ -311,7 +311,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 基础数据 - 品牌管理 - 编辑门店
   {
-    path: '/data/brand/shopedit',
+    path: '/data/brand/shopedit/:id?',
     name: 'data-brand-shopedit',
     component: () => import('./views/data/brand/shopedit.vue'),
     meta: {
@@ -344,6 +344,26 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     path: '/data/kol/associated',
     name: 'data-kol-associated',
     component: () => import('./views/data/kol/associated.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 基础数据 - kol平台关联 - 列表
+  {
+    path: '/data/kol/associated/edit/:id?',
+    name: 'data-kol-associated-edit',
+    component: () => import('./views/data/kol/edit.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 基础数据 - kol平台关联 - 列表
+  {
+    path: '/data/kol/associated/detail/:id?',
+    name: 'data-kol-associated-detail',
+    component: () => import('./views/data/kol/detail.vue'),
     meta: {
       authKey: ''
     }

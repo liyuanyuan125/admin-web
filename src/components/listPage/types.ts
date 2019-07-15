@@ -3,7 +3,7 @@ import { MapType, AjaxResult } from '@/util/types'
 import { Select } from 'iview'
 import LazyInput from '@/components/LazyInput'
 import NumberInput from '@/components/numberInput'
-import { kebabCase } from 'lodash'
+import { kebabCase, isPlainObject } from 'lodash'
 import Deprecated from '@/components/Deprecated.vue'
 import PoptipSelect from '@/components/PoptipSelect.vue'
 import { devError } from '@/util/dev'
@@ -11,6 +11,10 @@ import { ParamDeal, Param } from '@/util/param'
 import moment from 'moment'
 import DatePicker from './components/datePicker.vue'
 import DateRangePicker from './components/dateRangePicker.vue'
+import RemoteSelect, {
+  Fetch as RemoteSelectFetch,
+  Backfill as RemoteSelectBackfill
+} from '@/components/remoteSelect'
 
 /**
  * 固定类型列表
@@ -49,6 +53,10 @@ const defaultPropsMap: MapType<object> = {
  */
 export type FetchAction = (query: any) => Promise<AjaxResult>
 
+const filterComponentMap: MapType<Component> = {
+  remoteSelect: RemoteSelect
+}
+
 /**
  * 查询项
  */
@@ -76,6 +84,7 @@ export interface Filter extends Param {
 
   /**
    * 传递给组件的 props
+   * TODO: 在新的方式下，该属性没用了
    */
   props?: MapType<any>
 
@@ -83,6 +92,19 @@ export interface Filter extends Param {
    * 权限配置
    */
   auth?: string
+
+  // --------------------------------------------------
+  // 新的语法，参考 echarts 的配置语法，每个组件占用一个 key
+  // --------------------------------------------------
+
+  /**
+   * 组件 remoteSelect 的选项，若设置了该项，
+   * 则说明会用 RemoteSelect 组件渲染该项
+   */
+  remoteSelect?: {
+    fetch: RemoteSelectFetch,
+    backfill?: RemoteSelectBackfill
+  }
 }
 
 /**
@@ -99,19 +121,44 @@ export interface NormalFilter extends Filter {
   style: MapType
 }
 
+// 为了支持 true 作为属性的占位符
+const resolveProps = (item: any, name: string) => {
+  const props = item[name]
+  return isPlainObject(props) ? props : {}
+}
+
+// 新的方式：解析组件
+const resolveComponent = (item: Filter) => {
+  let part: any = null
+  if (item.type != null) {
+    // 老的方式，通过 type
+    const isStringType = typeof item.type === 'string'
+    const stringType = item.type as string
+    const component = isStringType ? innateTypeMap[stringType] : item.type as Component
+    const props = isStringType ? defaultPropsMap[stringType] : {}
+    part = { component, props }
+  } else {
+    // 新的方式，通过组件名
+    const name = Object.keys(filterComponentMap).find(key => key in item)
+    part = name && {
+      component: filterComponentMap[name],
+      props: resolveProps(item, name)
+    }
+  }
+  return { ...item, ...part }
+}
+
 /**
  * 规范化查询项
  * @param list 待规范化的查询项列表
  */
 export function normalizeFilter(list: Filter[]) {
-  const result = list.filter(it => it.type != null).map(it => {
-    const isStringType = typeof it.type === 'string'
-    const stringType = it.type as string
-    const component = isStringType ? innateTypeMap[stringType] : it.type as Component
-
+  const result = list.map(resolveComponent)
+  .filter(it => it.component != null)
+  .map(it => {
+    const { component } = it
     const item: NormalFilter = {
       ...it,
-      component,
       class: [
         'ui-filter',
         kebabCase(component.name + '-' + it.name),
@@ -123,7 +170,6 @@ export function normalizeFilter(list: Filter[]) {
       },
       enumKey: it.enumKey || it.name.replace(/Code$|$/, 'List'),
       auth: it.auth || '',
-      props: it.props || (isStringType ? defaultPropsMap[stringType] : {}) || {},
     }
 
     return item

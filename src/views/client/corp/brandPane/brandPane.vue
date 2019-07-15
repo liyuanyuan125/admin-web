@@ -1,22 +1,12 @@
 <template>
   <section class="brand-pane">
     <div class="action-bar">
-      <Select
+      <RemoteSelect
         v-model="id"
-        filterable
-        clearable
-        remote
-        :remote-method="fetch"
-        :loading="loading"
+        :fetch="searchBrandByName"
         class="brand-select"
         placeholder="请输入品牌名"
-      >
-        <Option
-          v-for="(it, i) in selectList"
-          :key="i"
-          :value="it.id"
-        >{{it.name}}</Option>
-      </Select>
+      />
 
       <Button
         type="primary"
@@ -50,11 +40,16 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { isEqual } from 'lodash'
-import { searchBrandByName } from './data'
+import { searchBrand } from './data'
 import { Brand, BrandBind } from './types'
 import { alert } from '@/ui/modal'
+import RemoteSelect from '@/components/remoteSelect'
 
-@Component
+@Component({
+  components: {
+    RemoteSelect
+  }
+})
 export default class BrandPane extends ViewBase {
   @Prop({ type: Array, default: () => [] }) value!: number[]
 
@@ -64,8 +59,6 @@ export default class BrandPane extends ViewBase {
   model = this.value
 
   id = 0
-
-  loading = false
 
   selectList: Brand[] = []
 
@@ -81,21 +74,10 @@ export default class BrandPane extends ViewBase {
     ]
   }
 
-  async fetch(query: string) {
-    const name = query.trim()
-    if (name) {
-      this.loading = true
-      try {
-        const list = await searchBrandByName(name)
-        this.selectList = list
-      } catch (ex) {
-        this.handleError(ex)
-      } finally {
-        this.loading = false
-      }
-    } else {
-      this.list = []
-    }
+  async searchBrandByName(name: string) {
+    const list = await searchBrand({ name })
+    this.selectList = list
+    return list
   }
 
   addBrand() {

@@ -19,15 +19,8 @@
       </FormItem>
       <Table ref="selection" :columns="columns" @on-selection-change="onselect" :data="list" v-if="showDlg"  
         border stripe disabled-hover size="small" class="table">
-        <template  slot="type" slot-scope="{row}" >
-          <span>{{typelists(typelist, row.type)}}</span>
-          <!-- <span class="type-box" v-for='(it,index) in typelist' :key='index'>
-            <em v-for='(item,index) in row.type' class="types" :key='index' v-if='it.key == item'>{{it.text}}
-            </em>
-          </span> -->
-        </template>
-        <template  slot="wish" slot-scope="{row}" >
-          {{formatNumber(row.wish , 2)}}
+        <template  slot="personCount" slot-scope="{row}" >
+          {{formatNumber(row.personCount , 2)}}
         </template>
         </Table>
       <div class="page-wrap" v-if="total > 0">
@@ -59,7 +52,9 @@ import { slice, clean } from '@/fn/object'
 import moment from 'moment'
 import number from './number.vue'
 import { formatNumber } from '@/util/validateRules'
+import Decimal from 'decimal.js'
 const timeFormat = 'YYYY-MM-DD'
+
 
 const dataForm = {
 }
@@ -73,15 +68,14 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
   query = {
     name: '',
     types: '',
-    releaseStatus: 2,
     pageIndex: 1,
-    pageSize: 10,
+    pageSize: 5,
   }
 
   asd: any = false
   showDlg = false
   id = 0
-  total = 0
+  total: any = 0
   list: any = []
   typelist: any = []
   type: any = []
@@ -90,6 +84,9 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
   ids: any = []
   start: any = ''
   end: any = ''
+
+  director: any = []
+  actor: any = []
 
   columns = [
     {
@@ -105,21 +102,21 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
       //   /* tslint:enable */
       }
     },
-    { title: '影片名称', key: 'nameCn', align: 'center',
-      render: (hh: any, { row: { nameCn } }: any) => {
+    { title: '影片名称', key: 'name', align: 'center',
+      render: (hh: any, { row: { name } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        if (nameCn.length >= 7) {
+        if (name.length >= 7) {
         return (
             <div>
-              <tooltip max-width="200" transfer content={nameCn} placement="top">
-                <span class="bei" v-html={nameCn} />
+              <tooltip max-width="200" transfer content={name} placement="top">
+                <span class="bei" v-html={name} />
               </tooltip>
             </div>
           )
         } else {
           return (
-              <span class="bei" v-html={nameCn} />
+              <span class="bei" v-html={name} />
           )
         }
         /* tslint:enable */
@@ -130,53 +127,64 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         const a = String(releaseDate)
-        const html = a.slice(0 , 4) + '-' + a.slice(4 , 6) + '-' + a.slice(6 , 8)
+        const html = releaseDate == null ? '-' : a.slice(0 , 4) + '-' + a.slice(4 , 6) + '-' + a.slice(6 , 8)
         return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
     },
-    { title: '剧情类型', slot: 'type', align: 'center'},
-    { title: '导演', key: 'director', align: 'center',
-      render: (hh: any, { row: { director } }: any) => {
+    { title: '剧情类型', key: 'types', align: 'center',
+      render: (hh: any, { row: { types } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        if (director.length >= 2) {
-        return (
-            <div>
-              <tooltip max-width="200" transfer content={director + ' '} placement="top">
-                <span class="bei" v-html={director + ' '} />
-              </tooltip>
-            </div>
-          )
-        } else {
-          return (
-              <span class="bei" v-html={director + ' '} />
-          )
-        }
+        const html =  types == null ? '-' : types.join('/')
+        return <span class='datetime' v-html={html}></span>
         /* tslint:enable */
       }
     },
-    { title: '主演', key: 'actor', align: 'center',
-      render: (hh: any, { row: { actor } }: any) => {
+    { title: '导演', key: 'celebrities', align: 'center',
+      render: (hh: any, { row: { celebrities } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        if (actor.length >= 2) {
+        const li: any = []
+        const aaa = celebrities.map((it: any) => {
+          const bbb = it.occupations.map((its: any) => {
+            if (its.occupationCode == "Director") {
+              li.push(it.name)
+            }
+          })
+        })
+        const html =  li == [] ? '-' : li.join('/')
         return (
-            <div>
-              <tooltip max-width="200" transfer content={actor + ' '} placement="top">
-                <span class="bei" v-html={actor + ' '} />
+              <tooltip style='width: 100%;' max-width="200" transfer content={html} placement="top">
+                <span class='bei' style='display: block;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width: 100px;' v-html={html}></span>
               </tooltip>
-            </div>
           )
-        } else {
-          return (
-              <span class="bei" v-html={actor + ' '} />
-          )
-        }
+
         /* tslint:enable */
       }
     },
-    { title: '想看人数', slot: 'wish', align: 'center'},
+    { title: '主演', ley: 'celebrities', align: 'center',
+      render: (hh: any, { row: { celebrities } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        const li: any = []
+        const aaa = celebrities.map((it: any) => {
+          const bbb = it.occupations.map((its: any) => {
+            if (its.occupationCode == "Actor") {
+              li.push(it.name)
+            }
+          })
+        })
+        const html =  li == [] ? '-' : li.join('/')
+         return (
+              <tooltip max-width="200" transfer content={html} placement="top">
+                <span class='bei' style='display: block;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width: 100px;' v-html={html}></span>
+              </tooltip>
+          )
+        /* tslint:enable */
+      }
+    },
+    { title: '想看人数', slot: 'personCount', align: 'center'},
   ]
 
   ruleValidate = {
@@ -195,19 +203,6 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
     return this.id
   }
 
-  typelists(val: any, type: any) {
-    const maps: any = []
-    ; (val || []).forEach((item: any) => {
-      if (item) {
-        (type || []).forEach((it: any) => {
-          if (item.key == it) {
-            maps.push(item.text)
-          }
-        })
-      }
-    })
-    return maps.join(' / ')
-  }
   onselect(row: any , selection: any) {
     this.ids = row.map((it: any) => {
       return {
@@ -267,13 +262,31 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
   }
 
   async doSearch() {
+    this.list = []
     this.query.types = this.type.join(',')
     try {
       // 获取角色详情
-      const { data } = await filmList(this.query)
-      this.list = data.items
-      this.total = data.totalCount
-      this.typelist = data.movieTypeList
+      const { data } = await filmList({
+        ...this.query,
+        releaseStatus: 2,
+      }) // 即将上映
+      const datath = await filmList({
+        ...this.query,
+        releaseStatus: 3,
+      }) // 正在热映
+
+      // 影片列表
+      const aaa = (data.items || []).map((it: any) => {
+        this.list.push(it)
+      })
+      const bbb = (datath.data.items || []).map((it: any) => {
+        this.list.push(it)
+      })
+
+
+
+      this.total = new Decimal(data.totalCount).plus(datath.data.totalCount)
+      this.typelist = data.typeList
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -387,22 +400,13 @@ em {
       content: '-';
     }
   }
-  /deep/ .bei {
-    display: block;
-    width: 86%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  /deep/ .ivu-tooltip {
+    display: inline-block;
+    width: 100% !important;
   }
 }
 /deep/ .ivu-tooltip {
-  width: 100%;
+  display: inline-block;
+  width: 100% !important;
 }
-// /deep/ .ivu-table-cell {
-//   padding-left: 4px;
-//   padding-right: 4px;
-//   overflow: hidden;
-//   text-overflow: ellipsis;
-//   white-space: nowrap;
-// }
 </style>

@@ -11,50 +11,25 @@
         <Button
           type="success"
           icon="md-add-circle"
-          @click="editShow()"
+          :to="{
+            name: 'data-kol-associated-edit'
+          }"
         >新建</Button>
       </template>
-      <template slot="keyWords" slot-scope="{ row: { keyWords } }">
-        <div class="keyWords">
-         <span v-if="keyWords">{{keyWords.join(';')}}</span>
-        </div>
-      </template>
 
-      <template slot="platform" slot-scope="{ row: { status, id } }">
-        <div class="keyWords">
-         <router-link v-if="status == 1" :to="{ name: 'data-brand-platformdetail', params: { brandId: id} }">
-           查看媒体平台</router-link>
-         <router-link v-if="status == 1 || status == 2" :to="{ name: 'data-brand-platformedit', params: { brandId: id} }">
-           编辑媒体平台</router-link>
-        </div>
-      </template>
-
-      <template slot="shop" slot-scope="{ row: { status } }">
-        <div class="keyWords">
-          <router-link v-if="status == 1" :to="{ name: 'data-brand-shopedit' }">查看门店</router-link>
-          <router-link v-if="status == 1 || status == 2" :to="{ name: 'data-brand-shopedit' }">编辑门店</router-link>
-        </div>
-      </template>
-
-      <template slot="product" slot-scope="{ row: { status } }">
-        <div class="keyWords">
-          <router-link v-if="status == 1" :to="{ name: 'data-cinema-hall' }">查看产品</router-link>
-          <router-link v-if="status == 1 || status == 2" :to="{ name: 'data-cinema-hall' }">编辑产品</router-link>
-        </div>
-      </template>
-
-      <template slot="status" slot-scope="{ row }">
-        <div class="keyWords">
-         <a @click="start(row)" v-if="row.status == 1">禁用</a>
-         <a @click="start(row)" v-if="row.status == 2">启用</a>
-        </div>
+      <template slot="id" slot-scope="{ row: { id } }">
+        <router-link :to="{ name: 'data-kol-associated-detail', params: { id} }">
+           {{id}}</router-link>
       </template>
 
       <template slot="action" slot-scope="{ row }">
         <div class="row-acts">
-          <a @click="start(row)" v-if="row.status == 1">禁用</a>
-          <a @click="start(row)" v-if="row.status == 2">启用</a>
-          <a @click="start(row)" v-if="row.status == 1">编辑</a>
+          <router-link :to="{
+            name: 'data-kol-associated-edit',
+            params: {
+              id: row.id
+            }
+          }">编辑</router-link>
         </div>
       </template>
     </ListPage>
@@ -66,7 +41,7 @@ import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import jsxReactToVue from '@/util/jsxReactToVue'
-import { brandList } from '@/api/brand'
+import { queryList } from '@/api/associated'
 
 @Component({
   components: {
@@ -74,7 +49,6 @@ import { brandList } from '@/api/brand'
   }
 })
 export default class Main extends ViewBase {
-  fetch = brandList
 
   filters: Filter[] = [
     {
@@ -82,7 +56,7 @@ export default class Main extends ViewBase {
       defaultValue: '',
       type: 'input',
       width: 85,
-      placeholder: '品牌ID'
+      placeholder: 'KOL编号'
     },
 
     {
@@ -90,23 +64,7 @@ export default class Main extends ViewBase {
       defaultValue: '',
       type: 'input',
       width: 85,
-      placeholder: '品牌中文名称'
-    },
-    {
-      name: 'enName',
-      defaultValue: '',
-      type: 'input',
-      width: 85,
-      placeholder: '品牌外文名称'
-    },
-
-    {
-      name: 'tradeCode',
-      defaultValue: 0,
-      type: 'select',
-      width: 85,
-      placeholder: '品牌所属行业',
-      enumKey: 'tradeCodeList'
+      placeholder: 'KOL名称'
     },
 
     {
@@ -121,24 +79,58 @@ export default class Main extends ViewBase {
   ]
 
   enums = [
-    'tradeCodeList',
-    'statusList'
+    'accountCategoryList'
   ]
+
+  fetch = async (val: any) => {
+    const {
+      data: {
+        accountCategoryList,
+        items,
+        totalCount
+      }
+    } = await queryList(val)
+    const name: any = {
+      weibo: '',
+      kuaishou: '',
+      douyin: '',
+      wechat: ''
+    }
+    const item = (items || []).map((it: any) => {
+      (it.exts || []).map((its: any) => {
+        name[its.channelCode] = its.channelDataName
+      })
+      return {
+        ...it,
+        ...name.channelDataName
+      }
+    })
+    return {
+      data: {
+        accountCategoryList,
+        items: [
+          ...item
+        ],
+        totalCount
+      },
+      items: [
+        ...item
+      ],
+      totalCount
+    }
+  }
 
   get columns() {
     return [
-      { title: '序号', key: 'id', width: 65 },
-      { title: '品牌ID', key: 'id', width: 80 },
-      { title: '品牌中文名称', key: 'name', minWidth: 90 },
-      { title: '品牌外文名称', key: 'enName', width: 100 },
-      { title: '品牌logo', key: 'logo', minWidth: 90, editor: 'deprecated' },
-      { title: '所属行业', key: 'tradeCode', width: 80, editor: 'enum', enumKey: 'tradeCodeCode' },
-      { title: '搜索关键字', key: 'keyWords', width: 80, slot: 'keyWords' },
-      { title: '社交平台', key: 'countyName', width: 110, slot: 'platform' },
-      { title: '门店', key: 'gradeCode', width: 80, slot: 'shop' },
-      { title: '产品', key: 'gradeCode', width: 80, slot: 'product' },
-      { title: '状态', key: 'gradeCode', width: 80, slot: 'status' },
-      { title: '操作', slot: 'action', width: 100 }
+      { title: 'KOL编号', key: 'id', slot: 'id' },
+      { title: 'KOL名称', key: 'name' },
+      { title: '鲸娱指数', key: 'jyIndex' },
+      { title: '微博平台账号', key: 'weibo' },
+      { title: '微信平台账号', key: 'wechat' },
+      { title: '快手', key: 'kuaishou' },
+      { title: '抖音平台账号', key: 'douyin' },
+      { title: '最后更新时间', key: 'modifyTime', editor: 'dateTime' },
+      { title: '操作', slot: 'action' }
     ] as ColumnExtra[]
   }
 
