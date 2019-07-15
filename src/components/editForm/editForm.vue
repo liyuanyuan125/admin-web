@@ -22,8 +22,8 @@
             v-for="it in group.list"
             :key="it.name"
             :span="it.span"
-            :offset="it.offset"
-            :class="{ 'col-no-label': !it.label }"
+            :offset="it.offsetLeft"
+            :class="it.colClass"
             :style="it.style"
           >
             <FormItem
@@ -37,15 +37,9 @@
               <component
                 v-model="item[it.name]"
                 :is="it.component"
-                :placeholder="it.placeholder"
+                :enumList="enumMap[it.name] || []"
                 v-bind="it.props"
               >
-                <Option
-                  v-for="sub in enumMap[it.name]"
-                  :key="sub.key"
-                  :value="sub.key"
-                  v-if="it.type == 'select'"
-                >{{sub.text}}</Option>
               </component>
             </FormItem>
           </Col>
@@ -133,26 +127,12 @@ export default class EditForm extends ViewBase {
   }
 
   get rules() {
-    const result = cloneDeep(this.fields).reduce(
+    const result = cloneDeep(this.normalFields).reduce(
       (map, it) => {
-        if ((it.rules == null || it.rules.length == 0) && it.required) {
-          const defaultValue = it.defaultValue
-          it.rules = [
-            {
-              required: true,
-              message: '不能为空',
-              trigger: it.type == 'input' ? 'blur' : 'change',
-              transform(value: any[]) {
-                const equal = isEqual(value, defaultValue)
-                return equal ? '' : 'not-empty'
-              }
-            }
-          ]
-        }
         map[it.name] = it.rules || []
         return map
       },
-      {} as any
+      {} as MapType<Rule[]>
     )
     return result
   }
@@ -192,9 +172,8 @@ export default class EditForm extends ViewBase {
       const query = slice(this.item, this.queryKeys)
       const { data } = await this.fetchWrap(query)
 
-      // 从 select 中推断出所用枚举
       const enumMap = this.normalFields
-        .filter(it => it.type == 'select')
+        .filter(it => !!it.enumKey)
         .reduce(
           (map, it) => {
             map[it.name] = filterByControlStatus(data[it.enumKey!])
@@ -293,6 +272,9 @@ export default class EditForm extends ViewBase {
   /deep/ .form-text {
     padding: 10px 12px 10px 0;
   }
+  /deep/ .form-radio {
+    padding: 9px 12px 9px 0;
+  }
 }
 
 .form-group {
@@ -320,4 +302,10 @@ export default class EditForm extends ViewBase {
     margin-left: 8px !important;
   }
 }
+
+each(range(23), {
+  .col-offset-right-@{value} {
+    margin-right: (100% / 24 * @value);
+  }
+});
 </style>

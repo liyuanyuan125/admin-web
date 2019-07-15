@@ -45,7 +45,11 @@ export async function queryItem(query: any = {}) {
     ...data,
     item: {
       ...data.item,
+      intro: dot(data, 'item.customIntroduction') || '',
+      authName: dot(data, 'item.authName') || '',
       fansCount: parseInt(dot(data, 'item.customFans.totalCount'), 10) || 0,
+      malePercent: parseInt(dot(data, 'item.customFans.malePercent'), 10) || 0,
+      femalePercent: parseInt(dot(data, 'item.customFans.femalePercent'), 10) || 0,
     },
     typeList: [
       { key: 1, text: '个人' },
