@@ -1,5 +1,5 @@
-import { get, put } from '@/fn/ajax'
-import { dot } from '@/util/dealData'
+import { get, put, post } from '@/fn/ajax'
+import { dot, readableNumber } from '@/util/dealData'
 
 /**
  * 查询 KOL 平台账号
@@ -12,7 +12,7 @@ export async function queryList(query: any = {}) {
     ...data,
     items: (data.items as any[] || []).map(it => ({
       ...it,
-      fansCount: dot(it, 'customFans.totalCount'),
+      fansCount: readableNumber(dot(it, 'customFans.totalCount')),
       kolIdText: it.kolId || '-',
       provideInvoiceText: it.provideInvoice ? '是' : '否',
     }))
@@ -44,5 +44,22 @@ export async function kolOff(query: any = {}) {
  */
 export async function changePrice(query: any = {}) {
   const res = await put('/kol/channel-accounts/change-price', query)
+  return res
+}
+
+/**
+ * 根据渠道编码和渠道数据ID查看详情
+ * http://yapi.aiads-dev.com/project/142/interface/api/3902
+ */
+export async function details(channelCode: string, id: number) {
+  const res = await get(`/kol/channel-accounts/${channelCode}/${id}`)
+  return res
+}
+/**
+ * 审核平台账号
+ * http://yapi.aiads-dev.com/project/142/interface/api/3030
+ */
+export async function approve(data: any) {
+  const res = await put('/kol/channel-accounts/approve', data)
   return res
 }

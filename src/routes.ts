@@ -249,6 +249,37 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  // 客户管理 - 品牌关联
+  {
+    path: '/client/brand/',
+    name: 'client-brand',
+    component: () => import('./views/client/brand/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 客户管理 - 品牌关联 - 详情&审核
+  {
+    path: '/client/brand/detail/:id',
+    name: 'client-brand-detail',
+    component: () => import('./views/client/brand/detail.vue'),
+    props: true,
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 客户管理 - 留言本
+  {
+    path: '/client/message/',
+    name: 'client-message',
+    component: () => import('./views/client/message/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
   // 基础数据 - 系统字典 - 分类列表
   {
     path: '/data/dict/',
@@ -753,25 +784,28 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   //  kol平台账号资源管理 - 查看
   {
-    path: '/resource/kolplatform/detail/:id',
+    path: '/resource/kolplatform/detail/:code/:id/:type?',
     name: 'resource-kolplatform-list-detail',
     component: () => import('./views/resource/kolPlatform/details.vue'),
     meta: {
       authKey: '',
-      title: '查看',
-    }
+      title({params}) {
+        return params.type ? '审核' : '查看'
+      }
+    },
+    props: paramTypes({ id: Number, code: String, type: Number})
   },
 
   //  kol平台账号资源管理 - 审核
-  {
-    path: '/resource/kolplatform/audit/:id',
-    name: 'resource-kolplatform-list-audit',
-    component: () => import('./views/resource/kolPlatform/audit.vue'),
-    meta: {
-      authKey: '',
-      title: '审核',
-    }
-  },
+  // {
+  //   path: '/resource/kolplatform/audit/:code/:id',
+  //   name: 'resource-kolplatform-list-audit',
+  //   component: () => import('./views/resource/kolPlatform/audit.vue'),
+  //   meta: {
+  //     authKey: '',
+  //     title: '审核',
+  //   }
+  // },
 
   // 影片资源管理
   {

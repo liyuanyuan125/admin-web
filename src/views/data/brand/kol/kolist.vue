@@ -26,7 +26,7 @@
       disabled-hover
     >
       <template slot="action" slot-scope="{row, index}">
-        <span class="del-col" @click="kollist.splice(index, 1)">删除</span>
+        <span class="del-col" @click="del(index)">删除</span>
       </template>
     </Table>
   </div>
@@ -87,6 +87,11 @@ export default class Kol extends ViewBase {
     } catch (ex) {
       this.handleError(ex)
     }
+  }
+
+  del(index: any) {
+    this.kollist.splice(index, 1)
+    this.$emit('input', this.kollist)
   }
 
   async addProvinceList() {
