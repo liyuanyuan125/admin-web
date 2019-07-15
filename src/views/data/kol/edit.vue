@@ -108,8 +108,28 @@
         <FormItem label="关联KOL账号:" prop="exts">
           <kol :channelCodeList="channelCodeList" v-model="form.exts"></kol>
         </FormItem>
+        <Row v-if="logList.length > 0">
+          <Col :span="15">
+            <FormItem label="操作日志:">
+              <Table
+                :columns="logocoulms"
+                :data="logList"
+                class="log-table"
+                border
+                stripe
+                disabled-hover
+              >
+                <template slot="index" slot-scope="{row, index}">
+                  <span>{{index + 1}}</span>
+                </template>
+                <template slot="createTime" slot-scope="{row}">
+                  <span>{{autotime(row.createTime)}}</span>
+                </template>
+              </Table>
+            </FormItem>
+          </Col>
+        </Row>
       </div>
-  
       <div class="footer-btn">
         <Button type="primary" class="btn">浏览</Button>
         <Button type="primary" @click="editSubmit">保存</Button>
@@ -127,10 +147,12 @@ import AreaSelect, { areaParam } from '@/components/areaSelect'
 import Upload from '@/components/Upload.vue'
 import kol from '../brand/kol/kolist.vue'
 import Brand from './brand.vue'
+import moment from 'moment'
 import { queryList, addkol, editkol, detailkol } from '@/api/associated'
 import { clean } from '@/fn/object'
 import { toMap } from '@/fn/array'
 
+const timeFormat = 'YYYY/MM/DD HH:mm:ss'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 @Component({
   components: {
@@ -156,6 +178,8 @@ export default class Main extends ViewBase {
     exts: []
   }
 
+  logList: any = []
+
   customcolunms: any = [
     { title: '排序', key: 'index', align: 'center' },
     { title: '评论热词', key: 'hot', align: 'center' },
@@ -163,6 +187,15 @@ export default class Main extends ViewBase {
 
   tags: any = []
 
+  logocoulms: any = [
+    { title: '序号', key: 'index', slot: 'index', align: 'center' },
+    { title: '操作类型', key: 'eventName', align: 'center' },
+    { title: '操作时间', width: '130', key: 'createTime', slot: 'createTime', align: 'center' },
+    { title: '操作人', key: 'createUserName', align: 'center' },
+    { title: '字段', key: 'kyes', align: 'center' },
+    { title: '原值', key: 'kyes', align: 'center' },
+    { title: '新值', key: 'kyes', align: 'center' },
+  ]
   get rule() {
     const exts = (rule: any, value: any, callback: any) => {
       if (value.length == 0) {
@@ -228,6 +261,10 @@ export default class Main extends ViewBase {
     this.detail()
   }
 
+  autotime(time: any) {
+    return time ? moment(time).format(timeFormat) : ''
+  }
+
   async init() {
     try {
      const { data: {
@@ -250,7 +287,8 @@ export default class Main extends ViewBase {
       const { data: {
         accountCategoryList,
         brandCategoryList,
-        item
+        item,
+        logList
       } } = await detailkol(this.$route.params.id)
       this.accountCategoryList = accountCategoryList
       const msg = item && item[0]
@@ -277,6 +315,7 @@ export default class Main extends ViewBase {
             rate: it.channelDataName
           }
         })
+        this.logList = logList || []
         this.jyIndex = item.jyIndex
         this.form.photo = item.photo ? [
           {
@@ -400,7 +439,7 @@ export default class Main extends ViewBase {
   }
 }
 .brand-table {
-  width: 362px;
+  min-width: 362px;
   margin-top: 15px;
   /deep/ .ivu-table {
     background: none;
@@ -422,6 +461,16 @@ export default class Main extends ViewBase {
   text-align: center;
   .btn {
     margin-right: 15px;
+  }
+}
+.log-table {
+  max-height: 500px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /deep/ span:empty {
+    &::before {
+      content: '-';
+    }
   }
 }
 </style>
