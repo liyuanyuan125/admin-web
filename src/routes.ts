@@ -259,7 +259,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
-  // 客户管理 - 品牌关联 - 详情&审核 nxd 20190713
+  // 客户管理 - 品牌关联 - 详情&审核
   {
     path: '/client/brand/detail/:id',
     name: 'client-brand-detail',
@@ -271,14 +271,14 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   },
 
   // 客户管理 - 留言本
-  // {
-  //   path: '/client/message/',
-  //   name: 'client-message',
-  //   component: () => import('./views/client/message/index.vue'),
-  //   meta: {
-  //     authKey: ''
-  //   }
-  // },
+  {
+    path: '/client/message/',
+    name: 'client-message',
+    component: () => import('./views/client/message/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
 
   // 基础数据 - 系统字典 - 分类列表
   {
