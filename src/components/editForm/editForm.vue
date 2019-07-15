@@ -1,55 +1,62 @@
 <template>
-  <Modal
-    v-model="visible"
-    :width="width"
-    :loading="submitLoading"
-    @on-ok="onSubmit"
-  >
-    <main class="modal-main">
-      <Form
-        :model="item"
-        :key="formKey"
-        :label-width="labelWidth"
-        :rules="rules"
-        class="form"
-        :style="{ visibility: loading ? 'hidden' : 'visible' }"
-        ref="form"
+  <div class="edit-form">
+    <Form
+      :model="item"
+      :key="formKey"
+      :label-width="labelWidth"
+      :rules="rules"
+      class="form"
+      :style="{ visibility: loading ? 'hidden' : 'visible' }"
+      :loading="submitLoading"
+      @submit.native.prevent="onSubmit"
+      ref="form"
+    >
+      <fieldset
+        v-for="group in groupFields"
+        :key="group.name"
+        class="form-group"
       >
-        <Col
-          v-for="it in normalFields"
-          :key="it.name"
-          :span="it.span"
-          :class="{ 'col-no-label': !it.label }"
-          :style="it.style"
-        >
-          <FormItem
-            :label="it.label"
-            :prop="it.name"
-            :error="errorMap[it.name]"
-            v-auth="it.auth"
+        <h3 class="group-name" v-if="group.name">{{group.name}}</h3>
+        <section class="field-section">
+          <Col
+            v-for="it in group.list"
+            :key="it.name"
+            :span="it.span"
+            :offset="it.offset"
+            :class="{ 'col-no-label': !it.label }"
+            :style="it.style"
           >
-            <component
-              v-model="item[it.name]"
-              :is="it.component"
-              :placeholder="it.placeholder"
-              v-bind="it.props"
+            <FormItem
+              :label="it.label"
+              :prop="it.name"
+              :error="errorMap[it.name]"
+              :class="it.class"
+              v-auth="it.auth"
+              v-if="it.visible(item)"
             >
-              <Option
-                v-for="sub in enumMap[it.name]"
-                :key="sub.key"
-                :value="sub.key"
-                v-if="it.type == 'select'"
-              >{{sub.text}}</Option>
-            </component>
-          </FormItem>
-        </Col>
-      </Form>
+              <component
+                v-model="item[it.name]"
+                :is="it.component"
+                :placeholder="it.placeholder"
+                v-bind="it.props"
+              >
+                <Option
+                  v-for="sub in enumMap[it.name]"
+                  :key="sub.key"
+                  :value="sub.key"
+                  v-if="it.type == 'select'"
+                >{{sub.text}}</Option>
+              </component>
+            </FormItem>
+          </Col>
+        </section>
+      </fieldset>
+    </Form>
 
-      <div class="inner-loading flex-mid" v-show="loading">
-        <TinyLoading :size="38"/>
-      </div>
-    </main>
-  </Modal>
+    <div class="inner-loading flex-mid" v-show="loading">
+      <TinyLoading :size="38" />
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -58,7 +65,15 @@ import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { MapType, AjaxResult, KeyTextControlStatus } from '@/util/types'
 import TinyLoading from '@/components/TinyLoading.vue'
-import { Field, normalizeField, Rule } from './types'
+import {
+  Field,
+  normalizeField,
+  normalizeAndGroupField,
+  Rule,
+  FetchData,
+  FetchResult,
+  fetchDataToResult
+} from './types'
 import { cloneDeep, isEqual } from 'lodash'
 import { defaultParams, dealParams, backfillParams } from '@/util/param'
 import { slice } from '@/fn/object'
@@ -70,29 +85,27 @@ import { random } from '@/fn/string'
     TinyLoading
   }
 })
-export default class EditDialog extends ViewBase {
+export default class EditForm extends ViewBase {
+  /** 字段配置 */
+  @Prop({ type: Array, default: () => [] }) fields!: Field[]
+
+  /** 初始化数据 */
+  @Prop({ type: Object, default: () => ({}) }) initData!: object
+
   /** 加载编辑项的请求函数 */
-  @Prop({ type: Function }) fetch!: (query?: any) => Promise<AjaxResult>
+  @Prop({ type: Function }) fetch!: (query?: any) => Promise<FetchData | FetchResult>
 
   /** 查询字段列表，默认为 id，可以使用以逗号分隔的字符串，指定多个字段，例如：key1,key2 */
   @Prop({ type: String, default: 'id' }) queryKeys!: string
 
   /** 提交请求函数 */
-  @Prop({ type: Function, required: true }) submit!: (data: any) => Promise<AjaxResult>
-
-  /** 字段配置 */
-  @Prop({ type: Array, default: () => [] }) fields!: Field[]
-
-  /** 对话框宽度 */
-  @Prop({ type: Number, default: 770 }) width!: number
+  @Prop({ type: Function }) submit!: (data: any) => Promise<AjaxResult>
 
   /** 表单 label 宽度 */
   @Prop({ type: Number, default: 76 }) labelWidth!: number
 
   /** 过滤器，对字段进一步加工 */
   @Prop({ type: Function }) filter!: (item: any) => any
-
-  visible = false
 
   // 用来预防 form 被重用，确保每次都使用新的实例
   formKey = random('editDialog')
@@ -112,6 +125,11 @@ export default class EditDialog extends ViewBase {
   get normalFields() {
     const list = normalizeField(this.fields)
     return list
+  }
+
+  get groupFields() {
+    const group = normalizeAndGroupField(this.fields)
+    return group
   }
 
   get rules() {
@@ -139,11 +157,17 @@ export default class EditDialog extends ViewBase {
     return result
   }
 
-  created() {
+  public done(handler: (data: any) => any) {
+    this.$once('done', handler)
+    return this
+  }
+
+  init(initData = {}) {
     const item = defaultParams(this.fields)
     this.defItem = cloneDeep(item)
-    this.item = cloneDeep(item)
-    this.errorMap = Object.keys(item).reduce(
+    this.item = cloneDeep({ ...item, ...initData })
+    this.formKey = random('editForm')
+    this.errorMap = Object.keys(this.item).reduce(
       (map, key) => {
         map[key] = ''
         return map
@@ -152,22 +176,10 @@ export default class EditDialog extends ViewBase {
     )
   }
 
-  public show(data?: any) {
-    this.item = cloneDeep({ ...this.defItem, ...data })
-    this.visible = true
-    this.formKey = random('editDialog')
-    this.load()
-    return this
-  }
-
-  public hide() {
-    this.visible = false
-    return this
-  }
-
-  public done(handler: (data: any) => any) {
-    this.$once('done', handler)
-    return this
+  // 简单包装一下，以便适应两种数据结构
+  async fetchWrap(query: any) {
+    const res = await this.fetch(query)
+    return fetchDataToResult(res)
   }
 
   async load() {
@@ -178,7 +190,7 @@ export default class EditDialog extends ViewBase {
     this.loading = true
     try {
       const query = slice(this.item, this.queryKeys)
-      const { data } = await this.fetch(query)
+      const { data } = await this.fetchWrap(query)
 
       // 从 select 中推断出所用枚举
       const enumMap = this.normalFields
@@ -226,15 +238,13 @@ export default class EditDialog extends ViewBase {
     }
   }
 
-  resetSubmitLoading() {
-    this.submitLoading = false
-    this.$nextTick(() => (this.submitLoading = true))
-  }
-
   async onSubmit() {
+    if (this.submit == null) {
+      return
+    }
+
     const valid = await (this.$refs.form as any).validate()
     if (!valid) {
-      this.resetSubmitLoading()
       return
     }
 
@@ -243,20 +253,24 @@ export default class EditDialog extends ViewBase {
       const data = dealParams(this.fields, item)
       const res = await this.submit(data)
       this.$emit('done', res && res.data)
-      this.visible = false
     } catch (ex) {
-      this.resetSubmitLoading()
       // TODO: custom error
       this.handleError(ex)
     }
+  }
+
+  @Watch('initData', { deep: true, immediate: true })
+  watchInitData(value: object) {
+    this.init(value)
+    this.load()
   }
 }
 </script>
 
 <style lang="less" scoped>
-.modal-main {
+.edit-form {
   position: relative;
-  padding: 18px 28px 0 0;
+  padding: 0 0 38px 0;
 }
 
 .form {
@@ -267,6 +281,7 @@ export default class EditDialog extends ViewBase {
   }
   /deep/ .ivu-col {
     display: inline-block;
+    vertical-align: top;
     float: none;
   }
   /deep/ .ivu-form-item-label {
@@ -275,6 +290,21 @@ export default class EditDialog extends ViewBase {
   /deep/ .ivu-form-item-content {
     line-height: 1;
   }
+  /deep/ .form-text {
+    padding: 10px 12px 10px 0;
+  }
+}
+
+.form-group {
+  padding: 10px;
+  border: 1px solid #e8e8e8;
+  background-color: #fff;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.group-name {
+  font-size: 14px;
 }
 
 .inner-loading {

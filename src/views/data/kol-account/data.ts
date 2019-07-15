@@ -33,3 +33,33 @@ export async function queryList(query: any = {}) {
   }
   return result
 }
+
+/**
+ * https://yapi.aiads-dev.com/project/142/interface/api/3054
+ * @param query 查询条件
+ */
+export async function queryItem(query: any = {}) {
+  const { id, channel } = query
+  const { data } = await get(`/kol/channel-accounts/${channel}/${id}`)
+  const result = {
+    ...data,
+    item: {
+      ...data.item,
+      fansCount: parseInt(dot(data, 'item.customFans.totalCount'), 10) || 0,
+    },
+    typeList: [
+      { key: 1, text: '个人' },
+      { key: 2, text: '公司' },
+    ],
+    authList: [
+      { key: 0, text: '未认证' },
+      { key: 1, text: '已认证' },
+    ]
+  }
+
+  // result.item.photo = 'http://aiads-file.oss-cn-beijing.aliyuncs.com/IMAGE/MISC/bklm23duomr0008001f0.jpg'
+  // result.item.provinceId = 4
+  // result.item.cityId = 68
+
+  return result
+}

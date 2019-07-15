@@ -10,7 +10,7 @@
         <Input v-model="dataForm.name"></Input>
       </FormItem>
       <FormItem label="唯一识别符" prop="code">
-        <Input v-model="dataForm.code"></Input>
+        <Input v-model="dataForm.code" disabled></Input>
       </FormItem>
       <FormItem label="启用状态" prop="enableStatus">
         <RadioGroup v-model="dataForm.enableStatus" >

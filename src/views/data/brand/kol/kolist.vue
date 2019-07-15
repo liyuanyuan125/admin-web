@@ -26,7 +26,7 @@
       disabled-hover
     >
       <template slot="action" slot-scope="{row, index}">
-        <span class="del-col" @click="kollist.splice(index, 1)">删除</span>
+        <span class="del-col" @click="del(index)">删除</span>
       </template>
     </Table>
   </div>
@@ -89,6 +89,11 @@ export default class Kol extends ViewBase {
     }
   }
 
+  del(index: any) {
+    this.kollist.splice(index, 1)
+    this.$emit('input', this.kollist)
+  }
+
   async addProvinceList() {
     if (this.promodel && this.channel) {
       let proname: string = ''
@@ -116,7 +121,7 @@ export default class Kol extends ViewBase {
         this.$emit('input', this.kollist)
         ; (this.$refs.ul as any).dispatch('FormItem', 'on-form-change', this.kollist)
       } else {
-        await info('改账号已存在', { title: '提示' })
+        await info('该账号已存在', { title: '提示' })
       }
     } else {
       await info('请选择账号平台', { title: '提示' })
