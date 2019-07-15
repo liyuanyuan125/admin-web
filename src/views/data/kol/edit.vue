@@ -173,6 +173,9 @@ export default class Main extends ViewBase {
     }
     const jinyu = (rule: any, value: any, callback: any) => {
       const jinyureg: any = /^(([1-9]{1}\\d*)|([0]{1}))(\\.(\\d){0,2})?$/
+      if (value == 0 || value == '') {
+        return callback()
+      }
       if (jinyureg.test((value + ''))) {
         return callback(new Error('格式不对'))
       } else {
@@ -181,6 +184,9 @@ export default class Main extends ViewBase {
     }
     const jinyu1 = (rule: any, value: any, callback: any) => {
       const jinyureg: any = /^(([1-9]{1}\\d*)|([0]{1}))(\\.(\\d){0,2})?$/
+      if (value == 0 || value == '') {
+        return callback()
+      }
       if (value > 100) {
         return callback(new Error('数字不能大于100'))
       }
