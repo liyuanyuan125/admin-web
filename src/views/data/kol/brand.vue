@@ -113,13 +113,13 @@ export default class Main extends ViewBase {
           channelname = item.name
         }
       })
-      const ishas = this.kollist.some(
-        (item: any) => item.categoryCode == this.promodel
-      )
+      // const ishas = this.kollist.some(
+      //   (item: any) => item.categoryCode == this.promodel
+      // )
       const ishascode = this.kollist.some(
         (item: any) => item.brandId == this.channel
       )
-      if (!ishas && !ishascode) {
+      if (!ishascode) {
         this.kollist.push({
           name: proname,
           categoryCode: this.promodel,
@@ -128,12 +128,13 @@ export default class Main extends ViewBase {
         })
         this.$emit('input', this.kollist.map((it: any) => {
           return {
+            ...it,
             categoryCode: it.categoryCode,
             brandId: it.brandId
           }
         }))
       } else {
-        await info('改品牌已存在', { title: '提示' })
+        await info('该产品已存在', { title: '提示' })
       }
     } else {
       await info('请选择品牌', { title: '提示' })

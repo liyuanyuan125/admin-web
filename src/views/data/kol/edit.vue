@@ -98,7 +98,9 @@
 
           <Col :span="6">
             <FormItem :labelWidth="180" label="调整鲸娱指数所占权重:" prop="customIndexPercent">
-              <Input v-model="form.customIndexPercent	" placeholder=""></Input>%
+              <div style="display: flex">
+                <Input v-model="form.customIndexPercent	" placeholder=""></Input><span>%</span>
+              </div>
             </FormItem>
           </Col>
         </Row>
