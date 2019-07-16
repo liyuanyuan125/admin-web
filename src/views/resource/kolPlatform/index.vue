@@ -64,7 +64,7 @@
         </Table>
     </Modal>
 
-    <Modal v-model="visSingle" width="500" title="修改定价"
+    <Modal v-model="visSingle" width="500" title="修改定价" class="single-modal"
     @on-ok="handleSubmit('single')" >
         <Table :columns="colSinglePrice" :data="dataSinglePrice"  border stripe>
           <template slot="priceType" slot-scope="{row, index}">
@@ -262,7 +262,7 @@ export default class KolPlatformIndex extends ViewBase {
       }
     }
     const ids = id ? Array.of(id) : this.selectedIds
-    await confirm(`您选择了${ids.length}条影人进行${text }`, {
+    await confirm(`您选择了${ids.length}条数据进行${text }`, {
       title: `${text}操作`
     })
     try {
@@ -387,5 +387,9 @@ export default class KolPlatformIndex extends ViewBase {
   text-align: center;
   padding: 10px 0;
 }
-
+.single-modal {
+  /deep/ .ivu-table-wrapper {
+    overflow: inherit;
+  }
+}
 </style>
