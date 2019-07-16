@@ -23,24 +23,33 @@
             :value="it.code">{{it.name}}</Option>
         </Select>
       </FormItem>
-      <FormItem v-if="parentsName" label="行政等级" prop="grade">
+      <!-- <FormItem v-if="parentsName" label="行政等级" prop="grade">
         <Select v-model="dataForm.grade" placeholder="请选择" class="input" style="width: 200px" clearable>
           <Option v-for="it in gradelist" :key="it.key"
             :value="it.key">{{it.value}}</Option>
         </Select>
-      </FormItem>
-      <!-- <FormItem v-if="parentsName" label="业务等级" prop="">
-        <Select v-model="dataForm.bizGrade" placeholder="请选择" class="input" style="width: 200px" clearable>
-          <Option v-for="it in bizGradelist" :key="it.key"
-            :value="it.key">{{it.value}}</Option>
-        </Select>
       </FormItem> -->
-      <FormItem v-if="parentsName" label="业务等级" prop="bizGrade">
-        <Select v-model="dataForm.bizGrade" placeholder="请选择" class="input" style="width: 200px" clearable>
-          <Option v-for="it in bizGradelist" :key="it.key"
-            :value="it.key">{{it.value}}</Option>
-        </Select>
-      </FormItem>
+      <!-- <FormItem class='hhh' v-if="parentsName" label="业务等级" prop="bizGrade"> -->
+        <Row v-if="parentsName" style='margin-bottom: 25px;'>
+          <Col :span='5' style='margin-top: 8px;'>行政等级</Col>
+          <Col :span='10'>
+            <Select v-model="dataForm.grade" placeholder="请选择" class="input" style="width: 200px" clearable>
+              <Option v-for="it in gradelist" :key="it.key"
+              :value="it.key">{{it.value}}</Option>
+            </Select>
+          </Col>
+        </Row>
+        <Row v-if="parentsName" style='margin-bottom: 25px;'>
+          <Col :span='5' style='margin-top: 8px;'>业务等级</Col>
+          <Col :span='10'>
+            <Select v-model="dataForm.bizGrade" placeholder="请选择" class="input" style="width: 200px" clearable>
+              <Option v-for="it in bizGradelist" :key="it.key"
+              :value="it.key">{{it.value}}</Option>
+            </Select>
+          </Col>
+        </Row>
+        
+      <!-- </FormItem> -->
       <FormItem label="排序" prop="sort">
         <Input style="width:150px" v-model="dataForm.sort" placeholder="请输入"/><span class="hiht">数值越小，排序越靠前</span>
       </FormItem>
@@ -91,14 +100,7 @@ export default class ComponentMain extends ViewBase {
     ],
     areaCode: [
         { required: true, message: '请选择所属区域', trigger: 'change', type: 'string' }
-    ],
-    // grade: [
-    //     { required: true, message: '请选择行政等级', trigger: 'change', type: 'string' }
-    // ],
-    // bizGrade: [
-    //     { required: true, message: '请选择业务等级', trigger: 'change', type: 'string' }
-    // ],
-    // sort: []
+    ]
   }
   @Prop({ type: Array }) areaSelect: any
   @Prop() areaObject: any
@@ -208,4 +210,5 @@ export default class ComponentMain extends ViewBase {
   margin-left: 15px;
   color: #6b6b6b;
 }
+
 </style>
