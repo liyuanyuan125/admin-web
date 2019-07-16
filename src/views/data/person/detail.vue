@@ -38,15 +38,15 @@
                 </p>
                 <p>
                   <label>其他职业</label>
-                  <em v-for="(item, index) in restPro" :key="index">{{item}} &nbsp; </em>
+                  <!-- <em v-for="(item, index) in restPro" :key="index">{{item}} &nbsp; </em> -->
                 </p>
               </Col>
               <Col :span="12"><img :src="itemList.headImgSmall" class="head-img" /></Col>
             </Row>
             <Row>
-            <Col :span="6"><p><label>系统鲸娱指数</label><em>{{itemList.biJyIndex / 100}}</em></p></Col>
-            <Col :span="6"><p><label>调整鲸娱指数</label><em >{{itemList.jyIndex / 100}}</em></p></Col>
-            <Col :span="6"><p><label>指数所占权重</label><em>{{itemList.jyIndexWeight || '-'}}%</em></p></Col>
+            <Col :span="6"><p><label>系统鲸娱指数</label><em>{{itemList.biJyIndex}}</em></p></Col>
+            <Col :span="6"><p><label>调整鲸娱指数</label><em >{{itemList.jyIndex}}</em></p></Col>
+            <Col :span="6"><p><label style="width: 160px">调整鲸鱼指数所占权重</label><em>{{itemList.jyIndexWeight || 0}}%</em></p></Col>
             </Row>
             <Row>
             <Col :span="22">
@@ -254,18 +254,6 @@ export default class Main extends ViewBase {
   imageTypes = []
   cloneImages: any[] = []
 
-  // 操作日志
-  // operateColumns = [
-  //   { type: 'index', align: 'center', renderHeader: (h: any, params: any) => {
-  //       return h('span', '序号')
-  //   }},
-  //   { key: 'type', title: '操作类型', align: 'center'},
-  //   { key: 'time', title: '操作时间', align: 'center'},
-  //   { key: 'user', title: '操作人', align: 'center'},
-  //   { key: 'field', title: '字段', align: 'center'},
-  //   { key: 'originalVal', title: '原值', align: 'center'},
-  //   { key: 'newVal', title: '新值', align: 'center'},
-  // ]
   oprateList = []
 
   mounted() {
@@ -308,11 +296,11 @@ export default class Main extends ViewBase {
       // 粉丝画像
       this.fans = item.fans || {}
       this.ageData = this.fans.ages
-      this.proData = this.fans.provinces
-      this.ctyData = this.fans.cities
+      this.proData = this.fans.provinces || []
+      this.ctyData = this.fans.cities || []
 
       // 影人相册
-      this.imgList = item.images
+      this.imgList = item.images || []
       this.cloneImages = item.images
       this.imageTypes = imageTypes
     } catch (ex) {
@@ -373,9 +361,7 @@ export default class Main extends ViewBase {
 </script>
 <style lang='less' scoped>
 @import './less/common.less';
-i {
-  font-style: normal;
-}
+
 .select-picture {
   width: 120px;
   margin-bottom: 15px;
@@ -389,9 +375,7 @@ i {
 .head-img {
   width: 100px;
 }
-em {
-  font-style: normal;
-}
+
 .table-label {
   display: -webkit-box;
   margin-bottom: 15px;

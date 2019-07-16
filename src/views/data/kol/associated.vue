@@ -65,6 +65,16 @@ export default class Main extends ViewBase {
       type: 'input',
       width: 85,
       placeholder: 'KOL名称'
+    },
+
+    {
+      name: 'pageIndex',
+      defaultValue: 1
+    },
+
+    {
+      name: 'pageSize',
+      defaultValue: 20
     }
   ]
 
@@ -105,7 +115,8 @@ export default class Main extends ViewBase {
       },
       items: [
         ...item
-      ]
+      ],
+      totalCount
     }
   }
 

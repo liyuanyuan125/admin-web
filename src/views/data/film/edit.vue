@@ -4,7 +4,7 @@
         <div class="base-mess">
         <h2 class="title">基础和扩展信息</h2>
         <FormItem label="搜索关键字">
-            <Input type="text" v-model="form.searchKeywords" placeholder="请以‘，’号分割"></Input>
+            <Input type="text" v-model="form.searchKeywords" placeholder="请以‘;’号分割"></Input>
         </FormItem>
         <FormItem label="预估票房">
             <Input type="text" v-model="form.predict" placeholder="预估票房"></Input>
@@ -20,7 +20,7 @@
             <Input type="text" v-model="form.celebrityRating" placeholder="满分为5分，保留一位小数"></Input>
         </FormItem>
         <FormItem label="编辑评论热词">
-            <Input type="text" v-model="form.tags" placeholder="热词请以‘，’号分开"></Input>
+            <Input type="text" v-model="form.tags" placeholder="热词请以‘;’号分开"></Input>
         </FormItem>
          <Row>
             <Col :span="4">
@@ -80,12 +80,12 @@ export default class Main extends ViewBase {
 
   async handleSubmit() {
     const formTag = this.form.tags
-    const hasFlag = formTag.includes(',')
-    const tags = hasFlag ? formTag.split(',') : formTag ? Array.of(formTag) : []
+    const hasFlag = formTag.includes(';')
+    const tags = hasFlag ? formTag.split(';') : formTag ? Array.of(formTag) : []
 
     const searchKeyWord = this.form.searchKeywords
-    const keyWord =  searchKeyWord.includes(',')
-    const searchKeywords = keyWord ? searchKeyWord.split(',') : searchKeyWord ? Array.of(searchKeyWord) : []
+    const keyWord =  searchKeyWord.includes(';')
+    const searchKeywords = keyWord ? searchKeyWord.split(';') : searchKeyWord ? Array.of(searchKeyWord) : []
     try {
         const { data } = await movieEdit(this.id, {
             ...this.form,

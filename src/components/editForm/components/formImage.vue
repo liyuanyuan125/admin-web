@@ -17,7 +17,7 @@ import Upload, { FileItem } from '@/components/Upload.vue'
 export default class FormImage extends ViewBase {
   @Prop({ type: String, default: '' }) value!: string
 
-  @Prop({ type: String, default: '更改' }) buttonText!: string
+  // @Prop({ type: String, default: '更改' }) buttonText!: string
 
   model: FileItem[] = []
 
@@ -59,5 +59,4 @@ export default class FormImage extends ViewBase {
     box-shadow: none;
   }
 }
-
 </style>
