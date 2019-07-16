@@ -29,3 +29,10 @@ export async function dels(id: any) {
     const res = await del(`/basis/districts/${id}`)
     return res
 }
+
+// 根据分类Code获取词条列表
+export async function codelist(code: any) {
+    const res = await get(`/basis/dictionary-categories/${code}/items`)
+    return res
+}
+

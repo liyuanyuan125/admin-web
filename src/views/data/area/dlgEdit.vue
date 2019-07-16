@@ -23,6 +23,18 @@
             :value="it.code">{{it.name}}</Option>
         </Select>
       </FormItem>
+      <FormItem v-if="parentsName" label="行政等级" prop="grade">
+        <Select v-model="dataForm.grade" placeholder="请选择" class="input" style="width: 200px" clearable>
+          <Option v-for="it in gradelist" :key="it.key"
+            :value="it.key">{{it.value}}</Option>
+        </Select>
+      </FormItem>
+      <FormItem v-if="parentsName" label="业务等级" prop="bizGrade">
+        <Select v-model="dataForm.bizGrade" placeholder="请选择" class="input" style="width: 200px" clearable>
+          <Option v-for="it in bizGradelist" :key="it.key"
+            :value="it.key">{{it.value}}</Option>
+        </Select>
+      </FormItem>
       <FormItem label="排序" prop="sort">
         <Input style="width:150px" v-model="dataForm.sort" placeholder="请输入"/><span class="hiht">数值越小，排序越靠前</span>
       </FormItem>
@@ -55,8 +67,12 @@ export default class ComponentMain extends ViewBase {
     pinyinShort: '',
     pinyin: '',
     areaCode: '',
-    sort: ''
+    sort: '',
+    grade: '',
+    bizGrade: ''
   }
+  gradelist: any = []
+  bizGradelist: any = []
   ruleValidate = {
     nameCn: [
         { required: true, message: '请输入地区名称', trigger: 'blur' }
@@ -70,16 +86,31 @@ export default class ComponentMain extends ViewBase {
     areaCode: [
         { required: true, message: '请选择所属区域', trigger: 'change', type: 'string' }
     ],
+    grade: [
+        { required: true, message: '请选择行政等级', trigger: 'change', type: 'string' }
+    ],
+    bizGrade: [
+        { required: true, message: '请选择业务等级', trigger: 'change', type: 'string' }
+    ],
     sort: []
   }
   @Prop({ type: Array }) areaSelect: any
   @Prop() areaObject: any
-  init(id: any, name: string, areaCode: any, editMes: any, parentsareaCode: string) {
+  init(
+        id: any,
+        name: string,
+        areaCode: any,
+        editMes: any,
+        parentsareaCode: string ,
+        bizGradelist: any,
+        gradelist: any) {
     this.setId = id
     this.editMes = editMes
     this.parentsName = name
     this.showDlg = true
     this.id = parentsareaCode
+    this.gradelist = gradelist
+    this.bizGradelist = bizGradelist
     if ( !!this.parentsName ) {
       this.dataForm.areaCode = areaCode
     } else {
@@ -92,6 +123,8 @@ export default class ComponentMain extends ViewBase {
        this.dataForm.pinyin = this.areaObject.pinyin
        this.dataForm.areaCode = this.areaObject.areaCode
        this.dataForm.sort = this.areaObject.sort
+       this.dataForm.grade = this.areaObject.grade
+       this.dataForm.bizGrade = this.areaObject.bizGrade
     }
   }
 
