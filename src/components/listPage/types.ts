@@ -145,7 +145,14 @@ const resolveComponent = (item: Filter) => {
       props: resolveProps(item, name)
     }
   }
-  return { ...item, ...part }
+  return {
+    ...item,
+    component: part && part.component,
+    props: {
+      ...item.props,
+      ...(part && part.props),
+    }
+  }
 }
 
 /**
