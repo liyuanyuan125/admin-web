@@ -21,6 +21,16 @@
         <PoptipSelect v-auth="'basis.districts:modify'" :value='rows(row)' @change="editStatus"/>
         <span v-auth-not="'basis.districts:modify'">{{row.areaName}}</span>
       </template>
+
+      <template slot="grade" slot-scope="{row}">
+        <span v-if='row.gradeName == null'>-</span>
+        <PoptipSelect v-else  :value='rowsgrade(row)' @change="editgrade"/>
+      </template>
+      <template slot="bizGrade" slot-scope="{row}">
+        <span v-if='row.bizGradeName == null'>-</span>
+        <PoptipSelect v-else  :value='rowsbiz(row)' @change="editbiz"/>
+      </template>
+
       <template slot="action" slot-scope="{row}">
         <a v-auth="'basis.districts:modify'" @click="edit(row.id, row, 1)">编辑</a>
         <a style="margin-left: 8px" v-auth="'basis.districts:delete'" @click="deletes(edit.id)">删除</a>
@@ -46,7 +56,7 @@ import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
-import { queryList, arealist, areaSet, dels } from '@/api/dateArea'
+import { queryList, arealist, areaSet, dels , codelist} from '@/api/dateArea'
 import PoptipSelect from '@/components/PoptipSelect.vue'
 import { confirm, toast } from '@/ui/modal'
 import DlgEdit from './dlgEdit.vue'
@@ -87,6 +97,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   statusList: any[] = []
   saveId: any[] = []
 
+  // 行政等级
+  gradelist: any = []
+  // 业务等级
+  bizGradelist: any = []
+
   get columns() {
     const colum =  [
       { title: '序号', key: 'id', align: 'center' },
@@ -102,6 +117,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       },
       { title: '简拼', key: 'pinyinShort',  align: 'center' },
       { title: '拼音', key: 'pinyin',  align: 'center' },
+    ]
+    const sss = [
       {
         title: '所属区域',
         key: 'areaName',
@@ -128,6 +145,24 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         //   /* tslint:enable */
         // }
       },
+    ]
+    const aaa = [
+      {
+        title: '行政等级',
+        key: 'gradeName',
+        width: 120,
+        slot: 'grade',
+        align: 'center',
+      },
+      {
+        title: '业务等级',
+        key: 'bizGradeName',
+        width: 120,
+        slot: 'bizGrade',
+        align: 'center',
+      },
+    ]
+    const bbb = [
       {
         title: '排序',
         key: 'sort',
@@ -142,8 +177,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         align: 'center'
       }
     ]
-    ; (this.query.parentIds != '0') ? colum.splice(4, 1) : colum
-    return colum
+    const ddd = (this.query.parentIds != '0') ? [...colum, ...aaa, ...bbb] : [...colum, ...sss, ...bbb]
+    return ddd
   }
 
   get cachedMap() {
@@ -168,10 +203,37 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       id: row.id,
       text: row.areaName,
       value: row.areaCode,
-      list: this.statusList.map(value => {
+      list: this.statusList.map((value: any) => {
         return {
           key: value.code,
           text: value.name
+        }
+      })
+    }
+  }
+
+  rowsgrade(row: any) {
+    return {
+      id: row.id,
+      text: row.gradeName,
+      value: row.grade,
+      list: this.gradelist.map((value: any) => {
+        return {
+          key: value.key,
+          text: value.value
+        }
+      })
+    }
+  }
+  rowsbiz(row: any) {
+    return {
+      id: row.id,
+      text: row.bizGradeName,
+      value: row.bizGrade,
+      list: this.bizGradelist.map((value: any) => {
+        return {
+          key: value.key,
+          text: value.value
         }
       })
     }
@@ -210,6 +272,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     try {
       const { data } = await arealist({})
       this.statusList = data
+      // 业务等级
+      const list = await codelist('Urban_Business_Level')
+      // 行政等级
+      const list2 = await codelist('CITY_GRADE')
+      this.bizGradelist = list.data
+      this.gradelist = list2.data
     } catch (ex) {
       this.handleError(ex)
     }
@@ -297,12 +365,50 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 
+  async editgrade({ id, value, showLoading, hideLoading }: any) {
+    const item = this.list.find(it => it.id == id)
+    try {
+      showLoading()
+      await areaSet(id, {grade: value})
+      item.grade = value
+      this.gradelist.forEach((it: any , key: any) => {
+        if (it.key == value) {
+          item.gradeName = it.value
+        }
+      })
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      hideLoading()
+    }
+  }
+
+  async editbiz({ id, value, showLoading, hideLoading }: any) {
+    const item = this.list.find(it => it.id == id)
+    try {
+      showLoading()
+      await areaSet(id, {bizGrade: value})
+      item.bizGrade = value
+      this.bizGradelist.forEach((it: any , key: any) => {
+        if (it.key == value) {
+          item.bizGradeName = it.value
+        }
+      })
+
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      hideLoading()
+    }
+  }
+
   // 新增 / 修改
   edit(id: any, row: any, editMes: number) {
     this.addOrUpdateVisible = true
     id != '0' ? this.editOne = row : this.editOne = ''
     this.$nextTick(() => {
-      (this.$refs.addOrUpdate as any).init(id, this.query.city, this.query.areaCodes, editMes, this.query.parentIds)
+      (this.$refs.addOrUpdate as any).init(id, this.query.city, this.query.areaCodes,
+        editMes, this.query.parentIds , this.bizGradelist, this.gradelist)
     })
   }
 
