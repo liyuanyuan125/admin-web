@@ -29,6 +29,12 @@
             :value="it.key">{{it.value}}</Option>
         </Select>
       </FormItem>
+      <!-- <FormItem v-if="parentsName" label="业务等级" prop="">
+        <Select v-model="dataForm.bizGrade" placeholder="请选择" class="input" style="width: 200px" clearable>
+          <Option v-for="it in bizGradelist" :key="it.key"
+            :value="it.key">{{it.value}}</Option>
+        </Select>
+      </FormItem> -->
       <FormItem v-if="parentsName" label="业务等级" prop="bizGrade">
         <Select v-model="dataForm.bizGrade" placeholder="请选择" class="input" style="width: 200px" clearable>
           <Option v-for="it in bizGradelist" :key="it.key"
@@ -86,13 +92,13 @@ export default class ComponentMain extends ViewBase {
     areaCode: [
         { required: true, message: '请选择所属区域', trigger: 'change', type: 'string' }
     ],
-    grade: [
-        { required: true, message: '请选择行政等级', trigger: 'change', type: 'string' }
-    ],
-    bizGrade: [
-        { required: true, message: '请选择业务等级', trigger: 'change', type: 'string' }
-    ],
-    sort: []
+    // grade: [
+    //     { required: true, message: '请选择行政等级', trigger: 'change', type: 'string' }
+    // ],
+    // bizGrade: [
+    //     { required: true, message: '请选择业务等级', trigger: 'change', type: 'string' }
+    // ],
+    // sort: []
   }
   @Prop({ type: Array }) areaSelect: any
   @Prop() areaObject: any
