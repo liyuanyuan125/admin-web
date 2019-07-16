@@ -1,27 +1,14 @@
 import { Component } from 'vue'
-import { MapType } from '@/util/types'
-import { Select } from 'iview'
-import { Input } from 'iview'
-import { kebabCase, isPlainObject } from 'lodash'
+import { MapType, KeyText } from '@/util/types'
+import { kebabCase, isPlainObject, cloneDeep, isEqual } from 'lodash'
 import { Param } from '@/util/param'
 import FormText from './components/formText.vue'
+import FormInput from './components/formInput.vue'
+import FormSelect from './components/formSelect.vue'
+import FormRadio from './components/formRadio.vue'
 import FormImage from './components/formImage.vue'
 import AreaSelect from '@/components/areaSelect'
 import NumberInput from '@/components/numberInput'
-
-/**
- * 固定类型列表
- */
-export type InnateTypes = 'text' | 'input' | 'select'
-
-/**
- * 固定类型 Map
- */
-const innateTypeMap: MapType<Component> = {
-  text: FormText,
-  input: Input,
-  select: Select,
-}
 
 export type ValidatorCallback = (error?: Error) => any
 
@@ -29,7 +16,7 @@ export type ValidatorCallback = (error?: Error) => any
  * 验证器
  * https://github.com/yiminghe/async-validator#rules
  */
-export type Validator = (rule: any, value: any, callback: ValidatorCallback) => boolean | Error
+export type Validator = (rule: any, value: any, callback: ValidatorCallback) => void
 
 /**
  * 验证规则
@@ -52,21 +39,79 @@ export interface Rule {
   [key: string]: any
 }
 
-const fieldComponentMap: MapType<Component> = {
-  image: FormImage,
-  area: AreaSelect,
-  number: NumberInput
+// 生成默认的 required 规则
+const makeRequiredRule = (item: Field, rule?: Rule) => {
+  const defaultValue = item.defaultValue
+  const result: Rule = {
+    required: true,
+    message: '不能为空',
+    trigger: 'change',
+    transform(value: any) {
+      const equal = isEqual(value, defaultValue)
+      return equal ? '' : 'not-empty'
+    },
+    ...rule,
+  }
+  return result
+}
+
+interface ComponentItem {
+  component: Component
+  props?: MapType<any>
+  // 当字段 required 时，默认的 rule（部分字段）
+  requiredRule?: Rule
+}
+
+const componentMap: MapType<ComponentItem> = {
+  text: {
+    component: FormText
+  },
+
+  input: {
+    component: FormInput,
+    props: {
+      placeholder: '请输入',
+    },
+    requiredRule: {
+      trigger: 'blur'
+    }
+  },
+
+  number: {
+    component: NumberInput,
+    props: {
+      placeholder: '请输入',
+      min: 0,
+    },
+    requiredRule: {
+      trigger: 'blur'
+    }
+  },
+
+  select: {
+    component: FormSelect,
+    props: {
+      placeholder: '请选择'
+    }
+  },
+
+  area: {
+    component: AreaSelect,
+  },
+
+  radio: {
+    component: FormRadio,
+  },
+
+  image: {
+    component: FormImage,
+  },
 }
 
 /**
  * 字段配置
  */
 export interface Field extends Param {
-  /**
-   * 要使用的编辑器 component 类型，不设置则不使用编辑器，不会出现在 from 中
-   */
-  type?: InnateTypes | Component
-
   /**
    * 分组名，用于复杂表单编辑
    */
@@ -78,15 +123,31 @@ export interface Field extends Param {
   label?: string
 
   /**
+   * 要使用的 component
+   */
+  component?: Component
+
+  /**
+   * 传递给组件的 props
+   */
+  props?: MapType<any>
+
+  /**
    * 占用的空间大小，从 1 ~ 24
    */
   span?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14
     | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24
 
   /**
-   * 占用空间偏移量
+   * 向左偏移量
    */
-  offset?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14
+  offsetLeft?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14
+    | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23
+
+  /**
+   * 向右偏移量
+   */
+  offsetRight?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14
     | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23
 
   /**
@@ -117,21 +178,10 @@ export interface Field extends Param {
   rules?: Rule[]
 
   /**
-   * 当 enumKey 为 select 时，渲染 select 的枚举列表的 key
-   * 如果没有明确设置，则 enumKey 会被设置为 name.replace(/Code$|$/, 'List')
-   */
-  enumKey?: string
-
-  /**
    * 默认枚举索引
    * 若设置了该项，当该字段的值为默认值时，强制选择相应枚举列表中，该索引对应项的值
    */
   defaultEnumIndex?: number
-
-  /**
-   * 传递给组件的 props
-   */
-  props?: MapType<any>
 
   /**
    * 权限配置
@@ -148,11 +198,37 @@ export interface Field extends Param {
   // --------------------------------------------------
 
   /**
-   * 组件 image 的选项，若设置了该项，
-   * 则说明会用 FormImage 组件渲染该项
+   * 使用组件 Text
    */
-  image?: true | {
-    buttonText?: string
+  text?: true
+
+  /**
+   * 使用组件 Input
+   */
+  input?: true | {
+    prepend?: string
+    append?: string
+    [key: string]: any
+  }
+
+  /**
+   * 组件 NumberInput 的选项
+   */
+  number?: true | {
+    min?: number
+    max?: number
+    showZero?: boolean
+    prepend?: string
+    append?: string
+    [key: string]: any
+  }
+
+  /**
+   * 使用组件 Select
+   */
+  select?: {
+    enumKey: string
+    [key: string]: any
   }
 
   /**
@@ -161,15 +237,25 @@ export interface Field extends Param {
   area?: true | {
     maxLevel?: number
     clearable?: boolean
-    placeholder?: string
     noSelf?: boolean
+    [key: string]: any
   }
 
   /**
-   * 组件 NumberInput 的选项
+   * 使用组件 Radio
    */
-  number?: true | {
-    showZero?: boolean
+  radio?: {
+    enumKey: string
+    [key: string]: any
+  }
+
+  /**
+   * 组件 image 的选项，若设置了该项，
+   * 则说明会用 FormImage 组件渲染该项
+   */
+  image?: true | {
+    // buttonText?: string
+    [key: string]: any
   }
 }
 
@@ -177,14 +263,17 @@ export interface Field extends Param {
  * 规范化后的字段配置
  */
 export interface NormalField extends Field {
-  /** 确定要使用的 component */
-  component: Component
+  /** 包裹组件的 col 的 class */
+  colClass: MapType<boolean>
 
-  /** class 或 class 列表 */
-  class: string | string[]
+  /** 组件的 class */
+  class: MapType<boolean>
 
   /** 样式对象 */
   style: MapType
+
+  /** 枚举 key，从 radio.enumKey、select.enumKey 等子属性中提取 */
+  enumKey?: string
 }
 
 /**
@@ -195,40 +284,47 @@ export interface GroupField {
   list: NormalField[]
 }
 
-const defaultPlaceholderMap: MapType = {
-  input: '请输入',
-  select: '请选择',
-}
-
 // 为了支持 true 作为属性的占位符
 const resolveProps = (item: any, name: string) => {
   const props = item[name]
-  return isPlainObject(props) ? props : {}
+  return isPlainObject(props) ? cloneDeep(props) : {}
 }
 
 // 新的方式：解析组件
 const resolveComponent = (item: Field) => {
-  let part: any = null
-  if (item.type != null) {
-    // 老的方式，通过 type
-    const isStringType = typeof item.type === 'string'
-    const stringType = item.type as string
-    const component = isStringType ? innateTypeMap[stringType] : item.type as Component
-    const props = {
-      placeholder: item.placeholder != null
-        ? item.placeholder
-        : isStringType ? defaultPlaceholderMap[stringType] : undefined
-    }
-    part = { component, props }
-  } else {
-    // 新的方式，通过组件名
-    const name = Object.keys(fieldComponentMap).find(key => key in item)
-    part = name && {
-      component: fieldComponentMap[name],
-      props: resolveProps(item, name)
-    }
+  const name = Object.keys(componentMap).find(key => key in item)
+  if (name) {
+    const {
+      component,
+      props: defaultProps = {},
+      requiredRule
+    } = componentMap[name]
+
+    const props = resolveProps(item, name)
+
+    // 单独处理 enumKey
+    const enumKey = props.enumKey
+    delete props.enumKey
+
+    // 处理验证规则
+    const rules = (item.rules || []).length == 0 && item.required
+      ? [ makeRequiredRule(item, requiredRule) ]
+      : (item.rules || [])
+
+    const result = {
+      ...item,
+      component,
+      enumKey,
+      props: {
+        ...defaultProps,
+        ...props
+      },
+      rules
+    } as any
+
+    return result
   }
-  return { ...item, ...part }
+  return item as any
 }
 
 /**
@@ -239,24 +335,39 @@ export function normalizeField(list: Field[]) {
   const result = list.map(resolveComponent)
   .filter(it => it.component != null)
   .map(it => {
-    const { component } = it
+    const { component, props, placeholder } = it
     const item: NormalField = {
       span: 1,
-      offset: 0,
+      offsetLeft: 0,
+      offsetRight: 0,
       visible: () => true,
       ...it,
       component,
-      class: [
-        'ui-field',
-        kebabCase(component.name + '-' + it.name),
-      ],
+      props: {
+        ...props,
+        // 优先使用 placeholder
+        placeholder: placeholder || (props && props.placeholder)
+      },
       style: {
         width: it.width ? `${it.width}px` : '',
         minWidth: it.minWidth ? `${it.minWidth}px` : '',
         maxWidth: it.maxWidth ? `${it.maxWidth}px` : '',
       },
-      enumKey: it.enumKey || it.name.replace(/Code$|$/, 'List'),
       auth: it.auth || '',
+    }
+
+    const classBase = kebabCase(`${component.name}-${item.name}`)
+
+    item.colClass = {
+      'col-field': true,
+      'col-no-label': !item.label,
+      [`col-${classBase}`]: true,
+      [`col-offset-right-${item.offsetRight}`]: item.offsetRight! > 0
+    }
+
+    item.class = {
+      'ui-field': true,
+      [`ui-${classBase}`]: true,
     }
 
     return item

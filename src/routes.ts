@@ -249,6 +249,37 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  // 客户管理 - 品牌关联
+  {
+    path: '/client/brand/',
+    name: 'client-brand',
+    component: () => import('./views/client/brand/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 客户管理 - 品牌关联 - 详情&审核
+  {
+    path: '/client/brand/detail/:id',
+    name: 'client-brand-detail',
+    component: () => import('./views/client/brand/detail.vue'),
+    props: true,
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 客户管理 - 留言本
+  {
+    path: '/client/message/',
+    name: 'client-message',
+    component: () => import('./views/client/message/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
   // 基础数据 - 系统字典 - 分类列表
   {
     path: '/data/dict/',
