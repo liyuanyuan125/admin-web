@@ -140,6 +140,11 @@
         </FormItem>
       </Row>
     </Form>
+    <div v-if="!needAudit" class='titop'>操作日志</div>
+    <div class="log-wrap">
+      <Table :columns="columns" :data="logList"
+            border stripe disabled-hover size="small" class="table"></Table>
+    </div>
     <div v-if="needAudit" class="edit-button">
       <Button type="info" size="large" @click="approvehandle('dataForms')">提交</Button>
     </div>
@@ -159,7 +164,7 @@ import Upload from '@/components/Upload.vue'
 import CompanyList from '@/components/companyList.vue'
 import { getUser } from '@/store'
 import { getIdDetal } from '@/api/film'
-import { queryList, queryItem, approvePass, approveReject } from '@/api/clientBrand'
+import { queryList, queryItem, approvePass, approveReject, log } from '@/api/clientBrand'
 import ImgModel from './components/imgModel.vue'
 const timeFormat = 'YYYY/MM/DD'
 import { findIndex } from 'lodash'
@@ -204,6 +209,18 @@ export default class Main extends ViewBase {
 
   applyName: string = ''
   statusName: string = ''
+
+  logList: any = []
+
+  get columns() {
+    return [
+      { title: '序号', key: 'logId', width: 200 },
+      { title: '操作类型', key: 'description', width: 150 },
+      { title: '操作时间', key: 'createTime', minWidth: 150 },
+      { title: '操作人', key: 'createUserName', width: 200 },
+    ] as any[]
+  }
+
   get rules() {
     return {
       approveStatus: [
@@ -213,10 +230,11 @@ export default class Main extends ViewBase {
   }
 
   created() {
-    this.fileDetail()
+    this.getDetailHandler()
+    this.getLogHandler()
   }
 
-  async fileDetail() {
+  async getDetailHandler() {
     try {
       const id = Number(this.$route.params.id) || null
       this.id = id || null
@@ -269,6 +287,20 @@ export default class Main extends ViewBase {
       this.brandName = data.item.brandName || ''
       this.brandEnName = data.item.brandEnName || ''
       this.fileIds = data.item.fileIds || []
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
+  async getLogHandler() {
+    try {
+      const id = Number(this.$route.params.id) || null
+      this.id = id || null
+      if ( !id ) { return }
+      const { data } = await log(id)
+      if ( data.length > 0 ) {
+        this.logList = data
+      }
     } catch (ex) {
       this.handleError(ex)
     }
@@ -386,5 +418,9 @@ export default class Main extends ViewBase {
   line-height: 28px;
   color: rgb(61, 156, 235);
   font-size: 16px;
+}
+.log-wrap {
+  padding-right: 15px;
+  padding-bottom: 50px;
 }
 </style>

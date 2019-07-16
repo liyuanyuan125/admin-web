@@ -155,7 +155,7 @@ export async function approveReject(query: any = {}) {
  * @param query 查询条件，参见接口文档
  * @description http://yapi.aiads-dev.com/project/154/interface/api/3646
  */
-export async function queryItem(id: string | number) {
+export async function queryItem(id: string|number) {
   const res = await get(`/brand/brand-relation/${id}`)
   return res
   return await mockGet(id, {
@@ -260,4 +260,52 @@ export async function updateItem(data: any = {}) {
   const url = `/brand/brand-relation/status-cancel`
   const res = await put(url, data)
   return res
+}
+
+/**
+ * 审批操作日志
+ * @param data 数据，参见接口文档
+ * @description http://yapi.aiads-dev.com/project/154/interface/api/5331
+ */
+export async function log(id: string|number) {
+  const res = await get(`/brand/brand-relation/log/${id}`)
+  return res
+  return await mockGet(id, [
+    {
+      logId: 203198568780038144,
+      appName: 'iadp-brand-admin-api',
+      objectType: 46,
+      objectId: '298',
+      associations: [
+        {
+          objectType: 46,
+          objectId: '298'
+        }
+      ],
+      eventCode: '0',
+      description: '审核',
+      createUser: 4,
+      createUserName: '1admin',
+      createUserEmail: 'admin@aiads.com',
+      createTime: '2019-07-15T17:18:34.033'
+    },
+    {
+      logId: 203196429076824064,
+      appName: 'iadp-brand-admin-api',
+      objectType: 46,
+      objectId: '298',
+      associations: [
+        {
+          objectType: 46,
+          objectId: '298'
+        }
+      ],
+      eventCode: '0',
+      description: '审核',
+      createUser: 4,
+      createUserName: '1admin',
+      createUserEmail: 'admin@aiads.com',
+      createTime: '2019-07-15T17:10:03.883'
+    }
+  ])
 }
