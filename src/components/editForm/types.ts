@@ -16,7 +16,7 @@ export type ValidatorCallback = (error?: Error) => any
  * 验证器
  * https://github.com/yiminghe/async-validator#rules
  */
-export type Validator = (rule: any, value: any, callback: ValidatorCallback) => boolean | Error
+export type Validator = (rule: any, value: any, callback: ValidatorCallback) => void
 
 /**
  * 验证规则

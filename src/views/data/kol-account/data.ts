@@ -1,5 +1,7 @@
 import { get } from '@/fn/ajax'
 import { dot, intDate, readableThousands } from '@/util/dealData'
+import { KeyText } from '@/util/types'
+import { keyBy } from 'lodash'
 
 /**
  * 查询 KOL 平台账号
@@ -8,6 +10,7 @@ import { dot, intDate, readableThousands } from '@/util/dealData'
  */
 export async function queryList(query: any = {}) {
   const { data } = await get('/kol/channel-accounts', query)
+
   const result = {
     ...data,
 
@@ -31,6 +34,17 @@ export async function queryList(query: any = {}) {
       { key: 2, text: '无' },
     ]
   }
+
+  return result
+}
+
+const makeAgeList = (ageList: KeyText[], values: Array<{ k: string, r: number }>) => {
+  const map = keyBy(values, 'k')
+  const result = ageList.map(it => ({
+    key: it.key,
+    text: it.text,
+    value: (dot(map[it.key], 'r') || 0) / 100
+  }))
   return result
 }
 
@@ -41,6 +55,8 @@ export async function queryList(query: any = {}) {
 export async function queryItem(query: any = {}) {
   const { id, channel } = query
   const { data } = await get(`/kol/channel-accounts/${channel}/${id}`)
+  const { ageList } = data
+
   const result = {
     ...data,
     item: {
@@ -50,6 +66,7 @@ export async function queryItem(query: any = {}) {
       fansCount: parseInt(dot(data, 'item.customFans.totalCount'), 10) || 0,
       malePercent: parseInt(dot(data, 'item.customFans.malePercent'), 10) || 0,
       femalePercent: parseInt(dot(data, 'item.customFans.femalePercent'), 10) || 0,
+      ageList: makeAgeList(ageList, dot(data, 'item.customFans.ages')),
     },
     typeList: [
       { key: 1, text: '个人' },

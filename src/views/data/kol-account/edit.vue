@@ -3,6 +3,7 @@
     <EditForm
       :fields="fields"
       :fetch="fetch"
+      :labelWidth="88"
       queryKeys="id,channel"
     >
     </EditForm>
@@ -14,6 +15,7 @@ import { Component, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import EditForm, { Field } from '@/components/editForm'
 import { queryItem } from './data'
+import AgeTable, { KeyTextValue } from './components/ageTable.vue'
 
 type Action = 'edit' | 'audit'
 
@@ -63,7 +65,7 @@ export default class EditPage extends ViewBase {
         defaultValue: '',
         text: true,
         label: '账号名称',
-        span: 24
+        span: 22
       },
 
       {
@@ -85,7 +87,7 @@ export default class EditPage extends ViewBase {
         },
         label: '账号分类',
         required: true,
-        span: 6,
+        span: 8,
       },
 
       {
@@ -115,7 +117,7 @@ export default class EditPage extends ViewBase {
           enumKey: 'typeList'
         },
         label: '账号类型',
-        span: 6,
+        span: 8,
       },
 
       // TODO: 暂时用 select 展现，需要开发 toggle 组件
@@ -139,7 +141,7 @@ export default class EditPage extends ViewBase {
         input: {
           prepend: '认证企业名称'
         },
-        span: 9,
+        span: 8,
         visible: item => item.auth == 1
       },
 
@@ -180,6 +182,25 @@ export default class EditPage extends ViewBase {
           showZero: true,
         }
       },
+
+      {
+        name: 'ageList',
+        defaultValue: [],
+        label: '粉丝年龄区间',
+        component: AgeTable,
+        span: 22,
+        rules: [
+          {
+            validator(rule, value: KeyTextValue[], callback) {
+              const total = value.reduce((sum, it) => sum += it.value, 0)
+              const error = isNaN(total)
+                ? '请输入数字'
+                : (total > 100 ? '占比之和不能大于 100' : '')
+              error ? callback(new Error(error)) : callback()
+            }
+          }
+        ]
+      },
     ]
   }
 
@@ -196,6 +217,12 @@ export default class EditPage extends ViewBase {
 /deep/ .ui-number-input-female-percent {
   .number-input {
     width: 128px;
+    input {
+      text-align: center;
+    }
   }
+}
+/deep/ .col-form-input-auth-name {
+  left: -18px;
 }
 </style>

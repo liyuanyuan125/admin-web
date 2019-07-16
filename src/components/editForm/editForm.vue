@@ -250,6 +250,7 @@ export default class EditForm extends ViewBase {
 .edit-form {
   position: relative;
   padding: 0 0 38px 0;
+  max-width: 1200px;
 }
 
 .form {
@@ -275,10 +276,13 @@ export default class EditForm extends ViewBase {
   /deep/ .form-radio {
     padding: 9px 12px 9px 0;
   }
+  /deep/ .ivu-input-group {
+    top: 0;
+  }
 }
 
 .form-group {
-  padding: 10px;
+  padding: 10px 12px;
   border: 1px solid #e8e8e8;
   background-color: #fff;
   border-radius: 4px;
@@ -287,6 +291,10 @@ export default class EditForm extends ViewBase {
 
 .group-name {
   font-size: 14px;
+}
+
+.field-section {
+  margin-top: 24px;
 }
 
 .inner-loading {
