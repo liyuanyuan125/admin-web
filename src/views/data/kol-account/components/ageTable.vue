@@ -11,8 +11,6 @@
           v-model="it.value"
           size="small"
           class="inner-input"
-          :min="0"
-          :max="100"
           number
         >
           <span slot="append">%</span>
