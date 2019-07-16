@@ -10,6 +10,7 @@
         <Input
           v-model="it.value"
           size="small"
+          :disabled="disabled"
           class="inner-input"
           number
         >
@@ -35,6 +36,8 @@ export interface KeyTextValue {
 export default class AgeTable extends ViewBase {
   @Prop({ type: Array, default: () => [] }) value!: KeyTextValue[]
 
+  @Prop({ type: Boolean, default: false }) disabled!: boolean
+
   model: KeyTextValue[] = []
 
   @Watch('value', { deep: true, immediate: true })
@@ -53,6 +56,12 @@ export default class AgeTable extends ViewBase {
 .age-table {
   max-width: 880px;
   border-collapse: collapse;
+  thead {
+    th {
+      height: 32px;
+      background-color: #f8f8f9;
+    }
+  }
   th, td {
     border: 1px solid #e8e8e8;
     padding: 4px 8px;

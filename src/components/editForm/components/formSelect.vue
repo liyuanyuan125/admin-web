@@ -1,5 +1,9 @@
 <template>
-  <Select v-model="model" class="form-select">
+  <Select
+    v-model="model"
+    class="form-select"
+    v-bind="$attrs"
+  >
     <Option
       v-for="it in enumList"
       :key="it.key"

@@ -1,9 +1,13 @@
 <template>
-  <RadioGroup v-model="model" class="form-radio">
+  <RadioGroup
+    v-model="model"
+    class="form-radio"
+  >
     <Radio
       v-for="it in enumList"
       :key="it.key"
       :label="it.key"
+      :disabled="disabled"
       class="form-radio-item"
     >{{it.text}}</Radio>
   </RadioGroup>
@@ -19,6 +23,8 @@ export default class FormRadio extends ViewBase {
   @Prop({ type: [Number, String], default: '' }) value!: number | string
 
   @Prop({ type: Array, default: () => [] }) enumList!: KeyText[]
+
+  @Prop({ type: Boolean, default: false }) disabled!: boolean
 
   model: number | string = this.value
 

@@ -7,6 +7,7 @@
     :clearable="clearable"
     :placeholder="placeholder"
     :render-format="format"
+    v-bind="$attrs"
     ref="ui"
   />
 </template>
