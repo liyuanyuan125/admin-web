@@ -28,9 +28,14 @@
           <h2 class="title">KOL平台账号定价信息</h2>
           <Table :columns="priceCol" :data="priceDate" border stripe></Table>
       </div>
-      <div class="base-mess">
+      <div class="base-mess logs">
           <h2 class="title">操作日志</h2>
-          <Table :columns="operationLogCol" :data="logList" border stripe></Table>
+           <p v-for="(item, index) in logList" :key="index">
+            <span>{{item.createUserName}}</span>
+            <span>{{item.createTime}}</span>
+            <span>{{item.descption}}</span>
+           </p>
+          <!-- <Table :columns="operationLogCol" :data="logList" border stripe></Table> -->
           <div class="text-align">
               <Button :to="{name: 'resource-kolplatform-list'}">返回</Button>
           </div>
@@ -174,5 +179,14 @@ export default class Main extends ViewBase {
     margin-right: 20px;
   }
 }
+.logs {
+  p {
+    padding-bottom: 10px;
+    span {
+      padding-right: 10px;
+    }
+  }
+}
+
 
 </style>
