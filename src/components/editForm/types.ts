@@ -4,12 +4,13 @@ import { kebabCase, isPlainObject, cloneDeep, isEqual } from 'lodash'
 import { Param } from '@/util/param'
 import FormText from './components/formText.vue'
 import FormInput from './components/formInput.vue'
+import FormInputNumber from './components/formInputNumber.vue'
 import FormSelect from './components/formSelect.vue'
 import FormRadio from './components/formRadio.vue'
 import FormImage from './components/formImage.vue'
 import AreaSelect from '@/components/areaSelect'
-import NumberInput from '@/components/numberInput'
 import { Switch } from 'iview'
+import { AjaxResult } from '@/util/types'
 
 export type ValidatorCallback = (error?: Error) => any
 
@@ -72,20 +73,14 @@ const componentMap: MapType<ComponentItem> = {
     component: FormInput,
     props: {
       placeholder: '请输入',
-    },
-    requiredRule: {
-      trigger: 'blur'
     }
   },
 
   number: {
-    component: NumberInput,
+    component: FormInputNumber,
     props: {
       placeholder: '请输入',
       min: 0,
-    },
-    requiredRule: {
-      trigger: 'blur'
     }
   },
 
@@ -225,14 +220,11 @@ export interface Field extends Param {
   }
 
   /**
-   * 组件 NumberInput 的选项
+   * 组件 InputNumber 的选项
    */
   number?: true | {
     min?: number
     max?: number
-    showZero?: boolean
-    prepend?: string
-    append?: string
     [key: string]: any
   }
 
@@ -457,4 +449,18 @@ export function fetchDataToResult(data: FetchData | FetchResult) {
     ? data as FetchResult
     // 进行简单包装
     : { code: 0, data, msg: '' }
+}
+
+/**
+ * 字段名与错误消息数据
+ */
+export interface EditErrorData {
+  [name: string]: string
+}
+
+/**
+ * 处理错误的数据结构
+ */
+export interface EditErrorHandlers {
+  [code: number]: EditErrorData | ((ex: AjaxResult, { item: any }: any) => EditErrorData)
 }

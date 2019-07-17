@@ -40,6 +40,10 @@ export default class EditPage extends ViewBase {
   @Prop({ type: String, default: '' }) action!: 'view' | 'edit' | 'audit'
 
   get fields() {
+    const isView = this.action == 'view'
+    const isAudit = this.action == 'audit'
+    const readonly = isView || isAudit
+
     const list: Field[] = [
       {
         name: 'id',
@@ -94,7 +98,7 @@ export default class EditPage extends ViewBase {
           enumKey: 'accountCategoryList',
         },
         label: '账号分类',
-        required: true,
+        required: !readonly,
         span: 8,
       },
 
@@ -121,6 +125,7 @@ export default class EditPage extends ViewBase {
       {
         name: 'type',
         defaultValue: 0,
+        required: true,
         radio: {
           enumKey: 'typeList'
         },
@@ -150,7 +155,7 @@ export default class EditPage extends ViewBase {
         name: 'fansCount',
         defaultValue: 0,
         label: '粉丝数',
-        required: true,
+        required: !readonly,
         placeholder: '粉丝数',
         span: 6,
         group: '粉丝画像',
@@ -249,9 +254,6 @@ export default class EditPage extends ViewBase {
       },
     ]
 
-    const isView = this.action == 'view'
-    const isAudit = this.action == 'audit'
-    const readonly = isView || isAudit
     readonly && list.forEach(it => it.disabled = true)
 
     readonly && list.push(
@@ -269,9 +271,9 @@ export default class EditPage extends ViewBase {
         name: 'remark',
         defaultValue: '',
         disabled: isView,
-        placeholder: '请输入审核不通过的理由',
+        required: true,
         input: {
-          prepend: '备注'
+          prepend: '审核不通过的理由'
         },
         span: 8,
         visible: item => !item.auditPass

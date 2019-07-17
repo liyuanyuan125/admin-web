@@ -10,6 +10,8 @@
       :disabled="disabled"
       class="form-radio-item"
     >{{it.text}}</Radio>
+
+    <InputHidden :value="model"/>
   </RadioGroup>
 </template>
 
@@ -17,8 +19,13 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { KeyText } from '@/util/types'
+import InputHidden from '@/components/inputHidden'
 
-@Component
+@Component({
+  components: {
+    InputHidden
+  }
+})
 export default class FormRadio extends ViewBase {
   @Prop({ type: [Number, String], default: '' }) value!: number | string
 
@@ -26,7 +33,7 @@ export default class FormRadio extends ViewBase {
 
   @Prop({ type: Boolean, default: false }) disabled!: boolean
 
-  model: number | string = this.value
+  model = this.value
 
   @Watch('value')
   watchValue(value: number | string) {

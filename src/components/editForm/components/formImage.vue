@@ -1,6 +1,7 @@
 <template>
   <figure class="form-image">
     <Upload v-model="model" :readonly="disabled"/>
+    <InputHidden :value="model"/>
   </figure>
 </template>
 
@@ -8,10 +9,12 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import Upload, { FileItem } from '@/components/Upload.vue'
+import InputHidden from '@/components/inputHidden'
 
 @Component({
   components: {
-    Upload
+    Upload,
+    InputHidden
   }
 })
 export default class FormImage extends ViewBase {

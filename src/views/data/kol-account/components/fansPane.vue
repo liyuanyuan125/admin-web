@@ -46,7 +46,7 @@
       >添加进列表</Button>
     </div>
 
-    <Input v-model="hiddenModel" class="input-hidden"/>
+    <InputHidden :value="model"/>
 
     <div class="table-wrap">
       <Table
@@ -75,6 +75,7 @@ import { isEqual } from 'lodash'
 import { toast } from '@/ui/modal'
 import RemoteSelect from '@/components/remoteSelect'
 import NumberInput from '@/components/numberInput'
+import InputHidden from '@/components/inputHidden'
 
 export interface IdName {
   id: number
@@ -88,7 +89,8 @@ export interface FansItem extends IdName {
 @Component({
   components: {
     RemoteSelect,
-    NumberInput
+    NumberInput,
+    InputHidden
   }
 })
 export default class FansPane extends ViewBase {
@@ -103,9 +105,6 @@ export default class FansPane extends ViewBase {
   @Prop({ type: Boolean, default: false }) disabled!: boolean
 
   model = this.value
-
-  // 用于触发 FormItem 的验证
-  hiddenModel = ''
 
   id = 0
 
@@ -152,7 +151,6 @@ export default class FansPane extends ViewBase {
   @Watch('value', { deep: true, immediate: true })
   watchValue(value: FansItem[]) {
     !isEqual(this.model, value) && (this.model = value)
-    this.hiddenModel = value.map(it => it.value).join(',')
   }
 
   @Watch('model', { deep: true })
@@ -207,10 +205,6 @@ export default class FansPane extends ViewBase {
 
 .btn-add {
   margin-left: 10px;
-}
-
-.input-hidden {
-  display: none;
 }
 
 .table-wrap {

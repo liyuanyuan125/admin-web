@@ -172,7 +172,7 @@ const getName = (key: string, list: any[]) => {
   const i: number = findIndex(list, (it: any) => {
     return key === it.key
   })
-  const res: string = list[i].text
+  const res: string = list[i].text || '-'
   return res
 }
 
