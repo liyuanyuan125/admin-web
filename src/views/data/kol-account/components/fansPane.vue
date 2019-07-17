@@ -46,7 +46,7 @@
       >添加进列表</Button>
     </div>
 
-    <Input v-model="hiddenModel" class="input-hidden"/>
+    <InputHidden v-model="hiddenModel"/>
 
     <div class="table-wrap">
       <Table
@@ -75,6 +75,7 @@ import { isEqual } from 'lodash'
 import { toast } from '@/ui/modal'
 import RemoteSelect from '@/components/remoteSelect'
 import NumberInput from '@/components/numberInput'
+import InputHidden from '@/components/inputHidden'
 
 export interface IdName {
   id: number
@@ -88,7 +89,8 @@ export interface FansItem extends IdName {
 @Component({
   components: {
     RemoteSelect,
-    NumberInput
+    NumberInput,
+    InputHidden
   }
 })
 export default class FansPane extends ViewBase {
@@ -207,10 +209,6 @@ export default class FansPane extends ViewBase {
 
 .btn-add {
   margin-left: 10px;
-}
-
-.input-hidden {
-  display: none;
 }
 
 .table-wrap {

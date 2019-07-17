@@ -26,6 +26,10 @@ declare module 'clipboard' {
   export default clipboard
 }
 
+declare module 'document-offset' {
+  export default function(el: Element): { left: number, top: number }
+}
+
 interface VarType {
   env: string
   baseUrl: string

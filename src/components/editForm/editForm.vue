@@ -52,11 +52,13 @@
           <Button
             type="primary"
             html-type="submit"
+            size="large"
             class="button-submit"
           >{{submitText}}</Button>
 
           <Button
-            type="primary"
+            type="default"
+            size="large"
             class="button-return"
             @click="goback"
           >{{returnText}}</Button>
@@ -125,6 +127,9 @@ export default class EditForm extends ViewBase {
 
   /** 返回按钮文本 */
   @Prop({ type: String, default: '返回' }) returnText!: string
+
+  /** scrollToErrorOffsetTop */
+  @Prop({ type: Number, default: -60 }) scrollToErrorOffsetTop!: number
 
   // 用来预防 form 被重用，确保每次都使用新的实例
   formKey = random('editForm')
@@ -240,7 +245,7 @@ export default class EditForm extends ViewBase {
     const form = this.$refs.form as any
     const valid = await form.validate()
     if (!valid) {
-      return scrollToError(form)
+      return scrollToError(form, { offsetTop: this.scrollToErrorOffsetTop })
     }
 
     if (this.submit == null) {
@@ -270,6 +275,10 @@ export default class EditForm extends ViewBase {
 
   setError(name: string, error: string) {
     this.errorMap[name] = error
+  }
+
+  goback() {
+    this.$router.back()
   }
 
   @Watch('initData', { deep: true, immediate: true })
@@ -345,6 +354,15 @@ export default class EditForm extends ViewBase {
 .col-no-label {
   /deep/ .ivu-form-item-content {
     margin-left: 8px !important;
+  }
+}
+
+.submit-line {
+  margin: 30px 0;
+  text-align: center;
+  /deep/ .ivu-btn {
+    margin: 0 15px;
+    padding: 8px 26px;
   }
 }
 
