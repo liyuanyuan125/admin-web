@@ -244,7 +244,7 @@ export default class Main extends ViewBase {
     this.$nextTick(() => {
       const myThis: any = this
       // myThis.$refs.change.init(params)
-      myThis.$refs.change.init(this.prelists, this.prelist)
+      myThis.$refs.change.init(params , this.prelists, this.prelist)
     })
   }
 

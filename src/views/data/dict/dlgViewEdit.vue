@@ -9,8 +9,11 @@
       <FormItem label="词条名称" prop="name">
         <Input v-model="dataForm.name"></Input>
       </FormItem>
-      <FormItem label="唯一识别符" prop="code">
+      <FormItem v-if='id != 0' label="唯一识别符" prop="code">
         <Input v-model="dataForm.code" disabled></Input>
+      </FormItem>
+      <FormItem v-if='id == 0' label="唯一识别符" prop="code">
+        <Input v-model="dataForm.code"></Input>
       </FormItem>
       <FormItem label="排序" prop="sortValue">
         <Input v-model="dataForm.sortValue"></Input>

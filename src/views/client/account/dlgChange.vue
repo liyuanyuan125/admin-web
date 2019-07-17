@@ -50,10 +50,10 @@ export default class ComponentMain extends ViewBase {
   ruleValidate = {
   }
   dataForm = { ...dataForm }
-  init(list1: any, list2: any) {
+  init(id: any , list1: any, list2: any) {
     this.list = []
     this.showDlg = true
-    // this.id = id.id
+    this.id = id.id
     list1.forEach((it: any) => {
       this.list.push(it)
     })
