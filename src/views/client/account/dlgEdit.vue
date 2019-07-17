@@ -109,7 +109,9 @@ export default class ComponentMain extends ViewBase {
       ],
       mobile: [
           { required: true, message: '请输入手机号码', trigger: 'blur' },
-          { pattern: /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/,
+          {
+            // pattern: /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/,
+            pattern: /^1\d{10}$/,
             message: '请输入正确的手机号码', trigger: 'blur'
           }
       ],

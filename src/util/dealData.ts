@@ -211,3 +211,15 @@ export function intDate(date: number, format = 'YYYY-MM-DD') {
   }
   return date
 }
+
+/**
+ * 将形如 20190622 形式的整数，格式化成日期
+ * @param date 数字日期
+ */
+export function validDate(date: number | null) {
+  if (date == null) {
+    return null
+  }
+  const d = moment(String(date))
+  return d.isValid() ? d.toDate() : null
+}

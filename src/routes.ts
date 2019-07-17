@@ -534,7 +534,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     meta: {
       authKey: '',
       title({ params: { action } }) {
-        return action == 'edit' ? '编辑' : '审核'
+        return action == 'view' ? '查看' : (action == 'edit' ? '编辑' : '审核')
       }
     },
     props: paramTypes({ id: Number, channel: String, action: String })

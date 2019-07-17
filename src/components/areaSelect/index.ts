@@ -1,4 +1,4 @@
-import AreaSelect from './AreaSelect.vue'
+import AreaSelect from './areaSelect.vue'
 
 export * from './types'
 

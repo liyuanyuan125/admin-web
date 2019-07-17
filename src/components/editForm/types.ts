@@ -9,6 +9,8 @@ import FormRadio from './components/formRadio.vue'
 import FormImage from './components/formImage.vue'
 import AreaSelect from '@/components/areaSelect'
 import NumberInput from '@/components/numberInput'
+import { Switch } from 'iview'
+import { AjaxResult } from '@/util/types'
 
 export type ValidatorCallback = (error?: Error) => any
 
@@ -16,7 +18,7 @@ export type ValidatorCallback = (error?: Error) => any
  * 验证器
  * https://github.com/yiminghe/async-validator#rules
  */
-export type Validator = (rule: any, value: any, callback: ValidatorCallback) => boolean | Error
+export type Validator = (rule: any, value: any, callback: ValidatorCallback) => void
 
 /**
  * 验证规则
@@ -103,6 +105,13 @@ const componentMap: MapType<ComponentItem> = {
     component: FormRadio,
   },
 
+  switch: {
+    component: Switch,
+    props: {
+      class: 'form-switch'
+    }
+  },
+
   image: {
     component: FormImage,
   },
@@ -163,6 +172,11 @@ export interface Field extends Param {
 
   /** maxWidth */
   maxWidth?: number
+
+  /**
+   * 是否禁用
+   */
+  disabled?: boolean
 
   /**
    * 是否为必填的
@@ -248,6 +262,17 @@ export interface Field extends Param {
     enumKey: string
     [key: string]: any
   }
+
+  /**
+   * 使用组件 Switch
+   */
+  switch?: true | {
+    'true-value'?: boolean | number | string
+    'false-value'?: boolean | number | string
+    size?: 'default' | 'small' | 'large'
+    loading?: boolean
+    [key: string]: any
+  },
 
   /**
    * 组件 image 的选项，若设置了该项，
@@ -433,4 +458,18 @@ export function fetchDataToResult(data: FetchData | FetchResult) {
     ? data as FetchResult
     // 进行简单包装
     : { code: 0, data, msg: '' }
+}
+
+/**
+ * 字段名与错误消息数据
+ */
+export interface EditErrorData {
+  [name: string]: string
+}
+
+/**
+ * 处理错误的数据结构
+ */
+export interface EditErrorHandlers {
+  [code: number]: EditErrorData | ((ex: AjaxResult, { item: any }: any) => EditErrorData)
 }

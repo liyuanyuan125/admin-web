@@ -185,12 +185,12 @@ export interface ToastConfig {
   /**
    * 关闭时的回调
    */
-  onClose: () => any
+  onClose?: () => any
 
   /**
    * 是否显示关闭按钮
    */
-  closable: boolean
+  closable?: boolean
 }
 
 /**
