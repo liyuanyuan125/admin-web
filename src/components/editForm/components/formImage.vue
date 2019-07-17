@@ -1,6 +1,6 @@
 <template>
   <figure class="form-image">
-    <Upload v-model="model"/>
+    <Upload v-model="model" :readonly="disabled"/>
   </figure>
 </template>
 
@@ -17,7 +17,7 @@ import Upload, { FileItem } from '@/components/Upload.vue'
 export default class FormImage extends ViewBase {
   @Prop({ type: String, default: '' }) value!: string
 
-  // @Prop({ type: String, default: '更改' }) buttonText!: string
+  @Prop({ type: Boolean, default: false }) disabled!: boolean
 
   model: FileItem[] = []
 
@@ -52,6 +52,12 @@ export default class FormImage extends ViewBase {
   }
   /deep/ .upload-list {
     padding: 0;
+  }
+  /deep/ .upload-box-readonly .upload-list:empty {
+    width: 80px;
+    height: 80px;
+    border-radius: 4px;
+    border: 1px solid #e8e8e8;
   }
   /deep/ .upload-item {
     margin: 0;

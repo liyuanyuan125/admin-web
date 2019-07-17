@@ -38,6 +38,7 @@
                 v-model="item[it.name]"
                 :is="it.component"
                 :enumList="enumMap[it.name] || []"
+                :disabled="!!it.disabled"
                 v-bind="it.props"
               >
               </component>
@@ -275,6 +276,9 @@ export default class EditForm extends ViewBase {
   }
   /deep/ .form-radio {
     padding: 9px 12px 9px 0;
+  }
+  /deep/ .form-switch {
+    margin-top: 5px;
   }
   /deep/ .ivu-input-group {
     top: 0;
