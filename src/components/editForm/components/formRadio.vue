@@ -11,7 +11,7 @@
       class="form-radio-item"
     >{{it.text}}</Radio>
 
-    <InputHidden v-model="model"/>
+    <InputHidden :value="model"/>
   </RadioGroup>
 </template>
 

@@ -46,7 +46,7 @@
       >添加进列表</Button>
     </div>
 
-    <InputHidden v-model="hiddenModel"/>
+    <InputHidden :value="model"/>
 
     <div class="table-wrap">
       <Table
@@ -106,9 +106,6 @@ export default class FansPane extends ViewBase {
 
   model = this.value
 
-  // 用于触发 FormItem 的验证
-  hiddenModel = ''
-
   id = 0
 
   ratio = 0
@@ -154,7 +151,6 @@ export default class FansPane extends ViewBase {
   @Watch('value', { deep: true, immediate: true })
   watchValue(value: FansItem[]) {
     !isEqual(this.model, value) && (this.model = value)
-    this.hiddenModel = value.map(it => it.value).join(',')
   }
 
   @Watch('model', { deep: true })
