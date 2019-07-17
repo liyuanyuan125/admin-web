@@ -3,6 +3,7 @@
     v-model="model"
     class="form-input"
     v-bind="$attrs"
+    ref="input"
   >
     <span slot="prepend" v-if="prepend">{{prepend}}</span>
     <span slot="append" v-if="append">{{append}}</span>
@@ -12,13 +13,9 @@
 <script lang="ts">
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import LazyInput from '@/components/LazyInput'
+import { triggerValidate } from '@/util/form'
 
-@Component({
-  components: {
-    LazyInput
-  }
-})
+@Component
 export default class FormInput extends ViewBase {
   @Prop({ type: String, default: '' }) value!: string
 
@@ -31,6 +28,7 @@ export default class FormInput extends ViewBase {
   @Watch('value')
   watchValue(value: string) {
     this.model = value
+    triggerValidate(this.$refs.input, value)
   }
 
   @Watch('model')

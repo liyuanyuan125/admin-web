@@ -30,3 +30,12 @@ export function scrollToError(
     })
   }
 }
+
+/**
+ * 触发 form item 验证
+ * @param ui iview 组件引用
+ * @param value 值
+ */
+export function triggerValidate(ui: any, value: any) {
+  ui && ui.dispatch && ui.dispatch('FormItem', 'on-form-change', value)
+}
