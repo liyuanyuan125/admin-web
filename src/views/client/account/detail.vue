@@ -243,7 +243,8 @@ export default class Main extends ViewBase {
     const params = this.$route.params
     this.$nextTick(() => {
       const myThis: any = this
-      myThis.$refs.change.init(params)
+      // myThis.$refs.change.init(params)
+      myThis.$refs.change.init(this.prelists, this.prelist)
     })
   }
 

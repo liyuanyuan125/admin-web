@@ -8,7 +8,7 @@
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
       <FormItem label="新主账户" prop="companyId">
         <Select style="width:240px" v-model="dataForm.newId">
-          <Option v-for="it in prelist" :key="it.id" :value="it.id">{{it.email}}</Option>
+          <Option v-for="it in list" :key="it.id" :value="it.id">{{it.email}}</Option>
         </Select>
       </FormItem>
     </Form>
@@ -42,7 +42,7 @@ export default class ComponentMain extends ViewBase {
   // @Prop({ type: String }) mainid: any
   query = { ...defQuery }
   // oldQuery: any = {}
-  list = []
+  list: any = []
   showDlg = false
   oldQuery: any = {}
 
@@ -50,9 +50,16 @@ export default class ComponentMain extends ViewBase {
   ruleValidate = {
   }
   dataForm = { ...dataForm }
-  init(id: any) {
+  init(list1: any, list2: any) {
+    this.list = []
     this.showDlg = true
-    this.id = id.id
+    // this.id = id.id
+    list1.forEach((it: any) => {
+      this.list.push(it)
+    })
+    list2.forEach((it: any) => {
+      this.list.push(it)
+    })
     ; (this.$refs.dataForm as any).resetFields()
   }
 
