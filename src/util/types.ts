@@ -51,6 +51,13 @@ export interface AjaxResult {
 }
 
 /**
+ * 判断是否为 AjaxResult
+ */
+export function isAjaxResult(ex: any) {
+  return 'code' in ex && 'data' in ex
+}
+
+/**
  * 获取 KOL 平台列表
  */
 export function getChannelList() {

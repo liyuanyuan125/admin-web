@@ -46,6 +46,22 @@
           </Col>
         </section>
       </fieldset>
+
+      <div class="submit-line">
+        <slot name="submit">
+          <Button
+            type="primary"
+            html-type="submit"
+            class="button-submit"
+          >{{submitText}}</Button>
+
+          <Button
+            type="primary"
+            class="button-return"
+            @click="goback"
+          >{{returnText}}</Button>
+        </slot>
+      </div>
     </Form>
 
     <div class="inner-loading flex-mid" v-show="loading">
@@ -58,7 +74,7 @@
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import { MapType, AjaxResult, KeyTextControlStatus } from '@/util/types'
+import { MapType, AjaxResult, isAjaxResult, KeyTextControlStatus } from '@/util/types'
 import TinyLoading from '@/components/TinyLoading.vue'
 import {
   Field,
@@ -67,13 +83,15 @@ import {
   Rule,
   FetchData,
   FetchResult,
-  fetchDataToResult
+  fetchDataToResult,
+  EditErrorHandlers
 } from './types'
-import { cloneDeep, isEqual } from 'lodash'
+import { cloneDeep, isEqual, isEmpty } from 'lodash'
 import { defaultParams, dealParams, backfillParams } from '@/util/param'
 import { slice } from '@/fn/object'
 import { filterByControlStatus, filterItemInList } from '@/util/dealData'
 import { random } from '@/fn/string'
+import { scrollToError } from '@/util/form'
 
 @Component({
   components: {
@@ -84,11 +102,11 @@ export default class EditForm extends ViewBase {
   /** 字段配置 */
   @Prop({ type: Array, default: () => [] }) fields!: Field[]
 
-  /** 初始化数据 */
-  @Prop({ type: Object, default: () => ({}) }) initData!: object
-
   /** 加载编辑项的请求函数 */
   @Prop({ type: Function }) fetch!: (query?: any) => Promise<FetchData | FetchResult>
+
+  /** 初始化数据 */
+  @Prop({ type: Object, default: () => ({}) }) initData!: object
 
   /** 查询字段列表，默认为 id，可以使用以逗号分隔的字符串，指定多个字段，例如：key1,key2 */
   @Prop({ type: String, default: 'id' }) queryKeys!: string
@@ -99,11 +117,17 @@ export default class EditForm extends ViewBase {
   /** 表单 label 宽度 */
   @Prop({ type: Number, default: 76 }) labelWidth!: number
 
-  /** 过滤器，对字段进一步加工 */
-  @Prop({ type: Function }) filter!: (item: any) => any
+  /** 错误处理 */
+  @Prop({ type: Object, default: () => ({}) }) errorHandlers!: EditErrorHandlers
+
+  /** 提交按钮文本 */
+  @Prop({ type: String, default: '提交' }) submitText!: string
+
+  /** 返回按钮文本 */
+  @Prop({ type: String, default: '返回' }) returnText!: string
 
   // 用来预防 form 被重用，确保每次都使用新的实例
-  formKey = random('editDialog')
+  formKey = random('editForm')
 
   loading = false
 
@@ -136,11 +160,6 @@ export default class EditForm extends ViewBase {
       {} as MapType<Rule[]>
     )
     return result
-  }
-
-  public done(handler: (data: any) => any) {
-    this.$once('done', handler)
-    return this
   }
 
   init(initData = {}) {
@@ -209,8 +228,7 @@ export default class EditForm extends ViewBase {
           }
         })
 
-      const finalItem = this.filter ? this.filter(item) : item
-      this.item = finalItem
+      this.item = item
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -219,24 +237,39 @@ export default class EditForm extends ViewBase {
   }
 
   async onSubmit() {
+    const form = this.$refs.form as any
+    const valid = await form.validate()
+    if (!valid) {
+      return scrollToError(form)
+    }
+
     if (this.submit == null) {
       return
     }
 
-    const valid = await (this.$refs.form as any).validate()
-    if (!valid) {
-      return
-    }
+    const item = { ...this.item }
 
     try {
-      const item = { ...this.item }
       const data = dealParams(this.fields, item)
       const res = await this.submit(data)
       this.$emit('done', res && res.data)
     } catch (ex) {
-      // TODO: custom error
+      if (isAjaxResult(ex) && (ex.code in this.errorHandlers)) {
+        const handler = this.errorHandlers[ex.code]
+        const errorData = typeof handler === 'function' ? handler(ex, { item }) : handler
+        if (!isEmpty(errorData)) {
+          Object.entries(errorData).forEach(([ name, error ]) => {
+            this.setError(name, error)
+          })
+          return
+        }
+      }
       this.handleError(ex)
     }
+  }
+
+  setError(name: string, error: string) {
+    this.errorMap[name] = error
   }
 
   @Watch('initData', { deep: true, immediate: true })

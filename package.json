@@ -24,6 +24,7 @@
     "mockjs": "^1.0.1-beta3",
     "moment": "^2.23.0",
     "numeral": "^2.0.6",
+    "scroll-into-view-if-needed": "^2.2.20",
     "vue": "^2.5.22",
     "vue-class-component": "^7.1.0",
     "vue-property-decorator": "^7.3.0",

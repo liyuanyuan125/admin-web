@@ -10,6 +10,7 @@ import FormImage from './components/formImage.vue'
 import AreaSelect from '@/components/areaSelect'
 import NumberInput from '@/components/numberInput'
 import { Switch } from 'iview'
+import { AjaxResult } from '@/util/types'
 
 export type ValidatorCallback = (error?: Error) => any
 
@@ -457,4 +458,18 @@ export function fetchDataToResult(data: FetchData | FetchResult) {
     ? data as FetchResult
     // 进行简单包装
     : { code: 0, data, msg: '' }
+}
+
+/**
+ * 字段名与错误消息数据
+ */
+export interface EditErrorData {
+  [name: string]: string
+}
+
+/**
+ * 处理错误的数据结构
+ */
+export interface EditErrorHandlers {
+  [code: number]: EditErrorData | ((ex: AjaxResult, { item: any }: any) => EditErrorData)
 }

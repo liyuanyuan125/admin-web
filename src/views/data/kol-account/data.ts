@@ -85,6 +85,9 @@ export async function queryItem(query: any = {}) {
   const { data } = await get(`/kol/channel-accounts/${channel}/${id}`)
   const { ageList, publishCategoryList } = data
 
+  // 审核状态：1 待审核，2 审核通过，3 审核拒绝
+  const status = parseInt(dot(data, 'item.status'), 10) || 0
+
   const result = {
     ...data,
     item: {
@@ -98,8 +101,8 @@ export async function queryItem(query: any = {}) {
       provinceList: makeFansList(dot(data, 'item.customFans.provinces')),
       cityList: makeFansList(dot(data, 'item.customFans.cities')),
       priceList: makePriceList(publishCategoryList, dot(data, 'item.settlementPrices')),
-      // 审核是否通过，默认通过：1 待审核，2 审核通过，3 审核拒绝
-      auditPass: (parseInt(dot(data, 'item.status'), 10) || 2) == 2
+      // 审核是否通过，默认通过
+      auditPass: status != 3
     },
     typeList: [
       { key: 1, text: '个人' },
