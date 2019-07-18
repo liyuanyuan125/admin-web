@@ -20,6 +20,7 @@
             size="small"
             :disabled="disabled"
             prepend="&yen;"
+            poptip
             class="inner-input"
           />
         </td>
