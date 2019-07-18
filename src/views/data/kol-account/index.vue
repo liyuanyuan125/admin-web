@@ -182,26 +182,26 @@ export default class IndexPage extends ViewBase {
 
   get columns() {
     return [
-      { title: '序号', key: 'id', width: 65 },
-      { title: '账号', slot: 'channelDataId', width: 80 },
+      { title: '序号', key: 'id', minWidth: 65 },
+      { title: '账号', slot: 'channelDataId', minWidth: 100 },
       { title: '名称', key: 'name', minWidth: 100 },
-      { title: '分类', key: 'accountCategoryCode', width: 60, editor: 'deprecated' },
-      { title: '粉丝数', key: 'fansCount', width: 60 },
+      { title: '分类', key: 'accountCategoryCode', minWidth: 60, editor: 'deprecated' },
+      { title: '粉丝数', key: 'fansCount', minWidth: 60 },
 
-      { title: '关联KOL编号', key: 'kolIdText', width: 90 },
-      { title: '关联KOL名称', key: 'kolName', width: 100 },
-      { title: '是否提供发票', key: 'provideInvoiceText', width: 90 },
-      { title: '结算价/有效期', slot: 'price', width: 270 },
-      { title: '审核状态', key: 'status', width: 65, editor: 'enum' },
+      { title: '关联KOL编号', key: 'kolIdText', minWidth: 90 },
+      { title: '关联KOL名称', key: 'kolName', minWidth: 100 },
+      { title: '是否提供发票', key: 'provideInvoiceText', minWidth: 90 },
+      { title: '结算价/有效期', slot: 'price', minWidth: 270 },
+      { title: '审核状态', key: 'status', minWidth: 65, editor: 'enum' },
 
-      { title: '操作', slot: 'action', width: 65 }
+      { title: '操作', slot: 'action', minWidth: 50 }
     ] as ColumnExtra[]
   }
 
   priceColumns = [
-    { title: '类别', key: 'name' },
-    { title: '价格', key: 'price', width: 75, align: 'center' },
-    { title: '有效期', key: 'date', width: 75, align: 'center' },
+    { title: '类别', key: 'name', minWidth: 100 },
+    { title: '价格', key: 'price', minWidth: 85, align: 'center' },
+    { title: '有效期', key: 'date', minWidth: 75, align: 'center' },
   ]
 
   selectionChange(list: any[]) {

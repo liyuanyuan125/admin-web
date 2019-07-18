@@ -26,7 +26,7 @@ export async function queryList(query: any = {}) {
         return {
           name: sub.categoryName,
           price: price != '-' ? `￥${price}` : '-',
-          date: intDate(sub.effectiveDate)
+          date: sub.effectiveDate ? intDate(sub.effectiveDate) : '-'
         }
       }),
     })),
