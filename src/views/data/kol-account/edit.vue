@@ -183,7 +183,9 @@ export default class EditPage extends ViewBase {
         placeholder: '粉丝数',
         span: 6,
         group: '粉丝画像',
-        number: true
+        number: {
+          poptip: true
+        }
       },
 
       {

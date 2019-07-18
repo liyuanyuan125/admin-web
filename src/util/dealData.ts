@@ -196,6 +196,20 @@ export function readableThousands(
 }
 
 /**
+ * 将数字的整数部分格式化成千分位，保留完整的小数部分
+ * @param number 数字
+ */
+export function realThousands(number: number | string) {
+  if (isZero(number)) {
+    return ''
+  }
+  const [ , n = '', m = '' ] = String(number).match(/^(\d+)\.?(\d+)?/) || []
+  const thousands = numeral(n).format('0,0')
+  const result = thousands + (m ? `.${m}` : '')
+  return result
+}
+
+/**
  * 将形如 20190622 形式的整数，格式化成日期
  * 同时处理形如 2019、201906、2019-06、2019/06 的情况
  * @param date 整数
