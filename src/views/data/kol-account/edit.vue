@@ -196,7 +196,6 @@ export default class EditPage extends ViewBase {
           prepend: '男性',
           append: '%',
           max: 100,
-          showZero: true,
         }
       },
 
@@ -209,7 +208,6 @@ export default class EditPage extends ViewBase {
           prepend: '女性',
           append: '%',
           max: 100,
-          showZero: true,
         }
       },
 
