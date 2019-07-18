@@ -27,15 +27,14 @@
         >{{it.name}}</Option>
       </Select>
 
-      <InputNumber
+      <FormInputNumber
         v-model="ratio"
         :min="0"
         :max="100"
-        placeholder="粉丝数占比"
         :disabled="disabled"
+        placeholder="粉丝数占比"
+        append="%"
         class="ratio-input"
-        :formatter="value => `${value > 0 ? value : ''}`"
-        :parser="value => `${parseInt(value, 10) || 0}`"
       />
 
       <Button
@@ -74,7 +73,7 @@ import ViewBase from '@/util/ViewBase'
 import { isEqual } from 'lodash'
 import { toast } from '@/ui/modal'
 import RemoteSelect from '@/components/remoteSelect'
-import NumberInput from '@/components/numberInput'
+import { FormInputNumber } from '@/components/editForm'
 import InputHidden from '@/components/inputHidden'
 
 export interface IdName {
@@ -89,7 +88,7 @@ export interface FansItem extends IdName {
 @Component({
   components: {
     RemoteSelect,
-    NumberInput,
+    FormInputNumber,
     InputHidden
   }
 })
@@ -116,8 +115,9 @@ export default class FansPane extends ViewBase {
     return [
       { title: this.type, key: 'name', align: 'center' },
       { title: '粉丝数占比', slot: 'value', width: 120, align: 'center' },
-      { title: '操作', slot: 'action', width: 120, align: 'center' },
+      !this.disabled && { title: '操作', slot: 'action', width: 120, align: 'center' },
     ]
+    .filter(it => !!it)
   }
 
   mounted() {
@@ -181,26 +181,8 @@ export default class FansPane extends ViewBase {
 
 .ratio-input {
   display: inline-flex;
-  width: 280px;
+  width: 242px;
   margin-left: 10px;
-
-  /deep/ input {
-    text-align: center;
-  }
-
-  /deep/ .ivu-input-number-handler-wrap {
-    display: none;
-  }
-
-  &::after {
-    content: '%';
-    display: inline-block;
-    min-width: 36px;
-    height: 100%;
-    text-align: center;
-    background-color: #f8f8f9;
-    border-left: 1px solid #dcdee2;
-  }
 }
 
 .btn-add {

@@ -2,8 +2,8 @@
   <table class="price-table">
     <colgroup>
       <col width="auto">
-      <col width="120">
-      <col width="130">
+      <col width="150">
+      <col width="150">
     </colgroup>
     <thead>
       <th>分类</th>
@@ -14,15 +14,14 @@
       <tr v-for="it in model" :key="it.key">
         <td>{{it.text}}</td>
         <td>
-          <Input
+          <FormInputNumber
             v-model="it.value"
+            :min="0"
             size="small"
             :disabled="disabled"
+            prepend="&yen;"
             class="inner-input"
-            number
-          >
-            <span slot="prepend">&yen;</span>
-          </Input>
+          />
         </td>
         <td>
           <DatePicker
@@ -42,6 +41,7 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { isEqual } from 'lodash'
+import { FormInputNumber } from '@/components/editForm'
 
 export interface PriceItem {
   key: string
@@ -50,7 +50,11 @@ export interface PriceItem {
   date: Date
 }
 
-@Component
+@Component({
+  components: {
+    FormInputNumber
+  }
+})
 export default class PriceTable extends ViewBase {
   @Prop({ type: Array, default: () => [] }) value!: PriceItem[]
 
@@ -88,15 +92,8 @@ export default class PriceTable extends ViewBase {
 }
 
 .inner-input {
-  display: flex;
-  /deep/ input {
-    text-align: center;
-  }
-  /deep/ .ivu-input-group-prepend {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
+  /deep/ .input-number-prepend {
+    color: #888;
   }
 }
 </style>

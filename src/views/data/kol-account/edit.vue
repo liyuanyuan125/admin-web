@@ -3,7 +3,10 @@
     <EditForm
       :fields="fields"
       :fetch="fetch"
+      :submit="submit"
+      :hideSubmit="isView"
       :labelWidth="88"
+      @done="onDone"
       queryKeys="id,channel"
     >
     </EditForm>
@@ -14,10 +17,12 @@
 import { Component, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import EditForm, { Field, Validator } from '@/components/editForm'
-import { queryItem, queryProvince, queryCity } from './data'
+import { queryItem, queryProvince, queryCity, editItem, auditItem } from './data'
 import AgeTable, { KeyTextValue } from './components/ageTable.vue'
 import FansPane, { FansItem } from './components/fansPane.vue'
 import PriceTable, { PriceItem } from './components/priceTable.vue'
+import { success } from '@/ui/modal'
+import { MapType } from '@/util/types'
 
 const ratioValidator: Validator = (rule, value: Array<{ value: number }>, callback) => {
   const total = value.reduce((sum, it) => sum += it.value, 0)
@@ -25,6 +30,12 @@ const ratioValidator: Validator = (rule, value: Array<{ value: number }>, callba
     ? '请输入数字'
     : (total > 100 ? '占比之和不能大于 100' : '')
   error ? callback(new Error(error)) : callback()
+}
+
+const actionMap: MapType<any> = {
+  view: null,
+  edit: editItem,
+  audit: auditItem,
 }
 
 @Component({
@@ -39,9 +50,21 @@ export default class EditPage extends ViewBase {
 
   @Prop({ type: String, default: '' }) action!: 'view' | 'edit' | 'audit'
 
+  get isView() {
+    return this.action == 'view'
+  }
+
+  get isEdit() {
+    return this.action == 'edit'
+  }
+
+  get isAudit() {
+    return this.action == 'audit'
+  }
+
   get fields() {
-    const isView = this.action == 'view'
-    const isAudit = this.action == 'audit'
+    const isView = this.isView
+    const isAudit = this.isAudit
     const readonly = isView || isAudit
 
     const list: Field[] = [
@@ -144,10 +167,11 @@ export default class EditPage extends ViewBase {
       {
         name: 'authName',
         defaultValue: '',
+        required: true,
         input: {
           prepend: '认证企业名称'
         },
-        span: 8,
+        span: 10,
         visible: item => item.auth
       },
 
@@ -167,7 +191,7 @@ export default class EditPage extends ViewBase {
         defaultValue: 0,
         label: '粉丝性别',
         placeholder: '百分比',
-        span: 6,
+        span: 7,
         number: {
           prepend: '男性',
           append: '%',
@@ -180,7 +204,7 @@ export default class EditPage extends ViewBase {
         name: 'femalePercent',
         defaultValue: 0,
         placeholder: '百分比',
-        span: 4,
+        span: 5,
         number: {
           prepend: '女性',
           append: '%',
@@ -284,28 +308,32 @@ export default class EditPage extends ViewBase {
   }
 
   fetch = queryItem
+
+  submit = actionMap[this.action]
+
+  async onDone() {
+    await success('操作成功')
+    this.$router.back()
+  }
 }
 </script>
 
 <style lang="less" scoped>
-/deep/ .col-i-switch-auth,
-/deep/ .col-number-input-male-percent,
-/deep/ .col-i-switch-audit-pass {
+/deep/ .col-field-auth,
+/deep/ .col-field-male-percent,
+/deep/ .col-field-audit-pass {
   width: auto;
 }
 
-/deep/ .col-form-input-auth-name,
-/deep/ .col-form-input-remark {
+/deep/ .col-field-auth-name,
+/deep/ .col-field-remark {
   left: 4px;
 }
 
-/deep/ .ui-number-input-male-percent,
-/deep/ .ui-number-input-female-percent {
-  .number-input {
-    width: 128px;
-    input {
-      text-align: center;
-    }
+/deep/ .ui-field-male-percent,
+/deep/ .ui-field-female-percent {
+  .input-number {
+    width: 78px;
   }
 }
 </style>

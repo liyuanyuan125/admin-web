@@ -1,7 +1,9 @@
-import { get } from '@/fn/ajax'
-import { dot, intDate, readableThousands, validDate } from '@/util/dealData'
+import { get, post, put } from '@/fn/ajax'
+import { dot, intDate, readableThousands, validDate, baifen, wanfen } from '@/util/dealData'
 import { KeyText, MapType } from '@/util/types'
 import { keyBy } from 'lodash'
+import moment from 'moment'
+import { devLog } from '@/util/dev'
 
 /**
  * 查询 KOL 平台账号
@@ -43,7 +45,7 @@ const makeAgeList = (enumList: KeyText[], values: Array<{ k: string, r: number }
   const result = enumList.map(it => ({
     key: it.key,
     text: it.text,
-    value: (dot(map[it.key], 'r') || 0) / 100
+    value: baifen(dot(map[it.key], 'r'))
   }))
   return result
 }
@@ -52,7 +54,7 @@ const makeFansList = (values: Array<{ id: number, name: string, rate: number }>)
   const result = (values || []).map(it => ({
     id: it.id,
     name: it.name,
-    value: (it.rate || 0) / 100
+    value: baifen(it.rate)
   }))
   return result
 }
@@ -95,8 +97,8 @@ export async function queryItem(query: any = {}) {
       intro: dot(data, 'item.customIntroduction') || '',
       authName: dot(data, 'item.authName') || '',
       fansCount: parseInt(dot(data, 'item.customFans.totalCount'), 10) || 0,
-      malePercent: parseInt(dot(data, 'item.customFans.malePercent'), 10) || 0,
-      femalePercent: parseInt(dot(data, 'item.customFans.femalePercent'), 10) || 0,
+      malePercent: baifen(dot(data, 'item.customFans.maleRate')),
+      femalePercent: baifen(dot(data, 'item.customFans.femaleRate')),
       ageList: makeAgeList(ageList, dot(data, 'item.customFans.ages')),
       provinceList: makeFansList(dot(data, 'item.customFans.provinces')),
       cityList: makeFansList(dot(data, 'item.customFans.cities')),
@@ -109,18 +111,6 @@ export async function queryItem(query: any = {}) {
       { key: 2, text: '公司' },
     ],
   }
-
-  // result.item.photo = 'http://aiads-file.oss-cn-beijing.aliyuncs.com/IMAGE/MISC/bklm23duomr0008001f0.jpg'
-  // result.item.provinceId = 4
-  // result.item.cityId = 68
-  // result.item.provinceList = [
-  //   { id: 23, name: '北京', value: 65 },
-  //   { id: 28, name: '天津', value: 22 },
-  // ]
-  // result.item.cityList = [
-  //   { id: 123, name: '商丘市', value: 88 },
-  //   { id: 51, name: '宜昌市', value: 66 },
-  // ]
 
   return result
 }
@@ -176,4 +166,86 @@ export async function queryCity(keyword: string) {
   }))
 
   return list
+}
+
+const dealAreaList = (list: any[]) => list.map(it => ({
+  id: it.id,
+  name: it.name,
+  rate: wanfen(it.value)
+}))
+
+// 按照接口要求，处理数据
+const dealEditItem = (item: any) => {
+  devLog(item)
+  const data = {
+    name: item.name,
+    customIntroduction: item.intro,
+    accountCategoryCode: item.accountCategoryCode,
+    channelCode: item.channel,
+    channelDataId: item.channelDataId,
+    provinceId: item.provinceId,
+    cityId: item.cityId,
+    photo: item.photo,
+    type: item.type,
+    auth: item.auth,
+    authName: item.authName,
+    customFans: {
+      maleRate: wanfen(item.malePercent),
+      femaleRate: wanfen(item.femalePercent),
+      ages: (item.ageList as any[]).map(it => ({
+        k: it.key,
+        r: wanfen(it.value)
+      })),
+      provinces: dealAreaList(item.provinceList),
+      cities: dealAreaList(item.cityList),
+      totalCount: item.fansCount
+    },
+    remark: item.remark,
+    provideInvoice: item.provideInvoice,
+    settlementPrices: (item.priceList as any[]).map(it => ({
+      categoryCode: it.key,
+      effectiveDate: it.date ? moment(it.date).format('YYYYMMDD') : 0,
+      settlementPrice: it.value
+    }))
+  }
+
+  return data
+}
+
+/**
+ * 新建平台账号
+ * https://yapi.aiads-dev.com/project/142/interface/api/2654
+ * @param item 数据
+ */
+export async function newItem(item: any) {
+  const pdata = dealEditItem(item)
+  const { data } = await post('/kol/channel-accounts', pdata)
+  return data
+}
+
+/**
+ * 编辑平台账号
+ * https://yapi.aiads-dev.com/project/142/interface/api/3014
+ * @param item 数据
+ */
+export async function editItem(item: any) {
+  const pdata = dealEditItem(item)
+  const { data } = await put(`/kol/channel-accounts/${item.channel}/${item.id}`, pdata)
+  return data
+}
+
+/**
+ * 审核平台账号
+ * https://yapi.aiads-dev.com/project/142/interface/api/3030
+ * @param item 数据
+ */
+export async function auditItem(item: any) {
+  const pdata = {
+    channelCode: item.channel,
+    ids: [item.id],
+    agree: item.auditPass,
+    remark: item.auditPass ? '' : item.remark
+  }
+  const { data } = await put(`/kol/channel-accounts/approve`, pdata)
+  return data
 }

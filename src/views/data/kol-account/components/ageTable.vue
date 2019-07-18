@@ -7,15 +7,13 @@
     <tbody>
       <th>粉丝数占比</th>
       <td v-for="it in model" :key="it.key">
-        <Input
+        <FormInputNumber
           v-model="it.value"
           size="small"
           :disabled="disabled"
           class="inner-input"
-          number
-        >
-          <span slot="append">%</span>
-        </Input>
+          append="%"
+        />
       </td>
     </tbody>
   </table>
@@ -25,6 +23,7 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { isEqual } from 'lodash'
+import { FormInputNumber } from '@/components/editForm'
 
 export interface KeyTextValue {
   key: string
@@ -32,7 +31,11 @@ export interface KeyTextValue {
   value: number
 }
 
-@Component
+@Component({
+  components: {
+    FormInputNumber
+  }
+})
 export default class AgeTable extends ViewBase {
   @Prop({ type: Array, default: () => [] }) value!: KeyTextValue[]
 
@@ -54,7 +57,7 @@ export default class AgeTable extends ViewBase {
 
 <style lang="less" scoped>
 .age-table {
-  max-width: 880px;
+  max-width: 900px;
   border-collapse: collapse;
   thead {
     th {
@@ -64,21 +67,8 @@ export default class AgeTable extends ViewBase {
   }
   th, td {
     border: 1px solid #e8e8e8;
-    padding: 4px 8px;
+    padding: 4px;
     white-space: nowrap;
-  }
-}
-
-.inner-input {
-  display: flex;
-  /deep/ input {
-    text-align: center;
-  }
-  /deep/ .ivu-input-group-append {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
   }
 }
 </style>

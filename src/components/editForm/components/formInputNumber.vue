@@ -6,14 +6,18 @@
       'form-input-number-with-append': append != '',
     }"
   >
-    <span class="input-number-prepend" v-if="prepend">{{prepend}}</span>
+    <span class="input-number-prepend" v-if="prepend">
+      <slot name="prepend"><i v-html="prepend"></i></slot>
+    </span>
     <InputNumber
       v-model="model"
       class="input-number"
       v-bind="$attrs"
       ref="input"
     />
-    <span class="input-number-append" v-if="append">{{append}}</span>
+    <span class="input-number-append" v-if="append">
+      <slot name="append"><i v-html="append"></i></slot>
+    </span>
   </span>
 </template>
 
@@ -56,6 +60,18 @@ export default class FormInputNumber extends ViewBase {
 <style lang="less" scoped>
 .form-input-number {
   display: inline-flex;
+  &[size=small] {
+    /deep/ .ivu-input-number-handler-wrap {
+      width: 18px;
+      .ivu-icon {
+        right: 3px;
+      }
+    }
+    .input-number-prepend,
+    .input-number-append {
+      padding: 0 6px;
+    }
+  }
 }
 
 .input-number-prepend,
@@ -68,6 +84,10 @@ export default class FormInputNumber extends ViewBase {
   background-color: #f8f8f9;
   border: 1px solid #dcdee2;
   border-radius: 4px;
+  user-select: none;
+  i {
+    font-style: normal;
+  }
 }
 
 .form-input-number-with-prepend {

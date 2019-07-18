@@ -5,10 +5,10 @@
       :key="formKey"
       :label-width="labelWidth"
       :rules="rules"
-      class="form"
       :style="{ visibility: loading ? 'hidden' : 'visible' }"
       :loading="submitLoading"
       @submit.native.prevent="onSubmit"
+      class="form"
       ref="form"
     >
       <fieldset
@@ -54,6 +54,7 @@
             html-type="submit"
             size="large"
             class="button-submit"
+            v-if="!hideSubmit"
           >{{submitText}}</Button>
 
           <Button
@@ -61,19 +62,19 @@
             size="large"
             class="button-return"
             @click="goback"
+            v-if="!hideReturn"
           >{{returnText}}</Button>
         </slot>
       </div>
     </Form>
 
-    <div class="inner-loading flex-mid" v-show="loading">
+    <div class="inner-loading" v-show="loading">
       <TinyLoading :size="38" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-// doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { MapType, AjaxResult, isAjaxResult, KeyTextControlStatus } from '@/util/types'
@@ -114,7 +115,7 @@ export default class EditForm extends ViewBase {
   @Prop({ type: String, default: 'id' }) queryKeys!: string
 
   /** 提交请求函数 */
-  @Prop({ type: Function }) submit!: (data: any) => Promise<AjaxResult>
+  @Prop({ type: [Function, Boolean] }) submit!: (data: any) => Promise<AjaxResult | any>
 
   /** 表单 label 宽度 */
   @Prop({ type: Number, default: 76 }) labelWidth!: number
@@ -122,8 +123,14 @@ export default class EditForm extends ViewBase {
   /** 错误处理 */
   @Prop({ type: Object, default: () => ({}) }) errorHandlers!: EditErrorHandlers
 
+  /** 是否隐藏提交按钮 */
+  @Prop({ type: Boolean, default: false }) hideSubmit!: boolean
+
   /** 提交按钮文本 */
   @Prop({ type: String, default: '提交' }) submitText!: string
+
+  /** 是否隐藏返回按钮 */
+  @Prop({ type: Boolean, default: false }) hideReturn!: boolean
 
   /** 返回按钮文本 */
   @Prop({ type: String, default: '返回' }) returnText!: string
@@ -248,16 +255,19 @@ export default class EditForm extends ViewBase {
       return scrollToError(form, { offsetTop: this.scrollToErrorOffsetTop })
     }
 
-    if (this.submit == null) {
+    if (typeof this.submit !== 'function') {
       return
     }
 
-    const item = { ...this.item }
+    const item = cloneDeep(this.item)
 
     try {
-      const data = dealParams(this.fields, item)
+      const data = dealParams(this.fields, item, {
+        cleanList: [null, undefined]
+      })
       const res = await this.submit(data)
-      this.$emit('done', res && res.data)
+      const eventData = isAjaxResult(res) ? res.data : res
+      this.$emit('done', eventData)
     } catch (ex) {
       if (isAjaxResult(ex) && (ex.code in this.errorHandlers)) {
         const handler = this.errorHandlers[ex.code]
@@ -292,11 +302,11 @@ export default class EditForm extends ViewBase {
 <style lang="less" scoped>
 .edit-form {
   position: relative;
-  padding: 0 0 38px 0;
   max-width: 1200px;
 }
 
 .form {
+  padding-bottom: 38px;
   &::after {
     content: '';
     display: block;
@@ -344,11 +354,13 @@ export default class EditForm extends ViewBase {
 }
 
 .inner-loading {
-  position: absolute;
-  top: 18px;
+  position: fixed;
+  top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  text-align: center;
+  padding-top: 42vh;
 }
 
 .col-no-label {

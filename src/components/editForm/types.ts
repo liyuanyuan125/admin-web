@@ -372,18 +372,18 @@ export function normalizeField(list: Field[]) {
       auth: it.auth || '',
     }
 
-    const classBase = kebabCase(`${component.name}-${item.name}`)
+    const classBase = kebabCase(item.name)
 
     item.colClass = {
       'col-field': true,
       'col-no-label': !item.label,
-      [`col-${classBase}`]: true,
+      [`col-field-${classBase}`]: true,
       [`col-offset-right-${item.offsetRight}`]: item.offsetRight! > 0
     }
 
     item.class = {
       'ui-field': true,
-      [`ui-${classBase}`]: true,
+      [`ui-field-${classBase}`]: true,
     }
 
     return item

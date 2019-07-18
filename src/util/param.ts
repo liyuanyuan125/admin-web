@@ -73,7 +73,14 @@ const isFixedParam = (param: Param) => {
  * @param data 数据
  * @param cleanDefault 是否清理默认值
  */
-export function dealParams(params: Param[], data: any, cleanDefault = false) {
+export function dealParams(
+  params: Param[],
+  data: any,
+  {
+    cleanDefault = false,
+    cleanList = [null, undefined, ''],
+  } = {}
+) {
   const store = data || {}
 
   const tdata = params.reduce((ret, param) => {
@@ -97,7 +104,7 @@ export function dealParams(params: Param[], data: any, cleanDefault = false) {
     }
   })
 
-  const result = clean(tdata)
+  const result = clean(tdata, cleanList)
   return result
 }
 

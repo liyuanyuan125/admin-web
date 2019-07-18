@@ -217,9 +217,26 @@ export function intDate(date: number, format = 'YYYY-MM-DD') {
  * @param date 数字日期
  */
 export function validDate(date: number | null) {
-  if (date == null) {
+  if (date == null || date == 0) {
     return null
   }
   const d = moment(String(date))
   return d.isValid() ? d.toDate() : null
+}
+
+/**
+ * 将万分转成百分
+ * @param num 万分值
+ * @param digits 保留位数，默认为 2
+ */
+export function baifen(wan: number | null, digits = 2) {
+  return +((wan || 0) / 100).toFixed(digits)
+}
+
+/**
+ * 将百分转成万分
+ * @param bai 百分值
+ */
+export function wanfen(bai: number | null) {
+  return Math.floor((bai || 0) * 100) || 0
 }

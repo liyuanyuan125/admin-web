@@ -51,10 +51,11 @@ export interface AjaxResult {
 }
 
 /**
- * 判断是否为 AjaxResult
+ * 判断 object 是否为 AjaxResult（只要含有 code 就行）
+ * @param object 对象
  */
-export function isAjaxResult(ex: any) {
-  return 'code' in ex && 'data' in ex
+export function isAjaxResult(object: any) {
+  return !!(object && typeof object === 'object' && 'code' in object)
 }
 
 /**
