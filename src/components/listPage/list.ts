@@ -60,11 +60,10 @@ export interface LinkOptions {
   /** 跳转到的 route name */
   name: string
 
-  /** 固定的 params 对象，将会跟从 paramsKeys 形成的对象进行合并，作为最终的 params */
-  params?: MapType<any>
-
-  /** 从 item 中截取 keys 作为 params 的一部分，以 , 分割，默认为 'id' */
-  paramsKeys?: string
+  /**
+   * 获取 params 对象的函数，参数 item 为当前行的数据
+   */
+  params?: (item: any) => MapType<any>
 }
 
 /**
@@ -74,15 +73,12 @@ const componentMap: MapType<ListComponent> = {
   link: {
     component: 'router-link',
     props: ({ item, options }) => {
-      const { name, paramsKeys, params } = options as LinkOptions
-      const keyParams = slice(item, paramsKeys || 'id')
+      const { name, params: getParams } = options as LinkOptions
+      const params = getParams && getParams(item) || {}
       const result = {
         to: {
           name,
-          params: {
-            ...params,
-            ...keyParams
-          }
+          params
         }
       }
       return result
@@ -141,6 +137,11 @@ const resolveComponent = (column: ColumnExtra, param: GetParam) => {
 }
 
 /**
+ * 默认被当做空的值
+ */
+const defaultEmptyValues = [ undefined, null, 0, '' ]
+
+/**
  * 将列配置，解析成 render 函数
  * @param column 列配置
  */
@@ -148,6 +149,17 @@ export function resolveRender(column: ColumnExtra) {
   const name = getComponentName(column)
   return name
     ? (h: any, { row: item, index }: any) => {
+      // 统一处理空值，这样下面的组件就不用处理空值了
+      if (column.key) {
+        const emptyValues = column.emptyValues || defaultEmptyValues
+        const value = item[column.key]
+        const isEmptyValue = emptyValues.includes(value)
+        if (isEmptyValue) {
+          // 渲染一个空的 span，以便样式可以显示出一个空的 -
+          return h('span')
+        }
+      }
+
       const param: GetParam = { item, index, column }
       const { component = null, props = null, text = '' } = resolveComponent(column, param) || {}
       devAssert(component != null)

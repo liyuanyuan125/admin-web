@@ -180,14 +180,22 @@ export default class IndexPage extends ViewBase {
         minWidth: 100,
         link: {
           name: 'data-kol-account-edit',
-          params: { channel: this.channel, action: 'view' },
+          params: it => ({ id: it.id, channel: this.channel, action: 'view' }),
         }
       },
       { title: '名称', key: 'name', minWidth: 100 },
       { title: '分类', key: 'accountCategoryCode', minWidth: 60, editor: 'deprecated' },
       { title: '粉丝数', key: 'fansCount', minWidth: 60 },
 
-      { title: '关联KOL编号', key: 'kolIdText', minWidth: 90 },
+      {
+        title: '关联KOL编号',
+        key: 'kolId',
+        minWidth: 90,
+        link: {
+          name: 'data-kol-associated-detail',
+          params: it => ({ id: it.kolId })
+        }
+      },
       { title: '关联KOL名称', key: 'kolName', minWidth: 100 },
       { title: '是否提供发票', key: 'provideInvoiceText', minWidth: 90 },
       { title: '结算价/有效期', slot: 'price', minWidth: 270 },

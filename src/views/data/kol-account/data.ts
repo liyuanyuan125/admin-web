@@ -19,7 +19,6 @@ export async function queryList(query: any = {}) {
     items: (data.items as any[] || []).map(it => ({
       ...it,
       fansCount: dot(it, 'customFans.totalCount'),
-      kolIdText: it.kolId || '-',
       provideInvoiceText: it.provideInvoice ? '是' : '否',
       priceList: (it.settlementPrices as any[] || []).map(sub => {
         const price = readableThousands(sub.settlementPrice, '-', '0,0.00')
