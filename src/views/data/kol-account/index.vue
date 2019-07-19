@@ -26,15 +26,6 @@
         >新建</Button>
       </template>
 
-      <template slot="channelDataId" slot-scope="{ row: { id, channelDataId } }">
-        <router-link
-          :to="{
-            name: 'data-kol-account-edit',
-            params: { id, channel, action: 'view' }
-          }"
-        >{{channelDataId}}</router-link>
-      </template>
-
       <template slot="price" slot-scope="{ row: { priceList } }">
         <Table
           :columns="priceColumns"
@@ -183,7 +174,15 @@ export default class IndexPage extends ViewBase {
   get columns() {
     return [
       { title: '序号', key: 'id', minWidth: 65 },
-      { title: '账号', slot: 'channelDataId', minWidth: 100 },
+      {
+        title: '账号',
+        key: 'channelDataId',
+        minWidth: 100,
+        link: {
+          name: 'data-kol-account-edit',
+          params: { channel: this.channel, action: 'view' },
+        }
+      },
       { title: '名称', key: 'name', minWidth: 100 },
       { title: '分类', key: 'accountCategoryCode', minWidth: 60, editor: 'deprecated' },
       { title: '粉丝数', key: 'fansCount', minWidth: 60 },

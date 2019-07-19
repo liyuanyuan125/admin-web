@@ -1,5 +1,4 @@
 import { Component } from 'vue'
-import { MapType, KeyText } from '@/util/types'
 import { kebabCase, isPlainObject, cloneDeep, isEqual } from 'lodash'
 import { Param } from '@/util/param'
 import FormText from './components/formText.vue'
@@ -10,7 +9,7 @@ import FormRadio from './components/formRadio.vue'
 import FormImage from './components/formImage.vue'
 import AreaSelect from '@/components/areaSelect'
 import { Switch } from 'iview'
-import { AjaxResult } from '@/util/types'
+import { AjaxResult, MapType } from '@/util/types'
 
 export type ValidatorCallback = (error?: Error) => any
 
