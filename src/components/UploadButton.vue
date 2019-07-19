@@ -1,6 +1,6 @@
 <template>
-  <Dropdown placement="bottom-start" class="upload-button">
-    <Button class="button-upload" :disabled="isUploading">
+  <Dropdown placement="bottom-start" transfer class="upload-button">
+    <Button :type="buttonType" class="button-upload" :disabled="isUploading">
       <Icon type="ios-cloud-upload-outline" v-if="!isUploading" class="icon-prefix"/>
       <TinyLoading :size="12" v-if="isUploading" class="icon-prefix"/>
       <span class="button-text">
@@ -11,36 +11,33 @@
       </label>
       <Icon type="ios-arrow-down" class="icon-suffix" v-show="list.length > 0"/>
     </Button>
-    <DropdownMenu v-if="accept != 'image/*' && list.length > 0" slot="list" class="progress-pane">
-      <DropdownItem v-for="it in list" :key="it.uqid" disabled
-        :class="{'has-error': !!it.error}">
-        <div class="file-name">{{it.clientName}}</div>
-        <Progress :percent="it.percent" :status="it.progressStatus"/>
-        <div class="error" v-if="it.error">{{it.error}}</div>
+
+    <DropdownMenu slot="list" class="progress-pane" v-if="list.length > 0">
+      <DropdownItem
+        v-for="it in list"
+        :key="it.uqid"
+        disabled
+        class="upload-item"
+        :class="{ 'has-error': !!it.error }"
+      >
+        <Tooltip
+          placement="right" :max-width="400"
+          class="upload-item-tooltip"
+          transfer
+        >
+          <div class="file-name">{{it.clientName}}</div>
+          <Progress :percent="it.percent" :status="it.progressStatus"/>
+          <div class="error" v-if="it.error">{{it.error}}</div>
+          <div slot="content" v-if="canViewImage">
+            <img :src="it.url" class="upload-img">
+          </div>
+        </Tooltip>
       </DropdownItem>
     </DropdownMenu>
-
-    <DropdownMenu v-else-if="accept == 'image/*' && list.length > 0" slot="list" class="progress-pane">
-      <DropdownItem v-for="it in list" :key="it.uqid" disabled
-        :class="{'has-error': !!it.error}">
-        <div v-if="it.percent == 100">
-          <span class="file-name">{{it.clientName}}</span>
-          <a @click="onView(it.url)" style="margin-left: 10px">查看大图</a>
-        </div>
-        <Progress :percent="it.percent" :status="it.progressStatus"/>
-        <div class="error" v-if="it.error">{{it.error}}</div>
-      </DropdownItem>
-    </DropdownMenu>
-
-    <Modal v-model="viewerShow" title="查看图片" width="888">
-      <img :src="viewerImage" class="viewer-image">
-    </Modal>
-
   </Dropdown>
 </template>
 
 <script lang="ts">
-// doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import TinyLoading from '@/components/TinyLoading.vue'
@@ -119,17 +116,25 @@ export default class UploadButton extends ViewBase {
   @Prop({ type: Number, default: 1 }) maxCount!: number
 
   /**
+   * Button Type，详见 https://www.iviewui.com/components/button
+   */
+  @Prop({ type: String, default: 'default' }) buttonType!: string
+
+  /**
    * 上传选项，传递给 util/Uploader 类
    */
   @Prop({ type: Object, default: () => ({}) }) uploaderOptions!: UploaderOptions
 
   list: UploadItem[] = []
 
-  viewerShow = false
-  viewerImage = ''
-
   get isUploading() {
     return !this.list.every(it => it.status == 'done' || it.status == 'fail')
+  }
+
+  canViewImage(item: UploadItem) {
+    const isImage = this.accept.startsWith('image')
+      || (item.clientType || '').startsWith('image')
+    return isImage && item.status == 'done'
   }
 
   onChange(ev: Event) {
@@ -205,11 +210,6 @@ export default class UploadButton extends ViewBase {
     this.checkComplete()
   }
 
-  onView(it: any) {
-    this.viewerImage = it
-    this.viewerShow = true
-  }
-
   checkComplete() {
     if (!this.isUploading) {
       const files = this.list.filter(it => it.status == 'done')
@@ -224,9 +224,11 @@ export default class UploadButton extends ViewBase {
 .button-upload {
   position: relative;
 }
+
 .button-text {
   margin: 0 3px;
 }
+
 .upload-label {
   position: absolute;
   top: 0;
@@ -238,6 +240,7 @@ export default class UploadButton extends ViewBase {
     display: none;
   }
 }
+
 .progress-pane {
   width: 288px;
   user-select: none;
@@ -249,26 +252,38 @@ export default class UploadButton extends ViewBase {
     margin-right: -25px;
   }
 }
+
+.upload-item {
+  position: relative;
+}
+
+.upload-item-tooltip {
+  width: 100%;
+}
+
 .file-name,
 .error {
   margin-left: 2px;
 }
+
 .file-name {
   position: relative;
-  display: inline-block;
   max-width: 70%;
-  margin-bottom: 3px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  margin-bottom: 3px;
 }
+
+.upload-img {
+  max-width: 100%;
+  max-height: 300px;
+}
+
 .has-error {
   .file-name,
   .error {
     color: #ed4014;
   }
-}
-.viewer-image {
-  width: 100%;
 }
 </style>
