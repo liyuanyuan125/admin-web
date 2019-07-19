@@ -60,7 +60,7 @@ const main = async () => {
   const theTag = await thisTag()
   const newTag = vtag ? vtag.replace(/^v/i, 'v') : await nextTag()
 
-  log(`=> 发布版本 ${theTag} -> ${newTag}`)
+  log(`=> 发布版本 ${theTag} -> ${newTag}，附加消息：${commitMsg}`)
 
   await shell(`git tag -a ${newTag} -m "version ${newTag}"`)
   await shell(`git push origin ${newTag}`)
