@@ -135,14 +135,6 @@ export default class EditPage extends ViewBase {
           noSelf: true,
         },
         offsetRight: 6,
-        dealParam: ([provinceId, cityId]: number[]) => ({
-          provinceId: provinceId || 0,
-          cityId: cityId || 0,
-        }),
-        backfillParam: ({ provinceId, cityId }: any) => [
-          provinceId || 0,
-          cityId || 0,
-        ]
       },
 
       {

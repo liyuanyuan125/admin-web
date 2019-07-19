@@ -94,14 +94,23 @@ export async function queryItem(query: any = {}) {
     item: {
       ...data.item,
       intro: dot(data, 'item.customIntroduction') || '',
+      area: [
+        parseInt(dot(data, 'item.provinceId'), 10) || 0,
+        parseInt(dot(data, 'item.cityId'), 10) || 0,
+      ],
       authName: dot(data, 'item.authName') || '',
+
+      // 粉丝画像
       fansCount: parseInt(dot(data, 'item.customFans.totalCount'), 10) || 0,
       malePercent: baifen(dot(data, 'item.customFans.maleRate')),
       femalePercent: baifen(dot(data, 'item.customFans.femaleRate')),
       ageList: makeAgeList(ageList, dot(data, 'item.customFans.ages')),
       provinceList: makeFansList(dot(data, 'item.customFans.provinces')),
       cityList: makeFansList(dot(data, 'item.customFans.cities')),
+
+      // 结算信息
       priceList: makePriceList(publishCategoryList, dot(data, 'item.settlementPrices')),
+
       // 审核是否通过，默认通过
       auditPass: status != 3
     },
@@ -175,19 +184,21 @@ const dealAreaList = (list: any[]) => list.map(it => ({
 
 // 按照接口要求，处理数据
 const dealEditItem = (item: any) => {
-  devLog(item)
   const data = {
+    // 基本信息
     name: item.name,
     customIntroduction: item.intro,
     accountCategoryCode: item.accountCategoryCode,
     channelCode: item.channel,
     channelDataId: item.channelDataId,
-    provinceId: item.provinceId,
-    cityId: item.cityId,
+    provinceId: item.area[0],
+    cityId: item.area[1],
     photo: item.photo,
     type: item.type,
     auth: item.auth,
     authName: item.authName,
+
+    // 粉丝画像
     customFans: {
       maleRate: wanfen(item.malePercent),
       femaleRate: wanfen(item.femalePercent),
@@ -199,13 +210,17 @@ const dealEditItem = (item: any) => {
       cities: dealAreaList(item.cityList),
       totalCount: item.fansCount
     },
-    remark: item.remark,
-    provideInvoice: item.provideInvoice,
+
+    // 结算信息
     settlementPrices: (item.priceList as any[]).map(it => ({
       categoryCode: it.key,
       effectiveDate: it.date ? moment(it.date).format('YYYYMMDD') : 0,
       settlementPrice: it.value
-    }))
+    })),
+    provideInvoice: item.provideInvoice,
+
+    // 审核意见
+    remark: item.remark,
   }
 
   return data
