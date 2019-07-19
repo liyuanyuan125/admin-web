@@ -31,7 +31,8 @@ export default class IssueIndex extends ViewBase {
   file: FileItem | null = null
 
   options: UploaderOptions = {
-    filePostUrl: '/file/miscs',
+    filePostUrl: '/xadvert/off-shelf/import-data',
+    fileFieldName: 'file',
   }
 
   uploadSuccess({ files }: { files: FileItem[] }) {
