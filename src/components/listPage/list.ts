@@ -6,7 +6,6 @@ import { MapType } from '@/util/types'
 import { ColumnExtra } from './types'
 import { isPlainObject, cloneDeep } from 'lodash'
 import { devAssert } from '@/util/dev'
-import { slice } from '@/fn/object'
 
 /**
  * GetProps、GetText 等函数的传入参数，可扩展其他值
