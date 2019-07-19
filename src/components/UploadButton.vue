@@ -4,7 +4,7 @@
       <Icon type="ios-cloud-upload-outline" v-if="!isUploading" class="icon-prefix"/>
       <TinyLoading :size="12" v-if="isUploading" class="icon-prefix"/>
       <span class="button-text">
-        <slot>{{titlename}}</slot>
+        <slot>上传</slot>
       </span>
       <label class="upload-label" v-if="!isUploading">
         <input type="file" :accept="accept" :multiple="multiple" @change="onChange"/>
@@ -44,7 +44,7 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import TinyLoading from '@/components/TinyLoading.vue'
-import Uploader from '@/util/Uploader'
+import Uploader, { UploaderOptions } from '@/util/Uploader'
 import { random } from '@/fn/string'
 import { slice } from '@/fn/object'
 
@@ -108,8 +108,6 @@ export default class UploadButton extends ViewBase {
    */
   @Prop({ type: Boolean, default: false }) multiple!: boolean
 
-  @Prop({ type: String, default: '上传'}) titlename!: string
-
   /**
    * 接受的文件类型
    */
@@ -119,6 +117,11 @@ export default class UploadButton extends ViewBase {
    * 上传文件的最大个数，默认 1 个
    */
   @Prop({ type: Number, default: 1 }) maxCount!: number
+
+  /**
+   * 上传选项，传递给 util/Uploader 类
+   */
+  @Prop({ type: Object, default: () => ({}) }) uploaderOptions!: UploaderOptions
 
   list: UploadItem[] = []
 
@@ -154,7 +157,7 @@ export default class UploadButton extends ViewBase {
         error: '',
       })
 
-      const uploader = new Uploader()
+      const uploader = new Uploader(this.uploaderOptions)
       uploader.on(this.uploadHandlers(uqid)).upload(file)
     })
   }
