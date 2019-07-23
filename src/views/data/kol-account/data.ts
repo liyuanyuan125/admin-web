@@ -112,7 +112,10 @@ export async function queryItem(query: any = {}) {
       priceList: makePriceList(publishCategoryList, dot(data, 'item.settlementPrices')),
 
       // 审核是否通过，默认通过
-      auditPass: status != 3
+      auditPass: status != 3,
+
+      // 是否被审核过（通过或拒绝）
+      audited: status == 2 || status == 3,
     },
     typeList: [
       { key: 1, text: '个人' },

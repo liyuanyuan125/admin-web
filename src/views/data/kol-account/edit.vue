@@ -7,7 +7,6 @@
       :hideSubmit="isView"
       :labelWidth="88"
       @done="onDone"
-      queryKeys="id,channel"
     >
     </EditForm>
   </div>
@@ -23,6 +22,7 @@ import FansPane, { FansItem } from './components/fansPane.vue'
 import PriceTable, { PriceItem } from './components/priceTable.vue'
 import { success } from '@/ui/modal'
 import { MapType } from '@/util/types'
+import { devLog } from '@/util/dev'
 
 const ratioValidator: Validator = (rule, value: Array<{ value: number }>, callback) => {
   const total = value.reduce((sum, it) => sum += it.value, 0)
@@ -49,6 +49,8 @@ export default class EditPage extends ViewBase {
   @Prop({ type: String, default: '' }) channel!: string
 
   @Prop({ type: String, default: '' }) action!: 'view' | 'edit' | 'audit'
+
+  item: any = null
 
   get isView() {
     return this.action == 'view'
@@ -274,6 +276,11 @@ export default class EditPage extends ViewBase {
 
     readonly && list.push(
       {
+        name: 'audited',
+        defaultValue: false,
+      },
+
+      {
         name: 'auditPass',
         defaultValue: true,
         disabled: isView,
@@ -281,6 +288,7 @@ export default class EditPage extends ViewBase {
         group: '审核意见',
         label: '审核通过',
         span: 6,
+        visibleCol: item => isAudit || item.audited
       },
 
       {
@@ -292,16 +300,22 @@ export default class EditPage extends ViewBase {
           prepend: '审核不通过的理由'
         },
         span: 8,
-        visible: item => !item.auditPass
+        visible: item => !item.auditPass,
+        visibleCol: item => isAudit || item.audited
       }
     )
 
     return list
   }
 
-  fetch = queryItem
-
   submit = actionMap[this.action]
+
+  fetch() {
+    return queryItem({
+      id: this.id,
+      channel: this.channel
+    })
+  }
 
   async onDone() {
     await success('操作成功')
