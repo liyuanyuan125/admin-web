@@ -10,6 +10,8 @@
         <FormInputNumber
           v-model="it.value"
           size="small"
+          :min="0"
+          :max="100"
           :disabled="disabled"
           class="inner-input"
           append="%"

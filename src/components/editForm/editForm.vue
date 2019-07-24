@@ -10,6 +10,7 @@
       @submit.native.prevent="onSubmit"
       class="form"
       ref="form"
+      v-if="item"
     >
       <fieldset
         v-for="group in groupFields"
@@ -25,6 +26,7 @@
             :offset="it.offsetLeft"
             :class="it.colClass"
             :style="it.style"
+            v-if="it.visibleCol(item)"
           >
             <FormItem
               :label="it.label"
@@ -95,6 +97,7 @@ import { slice } from '@/fn/object'
 import { filterByControlStatus, filterItemInList } from '@/util/dealData'
 import { random } from '@/fn/string'
 import { scrollToError } from '@/util/form'
+import { devLog } from '@/util/dev'
 
 @Component({
   components: {
@@ -106,13 +109,10 @@ export default class EditForm extends ViewBase {
   @Prop({ type: Array, default: () => [] }) fields!: Field[]
 
   /** 加载编辑项的请求函数 */
-  @Prop({ type: Function }) fetch!: (query?: any) => Promise<FetchData | FetchResult>
+  @Prop({ type: Function }) fetch!: () => Promise<FetchData | FetchResult>
 
   /** 初始化数据 */
   @Prop({ type: Object, default: () => ({}) }) initData!: object
-
-  /** 查询字段列表，默认为 id，可以使用以逗号分隔的字符串，指定多个字段，例如：key1,key2 */
-  @Prop({ type: String, default: 'id' }) queryKeys!: string
 
   /** 提交请求函数 */
   @Prop({ type: [Function, Boolean] }) submit!: (data: any) => Promise<AjaxResult | any>
@@ -145,7 +145,7 @@ export default class EditForm extends ViewBase {
 
   submitLoading = true
 
-  item: any = {}
+  item: any = null
 
   defItem: any = {}
 
@@ -159,7 +159,11 @@ export default class EditForm extends ViewBase {
   }
 
   get groupFields() {
-    const group = normalizeAndGroupField(this.fields)
+    const item = this.item
+    if (item == null) {
+      return []
+    }
+    const group = normalizeAndGroupField(this.fields, item)
     return group
   }
 
@@ -189,8 +193,8 @@ export default class EditForm extends ViewBase {
   }
 
   // 简单包装一下，以便适应两种数据结构
-  async fetchWrap(query: any) {
-    const res = await this.fetch(query)
+  async fetchWrap() {
+    const res = await this.fetch()
     return fetchDataToResult(res)
   }
 
@@ -201,8 +205,7 @@ export default class EditForm extends ViewBase {
 
     this.loading = true
     try {
-      const query = slice(this.item, this.queryKeys)
-      const { data } = await this.fetchWrap(query)
+      const { data } = await this.fetchWrap()
 
       const enumMap = this.normalFields
         .filter(it => !!it.enumKey)

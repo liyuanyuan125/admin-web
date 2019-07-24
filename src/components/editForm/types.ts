@@ -200,6 +200,11 @@ export interface Field extends Param {
    */
   visible?: (item: any) => boolean
 
+  /**
+   * 切换 Col 是否显示的函数
+   */
+  visibleCol?: (item: any) => boolean
+
   // --------------------------------------------------
   // 新的语法，参考 echarts 的配置语法，每个组件占用一个 key
   // --------------------------------------------------
@@ -356,6 +361,7 @@ export function normalizeField(list: Field[]) {
       offsetLeft: 0,
       offsetRight: 0,
       visible: () => true,
+      visibleCol: () => true,
       ...it,
       component,
       props: {
@@ -394,8 +400,9 @@ export function normalizeField(list: Field[]) {
 /**
  * 规范化字段配置，并根据 group 字段分组
  * @param list 待规范化的字段配置列表
+ * @param data 数据对象
  */
-export function normalizeAndGroupField(list: Field[]) {
+export function normalizeAndGroupField(list: Field[], data: any) {
   const fieldList = normalizeField(list)
   if (fieldList.length == 0) {
     return []
@@ -414,7 +421,9 @@ export function normalizeAndGroupField(list: Field[]) {
     return ret
   }, [] as GroupField[])
 
-  return group
+  // 过滤掉，visibleCol 计算结果，全部为假的 group
+  const result = group.filter(item => item.list.some(it => it.visibleCol!(data)))
+  return result
 }
 
 /**

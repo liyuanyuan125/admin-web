@@ -74,7 +74,7 @@
 
         <Row>
           <Col v-if="$route.params.id" :span="6">
-            <FormItem label="系统鲸鱼指数:">
+            <FormItem label="系统鲸娱指数:">
               <span>{{jyIndex}}</span>
             </FormItem>
           </Col>
@@ -86,13 +86,13 @@
           </Col>
 
           <Col :span="6">
-            <FormItem :labelWidth="180" label="调整鲸鱼指数所占权重:" prop="customIndexPercent">
+            <FormItem :labelWidth="180" label="调整鲸娱指数所占权重:" prop="customIndexPercent">
               <span>{{form.customIndexPercent}}</span>
             </FormItem>
           </Col>
         </Row>
 
-        <FormItem label="推荐的KOL列表:" prop="exts">
+        <FormItem label="KOL列表:" prop="exts">
           <kol :editnums="detail" :channelCodeList="channelCodeList" v-model="form.exts"></kol>
         </FormItem>
         <Row>

@@ -256,6 +256,11 @@ export interface ColumnExtra extends Column {
    */
   auth?: string
 
+  /**
+   * 被当做空的值，默认为 [ undefined, null, 0, '' ]
+   */
+  emptyValues?: any[]
+
   // 组件配置字段（要与 list.ts#componentMap 中的字段相同）
 
   /**

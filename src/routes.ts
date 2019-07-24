@@ -864,6 +864,17 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     }
   },
+
+  // 下刊触发
+  {
+    path: '/system/issue',
+    name: 'system-issue',
+    component: () => import('./views/system/issue/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
   {
     path: '/order/list',
     name: 'order-list',
