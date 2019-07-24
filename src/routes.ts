@@ -96,8 +96,6 @@ export interface RouteConfigEnhance extends RouteConfig {
   children?: RouteConfigEnhance[]
 }
 
-
-
 /**
  * 单独的 routes
  *

@@ -80,7 +80,7 @@ export function toThousands(nums: any) {
  * 根据 controlStatus 的值，过滤列表（只保留 controlStatus 为 1 的项）
  * @param list 列表
  */
-export function filterByControlStatus(list: KeyTextControlStatus[]) {
+export function filterByControlStatus(list: any[]) {
   return (list || []).filter(it => !('controlStatus' in it) || it.controlStatus == 1)
 }
 
