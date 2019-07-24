@@ -169,8 +169,10 @@
                     <Col :span="12">
                         <FormItem label="粉丝性别占比" class="rest-input">
                             <div class="flex-box">
-                                <div>男性：<Input  v-model="formFans.male" placeholder="" style="width: 100px"></Input>%</div>
-                                <div>女性：<Input  v-model="formFans.female" placeholder="" style="width: 100px"></Input>%</div>
+                                <div>男性：<InputNumber :max="100" :min="0" style="width: 120px"  v-model.number="formFans.male" ></InputNumber>%</div>
+                                <div>女性：<InputNumber :max="100" :min="0" style="width: 120px" v-model.number="formFans.female" ></InputNumber>%</div>
+                                <!-- <div><Input  v-model="formFans.male" placeholder="" ></Input>%</div>
+                                <div>女性：<Input  v-model="formFans.female" placeholder="" style="width: 100px"></Input>%</div> -->
                             </div>
                         </FormItem>
                     </Col>
@@ -178,7 +180,10 @@
                 <FormItem label="粉丝年龄区间">
                     <Table :columns="ageColumns" :data="(formFans.ages || [])" class="brand-table rest-input" border stripe disabled-hover>
                         <template slot="v" slot-scope="{row, index}">
-                            <Input v-model="row.v" @on-change="updataRow(row, index)" />
+                            <InputNumber :max="100" :min="0" 
+                            v-model="row.v"
+                            @on-change="updataRow(row, index)" />
+                            <!-- <Input v-model="row.v" @on-change="updataRow(row, index)" /> -->
                         </template>
                     </Table>
                 </FormItem>
@@ -262,12 +267,12 @@ export default class Main extends ViewBase {
         male: null,
         femalenu: null,
         ages: [
-            {k: '0-17岁', v: ''},
-            {k: '18-24岁', v: ''},
-            {k: '25-29岁', v: ''},
-            {k: '30-39岁', v: ''},
-            {k: '40-49岁', v: ''},
-            {k: '50-59岁', v: ''},
+            {k: '0-17岁', v: 0},
+            {k: '18-24岁', v: 0},
+            {k: '25-29岁', v: 0},
+            {k: '30-39岁', v: 0},
+            {k: '40-49岁', v: 0},
+            {k: '50-59岁', v: 0},
         ], // 年龄分布
         provinces: [], // 省份分布
         cities: [] // 城市分布
@@ -378,8 +383,8 @@ export default class Main extends ViewBase {
         if (item.fans) {
             this.formFans = {
                 count: item.fans.count ? item.fans.count : null,
-                male: item.fans.male ? item.fans.male : null,
-                female: item.fans.female ? item.fans.female : null,
+                male: item.fans.male ? Number(item.fans.male) : 0,
+                female: item.fans.female ? Number(item.fans.female) : 0,
                 ages: item.fans.ages ? item.fans.ages : [], // 年龄分布
                 provinces: item.fans.provinces ? item.fans.provinces : [], // 省份分布
                 cities: item.fans.cities ? item.fans.cities : [] // 城市分布

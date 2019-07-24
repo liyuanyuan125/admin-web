@@ -93,6 +93,19 @@
               <PartBindCinema type="1" :value="detail.cinemaList" />
           </Col>
         </Row>
+        <Row class="cinema-button">
+          <Col span="2"><div>品牌列表</div></Col>
+          <Col span="12">
+              <Table
+                :columns="columns"
+                :data="list"
+                size="small"
+                stripe
+                border
+              >
+              </Table>
+          </Col>
+       </Row>
       </Row>
       <Row class="detail-number">
         <Row>
@@ -158,6 +171,7 @@ export default class Main extends ViewBase {
   levelList: any = []
   statusList: any = []
   showimg = true
+  list: any = []
   created() {
     this.load()
   }
@@ -168,6 +182,15 @@ export default class Main extends ViewBase {
       levelList: makeMap(this.levelList),
       levelStaus: conMap(this.levelList),
     }
+  }
+
+  get columns() {
+    return [
+      { type: 'index', title: '序号', width: 60, align: 'center' },
+      { title: '品牌ID', key: 'id', width: 80, align: 'center' },
+      { title: '品牌中文名称', key: 'brandName', align: 'center' },
+      { title: '状态', slot: 'status', align: 'center' },
+    ]
   }
 
   get format() {
@@ -241,6 +264,7 @@ export default class Main extends ViewBase {
     try {
       const res = await queryId(query)
       this.detail = res.data
+      this.list = res.data.brandList || []
       this.detail.cinemaList = res.data.cinemaList || []
       this.approveStatusList = res.data.approveStatusList
       this.customerTypeList = res.data.customerTypeList

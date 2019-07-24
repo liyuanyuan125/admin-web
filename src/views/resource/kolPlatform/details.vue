@@ -33,12 +33,11 @@
            <p v-for="(item, index) in logList" :key="index">
             <span>{{item.createUserName}}</span>
             <span>{{item.createTime}}</span>
-            <span>{{item.descption}}</span>
+            <span>{{item.description}}</span>
            </p>
-          <!-- <Table :columns="operationLogCol" :data="logList" border stripe></Table> -->
-          <div class="text-align">
+          <!-- <div class="text-align">
               <Button :to="{name: 'resource-kolplatform-list'}">返回</Button>
-          </div>
+          </div> -->
       </div>
       
       <div class="base-mess" v-if="type">
@@ -49,10 +48,11 @@
             <label class="label-dese">备注：</label>
             <Input v-model="desc" type="textarea" style="width: 80%" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入备注"></Input>
           </p>
-         <div class="batch-btn">
-            <Button type="primary" class="btn" @click="submitAudit"> 提交</Button>
-            <Button :to="{name: 'resource-kolplatform-list'}"> 返回</Button>
-         </div>
+      </div>
+
+       <div class="batch-btn">
+        <Button  v-if="type" type="primary" class="btn" @click="submitAudit"> 提交</Button>
+        <Button :to="{name: 'resource-kolplatform-list'}"> 返回</Button>
       </div>
       
   </div>
@@ -63,6 +63,11 @@ import {Component, Prop} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { intDate } from '@/util/dealData.ts'
 import { details, approve } from './data'
+import moment from 'moment'
+const dateFormat = 'YYYY-MM-DD HH:mm:ss'
+
+
+
 @Component
 export default class Main extends ViewBase {
     @Prop({ type: Number, default: 0}) id!: number
@@ -123,19 +128,27 @@ export default class Main extends ViewBase {
             const { data: {item, accountCategoryList, logList} } = await details(this.code, this.id)
             this.items = item
             this.accountCategoryList = accountCategoryList
+            // 结算价
             this.settlmentDate = (item.settlementPrices || []).map((it: any) => {
                 return {
                    ...it,
                    effectiveDate: intDate(it.effectiveDate)
                 }
-            }) // 结算价
+            })
+            // 定价/销售价
             this.priceDate = (item.prices || []).map((it: any) => {
                 return {
                     ...it,
                     priceType: it.priceType == 1 ? '固定价格' : '固定价格*系数'
                 }
-            }) // 定价/销售价
-            this.logList = logList || [] // 日志
+            })
+            // 日志
+            this.logList = (logList || []).map((it: any) => {
+              return {
+                ...it,
+                createTime: moment(it.createTime).format(dateFormat)
+              }
+            })
         } catch (ex) {
             this.handleError(ex)
         }
