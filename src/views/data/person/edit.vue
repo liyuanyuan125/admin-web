@@ -21,7 +21,7 @@
             <Row> 
                 <Col :span="24">
                     <FormItem label="简介修改:">
-                        <Input type="textarea" class="info-textarea" :rows="4" v-model="form.introduction" placeholder=""></Input>
+                        <Input type="textarea" class="info-textarea" :rows="6" v-model="form.introduction" placeholder=""></Input>
                     </FormItem>
                 </Col>
             </Row>
@@ -391,10 +391,12 @@ export default class Main extends ViewBase {
             }
         }
         // 处理粉丝展示
+        const formatIntro = item.introduction.replace(/&nbsp;/g, ' ').replace(/\<br\/>/g, '\r\n')
+        const intro = item.introduction ? formatIntro : item.introduction
         this.form = {
             tip: item.tip || '',
             tags: item.tags ? item.tags.join(',') : null,
-            introduction: item.introduction,
+            introduction: intro,
             biJyIndex: item.biJyIndex,
             jyIndex: item.jyIndex,
             jyIndexWeight: item.jyIndexWeight,
@@ -443,9 +445,14 @@ export default class Main extends ViewBase {
         delete this.form.primaryPro
         delete this.form.restPro
         delete this.form.biJyIndex
+
+        const intro = this.form.introduction
+        const format = intro.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;')
+        const introduction = intro ? format : intro
         try {
             const { data } = await editPersonal(this.detaiId, {
                 ...this.form,
+                introduction,
                 tags,
                 headImgBig: this.imageList.length > 0 ? this.imageList[0].url : null, // 上传大图
                 brands: this.brandData, // 品牌
