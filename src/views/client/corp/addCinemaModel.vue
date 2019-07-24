@@ -8,13 +8,14 @@
     <p class="cinema-header">注：因资源方类型为影院，因此仅能关联一家影院</p>
     <Row class="shouDlg-header">
       <Col span="7">
-        <Select v-model="chainId" placeholder="请输入院线名称" filterable
+        <Cinema v-model='chainId' />
+        <!-- <Select v-model="chainId" placeholder="请输入院线名称" filterable
           clearable class="component" ref="ui">
           <Option v-if="!!it.chainName" v-for="it in options" :key="it.id" :value="it.chainId"
             :label="it.chainName" class="flex-box">
             <span class="flex-1">{{it.chainName}}</span>
           </Option>
-        </Select>
+        </Select> -->
       </Col>
       <Col span="7" offset="1">
         <AreaSelect v-model="area"/>
@@ -78,15 +79,14 @@
 import { Component, Watch, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import AreaSelect from '@/components/areaSelect'
-import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import { slice, clean } from '@/fn/object'
 import { queryList } from '@/api/cinema'
 import { isEqual } from 'lodash'
-
+import Cinema from '@/components/theaterCinema/index.vue'
 @Component({
   components: {
     AreaSelect,
-    CinemaChainSelect
+    Cinema
   }
 })
 export default class Main extends ViewBase {
@@ -129,23 +129,10 @@ export default class Main extends ViewBase {
     }
     this.showDlg = true
     this.seach()
-    this.authIdList()
   }
 
   created() {
     this.seach()
-  }
-
-  async authIdList() {
-    try {
-      const { data } = await queryList({
-        pageSize: 888888
-      })
-      const list: any[] = data.items || []
-      this.options = list
-    } catch (ex) {
-      this.handleError(ex)
-    }
   }
 
   async seach(id?: any) {

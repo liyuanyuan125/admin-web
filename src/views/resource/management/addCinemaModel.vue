@@ -89,12 +89,14 @@ import { slice, clean } from '@/fn/object'
 import { cinemaList, cinemaCldList } from '@/api/rateCard'
 import { toast } from '@/ui/modal.ts'
 import { isEqual } from 'lodash'
+import Cinema from '@/components/theaterCinema/index.vue'
 
 @Component({
   components: {
     AreaSelect,
     CinemaChainSelect,
-    MovieHall
+    MovieHall,
+    Cinema
   }
 })
 export default class Main extends ViewBase {
@@ -148,7 +150,6 @@ export default class Main extends ViewBase {
     }
     this.showDlg = true
     this.seach()
-    this.authIdList()
   }
 
   created() {
@@ -159,19 +160,6 @@ export default class Main extends ViewBase {
     return this.items.map((it: any) => {
       return it.id
     })
-  }
-  // 获取影院列表
-  async authIdList() {
-    try {
-      const { data } = await cinemaList({
-        companyId: this.companyId,
-        pageSize: 888888
-      })
-      const list: any[] = data.items || []
-      this.options = list
-    } catch (ex) {
-      this.handleError(ex)
-    }
   }
 
   // 获取所选长度

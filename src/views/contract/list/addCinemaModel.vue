@@ -8,13 +8,7 @@
     <p class="cinema-header">注：因资源方类型为影院，因此仅能关联一家影院</p>
     <Row class="shouDlg-header">
       <Col span="7">
-      <Select v-model="chainId" placeholder="请输入院线名称" filterable
-        clearable class="component" ref="ui">
-        <Option v-for="it in options" :key="it.id" :value="it.chainId"
-          :label="it.chainName" class="flex-box">
-          <span class="flex-1">{{it.chainName}}</span>
-        </Option>
-      </Select>
+       <Cinema v-model='chainId' />
       </Col>
       <Col span="7" offset="1">
         <AreaSelect v-model="area"/>
@@ -80,11 +74,13 @@ import { slice, clean } from '@/fn/object'
 import { cinemaId } from '@/api/list'
 import { isEqual } from 'lodash'
 import { queryList } from '@/api/cinemaChain'
+import Cinema from '@/components/theaterCinema/index.vue'
 
 @Component({
   components: {
     AreaSelect,
-    CinemaChainSelect
+    CinemaChainSelect,
+    Cinema
   }
 })
 export default class Main extends ViewBase {
@@ -130,27 +126,10 @@ export default class Main extends ViewBase {
     }
     this.showDlg = true
     this.seach()
-    this.authIdList()
   }
 
   created() {
     this.seach()
-    this.authIdList()
-  }
-
-  async authIdList() {
-    if (!this.id) {
-      return
-    }
-    try {
-      const { data } = await cinemaId(this.id, {
-        pageSize: 888888
-      })
-      const list: any[] = data.items || []
-      this.options = list
-    } catch (ex) {
-      this.handleError(ex)
-    }
   }
 
   async seach() {
