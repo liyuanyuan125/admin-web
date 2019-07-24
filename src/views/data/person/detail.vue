@@ -161,8 +161,6 @@
           <span>{{item.descption}}</span>
         </p>
       </div>
-      
-        <!-- <Table :columns="operateColumns" :data="oprateList" border stripe disabled-hover></Table> -->
     </div>
   </div>
 </template>
@@ -175,6 +173,7 @@ import personMovies from './personMovies.vue'
 import {formatConversion} from '@/util/validateRules'
 import { readableNumber } from '@/util/dealData'
 import { cloneDeep } from 'lodash'
+
 
 
 @Component({
