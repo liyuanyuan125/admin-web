@@ -84,7 +84,7 @@ const makePriceList = (
 export async function queryItem(query: any = {}) {
   const { id, channel } = query
   const { data } = await get(`/kol/channel-accounts/${channel}/${id}`)
-  const { ageList, publishCategoryList } = data
+  const { ageList, publishCategoryList, logList = [] } = data
 
   // 审核状态：1 待审核，2 审核通过，3 审核拒绝
   const status = parseInt(dot(data, 'item.status'), 10) || 0
@@ -116,6 +116,8 @@ export async function queryItem(query: any = {}) {
 
       // 是否被审核过（通过或拒绝）
       audited: status == 2 || status == 3,
+
+      logList,
     },
     typeList: [
       { key: 1, text: '个人' },

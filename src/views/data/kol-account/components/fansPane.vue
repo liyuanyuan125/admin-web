@@ -193,5 +193,3 @@ export default class FansPane extends ViewBase {
   margin-top: 10px;
 }
 </style>
-
-

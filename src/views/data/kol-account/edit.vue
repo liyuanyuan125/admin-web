@@ -20,6 +20,7 @@ import { queryItem, queryProvince, queryCity, editItem, auditItem } from './data
 import AgeTable, { KeyTextValue } from './components/ageTable.vue'
 import FansPane, { FansItem } from './components/fansPane.vue'
 import PriceTable, { PriceItem } from './components/priceTable.vue'
+import LogTable from './components/logTable.vue'
 import { success } from '@/ui/modal'
 import { MapType } from '@/util/types'
 import { devLog } from '@/util/dev'
@@ -302,6 +303,14 @@ export default class EditPage extends ViewBase {
         span: 8,
         visible: item => !item.auditPass,
         visibleCol: item => isAudit || item.audited
+      },
+
+      {
+        name: 'logList',
+        defaultValue: [],
+        component: LogTable,
+        group: '操作日志',
+        visibleCol: () => isView
       }
     )
 
