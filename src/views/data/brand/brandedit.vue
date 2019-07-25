@@ -510,7 +510,7 @@ export default class Main extends ViewBase {
 
   updataRow(row: any, ind: number) {
     if (row.v == '') {
-      row.v = 0
+      row.v = null
     }
     this.ageCodeList.splice(ind, 1, row)
   }
