@@ -47,9 +47,9 @@
               <div v-if="items.length>0">
                 <div v-for="(item) in items" :key="item.id" class="check">
                   <tooltip content="已下架" v-if="item.controlStatus != 1" placement="right">
-                    <Checkbox :label="item.id" style="color: red">{{item.shortName}}</Checkbox>
+                    <Checkbox :label="item.id" style="color: red">【{{item.code}}】 {{item.shortName}}</Checkbox>
                   </tooltip>
-                  <Checkbox v-else :label="item.id">{{item.shortName}}</Checkbox>
+                  <Checkbox v-else :label="item.id">【{{item.code}}】 {{item.shortName}}</Checkbox>
                 </div>
                 <div v-if="(items.length%4) == 3" class="check">&nbsp;</div>
               </div>
