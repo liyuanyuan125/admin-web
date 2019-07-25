@@ -330,7 +330,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 基础数据 - 品牌管理 - 查看门店
   {
-    path: '/data/brand/shopdetail/:id',
+    path: '/data/brand/shopdetail/:brandId',
     name: 'data-brand-shopdetail',
     component: () => import('./views/data/brand/shopdetail.vue'),
     meta: {
@@ -340,7 +340,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 基础数据 - 品牌管理 - 编辑门店
   {
-    path: '/data/brand/shopedit/:id?',
+    path: '/data/brand/shopedit/:brandId',
     name: 'data-brand-shopedit',
     component: () => import('./views/data/brand/shopedit.vue'),
     meta: {
@@ -350,7 +350,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 基础数据 - 品牌管理 - 查看产品
   {
-    path: '/data/brand/productdetail',
+    path: '/data/brand/productdetail/:id',
     name: 'data-brand-productdetail',
     component: () => import('./views/data/brand/productdetail.vue'),
     meta: {
@@ -360,7 +360,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 基础数据 - 品牌管理 - 查看产品
   {
-    path: '/data/brand/productedit',
+    path: '/data/brand/productedit/:id',
     name: 'data-brand-productedit',
     component: () => import('./views/data/brand/productedit.vue'),
     meta: {

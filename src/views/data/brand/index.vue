@@ -36,17 +36,17 @@
         </div>
       </template>
 
-      <template slot="shop" slot-scope="{ row: { status } }">
+      <template slot="shop" slot-scope="{ row: { status, id } }">
         <div class="keyWords">
-          <router-link v-if="status == 1" :to="{ name: 'data-brand-shopedit' }">查看门店</router-link>
-          <router-link v-if="status == 1 || status == 2" :to="{ name: 'data-brand-shopedit' }">编辑门店</router-link>
+          <router-link v-if="status == 1" :to="{ name: 'data-brand-shopdetail', params: { brandId: id} }">查看门店</router-link>
+          <router-link v-if="status == 1 || status == 2" :to="{ name: 'data-brand-shopedit', params: { brandId: id} }">编辑门店</router-link>
         </div>
       </template>
 
-      <template slot="product" slot-scope="{ row: { status } }">
+      <template slot="product" slot-scope="{ row: { status, id } }">
         <div class="keyWords">
-          <router-link v-if="status == 1" :to="{ name: 'data-cinema-hall' }">查看产品</router-link>
-          <router-link v-if="status == 1 || status == 2" :to="{ name: 'data-cinema-hall' }">编辑产品</router-link>
+          <router-link v-if="status == 1" :to="{ name: 'data-brand-productdetail',  params: { id } }">查看产品</router-link>
+          <router-link v-if="status == 1 || status == 2" :to="{ name: 'data-brand-productedit',  params: { id } }">编辑产品</router-link>
         </div>
       </template>
 

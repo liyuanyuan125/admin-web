@@ -17,6 +17,22 @@
         >新建</Button>
       </template>
 
+      <template slot="weibo" slot-scope="{ row: { id, exts } }">
+        <span v-for="it in (exts || [])" :key="it.id" v-if="it.channelCode == 'weibo'">{{it.channelDataName}}</span>
+      </template>
+
+      <template slot="wechat" slot-scope="{ row: { id, exts } }">
+        <span v-for="it in (exts || [])" :key="it.id" v-if="it.channelCode == 'wechat'">{{it.channelDataName}}</span>
+      </template>
+
+      <template slot="douyin" slot-scope="{ row: { id, exts } }">
+        <span v-for="it in (exts || [])" :key="it.id" v-if="it.channelCode == 'douyin'">{{it.channelDataName}}</span>
+      </template>
+
+      <template slot="kuaishou" slot-scope="{ row: { id, exts } }">
+        <span v-for="it in (exts || [])" :key="it.id" v-if="it.channelCode == 'kuaishou'">{{it.channelDataName}}</span>
+      </template>
+
       <template slot="id" slot-scope="{ row: { id } }">
         <router-link :to="{ name: 'data-kol-associated-detail', params: { id} }">
            {{id}}</router-link>
@@ -125,10 +141,10 @@ export default class Main extends ViewBase {
       { title: 'KOL编号', key: 'id', slot: 'id' },
       { title: 'KOL名称', key: 'name' },
       { title: '鲸娱指数', key: 'jyIndex' },
-      { title: '微博平台账号', key: 'weibo' },
-      { title: '微信平台账号', key: 'wechat' },
-      { title: '快手', key: 'kuaishou' },
-      { title: '抖音平台账号', key: 'douyin' },
+      { title: '微博平台账号', key: 'weibo', slot: 'weibo' },
+      { title: '微信平台账号', key: 'wechat', slot: 'wechat' },
+      { title: '快手', key: 'kuaishou', slot: 'kuaishou' },
+      { title: '抖音平台账号', key: 'douyin', slot: 'douyin' },
       { title: '最后更新时间', key: 'modifyTime', editor: 'dateTime' },
       { title: '操作', slot: 'action' }
     ] as ColumnExtra[]
