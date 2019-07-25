@@ -328,6 +328,26 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  // 基础数据 - 品牌管理 - 新建品牌
+  {
+    path: '/data/brand/brandedit/:id?',
+    name: 'data-brand-brandedit',
+    component: () => import('./views/data/brand/brandedit.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 基础数据 - 品牌管理 - 编辑品牌
+  {
+    path: '/data/brand/brandetail',
+    name: 'data-brand-brandetail',
+    component: () => import('./views/data/brand/brandDetail.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
   // 基础数据 - 品牌管理 - 查看门店
   {
     path: '/data/brand/shopdetail/:brandId',
