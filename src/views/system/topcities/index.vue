@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    票房城市TOP20设置 
+    票房城市TOP20设置
   </div>
 </template>
 
@@ -10,13 +10,14 @@ import ViewBase from '@/util/ViewBase'
 
 @Component({
   components: {
+    // todo
   }
 })
 export default class TopCities extends ViewBase {
-
+  // todo
 }
 </script>
 
 <style lang="less" scoped>
-
+  // todo
 </style>
