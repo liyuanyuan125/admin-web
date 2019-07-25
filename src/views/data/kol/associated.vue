@@ -18,19 +18,19 @@
       </template>
 
       <template slot="weibo" slot-scope="{ row: { id, exts } }">
-        <span v-for="it in (exts || [])" :key="it.id" v-if="it.channelCode == 'weibo'">{{it.channelDataName}}</span>
+        <span v-for="it in (exts || [])" :key="it.id" v-if="it.channelCode == 'weibo'">{{it.channelDataId}}</span>
       </template>
 
       <template slot="wechat" slot-scope="{ row: { id, exts } }">
-        <span v-for="it in (exts || [])" :key="it.id" v-if="it.channelCode == 'wechat'">{{it.channelDataName}}</span>
+        <span v-for="it in (exts || [])" :key="it.id" v-if="it.channelCode == 'wechat'">{{it.channelDataId}}</span>
       </template>
 
       <template slot="douyin" slot-scope="{ row: { id, exts } }">
-        <span v-for="it in (exts || [])" :key="it.id" v-if="it.channelCode == 'douyin'">{{it.channelDataName}}</span>
+        <span v-for="it in (exts || [])" :key="it.id" v-if="it.channelCode == 'douyin'">{{it.channelDataId}}</span>
       </template>
 
       <template slot="kuaishou" slot-scope="{ row: { id, exts } }">
-        <span v-for="it in (exts || [])" :key="it.id" v-if="it.channelCode == 'kuaishou'">{{it.channelDataName}}</span>
+        <span v-for="it in (exts || [])" :key="it.id" v-if="it.channelCode == 'kuaishou'">{{it.channelDataId}}</span>
       </template>
 
       <template slot="id" slot-scope="{ row: { id } }">
