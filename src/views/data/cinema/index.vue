@@ -79,7 +79,7 @@ export default class Main extends ViewBase {
       name: 'name',
       defaultValue: '',
       type: 'input',
-      width: 85,
+      width: 90,
       placeholder: '影院名称'
     },
 
