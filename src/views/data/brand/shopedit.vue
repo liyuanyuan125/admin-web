@@ -15,14 +15,14 @@
         >新建账号平台</Button>
       </template>
 
-      <template slot="action" slot-scope="{ row: { id } }">
+      <template slot="action" slot-scope="{ row, row: { id } }">
         <div class="row-acts">
-          <a @click="editShow(id)">编辑</a>
+          <a @click="editShow(id, row)">编辑</a>
           <a @click="del(id)">删除</a>
         </div>
       </template>
     </ListPage>
-    <EditDialog :fields="fields" :fetch="editFetch" queryKeys="brandId,id" :submit="editSubmit" ref="editDlg"/>
+    <EditDialog :fields="fields" :fetch="editFetch" queryKeys="brandId,id,name,provinceId,phone,cityId,address" :submit="editSubmit" ref="editDlg"/>
   </div>
 </template>
 
@@ -50,12 +50,11 @@ export default class Main extends ViewBase {
     const brandId = this.$route.params.brandId
     return [
       {
-        name: 'channelCode',
+        name: 'query',
         defaultValue: '',
         type: 'input',
         width: 85,
         placeholder: '门店名称',
-        enumKey: 'query'
       },
 
       {
@@ -155,7 +154,15 @@ export default class Main extends ViewBase {
     ]
   }
 
-  editFetch = shoplist
+  editFetch = async (query: any) => {
+    return {
+      data: {
+        item: {
+          ...query
+        }
+      }
+    }
+  }
 
   async del(id: any) {
     try {
@@ -166,7 +173,7 @@ export default class Main extends ViewBase {
     }
   }
 
-  editShow(id = 0) {
+  editShow(id = 0, it: any) {
     const editor = this.$refs.editDlg as EditDialog
     const brandId = this.$route.params.brandId
     this.id = id
@@ -174,7 +181,8 @@ export default class Main extends ViewBase {
     if (this.id) {
       query = {
         brandId,
-        id
+        id,
+        ...it
       }
     } else {
       query = {

@@ -7,20 +7,6 @@
       :columns="columns"
       ref="listPage"
     >
-      <template slot="acts">
-        <Button
-          type="success"
-          icon="md-add-circle"
-          @click="editShow()"
-        >新建账号平台</Button>
-      </template>
-
-      <template slot="action" slot-scope="{ row: { id } }">
-        <div class="row-acts">
-          <a @click="editShow(id)">编辑</a>
-          <a @click="del(id)">删除</a>
-        </div>
-      </template>
     </ListPage>
   </div>
 </template>
@@ -47,12 +33,11 @@ export default class Main extends ViewBase {
     const brandId = this.$route.params.brandId
     return [
       {
-        name: 'channelCode',
+        name: 'query',
         defaultValue: '',
         type: 'input',
         width: 85,
         placeholder: '门店名称',
-        enumKey: 'query'
       },
 
       {
