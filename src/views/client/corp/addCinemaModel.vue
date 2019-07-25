@@ -5,7 +5,7 @@
     title="添加关联影院"
     @on-cancel="cancel()"
     >
-    <p class="cinema-header">注：因资源方类型为影院，因此仅能关联一家影院</p>
+    <p class="cinema-header" v-if='cinemaend == 1'>注：因资源方类型为影院，因此仅能关联一家影院</p>
     <Row class="shouDlg-header">
       <Col span="7">
         <Cinema v-model='chainId' />
@@ -21,7 +21,7 @@
         <AreaSelect v-model="area"/>
       </Col>
       <Col span="5" offset="1">
-         <Input v-model="value" placeholder="请输入影院名称" />
+         <Input v-model="value" placeholder="影院名称/转资编码" />
       </Col>
       <Button style="float:right" type="primary" @click="seach(1)">搜索</Button>
     </Row>
