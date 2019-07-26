@@ -1,7 +1,6 @@
 
 // import { get } from '@/fn/ajax'
 import { get , post , put , del } from '@/fn/ajax'
-import { mockGet, tid, title20, typeInt, dateRange } from './mock'
 
 //  列表
 export async function queryList(query: any) {
