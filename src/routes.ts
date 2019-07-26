@@ -893,6 +893,16 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  // TOP城市设置
+  {
+    path: '/system/topcities',
+    name: 'system-topcities',
+    component: () => import('./views/system/topcities/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
   {
     path: '/order/list',
     name: 'order-list',
