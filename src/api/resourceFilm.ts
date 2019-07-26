@@ -14,6 +14,14 @@ export async function queryDetail(id: any) {
   return res
 }
 
+// 影片资源管理 - 详情
+// http://yapi.aiads-dev.com/project/156/interface/api/4334
+export async function moviedetail(id: any) {
+  const res = await get(`/movie/resource/${id}`)
+  return res
+}
+
+
 // 影片关联
 export async function relevanceFilm() {
   const res = await get('/movie/resource/movies')

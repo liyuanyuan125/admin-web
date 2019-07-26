@@ -20,9 +20,9 @@
           </Row>
           <Row>
             <Col :span='3'>影片资源要求:</Col>
-            <Col :span='9' v-if='list.movieResource.material.need == true'>授权海报</Col>
-            <Col :span='2' v-if='list.movieResource.coupon.need == true'>电子券</Col>
-            <Col :span='9' v-if='list.movieResource.coupon.need == true'>数量：{{list.movieResource.coupon.count}}</Col>
+            <Col :span='9' v-if='list.movieResource && list.movieResource.material.need == true'>授权海报</Col>
+            <Col :span='2' v-if='list.movieResource && list.movieResource.coupon.need == true'>电子券</Col>
+            <Col :span='9' v-if='list.movieResource && list.movieResource.coupon.need == true'>数量：{{list.movieResource.coupon.count}}</Col>
           </Row>
           <Row>
             <Col :span='3'>品牌方线上资源:</Col>
@@ -41,9 +41,9 @@
                 <Radio v-for="it in approveStatusList"   :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
               </RadioGroup>
             </FormItem>
-            <!-- <FormItem  label="备注" prop="reason">
-            <Input style="width:240px" v-model="dataForm.refuseReason"></Input>
-          </FormItem> -->
+            <FormItem  label="备注" prop="reason">
+              <Input style="width:240px" v-model="dataForm.refuseReason"></Input>
+            </FormItem>
           </Form>
           <Button style='margin-left:20px;' type="primary"  @click="change()">提交</Button>
           <Button style='margin-left:20px;' @click="back">取消</Button>
@@ -83,7 +83,7 @@ import moment from 'moment'
 import {
   itemlist, changestatus
 } from '@/api/filmorder'
-import { queryDetail } from '@/api/resourceFilm'
+import { moviedetail } from '@/api/resourceFilm'
 import EditDialog, { Field } from '@/components/editDialog'
 import UploadButton, { SuccessEvent } from '@/components/UploadButton.vue'
 
@@ -92,7 +92,7 @@ const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
 
 const dataForm = {
-  status: 2
+  status: 1
 }
 
 @Component({
@@ -150,7 +150,7 @@ export default class Main extends ViewBase {
       const { data } = await itemlist(this.$route.params.id)
       this.list = data
 
-      const datas = await queryDetail(this.$route.params.id)
+      const datas = await moviedetail(this.$route.params.id)
       this.detailList = datas.data
     } catch (ex) {
       this.handleError(ex)

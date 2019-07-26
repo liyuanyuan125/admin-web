@@ -146,6 +146,7 @@ import PartBindCinema from './partBindCinema.vue'
 import DlgEdit from '../account/dlgEdit.vue'
 import Upload from '@/components/Upload.vue'
 import { toMap } from '@/fn/array'
+import { flattenDeep } from 'lodash'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 const typeMap = (list: any[]) => toMap(list, 'typeCode', 'controlStatus')
 const conMap = (list: any[]) => toMap(list, 'key', 'controlStatus')
@@ -218,9 +219,9 @@ export default class Main extends ViewBase {
   }
 
   formatCinema(data: any) {
-    const cinemChildren = data && data.map((item: any) => {
+    const cinemChildren = data && flattenDeep(data.map((item: any) => {
       return item.typeCategoryList
-    }).flat()
+    }))
     return typeMap(cinemChildren)
   }
   get qualifica() {
