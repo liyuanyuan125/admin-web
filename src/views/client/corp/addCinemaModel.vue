@@ -139,7 +139,7 @@ export default class Main extends ViewBase {
     this.dataLoading = true
     const query: any = {
       chainId: this.chainId,
-      name: this.value,
+      query: this.value,
       ...this.query,
       pageSize: this.pageSize,
       pageIndex: id || this.pageIndex
