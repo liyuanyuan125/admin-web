@@ -328,9 +328,29 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  // 基础数据 - 品牌管理 - 新建品牌
+  {
+    path: '/data/brand/brandedit/:id?',
+    name: 'data-brand-brandedit',
+    component: () => import('./views/data/brand/brandedit.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 基础数据 - 品牌管理 - 编辑品牌
+  {
+    path: '/data/brand/brandetail',
+    name: 'data-brand-brandetail',
+    component: () => import('./views/data/brand/brandDetail.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
   // 基础数据 - 品牌管理 - 查看门店
   {
-    path: '/data/brand/shopdetail/:id',
+    path: '/data/brand/shopdetail/:brandId',
     name: 'data-brand-shopdetail',
     component: () => import('./views/data/brand/shopdetail.vue'),
     meta: {
@@ -340,7 +360,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 基础数据 - 品牌管理 - 编辑门店
   {
-    path: '/data/brand/shopedit/:id?',
+    path: '/data/brand/shopedit/:brandId',
     name: 'data-brand-shopedit',
     component: () => import('./views/data/brand/shopedit.vue'),
     meta: {
@@ -350,7 +370,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 基础数据 - 品牌管理 - 查看产品
   {
-    path: '/data/brand/productdetail',
+    path: '/data/brand/productdetail/:id',
     name: 'data-brand-productdetail',
     component: () => import('./views/data/brand/productdetail.vue'),
     meta: {
@@ -360,7 +380,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 基础数据 - 品牌管理 - 查看产品
   {
-    path: '/data/brand/productedit',
+    path: '/data/brand/productedit/:id',
     name: 'data-brand-productedit',
     component: () => import('./views/data/brand/productedit.vue'),
     meta: {
@@ -868,6 +888,16 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     path: '/system/issue',
     name: 'system-issue',
     component: () => import('./views/system/issue/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // TOP城市设置
+  {
+    path: '/system/topcities',
+    name: 'system-topcities',
+    component: () => import('./views/system/topcities/index.vue'),
     meta: {
       authKey: ''
     }

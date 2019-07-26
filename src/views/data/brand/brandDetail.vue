@@ -7,22 +7,7 @@
       :columns="columns"
       ref="listPage"
     >
-      <template slot="acts">
-        <Button
-          type="success"
-          icon="md-add-circle"
-          @click="editShow()"
-        >新建账号平台</Button>
-      </template>
-
-      <template slot="action" slot-scope="{ row, row: { id } }">
-        <div class="row-acts">
-          <a @click="editShow(id, row)">编辑</a>
-          <a @click="del(id)">删除</a>
-        </div>
-      </template>
     </ListPage>
-    <EditDialog :fields="fields" :fetch="editFetch" queryKeys="brandId,id,name,provinceId,phone,cityId,address" :submit="editSubmit" ref="editDlg"/>
   </div>
 </template>
 
@@ -31,54 +16,50 @@ import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import jsxReactToVue from '@/util/jsxReactToVue'
-import { editshop, delshop, addshop, shoplist } from '@/api/brand'
+import { mediaslist, addmedias, editmedias, delmedias } from '@/api/brand'
 import EditDialog, { Field } from '@/components/editDialog'
 import { slice, clean } from '@/fn/object'
-import AreaSelect, { areaParam } from '@/components/areaSelect'
 
 @Component({
   components: {
     ListPage,
-    EditDialog
   }
 })
 export default class Main extends ViewBase {
-  fetch = shoplist
+  fetch = mediaslist
   id = 0
 
   get filters() {
     const brandId = this.$route.params.brandId
     return [
       {
-        name: 'query',
+        name: 'channelCode',
         defaultValue: '',
-        type: 'input',
+        type: 'select',
         width: 85,
-        placeholder: '门店名称',
+        placeholder: '账号平台',
+        enumKey: 'channelCodeList'
       },
 
       {
-        ...areaParam,
-        type: AreaSelect,
-        props: {
-          maxLevel: 2,
-        },
-        width: 160,
-        placeholder: '所在省市',
-        defaultValue: [0, 0],
-        dealParam: ([provinceId, cityId]: number[]) => ({
-          provinceId: provinceId || 0,
-          cityId: cityId || 0,
-        }),
-        backfillParam: ({ provinceId, cityId }: any) => [
-          provinceId || 0,
-          cityId || 0,
-        ]
+        name: 'channelDataId',
+        defaultValue: '',
+        type: 'input',
+        width: 85,
+        placeholder: '账号ID'
+      },
+
+      {
+        name: 'name',
+        defaultValue: '',
+        type: 'input',
+        width: 85,
+        placeholder: '账号名称'
       },
 
       {
         name: 'brandId',
-        defaultValue: brandId
+        defaultValue: brandId,
       },
 
       {
@@ -100,12 +81,12 @@ export default class Main extends ViewBase {
   get columns() {
     return [
       { title: '序号', key: 'id' },
-      { title: '门店名称', key: 'name' },
-      { title: '门店所在省份', key: 'provinceName'},
-      { title: '门店所在城市', key: 'cityName' },
-      { title: '门店详细地址', key: 'address' },
-      { title: '门店电话', key: 'phone' },
-      { title: '操作', key: 'keyWords', slot: 'action' }
+      { title: '账号平台', key: 'channelCode' , editor: 'enum', enumKey: 'channelCodeCode'},
+      { title: '账号ID', key: 'id'},
+      { title: '账号名称', key: 'name' },
+      { title: '账号头像', key: 'logo', editor: 'deprecated' },
+      { title: '跳转URL链接', key: 'url', editor: 'enum', enumKey: 'tradeCodeCode' },
+      // { title: '操作', key: 'keyWords', slot: 'action' }
     ] as ColumnExtra[]
   }
 
@@ -118,47 +99,55 @@ export default class Main extends ViewBase {
       },
 
       {
-        name: 'name',
+        name: 'channelCodeCode',
         defaultValue: '',
-        type: 'input',
-        label: '门店名称',
+        type: 'select',
+        label: '账号平台',
         span: 12,
         required: true
       },
 
       {
-        ...areaParam,
-        type: AreaSelect,
-        label: '所在地区：',
+        name: 'channelDataId',
+        defaultValue: '',
+        type: 'input',
+        label: '账号ID',
         span: 12,
-        props: {
-          maxLevel: 2
-        }
+        required: true
       },
 
       {
-        name: 'address',
+        name: 'name',
         defaultValue: '',
         type: 'input',
-        label: '详细地址：',
+        label: '账号名称',
         span: 12,
       },
 
       {
-        name: 'phone',
+        name: 'url',
         defaultValue: '',
         type: 'input',
-        label: '电话：',
+        label: 'URL链接',
         span: 12
       }
     ]
   }
 
-  editFetch = async (query: any) => {
+  editFetch = async ( query: any) => {
+    const { data: {
+      items,
+      channelCodeList
+    }} = await mediaslist(query)
+
     return {
       data: {
+        channelCodeList,
         item: {
-          ...query
+          url: items[0].url,
+          channelCodeCode: items[0].channelCode,
+          name: items[0].name,
+          channelDataId: items[0].channelDataId,
         }
       }
     }
@@ -166,14 +155,14 @@ export default class Main extends ViewBase {
 
   async del(id: any) {
     try {
-      await delshop(id)
+      await delmedias(id)
       ; (this.$refs.listPage as any).update()
     } catch (ex) {
       this.handleError(ex)
     }
   }
 
-  editShow(id = 0, it: any) {
+  editShow(id = 0) {
     const editor = this.$refs.editDlg as EditDialog
     const brandId = this.$route.params.brandId
     this.id = id
@@ -181,12 +170,12 @@ export default class Main extends ViewBase {
     if (this.id) {
       query = {
         brandId,
-        id,
-        ...it
+        id
       }
     } else {
       query = {
         brandId,
+        channelCode: 1
       }
     }
     editor.show({ ...query }).done((data: any) => {
@@ -197,9 +186,11 @@ export default class Main extends ViewBase {
   editSubmit(data: any) {
     const query = clean({
       ...data,
+      channelCode: data.channelCodeCode,
+      channelCodeCode: '',
       id: this.id
-    }, [0])
-    return this.id ? editshop(query) : addshop(query)
+    })
+    return this.id ? editmedias(query) : addmedias(query)
   }
 
   mounted() {}

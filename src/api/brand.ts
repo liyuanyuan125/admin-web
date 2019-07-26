@@ -116,3 +116,39 @@ export async function filmlist(query: any) {
   const data = await get(`/movie/resource/`, query)
   return data
 }
+
+/**
+ * 分页查询 门店列表
+ * @param query 查询条件，http://yapi.aiads-dev.com/project/152/interface/api/3934
+ */
+export async function shoplist(query: any) {
+  const data = await get(`/brand/stores`, query)
+  return data
+}
+
+/**
+ * 分页查询 门店创建
+ * @param query 查询条件，http://yapi.aiads-dev.com/project/154/interface/api/3678
+ */
+export async function addshop(query: any) {
+  const data = await post(`/brand/stores`, query)
+  return data
+}
+
+/**
+ * 分页查询 门店编辑
+ * @param query 查询条件，http://yapi.aiads-dev.com/project/154/interface/api/3678
+ */
+export async function editshop(query: any) {
+  const data = await put(`/brand/stores`, query)
+  return data
+}
+
+/**
+ * 分页查询 门店删除
+ * @param query 查询条件，http://yapi.aiads-dev.com/project/154/interface/api/3678
+ */
+export async function delshop(id: any) {
+  const data = await put(`/brand/stores/${id}`)
+  return data
+}

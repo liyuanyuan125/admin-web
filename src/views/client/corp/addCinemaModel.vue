@@ -5,7 +5,7 @@
     title="添加关联影院"
     @on-cancel="cancel()"
     >
-    <p class="cinema-header">注：因资源方类型为影院，因此仅能关联一家影院</p>
+    <p class="cinema-header" v-if='cinemaend == 1'>注：因资源方类型为影院，因此仅能关联一家影院</p>
     <Row class="shouDlg-header">
       <Col span="7">
         <Cinema v-model='chainId' />
@@ -21,7 +21,7 @@
         <AreaSelect v-model="area"/>
       </Col>
       <Col span="5" offset="1">
-         <Input v-model="value" placeholder="请输入影院名称" />
+         <Input v-model="value" placeholder="影院名称/转资编码" />
       </Col>
       <Button style="float:right" type="primary" @click="seach(1)">搜索</Button>
     </Row>
@@ -47,9 +47,9 @@
               <div v-if="items.length>0">
                 <div v-for="(item) in items" :key="item.id" class="check">
                   <tooltip content="已下架" v-if="item.controlStatus != 1" placement="right">
-                    <Checkbox :label="item.id" style="color: red">{{item.shortName}}</Checkbox>
+                    <Checkbox :label="item.id" style="color: red">【{{item.code}}】 {{item.shortName}}</Checkbox>
                   </tooltip>
-                  <Checkbox v-else :label="item.id">{{item.shortName}}</Checkbox>
+                  <Checkbox v-else :label="item.id">【{{item.code}}】 {{item.shortName}}</Checkbox>
                 </div>
                 <div v-if="(items.length%4) == 3" class="check">&nbsp;</div>
               </div>
