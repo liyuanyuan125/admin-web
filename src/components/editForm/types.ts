@@ -42,8 +42,8 @@ export interface Rule {
 }
 
 // 生成默认的 required 规则
-const makeRequiredRule = (item: Field, rule?: Rule) => {
-  const defaultValue = item.defaultValue
+const makeRequiredRule = (field: Field, rule?: Rule) => {
+  const defaultValue = field.defaultValue
   const result: Rule = {
     required: true,
     message: '不能为空',
@@ -311,14 +311,14 @@ export interface GroupField {
 }
 
 // 为了支持 true 作为属性的占位符
-const resolveProps = (item: any, name: string) => {
-  const props = item[name]
+const resolveProps = (field: any, name: string) => {
+  const props = field[name]
   return isPlainObject(props) ? cloneDeep(props) : {}
 }
 
 // 新的方式：解析组件
-const resolveComponent = (item: Field) => {
-  const name = Object.keys(componentMap).find(key => key in item)
+const resolveComponent = (field: Field) => {
+  const name = Object.keys(componentMap).find(key => key in field)
   if (name) {
     const {
       component,
@@ -326,19 +326,19 @@ const resolveComponent = (item: Field) => {
       requiredRule
     } = componentMap[name]
 
-    const props = resolveProps(item, name)
+    const props = resolveProps(field, name)
 
     // 单独处理 enumKey
     const enumKey = props.enumKey
     delete props.enumKey
 
     // 处理验证规则
-    const rules = (item.rules || []).length == 0 && item.required
-      ? [ makeRequiredRule(item, requiredRule) ]
-      : (item.rules || [])
+    const rules = (field.rules || []).length == 0 && field.required
+      ? [ makeRequiredRule(field, requiredRule) ]
+      : (field.rules || [])
 
     const result = {
-      ...item,
+      ...field,
       component,
       enumKey,
       props: {
@@ -350,7 +350,7 @@ const resolveComponent = (item: Field) => {
 
     return result
   }
-  return item as any
+  return field as any
 }
 
 /**
@@ -362,7 +362,7 @@ export function normalizeField(list: Field[]) {
   .filter(it => it.component != null)
   .map(it => {
     const { component, props, placeholder } = it
-    const item: NormalField = {
+    const field: NormalField = {
       span: 1,
       offsetLeft: 0,
       offsetRight: 0,
@@ -383,22 +383,22 @@ export function normalizeField(list: Field[]) {
       auth: it.auth || '',
     }
 
-    const classBase = kebabCase(item.name)
+    const classBase = kebabCase(field.name)
 
-    item.colClass = {
+    field.colClass = {
       'col-field': true,
-      'col-no-label': !item.label,
-      'col-field-auto-width': !!item.autoWidth,
-      [`col-offset-right-${item.offsetRight}`]: item.offsetRight! > 0,
+      'col-no-label': !field.label,
+      'col-field-auto-width': !!field.autoWidth,
+      [`col-offset-right-${field.offsetRight}`]: field.offsetRight! > 0,
       [`col-field-${classBase}`]: true,
     }
 
-    item.class = {
+    field.class = {
       'ui-field': true,
       [`ui-field-${classBase}`]: true,
     }
 
-    return item
+    return field
   })
 
   return result
@@ -416,20 +416,20 @@ export function normalizeAndGroupField(list: Field[], data: any) {
   }
 
   let lastGroup: GroupField
-  const group = fieldList.reduce((ret, item, index) => {
-    if (item.group || index == 0) {
+  const group = fieldList.reduce((ret, field, index) => {
+    if (field.group || index == 0) {
       lastGroup = {
-        name: item.group || '',
+        name: field.group || '',
         list: []
       }
       ret.push(lastGroup)
     }
-    lastGroup.list.push(item)
+    lastGroup.list.push(field)
     return ret
   }, [] as GroupField[])
 
   // 过滤掉，visibleCol 计算结果，全部为假的 group
-  const result = group.filter(item => item.list.some(it => it.visibleCol!(data)))
+  const result = group.filter(g => g.list.some(it => it.visibleCol!(data)))
   return result
 }
 
