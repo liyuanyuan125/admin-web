@@ -85,7 +85,7 @@ import { devInfo, devError } from '@/util/dev'
 import { toMap } from '@/fn/array'
 import { clean } from '@/fn/object'
 import { defaultParams, dealParams } from '@/util/param'
-import { uniq, difference, union } from 'lodash'
+import { uniq, difference, union, isEqual } from 'lodash'
 
 const makeMap = (list: any[]) => toMap(list, 'key')
 
@@ -177,7 +177,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
       type: 'selection',
       width: 40,
       align: 'center'
-    } as ColumnExtra ].concat(columns) : columns
+    } as ColumnExtra].concat(columns) : columns
 
     return result
   }
@@ -208,17 +208,9 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
     const query = dealParams(this.filters, this.query, { cleanDefault: true })
     try {
       const { data } = await this.fetchWrap(query)
-      const idKey = this.idKey
-      const selectable = this.selectable
-      const selectedMap = toMap(this.selectedIds)
-      this.list = (data.items as any[] || []).map(it => {
-        return {
-          ...it,
-          _checked: selectable ? it[idKey] in selectedMap : false
-        }
-      })
-      this.total = data.totalCount || 0
 
+      this.total = data.totalCount || 0
+      this.updateList(data.items || [])
       const enumType = this.enums.reduce(
         (map, key) => {
           map[key] = data[key] || []
@@ -232,6 +224,19 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
     } finally {
       this.loading = false
     }
+  }
+
+  updateList(items?: any[]) {
+    const list = items || this.list || []
+    const idKey = this.idKey
+    const selectable = this.selectable
+    const selectedMap = toMap(this.selectedIds)
+    this.list = list.map(it => {
+      return {
+        ...it,
+        _checked: selectable ? it[idKey] in selectedMap : false
+      }
+    })
   }
 
   // 全选
@@ -260,13 +265,16 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
     if (this.query.pageIndex == this.oldQuery.pageIndex) {
       this.query.pageIndex = 1
     }
-
     this.update()
   }
 
   @Watch('selectedIds')
   watchSelectedIds(value: Array<number | string>) {
-    this.allSelectedIds = value || []
+    const ids = value || []
+    if (!isEqual(ids, this.allSelectedIds)) {
+      this.allSelectedIds = ids
+      this.updateList()
+    }
   }
 
   @Watch('allSelectedIds')
@@ -286,6 +294,10 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
 .list-page {
   min-height: 288px;
   margin-bottom: 88px;
+}
+
+.act-bar ~ .act-bar {
+  margin-top: 15px;
 }
 
 .ui-filter,

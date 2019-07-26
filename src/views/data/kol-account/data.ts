@@ -256,15 +256,9 @@ export async function editItem(item: any) {
 /**
  * 审核平台账号
  * https://yapi.aiads-dev.com/project/142/interface/api/3030
- * @param item 数据
+ * @param data 数据
  */
-export async function auditItem(item: any) {
-  const pdata = {
-    channelCode: item.channel,
-    ids: [item.id],
-    agree: item.auditPass,
-    remark: item.auditPass ? '' : item.remark
-  }
-  const { data } = await put(`/kol/channel-accounts/approve`, pdata)
+export async function auditItem(postData: any) {
+  const { data } = await put(`/kol/channel-accounts/approve`, postData)
   return data
 }

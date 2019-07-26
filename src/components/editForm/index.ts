@@ -1,4 +1,5 @@
 import EditForm from './editForm.vue'
+import EditDialog from './editDialog.vue'
 
 import FormImage from './components/formImage.vue'
 import FormInput from './components/formInput.vue'
@@ -9,6 +10,14 @@ import FormText from './components/formText.vue'
 
 export * from './types'
 
-export { FormImage, FormInput, FormInputNumber, FormRadio, FormSelect, FormText }
+export {
+  EditDialog,
+  FormImage,
+  FormInput,
+  FormInputNumber,
+  FormRadio,
+  FormSelect,
+  FormText
+}
 
 export default EditForm

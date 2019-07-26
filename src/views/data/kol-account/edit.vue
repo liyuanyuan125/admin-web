@@ -36,7 +36,12 @@ const ratioValidator: Validator = (rule, value: Array<{ value: number }>, callba
 const actionMap: MapType<any> = {
   view: null,
   edit: editItem,
-  audit: auditItem,
+  audit: (item: any) => auditItem({
+    channelCode: item.channel,
+    ids: [item.id],
+    agree: item.auditPass,
+    remark: item.auditPass ? '' : item.remark
+  }),
 }
 
 @Component({
