@@ -8,6 +8,7 @@
   >
     <main class="modal-main">
       <EditForm
+        :key="formKey"
         v-bind="$attrs"
         @validateFail="$emit('validateFail', $event), resetSubmitLoading()"
         @beforeSubmit="$emit('beforeSubmit', $event)"
@@ -16,7 +17,6 @@
         @fail="$emit('fail', $event)"
         @always="$emit('always', $event), resetSubmitLoading()"
         ref="form"
-        v-if="model"
       />
     </main>
   </Modal>
@@ -26,6 +26,9 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import EditForm from './editForm.vue'
+import { random } from '@/fn/string'
+
+const randomKey = () => random('editDialogForm')
 
 @Component({
   components: {
@@ -46,6 +49,9 @@ export default class EditDialog extends ViewBase {
 
   submitLoading = true
 
+  // 用来预防 form 被重用，确保每次都使用新的实例
+  formKey = randomKey()
+
   resetSubmitLoading() {
     this.submitLoading = false
     this.$nextTick(() => (this.submitLoading = true))
@@ -59,6 +65,7 @@ export default class EditDialog extends ViewBase {
   @Watch('value')
   watchValue(value: boolean) {
     this.model = value
+    value && (this.formKey = randomKey())
   }
 
   @Watch('model')

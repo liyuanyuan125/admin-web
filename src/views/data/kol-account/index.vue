@@ -30,13 +30,13 @@
           type="primary"
           class="button-audit"
           :disabled="!(selectedIds.length > 0)"
-          @click="onAudit"
+          @click="auditVisible = true"
         >批量审核</Button>
 
         <Button
           type="primary"
           class="button-crawl"
-          @click="onCrawl"
+          @click="crawlVisible = true"
         >抓取平台账号</Button>
       </template>
 
@@ -86,11 +86,11 @@
   </div>
 </template>
 
-<script lang="tsx">
+<script lang="ts">
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { queryList, auditItem } from './data'
+import { queryList, auditItem, newItem } from './data'
 import { alert, toast } from '@/ui/modal'
 
 import {
@@ -120,6 +120,10 @@ const defaultChannel = channelList[0].value
 })
 export default class IndexPage extends ViewBase {
   @Prop({ type: String, default: defaultChannel }) channel!: string
+
+  get listPage() {
+    return this.$refs.listPage as ListPage
+  }
 
   channelCode = this.channel
 
@@ -273,6 +277,10 @@ export default class IndexPage extends ViewBase {
     }
   ]
 
+  refresh() {
+    this.listPage.update()
+  }
+
   async auditSubmit({ agree, remark }: any) {
     const pdata = {
       channelCode: this.channel,
@@ -284,15 +292,7 @@ export default class IndexPage extends ViewBase {
     toast('操作成功')
     this.selectedIds = []
     this.auditVisible = false
-  }
-
-  onAudit() {
-    const ids = this.selectedIds
-    if (ids.length > 0) {
-      this.auditVisible = true
-    } else {
-      alert('请至少选择一个')
-    }
+    this.refresh()
   }
 
   async crawlSubmit({ channel, account }: any) {
@@ -300,11 +300,10 @@ export default class IndexPage extends ViewBase {
       channelCode: channel,
       channelDataId: account
     }
-
-  }
-
-  onCrawl() {
-    this.crawlVisible = true
+    await newItem(pdata)
+    toast('操作成功')
+    this.crawlVisible = false
+    this.refresh()
   }
 
   @Watch('channelCode')
@@ -317,8 +316,7 @@ export default class IndexPage extends ViewBase {
 
   @Watch('channel')
   watchChannel(channel: string) {
-    const listPage = this.$refs.listPage as ListPage
-    listPage.query.channelCode = channel
+    this.listPage.query.channelCode = channel
   }
 }
 </script>

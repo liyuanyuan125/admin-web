@@ -100,6 +100,8 @@ import { random } from '@/fn/string'
 import { scrollToError } from '@/util/form'
 import { devLog } from '@/util/dev'
 
+const randomKey = () => random('editForm')
+
 @Component({
   components: {
     TinyLoading
@@ -143,7 +145,7 @@ export default class EditForm extends ViewBase {
   @Prop({ type: Boolean, default: false }) inDialog!: boolean
 
   // 用来预防 form 被重用，确保每次都使用新的实例
-  formKey = random('editForm')
+  formKey = randomKey()
 
   loading = false
 
@@ -186,7 +188,7 @@ export default class EditForm extends ViewBase {
     const item = defaultParams(this.fields)
     this.defItem = cloneDeep(item)
     this.item = cloneDeep({ ...item, ...initData })
-    this.formKey = random('editForm')
+    this.formKey = randomKey()
     this.errorMap = Object.keys(this.item).reduce(
       (map, key) => {
         map[key] = ''
