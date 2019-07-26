@@ -42,8 +42,7 @@
                 :enumList="enumMap[it.name] || []"
                 :disabled="!!it.disabled"
                 v-bind="it.props"
-              >
-              </component>
+              />
             </FormItem>
           </Col>
         </section>
@@ -138,6 +137,9 @@ export default class EditForm extends ViewBase {
   /** scrollToErrorOffsetTop */
   @Prop({ type: Number, default: -60 }) scrollToErrorOffsetTop!: number
 
+  /** 内部使用，是否在 editDialog 内 */
+  @Prop({ type: Boolean, default: false }) inDialog!: boolean
+
   // 用来预防 form 被重用，确保每次都使用新的实例
   formKey = random('editForm')
 
@@ -178,7 +180,7 @@ export default class EditForm extends ViewBase {
     return result
   }
 
-  init(initData = {}) {
+  public init(initData = {}) {
     const item = defaultParams(this.fields)
     this.defItem = cloneDeep(item)
     this.item = cloneDeep({ ...item, ...initData })
@@ -198,7 +200,7 @@ export default class EditForm extends ViewBase {
     return fetchDataToResult(res)
   }
 
-  async load() {
+  public async load() {
     if (this.fetch == null) {
       return
     }
@@ -251,11 +253,14 @@ export default class EditForm extends ViewBase {
     }
   }
 
-  async onSubmit() {
+  public async onSubmit() {
     const form = this.$refs.form as any
     const valid = await form.validate()
     if (!valid) {
-      return scrollToError(form, { offsetTop: this.scrollToErrorOffsetTop })
+      this.$emit('validateFail')
+      return this.inDialog || scrollToError(form, {
+        offsetTop: this.scrollToErrorOffsetTop
+      })
     }
 
     if (typeof this.submit !== 'function') {
@@ -263,6 +268,13 @@ export default class EditForm extends ViewBase {
     }
 
     const item = cloneDeep(this.item)
+
+    const intent = { preventSubmit: false, item }
+    this.$emit('beforeSubmit', intent)
+    if (intent.preventSubmit) {
+      this.$emit('submitPrevented')
+      return
+    }
 
     try {
       const data = dealParams(this.fields, item, {
@@ -272,6 +284,7 @@ export default class EditForm extends ViewBase {
       const eventData = isAjaxResult(res) ? res.data : res
       this.$emit('done', eventData)
     } catch (ex) {
+      this.$emit('fail', ex)
       if (isAjaxResult(ex) && (ex.code in this.errorHandlers)) {
         const handler = this.errorHandlers[ex.code]
         const errorData = typeof handler === 'function' ? handler(ex, { item }) : handler
@@ -283,6 +296,8 @@ export default class EditForm extends ViewBase {
         }
       }
       this.handleError(ex)
+    } finally {
+      this.$emit('always')
     }
   }
 
@@ -319,6 +334,10 @@ export default class EditForm extends ViewBase {
     display: inline-block;
     vertical-align: top;
     float: none;
+  }
+  /deep/ .col-field-auto-width {
+    width: auto;
+    margin-right: 10px;
   }
   /deep/ .ivu-form-item-label {
     user-select: none;

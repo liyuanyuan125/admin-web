@@ -16,14 +16,28 @@
       :columns="columns"
       selectable
       :selectedIds.sync="selectedIds"
-      @selectionChange="selectionChange"
       ref="listPage"
     >
       <template slot="acts">
-        <Button
+        <!-- <Button
           type="success"
           icon="md-add-circle"
-        >新建</Button>
+        >新建</Button> -->
+      </template>
+
+      <template slot="acts-2">
+        <Button
+          type="primary"
+          class="button-audit"
+          :disabled="!(selectedIds.length > 0)"
+          @click="onAudit"
+        >批量审核</Button>
+
+        <Button
+          type="primary"
+          class="button-crawl"
+          @click="onCrawl"
+        >抓取平台账号</Button>
       </template>
 
       <template slot="price" slot-scope="{ row: { priceList } }">
@@ -53,8 +67,22 @@
       </template>
     </ListPage>
 
-    <!-- <EditDialog
-    /> -->
+    <BatchAudit
+      v-model="auditVisible"
+      :summary="auditSummary"
+      :submit="auditSubmit"
+    />
+
+    <EditDialog
+      v-model="crawlVisible"
+      title="抓取平台账号"
+      :width="580"
+      :fields="crawlFields"
+      :fetch="() => ({ channel: '', account: '' })"
+      :submit="crawlSumit"
+      hideSubmit
+      hideReturn
+    />
   </div>
 </template>
 
@@ -62,7 +90,8 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { queryList } from './data'
+import { queryList, auditItem } from './data'
+import { alert, toast } from '@/ui/modal'
 
 import {
   updateStatus,
@@ -74,7 +103,8 @@ import {
   updateItem
 } from '@/api/cinema'
 
-import EditDialog, { Field } from '@/components/editDialog'
+import { EditDialog, Field } from '@/components/editForm'
+import BatchAudit from '@/components/batchAudit'
 
 import { getChannelList } from '@/util/types'
 
@@ -84,7 +114,8 @@ const defaultChannel = channelList[0].value
 @Component({
   components: {
     ListPage,
-    EditDialog
+    EditDialog,
+    BatchAudit
   }
 })
 export default class IndexPage extends ViewBase {
@@ -211,8 +242,65 @@ export default class IndexPage extends ViewBase {
     { title: '有效期', key: 'date', minWidth: 75, align: 'center' },
   ]
 
-  selectionChange(list: any[]) {
-    // debugger
+  auditVisible = false
+
+  crawlVisible = false
+
+  get auditSummary() {
+    const count = this.selectedIds.length
+    return `您选择了${count}条KOL平台账号，审核通过后可以在“KOL资源列表”中操作定价和上架。`
+  }
+
+  crawlFields: Field[] = [
+    {
+      name: 'channel',
+      defaultValue: this.channel,
+      label: '平台',
+      required: true,
+      select: {
+        enumList: channelList.map(it => ({ key: it.value, text: it.name }))
+      },
+      span: 24,
+    },
+
+    {
+      name: 'account',
+      defaultValue: '',
+      label: '平台账号',
+      required: true,
+      input: true,
+      span: 24,
+    }
+  ]
+
+  async auditSubmit({ agree, remark }: any) {
+    const pdata = {
+      channelCode: this.channel,
+      ids: this.selectedIds,
+      agree,
+      remark: agree ? '' : remark
+    }
+    await auditItem(pdata)
+    toast('操作成功')
+    this.selectedIds = []
+    this.auditVisible = false
+  }
+
+  onAudit() {
+    const ids = this.selectedIds
+    if (ids.length > 0) {
+      this.auditVisible = true
+    } else {
+      alert('请至少选择一个')
+    }
+  }
+
+  async crawlSumit({ channel, account }: any) {
+    debugger
+  }
+
+  onCrawl() {
+    this.crawlVisible = true
   }
 
   @Watch('channelCode')
@@ -232,8 +320,8 @@ export default class IndexPage extends ViewBase {
 </script>
 
 <style lang="less" scoped>
-.settlement-price-list {
-  text-align: left;
+.button-crawl {
+  margin-left: 12px;
 }
 
 .price-table {

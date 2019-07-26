@@ -9,7 +9,8 @@ import FormRadio from './components/formRadio.vue'
 import FormImage from './components/formImage.vue'
 import AreaSelect from '@/components/areaSelect'
 import { Switch } from 'iview'
-import { AjaxResult, MapType } from '@/util/types'
+import { AjaxResult, MapType, KeyText } from '@/util/types'
+import { devLog, devError } from '@/util/dev'
 
 export type ValidatorCallback = (error?: Error) => any
 
@@ -166,6 +167,9 @@ export interface Field extends Param {
   /** maxWidth */
   maxWidth?: number
 
+  /** 自动宽度模式 */
+  autoWidth?: boolean
+
   /**
    * 是否禁用
    */
@@ -236,7 +240,8 @@ export interface Field extends Param {
    * 使用组件 Select
    */
   select?: {
-    enumKey: string
+    enumKey?: string
+    enumList?: KeyText[]
     [key: string]: any
   }
 
@@ -254,7 +259,8 @@ export interface Field extends Param {
    * 使用组件 Radio
    */
   radio?: {
-    enumKey: string
+    enumKey?: string
+    enumList?: KeyText[]
     [key: string]: any
   }
 
@@ -382,8 +388,9 @@ export function normalizeField(list: Field[]) {
     item.colClass = {
       'col-field': true,
       'col-no-label': !item.label,
+      'col-field-auto-width': !!item.autoWidth,
+      [`col-offset-right-${item.offsetRight}`]: item.offsetRight! > 0,
       [`col-field-${classBase}`]: true,
-      [`col-offset-right-${item.offsetRight}`]: item.offsetRight! > 0
     }
 
     item.class = {
