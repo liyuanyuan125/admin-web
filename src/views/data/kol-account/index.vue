@@ -73,16 +73,16 @@
       :submit="auditSubmit"
     />
 
-    <!-- <EditDialog
+    <EditDialog
       v-model="crawlVisible"
       title="抓取平台账号"
       :width="580"
-      :fields="auditFields"
-      :fetch="auditFetch"
-      :submit="auditSubmit"
+      :fields="crawlFields"
+      :fetch="() => ({ channel: '', account: '' })"
+      :submit="crawlSumit"
       hideSubmit
       hideReturn
-    /> -->
+    />
   </div>
 </template>
 
@@ -255,23 +255,21 @@ export default class IndexPage extends ViewBase {
     {
       name: 'channel',
       defaultValue: this.channel,
+      label: '平台',
+      required: true,
       select: {
-        enumList: channelList
+        enumList: channelList.map(it => ({ key: it.value, text: it.name }))
       },
-      label: '审核通过',
-      span: 8,
-      autoWidth: true
+      span: 24,
     },
 
     {
-      name: 'remark',
+      name: 'account',
       defaultValue: '',
+      label: '平台账号',
       required: true,
-      input: {
-        prepend: '审核不通过的理由'
-      },
-      span: 16,
-      visible: item => !item.agree,
+      input: true,
+      span: 24,
     }
   ]
 
@@ -295,6 +293,10 @@ export default class IndexPage extends ViewBase {
     } else {
       alert('请至少选择一个')
     }
+  }
+
+  async crawlSumit({ channel, account }: any) {
+    debugger
   }
 
   onCrawl() {

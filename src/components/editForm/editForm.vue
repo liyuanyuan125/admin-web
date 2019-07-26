@@ -39,7 +39,7 @@
               <component
                 v-model="item[it.name]"
                 :is="it.component"
-                :enumList="it.enumList || enumMap[it.name] || []"
+                :enumList="enumMap[it.name] || []"
                 :disabled="!!it.disabled"
                 v-bind="it.props"
               />
