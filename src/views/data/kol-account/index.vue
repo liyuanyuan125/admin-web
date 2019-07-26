@@ -74,8 +74,8 @@
     />
 
     <!-- <EditDialog
-      v-model="auditVisible"
-      title="批量审核"
+      v-model="crawlVisible"
+      title="抓取平台账号"
       :width="580"
       :fields="auditFields"
       :fetch="auditFetch"
@@ -244,10 +244,36 @@ export default class IndexPage extends ViewBase {
 
   auditVisible = false
 
+  crawlVisible = false
+
   get auditSummary() {
     const count = this.selectedIds.length
     return `您选择了${count}条KOL平台账号，审核通过后可以在“KOL资源列表”中操作定价和上架。`
   }
+
+  crawlFields: Field[] = [
+    {
+      name: 'channel',
+      defaultValue: this.channel,
+      select: {
+        enumList: channelList
+      },
+      label: '审核通过',
+      span: 8,
+      autoWidth: true
+    },
+
+    {
+      name: 'remark',
+      defaultValue: '',
+      required: true,
+      input: {
+        prepend: '审核不通过的理由'
+      },
+      span: 16,
+      visible: item => !item.agree,
+    }
+  ]
 
   async auditSubmit({ agree, remark }: any) {
     const pdata = {
@@ -272,7 +298,7 @@ export default class IndexPage extends ViewBase {
   }
 
   onCrawl() {
-    debugger
+    this.crawlVisible = true
   }
 
   @Watch('channelCode')
