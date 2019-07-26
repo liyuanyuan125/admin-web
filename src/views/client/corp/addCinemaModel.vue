@@ -21,7 +21,7 @@
         <AreaSelect v-model="area"/>
       </Col>
       <Col span="5" offset="1">
-         <Input v-model="value" placeholder="影院名称/转资编码" />
+         <Input v-model="value" placeholder="影院名称/专资编码" />
       </Col>
       <Button style="float:right" type="primary" @click="seach(1)">搜索</Button>
     </Row>
