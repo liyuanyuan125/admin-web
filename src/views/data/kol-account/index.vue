@@ -76,10 +76,10 @@
     <EditDialog
       v-model="crawlVisible"
       title="抓取平台账号"
-      :width="580"
+      :width="380"
       :fields="crawlFields"
-      :fetch="() => ({ channel: '', account: '' })"
-      :submit="crawlSumit"
+      :fetch="() => ({ channel, account: '' })"
+      :submit="crawlSubmit"
       hideSubmit
       hideReturn
     />
@@ -254,13 +254,13 @@ export default class IndexPage extends ViewBase {
   crawlFields: Field[] = [
     {
       name: 'channel',
-      defaultValue: this.channel,
+      defaultValue: '',
       label: '平台',
       required: true,
       select: {
         enumList: channelList.map(it => ({ key: it.value, text: it.name }))
       },
-      span: 24,
+      span: 21,
     },
 
     {
@@ -269,7 +269,7 @@ export default class IndexPage extends ViewBase {
       label: '平台账号',
       required: true,
       input: true,
-      span: 24,
+      span: 21,
     }
   ]
 
@@ -295,8 +295,12 @@ export default class IndexPage extends ViewBase {
     }
   }
 
-  async crawlSumit({ channel, account }: any) {
-    debugger
+  async crawlSubmit({ channel, account }: any) {
+    const pdata = {
+      channelCode: channel,
+      channelDataId: account
+    }
+
   }
 
   onCrawl() {

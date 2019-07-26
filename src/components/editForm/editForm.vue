@@ -39,9 +39,11 @@
               <component
                 v-model="item[it.name]"
                 :is="it.component"
-                :enumList="enumMap[it.name] || []"
                 :disabled="!!it.disabled"
-                v-bind="it.props"
+                v-bind="{
+                  enumList: enumMap[it.name] || [],
+                  ...it.props
+                }"
               />
             </FormItem>
           </Col>
@@ -197,7 +199,8 @@ export default class EditForm extends ViewBase {
   // 简单包装一下，以便适应两种数据结构
   async fetchWrap() {
     const res = await this.fetch()
-    return fetchDataToResult(res)
+    const result = fetchDataToResult(res)
+    return result
   }
 
   public async load() {

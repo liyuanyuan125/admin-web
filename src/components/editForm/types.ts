@@ -463,7 +463,12 @@ export function fetchDataToResult(data: FetchData | FetchResult) {
     // 已经是 FetchResult 格式了，直接返回
     ? data as FetchResult
     // 进行简单包装
-    : { code: 0, data, msg: '' }
+    : {
+      code: 0,
+      // 若非 { data: { item, ... } } 格式，则包装成这种格式
+      data: 'item' in data ? data : { item: data },
+      msg: ''
+    }
 }
 
 /**

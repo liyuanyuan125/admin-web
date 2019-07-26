@@ -234,11 +234,10 @@ const dealEditItem = (item: any) => {
 /**
  * 新建平台账号
  * https://yapi.aiads-dev.com/project/142/interface/api/2654
- * @param item 数据
+ * @param postData 数据
  */
-export async function newItem(item: any) {
-  const pdata = dealEditItem(item)
-  const { data } = await post('/kol/channel-accounts', pdata)
+export async function newItem(postData: any) {
+  const { data } = await post('/kol/channel-accounts', postData)
   return data
 }
 
@@ -256,7 +255,7 @@ export async function editItem(item: any) {
 /**
  * 审核平台账号
  * https://yapi.aiads-dev.com/project/142/interface/api/3030
- * @param data 数据
+ * @param postData 数据
  */
 export async function auditItem(postData: any) {
   const { data } = await put(`/kol/channel-accounts/approve`, postData)
