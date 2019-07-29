@@ -16,9 +16,10 @@
         <td>
           <FormInputNumber
             v-model="it.value"
-            :min="0"
             size="small"
+            :min="0"
             :disabled="disabled"
+            placeholder="结算价"
             prepend="&yen;"
             poptip
             class="inner-input"

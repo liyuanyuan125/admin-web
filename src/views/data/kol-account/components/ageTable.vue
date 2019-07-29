@@ -13,6 +13,7 @@
           :min="0"
           :max="100"
           :disabled="disabled"
+          placeholder="百分比"
           class="inner-input"
           append="%"
         />
