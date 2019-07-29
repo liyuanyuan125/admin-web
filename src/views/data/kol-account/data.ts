@@ -5,6 +5,15 @@ import { keyBy } from 'lodash'
 import moment from 'moment'
 import { devLog } from '@/util/dev'
 
+const nullNumber = (value: any, format?: (num: number) => any) => {
+  const num = parseFloat(value)
+  return isNaN(num) ? null : (format ? format(num) : num)
+}
+
+const nullBaifen = (value: any) => nullNumber(value, baifen)
+
+const nullWanfen = (value: any) => nullNumber(value, wanfen)
+
 /**
  * 查询 KOL 平台账号
  * @param query 查询条件
@@ -44,7 +53,7 @@ const makeAgeList = (enumList: KeyText[], values: Array<{ k: string, r: number }
   const result = enumList.map(it => ({
     key: it.key,
     text: it.text,
-    value: baifen(dot(map[it.key], 'r'))
+    value: nullBaifen(dot(map[it.key], 'r'))
   }))
   return result
 }
@@ -53,7 +62,7 @@ const makeFansList = (values: Array<{ id: number, name: string, rate: number }>)
   const result = (values || []).map(it => ({
     id: it.id,
     name: it.name,
-    value: baifen(it.rate)
+    value: nullBaifen(it.rate)
   }))
   return result
 }
@@ -70,7 +79,7 @@ const makePriceList = (
   const result = enumList.map(it => ({
     key: it.key,
     text: it.text,
-    value: dot(map[it.key], 'settlementPrice') || 0,
+    value: dot(map[it.key], 'settlementPrice'),
     date: validDate(dot(map[it.key], 'effectiveDate'))
   }))
   return result
@@ -101,9 +110,9 @@ export async function queryItem(query: any = {}) {
       authName: dot(data, 'item.authName') || '',
 
       // 粉丝画像
-      fansCount: parseInt(dot(data, 'item.customFans.totalCount'), 10) || 0,
-      malePercent: baifen(dot(data, 'item.customFans.maleRate')),
-      femalePercent: baifen(dot(data, 'item.customFans.femaleRate')),
+      fansCount: nullNumber(dot(data, 'item.customFans.totalCount')),
+      malePercent: nullBaifen(dot(data, 'item.customFans.maleRate')),
+      femalePercent: nullBaifen(dot(data, 'item.customFans.femaleRate')),
       ageList: makeAgeList(ageList, dot(data, 'item.customFans.ages')),
       provinceList: makeFansList(dot(data, 'item.customFans.provinces')),
       cityList: makeFansList(dot(data, 'item.customFans.cities')),
@@ -205,22 +214,22 @@ const dealEditItem = (item: any) => {
 
     // 粉丝画像
     customFans: {
-      maleRate: wanfen(item.malePercent),
-      femaleRate: wanfen(item.femalePercent),
+      maleRate: nullWanfen(item.malePercent),
+      femaleRate: nullWanfen(item.femalePercent),
       ages: (item.ageList as any[]).map(it => ({
         k: it.key,
-        r: wanfen(it.value)
+        r: nullWanfen(it.value)
       })),
       provinces: dealAreaList(item.provinceList),
       cities: dealAreaList(item.cityList),
-      totalCount: item.fansCount
+      totalCount: item.fansCount || null
     },
 
     // 结算信息
     settlementPrices: (item.priceList as any[]).map(it => ({
       categoryCode: it.key,
-      effectiveDate: it.date ? moment(it.date).format('YYYYMMDD') : 0,
-      settlementPrice: it.value
+      effectiveDate: it.date ? moment(it.date).format('YYYYMMDD') : null,
+      settlementPrice: it.value || null
     })),
     provideInvoice: item.provideInvoice,
 
