@@ -130,6 +130,16 @@ export default class Main extends ViewBase {
           }
         }
       }
+    },
+
+    {
+      name: 'pageIndex',
+      defaultValue: 1
+    },
+
+    {
+      name: 'pageSize',
+      defaultValue: 20
     }
   ]
 
