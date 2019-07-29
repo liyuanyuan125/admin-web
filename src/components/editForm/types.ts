@@ -49,6 +49,10 @@ const makeRequiredRule = (field: Field, rule?: Rule) => {
     message: '不能为空',
     trigger: 'change',
     transform(value: any) {
+      // null 始终被认为是空
+      if (value == null) {
+        return ''
+      }
       const equal = isEqual(value, defaultValue)
       return equal ? '' : 'not-empty'
     },

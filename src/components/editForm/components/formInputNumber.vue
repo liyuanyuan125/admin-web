@@ -3,6 +3,7 @@
     :is="poptip === false ? 'span' : 'poptip'"
     trigger="focus"
     transfer
+    class="form-input-number-wrap"
     popper-class="edit-form-form-input-number-poptip"
   >
     <span
@@ -97,6 +98,14 @@ export default class FormInputNumber extends ViewBase {
 </style>
 
 <style lang="less" scoped>
+.form-input-number-wrap {
+  width: 100%;
+  /deep/ .ivu-poptip-rel,
+  /deep/ .form-input-number {
+    width: 100%;
+  }
+}
+
 .form-input-number {
   display: inline-flex;
   &[size=small] {
