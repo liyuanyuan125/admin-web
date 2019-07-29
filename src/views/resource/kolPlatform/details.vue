@@ -15,7 +15,7 @@
             <Col :span="6"><p><label>是否认证</label><em>{{items.auth ? '是' : '否'}}</em></p></Col>
             </Row>
             <Row>
-            <Col :span="22"><p><label>功能介绍</label><em class="information">{{items.introduction}}</em></p></Col> 
+            <Col :span="22"><p><label>功能介绍</label><em class="information">{{items.customIntroduction}}</em></p></Col> 
             </Row>
       </div>
 
@@ -29,21 +29,17 @@
           <Table :columns="priceCol" :data="priceDate" border stripe></Table>
       </div>
       <div class="base-mess logs">
-          <h2 class="title">操作日志</h2>
-           <p v-for="(item, index) in logList" :key="index">
+          <h2 class="title">操作日志  <span v-if="logList.length > 20" @click="handleMore">查看更多</span></h2>
+          <p v-for="(item, index) in logList" v-if="index < 20" :key="index">
             <span>{{item.createUserName}}</span>
             <span>{{item.createTime}}</span>
             <span>{{item.description}}</span>
-           </p>
-          <!-- <div class="text-align">
-              <Button :to="{name: 'resource-kolplatform-list'}">返回</Button>
-          </div> -->
+          </p>
       </div>
       
       <div class="base-mess" v-if="type">
           <h2 class="title"> 审核意见</h2>
            <RadioGroup v-model="auditOpinion"> <Radio :label="1">审核通过</Radio> <Radio :label="2">审核不通过</Radio> </RadioGroup>
-           <!-- v-if="auditOpinion == 2" -->
            <p class="flex-box text-desc"  >
             <label class="label-dese">备注：</label>
             <Input v-model="desc" type="textarea" style="width: 80%" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入备注"></Input>
@@ -55,6 +51,7 @@
         <Button :to="{name: 'resource-kolplatform-list'}"> 返回</Button>
       </div>
       
+      <moreLog ref="moreList" :fetch="fetch"/>
   </div>
 </template>
 
@@ -63,12 +60,17 @@ import {Component, Prop} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { intDate } from '@/util/dealData.ts'
 import { details, approve } from './data'
+import moreLog from './moreLogs.vue'
 import moment from 'moment'
 const dateFormat = 'YYYY-MM-DD HH:mm:ss'
 
 
 
-@Component
+@Component({
+  components: {
+    moreLog
+  }
+})
 export default class Main extends ViewBase {
     @Prop({ type: Number, default: 0}) id!: number
     @Prop({ type: String, default: ''}) code!: string
@@ -109,20 +111,20 @@ export default class Main extends ViewBase {
     priceDate = []
 
     // 操作日志
-    operationLogCol = [
-        {title: '操作类型', key: 'type', align: 'center'},
-        {title: '操作时间', key: 'type', align: 'center'},
-        {title: '操作人', key: 'type', align: 'center'},
-        {title: '字段', key: 'type', align: 'center'},
-        {title: '原值', key: 'type', align: 'center'},
-        {title: '新值', key: 'type', align: 'center'},
-    ]
     logList = []
 
     mounted() {
-        this.details()
+      this.details()
     }
 
+    handleMore() {
+      (this.$refs.moreList as any).show()
+    }
+
+    async fetch() {
+      const { data: {logList}} = await details(this.code, this.id)
+      return logList
+    }
     async details() {
         try {
             const { data: {item, accountCategoryList, logList} } = await details(this.code, this.id)
@@ -192,14 +194,7 @@ export default class Main extends ViewBase {
     margin-right: 20px;
   }
 }
-.logs {
-  p {
-    padding-bottom: 10px;
-    span {
-      padding-right: 10px;
-    }
-  }
-}
+
 
 
 </style>

@@ -14,10 +14,12 @@
                 </Col>
                 <Col :span="12">
                     <FormItem label="系统评论热词:">
-                        <Input type="textarea" v-model="form.tags" placeholder="关键词‘；’隔开，按照顺序优先显示热词，数量不足再显示抓取的"></Input>
+                        <Input type="textarea" v-model="form.tags" placeholder="关键词中文‘，’隔开，按照顺序优先显示热词，数量不足再显示抓取的"></Input>
+                        <p>关键词中文‘，’隔开，按照顺序优先显示热词，数量不足再显示抓取的</p>
                     </FormItem>
                 </Col>
             </Row>
+
             <Row> 
                 <Col :span="24">
                     <FormItem label="简介修改:">
@@ -25,6 +27,7 @@
                     </FormItem>
                 </Col>
             </Row>
+
             <Row>
                 <Col :span="22">
                   <FormItem label="擅长类型:">
@@ -44,6 +47,7 @@
                     </FormItem>
                 </Col>
             </Row>
+
             <Row>
                 <Col :span="5">
                 <FormItem label="上传大图:"> 
@@ -68,6 +72,7 @@
                     </FormItem>
                 </Col>
             </Row>
+
             <FormItem label="合作品牌信息">
                <div class="brand-select">
                     <Select v-model="brandType" clearable style="width: 150px" placeholder="品牌分类">
@@ -77,7 +82,7 @@
                      clearable  filterable remote :remote-method="remoteMethod">
                         <Option v-for="it in brandNames" :key="it.id" :value="it.id">{{it.name}}</option>
                     </Select>
-                    <Button @click="addList">添加列表</Button>
+                    <Button :disabled="isBrandDisabled" @click="addList">添加列表</Button>
                </div>
                 <Table :columns="brandColumns" :data="brandData" class="brand-table" border stripe disabled-hover>
                     <template slot="tradeCode" slot-scope="{row: {tradeCode}}">
@@ -88,6 +93,7 @@
                     </template>
                 </Table>
             </FormItem>
+
           </div>
 
           <div class="base-mess">
@@ -169,10 +175,9 @@
                     <Col :span="12">
                         <FormItem label="粉丝性别占比" class="rest-input">
                             <div class="flex-box">
-                                <div>男性：<InputNumber :max="100" :min="0" style="width: 120px"  v-model.number="formFans.male" ></InputNumber>%</div>
-                                <div>女性：<InputNumber :max="100" :min="0" style="width: 120px" v-model.number="formFans.female" ></InputNumber>%</div>
-                                <!-- <div><Input  v-model="formFans.male" placeholder="" ></Input>%</div>
-                                <div>女性：<Input  v-model="formFans.female" placeholder="" style="width: 100px"></Input>%</div> -->
+                                <div>男性：<InputNumber :max="100" :min="0" style="width: 120px"  v-model="formFans.male" ></InputNumber>%</div>
+                                <div>女性：<InputNumber :max="100" :min="0" style="width: 120px" v-model="formFans.female" ></InputNumber>%</div>
+                            
                             </div>
                         </FormItem>
                     </Col>
@@ -183,17 +188,17 @@
                             <InputNumber :max="100" :min="0" 
                             v-model="row.v"
                             @on-change="updataRow(row, index)" />
-                            <!-- <Input v-model="row.v" @on-change="updataRow(row, index)" /> -->
                         </template>
                     </Table>
                 </FormItem>
                 <FormItem label="粉丝省市分布">
                     <div class="brand-select rest-input">
-                        <Select v-model="promodel" filterable clearable  style="width: 120px">
-                            <Option v-for="option in proSearchList" :value="option.id" :key="option.id">{{option.nameCn}}</Option>
+                        <Select v-model="promodel" filterable clearable  style="width: 120px" 
+                        :label-in-value="true" @on-change="handleProSelect">
+                            <Option v-for="option in proSearchList" :value="option.id" :key="option.id" :label="option.nameCn">{{option.nameCn}}</Option>
                         </Select>
-                        <Input v-model="provinceRatio" placeholder="粉丝数占比" style="width: 120px" />
-                        <Button @click="addProvinceList">添加列表</Button>
+                        <InputNumber  :max="100" :min="0"  v-model="provinceRatio" placeholder="粉丝数占比" style="width: 120px"  />
+                        <Button class="add-list" :disabled="isDisble" @click="addProvinceList">添加列表</Button>
                     </div>
                     <Table :columns="provinceColumns" :data="(formFans.provinces || [])" class="brand-table" border stripe disabled-hover>
                         <template slot="operate" slot-scope="{row, index}">
@@ -203,11 +208,12 @@
                 </FormItem>
                  <FormItem label="粉丝城市分布">
                     <div class="brand-select rest-input">
-                        <Select v-model="citymodel" filterable clearable  style="width: 120px">
+                        <Select v-model="citymodel" filterable clearable  style="width: 120px"
+                        :label-in-value="true" @on-change="handleCitySelect">
                             <Option v-for="option in citySearchList" :value="option.id" :key="option.id">{{option.nameCn}}</Option>
                         </Select>
-                        <Input v-model="cityRatio" placeholder="粉丝数占比" style="width: 120px"  />
-                        <Button @click="addCityList">添加列表</Button>
+                        <InputNumber  :max="100" :min="0"  v-model="cityRatio" placeholder="粉丝数占比" style="width: 120px"  />
+                        <Button class="add-list" :disabled="isCityDisble" @click="addCityList">添加列表</Button>
                     </div>
                     <Table :columns="cityColumns" :data="(formFans.cities || [])" class="brand-table" border stripe disabled-hover>
                         <template slot="operate" slot-scope="{row, index}">
@@ -266,14 +272,7 @@ export default class Main extends ViewBase {
         count: null,
         male: null,
         femalenu: null,
-        ages: [
-            {k: '0-17岁', v: 0},
-            {k: '18-24岁', v: 0},
-            {k: '25-29岁', v: 0},
-            {k: '30-39岁', v: 0},
-            {k: '40-49岁', v: 0},
-            {k: '50-59岁', v: 0},
-        ], // 年龄分布
+        ages: [], // 年龄分布
         provinces: [], // 省份分布
         cities: [] // 城市分布
     }
@@ -295,10 +294,11 @@ export default class Main extends ViewBase {
     exts: any[] = []
 
     // 合作品牌信息
+    isBrandDisabled = true
     tradeCodeList: any[] = []
     brandType: any = null
+    brandNameId: any = null
     brandNames: any[] = []
-    brandNameId = ''
     brandTradeCode = null
     brandColumns = [
         {title: '品牌分类', slot: 'tradeCode', width: 120, align: 'center'},
@@ -313,9 +313,11 @@ export default class Main extends ViewBase {
         { title: '粉丝占比', slot: 'v', width: 180, align: 'center'},
     ]
     // 省份分布
+    isDisble = true
     promodel = ''
+    provinceObject: any = null
     proSearchList = []
-    provinceRatio = ''
+    provinceRatio = null
     provinceColumns = [
         {title: '省份', key: 'name', width: 120, align: 'center'},
         {title: '粉丝数占比%', key: 'rate', width: 120, align: 'center'},
@@ -323,9 +325,11 @@ export default class Main extends ViewBase {
     ]
 
     // 城市分布
+    isCityDisble = true
+    cityObject: any = null
     citySearchList = []
     citymodel = ''
-    cityRatio = ''
+    cityRatio = null
     cityColumns = [
         {title: '城市', key: 'name', width: 120, align: 'center'},
         {title: '粉丝数占比%', key: 'rate', width: 120, align: 'center'},
@@ -350,7 +354,8 @@ export default class Main extends ViewBase {
             item, genders, status, professions, imageTypes, brandTrades
           }} = await personDetail(this.detaiId)
           this.itemList = item || {}
-        // 主要职业
+
+        // 筛选主要和其他职业
         this.professionsList = professions || []
         const primaryPro: any = [] // 主要职业
         const restPro: any = []; // 其他职业(演员，编辑)
@@ -371,13 +376,16 @@ export default class Main extends ViewBase {
         })
         this.primaryPro = primaryPro
         this.restPro = restPro
+
         // 品牌名称
         this.brandData = item.brands || []
+
         // 平台id
         this.exts = item.exts || []
         this.exts.map((it: any) => {
             this.formId[it.channelCode] = it.channelDataId
         })
+
         // 品牌分类
         this.tradeCodeList = brandTrades
         if (item.fans) {
@@ -390,12 +398,13 @@ export default class Main extends ViewBase {
                 cities: item.fans.cities ? item.fans.cities : [] // 城市分布
             }
         }
+
         // 处理粉丝展示
         const formatIntro = item.introduction.replace(/&nbsp;/g, ' ').replace(/\<br\/>/g, '\r\n')
         const intro = item.introduction ? formatIntro : item.introduction
         this.form = {
             tip: item.tip || '',
-            tags: item.tags ? item.tags.join(',') : null,
+            tags: item.tags ? item.tags.join('，') : null,
             introduction: intro,
             biJyIndex: item.biJyIndex,
             jyIndex: item.jyIndex,
@@ -404,6 +413,7 @@ export default class Main extends ViewBase {
             primaryPro: this.primaryPro[0] || null, // 主要职业
             restPro: this.restPro, // 其他职业
         }
+
         } catch (ex) {
             this.handleError(ex)
         }
@@ -441,7 +451,7 @@ export default class Main extends ViewBase {
         const findIsCount = this.form.tags
         const noFlag = findIsCount == null ? [] : Array.of(findIsCount)
 
-        const tags = findIsCount && findIsCount.indexOf('；') ? findIsCount.split('；') : noFlag
+        const tags = findIsCount && findIsCount.indexOf('，') ? findIsCount.split('，') : noFlag
         delete this.form.primaryPro
         delete this.form.restPro
         delete this.form.biJyIndex
@@ -469,28 +479,23 @@ export default class Main extends ViewBase {
 
     async addList() {
         // 品牌id是唯一的，不能重复追加
-        if (!this.brandNameId) {
-            await info('请选择你要添加的品牌', { title: '提示'})
-        } else {
-            const isHasBrand = this.brandData.some((item: any) => item.id == this.brandNameId)
-            if (isHasBrand) {
-               await info('你选择的品牌已存在', { title: '提示'})
-               this.brandType = ''
-               this.brandNameId = ''
-               this.brandNames = []
-               return
-            }
-            const bType = this.tradeCodeList.find( item => item.key == this.brandType)
-            const bName = this.brandNames.find((item: any) => item.id == this.brandNameId)
-            this.brandData.push({
-                id: this.brandNameId,
-                name: bName.name,
-                tradeCode: this.brandType || this.brandTradeCode
-            })
+        const isHasBrand = this.brandData.some((item: any) => item.id == this.brandNameId)
+        if (isHasBrand) {
+            await info('你选择的品牌已存在', { title: '提示'})
             this.brandType = ''
             this.brandNameId = ''
             this.brandNames = []
+            return
         }
+        const bName = this.brandNames.find((item: any) => item.id == this.brandNameId)
+        this.brandData.push({
+            id: this.brandNameId,
+            name: bName.name,
+            tradeCode: this.brandType || this.brandTradeCode // 模糊查询筛选出的品牌分类
+        })
+        this.brandType = ''
+        this.brandNameId = ''
+        this.brandNames = []
     }
 
     handleDelCol(id: number) {
@@ -540,52 +545,38 @@ export default class Main extends ViewBase {
             this.handleError(ex)
         }
     }
+
+    handleProSelect(val: any) {
+      this.provinceObject = val
+    }
+    handleCitySelect(val: any) {
+      this.cityObject = val
+    }
+
     async addProvinceList() {
-        if (this.promodel != '' || this.provinceRatio != '') {
-            let proname: string = ''
-            this.proSearchList.map( (item: any) => {
-                if (item.id == this.promodel) {
-                    proname = item.nameCn
-                }
+        // 省是否存在
+        const ishas = this.formFans.provinces.some( (item: any) => item.id == this.promodel)
+        if (!ishas) {
+            this.formFans.provinces.push({
+                id: this.promodel,
+                name: this.provinceObject.label,
+                rate: this.provinceRatio
             })
-            // 省是否存在
-            const ishas = this.formFans.provinces.some( (item: any) => item.id == this.promodel)
-            if (!ishas) {
-                this.formFans.provinces.push({
-                    id: this.promodel,
-                    name: proname,
-                    rate: this.provinceRatio
-                })
-            } else {
-                await info('请选择城市已经存在', {title: '提示'})
-            }
         } else {
-            await info('请选择省份或者粉丝占比', {title: '提示'})
+            await info('请选择城市已经存在', {title: '提示'})
         }
     }
     async addCityList() {
-        if (this.citymodel != '' || this.cityRatio != '') {
-            let proname: string = ''
-            this.citySearchList.map( (item: any) => {
-                if (item.id == this.citymodel) {
-                    proname = item.nameCn
-                }
+        // 城市是否存在
+        const ishas = this.formFans.cities.some( (item: any) => item.id == this.citymodel)
+        if (!ishas) {
+            this.formFans.cities.push({
+                id: this.citymodel,
+                name: this.cityObject.label,
+                rate: this.cityRatio
             })
-            // 城市是否存在
-            const ishas = this.formFans.cities.some( (item: any) => item.id == this.citymodel)
-            if (!ishas) {
-                this.formFans.cities.push({
-                    id: this.citymodel,
-                    name: proname,
-                    rate: this.cityRatio
-                })
-            } else {
-                await info('请选择城市已经存在', {
-                    title: '提示'
-                })
-            }
         } else {
-            await info('请选择城市或者粉丝占比', {
+            await info('请选择城市已经存在', {
                 title: '提示'
             })
         }
@@ -599,6 +590,7 @@ export default class Main extends ViewBase {
                 pageIndex: 1
             })
             this.brandNames = items || []
+            // 确定选择数据
             if (items.length == 1) {
               this.brandTradeCode = items[0].tradeCode
             }
@@ -635,11 +627,37 @@ export default class Main extends ViewBase {
         }
     }
 
+    // 监听品牌类型选择
     @Watch('brandType')
     handleBrandType(type: string) {
         if (type) {
             this.tradeCode()
         }
+    }
+    // 监听品牌名称id
+    @Watch('brandNameId')
+    handleBrandID() {
+        this.isBrandDisabled =  this.brandNameId ? false : true
+    }
+
+    // 监听粉丝省市分布and 粉丝比例
+    @Watch('promodel')
+    watchPromodel(val: any) {
+        this.isDisble = this.promodel && this.provinceRatio ? false : true
+    }
+    @Watch('provinceRatio')
+    watchRatio(val: any) {
+        this.isDisble = this.promodel && this.provinceRatio ? false : true
+    }
+
+    // 监听粉丝城市and 粉丝比例
+    @Watch('citymodel')
+    watchCitymodel() {
+        this.isCityDisble = this.citymodel && this.cityRatio ? false : true
+    }
+    @Watch('cityRatio')
+    watchCityRatio() {
+        this.isCityDisble = this.citymodel && this.cityRatio ? false : true
     }
 }
 
