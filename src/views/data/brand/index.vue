@@ -44,10 +44,10 @@
       </template>
 
       <template slot="product" slot-scope="{ row: { status, id } }">
-        <!-- <div class="keyWords">
-          <router-link v-if="status == 1" :to="{ name: 'data-brand-product-view-list',  params: { id } }">查看产品</router-link>
+        <div class="keyWords">
+          <router-link v-if="status == 1" :to="{ name: 'data-brand-product-view-list',  params: { brandId: id } }">查看产品</router-link>
           <router-link v-if="status == 1 || status == 2" :to="{ name: 'data-brand-product-modify-list',  params: { brandId: id } }">编辑产品</router-link>
-        </div> -->
+        </div>
       </template>
 
       <template slot="status" slot-scope="{ row }">
