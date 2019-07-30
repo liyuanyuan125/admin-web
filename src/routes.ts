@@ -370,7 +370,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 基础数据 - 品牌管理 - 查看产品
   {
-    path: '/data/brand/productdetail/:id',
+    path: '/data/brand/productdetail/:brandId',
     name: 'data-brand-productdetail',
     component: () => import('./views/data/brand/productdetail.vue'),
     meta: {
@@ -380,7 +380,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 基础数据 - 品牌管理 - 查看产品
   {
-    path: '/data/brand/productedit/:id',
+    path: '/data/brand/productedit/:brandId',
     name: 'data-brand-productedit',
     component: () => import('./views/data/brand/productedit.vue'),
     meta: {
