@@ -16,9 +16,8 @@
       :columns="columns"
       ref="listPage"
     >
-      <template  slot="year" slot-scope="{row}" >
-          <span v-if='row.year!= null && row.month != null'>{{row.year}}-{{row.month}}</span>
-          <span v-if='row.year== null && row.month == null'>-</span>
+      <template  slot="billMonth" slot-scope="{row}" >
+          <span>{{row.billMonth == null ? '-' : String(row.billMonth).slice(0, 4) + '-' + String(row.billMonth).slice(4, 6)}}</span>
       </template>
       <template  slot="billAmount" slot-scope="{row}" >
           {{row.billAmount == null ? '-' : formatNumber(row.billAmount)}}
@@ -36,11 +35,11 @@
       </template>
     </ListPage>
 
-    <payDlg  ref="addOrUpdate" v-if="addOrUpdateVisible" @done="dlgEditDone"/>
+    <payDlg  ref="addOrUpdate" v-if="addOrUpdateVisible" @done="done"/>
   </div>
 </template>
 
-<script lang="tsx">
+<script lang="ts">
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
@@ -74,8 +73,14 @@ import { formatNumber } from '@/util/validateRules'
   }
 })
 export default class IndexPage extends ViewBase {
-  addOrUpdateVisible = false
   @Prop({ type: String, default: defaultPay }) pay!: string
+
+  get listPage() {
+    return this.$refs.listPage as ListPage
+  }
+
+  addOrUpdateVisible = false
+
 
   status = this.pay
 
@@ -86,7 +91,6 @@ export default class IndexPage extends ViewBase {
 
 
   get filters(): Filter[] {
-    // if (this.$route.params.pay)
     const firstN = [
       {
         name: 'status',
@@ -101,7 +105,7 @@ export default class IndexPage extends ViewBase {
       },
 
       {
-        name: 'paymentBillNo',
+        name: 'no',
         defaultValue: '',
         type: 'input',
         width: 168,
@@ -109,7 +113,7 @@ export default class IndexPage extends ViewBase {
       },
 
       {
-        name: 'applyBillNo',
+        name: 'applyNo',
         defaultValue: '',
         type: 'input',
         width: 168,
@@ -117,38 +121,7 @@ export default class IndexPage extends ViewBase {
       },
     ]
 
-    // const firstID = [
-    //   {
-    //     name: 'status',
-    //     defaultValue: this.pay,
-    //   },
-    //   {
-    //     name: 'billId',
-    //     defaultValue: '',
-    //     type: 'input',
-    //     width: 168,
-    //     placeholder: '账单ID'
-    //   },
-
-    //   {
-    //     name: 'channelDataName',
-    //     defaultValue: '',
-    //     type: 'input',
-    //     width: 168,
-    //     placeholder: '付款单ID'
-    //   },
-
-    //   {
-    //     name: 'channelDataName',
-    //     defaultValue: '',
-    //     type: 'input',
-    //     width: 168,
-    //     placeholder: '请款单ID'
-    //   },
-    // ]
-
     const two: any = [
-
       {
         name: 'cinemaId',
         defaultValue: 0,
@@ -175,7 +148,7 @@ export default class IndexPage extends ViewBase {
 
       {
         name: 'billMonth',
-        defaultValue: 0,
+        defaultValue: null,
         type: yearMonth,
         width: 108,
         placeholder: '账单月份'
@@ -205,12 +178,16 @@ export default class IndexPage extends ViewBase {
         placeholder: '对账完成时间',
         dealParam(value: string) {
           const [finishStartTime, finishEndTime] = value ? value.split('-') : [null, null]
-          return {
-            finishStartTime,
-            finishEndTime
+            return {
+              finishStartTime : finishStartTime ? Number(new Date(String(finishStartTime).slice(0, 4) + '-'
+              + String(finishStartTime).slice(4, 6) + '-' +
+              String(finishStartTime).slice(6, 8)).getTime() - (8 * 60 * 60 * 1000)) : null,
+              finishEndTime : finishEndTime ? Number(new Date(String(finishEndTime).slice(0, 4) + '-'
+              + String(finishEndTime).slice(4, 6) + '-' +
+              String(finishEndTime).slice(6, 8)).getTime() + (16 * 60 * 60 * 1000 - 1)) : null,
+            }
           }
-        }
-      },
+        },
 
       {
         name: 'dateRange2',
@@ -221,8 +198,12 @@ export default class IndexPage extends ViewBase {
         dealParam(value: string) {
           const [applyStartTime, applyEndTime] = value ? value.split('-') : [null, null]
           return {
-            applyStartTime,
-            applyEndTime
+            applyStartTime : applyStartTime ? Number(new Date(String(applyStartTime).slice(0, 4) + '-'
+              + String(applyStartTime).slice(4, 6) + '-' +
+              String(applyStartTime).slice(6, 8)).getTime() - (8 * 60 * 60 * 1000)) : null,
+            applyEndTime : applyEndTime ? Number(new Date(String(applyEndTime).slice(0, 4) + '-'
+              + String(applyEndTime).slice(4, 6) + '-' +
+              String(applyEndTime).slice(6, 8)).getTime() + (16 * 60 * 60 * 1000 - 1)) : null,
           }
         }
       },
@@ -248,8 +229,12 @@ export default class IndexPage extends ViewBase {
         dealParam(value: string) {
           const [payStartTime, payEndTime] = value ? value.split('-') : [null, null]
           return {
-            payStartTime,
-            payEndTime
+            payStartTime : payStartTime ? Number(new Date(String(payStartTime).slice(0, 4) + '-'
+              + String(payStartTime).slice(4, 6) + '-' +
+              String(payStartTime).slice(6, 8)).getTime() - (8 * 60 * 60 * 1000)) : null,
+            payEndTime : payEndTime ? Number(new Date(String(payEndTime).slice(0, 4) + '-'
+              + String(payEndTime).slice(4, 6) + '-' +
+              String(payEndTime).slice(6, 8)).getTime() + (16 * 60 * 60 * 1000 - 1)) : null,
           }
         }
       },
@@ -271,14 +256,14 @@ export default class IndexPage extends ViewBase {
   get columns() {
     // console.log(this.$route.params)
     const firstN: any = [
-      { title: '付款单编号', key: 'paymentBillNo', width: 60 },
-      { title: '请款单编号', key: 'applyBillNo', width: 60 },
+      { title: '付款单编号', key: 'no', width: 60 },
+      { title: '请款单编号', key: 'applyNo', width: 60 },
       { title: '对账单编号', key: 'billNo', width: 60 },
     ]
 
     const firstID: any = [
-      { title: '付款单ID', key: 'paymentBillId', width: 60 },
-      { title: '请款单ID', key: 'applyBillId', width: 60 },
+      { title: '付款单ID', key: 'id', width: 60 },
+      { title: '请款单ID', key: 'applyId', width: 60 },
       { title: '对账单ID', key: 'billId', width: 60 },
     ]
 
@@ -286,7 +271,7 @@ export default class IndexPage extends ViewBase {
       { title: '影城名称', key: 'cinemaName'},
       { title: '影城专资编码', key: 'cinemaCode', width: 65 },
       { title: '资源方名称', key: 'resourceName', width: 60 },
-      { title: '账单月份', slot: 'year', width: 60 },
+      { title: '账单月份', slot: 'billMonth', width: 60 },
       { title: '账单金额', slot: 'billAmount', width: 60 },
       { title: '可申请付款金额', slot: 'availableApplyAmount', width: 60},
       { title: '请款金额', slot: 'applyAmount', width: 60},
@@ -299,7 +284,7 @@ export default class IndexPage extends ViewBase {
     ]
 
     const threeN = [
-      { title: '请款时间', key: 'applyBillTime', width: 75, editor: 'dateTime' },
+      { title: '请款时间', key: 'applyTime', width: 75, editor: 'dateTime' },
       { title: '操作', slot: 'action', width: 65 }
     ]
 
@@ -312,12 +297,16 @@ export default class IndexPage extends ViewBase {
     [...firstN, ...two , ...threeN ] as ColumnExtra[]
   }
 
-  mounted() {
-    this.pay = this.statusList[0].value
+  // mounted() {
+  //   this.pay = this.statusList[0].value
+  // }
+
+  done() {
+    this.refresh()
   }
 
-  dlgEditDone() {
-    this.pay = '1'
+  refresh() {
+    this.listPage.update()
   }
 
    // 新增
@@ -331,18 +320,18 @@ export default class IndexPage extends ViewBase {
 
 
   @Watch('status')
-  watchstatus(pay: string) {
+  watchstatus(pay: any) {
+    this.listPage.query.status = pay
     this.$router.push({
       name: 'finance-payment',
-      params: { pay }
+      params: pay == defaultPay ? {} : { pay }
     })
   }
 
-  @Watch('pay')
-  watchPay(pay: string) {
-    const listPage = this.$refs.listPage as ListPage
-    listPage.query.status = pay
-  }
+  // @Watch('pay')
+  // watchPay(pay: any) {
+  //   this.listPage.query.status = pay
+  // }
 }
 </script>
 
