@@ -1,17 +1,5 @@
 <template>
-    <Select 
-       v-model="inValue"
-       placeholder="账单月份"
-       filterable
-       clearable 
-       class="component"
-       ref="ui"
-       >
-      <Option v-for="it in list" :key="it.id" :value="it.year + '-' + it.month"
-        :label="it.year + '-' + it.month" class="flex-box">
-        <span>{{it.year}}-{{it.month}}</span>
-      </Option>
-    </Select>
+    <DatePicker type="month" placeholder="账单月份" @on-change='chg'></DatePicker>
 </template>
 
 <script lang="ts">
@@ -34,37 +22,18 @@ export default class CompanyList extends ViewBase {
   @Prop({ type: String, default: '账单月份' }) placeholder!: string
   @Prop({ type: Boolean, default: true }) clearable!: boolean
 
-  inValue: number = this.value
+  inValue: any = this.value
   loading = false
 
   list: any[] = []
 
-  async mounted() {
-    try {
-      const adscmy = await queryList({})
-      this.list = adscmy.data.items
-    } catch (ex) {
-      this.handleError(ex)
+  chg(data: any) {
+    if (data != '') {
+      this.inValue = data.split('-')[0] + data.split('-')[1]
+    } else {
+      this.inValue = null
     }
   }
-
-  // async remoteMethod(querys: any) {
-  //   try {
-  //     if (querys) {
-  //       this.loading = true
-  //       const {
-  //         data: { items }
-  //       } = await queryList({
-  //         name: querys,
-  //       })
-  //       this.list = items || []
-  //     }
-  //     this.loading = false
-  //   } catch (ex) {
-  //     this.handleError(ex)
-  //     this.loading = false
-  //   }
-  // }
 
   @Watch('value')
   watchValue(val: number) {

@@ -11,7 +11,7 @@
         <span><span v-if='defaultfee != null'>￥</span>{{defaultfee == null ? '-' : formatNumber(defaultfee)}}</span>
       </FormItem>
       <FormItem label="实际付款金额" prop="fee">
-        <Input style="width:240px" v-model="dataForm.fee"></Input>
+        <InputNumber style="width:240px" :min='0' :max='defaultfee' v-model="dataForm.fee"></InputNumber>
       </FormItem>
       <FormItem label="备注" prop="remark">
         <Input type='textarea' style="width:240px" v-model="dataForm.remark"></Input>
@@ -35,9 +35,9 @@ import { warning , success, toast } from '@/ui/modal'
 import { formatNumber } from '@/util/validateRules'
 
 
-const dataForm = {
-  fee: '',
-  remark: '',
+const dataForm: any = {
+  fee: null,
+  remark: null,
 }
 
 @Component
@@ -51,7 +51,7 @@ export default class ComponentMain extends ViewBase {
   get ruleValidate() {
     const rules = {
       fee: [
-          { required: true, message: '请输入金额', trigger: 'blur' }
+          { required: true, message: '请输入金额' }
       ],
     }
     return rules
@@ -68,9 +68,9 @@ export default class ComponentMain extends ViewBase {
     this.showDlg = true
     this.id = id || 0
     this.defaultfee = applyAmount
-    this.dataForm.fee = applyAmount
     ; (this.$refs.dataForm as any).resetFields()
     if (this.id) {
+      this.dataForm.fee = applyAmount
     }
   }
 
