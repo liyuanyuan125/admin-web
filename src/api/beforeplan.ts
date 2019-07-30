@@ -102,5 +102,25 @@ export async function revuew(id: any ) {
   return data
 }
 
+// 修改应结金额
+// http://yapi.aiads-dev.com/project/140/interface/api/5381
+export async function needamount(id: any, query: any) {
+  const data = await post(`/xadvert/plans/${id}/set-need-pay-amount`, query )
+  return data
+}
+
+// 核对广告计划
+// http://yapi.aiads-dev.com/project/140/interface/api/5380
+export async function check(id: any, query: any) {
+  const data = await post(`/xadvert/plans/${id}/check`, query )
+  return data
+}
+
+// 商务审核方案（设置定金）
+// http://yapi.aiads-dev.com/project/140/interface/api/5379
+export async function business(id: any, query: any) {
+  const data = await post(`/xadvert/plans/{id}/business-approve_1564030188070`, query )
+  return data
+}
 
 

@@ -16,7 +16,7 @@
       </template>
       <template slot="channelCode" slot-scope="{ row: { channelCode , orderId , status } }">
         <div class="row-acts">
-          <span v-for='(it,index) in channelCodeList' :kry='index' v-if='it.key == channelCode'>{{it.text}}</span>
+          <span v-for='(it,index) in channelCodeList' :key='index' v-if='it.key == channelCode'>{{it.text}}</span>
         </div>
       </template>
       <template slot="action" slot-scope="{ row: { orderNo , orderId , status  } }">
