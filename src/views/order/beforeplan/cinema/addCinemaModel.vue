@@ -70,7 +70,7 @@
             show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
             @on-change="sizeChangeHandle"
             @on-page-size-change="currentChangeHandle"/>
-            <span class="checkId">已选: {{form.check.length}}</span>
+            <span class="checkId">已选: {{form.check.length - defaultlength}}</span>
         </div>
       </div>
     </div>
@@ -118,6 +118,7 @@ export default class Main extends ViewBase {
   ]
   // 选中的影院 id加名字
   checkCinema: any = [ ...this.addData ]
+  defaultlength: any = 0
   pageIndex = 1
   pageSize = 10
   totalPage = 0
@@ -193,6 +194,7 @@ export default class Main extends ViewBase {
       const sameId = this.items.filter((it: any) => {
         return this.form.check.includes(it.id)
       })
+      this.defaultlength = this.form.check.length
       if (this.items.length === sameId.length) {
         this.indeterminate = false
         this.checkAll = true
@@ -223,7 +225,8 @@ export default class Main extends ViewBase {
         // this.$Message.success({
         //   content: `删除成功`,
         // })
-        this.$router.go(0)
+        // this.$router.go(0)
+        this.$emit('dlgEditDone')
       } catch (ex) {
         this.handleError(ex)
       }
@@ -351,7 +354,7 @@ export default class Main extends ViewBase {
     this.chainId = 0
     this.showDlg = false
     this.pageIndex = 1
-    this.seach()
+    // this.seach()
   }
 }
 </script>

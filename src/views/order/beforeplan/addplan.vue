@@ -2,55 +2,85 @@
   <div class='page'>
     <header>
       <Button icon="md-return-left" @click="back" class="btn-back">返回上一页</Button>
-      <Button v-if='$route.params.status != 12' class="bth" style='float: right' @click="close($route.params.id)">关闭订单</Button><br>
     </header>
     <div class='title'>基础信息</div>
     <div class='bos'>
-      <Row>
-        <Col :span='12'>计划名称&nbsp;：&nbsp;{{listitem.name == null ? '暂无' : listitem.name}}</Col>
-        <Col :span='12'>广告片&nbsp;：&nbsp;{{listitem.videoName == null ? '-' : listitem.videoName}}({{listitem.specification == null ? '-' : listitem.specification}}s)【{{listitem.customerName == null ? '-' : listitem.customerName}}】</Col>
-      </Row>
-      <Row>
-        <Col :span='12'>投放排期&nbsp;：&nbsp;{{listitem.beginDate == null ? '暂无' : start}} ~ {{listitem.endDate == null ? '暂无' : end}}</Col>
-        <Col :span='12'>推广预算&nbsp;：&nbsp;{{formatNumber(listitem.budgetAmount)}}元</Col>
-      </Row>
-      <Row>
-        <Col :span='12'>覆盖城市&nbsp;：&nbsp;
-        <span v-if='listitem.deliveryCityTypes == null'>暂无城市类型</span>
-        <span v-if='listitem.deliveryCityTypes != null' v-for='(item , index) in deliveryCityTypeList' :key='index'>
-          <em v-for='(it,index) in listitem.deliveryCityTypes' :key='index' v-if='item.key == it'>{{item.text +' '}}</em>
-        </span>&nbsp; | &nbsp;  <router-link 
-            :to="{ name: 'order-beforeplan-detail-viewcity', params: { id : this.$route.params.id } }"
-          >查看城市列表</router-link><span></span></Col>
-        <!-- <Col :span='12'>覆盖城市&nbsp;：&nbsp;票仓城市Top20 | 一线城市 / <span v-if='listitem.cityCustom == 0'>查看城市列表</span></Col> -->
-        <!-- <Col :span='12'>影院星级&nbsp;：&nbsp;<span v-if='listitem.cinemaGradeCodes != null' v-for='(item , index) in cinemaGradeList' :key='index'><em v-for='(it,index) in listitem.cinemaGradeCodes' :key='index' v-if='item.key == it'>{{item.text +' '}}</em></span><span v-if='listitem.cinemaGradeCodes == null'>暂无</span></Col> -->
-        <Col :span='12' v-if='view'>影片类型&nbsp;：&nbsp;<span v-if='listitem.deliveryGroups != null' v-for='(item , index) in tags[0].values' :key='index'><em v-for='(it,index) in listitem.deliveryGroups' :key='index' v-if='item.key == it.text'>{{item.text +' '}}</em></span><span v-if='ifmovie'>暂无</span></Col>
-      </Row>
-      <Row>
-        <Col :span='12' v-if='view'>受众性别(比例较多)&nbsp;：&nbsp;<span v-if='listitem.deliveryGroups != null' v-for='(item , index) in tags[2].values' :key='index'><em v-for='(it,index) in listitem.deliveryGroups' :key='index' v-if='item.key == it.text'>{{item.text +' '}}</em></span><span v-if='ifsex'>暂无</span></Col>
-        <Col :span='12' v-if='view'>受众年龄&nbsp;：&nbsp;<span v-if='listitem.deliveryGroups != null' v-for='(item , index) in tags[1].values' :key='index'><em v-for='(it,index) in listitem.deliveryGroups' :key='index' v-if='item.key == it.text'>{{item.text +' '}}</em></span><span v-if='ifage'>暂无</span></Col>
-      </Row>
-      <Row>
-        <Col :span='12'>创建时间&nbsp;：&nbsp;{{applyTime}}</Col>
-        <Col :span='12'>创建人&nbsp;：&nbsp;{{listitem.applyName == null ? '暂无创建人' : listitem.applyName}}</Col>
-      </Row>
+      <Form ref="info" :model="info" label-position="left" :rules="ruleValidate" :label-width="100">
+        <Row>
+          <Col :span='6' style='margin-right: 3%;'>
+            <FormItem label="计划名称" prop="planName">
+              <Input v-model="info.planName" placeholder='广告计划名称'></Input>
+            </FormItem>
+          </Col>
+          <Col :span='6' style='margin-right: 3%;'>
+            <FormItem label="广告主公司" prop="xadscompanyId">
+              <CompanyList v-model="info.xadscompanyId"/>
+            </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col :span='6' style='margin-right: 3%;'>
+            <FormItem label="广告片" prop="filmid">
+              <videoList v-model="info.filmid" />
+            </FormItem>
+          </Col>
+          <Col :span='6' style='margin-right: 3%;'>
+            <FormItem label="广告片规格" prop="filmleng">
+              <Select v-model="info.filmleng" filterable placeholder="广告片规格" >
+                <Option v-for="it in []" v-if='it.status==1' :key="it.id" :value="it.id">{{it.name}}</Option>
+              </Select>
+            </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col :span='6' style='margin-right: 3%;'>
+            <FormItem label="客户" prop="custid">
+              <Select v-model="info.custid" filterable placeholder="客户">
+                <Option v-for="it in []" v-if='it.status==1' :key="it.id" :value="it.id">{{it.name}}</Option>
+              </Select>
+            </FormItem>
+          </Col>
+          <Col :span='6' style='margin-right: 3%;'>
+            <FormItem label="品牌" prop="brandid">
+              <brandList v-model="info.brandid" />
+            </FormItem>
+          </Col>
+          <Col :span='6' style='margin-right: 3%;'>
+            <FormItem label="产品" prop="proid">
+              <Select v-model="info.proid" filterable placeholder="产品">
+                <Option v-for="it in []" v-if='it.status==1' :key="it.id" :value="it.id">{{it.name}}</Option>
+              </Select>
+            </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col :span='6' style='margin-right: 3%;'>
+            <FormItem label="投放排期" prop="name">
+              <DatePicker type="daterange" @on-change="dateChange" style='width: 100%;' v-model="showTime" placement="bottom-start" placeholder="投放排期时间" class="input" ></DatePicker>
+            </FormItem>
+          </Col>
+        </Row>    
+      </Form>
     </div>
     <div class='title'>投放影片(系统推荐 / 用户自选)</div>
     <div class='bos'>
       <Table :columns="itemcolumns" :data='films' border stripe disabled-hover size="small" class="table">
-        <template v-if='$route.params.status == 2 || $route.params.status == 3 || $route.params.status == 9 || $route.params.status == 10' slot="action" slot-scope="{row}" >
+        <template v-if='$route.params.status == 0 || $route.params.status == 1 || $route.params.status == 2 ' slot="action" slot-scope="{row}" >
           <a  @click="deletefilm(row.movieId)">删除</a>
         </template>
      </Table>
-     <div style='cursor: pointer;' v-if='$route.params.status == 2 || $route.params.status == 3 || $route.params.status == 9 || $route.params.status == 10' @click='addfilm(listitem.beginDate , listitem.endDate)'>添加影片</div>
+     <div style='cursor: pointer;' v-if='$route.params.status == 0 || $route.params.status == 1 || $route.params.status == 2 ' @click='addfilm(listitem.beginDate , listitem.endDate)'>添加影片</div>
     </div>
-    <!-- <div class='title'>投放影院(532家)
-      <span style='float: right' @click='chgRes'>导出影院列表</span>
-    </div> -->
-    <!-- <div class='bos'> -->
-      <!-- <Cinema :value="it.cinemaList"/> -->
-      <Cinema  @getcine="getcinemas" />
-    <!-- </div> -->
+    <div class='title'>投放类型</div>
+    <Row class='bos'>
+      <RadioGroup v-model="info.status" >
+        <Radio v-for="it in toufangtype" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
+      </RadioGroup>
+    </Row>
+     <!-- 影院 -->
+    <Cinema  @getcine="getcinemas" />
+    <!-- 资源方列表 -->
+    <resList  @getcine="getcinemas"  />
     <div class='title'>备注</div>
     <div class='bos' >
       <Row v-if='(listitem.remarks == null)'>暂无备注</Row>
@@ -66,6 +96,13 @@
         <Button style='margin-left: 49%;' type="primary" @click="dataFormSubmit">提交备注</Button>
     </Form>
     </div>
+    <div class='title'>应收款项</div>
+    <Row class='bos'>
+      <Col :span='2'>应收金额</Col>
+      <Col :span='4'>
+          <Input style="width:100px" v-model="dataplan.money"></Input>
+      </Col>
+    </Row>
     <div class='title'>操作记录</div>
     <div class='bos'>
       <Row v-if='logList.length == 0'>暂无操作日志</Row>
@@ -73,41 +110,19 @@
         <Row>{{it.createTime}}  {{it.createUserEmail}}【{{it.createUserName}}】 {{it.eventName}}{{it.description}}</Row>
       </Row>
     </div>
-    <div class='title'>应收款项</div>
-    <Row class='bos'>
-      <Row>
-        <Col :span='2'>定金</Col>
-        <Col :span='4'>
-            <Input style="width:100px" v-if='listitem.status != 2 && listitem.status != 3' disabled v-model="dataplan.depositAmount"></Input>
-            <Input style="width:100px" v-if='listitem.status == 2 || listitem.status == 3' v-model="dataplan.depositAmount"></Input>
-        </Col>
-      </Row>
-      <Row>
-        <Col :span='2'>应结金额</Col>
-        <Col :span='3'>
-            <Input style="width:100px" v-if='listitem.status != 9 && listitem.status != 10' disabled v-model="dataplan.needPayAmount"></Input>
-            <Input style="width:100px" v-if='listitem.status == 9 || listitem.status == 10' v-model="dataplan.needPayAmount"></Input>
-        </Col>
-        <Col :span='10' v-if='listitem.totalCost && listitem.totalCost != null'>实际投放花费 ￥ ({{formatNumber(listitem.totalCost)}})</Col>
-      </Row>
-    </Row>
     <div style='padding: 20px 0 30px 0'>
         <Form ref="dataplan" :model="dataplan"  :rules="ruleValidate" label-position="left" :label-width="100">
-          <Col :span='15'>预估曝光人次【{{formatNumber(listitem.estimatePersonCount , 2)}}】预估曝光场次【{{formatNumber(listitem.estimateShowCount , 2)}}】预估花费【{{formatNumber(listitem.estimateCostAmount)}}】
-            <Button type="primary" :loading="loading2" @click="shuaxin()">刷新</Button>
-        </Col>
-          
-          <!-- <Col :span='4'>
-            <FormItem label="应收金额" prop="money">
-              <Input style="width:100px" v-model="dataplan.money"></Input>
-            </FormItem>
-          </Col> -->
+            <Col :span='11'>
+              预估曝光人次【{{formatNumber(listitem.estimatePersonCount , 2)}}】预估曝光场次【{{formatNumber(listitem.estimateShowCount , 2)}}】预估花费【{{formatNumber(listitem.estimateCostAmount)}}】
+               <Button type="primary" :loading="loading2" @click="shuaxin()">刷新</Button>
+            </Col>
           </Form>
           <Col :span='6'>
-              <Button v-if='(viewfilm == true || viewcinema == true) || (listitem.status != 2 && listitem.status != 3 && listitem.status != 9 && listitem.status != 10) ' type="primary" disabled>保存并发送方案至广告主</Button>
-              <Button v-if='(viewfilm == false && viewcinema == false) && (listitem.status == 2 || listitem.status == 3 || listitem.status == 9 || listitem.status == 10) ' type="primary" @click="save('dataplan')">保存并发送至广告主</Button>
+              <Button v-if='viewfilm == true || viewcinema == true ' type="primary" disabled>保存并发送方案至广告主</Button>
+              <Button v-if='viewfilm == false && viewcinema == false ' type="primary" @click="save('dataplan')">保存并发送方案至广告主</Button>
             <Button style='margin-left: 30px;' @click="back">取消</Button>
           </Col>
+      
     </div>
     <close  ref="over"   v-if="overVisible" @done="dlgEditDone"/>
     <addfilm  ref="adds" v-if='addVisible' @done="dlgEditDones"/>
@@ -119,18 +134,30 @@ import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { itemlist , delfilm , beizhu  , closeid , save , revuew , needamount , check } from '@/api/beforeplan'
+import { itemlist , delfilm , beizhu  , closeid , save , revuew  } from '@/api/beforeplan'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
+// 关闭订单
 import close from './closeorder.vue'
 import AreaSelect from '@/components/areaSelect'
 import { warning , success, toast , info } from '@/ui/modal'
 import { slice , clean } from '@/fn/object'
+// 影院
 import Cinema from './cinema/cinema.vue'
+// 添加影片
 import addfilm from './addfilm.vue'
 import { confirm } from '@/ui/modal'
+// 数字格式化
 import Number from '@/components/number.vue'
 import { formatNumber } from '@/util/validateRules'
+// 广告主公司名称
+import CompanyList from './files/adscompany.vue'
+// 广告片列表
+import videoList from './files/videoList.vue'
+// 品牌列表
+import brandList from './files/filebrand.vue'
+// 资源方列表
+import resList from './resourse/resourselist.vue'
 
 
 import {
@@ -147,14 +174,31 @@ const timeFormat = 'YYYY-MM-DD HH:mm:ss'
     close,
     AreaSelect,
     Cinema,
+    resList,
     addfilm,
-    Number
+    Number,
+    CompanyList,
+    videoList,
+    brandList
   }
 })
 export default class Main extends ViewBase {
   overVisible = false
   addOrUpdateVisible = false
   addVisible = false
+  // 基本信息
+  info = {
+    planName: null,
+    xadscompanyId: null,
+    filmid: null,
+    filmleng: null,
+    custid: null,
+    brandid: null,
+    proid: null,
+    startTime: null,
+    endTime: null,
+    status: 1,
+  }
   query: any = {
     pageIndex: 1,
     pageSize: 10,
@@ -168,14 +212,14 @@ export default class Main extends ViewBase {
     remarks : ''
   }
   dataplan: any = {
-    depositAmount : '',
-    needPayAmount: ''
+    money : ''
   }
   loading = false
   area: any = []
   list = []
   total = 0
   cinemaArray: any = []
+  showTime: any = []
 
 
   listitem: any = {}
@@ -190,6 +234,17 @@ export default class Main extends ViewBase {
   deliveryCityTypeList: any = []
   // 电影类型
   tags: any = []
+  // 投放类型
+  toufangtype: any = [
+    {
+      key: 1,
+      text: '按曝光 (以CPM计费,使用刊例价进行结算)'
+    },
+    {
+      key: 2,
+      text: '按场次 (执行完成后,手动进行结算;不适用刊例价,按单结算给资)'
+    }
+  ]
   deliveryGroups: any = []
   ifmovie = false
   ifage = false
@@ -219,7 +274,7 @@ export default class Main extends ViewBase {
         render: (hh: any, { row: { publishStartDate } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          const html = publishStartDate == 0 ? '-' : String(publishStartDate).slice(0, 4) + '-' + String(publishStartDate).slice(4, 6) + '-' + String(publishStartDate).slice(6, 8)
+          const html = String(publishStartDate).slice(0, 4) + '-' + String(publishStartDate).slice(4, 6) + '-' + String(publishStartDate).slice(6, 8)
           return <span class='datetime' v-html={html}></span>
           /* tslint:enable */
         }
@@ -247,15 +302,26 @@ export default class Main extends ViewBase {
         slot: 'action'
       }
     ]
-    return this.$route.params.status == '2' || this.$route.params.status == '3' ||
-    this.$route.params.status == '9' || this.$route.params.status == '10' ?
-    [...data, ...opernation] : data
+    return this.$route.params.status == '0' || this.$route.params.status == '1' ||
+    this.$route.params.status == '2' ? [...data, ...opernation] : data
   }
 
+  // 时间
+  dateChange(data: any) {
+     // 获取时间戳
+     !!data[0] ? (this.query.startTime = new Date(data[0]).getTime() - 28800000) : this.query.startTime = 0
+     !!data[1] ? (this.query.endTime = new Date(data[1]).getTime() + 57600000) : this.query.endTime = 0
+  }
+
+
+  // 输入框规则
   get ruleValidate() {
     const rules = {
       money: [
           { required: true, message: '请输入金额', trigger: 'blur' }
+      ],
+      planName: [
+          { required: true, message: '请输入广告计划金额', trigger: 'blur' }
       ],
     }
     return rules
@@ -266,7 +332,7 @@ export default class Main extends ViewBase {
   }
 
   mounted() {
-    this.search()
+    // this.search()
   }
 
   async getcinemas(asd: any) {
@@ -361,7 +427,6 @@ export default class Main extends ViewBase {
       this.end =  b.slice(0, 4) + '-' + b.slice(4, 6) + '-' + b.slice(6, 8)
       this.applyTime = data.item.applyTime.split('T')[0]
       + ' ' + data.item.applyTime.split('T')[1].split('.')[0]
-      // 备注
       this.remarks = (this.listitem.remarks || []).map((it: any) => {
         return {
           ...it,
@@ -374,17 +439,12 @@ export default class Main extends ViewBase {
           createTime : moment(it.createTime).format(timeFormat)
         }
       })
-      // 影片
       this.films = data.planMovies == null ? [] : data.planMovies
-      // 星级
       this.cinemaGradeList = data.cinemaGradeList == null ? [] : data.cinemaGradeList
-      // 城市
       this.deliveryCityTypeList = data.deliveryCityTypeList == null ? [] : data.deliveryCityTypeList
-      // 电影标签列表(影片类型/年龄/性别)
       this.tags = data.tags
       this.view = true
       this.deliveryGroups = data.item.deliveryGroups
-      // 判断电影标签的展示
       if (this.deliveryGroups == null) {
         this.ifmovie = true
         this.ifage = true
@@ -403,8 +463,6 @@ export default class Main extends ViewBase {
           this.ifsex = true
         }
       }
-      this.dataplan.depositAmount = data.item.depositAmount
-      this.dataplan.needPayAmount = data.item.needPayAmount
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -445,41 +503,17 @@ export default class Main extends ViewBase {
 
   // 保存方案
   async save(dataplan: any) {
-    // 保存定金
-    if (this.listitem.status == 2 || this.listitem.status == 3) {
-      if (this.dataplan.depositAmount == '') {
-        info('请输入定金金额')
-        return
+    const myThis: any = this
+    myThis.$refs[dataplan].validate(async ( valid: any ) => {
+      if (valid) {
+        try {
+          const res = await save (this.$route.params.id , {needPayAmount : this.dataplan.money})
+          this.$router.go(-1)
+        } catch (ex) {
+          this.handleError(ex)
+        }
       }
-      const res = await save (this.$route.params.id , {depositAmount : this.dataplan.depositAmount})
-    } else if (this.listitem.status == 9) { // 核对应结金额
-      if (this.dataplan.needPayAmount == '') {
-        info('请输入应结金额')
-        return
-      }
-      const rescheck = await check (this.$route.params.id , {needPayAmount : this.dataplan.needPayAmount})
-    } else if (this.listitem.status == 10) { // 修改应结金额
-      if (this.dataplan.needPayAmount == '') {
-        info('请输入应结金额')
-        return
-      }
-      const resneed = await needamount (this.$route.params.id , {needPayAmount : this.dataplan.needPayAmount})
-    }
-    this.$router.go(-1)
-    // const myThis: any = this
-    // myThis.$refs[dataplan].validate(async ( valid: any ) => {
-    //   if (valid) {
-    //     try {
-    //       const res = await save (this.$route.params.id , {depositAmount : this.dataplan.depositAmount})
-    //       // 核对中/待结算 ---  修改应结金额
-    //       if (this.listitem.status == 9 || this.listitem.status == 10) {
-    //         const resneed = await needamount (this.$route.params.id , {needPayAmount : this.dataplan.needPayAmount})
-    //       }
-    //     } catch (ex) {
-    //       this.handleError(ex)
-    //     }
-    //   }
-    // })
+    })
   }
 
   // 每页数
@@ -492,11 +526,6 @@ export default class Main extends ViewBase {
   currentChangeHandle(val: any) {
     this.query.pageSize = val
     this.search()
-  }
-
-  @Watch('dataplan', { deep: true })
-  watchDataplan() {
-
   }
 
 

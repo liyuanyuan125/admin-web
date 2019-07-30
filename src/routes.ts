@@ -368,21 +368,21 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
-  // 基础数据 - 品牌管理 - 查看产品
+  // 基础数据 - 品牌管理 - 产品 - 查看列表
   {
-    path: '/data/brand/productdetail/:id',
-    name: 'data-brand-productdetail',
-    component: () => import('./views/data/brand/productdetail.vue'),
+    path: '/data/brand/product/viewlist/:brandId',
+    name: 'data-brand-product-view-list',
+    component: () => import('./views/data/brand/product/viewList.vue'),
     meta: {
       authKey: ''
     }
   },
 
-  // 基础数据 - 品牌管理 - 查看产品
+  // 基础数据 - 品牌管理 - 产品 - 编辑列表
   {
-    path: '/data/brand/productedit/:id',
-    name: 'data-brand-productedit',
-    component: () => import('./views/data/brand/productedit.vue'),
+    path: '/data/brand/product/modifylist/:brandId',
+    name: 'data-brand-product-modify-list',
+    component: () => import('./views/data/brand/product/modifyList.vue'),
     meta: {
       authKey: ''
     }
@@ -674,6 +674,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     ]
   },
 
+  // 财务管理 - 充值审核
   {
     path: '/finance/examine/',
     name: 'finance-examine',
@@ -712,6 +713,16 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: true,
   },
 
+  // 映前广告付款单管理 - 列表
+  {
+    path: '/finance/payment/:pay?',
+    name: 'finance-payment',
+    component: () => import('./views/finance/payment/index.vue'),
+    meta: {
+      authKey: '',
+      title: '映前广告付款单列表'
+    }
+  },
   {
     path: '/plan/ggtising',
     name: 'plan-ggtising',
@@ -1040,6 +1051,18 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       title: '映前广告计划列表'
     }
   },
+
+  // 映前广告计划 - 列表
+  {
+    path: '/order/beforeplan/addplan',
+    name: 'order-beforeplan-addplan',
+    component: () => import('./views/order/beforeplan/addplan.vue'),
+    meta: {
+      authKey: '',
+      title: '映前广告计划列表'
+    }
+  },
+
   // 映前广告计划 - 详情
   {
     path: '/order/beforeplan/detail/:id/:status',

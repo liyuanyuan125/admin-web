@@ -3,7 +3,7 @@
     <div class="Inp-Group-res">
       <Button class="bth" icon="md-return-left" @click="goback">返回列表</Button>
       <Button v-auth="'advert.executeOrder:closed'" v-if='$route.params.status != 8' class="bth" style='float: right' @click="edit($route.params.id)">关闭订单</Button><br>
-      <div v-if='$route.params.status == 7' class="n-main">结算信息</div>
+      <!-- <div v-if='$route.params.status == 7' class="n-main">结算信息</div>
       <div v-if='$route.params.status == 7' class="Inps-res">
         <Row class='row-list'>
             <Col span='3' class='hui'>结算金额</Col>
@@ -11,7 +11,7 @@
             <Col span='3' class='hui'>操作时间/人</Col>
             <Col span='9'>{{settlementTime}} / {{item.settlementUserName}}</Col>
         </Row>
-      </div>
+      </div> -->
       <div class="n-main">广告主信息</div>
       <div class="Inps-res">
         <Row class='row-list'>

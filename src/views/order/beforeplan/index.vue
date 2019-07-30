@@ -7,9 +7,16 @@
       :columns="columns"
       ref="listPage"
     >
-      <template slot="budgetAmount" slot-scope="{ row: { budgetAmount   } }">
+      <template slot="depositAmount" slot-scope="{ row: { depositAmount   } }">
         <div class="row-acts">
-          <Number :addNum='budgetAmount' />
+          <Number v-if='depositAmount && depositAmount != null' :addNum='depositAmount' />
+          <span v-else>-</span>
+        </div>
+      </template>
+      <template slot="needPayAmount" slot-scope="{ row: { needPayAmount   } }">
+        <div class="row-acts">
+          <Number v-if='needPayAmount && needPayAmount != null' :addNum='needPayAmount' />
+          <span v-else>-</span>
         </div>
       </template>
       <template slot="action" slot-scope="{ row: { id , status  } }">
@@ -28,8 +35,8 @@ import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 // import planList from './filename.vue'
-import CompanyList from './fileplan.vue'
-import videoList from './videoList.vue'
+import CompanyList from './files/adscompany.vue'
+import videoList from './files/videoList.vue'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import moment from 'moment'
 import Number from '@/components/number.vue'
@@ -103,7 +110,7 @@ export default class Main extends ViewBase {
 
     {
       name: 'status',
-      defaultValue: 0,
+      defaultValue: null,
       type: 'select',
       width: 100,
       placeholder: '订单状态',
@@ -128,9 +135,9 @@ export default class Main extends ViewBase {
   get columns() {
     return [
       { title: '计划id', key: 'id', width: 65 },
-      { title: '计划名称', key: 'name', minWidth: 160 },
+      { title: '计划名称', key: 'name' },
       { title: '广告主公司名称', key: 'companyName'},
-      { title: '广告片', key: 'videoName', minWidth: 160 },
+      { title: '广告片', key: 'videoName', maxWidth: 100 },
       {
         title: '投放周期',
         key: 'beginDate',
@@ -145,7 +152,9 @@ export default class Main extends ViewBase {
           /* tslint:enable */
         }
       },
-      { title: '预算', slot: 'budgetAmount', width: 100},
+      // { title: '预算', slot: 'budgetAmount', width: 100},
+      { title: '定金', slot: 'depositAmount', width: 100},
+      { title: '应结金额', slot: 'needPayAmount', width: 100},
       { title: '提交时间', key: 'applyTime', editor: 'dateTime', width: 135 },
       { title: '状态', key: 'status', width: 100 , editor: 'enum' },
       { title: '操作', slot: 'action', width: 55 }

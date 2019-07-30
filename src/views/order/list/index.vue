@@ -7,7 +7,6 @@
             <Option v-for="it in adscompany" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
           </Select>
-          <!-- <LazyInput v-model="query.companyName" placeholder="广告计划名称" class="input"/> -->
           <Select v-model="query.planId" placeholder="广告计划名称" style='width: 200px;'  filterable>
             <Option v-for="it in planlist" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
@@ -16,10 +15,6 @@
             <Option v-for="it in resourcescompany" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
           </Select>
-          <!-- <Select v-model="query.planType" placeholder="订单类型" style='width: 200px;' clearable>
-            <Option v-for="it in planTypeList" v-if='it.key != 0' :key="it.key" :value="it.key"
-              :label="it.text">{{it.text}}</Option>
-          </Select> -->
           <Select v-model="query.status" placeholder="订单状态" style='width: 200px;' clearable>
             <Option v-for="it in statusList" v-if='it.key != 0' :key="it.key" :value="it.key"
               :label="it.text">{{it.text}}</Option>
@@ -30,7 +25,7 @@
       <Table :columns="columns" :data="tableData" :loading="loading"
         border stripe disabled-hover size="small" class="table">
           <template slot="spaction" slot-scope="{row}">
-          <a v-show='row.status == 3' v-auth="'advert.executeOrder:settlement'" @click="change(row.id, row)">结算</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <!-- <a v-show='row.status == 3' v-auth="'advert.executeOrder:settlement'" @click="change(row.id, row)">结算</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
           <router-link v-show='row.status == 3' v-auth="'advert.executeOrder:info'" :to="{ name: 'order-list-detail', params: { id: row.id , status: row.status } }">详情</router-link>
           <router-link v-show='row.status != 3' v-auth="'advert.executeOrder:info'" :to="{ name: 'order-list-detail', params: { id: row.id , status: row.status } }">详情</router-link>
         </template>
@@ -45,7 +40,6 @@
       </div>
     </div>
     <Dlgjie  ref="addOrUpdate"   @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/>
-    <!-- <dlgVerify  ref="change"   @refreshDataList="search" v-if="changeVisible" @done="dlgEditDone"/> -->
   </div>
 </template>
 
@@ -75,7 +69,6 @@ const dataForm = {
 @Component({
   components: {
     Dlgjie,
-    // dlgVerify
   }
 })
 export default class Main extends Mixins(ViewBase, UrlManager) {
