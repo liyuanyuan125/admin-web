@@ -27,17 +27,22 @@
 
       <template slot="action" slot-scope="{ row: { id } }">
         <div class="row-acts">
-          <!-- <router-link
+          <router-link
             :to="{
-              name: 'data-kol-account-edit',
+              name: 'data-brand-product-modify-detail',
               params: {
-                id,
-                channel,
-                action: status == 1 ? 'audit' : 'edit'
+                id
               }
             }"
-          >{{status == 1 ? '审核' : '编辑'}}</router-link> -->
-          <a @click="del(id)">查看</a>
+          >编辑</router-link>
+          <router-link
+            :to="{
+              name: 'data-brand-product-view-detail',
+              params: {
+                id
+              }
+            }"
+          >查看</router-link>
         </div>
       </template>
     </ListPage>
