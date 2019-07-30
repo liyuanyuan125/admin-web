@@ -21,6 +21,7 @@ export async function dels(id: any) {
 }
 
 // 获取影院定价等级
+// TODO: 该函数不要调用，pageSize 过大，会导致接口出现 58 超时
 export async function pricingLevelList(query: any) {
   const data = await get('/theater/cinemas', {pageSize: 10000})
   return data

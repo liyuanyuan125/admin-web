@@ -43,12 +43,13 @@
         </p>
       </template>
       
-      <template slot="action" slot-scope="{ row: { id, priceStatus} }">
+      <template slot="action" slot-scope="{ row: { id, priceStatus, controlStatus} }">
         <div class="row-acts">
-          <a v-if="[1, 3].includes(priceStatus)" @click="batchUpper(1, id)">上架</a>
-          <a v-if="[2].includes(priceStatus)" @click="batchUpper(2, id)">下架</a>
+          <a v-if="[2].includes(controlStatus)" @click="batchUpper(1, id)">上架</a>
+          <a v-if="[1].includes(controlStatus)" @click="batchUpper(2, id)">下架</a>
           <a v-if="[1, 3, 4].includes(priceStatus)" @click="singlePrice(id)">修改定价</a>
-          <router-link v-if="[2].includes(priceStatus)" :to="{name: 'resource-kolplatform-list-detail', params: {id, code: channelCode, type: 2}}">审核价格</router-link>
+          <router-link v-if="[2].includes(priceStatus)" 
+          :to="{name: 'resource-kolplatform-list-detail', params: {id, code: channelCode, type: 2}}">审核价格</router-link>
           <router-link :to="{name: 'resource-kolplatform-list-detail', params: {id, code: channelCode}}">查看</router-link>
         </div>
       </template>

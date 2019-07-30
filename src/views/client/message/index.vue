@@ -122,14 +122,30 @@ export default class Main extends ViewBase {
       placeholder: '留言日期',
       dealParam(value: string) {
         const [beginCreateTime, endCreateTime] = value ? value.split('-') : [null, null]
-        // console.log( beginCreateTime, endCreateTime )
-        if ( beginCreateTime && endCreateTime) {
-          return {
-            beginCreateTime: moment(beginCreateTime as string).unix(),
-            endCreateTime: moment(endCreateTime as string).unix()
+        if ( beginCreateTime && endCreateTime ) {
+          if ( beginCreateTime === endCreateTime) {
+            return {
+              beginCreateTime: moment(moment(beginCreateTime).toDate()).valueOf(),
+              endCreateTime: moment(moment(beginCreateTime).toDate()).add(23.99, 'h').valueOf()
+            }
+          } else {
+            return {
+              beginCreateTime: moment(moment(beginCreateTime).toDate()).valueOf(),
+              endCreateTime: moment(moment(endCreateTime).toDate()).valueOf()
+            }
           }
         }
       }
+    },
+
+    {
+      name: 'pageIndex',
+      defaultValue: 1
+    },
+
+    {
+      name: 'pageSize',
+      defaultValue: 20
     }
   ]
 

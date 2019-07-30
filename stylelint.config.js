@@ -9,5 +9,6 @@ module.exports = {
     'block-closing-brace-newline-before': null,
     'selector-list-comma-newline-after': null,
     'no-descending-specificity': null,
+    'block-no-empty': null
   }
 }

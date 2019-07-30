@@ -30,6 +30,8 @@ const nextTag = async () => {
   return newTag
 }
 
+const lastCommitMsg = async () => await shell('git log -1 --pretty=%B')
+
 const main = async () => {
   const [ vtag ] = process.argv.slice(2)
 
@@ -44,21 +46,23 @@ const main = async () => {
   const branch = await shell('git rev-parse --abbrev-ref HEAD')
   log(`=> 当前分支 ${branch}`)
 
+  const commitMsg = await lastCommitMsg()
+
   if (branch != MAIN) {
     log(`=> 切换到分支 ${MAIN}`)
     await shell('git pull')
     await shell('git push')
     await shell(`git checkout ${MAIN}`)
-    await shell(`git pull origin ${branch}`)
+    await shell(`git merge ${branch} -m "${commitMsg}"`)
     await shell('git push')
   }
 
   const theTag = await thisTag()
   const newTag = vtag ? vtag.replace(/^v/i, 'v') : await nextTag()
 
-  log(`=> 发布版本 ${theTag} -> ${newTag}`)
+  log(`=> 发布版本 ${theTag} -> ${newTag} [${commitMsg}]`)
 
-  await shell(`git tag -a ${newTag} -m 'version ${newTag}'`)
+  await shell(`git tag -a ${newTag} -m "version ${newTag}"`)
   await shell(`git push origin ${newTag}`)
 
   if (branch != MAIN) {

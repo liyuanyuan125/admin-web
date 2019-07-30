@@ -107,6 +107,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         const customerString: any = this.typeListFormt(types)
+        console.log(  <div v-html={userType}></div> )
         return !!customerString ? (customerString.map((val: any) => {
           if (!!val.twoText) {
             const red = (userType as any)[val.two] == 1 ? 1 : 2

@@ -3,8 +3,10 @@
     <EditForm
       :fields="fields"
       :fetch="fetch"
+      :submit="submit"
+      :hideSubmit="isView"
       :labelWidth="88"
-      queryKeys="id,channel"
+      @done="onDone"
     >
     </EditForm>
   </div>
@@ -14,10 +16,14 @@
 import { Component, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import EditForm, { Field, Validator } from '@/components/editForm'
-import { queryItem, queryProvince, queryCity } from './data'
+import { queryItem, queryProvince, queryCity, editItem, auditItem } from './data'
 import AgeTable, { KeyTextValue } from './components/ageTable.vue'
 import FansPane, { FansItem } from './components/fansPane.vue'
 import PriceTable, { PriceItem } from './components/priceTable.vue'
+import LogTable from './components/logTable.vue'
+import { success } from '@/ui/modal'
+import { MapType } from '@/util/types'
+import { devLog } from '@/util/dev'
 
 const ratioValidator: Validator = (rule, value: Array<{ value: number }>, callback) => {
   const total = value.reduce((sum, it) => sum += it.value, 0)
@@ -25,6 +31,17 @@ const ratioValidator: Validator = (rule, value: Array<{ value: number }>, callba
     ? '请输入数字'
     : (total > 100 ? '占比之和不能大于 100' : '')
   error ? callback(new Error(error)) : callback()
+}
+
+const actionMap: MapType<any> = {
+  view: null,
+  edit: editItem,
+  audit: (item: any) => auditItem({
+    channelCode: item.channel,
+    ids: [item.id],
+    agree: item.auditPass,
+    remark: item.auditPass ? '' : item.remark
+  }),
 }
 
 @Component({
@@ -39,9 +56,23 @@ export default class EditPage extends ViewBase {
 
   @Prop({ type: String, default: '' }) action!: 'view' | 'edit' | 'audit'
 
+  item: any = null
+
+  get isView() {
+    return this.action == 'view'
+  }
+
+  get isEdit() {
+    return this.action == 'edit'
+  }
+
+  get isAudit() {
+    return this.action == 'audit'
+  }
+
   get fields() {
-    const isView = this.action == 'view'
-    const isAudit = this.action == 'audit'
+    const isView = this.isView
+    const isAudit = this.isAudit
     const readonly = isView || isAudit
 
     const list: Field[] = [
@@ -112,14 +143,6 @@ export default class EditPage extends ViewBase {
           noSelf: true,
         },
         offsetRight: 6,
-        dealParam: ([provinceId, cityId]: number[]) => ({
-          provinceId: provinceId || 0,
-          cityId: cityId || 0,
-        }),
-        backfillParam: ({ provinceId, cityId }: any) => [
-          provinceId || 0,
-          cityId || 0,
-        ]
       },
 
       {
@@ -144,10 +167,11 @@ export default class EditPage extends ViewBase {
       {
         name: 'authName',
         defaultValue: '',
+        required: true,
         input: {
           prepend: '认证企业名称'
         },
-        span: 8,
+        span: 10,
         visible: item => item.auth
       },
 
@@ -157,9 +181,11 @@ export default class EditPage extends ViewBase {
         label: '粉丝数',
         required: !readonly,
         placeholder: '粉丝数',
-        span: 6,
+        span: 8,
         group: '粉丝画像',
-        number: true
+        number: {
+          poptip: true
+        }
       },
 
       {
@@ -167,12 +193,11 @@ export default class EditPage extends ViewBase {
         defaultValue: 0,
         label: '粉丝性别',
         placeholder: '百分比',
-        span: 6,
+        span: 7,
         number: {
           prepend: '男性',
           append: '%',
           max: 100,
-          showZero: true,
         }
       },
 
@@ -180,12 +205,11 @@ export default class EditPage extends ViewBase {
         name: 'femalePercent',
         defaultValue: 0,
         placeholder: '百分比',
-        span: 4,
+        span: 5,
         number: {
           prepend: '女性',
           append: '%',
           max: 100,
-          showZero: true,
         }
       },
 
@@ -258,6 +282,11 @@ export default class EditPage extends ViewBase {
 
     readonly && list.push(
       {
+        name: 'audited',
+        defaultValue: false,
+      },
+
+      {
         name: 'auditPass',
         defaultValue: true,
         disabled: isView,
@@ -265,6 +294,7 @@ export default class EditPage extends ViewBase {
         group: '审核意见',
         label: '审核通过',
         span: 6,
+        visibleCol: item => isAudit || item.audited
       },
 
       {
@@ -276,36 +306,54 @@ export default class EditPage extends ViewBase {
           prepend: '审核不通过的理由'
         },
         span: 8,
-        visible: item => !item.auditPass
+        visible: item => !item.auditPass,
+        visibleCol: item => isAudit || item.audited
+      },
+
+      {
+        name: 'logList',
+        defaultValue: [],
+        component: LogTable,
+        group: '操作日志',
+        visibleCol: () => isView
       }
     )
 
     return list
   }
 
-  fetch = queryItem
+  submit = actionMap[this.action]
+
+  fetch() {
+    return queryItem({
+      id: this.id,
+      channel: this.channel
+    })
+  }
+
+  async onDone() {
+    await success('操作成功')
+    this.$router.back()
+  }
 }
 </script>
 
 <style lang="less" scoped>
-/deep/ .col-i-switch-auth,
-/deep/ .col-number-input-male-percent,
-/deep/ .col-i-switch-audit-pass {
+/deep/ .col-field-auth,
+/deep/ .col-field-male-percent,
+/deep/ .col-field-audit-pass {
   width: auto;
 }
 
-/deep/ .col-form-input-auth-name,
-/deep/ .col-form-input-remark {
+/deep/ .col-field-auth-name,
+/deep/ .col-field-remark {
   left: 4px;
 }
 
-/deep/ .ui-number-input-male-percent,
-/deep/ .ui-number-input-female-percent {
-  .number-input {
-    width: 128px;
-    input {
-      text-align: center;
-    }
+/deep/ .ui-field-male-percent,
+/deep/ .ui-field-female-percent {
+  .input-number {
+    width: 78px;
   }
 }
 </style>

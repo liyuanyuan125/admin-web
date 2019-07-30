@@ -1,7 +1,18 @@
-import { get } from '@/fn/ajax'
-import { dot, intDate, readableThousands, validDate } from '@/util/dealData'
+import { get, post, put } from '@/fn/ajax'
+import { dot, intDate, readableThousands, validDate, baifen, wanfen } from '@/util/dealData'
 import { KeyText, MapType } from '@/util/types'
 import { keyBy } from 'lodash'
+import moment from 'moment'
+import { devLog } from '@/util/dev'
+
+const nullNumber = (value: any, format?: (num: number) => any) => {
+  const num = parseFloat(value)
+  return isNaN(num) ? null : (format ? format(num) : num)
+}
+
+const nullBaifen = (value: any) => nullNumber(value, baifen)
+
+const nullWanfen = (value: any) => nullNumber(value, wanfen)
 
 /**
  * 查询 KOL 平台账号
@@ -17,14 +28,13 @@ export async function queryList(query: any = {}) {
     items: (data.items as any[] || []).map(it => ({
       ...it,
       fansCount: dot(it, 'customFans.totalCount'),
-      kolIdText: it.kolId || '-',
       provideInvoiceText: it.provideInvoice ? '是' : '否',
       priceList: (it.settlementPrices as any[] || []).map(sub => {
         const price = readableThousands(sub.settlementPrice, '-', '0,0.00')
         return {
           name: sub.categoryName,
           price: price != '-' ? `￥${price}` : '-',
-          date: intDate(sub.effectiveDate)
+          date: sub.effectiveDate ? intDate(sub.effectiveDate) : '-'
         }
       }),
     })),
@@ -43,7 +53,7 @@ const makeAgeList = (enumList: KeyText[], values: Array<{ k: string, r: number }
   const result = enumList.map(it => ({
     key: it.key,
     text: it.text,
-    value: (dot(map[it.key], 'r') || 0) / 100
+    value: nullBaifen(dot(map[it.key], 'r'))
   }))
   return result
 }
@@ -52,7 +62,7 @@ const makeFansList = (values: Array<{ id: number, name: string, rate: number }>)
   const result = (values || []).map(it => ({
     id: it.id,
     name: it.name,
-    value: (it.rate || 0) / 100
+    value: nullBaifen(it.rate)
   }))
   return result
 }
@@ -69,7 +79,7 @@ const makePriceList = (
   const result = enumList.map(it => ({
     key: it.key,
     text: it.text,
-    value: dot(map[it.key], 'settlementPrice') || 0,
+    value: dot(map[it.key], 'settlementPrice'),
     date: validDate(dot(map[it.key], 'effectiveDate'))
   }))
   return result
@@ -83,7 +93,7 @@ const makePriceList = (
 export async function queryItem(query: any = {}) {
   const { id, channel } = query
   const { data } = await get(`/kol/channel-accounts/${channel}/${id}`)
-  const { ageList, publishCategoryList } = data
+  const { ageList, publishCategoryList, logList = [] } = data
 
   // 审核状态：1 待审核，2 审核通过，3 审核拒绝
   const status = parseInt(dot(data, 'item.status'), 10) || 0
@@ -93,34 +103,36 @@ export async function queryItem(query: any = {}) {
     item: {
       ...data.item,
       intro: dot(data, 'item.customIntroduction') || '',
+      area: [
+        parseInt(dot(data, 'item.provinceId'), 10) || 0,
+        parseInt(dot(data, 'item.cityId'), 10) || 0,
+      ],
       authName: dot(data, 'item.authName') || '',
-      fansCount: parseInt(dot(data, 'item.customFans.totalCount'), 10) || 0,
-      malePercent: parseInt(dot(data, 'item.customFans.malePercent'), 10) || 0,
-      femalePercent: parseInt(dot(data, 'item.customFans.femalePercent'), 10) || 0,
+
+      // 粉丝画像
+      fansCount: nullNumber(dot(data, 'item.customFans.totalCount')),
+      malePercent: nullBaifen(dot(data, 'item.customFans.maleRate')),
+      femalePercent: nullBaifen(dot(data, 'item.customFans.femaleRate')),
       ageList: makeAgeList(ageList, dot(data, 'item.customFans.ages')),
       provinceList: makeFansList(dot(data, 'item.customFans.provinces')),
       cityList: makeFansList(dot(data, 'item.customFans.cities')),
+
+      // 结算信息
       priceList: makePriceList(publishCategoryList, dot(data, 'item.settlementPrices')),
+
       // 审核是否通过，默认通过
-      auditPass: status != 3
+      auditPass: status != 3,
+
+      // 是否被审核过（通过或拒绝）
+      audited: status == 2 || status == 3,
+
+      logList,
     },
     typeList: [
       { key: 1, text: '个人' },
       { key: 2, text: '公司' },
     ],
   }
-
-  // result.item.photo = 'http://aiads-file.oss-cn-beijing.aliyuncs.com/IMAGE/MISC/bklm23duomr0008001f0.jpg'
-  // result.item.provinceId = 4
-  // result.item.cityId = 68
-  // result.item.provinceList = [
-  //   { id: 23, name: '北京', value: 65 },
-  //   { id: 28, name: '天津', value: 22 },
-  // ]
-  // result.item.cityList = [
-  //   { id: 123, name: '商丘市', value: 88 },
-  //   { id: 51, name: '宜昌市', value: 66 },
-  // ]
 
   return result
 }
@@ -176,4 +188,85 @@ export async function queryCity(keyword: string) {
   }))
 
   return list
+}
+
+const dealAreaList = (list: any[]) => list.map(it => ({
+  id: it.id,
+  name: it.name,
+  rate: wanfen(it.value)
+}))
+
+// 按照接口要求，处理数据
+const dealEditItem = (item: any) => {
+  const data = {
+    // 基本信息
+    name: item.name,
+    customIntroduction: item.intro,
+    accountCategoryCode: item.accountCategoryCode,
+    channelCode: item.channel,
+    channelDataId: item.channelDataId,
+    provinceId: item.area[0],
+    cityId: item.area[1],
+    photo: item.photo,
+    type: item.type,
+    auth: item.auth,
+    authName: item.authName,
+
+    // 粉丝画像
+    customFans: {
+      maleRate: nullWanfen(item.malePercent),
+      femaleRate: nullWanfen(item.femalePercent),
+      ages: (item.ageList as any[]).map(it => ({
+        k: it.key,
+        r: nullWanfen(it.value)
+      })),
+      provinces: dealAreaList(item.provinceList),
+      cities: dealAreaList(item.cityList),
+      totalCount: item.fansCount || null
+    },
+
+    // 结算信息
+    settlementPrices: (item.priceList as any[]).map(it => ({
+      categoryCode: it.key,
+      effectiveDate: it.date ? moment(it.date).format('YYYYMMDD') : null,
+      settlementPrice: it.value || null
+    })),
+    provideInvoice: item.provideInvoice,
+
+    // 审核意见
+    remark: item.remark,
+  }
+
+  return data
+}
+
+/**
+ * 新建平台账号
+ * https://yapi.aiads-dev.com/project/142/interface/api/2654
+ * @param postData 数据
+ */
+export async function newItem(postData: any) {
+  const { data } = await post('/kol/channel-accounts', postData)
+  return data
+}
+
+/**
+ * 编辑平台账号
+ * https://yapi.aiads-dev.com/project/142/interface/api/3014
+ * @param item 数据
+ */
+export async function editItem(item: any) {
+  const pdata = dealEditItem(item)
+  const { data } = await put(`/kol/channel-accounts/${item.channel}/${item.id}`, pdata)
+  return data
+}
+
+/**
+ * 审核平台账号
+ * https://yapi.aiads-dev.com/project/142/interface/api/3030
+ * @param postData 数据
+ */
+export async function auditItem(postData: any) {
+  const { data } = await put(`/kol/channel-accounts/approve`, postData)
+  return data
 }

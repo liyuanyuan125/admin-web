@@ -142,13 +142,12 @@ export default class Main extends ViewBase {
     }
     this.showDlg = true
     // this.seach()
-    // this.authIdList()
     this.dataLoading = false
   }
 
-  // created() {
-  //   this.seach()
-  // }
+  created() {
+    this.seach()
+  }
 
   async mounted() {
     try {

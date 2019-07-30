@@ -17,7 +17,7 @@
       </template>
       <template slot="companies" slot-scope="{ row: { companies } }">
         <div class="companies">
-          <p v-for="(item, index) in companies" :key="index">{{ item.name }}</p> 
+          <p v-for="(item, index) in companies" :key="index">{{ item.name }}</p>
         </div>
       </template>
       <template slot="action" slot-scope="{ row: { id } }">
@@ -68,10 +68,18 @@ export default class Main extends ViewBase {
 
   filters: Filter[] = [
     {
+      name: 'code',
+      defaultValue: '',
+      type: 'input',
+      width: 90,
+      placeholder: '专资ID'
+    },
+
+    {
       name: 'name',
       defaultValue: '',
       type: 'input',
-      width: 85,
+      width: 90,
       placeholder: '影院名称'
     },
 

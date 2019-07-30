@@ -49,6 +49,14 @@ export default class RemoteSelect extends ViewBase {
 
   inBackfill = false
 
+  // 记录下最后的搜索关键词
+  lastQuery = ''
+
+  // 提供刷新的方法，以便可以重新执行 fetch
+  public refresh() {
+    this.search(this.lastQuery)
+  }
+
   async search(query: string) {
     // iview 对 select 的 remote 实现有点问题，第一次会把 model 当搜索词
     if (this.inBackfill) {
@@ -63,6 +71,9 @@ export default class RemoteSelect extends ViewBase {
     }
 
     const keyword = query.trim()
+
+    this.lastQuery = keyword
+
     if (keyword) {
       this.loading = true
       try {
@@ -115,4 +126,3 @@ export default class RemoteSelect extends ViewBase {
 
 <style lang="less" scoped>
 </style>
-

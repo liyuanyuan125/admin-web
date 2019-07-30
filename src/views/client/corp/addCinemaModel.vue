@@ -5,22 +5,23 @@
     title="添加关联影院"
     @on-cancel="cancel()"
     >
-    <p class="cinema-header">注：因资源方类型为影院，因此仅能关联一家影院</p>
+    <p class="cinema-header" v-if='cinemaend == 1'>注：因资源方类型为影院，因此仅能关联一家影院</p>
     <Row class="shouDlg-header">
       <Col span="7">
-        <Select v-model="chainId" placeholder="请输入院线名称" filterable
+        <Cinema v-model='chainId' />
+        <!-- <Select v-model="chainId" placeholder="请输入院线名称" filterable
           clearable class="component" ref="ui">
           <Option v-if="!!it.chainName" v-for="it in options" :key="it.id" :value="it.chainId"
             :label="it.chainName" class="flex-box">
             <span class="flex-1">{{it.chainName}}</span>
           </Option>
-        </Select>
+        </Select> -->
       </Col>
       <Col span="7" offset="1">
         <AreaSelect v-model="area"/>
       </Col>
       <Col span="5" offset="1">
-         <Input v-model="value" placeholder="请输入影院名称" />
+         <Input v-model="value" placeholder="影院名称/专资编码" />
       </Col>
       <Button style="float:right" type="primary" @click="seach(1)">搜索</Button>
     </Row>
@@ -46,9 +47,9 @@
               <div v-if="items.length>0">
                 <div v-for="(item) in items" :key="item.id" class="check">
                   <tooltip content="已下架" v-if="item.controlStatus != 1" placement="right">
-                    <Checkbox :label="item.id" style="color: red">{{item.shortName}}</Checkbox>
+                    <Checkbox :label="item.id" style="color: red">【{{item.code}}】 {{item.shortName}}</Checkbox>
                   </tooltip>
-                  <Checkbox v-else :label="item.id">{{item.shortName}}</Checkbox>
+                  <Checkbox v-else :label="item.id">【{{item.code}}】 {{item.shortName}}</Checkbox>
                 </div>
                 <div v-if="(items.length%4) == 3" class="check">&nbsp;</div>
               </div>
@@ -78,15 +79,14 @@
 import { Component, Watch, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import AreaSelect from '@/components/areaSelect'
-import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import { slice, clean } from '@/fn/object'
 import { queryList } from '@/api/cinema'
 import { isEqual } from 'lodash'
-
+import Cinema from '@/components/theaterCinema/index.vue'
 @Component({
   components: {
     AreaSelect,
-    CinemaChainSelect
+    Cinema
   }
 })
 export default class Main extends ViewBase {
@@ -129,30 +129,17 @@ export default class Main extends ViewBase {
     }
     this.showDlg = true
     this.seach()
-    this.authIdList()
   }
 
   created() {
     this.seach()
   }
 
-  async authIdList() {
-    try {
-      const { data } = await queryList({
-        pageSize: 888888
-      })
-      const list: any[] = data.items || []
-      this.options = list
-    } catch (ex) {
-      this.handleError(ex)
-    }
-  }
-
   async seach(id?: any) {
     this.dataLoading = true
     const query: any = {
       chainId: this.chainId,
-      name: this.value,
+      query: this.value,
       ...this.query,
       pageSize: this.pageSize,
       pageIndex: id || this.pageIndex

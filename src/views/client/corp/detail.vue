@@ -93,6 +93,19 @@
               <PartBindCinema type="1" :value="detail.cinemaList" />
           </Col>
         </Row>
+        <Row class="cinema-button">
+          <Col span="2"><div>品牌列表</div></Col>
+          <Col span="12">
+              <Table
+                :columns="columns"
+                :data="list"
+                size="small"
+                stripe
+                border
+              >
+              </Table>
+          </Col>
+       </Row>
       </Row>
       <Row class="detail-number">
         <Row>
@@ -133,6 +146,7 @@ import PartBindCinema from './partBindCinema.vue'
 import DlgEdit from '../account/dlgEdit.vue'
 import Upload from '@/components/Upload.vue'
 import { toMap } from '@/fn/array'
+import { flattenDeep } from 'lodash'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 const typeMap = (list: any[]) => toMap(list, 'typeCode', 'controlStatus')
 const conMap = (list: any[]) => toMap(list, 'key', 'controlStatus')
@@ -158,6 +172,7 @@ export default class Main extends ViewBase {
   levelList: any = []
   statusList: any = []
   showimg = true
+  list: any = []
   created() {
     this.load()
   }
@@ -168,6 +183,15 @@ export default class Main extends ViewBase {
       levelList: makeMap(this.levelList),
       levelStaus: conMap(this.levelList),
     }
+  }
+
+  get columns() {
+    return [
+      { type: 'index', title: '序号', width: 60, align: 'center' },
+      { title: '品牌ID', key: 'id', width: 80, align: 'center' },
+      { title: '品牌中文名称', key: 'brandName', align: 'center' },
+      { title: '状态', slot: 'status', align: 'center' },
+    ]
   }
 
   get format() {
@@ -195,9 +219,9 @@ export default class Main extends ViewBase {
   }
 
   formatCinema(data: any) {
-    const cinemChildren = data && data.map((item: any) => {
+    const cinemChildren = data && flattenDeep(data.map((item: any) => {
       return item.typeCategoryList
-    }).flat()
+    }))
     return typeMap(cinemChildren)
   }
   get qualifica() {
@@ -241,6 +265,7 @@ export default class Main extends ViewBase {
     try {
       const res = await queryId(query)
       this.detail = res.data
+      this.list = res.data.brandList || []
       this.detail.cinemaList = res.data.cinemaList || []
       this.approveStatusList = res.data.approveStatusList
       this.customerTypeList = res.data.customerTypeList

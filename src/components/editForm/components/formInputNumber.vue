@@ -1,61 +1,125 @@
 <template>
-  <span
-    class="form-input-number"
-    :class="{
-      'form-input-number-with-prepend': prepend != '',
-      'form-input-number-with-append': append != '',
-    }"
+  <component
+    :is="poptip === false ? 'span' : 'poptip'"
+    trigger="focus"
+    transfer
+    class="form-input-number-wrap"
+    popper-class="edit-form-form-input-number-poptip"
   >
-    <span class="input-number-prepend" v-if="prepend">{{prepend}}</span>
-    <InputNumber
-      v-model="model"
-      class="input-number"
-      v-bind="$attrs"
-      ref="input"
-    />
-    <span class="input-number-append" v-if="append">{{append}}</span>
-  </span>
+    <span
+      class="form-input-number"
+      :class="{
+        'form-input-number-with-prepend': prepend != '',
+        'form-input-number-with-append': append != '',
+      }"
+    >
+      <span class="input-number-prepend" v-if="prepend">
+        <slot name="prepend"><i v-html="prepend"></i></slot>
+      </span>
+      <InputNumber
+        v-model="model"
+        class="input-number"
+        :placeholder="placeholder"
+        v-bind="$attrs"
+        ref="input"
+      />
+      <span class="input-number-append" v-if="append">
+        <slot name="append"><i v-html="append"></i></slot>
+      </span>
+    </span>
+
+    <div slot="content" v-if="poptip !== false">{{poptipValue}}</div>
+  </component>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { triggerValidate } from '@/util/form'
+import { realThousands } from '@/util/dealData'
+
+// 默认 poptip 函数，将数字千分位显示
+const defaultPoptip = (value: number) => realThousands(value)
 
 @Component
 export default class FormInputNumber extends ViewBase {
-  @Prop({ type: Number, default: 0 }) value!: number
+  @Prop({ type: [Number, String, Object], default: null }) value!: number | string | null
 
   @Prop({ type: String, default: '' }) prepend!: string
 
   @Prop({ type: String, default: '' }) append!: string
 
+  @Prop({ type: String, default: '' }) placeholder!: string
+
+  // TODO: 未来可以扩展，增加 String，设置成内置类型
+  @Prop({ type: [Boolean, Function], default: false }) poptip!: boolean | ((value: number) => string)
+
   model = this.value
 
-  numberValue(value: number | string) {
+  get poptipValue() {
+    if (this.poptip === false) {
+      return false
+    }
+    const poptipFormatter = typeof this.poptip === 'function' ? this.poptip : defaultPoptip
+    const value = this.model
+    const result = (typeof value == 'number' ? poptipFormatter(value) : '') || this.placeholder
+    return result
+  }
+
+  castValue(value: number | string | null) {
+    if (value === '' || value == null) {
+      return null
+    }
     const { min, max } = this.$refs.input as any
     const num = Math.min(max, Math.max(min, parseFloat(value as string) || 0))
     return num
   }
 
   @Watch('value')
-  watchValue(value: number) {
-    const num = this.numberValue(value)
+  watchValue(value: number | string | null) {
+    const num = this.castValue(value)
     this.model = num
     triggerValidate(this.$refs.input, num)
   }
 
   @Watch('model')
-  watchMode(value: number) {
-    const num = this.numberValue(value)
+  watchMode(value: number | string | null) {
+    const num = this.castValue(value)
     this.$emit('input', num)
   }
 }
 </script>
 
+<style lang="less">
+.edit-form-form-input-number-poptip {
+  font-family: monospace;
+  font-size: 16px;
+}
+</style>
+
 <style lang="less" scoped>
+.form-input-number-wrap {
+  width: 100%;
+  /deep/ .ivu-poptip-rel,
+  /deep/ .form-input-number {
+    width: 100%;
+  }
+}
+
 .form-input-number {
   display: inline-flex;
+  &[size=small] {
+    /deep/ .ivu-input-number-handler-wrap {
+      width: 18px;
+      .ivu-icon {
+        right: 3px;
+      }
+    }
+    .input-number-prepend,
+    .input-number-append {
+      padding: 0 6px;
+    }
+  }
 }
 
 .input-number-prepend,
@@ -68,6 +132,10 @@ export default class FormInputNumber extends ViewBase {
   background-color: #f8f8f9;
   border: 1px solid #dcdee2;
   border-radius: 4px;
+  user-select: none;
+  i {
+    font-style: normal;
+  }
 }
 
 .form-input-number-with-prepend {

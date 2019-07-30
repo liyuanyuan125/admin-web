@@ -52,7 +52,6 @@ export async function closeid(id: any) {
   return data
 }
 
-
 // 添加影院
 export async function addcinema(id: any , query: any) {
   const data = await post(`/xadvert/plans/${id}/cinemas`, query)

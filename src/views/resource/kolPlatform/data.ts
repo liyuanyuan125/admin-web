@@ -60,6 +60,6 @@ export async function details(channelCode: string, id: number) {
  * http://yapi.aiads-dev.com/project/142/interface/api/3030
  */
 export async function approve(data: any) {
-  const res = await put('/kol/channel-accounts/approve', data)
+  const res = await put('/kol/channel-accounts/approve-price', data)
   return res
 }

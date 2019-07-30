@@ -16,23 +16,28 @@
       :columns="columns"
       selectable
       :selectedIds.sync="selectedIds"
-      @selectionChange="selectionChange"
       ref="listPage"
     >
       <template slot="acts">
-        <Button
+        <!-- <Button
           type="success"
           icon="md-add-circle"
-        >新建</Button>
+        >新建</Button> -->
       </template>
 
-      <template slot="channelDataId" slot-scope="{ row: { id, channelDataId } }">
-        <router-link
-          :to="{
-            name: 'data-kol-account-edit',
-            params: { id, channel, action: 'view' }
-          }"
-        >{{channelDataId}}</router-link>
+      <template slot="acts-2">
+        <Button
+          type="primary"
+          class="button-audit"
+          :disabled="!(selectedIds.length > 0)"
+          @click="auditVisible = true"
+        >批量审核</Button>
+
+        <Button
+          type="primary"
+          class="button-crawl"
+          @click="crawlVisible = true"
+        >抓取平台账号</Button>
       </template>
 
       <template slot="price" slot-scope="{ row: { priceList } }">
@@ -62,16 +67,31 @@
       </template>
     </ListPage>
 
-    <!-- <EditDialog
-    /> -->
+    <BatchAudit
+      v-model="auditVisible"
+      :summary="auditSummary"
+      :submit="auditSubmit"
+    />
+
+    <EditDialog
+      v-model="crawlVisible"
+      title="抓取平台账号"
+      :width="380"
+      :fields="crawlFields"
+      :fetch="() => ({ channel, account: '' })"
+      :submit="crawlSubmit"
+      hideSubmit
+      hideReturn
+    />
   </div>
 </template>
 
-<script lang="tsx">
+<script lang="ts">
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { queryList } from './data'
+import { queryList, auditItem, newItem } from './data'
+import { alert, toast } from '@/ui/modal'
 
 import {
   updateStatus,
@@ -83,7 +103,8 @@ import {
   updateItem
 } from '@/api/cinema'
 
-import EditDialog, { Field } from '@/components/editDialog'
+import { EditDialog, Field } from '@/components/editForm'
+import BatchAudit from '@/components/batchAudit'
 
 import { getChannelList } from '@/util/types'
 
@@ -93,11 +114,16 @@ const defaultChannel = channelList[0].value
 @Component({
   components: {
     ListPage,
-    EditDialog
+    EditDialog,
+    BatchAudit
   }
 })
 export default class IndexPage extends ViewBase {
   @Prop({ type: String, default: defaultChannel }) channel!: string
+
+  get listPage() {
+    return this.$refs.listPage as ListPage
+  }
 
   channelCode = this.channel
 
@@ -182,30 +208,102 @@ export default class IndexPage extends ViewBase {
 
   get columns() {
     return [
-      { title: '序号', key: 'id', width: 65 },
-      { title: '账号', slot: 'channelDataId', width: 80 },
+      { title: '序号', key: 'id', minWidth: 65 },
+      {
+        title: '账号',
+        key: 'channelDataId',
+        minWidth: 100,
+        link: {
+          name: 'data-kol-account-edit',
+          params: it => ({ id: it.id, channel: this.channel, action: 'view' }),
+        }
+      },
       { title: '名称', key: 'name', minWidth: 100 },
-      { title: '分类', key: 'accountCategoryCode', width: 60, editor: 'deprecated' },
-      { title: '粉丝数', key: 'fansCount', width: 60 },
+      { title: '分类', key: 'accountCategoryCode', minWidth: 60, editor: 'deprecated' },
+      { title: '粉丝数', key: 'fansCount', minWidth: 60 },
 
-      { title: '关联KOL编号', key: 'kolIdText', width: 90 },
-      { title: '关联KOL名称', key: 'kolName', width: 100 },
-      { title: '是否提供发票', key: 'provideInvoiceText', width: 90 },
-      { title: '结算价/有效期', slot: 'price', width: 270 },
-      { title: '审核状态', key: 'status', width: 65, editor: 'enum' },
+      {
+        title: '关联KOL编号',
+        key: 'kolId',
+        minWidth: 90,
+        link: {
+          name: 'data-kol-associated-detail',
+          params: it => ({ id: it.kolId })
+        }
+      },
+      { title: '关联KOL名称', key: 'kolName', minWidth: 100 },
+      { title: '是否提供发票', key: 'provideInvoiceText', minWidth: 90 },
+      { title: '结算价/有效期', slot: 'price', minWidth: 270 },
+      { title: '审核状态', key: 'status', minWidth: 65, editor: 'enum' },
 
-      { title: '操作', slot: 'action', width: 65 }
+      { title: '操作', slot: 'action', minWidth: 50 }
     ] as ColumnExtra[]
   }
 
   priceColumns = [
-    { title: '类别', key: 'name' },
-    { title: '价格', key: 'price', width: 75, align: 'center' },
-    { title: '有效期', key: 'date', width: 75, align: 'center' },
+    { title: '类别', key: 'name', minWidth: 100 },
+    { title: '价格', key: 'price', minWidth: 85, align: 'center' },
+    { title: '有效期', key: 'date', minWidth: 75, align: 'center' },
   ]
 
-  selectionChange(list: any[]) {
-    // debugger
+  auditVisible = false
+
+  crawlVisible = false
+
+  get auditSummary() {
+    const count = this.selectedIds.length
+    return `您选择了${count}条KOL平台账号，审核通过后可以在“KOL资源列表”中操作定价和上架。`
+  }
+
+  crawlFields: Field[] = [
+    {
+      name: 'channel',
+      defaultValue: '',
+      label: '平台',
+      required: true,
+      select: {
+        enumList: channelList.map(it => ({ key: it.value, text: it.name }))
+      },
+      span: 21,
+    },
+
+    {
+      name: 'account',
+      defaultValue: '',
+      label: '平台账号',
+      required: true,
+      input: true,
+      span: 21,
+    }
+  ]
+
+  refresh() {
+    this.listPage.update()
+  }
+
+  async auditSubmit({ agree, remark }: any) {
+    const pdata = {
+      channelCode: this.channel,
+      ids: this.selectedIds,
+      agree,
+      remark: agree ? '' : remark
+    }
+    await auditItem(pdata)
+    toast('操作成功')
+    this.selectedIds = []
+    this.auditVisible = false
+    this.refresh()
+  }
+
+  async crawlSubmit({ channel, account }: any) {
+    const pdata = {
+      channelCode: channel,
+      channelDataId: account
+    }
+    await newItem(pdata)
+    toast('操作成功')
+    this.crawlVisible = false
+    this.refresh()
   }
 
   @Watch('channelCode')
@@ -218,15 +316,14 @@ export default class IndexPage extends ViewBase {
 
   @Watch('channel')
   watchChannel(channel: string) {
-    const listPage = this.$refs.listPage as ListPage
-    listPage.query.channelCode = channel
+    this.listPage.query.channelCode = channel
   }
 }
 </script>
 
 <style lang="less" scoped>
-.settlement-price-list {
-  text-align: left;
+.button-crawl {
+  margin-left: 12px;
 }
 
 .price-table {

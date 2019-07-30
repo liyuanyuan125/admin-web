@@ -11,8 +11,8 @@
       <Select ref='ul' v-model="channel" filterable clearable style="width: 120px">
         <Option
           v-for="option in channelList"
-          :value="option.id"
-          :key="option.id"
+          :value="option.channelDataId"
+          :key="option.channelDataId"
         >{{option.name}}</Option>
       </Select>
       <Button @click="addProvinceList">添加列表</Button>
@@ -104,7 +104,7 @@ export default class Kol extends ViewBase {
         }
       })
       this.channelList.map((item: any) => {
-        if (item.id == this.channel) {
+        if (item.channelDataId == this.channel) {
           channelname = item.name
         }
       })

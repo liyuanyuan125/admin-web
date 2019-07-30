@@ -6,9 +6,7 @@
 
         <AreaSelect v-model="query.area" noSelf/>
 
-        <Select v-model="query.cinemaId" filterable :loading="cinemaLoading" placeholder="请选择影院">
-          <Option v-for="it in cinemaList" :key="it.id" :value="it.id">{{it.shortName}}</Option>
-        </Select>
+        <CinemaSelect v-model="query.cinemaId" :query="cinemaQuery"/>
 
         <Select v-model="query.hallId" filterable :loading="hallLoading"
           placeholder="请选择影厅" class="select-hall" :disabled="!query.cinemaId">
@@ -77,15 +75,18 @@ import { queryLowestList } from '@/api/cpms'
 import { range, chunk } from 'lodash'
 import moment, { Moment } from 'moment'
 import { parse, toMap } from '@/fn/array'
+import { clean } from '@/fn/object'
 import { centToYuan } from '@/util/filters'
 import DlgReport, { CompanyType } from './dlgReport.vue'
 import { filterByControlStatus } from '@/util/dealData'
+import CinemaSelect from '@/components/cinemaSelect'
 
 @Component({
   components: {
     CinemaChainSelect,
     AreaSelect,
     DlgReport,
+    CinemaSelect
   },
   filters: {
     centToYuan
@@ -101,9 +102,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
 
   query: any = {}
-
-  cinemaLoading = false
-  cinemaList: any[] = []
 
   hallLoading = false
   hallList: any[] = []
@@ -171,8 +169,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         isCompany: data && data.rangeType == 'company',
       }
     })
-
     return chunk(list, 7)
+  }
+
+  get cinemaQuery() {
+    const { chainId = 0, area: [ provinceId, cityId, countyId ] = [0, 0, 0] } = this.query
+    const query = clean({ chainId, provinceId, cityId, countyId }, [null, undefined, '', 0])
+    return query
   }
 
   updateDateByMoment(m: Moment) {
@@ -247,27 +250,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 
-  async fetchCinemaList() {
-    this.cinemaLoading = true
-    this.cinemaList = []
-    try {
-      const { chainId, area: [ provinceId, cityId, countyId ] } = this.query
-      const query = { chainId, provinceId, cityId, countyId, pageSize: 88888888 }
-      const { data: { items } } = await queryCinemaList(query)
-      this.cinemaList = filterByControlStatus(items)
-
-      // 若现有列表中，没有找到已选择的影院，则清空
-      const foundItem = this.cinemaList.find((it: any) => it.id == this.query.cinemaId)
-      if (foundItem == null) {
-        this.query.cinemaId = 0
-      }
-    } catch (ex) {
-      this.handleError(ex)
-    } finally {
-      this.cinemaLoading = false
-    }
-  }
-
   async fetchHallList() {
     const cinemaId = this.query.cinemaId
     if (!(cinemaId > 0)) {
@@ -301,12 +283,6 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     } finally {
       this.hallLoading = false
     }
-  }
-
-  @Watch('query.chainId')
-  @Watch('query.area', { deep: true })
-  watchChainIdAndArea() {
-    this.fetchCinemaList()
   }
 
   @Watch('query.cinemaId')

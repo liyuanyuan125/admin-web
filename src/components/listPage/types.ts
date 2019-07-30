@@ -15,6 +15,10 @@ import RemoteSelect, {
   Fetch as RemoteSelectFetch,
   Backfill as RemoteSelectBackfill
 } from '@/components/remoteSelect'
+import {
+  resolveRender as listResolveRender,
+  LinkOptions as ListLinkOptions
+} from './list'
 
 /**
  * 固定类型列表
@@ -192,7 +196,7 @@ type RenderFunction = (h: any, ctx: any) => any
  * https://www.iviewui.com/components/table#column
  * NOTE: 类型中的函数类型，可能不准确
  */
-export interface Column {
+export interface Column extends MapType<any> {
   type?: string
   title?: string
   key?: string
@@ -251,6 +255,18 @@ export interface ColumnExtra extends Column {
    * 权限配置
    */
   auth?: string
+
+  /**
+   * 被当做空的值，默认为 [ undefined, null, 0, '' ]
+   */
+  emptyValues?: any[]
+
+  // 组件配置字段（要与 list.ts#componentMap 中的字段相同）
+
+  /**
+   * 使用组件 route-link
+   */
+  link?: ListLinkOptions
 }
 
 /**
@@ -360,7 +376,7 @@ const editorMap: MapType<(column: ColumnExtra, param: ColumnParam) => RenderFunc
 
   time: getTimeEditor('HH:mm:ss'),
 
-  dateTime:  getTimeEditor('YYYY-MM-DD HH:mm:ss'),
+  dateTime: getTimeEditor('YYYY-MM-DD HH:mm:ss'),
 }
 
 /**
@@ -373,6 +389,7 @@ export function normalizeColumns(list: ColumnExtra[], param: ColumnParam) {
     if (it.slot && it.render) {
       devError('slot 与 render 是互斥的')
     }
+
     if (it.slot) {
       const slotRender = param.scopedSlots[it.slot]
       if (slotRender != null) {
@@ -382,9 +399,15 @@ export function normalizeColumns(list: ColumnExtra[], param: ColumnParam) {
         devError(`找不到名为 ${it.slot} 的 slot`)
       }
     } else if (it.editor) {
+      // TODO: 老式的方法，会逐渐优化掉
       const factory = editorMap[it.editor]
       it.render = factory(it, param)
+    } else if (it.render == null) {
+      // 新版方法
+      const render = listResolveRender(it)
+      render && (it.render = render)
     }
+
     // 默认 center
     it.align || (it.align = 'center')
     return it

@@ -5,11 +5,12 @@
       :key="formKey"
       :label-width="labelWidth"
       :rules="rules"
-      class="form"
       :style="{ visibility: loading ? 'hidden' : 'visible' }"
       :loading="submitLoading"
       @submit.native.prevent="onSubmit"
+      class="form"
       ref="form"
+      v-if="item"
     >
       <fieldset
         v-for="group in groupFields"
@@ -25,6 +26,7 @@
             :offset="it.offsetLeft"
             :class="it.colClass"
             :style="it.style"
+            v-if="it.visibleCol(item)"
           >
             <FormItem
               :label="it.label"
@@ -37,11 +39,12 @@
               <component
                 v-model="item[it.name]"
                 :is="it.component"
-                :enumList="enumMap[it.name] || []"
                 :disabled="!!it.disabled"
-                v-bind="it.props"
-              >
-              </component>
+                v-bind="{
+                  enumList: enumMap[it.name] || [],
+                  ...it.props
+                }"
+              />
             </FormItem>
           </Col>
         </section>
@@ -54,6 +57,7 @@
             html-type="submit"
             size="large"
             class="button-submit"
+            v-if="!hideSubmit"
           >{{submitText}}</Button>
 
           <Button
@@ -61,19 +65,19 @@
             size="large"
             class="button-return"
             @click="goback"
+            v-if="!hideReturn"
           >{{returnText}}</Button>
         </slot>
       </div>
     </Form>
 
-    <div class="inner-loading flex-mid" v-show="loading">
+    <div class="inner-loading" v-show="loading">
       <TinyLoading :size="38" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-// doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { MapType, AjaxResult, isAjaxResult, KeyTextControlStatus } from '@/util/types'
@@ -94,6 +98,9 @@ import { slice } from '@/fn/object'
 import { filterByControlStatus, filterItemInList } from '@/util/dealData'
 import { random } from '@/fn/string'
 import { scrollToError } from '@/util/form'
+import { devLog } from '@/util/dev'
+
+const randomKey = () => random('editForm')
 
 @Component({
   components: {
@@ -105,16 +112,13 @@ export default class EditForm extends ViewBase {
   @Prop({ type: Array, default: () => [] }) fields!: Field[]
 
   /** 加载编辑项的请求函数 */
-  @Prop({ type: Function }) fetch!: (query?: any) => Promise<FetchData | FetchResult>
+  @Prop({ type: Function }) fetch!: () => Promise<FetchData | FetchResult>
 
   /** 初始化数据 */
   @Prop({ type: Object, default: () => ({}) }) initData!: object
 
-  /** 查询字段列表，默认为 id，可以使用以逗号分隔的字符串，指定多个字段，例如：key1,key2 */
-  @Prop({ type: String, default: 'id' }) queryKeys!: string
-
   /** 提交请求函数 */
-  @Prop({ type: Function }) submit!: (data: any) => Promise<AjaxResult>
+  @Prop({ type: [Function, Boolean] }) submit!: (data: any) => Promise<AjaxResult | any>
 
   /** 表单 label 宽度 */
   @Prop({ type: Number, default: 76 }) labelWidth!: number
@@ -122,8 +126,14 @@ export default class EditForm extends ViewBase {
   /** 错误处理 */
   @Prop({ type: Object, default: () => ({}) }) errorHandlers!: EditErrorHandlers
 
+  /** 是否隐藏提交按钮 */
+  @Prop({ type: Boolean, default: false }) hideSubmit!: boolean
+
   /** 提交按钮文本 */
   @Prop({ type: String, default: '提交' }) submitText!: string
+
+  /** 是否隐藏返回按钮 */
+  @Prop({ type: Boolean, default: false }) hideReturn!: boolean
 
   /** 返回按钮文本 */
   @Prop({ type: String, default: '返回' }) returnText!: string
@@ -131,14 +141,17 @@ export default class EditForm extends ViewBase {
   /** scrollToErrorOffsetTop */
   @Prop({ type: Number, default: -60 }) scrollToErrorOffsetTop!: number
 
+  /** 内部使用，是否在 editDialog 内 */
+  @Prop({ type: Boolean, default: false }) inDialog!: boolean
+
   // 用来预防 form 被重用，确保每次都使用新的实例
-  formKey = random('editForm')
+  formKey = randomKey()
 
   loading = false
 
   submitLoading = true
 
-  item: any = {}
+  item: any = null
 
   defItem: any = {}
 
@@ -152,7 +165,11 @@ export default class EditForm extends ViewBase {
   }
 
   get groupFields() {
-    const group = normalizeAndGroupField(this.fields)
+    const item = this.item
+    if (item == null) {
+      return []
+    }
+    const group = normalizeAndGroupField(this.fields, item)
     return group
   }
 
@@ -167,11 +184,11 @@ export default class EditForm extends ViewBase {
     return result
   }
 
-  init(initData = {}) {
+  public init(initData = {}) {
     const item = defaultParams(this.fields)
     this.defItem = cloneDeep(item)
     this.item = cloneDeep({ ...item, ...initData })
-    this.formKey = random('editForm')
+    this.formKey = randomKey()
     this.errorMap = Object.keys(this.item).reduce(
       (map, key) => {
         map[key] = ''
@@ -182,20 +199,20 @@ export default class EditForm extends ViewBase {
   }
 
   // 简单包装一下，以便适应两种数据结构
-  async fetchWrap(query: any) {
-    const res = await this.fetch(query)
-    return fetchDataToResult(res)
+  async fetchWrap() {
+    const res = await this.fetch()
+    const result = fetchDataToResult(res)
+    return result
   }
 
-  async load() {
+  public async load() {
     if (this.fetch == null) {
       return
     }
 
     this.loading = true
     try {
-      const query = slice(this.item, this.queryKeys)
-      const { data } = await this.fetchWrap(query)
+      const { data } = await this.fetchWrap()
 
       const enumMap = this.normalFields
         .filter(it => !!it.enumKey)
@@ -241,24 +258,38 @@ export default class EditForm extends ViewBase {
     }
   }
 
-  async onSubmit() {
+  public async onSubmit() {
     const form = this.$refs.form as any
     const valid = await form.validate()
     if (!valid) {
-      return scrollToError(form, { offsetTop: this.scrollToErrorOffsetTop })
+      this.$emit('validateFail')
+      return this.inDialog || scrollToError(form, {
+        offsetTop: this.scrollToErrorOffsetTop
+      })
     }
 
-    if (this.submit == null) {
+    if (typeof this.submit !== 'function') {
       return
     }
 
-    const item = { ...this.item }
+    const item = cloneDeep(this.item)
+
+    const intent = { preventSubmit: false, item }
+    this.$emit('beforeSubmit', intent)
+    if (intent.preventSubmit) {
+      this.$emit('submitPrevented')
+      return
+    }
 
     try {
-      const data = dealParams(this.fields, item)
+      const data = dealParams(this.fields, item, {
+        cleanList: [null, undefined]
+      })
       const res = await this.submit(data)
-      this.$emit('done', res && res.data)
+      const eventData = isAjaxResult(res) ? res.data : res
+      this.$emit('done', eventData)
     } catch (ex) {
+      this.$emit('fail', ex)
       if (isAjaxResult(ex) && (ex.code in this.errorHandlers)) {
         const handler = this.errorHandlers[ex.code]
         const errorData = typeof handler === 'function' ? handler(ex, { item }) : handler
@@ -270,6 +301,8 @@ export default class EditForm extends ViewBase {
         }
       }
       this.handleError(ex)
+    } finally {
+      this.$emit('always')
     }
   }
 
@@ -292,11 +325,11 @@ export default class EditForm extends ViewBase {
 <style lang="less" scoped>
 .edit-form {
   position: relative;
-  padding: 0 0 38px 0;
   max-width: 1200px;
 }
 
 .form {
+  padding-bottom: 38px;
   &::after {
     content: '';
     display: block;
@@ -306,6 +339,10 @@ export default class EditForm extends ViewBase {
     display: inline-block;
     vertical-align: top;
     float: none;
+  }
+  /deep/ .col-field-auto-width {
+    width: auto;
+    margin-right: 10px;
   }
   /deep/ .ivu-form-item-label {
     user-select: none;
@@ -344,11 +381,13 @@ export default class EditForm extends ViewBase {
 }
 
 .inner-loading {
-  position: absolute;
-  top: 18px;
+  position: fixed;
+  top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  text-align: center;
+  padding-top: 42vh;
 }
 
 .col-no-label {

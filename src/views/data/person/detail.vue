@@ -18,7 +18,7 @@
             <Col :span="6"><p><label>民族</label><em>{{itemList.nation || '-'}}</em></p></Col>
             </Row>
             <Row>
-            <Col :span="22"><p><label>简介</label><em class="information">{{itemList.introduction}}</em></p></Col> 
+            <Col :span="22"><p><label>简介</label><em class="information" v-html="itemList.introduction"></em></p></Col> 
             </Row>
       </div>
       <div class="base-mess">
@@ -161,8 +161,6 @@
           <span>{{item.descption}}</span>
         </p>
       </div>
-      
-        <!-- <Table :columns="operateColumns" :data="oprateList" border stripe disabled-hover></Table> -->
     </div>
   </div>
 </template>
@@ -175,6 +173,7 @@ import personMovies from './personMovies.vue'
 import {formatConversion} from '@/util/validateRules'
 import { readableNumber } from '@/util/dealData'
 import { cloneDeep } from 'lodash'
+
 
 
 @Component({

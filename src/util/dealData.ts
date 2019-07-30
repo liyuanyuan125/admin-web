@@ -80,7 +80,7 @@ export function toThousands(nums: any) {
  * 根据 controlStatus 的值，过滤列表（只保留 controlStatus 为 1 的项）
  * @param list 列表
  */
-export function filterByControlStatus(list: KeyTextControlStatus[]) {
+export function filterByControlStatus(list: any[]) {
   return (list || []).filter(it => !('controlStatus' in it) || it.controlStatus == 1)
 }
 
@@ -196,6 +196,20 @@ export function readableThousands(
 }
 
 /**
+ * 将数字的整数部分格式化成千分位，保留完整的小数部分
+ * @param number 数字
+ */
+export function realThousands(number: number | string) {
+  if (isZero(number)) {
+    return ''
+  }
+  const [ , n = '', m = '' ] = String(number).match(/^(\d+)\.?(\d+)?/) || []
+  const thousands = numeral(n).format('0,0')
+  const result = thousands + (m ? `.${m}` : '')
+  return result
+}
+
+/**
  * 将形如 20190622 形式的整数，格式化成日期
  * 同时处理形如 2019、201906、2019-06、2019/06 的情况
  * @param date 整数
@@ -217,9 +231,26 @@ export function intDate(date: number, format = 'YYYY-MM-DD') {
  * @param date 数字日期
  */
 export function validDate(date: number | null) {
-  if (date == null) {
+  if (date == null || date == 0) {
     return null
   }
   const d = moment(String(date))
   return d.isValid() ? d.toDate() : null
+}
+
+/**
+ * 将万分转成百分
+ * @param num 万分值
+ * @param digits 保留位数，默认为 2
+ */
+export function baifen(wan: number | null, digits = 2) {
+  return +((wan || 0) / 100).toFixed(digits)
+}
+
+/**
+ * 将百分转成万分
+ * @param bai 百分值
+ */
+export function wanfen(bai: number | null) {
+  return Math.floor((bai || 0) * 100) || 0
 }

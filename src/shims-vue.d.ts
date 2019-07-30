@@ -31,7 +31,7 @@ declare module 'document-offset' {
 }
 
 interface VarType {
-  env: string
+  env: 'dev' | 'qas' | 'stg' | 'prd'
   baseUrl: string
   ajaxBaseUrl: string
 }

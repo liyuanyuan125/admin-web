@@ -11,7 +11,7 @@
         <Button
           type="success"
           icon="md-add-circle"
-          :to="{ name: 'data-brand-shopedit' }"
+          :to="{ name: 'data-brand-brandedit' }"
         >新建</Button>
       </template>
 
@@ -23,7 +23,7 @@
 
   
       <template slot="id" slot-scope="{ row: { id } }">
-        <router-link :to="{ name: 'data-brand-shopdetail', params: { id} }">
+        <router-link :to="{ name: 'data-brand-brandDetail', params: { id} }">
            {{id}}</router-link>
       </template>
 
@@ -36,17 +36,17 @@
         </div>
       </template>
 
-      <template slot="shop" slot-scope="{ row: { status } }">
+      <template slot="shop" slot-scope="{ row: { status, id } }">
         <div class="keyWords">
-          <router-link v-if="status == 1" :to="{ name: 'data-brand-shopedit' }">查看门店</router-link>
-          <router-link v-if="status == 1 || status == 2" :to="{ name: 'data-brand-shopedit' }">编辑门店</router-link>
+          <router-link v-if="status == 1" :to="{ name: 'data-brand-shopdetail', params: { brandId: id} }">查看门店</router-link>
+          <router-link v-if="status == 1 || status == 2" :to="{ name: 'data-brand-shopedit', params: { brandId: id} }">编辑门店</router-link>
         </div>
       </template>
 
-      <template slot="product" slot-scope="{ row: { status } }">
+      <template slot="product" slot-scope="{ row: { status, id } }">
         <div class="keyWords">
-          <router-link v-if="status == 1" :to="{ name: 'data-cinema-hall' }">查看产品</router-link>
-          <router-link v-if="status == 1 || status == 2" :to="{ name: 'data-cinema-hall' }">编辑产品</router-link>
+          <router-link v-if="status == 1" :to="{ name: 'data-brand-productdetail',  params: { id } }">查看产品</router-link>
+          <router-link v-if="status == 1 || status == 2" :to="{ name: 'data-brand-productedit',  params: { id } }">编辑产品</router-link>
         </div>
       </template>
 
@@ -62,7 +62,7 @@
           <a @click="start(row)" v-if="row.status == 1">禁用</a>
           <a @click="start(row)" v-if="row.status == 2">启用</a>
           <router-link @click="start(row)" v-if="row.status == 1"
-            :to="{ name: 'data-brand-shopedit', params: {id: row.id} }">
+            :to="{ name: 'data-brand-brandedit', params: {id: row.id} }">
             编辑</router-link>
         </div>
       </template>
