@@ -10,12 +10,10 @@
       <EditForm
         :key="formKey"
         v-bind="$attrs"
-        @validateFail="$emit('validateFail', $event), resetSubmitLoading()"
-        @beforeSubmit="$emit('beforeSubmit', $event)"
-        @submitPrevented="$emit('submitPrevented', $event), resetSubmitLoading()"
-        @done="$emit('done', $event)"
-        @fail="$emit('fail', $event)"
-        @always="$emit('always', $event), resetSubmitLoading()"
+        v-on="$listeners"
+        @validateFail="resetSubmitLoading()"
+        @submitPrevented="resetSubmitLoading()"
+        @always="resetSubmitLoading()"
         ref="form"
       />
     </main>
