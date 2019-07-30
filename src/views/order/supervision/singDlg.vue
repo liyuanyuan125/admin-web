@@ -12,7 +12,7 @@
           <Radio v-for="it in appList" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
         </RadioGroup>
       </FormItem>
-      <Row v-if='statusform.status == 1' style='margin-left: 80px;'>请勾选在监播中已出现的广告，如有未出现广告，请及时与资源方联系！(审核通过后，未勾选的广告片将不参与到结算中，请谨慎操作)<br><Checkbox  :indeterminate="indeterminate" :value="checkAll"  @click.prevent.native="handleCheckAll">全选</Checkbox></Row>
+      <Row v-if='statusform.status == 1' style='margin-left: 80px;'>请勾选在监播中已出现的广告，如有未出现广告，请及时与资源方联系！<span style='color: red'>(审核通过后，未勾选的广告片将不参与到结算中，请谨慎操作)</span><br><Checkbox  :indeterminate="indeterminate" :value="checkAll"  @click.prevent.native="handleCheckAll">全选</Checkbox></Row>
       <FormItem v-if='statusform.status == 1' label="" prop="closeReason">
         <CheckboxGroup  v-model="dataForm.orderIds" >
           <Checkbox  v-for="(it,index) in itemvideos" :key="it.index" :value="it.orderId" :label="it.orderId">{{it.videoName}} ({{it.videoLength}})s</Checkbox >
