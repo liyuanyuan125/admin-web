@@ -368,21 +368,21 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
-  // 基础数据 - 品牌管理 - 查看产品
+  // 基础数据 - 品牌管理 - 产品 - 查看列表
   {
-    path: '/data/brand/productdetail/:brandId',
-    name: 'data-brand-productdetail',
-    component: () => import('./views/data/brand/productdetail.vue'),
+    path: '/data/brand/product/viewlist/:brandId',
+    name: 'data-brand-product-view-list',
+    component: () => import('./views/data/brand/product/viewList.vue'),
     meta: {
       authKey: ''
     }
   },
 
-  // 基础数据 - 品牌管理 - 查看产品
+  // 基础数据 - 品牌管理 - 产品 - 编辑列表
   {
-    path: '/data/brand/productedit/:brandId',
-    name: 'data-brand-productedit',
-    component: () => import('./views/data/brand/productedit.vue'),
+    path: '/data/brand/product/modifylist/:brandId',
+    name: 'data-brand-product-modify-list',
+    component: () => import('./views/data/brand/product/modifyList.vue'),
     meta: {
       authKey: ''
     }
