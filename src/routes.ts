@@ -674,6 +674,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     ]
   },
 
+  // 财务管理 - 充值审核
   {
     path: '/finance/examine/',
     name: 'finance-examine',
@@ -696,6 +697,16 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     component: () => import('./views/finance/examine/edit.vue'),
     meta: {
       authKey: ''
+    }
+  },
+  // 映前广告付款单管理 - 列表
+  {
+    path: '/finance/payment/:pay?',
+    name: 'finance-payment',
+    component: () => import('./views/finance/payment/index.vue'),
+    meta: {
+      authKey: '',
+      title: '映前广告付款单列表'
     }
   },
   {
@@ -1022,6 +1033,18 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       title: '映前广告计划列表'
     }
   },
+
+  // 映前广告计划 - 列表
+  {
+    path: '/order/beforeplan/addplan',
+    name: 'order-beforeplan-addplan',
+    component: () => import('./views/order/beforeplan/addplan.vue'),
+    meta: {
+      authKey: '',
+      title: '映前广告计划列表'
+    }
+  },
+
   // 映前广告计划 - 详情
   {
     path: '/order/beforeplan/detail/:id/:status',

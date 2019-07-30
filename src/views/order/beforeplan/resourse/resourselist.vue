@@ -1,21 +1,10 @@
 <template>
   <div class="pages" >
-    <div class='title'>投放影院({{total}}家)
-      <span style='float: right'>导出影院列表</span>
+    <div class='title'>资源方({{total}}家)
     </div>
     <div class='bos'>
       <Row class="shouDlg-header">
-        <Col span="5">
-          <AreaSelect v-model="area"/>
-        </Col>
-        <Col span="5" offset="1">
-          <Input v-model="dataForm.cinemaName" placeholder="【专资编码】或 影院名称" />
-        </Col>
-        <Col span='5' offset="1">
-          <!-- <Select v-model="dataForm.resourceId" placeholder="资源方公司名称" style='width: 200px;'  filterable>
-            <Option v-for="it in []" :key="it.id" :value="it.id"
-              :label="it.name">{{it.name}}</Option>
-          </Select> -->
+        <Col span='5'>
           <compangList v-model='dataForm.resourceId' @done="dlgEditDone"/>
         </Col>
         <Col span="4" offset="1">
@@ -43,11 +32,10 @@
             @on-page-size-change="currentChangeHandle"/>
       </div>
       <div class="act-bar">
-        <a @click="onAdd" v-if="!type" @done="dlgEditDone">添加影院</a>
+        <a @click="onAdd" v-if="!type" @done="dlgEditDone">添加资源方</a>
       </div>
-      <!-- <singDlg ref="addOrUpdate" v-if='addOrUpdateVisible' @done="dlgEditDone" /> -->
       <changeDlg ref="change" v-if='changeVisible' @done="dlgEditDone" />
-      <AddCinemaModel v-if="type != 'detail'" ref="addCinemaModel" :cinemaend = "incinematype" :addData="inValue" @done="dlgEditDone" />
+      <!-- <AddCinemaModel v-if="type != 'detail'" ref="addCinemaModel" :cinemaend = "incinematype" :addData="inValue" @done="dlgEditDone" /> -->
     </div>
     </div>
   </div>
@@ -66,10 +54,10 @@ import moment from 'moment'
 import { slice, clean } from '@/fn/object'
 import {confirm , warning , success, toast , info } from '@/ui/modal'
 import AreaSelect from '@/components/areaSelect'
-import singDlg from './singDlg.vue'
-import changeDlg from './changeDlg.vue'
-import AddCinemaModel from './addCinemaModel.vue'
-import compangList from '../supervision/companyList.vue'
+import singDlg from '../singDlg.vue'
+import changeDlg from '../changeDlg.vue'
+// import AddCinemaModel from '../addCinemaModel.vue'
+import compangList from '../../supervision/companyList.vue'
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
@@ -82,7 +70,7 @@ const dataForm = {
     AreaSelect,
     singDlg,
     changeDlg,
-    AddCinemaModel,
+    // AddCinemaModel,
     compangList,
   }
 })
@@ -138,14 +126,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   get columns() {
     const data: any = [
-      { title: '影院名称', key: 'cinemaName', align: 'center' },
-      { title: '专资编码', key: 'code', align: 'center' , width: 80 },
-      { title: '所在省', key: 'provinceName', align: 'center', width: 80 },
-      { title: '所在市', key: 'cityName', align: 'center', width: 80 },
-      { title: '所在区', key: 'countyName', align: 'center', width: 80 },
-      { title: '所属资源方', slot: 'resourceId', align: 'center' },
-      { title: '联系人', width: 120, key: 'contract', align: 'center' },
-      { title: '联系电话', width: 120, key: 'contractTel', align: 'center' },
+      { title: '资源方公司名称', key: 'cinemaName', align: 'center' },
+      { title: '执行影院数', key: 'code', align: 'center' },
+      { title: '联系人', key: 'provinceName', align: 'center', },
+      { title: '联系电话', key: 'cityName', align: 'center' },
+      { title: '分包场次数', slot: 'resourceId', align: 'center' },
     ]
     const check = [
        {
@@ -308,7 +293,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 </script>
 
 <style lang="less" scoped>
-@import '../../../site/lib.less';
+@import '../../../../site/lib.less';
 .form {
   .input,
   /deep/ .ivu-select {
