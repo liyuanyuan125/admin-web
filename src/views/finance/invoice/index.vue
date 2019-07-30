@@ -310,7 +310,7 @@ export default class IndexPage extends ViewBase {
   watchChannelCode(channel: string) {
     this.$router.push({
       name: 'data-kol-account',
-      params: channel == defaultChannel ? {} : { channel }
+      params: channel == defaultType ? {} : { channel }
     })
   }
 
