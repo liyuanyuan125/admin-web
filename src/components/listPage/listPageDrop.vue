@@ -46,7 +46,7 @@
       size="small"
       class="table"
       :draggable = true
-      @on-drag-drop = "handleDrop"
+      @on-drag-drop="handleDrop"
       @on-selection-change="selectionChange"
       ref="table"
     />

@@ -356,12 +356,11 @@ export default class Main extends ViewBase {
           this.itemList = item || {}
 
         // imageList
-        this.imageList = [
-            {
-                fileId: '',
-                url: item.headImgBig
-            }
-        ]
+        const imgObj = [{
+            fileId: '',
+            url: item.headImgBig
+        }]
+        this.imageList = item.headImgBig ? imgObj : []
 
         // 筛选主要和其他职业
         this.professionsList = professions || []

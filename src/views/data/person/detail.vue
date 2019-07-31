@@ -41,7 +41,7 @@
                   <!-- <em v-for="(item, index) in restPro" :key="index">{{item}} &nbsp; </em> -->
                 </p>
               </Col>
-              <Col :span="12"><img :src="itemList.headImgSmall || itemList.headImgBig" class="head-img" /></Col>
+              <Col :span="12"><img :src="itemList.headImgBig" class="head-img" /></Col>
             </Row>
             <Row>
             <Col :span="6"><p><label>系统鲸娱指数</label><em>{{itemList.biJyIndex}}</em></p></Col>
