@@ -558,18 +558,50 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: paramTypes({ id: Number, channel: String, action: String })
   },
 
+  // 合同列表
   {
-    path: '/contract/list/',
+    path: '/contract/list',
     name: 'contract-list',
     component: () => import('./views/contract/list/index.vue'),
     meta: {
       authKey: ''
     }
   },
+
+  // 合同编辑、审批、复制、详情
+  {
+    path: '/contract/:action(new|edit|audit|copy|view)/:id?',
+    name: 'contract-edit',
+    component: () => import('./views/contract/list/edit.vue'),
+    meta: {
+      authKey: '',
+      title({ params: { action } }) {
+        const actionTextMap: MapType = {
+          new: '新建',
+          edit: '编辑',
+          audit: '审核',
+          copy: '复制',
+          view: '查看',
+        }
+        return actionTextMap[action]
+      }
+    },
+    props: paramTypes({ id: Number, action: String })
+  },
+
+  {
+    path: '/contract/old/',
+    name: 'contract-list-old',
+    component: () => import('./views/contract/list/old.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
   {
     path: '/contract/list/edit/:id?',
     name: 'contract-list-edits',
-    component: () => import('./views/contract/list/edit.vue'),
+    component: () => import('./views/contract/list/editold.vue'),
     meta: {
       authKey: ''
     }
@@ -577,7 +609,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   {
     path: '/contract/list/edit/:id/:copy?',
     name: 'contract-list-edit',
-    component: () => import('./views/contract/list/edit.vue'),
+    component: () => import('./views/contract/list/editold.vue'),
     meta: {
       authKey: ''
     }
