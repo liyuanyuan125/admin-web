@@ -9,7 +9,9 @@ import { Component, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 @Component({})
 export default class EditPage extends ViewBase {
-  //
+
+  created() {
+  }
 }
 </script>
 
