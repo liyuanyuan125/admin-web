@@ -7,6 +7,7 @@ import FormInputNumber from './components/formInputNumber.vue'
 import FormSelect from './components/formSelect.vue'
 import FormRadio from './components/formRadio.vue'
 import FormImage from './components/formImage.vue'
+import FormImageList from './components/formImageList.vue'
 import AreaSelect from '@/components/areaSelect'
 import { Switch } from 'iview'
 import { AjaxResult, MapType, KeyText } from '@/util/types'
@@ -113,6 +114,10 @@ const componentMap: MapType<ComponentItem> = {
   image: {
     component: FormImage,
   },
+
+  imageList: {
+    component: FormImageList
+  }
 }
 
 /**
@@ -272,8 +277,8 @@ export interface Field extends Param {
    * 使用组件 Switch
    */
   switch?: true | {
-    'true-value'?: boolean | number | string
-    'false-value'?: boolean | number | string
+    trueValue?: boolean | number | string
+    falseValue?: boolean | number | string
     size?: 'default' | 'small' | 'large'
     loading?: boolean
     [key: string]: any
@@ -285,6 +290,16 @@ export interface Field extends Param {
    */
   image?: true | {
     // buttonText?: string
+    [key: string]: any
+  },
+
+  /**
+   * 组件 imageList 的选项，若设置了该项，
+   * 则说明会用 FormImageList 组件渲染该项
+   */
+  imageList?: true | {
+    /** 上传文件的最大个数，默认 3 个 */
+    maxCount?: number
     [key: string]: any
   }
 }

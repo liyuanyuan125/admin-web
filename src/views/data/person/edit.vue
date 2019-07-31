@@ -67,7 +67,7 @@
                     </FormItem>
                 </Col>
                 <Col :span="7">
-                    <FormItem label="调整鲸鱼指数所占权重" :label-width="180" class="rest-input" >
+                    <FormItem label="调整鲸娱指数所占权重" :label-width="180" class="rest-input" >
                         <Input v-model="form.jyIndexWeight" style="width: 150px" placeholder="数字不可超过1"/>%
                     </FormItem>
                 </Col>
@@ -354,6 +354,13 @@ export default class Main extends ViewBase {
             item, genders, status, professions, imageTypes, brandTrades
           }} = await personDetail(this.detaiId)
           this.itemList = item || {}
+
+        // imageList
+        const imgObj = [{
+            fileId: '',
+            url: item.headImgBig
+        }]
+        this.imageList = item.headImgBig ? imgObj : []
 
         // 筛选主要和其他职业
         this.professionsList = professions || []
@@ -660,7 +667,6 @@ export default class Main extends ViewBase {
         this.isCityDisble = this.citymodel && this.cityRatio ? false : true
     }
 }
-
 </script>
 <style lang='less' scoped>
 @import './less/common.less';

@@ -29,8 +29,10 @@
           <slot name="acts"></slot>
         </div>
       </div>
-      <div class="act-bar">
-        <slot name="acts-2"></slot>
+      <div class="act-bar flex-box">
+        <div class='flex-1'>
+          <slot name="acts-2"></slot>
+        </div>
       </div>
     </slot>
 
@@ -43,6 +45,8 @@
       disabled-hover
       size="small"
       class="table"
+      :draggable = true
+      @on-drag-drop="handleDrop"
       @on-selection-change="selectionChange"
       ref="table"
     />
@@ -248,6 +252,8 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
     const allSelectedIds = union(diffIds, ids)
     this.allSelectedIds = allSelectedIds
   }
+  // 返回两行数据的索引
+  handleDrop(pre: any, next: any) {}
 
   /**
    * 全选表格内的当前页的所有行

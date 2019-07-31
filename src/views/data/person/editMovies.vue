@@ -19,8 +19,12 @@ import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { clean } from '@/fn/object'
 import { personMovies } from '@/api/person'
-import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
+import ListPage from '@/components/listPage/listPageDrop.vue'
 import DatePicker from './components/datePicker.vue'
+import {
+  Filter,
+  ColumnExtra,
+} from '@/components/listPage/types'
 
 @Component({
   components: {
