@@ -25,9 +25,6 @@ import {
  */
 export type InnateTypes = 'input' | 'number' | 'select' | 'date' | 'dateRange'
 
-const formatDate = (value: string | Date | null, format = 'YYYYMMDD') =>
-  value ? moment(value).format(format) : ''
-
 /**
  * 固定类型 Map
  */
@@ -367,8 +364,12 @@ const editorMap: MapType<(column: ColumnExtra, param: ColumnParam) => RenderFunc
 
   enum(column: ColumnExtra, { enumMap }) {
     return (h: any, { row }: any) => {
-      const { text } = getEnum(column, enumMap, row) || { text: '' }
-      return h('span', text || '')
+      const { text, key } = getEnum(column, enumMap, row) || { text: '', key: '' }
+      return h('span', {
+        class: {
+          [`enum-key-${key}`]: true
+        }
+      }, text || '')
     }
   },
 
