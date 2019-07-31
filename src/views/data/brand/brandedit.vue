@@ -358,8 +358,8 @@ export default class Main extends ViewBase {
         this.form.founder = item.founder
         this.form.companySlogan = (item.companySlogan || '')
         this.form.description = item.description
-        this.form.femalePercent = item.femalePercent
-        this.form.malePercent = item.malePercent
+        this.form.femalePercent = item.femalePercent ? item.femalePercent / 100 : ''
+        this.form.malePercent = item.malePercent ? item.malePercent / 100 : ''
         this.ageCodeList = item.ages ? (this.ageCodeList || []).map((it: any, index: number) => {
           return {
             ...it,
@@ -546,7 +546,9 @@ export default class Main extends ViewBase {
         ages: agetable,
         kols,
         foundDate: this.form.foundDate[0] ? moment(this.form.foundDate).format(timeFormat) : '',
-        movies: this.filmlist
+        movies: this.filmlist,
+        malePercent: this.form.malePercent ? this.form.malePercent * 100 : '',
+        femalePercent: this.form.femalePercent ? this.form.femalePercent * 100 : '',
       })
       if (this.$route.params.id) {
         await editbrand(query)
