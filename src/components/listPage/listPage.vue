@@ -29,10 +29,8 @@
           <slot name="acts"></slot>
         </div>
       </div>
-      <div class="act-bar flex-box">
-        <div class='flex-1'>
-          <slot name="acts-2"></slot>
-        </div>
+      <div class="act-bar">
+        <slot name="acts-2"></slot>
       </div>
     </slot>
 

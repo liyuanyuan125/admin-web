@@ -368,21 +368,41 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
-  // 基础数据 - 品牌管理 - 查看产品
+  // 基础数据 - 品牌管理 - 产品 - 查看 - 列表
   {
-    path: '/data/brand/productdetail/:id',
-    name: 'data-brand-productdetail',
-    component: () => import('./views/data/brand/productdetail.vue'),
+    path: '/data/brand/product/viewlist/:brandId',
+    name: 'data-brand-product-view-list',
+    component: () => import('./views/data/brand/product/viewList.vue'),
     meta: {
       authKey: ''
     }
   },
 
-  // 基础数据 - 品牌管理 - 查看产品
+  // 基础数据 - 品牌管理 - 产品 - 查看 - 详情
   {
-    path: '/data/brand/productedit/:id',
-    name: 'data-brand-productedit',
-    component: () => import('./views/data/brand/productedit.vue'),
+    path: '/data/brand/product/viewdetail/:id',
+    name: 'data-brand-product-view-detail',
+    component: () => import('./views/data/brand/product/viewDetail.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 基础数据 - 品牌管理 - 产品 - 编辑 - 列表
+  {
+    path: '/data/brand/product/modifylist/:brandId',
+    name: 'data-brand-product-modify-list',
+    component: () => import('./views/data/brand/product/modifyList.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 基础数据 - 品牌管理 - 产品 - 编辑 - 详情
+  {
+    path: '/data/brand/product/modifydetail/:id',
+    name: 'data-brand-product-modify-detail',
+    component: () => import('./views/data/brand/product/modifyDetail.vue'),
     meta: {
       authKey: ''
     }
@@ -558,18 +578,50 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: paramTypes({ id: Number, channel: String, action: String })
   },
 
+  // 合同列表
   {
-    path: '/contract/list/',
+    path: '/contract/list',
     name: 'contract-list',
     component: () => import('./views/contract/list/index.vue'),
     meta: {
       authKey: ''
     }
   },
+
+  // 合同编辑、审批、复制、详情
+  {
+    path: '/contract/:action(new|edit|audit|copy|view)/:id?',
+    name: 'contract-edit',
+    component: () => import('./views/contract/list/edit.vue'),
+    meta: {
+      authKey: '',
+      title({ params: { action } }) {
+        const actionTextMap: MapType = {
+          new: '新建',
+          edit: '编辑',
+          audit: '审核',
+          copy: '复制',
+          view: '查看',
+        }
+        return actionTextMap[action]
+      }
+    },
+    props: paramTypes({ id: Number, action: String })
+  },
+
+  {
+    path: '/contract/old/',
+    name: 'contract-list-old',
+    component: () => import('./views/contract/list/old.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
   {
     path: '/contract/list/edit/:id?',
     name: 'contract-list-edits',
-    component: () => import('./views/contract/list/edit.vue'),
+    component: () => import('./views/contract/list/editold.vue'),
     meta: {
       authKey: ''
     }
@@ -577,7 +629,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   {
     path: '/contract/list/edit/:id/:copy?',
     name: 'contract-list-edit',
-    component: () => import('./views/contract/list/edit.vue'),
+    component: () => import('./views/contract/list/editold.vue'),
     meta: {
       authKey: ''
     }
@@ -674,6 +726,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     ]
   },
 
+  // 财务管理 - 充值审核
   {
     path: '/finance/examine/',
     name: 'finance-examine',
@@ -682,6 +735,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     }
   },
+
   {
     path: '/finance/examine/detail/:id/:approvalStatus',
     name: 'finance-examine-detail',
@@ -690,12 +744,35 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     }
   },
+
   {
     path: '/finance/examine/edit/:id?',
     name: 'finance-examine-edit',
     component: () => import('./views/finance/examine/edit.vue'),
     meta: {
       authKey: ''
+    }
+  },
+
+  // 财务管理 - 发票管理
+  {
+    path: '/finance/invoice/:type?',
+    name: 'finance-invoice',
+    component: () => import('./views/finance/invoice/index.vue'),
+    meta: {
+      authKey: ''
+    },
+    props: true,
+  },
+
+  // 映前广告付款单管理 - 列表
+  {
+    path: '/finance/payment/:pay?',
+    name: 'finance-payment',
+    component: () => import('./views/finance/payment/index.vue'),
+    meta: {
+      authKey: '',
+      title: '映前广告付款单列表'
     }
   },
   {
@@ -706,6 +783,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     }
   },
+
   {
     path: '/plan/ggtising/edit/:edit/:id',
     name: 'plan-ggtising-edit',
@@ -714,6 +792,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     }
   },
+
   {
     path: '/plan/ggtising/cinema/:id',
     name: 'plan-ggtising-cinema',
@@ -722,6 +801,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     }
   },
+
   {
     path: '/gg/film',
     name: 'gg-film',
@@ -730,6 +810,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     }
   },
+
   {
     path: '/gg/film/detail/:id/:status',
     name: 'gg-film-detail',
@@ -1022,6 +1103,18 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       title: '映前广告计划列表'
     }
   },
+
+  // 映前广告计划 - 列表
+  {
+    path: '/order/beforeplan/addplan',
+    name: 'order-beforeplan-addplan',
+    component: () => import('./views/order/beforeplan/addplan.vue'),
+    meta: {
+      authKey: '',
+      title: '映前广告计划列表'
+    }
+  },
+
   // 映前广告计划 - 详情
   {
     path: '/order/beforeplan/detail/:id/:status',

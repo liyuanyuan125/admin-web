@@ -13,7 +13,7 @@ export default class InputHidden extends ViewBase {
   @Prop() value!: any
 
   get json() {
-    return JSON.stringify(this.value)
+    return this.value == null ? '' : JSON.stringify(this.value)
   }
 }
 </script>

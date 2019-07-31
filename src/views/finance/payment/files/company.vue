@@ -1,5 +1,5 @@
 <template>
-    <Select  v-model="inValue" placeholder="广告主公司名称" filterable
+    <Select  v-model="inValue" placeholder="资源方公司名称" filterable
       clearable class="component" ref="ui">
       <Option v-for="it in list" :key="it.id" :value="it.id"
         :label="it.name" class="flex-box">
@@ -16,7 +16,7 @@ import { queryList , planlist , company } from '@/api/orderSys'
 import { clean } from '@/fn/object'
 
 @Component
-export default class CinemaChainSelect extends ViewBase {
+export default class CompanyList extends ViewBase {
   /**
    * 值本身，可以使用 v-model 进行双向绑定
    */
@@ -35,7 +35,7 @@ export default class CinemaChainSelect extends ViewBase {
 
   async mounted() {
     try {
-      const adscmy = await company({typeCode: 'ads' , pageSize: 100000})
+      const adscmy = await company({typeCode: 'resource' , pageSize: 100000})
       this.list = adscmy.data.items
     } catch (ex) {
       this.handleError(ex)

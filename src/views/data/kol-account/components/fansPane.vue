@@ -107,7 +107,7 @@ export default class FansPane extends ViewBase {
 
   id = 0
 
-  ratio = 0
+  ratio: number | null = null
 
   selectList: IdName[] = []
 
@@ -140,7 +140,7 @@ export default class FansPane extends ViewBase {
       return toast('已存在', { type: 'error' })
     }
     const item = this.selectList.find(it => it.id == this.id)!
-    this.model.push({ ...item, value: this.ratio })
+    this.model.push({ ...item, value: this.ratio! })
   }
 
   delItem(id: number) {
@@ -181,7 +181,7 @@ export default class FansPane extends ViewBase {
 
 .ratio-input {
   display: inline-flex;
-  width: 242px;
+  width: 318px;
   margin-left: 10px;
 }
 

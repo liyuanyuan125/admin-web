@@ -239,6 +239,47 @@ export function validDate(date: number | null) {
 }
 
 /**
+ * 将整数日期，格式化成日期范围字符串
+ * @param dateStart 开始数字日期
+ * @param dateEnd 结束数字日期
+ * @param options 选项
+ */
+export function formatIntDateRange(
+  dateStart: number | null,
+  dateEnd: number | null,
+  {
+    separator = '~',
+    format = 'YYYY-MM-DD',
+    blank = '-',
+  }: any = {}
+) {
+  const start = validDate(dateStart)
+  const end = validDate(dateEnd)
+  if (start == null && end == null) {
+    return blank
+  }
+  const pairs = [start, end].map(d => d != null ? moment(d).format(format) : blank)
+  const result = pairs.join(separator)
+  return result
+}
+
+/**
+ * 格式化时间戳
+ * @param time 时间戳
+ * @param options 选项
+ */
+export function formatTimestamp(
+  time: number,
+  {
+    format = 'YYYY-MM-DD HH:mm:ss',
+    blank = '-',
+  }: any = {}
+) {
+  const d = moment(time)
+  return d.isValid() ? d.format(format) : blank
+}
+
+/**
  * 将万分转成百分
  * @param num 万分值
  * @param digits 保留位数，默认为 2

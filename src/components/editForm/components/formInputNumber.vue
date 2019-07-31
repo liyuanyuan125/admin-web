@@ -3,6 +3,7 @@
     :is="poptip === false ? 'span' : 'poptip'"
     trigger="focus"
     transfer
+    class="form-input-number-wrap"
     popper-class="edit-form-form-input-number-poptip"
   >
     <span
@@ -42,7 +43,7 @@ const defaultPoptip = (value: number) => realThousands(value)
 
 @Component
 export default class FormInputNumber extends ViewBase {
-  @Prop({ type: Number, default: 0 }) value!: number
+  @Prop({ type: [Number, String, Object], default: null }) value!: number | string | null
 
   @Prop({ type: String, default: '' }) prepend!: string
 
@@ -60,26 +61,30 @@ export default class FormInputNumber extends ViewBase {
       return false
     }
     const poptipFormatter = typeof this.poptip === 'function' ? this.poptip : defaultPoptip
-    const result = poptipFormatter(this.model) || this.placeholder
+    const value = this.model
+    const result = (typeof value == 'number' ? poptipFormatter(value) : '') || this.placeholder
     return result
   }
 
-  numberValue(value: number | string) {
+  castValue(value: number | string | null) {
+    if (value === '' || value == null) {
+      return null
+    }
     const { min, max } = this.$refs.input as any
     const num = Math.min(max, Math.max(min, parseFloat(value as string) || 0))
     return num
   }
 
   @Watch('value')
-  watchValue(value: number) {
-    const num = this.numberValue(value)
+  watchValue(value: number | string | null) {
+    const num = this.castValue(value)
     this.model = num
     triggerValidate(this.$refs.input, num)
   }
 
   @Watch('model')
-  watchMode(value: number) {
-    const num = this.numberValue(value)
+  watchMode(value: number | string | null) {
+    const num = this.castValue(value)
     this.$emit('input', num)
   }
 }
@@ -93,6 +98,14 @@ export default class FormInputNumber extends ViewBase {
 </style>
 
 <style lang="less" scoped>
+.form-input-number-wrap {
+  width: 100%;
+  /deep/ .ivu-poptip-rel,
+  /deep/ .form-input-number {
+    width: 100%;
+  }
+}
+
 .form-input-number {
   display: inline-flex;
   &[size=small] {

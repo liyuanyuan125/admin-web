@@ -1,5 +1,14 @@
 import { get, post, put } from '@/fn/ajax'
-import { dot, intDate, readableThousands, validDate, baifen, wanfen } from '@/util/dealData'
+import {
+  dot,
+  intDate,
+  readableThousands,
+  validDate,
+  formatIntDateRange,
+  formatTimestamp,
+  baifen,
+  wanfen
+} from '@/util/dealData'
 import { KeyText, MapType } from '@/util/types'
 import { keyBy } from 'lodash'
 import moment from 'moment'
@@ -7,7 +16,7 @@ import { devLog } from '@/util/dev'
 
 const nullNumber = (value: any, format?: (num: number) => any) => {
   const num = parseFloat(value)
-  return isNaN(num) ? null : (format ? format(num) : num)
+  return isNaN(num) ? null : format ? format(num) : num
 }
 
 const nullBaifen = (value: any) => nullNumber(value, baifen)
@@ -15,40 +24,29 @@ const nullBaifen = (value: any) => nullNumber(value, baifen)
 const nullWanfen = (value: any) => nullNumber(value, wanfen)
 
 /**
- * 查询 KOL 平台账号
+ * 查询合同列表
  * @param query 查询条件
- * https://yapi.aiads-dev.com/project/142/interface/api/3198
+ * https://yapi.aiads-dev.com/project/34/interface/api/5233
  */
 export async function queryList(query: any = {}) {
-  const { data } = await get('/kol/channel-accounts', query)
+  const { data } = await get('/customer/contracts', query)
 
   const result = {
     ...data,
 
-    items: (data.items as any[] || []).map(it => ({
+    items: ((data.items as any[]) || []).map(it => ({
       ...it,
-      fansCount: dot(it, 'customFans.totalCount'),
-      provideInvoiceText: it.provideInvoice ? '是' : '否',
-      priceList: (it.settlementPrices as any[] || []).map(sub => {
-        const price = readableThousands(sub.settlementPrice, '-', '0,0.00')
-        return {
-          name: sub.categoryName,
-          price: price != '-' ? `￥${price}` : '-',
-          date: sub.effectiveDate ? intDate(sub.effectiveDate) : '-'
-        }
-      }),
+      validityDate: formatIntDateRange(it.validityStartDate, it.validityEndDate),
+      createTimeText: formatTimestamp(it.createTime)
     })),
 
-    hasSettlementPriceList: [
-      { key: 1, text: '有' },
-      { key: 2, text: '无' },
-    ]
+    hasSettlementPriceList: [{ key: 1, text: '有' }, { key: 2, text: '无' }]
   }
 
   return result
 }
 
-const makeAgeList = (enumList: KeyText[], values: Array<{ k: string, r: number }>) => {
+const makeAgeList = (enumList: KeyText[], values: Array<{ k: string; r: number }>) => {
   const map = keyBy(values, 'k')
   const result = enumList.map(it => ({
     key: it.key,
@@ -58,7 +56,7 @@ const makeAgeList = (enumList: KeyText[], values: Array<{ k: string, r: number }
   return result
 }
 
-const makeFansList = (values: Array<{ id: number, name: string, rate: number }>) => {
+const makeFansList = (values: Array<{ id: number; name: string; rate: number }>) => {
   const result = (values || []).map(it => ({
     id: it.id,
     name: it.name,
@@ -70,8 +68,8 @@ const makeFansList = (values: Array<{ id: number, name: string, rate: number }>)
 const makePriceList = (
   enumList: KeyText[],
   values: Array<{
-    categoryCode: string,
-    effectiveDate: number,
+    categoryCode: string
+    effectiveDate: number
     settlementPrice: number
   }>
 ) => {
@@ -105,7 +103,7 @@ export async function queryItem(query: any = {}) {
       intro: dot(data, 'item.customIntroduction') || '',
       area: [
         parseInt(dot(data, 'item.provinceId'), 10) || 0,
-        parseInt(dot(data, 'item.cityId'), 10) || 0,
+        parseInt(dot(data, 'item.cityId'), 10) || 0
       ],
       authName: dot(data, 'item.authName') || '',
 
@@ -126,12 +124,9 @@ export async function queryItem(query: any = {}) {
       // 是否被审核过（通过或拒绝）
       audited: status == 2 || status == 3,
 
-      logList,
+      logList
     },
-    typeList: [
-      { key: 1, text: '个人' },
-      { key: 2, text: '公司' },
-    ],
+    typeList: [{ key: 1, text: '个人' }, { key: 2, text: '公司' }]
   }
 
   return result
@@ -146,17 +141,15 @@ export async function queryProvince(keyword: string) {
   const query: MapType<any> = {
     parentIds: 0,
     pageIndex: 1,
-    pageSize: 888,
+    pageSize: 888
   }
   keyword && (query.nameCn = keyword)
 
   const {
-    data: {
-      items
-    }
+    data: { items }
   } = await get('/basis/districts', query)
 
-  const list = (items as any[] || []).map(it => ({
+  const list = ((items as any[]) || []).map(it => ({
     id: it.id as number,
     name: it.nameCn as string
   }))
@@ -172,17 +165,15 @@ export async function queryProvince(keyword: string) {
 export async function queryCity(keyword: string) {
   const query: MapType<any> = {
     pageIndex: 1,
-    pageSize: 888,
+    pageSize: 888
   }
   keyword && (query.nameCn = keyword)
 
   const {
-    data: {
-      items
-    }
+    data: { items }
   } = await get('/basis/districts/cities', query)
 
-  const list = (items as any[] || []).map(it => ({
+  const list = ((items as any[]) || []).map(it => ({
     id: it.id as number,
     name: it.nameCn as string
   }))
@@ -190,11 +181,12 @@ export async function queryCity(keyword: string) {
   return list
 }
 
-const dealAreaList = (list: any[]) => list.map(it => ({
-  id: it.id,
-  name: it.name,
-  rate: wanfen(it.value)
-}))
+const dealAreaList = (list: any[]) =>
+  list.map(it => ({
+    id: it.id,
+    name: it.name,
+    rate: wanfen(it.value)
+  }))
 
 // 按照接口要求，处理数据
 const dealEditItem = (item: any) => {
@@ -234,7 +226,7 @@ const dealEditItem = (item: any) => {
     provideInvoice: item.provideInvoice,
 
     // 审核意见
-    remark: item.remark,
+    remark: item.remark
   }
 
   return data

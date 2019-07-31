@@ -15,12 +15,12 @@ const nullBaifen = (value: any) => nullNumber(value, baifen)
 const nullWanfen = (value: any) => nullNumber(value, wanfen)
 
 /**
- * 查询 KOL 平台账号
+ * 查询发票
  * @param query 查询条件
- * https://yapi.aiads-dev.com/project/142/interface/api/3198
+ * https://yapi.aiads-dev.com/project/193/interface/api/5399
  */
 export async function queryList(query: any = {}) {
-  const { data } = await get('/kol/channel-accounts', query)
+  const { data } = await get('/invoice/purchase-invoices', query)
 
   const result = {
     ...data,
