@@ -43,7 +43,7 @@
             @on-page-size-change="currentChangeHandle"/>
       </div>
       <div class="act-bar">
-        <a @click="onAdd" v-if="!type" @done="dlgEditDone">添加影院</a>
+        <a @click="onAdd" v-if="!type && $route.params.status == 2 || $route.params.status == 3 || $route.params.status == 9 || $route.params.status == 10" @done="dlgEditDone">添加影院</a>
       </div>
       <!-- <singDlg ref="addOrUpdate" v-if='addOrUpdateVisible' @done="dlgEditDone" /> -->
       <changeDlg ref="change" v-if='changeVisible' @done="dlgEditDone" />
