@@ -24,7 +24,7 @@
       <div class="base-mess">
             <h2 class="title">扩展信息</h2>
             <Row>
-              <Col :span="9">
+              <Col :span="5">
                 <p><label>影人标签</label><em>{{itemList.tip}}</em></p>
                 <p>
                 <label>擅长类型</label>
@@ -41,12 +41,12 @@
                   <!-- <em v-for="(item, index) in restPro" :key="index">{{item}} &nbsp; </em> -->
                 </p>
               </Col>
-              <Col :span="12"><img :src="itemList.headImgSmall" class="head-img" /></Col>
+              <Col :span="12"><img :src="itemList.headImgBig" class="head-img" /></Col>
             </Row>
             <Row>
             <Col :span="6"><p><label>系统鲸娱指数</label><em>{{itemList.biJyIndex}}</em></p></Col>
             <Col :span="6"><p><label>调整鲸娱指数</label><em >{{itemList.jyIndex}}</em></p></Col>
-            <Col :span="6"><p><label style="width: 160px">调整鲸鱼指数所占权重</label><em>{{itemList.jyIndexWeight || 0}}%</em></p></Col>
+            <Col :span="6"><p><label style="width: 160px">调整鲸娱指数所占权重</label><em>{{itemList.jyIndexWeight || 0}}%</em></p></Col>
             </Row>
             <Row>
             <Col :span="22">

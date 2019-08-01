@@ -51,7 +51,7 @@ export default class ComponentMain extends ViewBase {
   get ruleValidate() {
     const rules = {
       fee: [
-          { required: true, message: '请输入金额' }
+          { required: true, message: '请输入金额(≥0且不得大于申请付款金额)' }
       ],
     }
     return rules
@@ -70,7 +70,7 @@ export default class ComponentMain extends ViewBase {
     this.defaultfee = applyAmount
     ; (this.$refs.dataForm as any).resetFields()
     if (this.id) {
-      this.dataForm.fee = applyAmount
+      this.dataForm.fee = applyAmount == null ? null : applyAmount
     }
   }
 
