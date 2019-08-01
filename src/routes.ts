@@ -590,7 +590,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 合同编辑、审批、复制、详情
   {
-    path: '/contract/:action(new|edit|audit|copy|view)/:id?',
+    path: '/contract/:action(new|edit|view|audit|copy)/:id?',
     name: 'contract-edit',
     component: () => import('./views/contract/list/edit.vue'),
     meta: {
@@ -599,9 +599,9 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
         const actionTextMap: MapType = {
           new: '新建',
           edit: '编辑',
+          view: '查看',
           audit: '审核',
           copy: '复制',
-          view: '查看',
         }
         return actionTextMap[action]
       }

@@ -89,45 +89,26 @@ const makePriceList = (
  * @param query 查询条件
  */
 export async function queryItem(query: any = {}) {
-  const { id, channel } = query
-  const { data } = await get(`/kol/channel-accounts/${channel}/${id}`)
-  const { ageList, publishCategoryList, logList = [] } = data
+  const { id } = query
+  const { data } = await get(`/customer/contracts/${id}`)
 
-  // 审核状态：1 待审核，2 审核通过，3 审核拒绝
-  const status = parseInt(dot(data, 'item.status'), 10) || 0
+  const {
+    validityStartDate = 0,
+    validityEndDate = 0
+  } = data.item || {}
 
   const result = {
     ...data,
     item: {
       ...data.item,
-      intro: dot(data, 'item.customIntroduction') || '',
-      area: [
-        parseInt(dot(data, 'item.provinceId'), 10) || 0,
-        parseInt(dot(data, 'item.cityId'), 10) || 0
-      ],
-      authName: dot(data, 'item.authName') || '',
-
-      // 粉丝画像
-      fansCount: nullNumber(dot(data, 'item.customFans.totalCount')),
-      malePercent: nullBaifen(dot(data, 'item.customFans.maleRate')),
-      femalePercent: nullBaifen(dot(data, 'item.customFans.femaleRate')),
-      ageList: makeAgeList(ageList, dot(data, 'item.customFans.ages')),
-      provinceList: makeFansList(dot(data, 'item.customFans.provinces')),
-      cityList: makeFansList(dot(data, 'item.customFans.cities')),
-
-      // 结算信息
-      priceList: makePriceList(publishCategoryList, dot(data, 'item.settlementPrices')),
-
-      // 审核是否通过，默认通过
-      auditPass: status != 3,
-
-      // 是否被审核过（通过或拒绝）
-      audited: status == 2 || status == 3,
-
-      logList
+      validityDate: [
+        validityStartDate,
+        validityEndDate
+      ]
     },
-    typeList: [{ key: 1, text: '个人' }, { key: 2, text: '公司' }]
   }
+
+  debugger
 
   return result
 }
@@ -203,27 +184,6 @@ const dealEditItem = (item: any) => {
     type: item.type,
     auth: item.auth,
     authName: item.authName,
-
-    // 粉丝画像
-    customFans: {
-      maleRate: nullWanfen(item.malePercent),
-      femaleRate: nullWanfen(item.femalePercent),
-      ages: (item.ageList as any[]).map(it => ({
-        k: it.key,
-        r: nullWanfen(it.value)
-      })),
-      provinces: dealAreaList(item.provinceList),
-      cities: dealAreaList(item.cityList),
-      totalCount: item.fansCount || null
-    },
-
-    // 结算信息
-    settlementPrices: (item.priceList as any[]).map(it => ({
-      categoryCode: it.key,
-      effectiveDate: it.date ? moment(it.date).format('YYYYMMDD') : null,
-      settlementPrice: it.value || null
-    })),
-    provideInvoice: item.provideInvoice,
 
     // 审核意见
     remark: item.remark
