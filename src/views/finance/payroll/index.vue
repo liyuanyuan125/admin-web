@@ -87,6 +87,7 @@ const defaultType = typeList[0].value
   }
 })
 export default class IndexPage extends ViewBase {
+  @Prop({ type: String, default: defaultType }) type!: string
 
   get listPage() {
     return this.$refs.listPage as ListPage
@@ -131,7 +132,6 @@ export default class IndexPage extends ViewBase {
       return finishfetch
     }
   }
-  @Prop({ type: String, default: defaultType }) type!: string
 
   typeCode = this.type
 
@@ -175,13 +175,17 @@ export default class IndexPage extends ViewBase {
     this.listPage.update()
   }
 
-
   @Watch('typeCode')
-  watchTypeCode(id: any) {
+  watchTypeCode(type: string) {
     this.$router.push({
       name: 'finance-payroll',
-      params: id == defaultType ? {} : { id }
+      params: type == defaultType ? {} : { type }
     })
+  }
+
+  @Watch('type')
+  watchType() {
+    this.refresh()
   }
 
   @Watch('filters', { deep: true })

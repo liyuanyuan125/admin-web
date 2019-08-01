@@ -150,6 +150,11 @@ export interface Field extends Param {
   label?: string
 
   /**
+   * 标签宽度
+   */
+  labelWidth?: number
+
+  /**
    * 要使用的 component
    */
   component?: Component
