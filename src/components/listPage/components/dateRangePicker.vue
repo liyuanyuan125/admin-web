@@ -4,6 +4,7 @@
     v-model="date"
     :placeholder="placeholder"
     transfer
+    split-panels
   />
 </template>
 
@@ -23,7 +24,7 @@ export default class DatePickerWrap extends Vue {
   @Prop({ type: String, default: '' }) value!: string
 
   /** placeholder */
-  @Prop({ type: String, default: '选择日期' }) placeholder!: string
+  @Prop({ type: String, default: '选择日期范围' }) placeholder!: string
 
   model = this.value
 

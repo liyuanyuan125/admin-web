@@ -147,14 +147,6 @@ export default class IndexPage extends ViewBase {
       },
 
       {
-        name: 'billMonth',
-        defaultValue: null,
-        type: yearMonth,
-        width: 108,
-        placeholder: '账单月份'
-      },
-
-      {
         name: 'invoiceType',
         defaultValue: 0,
         type: 'select',
@@ -168,6 +160,14 @@ export default class IndexPage extends ViewBase {
         type: 'select',
         width: 108,
         placeholder: '发票内容'
+      },
+
+      {
+        name: 'billMonth',
+        defaultValue: null,
+        type: yearMonth,
+        width: 108,
+        placeholder: '账单月份'
       },
 
       {
@@ -240,7 +240,7 @@ export default class IndexPage extends ViewBase {
       },
     ]
 
-    return this.$route.params.pay == '1' ? [...firstN, ...two] :
+    return this.status == '1' ? [...firstN, ...two] :
     [...firstN, ...two , ...threeID]
   }
 
@@ -254,7 +254,6 @@ export default class IndexPage extends ViewBase {
   }
 
   get columns() {
-    // console.log(this.$route.params)
     const firstN: any = [
       { title: '付款单编号', key: 'no', width: 60 },
       { title: '请款单编号', key: 'applyNo', width: 60 },
@@ -268,7 +267,7 @@ export default class IndexPage extends ViewBase {
     ]
 
     const two: any = [
-      { title: '影城名称', key: 'cinemaName'},
+      { title: '影城名称', key: 'cinemaName' , minWidth: 65},
       { title: '影城专资编码', key: 'cinemaCode', width: 65 },
       { title: '资源方名称', key: 'resourceName', width: 60 },
       { title: '账单月份', slot: 'billMonth', width: 60 },
@@ -293,7 +292,7 @@ export default class IndexPage extends ViewBase {
       { title: '付款完成时间', key: 'payTime', width: 75, editor: 'dateTime' },
     ]
 
-    return this.$route.params.pay == '2' ? [...firstID, ...two , ...threeID] :
+    return this.status == '2' ? [...firstID, ...two , ...threeID] :
     [...firstN, ...two , ...threeN ] as ColumnExtra[]
   }
 
@@ -328,10 +327,10 @@ export default class IndexPage extends ViewBase {
     })
   }
 
-  // @Watch('pay')
-  // watchPay(pay: any) {
-  //   this.listPage.query.status = pay
-  // }
+  @Watch('pay')
+  watchPay(pay: any) {
+    this.listPage.query.status = pay
+  }
 }
 </script>
 
@@ -347,5 +346,17 @@ export default class IndexPage extends ViewBase {
     height: 24px;
     background-color: #fff !important;
   }
+}
+/deep/ .ivu-input {
+  margin-bottom: 15px;
+}
+/deep/ .ivu-select {
+  margin-bottom: 15px;
+}
+/deep/ .ivu-btn {
+  margin-bottom: 15px;
+}
+/deep/ .ivu-page .ivu-select {
+  margin-bottom: 0;
 }
 </style>

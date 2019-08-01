@@ -15,10 +15,11 @@
         >新建合同</Button>
       </template>
 
-      <template slot="action" slot-scope="{ row: { id, status } }">
+      <template slot="action" slot-scope="{ row: { id, approveStatus: status } }">
         <div class="row-acts">
-          <router-link :to="editRoute('edit', id)">编辑</router-link>
-          <router-link :to="editRoute('audit', id)">审批</router-link>
+          <router-link :to="editRoute('edit', id)" v-if="status == 1">编辑</router-link>
+          <router-link :to="editRoute('audit', id)" v-if="status == 1">审批</router-link>
+          <a @click="cancel(id)" v-if="status == 2">作废</a>
           <router-link :to="editRoute('copy', id)">复制</router-link>
           <router-link :to="editRoute('view', id)">详情</router-link>
         </div>
@@ -139,6 +140,11 @@ export default class IndexPage extends ViewBase {
       name: 'contract-edit',
       params
     }
+  }
+
+  // 作废
+  cancel(id: number) {
+    debugger
   }
 }
 </script>

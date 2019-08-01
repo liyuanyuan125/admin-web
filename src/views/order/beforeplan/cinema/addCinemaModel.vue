@@ -146,7 +146,7 @@ export default class Main extends ViewBase {
   }
 
   created() {
-    this.seach()
+    // this.seach()
   }
 
   async mounted() {

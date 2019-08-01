@@ -1,14 +1,5 @@
 import { get, post, put } from '@/fn/ajax'
-import {
-  dot,
-  intDate,
-  readableThousands,
-  validDate,
-  formatIntDateRange,
-  formatTimestamp,
-  baifen,
-  wanfen
-} from '@/util/dealData'
+import { dot, intDate, readableThousands, validDate, baifen, wanfen } from '@/util/dealData'
 import { KeyText, MapType } from '@/util/types'
 import { keyBy } from 'lodash'
 import moment from 'moment'
@@ -16,7 +7,7 @@ import { devLog } from '@/util/dev'
 
 const nullNumber = (value: any, format?: (num: number) => any) => {
   const num = parseFloat(value)
-  return isNaN(num) ? null : format ? format(num) : num
+  return isNaN(num) ? null : (format ? format(num) : num)
 }
 
 const nullBaifen = (value: any) => nullNumber(value, baifen)
@@ -24,29 +15,40 @@ const nullBaifen = (value: any) => nullNumber(value, baifen)
 const nullWanfen = (value: any) => nullNumber(value, wanfen)
 
 /**
- * 查询合同列表
+ * 查询发票
  * @param query 查询条件
- * https://yapi.aiads-dev.com/project/34/interface/api/5233
+ * https://yapi.aiads-dev.com/project/193/interface/api/5399
  */
 export async function queryList(query: any = {}) {
-  const { data } = await get('/customer/contracts', query)
+  const { data } = await get('/invoice/purchase-invoices', query)
 
   const result = {
     ...data,
 
-    items: ((data.items as any[]) || []).map(it => ({
+    items: (data.items as any[] || []).map(it => ({
       ...it,
-      validityDate: formatIntDateRange(it.validityStartDate, it.validityEndDate),
-      createTimeText: formatTimestamp(it.createTime)
+      fansCount: dot(it, 'customFans.totalCount'),
+      provideInvoiceText: it.provideInvoice ? '是' : '否',
+      priceList: (it.settlementPrices as any[] || []).map(sub => {
+        const price = readableThousands(sub.settlementPrice, '-', '0,0.00')
+        return {
+          name: sub.categoryName,
+          price: price != '-' ? `￥${price}` : '-',
+          date: sub.effectiveDate ? intDate(sub.effectiveDate) : '-'
+        }
+      }),
     })),
 
-    hasSettlementPriceList: [{ key: 1, text: '有' }, { key: 2, text: '无' }]
+    hasSettlementPriceList: [
+      { key: 1, text: '有' },
+      { key: 2, text: '无' },
+    ]
   }
 
   return result
 }
 
-const makeAgeList = (enumList: KeyText[], values: Array<{ k: string; r: number }>) => {
+const makeAgeList = (enumList: KeyText[], values: Array<{ k: string, r: number }>) => {
   const map = keyBy(values, 'k')
   const result = enumList.map(it => ({
     key: it.key,
@@ -56,7 +58,7 @@ const makeAgeList = (enumList: KeyText[], values: Array<{ k: string; r: number }
   return result
 }
 
-const makeFansList = (values: Array<{ id: number; name: string; rate: number }>) => {
+const makeFansList = (values: Array<{ id: number, name: string, rate: number }>) => {
   const result = (values || []).map(it => ({
     id: it.id,
     name: it.name,
@@ -68,8 +70,8 @@ const makeFansList = (values: Array<{ id: number; name: string; rate: number }>)
 const makePriceList = (
   enumList: KeyText[],
   values: Array<{
-    categoryCode: string
-    effectiveDate: number
+    categoryCode: string,
+    effectiveDate: number,
     settlementPrice: number
   }>
 ) => {
@@ -89,26 +91,48 @@ const makePriceList = (
  * @param query 查询条件
  */
 export async function queryItem(query: any = {}) {
-  const { id } = query
-  const { data } = await get(`/customer/contracts/${id}`)
+  const { id, channel } = query
+  const { data } = await get(`/kol/channel-accounts/${channel}/${id}`)
+  const { ageList, publishCategoryList, logList = [] } = data
 
-  const {
-    validityStartDate = 0,
-    validityEndDate = 0
-  } = data.item || {}
+  // 审核状态：1 待审核，2 审核通过，3 审核拒绝
+  const status = parseInt(dot(data, 'item.status'), 10) || 0
 
   const result = {
     ...data,
     item: {
       ...data.item,
-      validityDate: [
-        validityStartDate,
-        validityEndDate
-      ]
-    },
-  }
+      intro: dot(data, 'item.customIntroduction') || '',
+      area: [
+        parseInt(dot(data, 'item.provinceId'), 10) || 0,
+        parseInt(dot(data, 'item.cityId'), 10) || 0,
+      ],
+      authName: dot(data, 'item.authName') || '',
 
-  debugger
+      // 粉丝画像
+      fansCount: nullNumber(dot(data, 'item.customFans.totalCount')),
+      malePercent: nullBaifen(dot(data, 'item.customFans.maleRate')),
+      femalePercent: nullBaifen(dot(data, 'item.customFans.femaleRate')),
+      ageList: makeAgeList(ageList, dot(data, 'item.customFans.ages')),
+      provinceList: makeFansList(dot(data, 'item.customFans.provinces')),
+      cityList: makeFansList(dot(data, 'item.customFans.cities')),
+
+      // 结算信息
+      priceList: makePriceList(publishCategoryList, dot(data, 'item.settlementPrices')),
+
+      // 审核是否通过，默认通过
+      auditPass: status != 3,
+
+      // 是否被审核过（通过或拒绝）
+      audited: status == 2 || status == 3,
+
+      logList,
+    },
+    typeList: [
+      { key: 1, text: '个人' },
+      { key: 2, text: '公司' },
+    ],
+  }
 
   return result
 }
@@ -122,15 +146,17 @@ export async function queryProvince(keyword: string) {
   const query: MapType<any> = {
     parentIds: 0,
     pageIndex: 1,
-    pageSize: 888
+    pageSize: 888,
   }
   keyword && (query.nameCn = keyword)
 
   const {
-    data: { items }
+    data: {
+      items
+    }
   } = await get('/basis/districts', query)
 
-  const list = ((items as any[]) || []).map(it => ({
+  const list = (items as any[] || []).map(it => ({
     id: it.id as number,
     name: it.nameCn as string
   }))
@@ -146,15 +172,17 @@ export async function queryProvince(keyword: string) {
 export async function queryCity(keyword: string) {
   const query: MapType<any> = {
     pageIndex: 1,
-    pageSize: 888
+    pageSize: 888,
   }
   keyword && (query.nameCn = keyword)
 
   const {
-    data: { items }
+    data: {
+      items
+    }
   } = await get('/basis/districts/cities', query)
 
-  const list = ((items as any[]) || []).map(it => ({
+  const list = (items as any[] || []).map(it => ({
     id: it.id as number,
     name: it.nameCn as string
   }))
@@ -162,12 +190,11 @@ export async function queryCity(keyword: string) {
   return list
 }
 
-const dealAreaList = (list: any[]) =>
-  list.map(it => ({
-    id: it.id,
-    name: it.name,
-    rate: wanfen(it.value)
-  }))
+const dealAreaList = (list: any[]) => list.map(it => ({
+  id: it.id,
+  name: it.name,
+  rate: wanfen(it.value)
+}))
 
 // 按照接口要求，处理数据
 const dealEditItem = (item: any) => {
@@ -185,8 +212,29 @@ const dealEditItem = (item: any) => {
     auth: item.auth,
     authName: item.authName,
 
+    // 粉丝画像
+    customFans: {
+      maleRate: nullWanfen(item.malePercent),
+      femaleRate: nullWanfen(item.femalePercent),
+      ages: (item.ageList as any[]).map(it => ({
+        k: it.key,
+        r: nullWanfen(it.value)
+      })),
+      provinces: dealAreaList(item.provinceList),
+      cities: dealAreaList(item.cityList),
+      totalCount: item.fansCount || null
+    },
+
+    // 结算信息
+    settlementPrices: (item.priceList as any[]).map(it => ({
+      categoryCode: it.key,
+      effectiveDate: it.date ? moment(it.date).format('YYYYMMDD') : null,
+      settlementPrice: it.value || null
+    })),
+    provideInvoice: item.provideInvoice,
+
     // 审核意见
-    remark: item.remark
+    remark: item.remark,
   }
 
   return data
