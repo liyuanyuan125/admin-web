@@ -11,6 +11,7 @@ import FormDateRange from './components/formDateRange.vue'
 import FormImage from './components/formImage.vue'
 import FormImageList from './components/formImageList.vue'
 import AreaSelect from '@/components/areaSelect'
+import CompanySelect from '@/components/companySelect'
 import { Switch } from 'iview'
 import { AjaxResult, MapType, KeyText } from '@/util/types'
 import { devLog, devError } from '@/util/dev'
@@ -127,6 +128,10 @@ const componentMap: MapType<ComponentItem> = {
 
   imageList: {
     component: FormImageList
+  },
+
+  company: {
+    component: CompanySelect
   }
 }
 
@@ -320,6 +325,15 @@ export interface Field extends Param {
     maxCount?: number
     /** 是否添加附加信息，若添加，则 value 会变成 FileItem[] */
     withExtra?: boolean
+    [key: string]: any
+  },
+
+  /**
+   * 组件 CompanySelect 的选项
+   */
+  company?: true | {
+    /** 附加查询数据 */
+    query?: MapType<any>
     [key: string]: any
   }
 }

@@ -46,46 +46,9 @@ export async function queryList(query: any = {}) {
   return result
 }
 
-const makeAgeList = (enumList: KeyText[], values: Array<{ k: string; r: number }>) => {
-  const map = keyBy(values, 'k')
-  const result = enumList.map(it => ({
-    key: it.key,
-    text: it.text,
-    value: nullBaifen(dot(map[it.key], 'r'))
-  }))
-  return result
-}
-
-const makeFansList = (values: Array<{ id: number; name: string; rate: number }>) => {
-  const result = (values || []).map(it => ({
-    id: it.id,
-    name: it.name,
-    value: nullBaifen(it.rate)
-  }))
-  return result
-}
-
-const makePriceList = (
-  enumList: KeyText[],
-  values: Array<{
-    categoryCode: string
-    effectiveDate: number
-    settlementPrice: number
-  }>
-) => {
-  const map = keyBy(values, 'categoryCode')
-  const result = enumList.map(it => ({
-    key: it.key,
-    text: it.text,
-    value: dot(map[it.key], 'settlementPrice'),
-    date: validDate(dot(map[it.key], 'effectiveDate'))
-  }))
-  return result
-}
-
 /**
- * 查询 KOL 详情
- * https://yapi.aiads-dev.com/project/142/interface/api/3054
+ * 查询合同详情
+ * https://yapi.aiads-dev.com/project/34/interface/api/5212
  * @param query 查询条件
  */
 export async function queryItem(query: any = {}) {
@@ -107,8 +70,6 @@ export async function queryItem(query: any = {}) {
       ]
     },
   }
-
-  debugger
 
   return result
 }
