@@ -24,6 +24,12 @@
       <template slot="countries" slot-scope="{row}">
         <span v-for="(item, index) in (row.countries || [])" :key="index">{{item}}</span>
       </template>
+      <template slot="casts" slot-scope="{row: {casts}}">
+        <span v-for="(it, index) in casts" :key="it.id" v-if="index < 3">{{it.name}},</span>
+      </template>
+      <template slot="directors" slot-scope="{row: {directors}}">
+        <span v-for="it in directors" :key="it.id">{{it.name}},</span>
+      </template>
       <template slot="operate" slot-scope="{row}">
         <div class="operate-btn">
           <span v-if="row.controlStatus == 2" @click="handleUpShelf(1, row.id)">上架</span>
@@ -132,10 +138,10 @@ export default class Main extends ViewBase {
       // {title: '专资id', key: 'specialId', minWidth: 85},
       {title: '影片名称', key: 'name', minWidth: 85},
       {title: '上映时间', slot: 'releaseDate', minWidth: 85},
-      {title: '今日票房', key: 'todayBox', minWidth: 85},
-      {title: '累计票房', key: 'sumBox', minWidth: 85},
-      {title: '演员', key: 'performers', minWidth: 85},
-      {title: '导演', key: 'director', minWidth: 85},
+      {title: '今日票房', key: 'todayBoxoffice', minWidth: 85},
+      {title: '累计票房', key: 'totalBoxoffice', minWidth: 85},
+      {title: '演员', slot: 'casts', minWidth: 85},
+      {title: '导演', slot: 'directors', minWidth: 85},
       {title: '产地', slot: 'countries', minWidth: 85},
       {title: '类型', slot: 'types', minWidth: 85},
       {title: '分类', key: 'categoryCode', minWidth: 85, editor: 'enum'},
