@@ -93,7 +93,11 @@
     </div>
     <!-- 电影公司 -->
     <div v-if="tab == 4">
-      <Table :columns="companyFilmColumns" :data="companyFilmList" border stripe disabled-hover></Table>
+      <Table :columns="companyFilmColumns" :data="companyFilmList" border stripe disabled-hover>
+        <template slot="text" slot-scope="{row: {companyTypes}}">
+          <span v-for="(it, index) in companyTypes" :key="index" >{{handleCompanyList(it.type)}}</span>
+        </template>
+      </Table>
     </div>
     <!-- 操作日志 -->
     <div v-if="tab == 5">
@@ -116,7 +120,7 @@ import { movieDetail } from '@/api/film-ed'
 import {dicItems} from '@/api/person'
 import {formatConversion} from '@/util/validateRules'
 import { map } from 'lodash'
-
+import { textList } from '@/util/dealData'
 
 
 
@@ -151,10 +155,11 @@ export default class Main extends ViewBase {
   // 电影公司
   companyFilmColumns = [
     { type: 'index', title: '序号', align: 'center'},
-    { key: 'channelCode', title: '公司类型', align: 'center'},
+    { slot: 'text', title: '公司类型', align: 'center'},
     { key: 'name', title: '公司中文名', align: 'center'},
   ]
   companyFilmList = []
+  companyTypeList = []
 
   // 演员阵容
   get castsList() {
@@ -188,6 +193,14 @@ export default class Main extends ViewBase {
     this.handleOccupation()
     this.queryList()
   }
+
+  // 电影类型
+  handleCompanyList(type: any) {
+    if (!type) {return}
+    const a = textList(this.companyTypeList, [type])
+    return a.join()
+  }
+
   async queryList() {
     try {
       const { data } = await movieDetail(this.id)
@@ -195,11 +208,13 @@ export default class Main extends ViewBase {
       // 演员表
       this.actorList = data.celebrities || []
       // 电影公司
+      this.companyTypeList = data.companyTypeList || []
       this.companyFilmList = data.companies || []
     } catch (ex) {
       this.handleError(ex)
     }
   }
+
   // 演员职业
   async handleOccupation() {
     try {

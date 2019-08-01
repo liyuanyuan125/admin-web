@@ -1,8 +1,8 @@
-import { MapType, KeyTextControlStatus } from '@/util/types'
+import { MapType, KeyTextControlStatus, KeyText } from '@/util/types'
 import { parse } from '@/fn/array'
 
 import moment from 'moment'
-import { at } from 'lodash'
+import { at, keyBy } from 'lodash'
 import numeral from 'numeral'
 
 /**
@@ -138,6 +138,17 @@ export function makeMap(list: string | any[], ignoreCase = true): MapType<number
     map[key] = 1
     return map
   }, {})
+  return result
+}
+
+/**
+ * 将 keys 映射到 texts
+ * @param list 所有 key test 列表
+ * @param keys key 列表
+ */
+export function textList(list: KeyText[], keys: Array<(string | number)>) {
+  const keyMap = keyBy(list, 'key')
+  const result = (keys || []).map(it => (keyMap[it] || {}).text).filter(it => it != null)
   return result
 }
 
