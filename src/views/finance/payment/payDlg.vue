@@ -70,7 +70,7 @@ export default class ComponentMain extends ViewBase {
     this.defaultfee = applyAmount
     ; (this.$refs.dataForm as any).resetFields()
     if (this.id) {
-      this.dataForm.fee = applyAmount == null ? 0 : applyAmount
+      this.dataForm.fee = applyAmount == null ? null : applyAmount
     }
   }
 
