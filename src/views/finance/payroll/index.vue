@@ -31,22 +31,30 @@
           class="button-audit"
           :disabled="!(selectedIds.length > 0)"
           @click="auditVisible = true"
-        >批量审核</Button>
+        >批量发票登记</Button>
 
         <Button
           type="primary"
-          class="button-crawl"
-          @click="crawlVisible = true"
-        >抓取平台账号</Button>
+          class="button-audit"
+          :disabled="!(selectedIds.length > 0)"
+          @click="pay(selectedIds)"
+        >批量发票付款</Button>
       </template>
 
-      <template slot="action" slot-scope="{ row: { id, status } }">
+      <template slot="month" slot-scope="{ row: { year, month } }">
         <div class="row-acts">
+          {{year}}-{{month}}
+        </div>
+      </template>
 
+      <template slot="action" slot-scope="{ row: { id, invoiceStatus, payStatus } }">
+        <div class="row-acts">
+          <a v-if='invoiceStatus < 2'>发票登记</a>
+          <a v-if='payStatus < 2' @click='pay([id])'>发票付款</a>
         </div>
       </template>
     </ListPage>
-
+    <Pay ref='pay' />
   </div>
 </template>
 
@@ -54,12 +62,12 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { beforeList } from '@/api/payroll'
+import { beforeList, auditList } from '@/api/payroll'
 import { alert, toast } from '@/ui/modal'
-import { beforefetch, beforenum } from './before'
-import { auditfetch } from './audit'
+import { beforefetch, beforenum, beforcoulm } from './before'
+import { auditfetch, auditcoulm, auditenum } from './audit'
 import { finishfetch } from './finnish'
-
+import Pay from './paymodel.vue'
 import { EditDialog, Field } from '@/components/editForm'
 import BatchAudit from '@/components/batchAudit'
 
@@ -74,27 +82,21 @@ const defaultType = typeList[0].value
   components: {
     ListPage,
     EditDialog,
-    BatchAudit
+    BatchAudit,
+    Pay
   }
 })
 export default class IndexPage extends ViewBase {
-  @Prop({ type: String, default: defaultType }) type!: string
 
   get listPage() {
     return this.$refs.listPage as ListPage
   }
 
-  typeCode = this.type
-
-  typeList = typeList
-
-  selectedIds = [] as number[]
-
   get fetch() {
     if (this.typeCode == 'before') {
       return beforeList
     } else if (this.typeCode == 'audit') {
-      return auditfetch
+      return auditList
     } else {
       return finishfetch
     }
@@ -114,43 +116,32 @@ export default class IndexPage extends ViewBase {
     if (this.typeCode == 'before') {
       return beforenum
     } else if (this.typeCode == 'audit') {
-      return auditfetch
+      return auditenum
     } else {
       return finishfetch
     }
   }
 
   get columns() {
-    return [
-      { title: '序号', key: 'id', minWidth: 65 },
-      { title: '名称', key: 'name', minWidth: 100 },
-      { title: '分类', key: 'accountCategoryCode', minWidth: 60, editor: 'deprecated' },
-      { title: '粉丝数', key: 'fansCount', minWidth: 60 },
-      {
-        title: '关联KOL编号',
-        key: 'kolId',
-        minWidth: 90,
-        link: {
-          name: 'data-kol-associated-detail',
-          params: it => ({ id: it.kolId })
-        }
-      },
-      { title: '关联KOL名称', key: 'kolName', minWidth: 100 },
-      { title: '是否提供发票', key: 'provideInvoiceText', minWidth: 90 },
-      { title: '结算价/有效期', slot: 'price', minWidth: 270 },
-      { title: '审核状态', key: 'status', minWidth: 65, editor: 'enum' },
-      { title: '操作', slot: 'action', minWidth: 50 }
-    ] as ColumnExtra[]
+    if (this.typeCode == 'before') {
+      return beforcoulm
+    } else if (this.typeCode == 'audit') {
+      return auditcoulm
+    } else {
+      return finishfetch
+    }
   }
+  @Prop({ type: String, default: defaultType }) type!: string
+
+  typeCode = this.type
+
+  typeList = typeList
+
+  selectedIds = [] as number[]
 
   auditVisible = false
 
   crawlVisible = false
-
-  get auditSummary() {
-    const count = this.selectedIds.length
-    return `您选择了${count}条KOL平台账号，审核通过后可以在“KOL资源列表”中操作定价和上架。`
-  }
 
   crawlFields: Field[] = [
     {
@@ -174,6 +165,12 @@ export default class IndexPage extends ViewBase {
     }
   ]
 
+  pay(id: any) {
+    this.$nextTick(() => {
+      (this.$refs.pay as any).init(id)
+    })
+  }
+
   refresh() {
     this.listPage.update()
   }
@@ -185,6 +182,10 @@ export default class IndexPage extends ViewBase {
       name: 'finance-payroll',
       params: id == defaultType ? {} : { id }
     })
+  }
+
+  @Watch('filters', { deep: true })
+  watchFilters(val: any) {
   }
 }
 </script>
