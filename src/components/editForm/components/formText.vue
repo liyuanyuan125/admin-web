@@ -8,7 +8,7 @@ import ViewBase from '@/util/ViewBase'
 
 @Component
 export default class FormText extends ViewBase {
-  @Prop({ type: String, default: '' }) value!: string
+  @Prop({ default: '' }) value!: any
 }
 </script>
 

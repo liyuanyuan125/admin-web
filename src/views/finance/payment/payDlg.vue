@@ -7,7 +7,7 @@
     @on-cancel="cancel('dataForm')" >
     
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
-      <FormItem label="申请付款金额">
+      <FormItem label="请款金额">
         <span><span v-if='defaultfee != null'>￥</span>{{defaultfee == null ? '-' : formatNumber(defaultfee)}}</span>
       </FormItem>
       <FormItem label="实际付款金额" prop="fee">

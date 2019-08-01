@@ -122,6 +122,39 @@ export default class EditPage extends ViewBase {
         dateRange: true,
       },
 
+      {
+        name: 'companyBId',
+        defaultValue: 0,
+        label: '公司名称',
+        span: 10,
+        group: '乙方信息',
+        company: true,
+      },
+
+      {
+        name: 'companyBContact',
+        defaultValue: '',
+        label: '联系人',
+        span: 10,
+        input: true,
+      },
+
+      {
+        name: 'companyBPhone',
+        defaultValue: '',
+        label: '联系电话',
+        span: 10,
+        input: true,
+      },
+
+      {
+        name: 'provideQuery',
+        defaultValue: false,
+        label: '是否提供观影人次查询接口',
+        labelWidth: 172,
+        span: 10,
+        switch: true,
+      },
     ]
 
     readonly && list.forEach(it => it.disabled = true)
