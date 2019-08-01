@@ -775,6 +775,31 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: true,
   },
 
+  // 财务管理 - KOL付款单管理
+  {
+    path: '/finance/kol-payment/',
+    name: 'finance-kol-payment',
+    component: () => import('./views/finance/kol-payment/index.vue'),
+    meta: {
+      authKey: ''
+    },
+    props: true,
+  },
+
+  // 财务管理 - KOL付款单管理 - 查看、登记、付款
+  {
+    path: '/finance/kol-payment/edit/:id/:channel/:action',
+    name: 'finance-kol-payment-edit',
+    component: () => import('./views/finance/kol-payment/edit.vue'),
+    meta: {
+      authKey: '',
+      title({ params: { action } }) {
+        return action == 'view' ? '查看' : (action == 'edit' ? '登记' : '付款')
+      }
+    },
+    props: paramTypes({ id: Number, channel: String, action: String })
+  },
+
   // 映前广告付款单管理 - 列表
   {
     path: '/finance/payment/:pay?',
