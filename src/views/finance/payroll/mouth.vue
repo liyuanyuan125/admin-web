@@ -1,5 +1,5 @@
 <template>
-  <DatePicker v-model="value" @change='change' type="month" placeholder="对账时间" style="width: 200px"></DatePicker>
+  <DatePicker v-model="value" @on-change='change' type="month" placeholder="对账时间" style="width: 200px"></DatePicker>
 </template>
 
 <script lang="ts">

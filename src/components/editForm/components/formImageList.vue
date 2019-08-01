@@ -1,7 +1,7 @@
 <template>
   <figure class="form-image-list">
-    <Upload v-model="model" multiple :maxCount="maxCount" :readonly="disabled"/>
-    <InputHidden :value="model"/>
+    <Upload v-model="model" multiple :maxCount="maxCount" :readonly="disabled" />
+    <InputHidden :value="model" />
   </figure>
 </template>
 
@@ -10,7 +10,28 @@ import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import Upload, { FileItem } from '@/components/Upload.vue'
 import InputHidden from '@/components/inputHidden'
-import { isEqual, uniq } from 'lodash'
+import { isEqual } from 'lodash'
+import { devLog } from '@/util/dev'
+
+const asStringList = (list: Array<string | FileItem>) =>
+  list.map(it => (typeof it === 'string' ? it : it.url))
+
+const asFileList = (list: Array<string | FileItem>) =>
+  list.map(it => (typeof it === 'string' ? { url: it, fileId: '' } : it))
+
+const fileListEqual = (alist: FileItem[], blist: FileItem[]) => {
+  return alist.length == blist.length
+  && alist.every((a, i) => {
+    const b = blist[i]
+    return a.url == b.url && a.fileId == b.fileId
+  })
+}
+
+const hasString = (list: Array<string | FileItem>) =>
+  list.some(it => typeof it === 'string')
+
+const hasFile = (list: Array<string | FileItem>) =>
+  list.some(it => typeof it !== 'string')
 
 @Component({
   components: {
@@ -19,7 +40,7 @@ import { isEqual, uniq } from 'lodash'
   }
 })
 export default class FormImageList extends ViewBase {
-  @Prop({ type: Array, default: () => [] }) value!: string[]
+  @Prop({ type: Array, default: () => [] }) value!: Array<string | FileItem>
 
   @Prop({ type: Boolean, default: false }) disabled!: boolean
 
@@ -28,21 +49,54 @@ export default class FormImageList extends ViewBase {
    */
   @Prop({ type: Number, default: 3 }) maxCount!: number
 
+  /**
+   * 是否添加附加信息，若添加，则 value 会变成 FileItem[]
+   */
+  @Prop({ type: Boolean, default: false }) withExtra!: boolean
+
   model: FileItem[] = []
 
-  @Watch('value', { immediate: true })
-  watchValue(value: string[]) {
-    const valList = uniq(value || [])
-    const urlList = uniq((this.model || []).map(it => it.url))
-    if (!isEqual(valList, urlList)) {
-      this.model = valList.map(url => ({ url, fileId: '' }) as FileItem)
+  compare(
+    action: (param: {
+      newModelList: FileItem[]
+      newValueList: Array<string | FileItem>
+    }) => any
+  ) {
+    if (this.withExtra) {
+      // 若 this.value 中含有 string，说明含有脏数据
+      const isDirty = hasString(this.value)
+      const valueList = asFileList(this.value)
+      const modelList = asFileList(this.model)
+      if (isDirty || !fileListEqual(valueList, modelList)) {
+        action({
+          newModelList: valueList,
+          newValueList: modelList
+        })
+      }
+    } else {
+      // 若 this.value 中含有 file，说明含有脏数据
+      const isDirty = hasFile(this.value)
+      const valueList = asStringList(this.value)
+      const modelList = asStringList(this.model)
+      if (isDirty || !isEqual(valueList, modelList)) {
+        action({
+          newModelList: asFileList(valueList),
+          newValueList: modelList
+        })
+      }
     }
   }
 
+  @Watch('value', { immediate: true })
+  @Watch('withExtra', { immediate: true })
+  watchValue() {
+    this.compare(({ newModelList }) => this.model = newModelList)
+  }
+
   @Watch('model')
-  watchModel(value: FileItem[]) {
-    const urlList = uniq((value || []).map(it => it.url))
-    this.$emit('input', urlList)
+  @Watch('withExtra')
+  watchModel() {
+    this.compare(({ newValueList }) => this.$emit('input', newValueList))
   }
 }
 </script>

@@ -3,11 +3,13 @@
       <Form ref="form" :model="form" :rules="rule" :label-width="110" class="form">
         <div class="base-mess">
         <h2 class="title">基础和扩展信息</h2>
-        <FormItem label="搜索关键字">
-            <Input type="text" v-model="form.searchKeywords" placeholder="请以‘;’号分割"></Input>
-        </FormItem>
+        
         <FormItem label="预估票房">
-            <Input type="text" v-model="form.predict" placeholder="预估票房"></Input>
+             <InputNumber :min="0" style="width: 200px" v-model="form.predict" /> 万元
+        </FormItem>
+        <FormItem label="演员阵容">
+             <InputNumber :max="5" :min="0" style="width: 200px"  v-model="form.celebrityRating" />
+            <em> 满分为5分，保留一位小数</em>
         </FormItem>
         <FormItem label="影片分类">
             <RadioGroup v-model="form.categoryCode">
@@ -16,24 +18,30 @@
                 <Radio label="popular">热门大片</Radio>
             </RadioGroup>
         </FormItem>
-        <FormItem label="演员阵容">
-            <Input type="text" v-model="form.celebrityRating" placeholder="满分为5分，保留一位小数"></Input>
-        </FormItem>
-        <FormItem label="编辑评论热词">
-            <Input type="text" v-model="form.tags" placeholder="热词请以‘;’号分开"></Input>
-        </FormItem>
-         <Row>
+        
+         <Row class="jyindex-input">
             <Col :span="4">
-                <FormItem label="系统鲸娱指数:">{{form.biJyIndex}}</FormItem>
+                <FormItem label="系统鲸娱指数:">{{items.jyIndex || '-'}}</FormItem>
             </Col>
-            <Col :span="10">
-                <FormItem label="调整鲸娱指数:"><Input v-model="form.jyIndex" placeholder=""></Input></FormItem>
+            <Col :span="6">
+                <FormItem label="调整鲸娱指数:">
+                  <InputNumber :max="100" :min="0" style="width: 120px"  v-model="form.customJyIndex" />
+                </FormItem>
             </Col>
-            <Col :span="10">
+            <Col :span="6">
                 <FormItem label="调整鲸鱼指数所占权重:" :label-width="160" >
-                    <Input v-model="form.jyIndexWeight" placeholder="数字不可超过1"></Input></FormItem>
+                  <InputNumber :max="100" :min="0" style="width: 120px"  v-model="form.customJyIndexRate" />
+                </FormItem>
             </Col>
         </Row>
+         <FormItem label="搜索关键字">
+            <Input type="text" v-model="form.searchKeywords" placeholder="请以‘，’号分割"></Input>
+            <em>请以‘，’号分割</em>
+        </FormItem>
+        <FormItem label="编辑评论热词">
+            <Input type="text" v-model="form.tags" placeholder="热词请以‘，’号分开"></Input>
+            <em>请以‘，’号分割</em>
+        </FormItem>
         <FormItem prop="mess" label="修改剧情">
             <Input type="textarea" class="info-textarea" :rows="5" v-model="form.summary" placeholder="请输入内容"></Input>
         </FormItem>
@@ -71,7 +79,10 @@ export default class Main extends ViewBase {
       this.form = {
         summary: data.summary,
         categoryCode: data.categoryCode,
-        celebrityRating: data.rating
+        predict: data.customPredict,
+        celebrityRating: data.customCelebrityRating,
+        searchKeywords: data.customSearchKeywords ? data.customSearchKeywords.join() : '',
+        tags: data.customTags ? data.customTags.join() : ''
       }
     } catch (ex) {
       this.handleError(ex)
@@ -79,18 +90,15 @@ export default class Main extends ViewBase {
   }
 
   async handleSubmit() {
-    const formTag = this.form.tags
-    const hasFlag = formTag.includes(';')
-    const tags = hasFlag ? formTag.split(';') : formTag ? Array.of(formTag) : []
-
-    const searchKeyWord = this.form.searchKeywords
-    const keyWord =  searchKeyWord.includes(';')
-    const searchKeywords = keyWord ? searchKeyWord.split(';') : searchKeyWord ? Array.of(searchKeyWord) : []
+    const formWords = this.form.searchKeywords.trim()
+    const formTags = this.form.tags.trim()
+    const searchKeywords = formWords ?  formWords.split(/,|，/) : []
+    const tags = formTags ? formTags.split(/,|，/) : []
     try {
         const { data } = await movieEdit(this.id, {
             ...this.form,
-            tags,
-            searchKeywords
+            searchKeywords,
+            tags
         })
         this.$router.push({name: 'data-film'})
     } catch (ex) {
@@ -102,6 +110,11 @@ export default class Main extends ViewBase {
 </script>
 <style lang='less' scoped>
 @import '../person/less/common';
+/deep/ .jyindex-input {
+  .ivu-input {
+    width: 150px;
+  }
+}
 .save {
   text-align: center;
   .btn {

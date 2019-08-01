@@ -6,9 +6,12 @@ import FormInput from './components/formInput.vue'
 import FormInputNumber from './components/formInputNumber.vue'
 import FormSelect from './components/formSelect.vue'
 import FormRadio from './components/formRadio.vue'
+import FormDate from './components/formDate.vue'
+import FormDateRange from './components/formDateRange.vue'
 import FormImage from './components/formImage.vue'
 import FormImageList from './components/formImageList.vue'
 import AreaSelect from '@/components/areaSelect'
+import CompanySelect from '@/components/companySelect'
 import { Switch } from 'iview'
 import { AjaxResult, MapType, KeyText } from '@/util/types'
 import { devLog, devError } from '@/util/dev'
@@ -111,12 +114,24 @@ const componentMap: MapType<ComponentItem> = {
     }
   },
 
+  date: {
+    component: FormDate,
+  },
+
+  dateRange: {
+    component: FormDateRange
+  },
+
   image: {
     component: FormImage,
   },
 
   imageList: {
     component: FormImageList
+  },
+
+  company: {
+    component: CompanySelect
   }
 }
 
@@ -284,6 +299,14 @@ export interface Field extends Param {
     [key: string]: any
   },
 
+  date?: true | {
+    [key: string]: any
+  },
+
+  dateRange?: true | {
+    [key: string]: any
+  },
+
   /**
    * 组件 image 的选项，若设置了该项，
    * 则说明会用 FormImage 组件渲染该项
@@ -300,6 +323,17 @@ export interface Field extends Param {
   imageList?: true | {
     /** 上传文件的最大个数，默认 3 个 */
     maxCount?: number
+    /** 是否添加附加信息，若添加，则 value 会变成 FileItem[] */
+    withExtra?: boolean
+    [key: string]: any
+  },
+
+  /**
+   * 组件 CompanySelect 的选项
+   */
+  company?: true | {
+    /** 附加查询数据 */
+    query?: MapType<any>
     [key: string]: any
   }
 }

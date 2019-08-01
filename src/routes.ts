@@ -590,7 +590,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 合同编辑、审批、复制、详情
   {
-    path: '/contract/:action(new|edit|audit|copy|view)/:id?',
+    path: '/contract/:action(new|edit|view|audit|copy)/:id?',
     name: 'contract-edit',
     component: () => import('./views/contract/list/edit.vue'),
     meta: {
@@ -599,9 +599,9 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
         const actionTextMap: MapType = {
           new: '新建',
           edit: '编辑',
+          view: '查看',
           audit: '审核',
           copy: '复制',
-          view: '查看',
         }
         return actionTextMap[action]
       }
@@ -773,6 +773,31 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     },
     props: true,
+  },
+
+  // 财务管理 - KOL付款单管理
+  {
+    path: '/finance/kol-payment/',
+    name: 'finance-kol-payment',
+    component: () => import('./views/finance/kol-payment/index.vue'),
+    meta: {
+      authKey: ''
+    },
+    props: true,
+  },
+
+  // 财务管理 - KOL付款单管理 - 查看、登记、付款
+  {
+    path: '/finance/kol-payment/edit/:id/:channel/:action',
+    name: 'finance-kol-payment-edit',
+    component: () => import('./views/finance/kol-payment/edit.vue'),
+    meta: {
+      authKey: '',
+      title({ params: { action } }) {
+        return action == 'view' ? '查看' : (action == 'edit' ? '登记' : '付款')
+      }
+    },
+    props: paramTypes({ id: Number, channel: String, action: String })
   },
 
   // 映前广告付款单管理 - 列表

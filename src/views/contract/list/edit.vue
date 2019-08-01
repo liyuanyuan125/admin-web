@@ -35,7 +35,6 @@ const actionMap: MapType<any> = {
   view: null,
   edit: editItem,
   audit: (item: any) => auditItem({
-    channelCode: item.channel,
     ids: [item.id],
     agree: item.auditPass,
     remark: item.auditPass ? '' : item.remark
@@ -50,22 +49,28 @@ const actionMap: MapType<any> = {
 export default class EditPage extends ViewBase {
   @Prop({ type: Number, default: 0 }) id!: number
 
-  @Prop({ type: String, default: '' }) channel!: string
-
-  @Prop({ type: String, default: '' }) action!: 'view' | 'edit' | 'audit' | 'copy'
+  @Prop({ type: String, default: '' }) action!: 'new' | 'edit' | 'view' | 'audit' | 'copy'
 
   item: any = null
 
-  get isView() {
-    return this.action == 'view'
+  get isNew() {
+    return this.action == 'new'
   }
 
   get isEdit() {
     return this.action == 'edit'
   }
 
+  get isView() {
+    return this.action == 'view'
+  }
+
   get isAudit() {
     return this.action == 'audit'
+  }
+
+  get isCopy() {
+    return this.action == 'copy'
   }
 
   get fields() {
@@ -80,144 +85,43 @@ export default class EditPage extends ViewBase {
       },
 
       {
-        name: 'channel',
-        defaultValue: this.channel,
-      },
-
-      {
-        name: 'channelDataId',
+        name: 'contractName',
         defaultValue: '',
-        text: true,
-        label: '账号',
-        span: 8,
-        group: '基本信息',
-      },
-
-      {
-        name: 'photo',
-        defaultValue: '',
-        label: '头像',
-        span: 8,
-        image: true
-      },
-
-      {
-        name: 'name',
-        defaultValue: '',
-        text: true,
-        label: '账号名称',
-        span: 22
-      },
-
-      {
-        name: 'intro',
-        defaultValue: '',
-        input: {
-          type: 'textarea',
-          autosize: { minRows: 2, maxRows: 8 }
-        },
-        label: '功能介绍',
-        span: 22
-      },
-
-      {
-        name: 'accountCategoryCode',
-        defaultValue: '',
-        select: {
-          enumKey: 'accountCategoryList',
-        },
-        label: '账号分类',
+        label: '合同名称',
         required: !readonly,
-        span: 8,
-      },
-
-      {
-        name: 'area',
-        defaultValue: [0, 0],
-        label: '所在地区',
-        span: 8,
-        area: {
-          maxLevel: 2,
-          noSelf: true,
-        },
-        offsetRight: 6,
-      },
-
-      {
-        name: 'type',
-        defaultValue: 0,
-        required: true,
-        radio: {
-          enumKey: 'typeList'
-        },
-        label: '账号类型',
-        span: 8,
-      },
-
-      {
-        name: 'auth',
-        defaultValue: false,
-        switch: true,
-        label: '是否认证',
-        span: 6,
-      },
-
-      {
-        name: 'authName',
-        defaultValue: '',
-        required: true,
-        input: {
-          prepend: '认证企业名称'
-        },
         span: 10,
-        visible: item => item.auth
+        group: '合同主体信息',
+        input: true,
       },
 
       {
-        name: 'fansCount',
-        defaultValue: 0,
-        label: '粉丝数',
+        name: 'companyACode',
+        defaultValue: '',
+        label: '甲方公司',
         required: !readonly,
-        placeholder: '粉丝数',
-        span: 8,
-        group: '粉丝画像',
-        number: {
-          poptip: true
-        }
+        span: 10,
+        select: {
+          enumKey: 'companyAList',
+        },
       },
 
       {
-        name: 'malePercent',
-        defaultValue: 0,
-        label: '粉丝性别',
-        placeholder: '百分比',
-        span: 7,
-        number: {
-          prepend: '男性',
-          append: '%',
-          max: 100,
-        }
+        name: 'contractNo',
+        defaultValue: '',
+        label: '合同编号',
+        required: !readonly,
+        span: 10,
+        input: true,
       },
 
       {
-        name: 'femalePercent',
-        defaultValue: 0,
-        placeholder: '百分比',
-        span: 5,
-        number: {
-          prepend: '女性',
-          append: '%',
-          max: 100,
-        }
+        name: 'validityDate',
+        defaultValue: [0, 0],
+        label: '合同有效期',
+        span: 10,
+        dateRange: true,
       },
 
-      {
-        name: 'provideInvoice',
-        defaultValue: false,
-        switch: true,
-        label: '是否提供发票',
-        span: 6,
-      },
     ]
 
     readonly && list.forEach(it => it.disabled = true)
@@ -260,8 +164,7 @@ export default class EditPage extends ViewBase {
 
   fetch() {
     return queryItem({
-      id: this.id,
-      channel: this.channel
+      id: this.id
     })
   }
 
