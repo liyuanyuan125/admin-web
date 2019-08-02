@@ -17,7 +17,8 @@
       ref="listPage"
     >
       <template  slot="billMonth" slot-scope="{row}" >
-          <span>{{row.billMonth == null ? '-' : String(row.billMonth).slice(0, 4) + '-' + String(row.billMonth).slice(4, 6)}}</span>
+          <span v-if='row.billMonth == null || row.billMonth == 0'>-</span>
+          <span v-else>{{String(row.billMonth).slice(0, 4) + '-' + String(row.billMonth).slice(4, 6)}}</span>
       </template>
       <template  slot="billAmount" slot-scope="{row}" >
           {{row.billAmount == null ? '-' : formatNumber(row.billAmount)}}
