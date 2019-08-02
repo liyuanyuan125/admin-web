@@ -31,18 +31,19 @@
             :to="{
               name: 'data-brand-product-modify-detail',
               params: {
-                id
+                id,
+                action: 'edit'
               }
             }"
           >编辑</router-link>
-          <router-link
+          <!-- <router-link
             :to="{
               name: 'data-brand-product-view-detail',
               params: {
                 id
               }
             }"
-          >查看</router-link>
+          >查看</router-link> -->
         </div>
       </template>
     </ListPage>
@@ -85,7 +86,7 @@ export default class Main extends ViewBase {
 
       {
         name: 'id',
-        defaultValue: '',
+        defaultValue: 0,
         type: 'input',
         width: 85,
         placeholder: '产品ID'
