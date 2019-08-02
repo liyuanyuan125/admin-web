@@ -1,10 +1,14 @@
 <template>
-  <div class="index-page">
+  <div class="cinema-table">
     <ListPage
       :fetch="fetch"
       :filters="filters"
       :columns="columns"
+      disableUrlManager
     >
+      <template slot="acts">
+        <Button type="success" @on-click="selectCinema">选择影城</Button>
+      </template>
     </ListPage>
   </div>
 </template>
@@ -45,7 +49,7 @@ export default class CinemaTable extends ViewBase {
 
       {
         name: 'pageSize',
-        defaultValue: 20
+        defaultValue: 10
       }
     ]
   }
@@ -58,11 +62,16 @@ export default class CinemaTable extends ViewBase {
   }
 
   fetch({ pageIndex: index, pageSize: size }: any) {
-    const list = (this.value || []).slice((index - 1) * size, index * size)
-    return list
+    const store = this.value || []
+    const totalCount = store.length
+    const items = store.slice((index - 1) * size, index * size)
+    return {
+      items,
+      totalCount
+    }
   }
 
-  addToList() {
+  selectCinema() {
     debugger
   }
 }

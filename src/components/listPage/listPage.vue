@@ -2,7 +2,11 @@
   <div class="list-page">
     <slot name="act-bar">
       <div class="act-bar flex-box">
-        <form class="form flex-1" @submit.prevent>
+        <form
+          class="form flex-1"
+          @submit.prevent
+          v-if="normalFilter && normalFilter.length > 0"
+        >
           <component
             v-for="it in normalFilter"
             v-model="query[it.name]"
@@ -120,6 +124,11 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
    */
   @Prop({ type: Array, default: () => [] }) selectedIds!: Array<number | string>
 
+  /**
+   * 禁用 url manager 的行为
+   */
+  @Prop({ type: Boolean, default: false }) disableUrlManager!: boolean
+
   allSelectedIds = this.selectedIds
 
   // 对 Filter 进行规范化处理
@@ -181,7 +190,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
   }
 
   mounted() {
-    this.updateQueryByParam()
+    this.disableUrlManager ? this.updateQuery() : this.updateQueryByParam()
   }
 
   // 简单包装一下，以便适应两种数据结构
@@ -200,7 +209,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
 
     this.oldQuery = { ...this.query }
 
-    this.updateUrl()
+    this.disableUrlManager || this.updateUrl()
 
     this.loading = true
     const query = dealParams(this.filters, this.query, { cleanDefault: true })

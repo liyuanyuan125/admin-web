@@ -245,7 +245,7 @@ export default class EditPage extends ViewBase {
       {
         name: 'cinemaList',
         defaultValue: [],
-        // label: '影院列表',
+        label: '　',
         component: CinemaTable,
         span: 22,
       },
@@ -303,21 +303,7 @@ export default class EditPage extends ViewBase {
 </script>
 
 <style lang="less" scoped>
-/deep/ .col-field-auth,
-/deep/ .col-field-male-percent,
-/deep/ .col-field-audit-pass {
-  width: auto;
-}
-
-/deep/ .col-field-auth-name,
-/deep/ .col-field-remark {
-  left: 4px;
-}
-
-/deep/ .ui-field-male-percent,
-/deep/ .ui-field-female-percent {
-  .input-number {
-    width: 78px;
-  }
+/deep/ .col-field-cinema-list {
+  margin-top: -7px;
 }
 </style>

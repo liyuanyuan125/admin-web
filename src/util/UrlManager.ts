@@ -57,7 +57,7 @@ export default class UrlManager extends Vue {
    * 更新查询条件
    * @param query 查询条件
    */
-  updateQuery(query: any) {
+  updateQuery(query: any = {}) {
     const keys = Object.keys(this.defQuery)
     const urlQuery = slice(query, keys)
     const tquery = numberify({ ...this.defQuery, ...urlQuery }, numberKeys(this.defQuery))

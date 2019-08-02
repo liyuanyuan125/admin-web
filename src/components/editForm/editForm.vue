@@ -43,7 +43,7 @@
                 :is="it.component"
                 :disabled="!!it.disabled"
                 v-bind="{
-                  enumList: enumMap[it.name] || [],
+                  enumList: enumMap[it.name],
                   ...it.props
                 }"
               />
