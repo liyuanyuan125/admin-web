@@ -414,7 +414,7 @@ export function normalizeField(list: Field[]) {
   const result = list.map(resolveComponent)
   .filter(it => it.component != null)
   .map(it => {
-    const { component, props, placeholder } = it
+    const { component, props = {}, placeholder } = it
 
     // 单独处理 enumKey
     const enumKey = props.enumKey

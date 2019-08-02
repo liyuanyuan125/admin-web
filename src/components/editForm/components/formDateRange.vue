@@ -16,6 +16,7 @@ import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import moment from 'moment'
 import { isEqual } from 'lodash'
+import { devLog } from '@/util/dev'
 
 // 逻辑与 listPage/components/dateRangePicker 基本相同，但类型不同
 
@@ -23,6 +24,16 @@ const dateFormat = 'YYYYMMDD'
 
 const dateToInt = (date: Date | number | string) =>
   date instanceof Date ? +moment(date).format(dateFormat) : +date
+
+const validRange = ([begin, end]: number[]) => {
+  // 只要有一个是 0，则全部是 0
+  if (begin == 0 || end == 0) {
+    return [0, 0]
+  }
+  const min = Math.min(begin, end)
+  const max = Math.max(begin, end)
+  return [min, max]
+}
 
 const isEmpty = (list: number[]) =>
   !list || list.length == 0 || list.every(it => !it)
@@ -64,12 +75,21 @@ export default class FormDateRange extends ViewBase {
     this.model = date
   }
 
-  @Watch('value')
+  @Watch('value', { immediate: true })
   watchValue(value: number[]) {
-    const [begin, end] = (value || []).map(it => dateToInt(it) || 0) || [0, 0]
-    const validValue = [begin || 0, end || 0]
+    const vals = value || []
+    const [begin, end] = vals.map(it => dateToInt(it) || 0) || [0, 0]
+    const validValue = validRange([begin || 0, end || 0])
+
     if (!isEqual(validValue, this.model)) {
       this.model = validValue
+    } else {
+      // 纠正长度与类型错误
+      if (vals.length != 2
+        || typeof vals[0] !== 'number'
+        || typeof vals[1] !== 'number') {
+        this.$emit('input', validValue)
+      }
     }
   }
 
