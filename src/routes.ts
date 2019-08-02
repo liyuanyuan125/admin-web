@@ -747,6 +747,17 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: true
   },
 
+  // 财务管理 - 请款单管理
+  {
+    path: '/finance/payroll/detail/:id',
+    name: 'finance-payroll-detail',
+    component: () => import('./views/finance/payroll/auditdetail.vue'),
+    meta: {
+      authKey: ''
+    },
+    props: true
+  },
+
   {
     path: '/finance/examine/detail/:id/:approvalStatus',
     name: 'finance-examine-detail',

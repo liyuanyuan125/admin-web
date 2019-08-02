@@ -39,3 +39,33 @@ export async function auditList(query: any) {
   const res = await get(`/xadvert/apply-bills`, query)
   return res
 }
+
+/**
+ * @param  {any} query
+ * 请款单审皮
+ * http://yapi.aiads-dev.com/project/140/interface/api/5367
+ */
+export async function billsaudit(query: any) {
+  const res = await put(`/xadvert/apply-bills`, query)
+  return res
+}
+
+/**
+ * @param  {any} query
+ * 请款单详情
+ * http://yapi.aiads-dev.com/project/140/interface/api/5367
+ */
+export async function auditdetail(id: any) {
+  const res = await get(`/xadvert/apply-bills/detail/${id}`)
+  return res
+}
+
+/**
+ * @param  {any} query
+ * 请款单详情
+ * http://yapi.aiads-dev.com/project/140/interface/api/5367
+ */
+export async function finishlist(query: any) {
+  const res = await get(`/xadvert/payment-bills`, query)
+  return res
+}

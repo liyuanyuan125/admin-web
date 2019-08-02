@@ -124,23 +124,24 @@ export const beforcoulm = [
 ]
 
 export const commoncolums: any = [
-  { title: '账单编号', key: 'id', minWidth: 65 },
-  { title: '影城名称', key: 'cinemaName', minWidth: 100 },
-  { title: '影城专资码', key: 'code', minWidth: 100,  },
-  { title: '资源方名称', key: 'resourceName', minWidth: 100 },
+  { title: '账单编号', align: 'center', key: 'id', minWidth: 65 },
+  { title: '影城名称', align: 'center', key: 'cinemaName', minWidth: 100 },
+  { title: '影城专资码', align: 'center', key: 'code', minWidth: 100,  },
+  { title: '资源方名称', align: 'center', key: 'resourceName', minWidth: 100 },
   {
     title: '账单月份',
     key: 'billMonth',
+    align: 'center',
     minWidth: 90,
   },
-  { title: '对账完成时间', key: 'approvalTime', minWidth: 100,  },
-  { title: '账单金额', key: 'amount', minWidth: 90 },
-  { title: '发票类型', key: 'invoiceType', minWidth: 100, },
-  { title: '发票内容', key: 'invoiceContentCode', minWidth: 65, },
-  { title: '可申请付款金额', key: 'mayApplyAmount', minWidth: 90 },
-  { title: '发票号', key: 'invoiceNo', minWidth: 100 },
-  { title: '收款账户名', key: 'accountName', minWidth: 90 },
-  { title: '收款银行', key: 'accountBank', minWidth: 120 },
-  { title: '收款账号', key: 'accountNumber',  minWidth: 120 },
-  { title: '操作', slot: 'action',  minWidth: 120 }
+  { title: '对账完成时间', align: 'center', key: 'approvalTime', minWidth: 100,  },
+  { title: '账单金额', align: 'center', key: 'amount', minWidth: 90 },
+  { title: '发票类型', align: 'center', key: 'invoiceType', minWidth: 100, },
+  { title: '发票内容', align: 'center', key: 'invoiceContentCode', minWidth: 65, },
+  { title: '可申请付款金额', align: 'center', key: 'mayApplyAmount', minWidth: 90 },
+  { title: '发票号', align: 'center', key: 'invoiceNo', minWidth: 100 },
+  { title: '收款账户名', align: 'center', key: 'accountName', minWidth: 90 },
+  { title: '收款银行', align: 'center', key: 'accountBank', minWidth: 120 },
+  { title: '收款账号', align: 'center', key: 'accountNumber',  minWidth: 120 },
+  { title: '操作', align: 'center', slot: 'action',  minWidth: 120 }
 ]
