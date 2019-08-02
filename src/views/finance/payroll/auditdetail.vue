@@ -23,7 +23,7 @@
       <h2 class="title">操作日志</h2>
       <Row>
         <Col v-for='(it, index) in operateLogList' :key='index'>
-         <span>{{it.createUserName}}于</span>
+         <span>【{{it.createUserName}}】于</span>
          <span>{{time(it.createTime)}}</span>
          <span>{{it.description}}</span>
         </Col>
@@ -75,7 +75,7 @@ export default class Main extends ViewBase {
   }
 
   time(time: any) {
-    return time ? moment(time).format('YYYY/MM/DD') : '-'
+    return time ? moment(time).format('YYYY-MM-DD hh:ss') : '-'
   }
 
   async detail() {

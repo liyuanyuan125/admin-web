@@ -24,13 +24,6 @@
           :disabled="!(selectedIds.length > 0)"
           @click="auditVisible = true"
         >批量审批</Button>
-
-        <Button
-          type="primary"
-          class="button-audit"
-          :disabled="!(selectedIds.length > 0)"
-          @click="pay(selectedIds)"
-        >批量发票付款</Button>
       </template>
 
       <template slot="audit" slot-scope="{ row: { id, approveStatus } }">

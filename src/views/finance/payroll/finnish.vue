@@ -5,25 +5,8 @@
       :filters="filters"
       :enums="enums"
       :columns="columns"
-      selectable
-      :selectedIds.sync="selectedIds"
       ref="listPage"
     >
-      <template slot="acts-2">
-        <Button
-          type="primary"
-          class="button-audit"
-          :disabled="!(selectedIds.length > 0)"
-          @click="auditVisible = true"
-        >批量发票登记</Button>
-
-        <Button
-          type="primary"
-          class="button-audit"
-          :disabled="!(selectedIds.length > 0)"
-          @click="pay(selectedIds)"
-        >批量发票付款</Button>
-      </template>
 
       <template slot="month" slot-scope="{ row: { year, month } }">
         <div class="row-acts">

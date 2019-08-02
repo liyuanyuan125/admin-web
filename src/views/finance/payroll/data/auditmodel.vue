@@ -9,8 +9,8 @@
      <Form ref="formCustom" :model="query" :label-width="80">
       <FormItem label="审批意见：" prop="approvalType">
          <RadioGroup v-model="query.approvalType">
-            <Radio :label="true">同意</Radio>
-            <Radio :label="false">拒绝</Radio>
+            <Radio :label="1">同意</Radio>
+            <Radio :label="2">拒绝</Radio>
         </RadioGroup>
       </FormItem>
       <FormItem label="备注：" prop="passwdCheck">
@@ -40,7 +40,7 @@ export default class ComponentMain extends ViewBase {
   id: any = []
 
   query: any = {
-    approvalType: true,
+    approvalType: 1,
     approveRemark: ''
   }
 
@@ -52,7 +52,7 @@ export default class ComponentMain extends ViewBase {
   cancel() {
     this.showDlg = false
     this.query = {
-      approvalType: true,
+      approvalType: 1,
       approveRemark: ''
     }
   }
@@ -61,6 +61,7 @@ export default class ComponentMain extends ViewBase {
     try {
       await billsaudit({
         ...this.query,
+        approvalType: this.query.approvalType == 1 ? true : false,
         ids: this.id
       })
       this.$emit('done')

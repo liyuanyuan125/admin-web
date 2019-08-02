@@ -340,7 +340,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 基础数据 - 品牌管理 - 编辑品牌
   {
-    path: '/data/brand/brandetail',
+    path: '/data/brand/brandetail/:brandId?',
     name: 'data-brand-brandetail',
     component: () => import('./views/data/brand/brandDetail.vue'),
     meta: {
