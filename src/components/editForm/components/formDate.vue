@@ -24,8 +24,8 @@ const dateToInt = (date: Date | number | string) =>
 @Component
 export default class FormDate extends ViewBase {
   /** 格式：20180901 */
-  // TODO: type 设置为 String 是为了消除开发错误
-  @Prop({ type: [Number, String], default: 0 }) value!: number
+  // TODO: type 设置为 String、Date 是为了消除开发错误
+  @Prop({ type: [Number, String, Date], default: 0 }) value!: number
 
   /** placeholder */
   @Prop({ type: String, default: '选择日期' }) placeholder!: string

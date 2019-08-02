@@ -386,10 +386,6 @@ const resolveComponent = (field: Field) => {
 
     const props = resolveProps(field, name)
 
-    // 单独处理 enumKey
-    const enumKey = props.enumKey
-    delete props.enumKey
-
     // 处理验证规则
     const rules = (field.rules || []).length == 0 && field.required
       ? [ makeRequiredRule(field, requiredRule) ]
@@ -398,7 +394,6 @@ const resolveComponent = (field: Field) => {
     const result = {
       ...field,
       component,
-      enumKey,
       props: {
         ...defaultProps,
         ...props
@@ -420,6 +415,11 @@ export function normalizeField(list: Field[]) {
   .filter(it => it.component != null)
   .map(it => {
     const { component, props, placeholder } = it
+
+    // 单独处理 enumKey
+    const enumKey = props.enumKey
+    delete props.enumKey
+
     const field: NormalField = {
       span: 1,
       offsetLeft: 0,
@@ -428,6 +428,7 @@ export function normalizeField(list: Field[]) {
       visibleCol: () => true,
       ...it,
       component,
+      enumKey,
       props: {
         ...props,
         // 优先使用 placeholder
