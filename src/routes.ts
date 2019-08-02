@@ -400,12 +400,16 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 基础数据 - 品牌管理 - 产品 - 编辑 - 详情
   {
-    path: '/data/brand/product/modifydetail/:id',
+    path: '/data/brand/product/modifydetail/:id/:brandId/:action',
     name: 'data-brand-product-modify-detail',
     component: () => import('./views/data/brand/product/modifyDetail.vue'),
     meta: {
-      authKey: ''
-    }
+      authKey: '',
+      title({ params: { action } }) {
+        return action == 'view' ? '查看' : (action == 'edit' ? '编辑' : '审核')
+      }
+    },
+    props: paramTypes({ id: Number, brandId: Number, action: String })
   },
 
   // 基础数据 - kol平台关联 - 列表
