@@ -816,6 +816,42 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: paramTypes({ id: Number, channel: String, action: String })
   },
 
+  // 财务管理 - 映前广告资源方账单管理 list
+  {
+    path: '/finance/billmanage',
+    name: 'finance-billmanage',
+    component: () => import('./views/finance/bill-manage/index.vue'),
+    meta: {
+      authKey: '',
+      title: '资源方账单管理'
+    }
+  },
+  // 财务管理 - 映前广告资源方账单管理 detail
+  {
+    path: '/finance/billmanage/detail/:id',
+    name: 'finance-billmanage-detail',
+    component: () => import('./views/finance/bill-manage/detail.vue'),
+    meta: {
+      authKey: '',
+      title: '详情'
+    },
+    props: idProps,
+  },
+
+  // 财务管理 - 映前广告资源方账单管理 - 运营确定账单
+  {
+    path: '/finance/billmanage/confirmbill/:id',
+    name: 'finance-billmanage-confirmbill',
+    component: () => import('./views/finance/bill-manage/confirmBill.vue'),
+    meta: {
+      authKey: '',
+      title: '运营确定账单'
+    },
+    props: idProps,
+  },
+
+
+
   // 映前广告付款单管理 - 列表
   {
     path: '/finance/payment/:pay?',

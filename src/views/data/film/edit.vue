@@ -25,12 +25,12 @@
             </Col>
             <Col :span="6">
                 <FormItem label="调整鲸娱指数:">
-                  <InputNumber :max="100" :min="0" style="width: 120px"  v-model="form.customJyIndex" />
+                  <InputNumber  style="width: 120px"  v-model="form.customJyIndex" />
                 </FormItem>
             </Col>
             <Col :span="6">
                 <FormItem label="调整鲸鱼指数所占权重:" :label-width="160" >
-                  <InputNumber :max="100" :min="0" style="width: 120px"  v-model="form.customJyIndexRate" />
+                  <InputNumber :min="0" style="width: 120px"  v-model="form.customJyIndexRate" />
                 </FormItem>
             </Col>
         </Row>
@@ -80,6 +80,8 @@ export default class Main extends ViewBase {
         summary: data.summary,
         categoryCode: data.categoryCode,
         predict: data.customPredict,
+        customJyIndex: data.customJyIndex || null,
+        customJyIndexRate: data.customJyIndexRate || null,
         celebrityRating: data.customCelebrityRating,
         searchKeywords: data.customSearchKeywords ? data.customSearchKeywords.join() : '',
         tags: data.customTags ? data.customTags.join() : ''
