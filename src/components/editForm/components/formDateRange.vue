@@ -52,9 +52,9 @@ export default class FormDateRange extends ViewBase {
     if (isEmpty(this.value)) {
       return [ undefined, undefined ]
     }
-    const [begin, end] = this.value
-    const bm = moment(String(begin))
-    const em = moment(String(end))
+    const [begin, end] = this.value as any[]
+    const bm = moment(begin instanceof Date ? begin : String(begin))
+    const em = moment(end instanceof Date ? end : String(end))
     const date = bm.isValid() && em.isValid()
       ? [ bm.toDate(), em.toDate() ]
       : [ undefined, undefined ]

@@ -14,7 +14,7 @@
         @validateFail="resetSubmitLoading()"
         @submitPrevented="resetSubmitLoading()"
         @always="resetSubmitLoading()"
-        ref="form"
+        ref="editForm"
       />
     </main>
   </Modal>
@@ -56,8 +56,8 @@ export default class EditDialog extends ViewBase {
   }
 
   onSubmit() {
-    const form = this.$refs.form as EditForm
-    form.onSubmit()
+    const editForm = this.$refs.editForm as EditForm
+    editForm.onSubmit()
   }
 
   @Watch('value')

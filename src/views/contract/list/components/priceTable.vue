@@ -46,6 +46,8 @@ import ViewBase from '@/util/ViewBase'
 import { isEqual, isEmpty } from 'lodash'
 import { FormInputNumber } from '@/components/editForm'
 import { MapType, KeyText } from '@/util/types'
+import { dot } from '@/util/dealData'
+import { devLog } from '@/util/dev'
 
 export interface PriceItem {
   /** 单人次结算价格（元/人次） */
@@ -66,26 +68,35 @@ export default class PriceTable extends ViewBase {
 
   @Prop({ type: Boolean, default: false }) disabled!: boolean
 
-  model: Array<KeyText & PriceItem> = []
+  model: MapType<PriceItem> = {}
+
+  makeModel(priceMap: MapType<PriceItem> = {}) {
+    const result = this.enumList.reduce((map, it) => {
+      map[it.key] = {
+        commonPrice: dot(priceMap, it.key + '.commonPrice') || null,
+        trailerPrice: dot(priceMap, it.key + '.trailerPrice') || null
+      }
+      return map
+    }, {} as MapType<PriceItem>)
+    return result
+  }
 
   @Watch('enumList', { immediate: true })
   watchEnumList() {
     if (isEmpty(this.model)) {
-      this.model = this.enumList.reduce((map, it) => {
-        map[it.key] = { commonPrice: 0, trailerPrice: 0 }
-        return map
-      }, {} as MapType<PriceItem>)
+      this.model = this.makeModel()
+      this.$emit('input', this.model)
     }
   }
 
   @Watch('value', { deep: true, immediate: true })
   watchValue(value: MapType<PriceItem>) {
-    !isEqual(this.model, value) && (this.model = value)
+    !isEqual(this.model, value) && (this.model = this.makeModel(value))
   }
 
   @Watch('model', { deep: true })
   watchModel(value: MapType<PriceItem>) {
-    !isEqual(this.value, value) && this.$emit('input', value)
+    !isEqual(this.value, value) && this.$emit('input', this.makeModel(value))
   }
 }
 </script>

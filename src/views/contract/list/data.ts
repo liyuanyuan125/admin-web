@@ -68,20 +68,11 @@ export async function queryItem(query: any = {}) {
         validityStartDate,
         validityEndDate
       ],
-      settlementPeriod: 1,
       settlementPrice: {},
+      accountBank: '',
+      accountName: '',
+      accountNumber: '',
     },
-    // TODO: 让后端补充
-    settlementPeriodList: [
-      { key: 1, text: '月结' }
-    ],
-    cityGradeCodeList: [
-      { key: 'first-tier', text: '一线城市' },
-      { key: 'second-tier', text: '二线城市' },
-      { key: 'third-tier', text: '三线城市' },
-      { key: 'four-tier', text: '四线城市' },
-      { key: 'five-tier', text: '五线城市' },
-    ]
   }
 
   return result
