@@ -340,7 +340,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 基础数据 - 品牌管理 - 编辑品牌
   {
-    path: '/data/brand/brandetail',
+    path: '/data/brand/brandetail/:brandId?',
     name: 'data-brand-brandetail',
     component: () => import('./views/data/brand/brandDetail.vue'),
     meta: {
@@ -400,12 +400,16 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 基础数据 - 品牌管理 - 产品 - 编辑 - 详情
   {
-    path: '/data/brand/product/modifydetail/:id',
+    path: '/data/brand/product/modifydetail/:id/:brandId/:action',
     name: 'data-brand-product-modify-detail',
     component: () => import('./views/data/brand/product/modifyDetail.vue'),
     meta: {
-      authKey: ''
-    }
+      authKey: '',
+      title({ params: { action } }) {
+        return action == 'view' ? '查看' : (action == 'edit' ? '编辑' : '审核')
+      }
+    },
+    props: paramTypes({ id: Number, brandId: Number, action: String })
   },
 
   // 基础数据 - kol平台关联 - 列表
@@ -741,6 +745,17 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     path: '/finance/payroll/:type?',
     name: 'finance-payroll',
     component: () => import('./views/finance/payroll/index.vue'),
+    meta: {
+      authKey: ''
+    },
+    props: true
+  },
+
+  // 财务管理 - 请款单管理
+  {
+    path: '/finance/payroll/detail/:id',
+    name: 'finance-payroll-detail',
+    component: () => import('./views/finance/payroll/auditdetail.vue'),
     meta: {
       authKey: ''
     },

@@ -23,7 +23,7 @@
 
   
       <template slot="id" slot-scope="{ row: { id } }">
-        <router-link :to="{ name: 'data-brand-brandetail', params: { id} }">
+        <router-link :to="{ name: 'data-brand-brandetail', params: { brandId: id } }">
            {{id}}</router-link>
       </template>
 

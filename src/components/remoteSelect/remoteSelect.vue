@@ -60,12 +60,12 @@ export default class RemoteSelect extends ViewBase {
   async search(query: string) {
     // iview 对 select 的 remote 实现有点问题，第一次会把 model 当搜索词
     if (this.inBackfill) {
-      devLog(`==> [search] inBackfill: ${query}`)
+      // devLog(`==> [search] inBackfill: ${query}`)
       return
     }
 
     if (query == this.backfillLabel) {
-      devLog(`==> [search] backfillLabel: ${query}`)
+      // devLog(`==> [search] backfillLabel: ${query}`)
       this.backfillLabel = ''
       return
     }

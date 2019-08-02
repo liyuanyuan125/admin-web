@@ -7,10 +7,11 @@
       :rules="rules"
       :style="{ visibility: loading ? 'hidden' : 'visible' }"
       :loading="submitLoading"
+      autocomplete="on"
       @submit.native.prevent="onSubmit"
       class="form"
       ref="form"
-      v-if="item"
+      v-if="!loading && item"
     >
       <fieldset
         v-for="group in groupFields"
@@ -115,9 +116,6 @@ export default class EditForm extends ViewBase {
   /** 加载编辑项的请求函数 */
   @Prop({ type: Function }) fetch!: () => Promise<FetchData | FetchResult>
 
-  /** 初始化数据 */
-  @Prop({ type: Object, default: () => ({}) }) initData!: object
-
   /** 提交请求函数 */
   @Prop({ type: [Function, Boolean] }) submit!: (data: any) => Promise<AjaxResult | any>
 
@@ -185,12 +183,11 @@ export default class EditForm extends ViewBase {
     return result
   }
 
-  public init(initData = {}) {
+  init() {
     const item = defaultParams(this.fields)
     this.defItem = cloneDeep(item)
-    this.item = cloneDeep({ ...item, ...initData })
     this.formKey = randomKey()
-    this.errorMap = Object.keys(this.item).reduce(
+    this.errorMap = Object.keys(item).reduce(
       (map, key) => {
         map[key] = ''
         return map
@@ -315,9 +312,8 @@ export default class EditForm extends ViewBase {
     this.$router.back()
   }
 
-  @Watch('initData', { deep: true, immediate: true })
-  watchInitData(value: object) {
-    this.init(value)
+  created() {
+    this.init()
     this.load()
   }
 }

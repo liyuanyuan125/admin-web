@@ -1,7 +1,7 @@
 <template>
   <Modal 
     v-model='showDlg'
-    :transfer='false'
+    :transfer='true'
     :width='1220'
     title="申请付款"
     @on-cancel="cancel('dataForm')"

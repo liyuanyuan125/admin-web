@@ -1,3 +1,5 @@
+import { chunk } from 'lodash'
+
 /**
  * 对字符串 `str` 执行正则 `regex`，并返回第 `index` 个捕捉组的内容，若无，返回默认值 `defVal`
  *
@@ -45,6 +47,16 @@ export function random(prefix = '', suffix = '') {
     + Math.random().toString(36).slice(2)
     + new Date().getTime().toString(36)
     + suffix
+}
+
+/**
+ * 将字符串分割，然后再用分隔符连接起来
+ * @param string 字符串
+ * @param size 分割大小，默认 4
+ * @param separator 连接符，默认空白字符
+ */
+export function chunkJoin(string: string | number, size = 4, separator = ' ') {
+  return chunk(String(string), size).map(it => it.join('')).join(separator)
 }
 
 /**

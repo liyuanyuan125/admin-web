@@ -1,7 +1,7 @@
 export const auditfetch = [
   {
     name: 'applyNumber',
-    defaultValue: 0,
+    defaultValue: '',
     type: 'input',
     width: 108,
     placeholder: '订单编号'
@@ -9,16 +9,16 @@ export const auditfetch = [
 
   {
     name: 'approveStatus',
-    defaultValue: 0,
+    defaultValue: '',
     type: 'select',
     width: 108,
     placeholder: '审批状态',
-    enumKey: 'billStatusList'
+    enumKey: 'approveStatusList'
   },
 
   {
     name: 'createName',
-    defaultValue: 0,
+    defaultValue: '',
     type: 'input',
     width: 108,
     placeholder: '请款人'
@@ -58,13 +58,14 @@ export const auditcoulm = [
   {
     title: '请款时间',
     key: 'createTime',
+    editor: 'dateTime',
     minWidth: 90,
   },
-  { title: '审批状态', key: 'approveStatus', minWidth: 100, editor: 'dateTime' },
-  { title: '操作', slot: 'action',  minWidth: 120 }
+  { title: '审批状态', key: 'approveStatus', minWidth: 100, editor: 'enum' },
+  { title: '操作', slot: 'audit',  minWidth: 120 }
 ]
 
 export const auditenum = [
-  'billStatusList',
+  'approveStatusList',
 ]
 

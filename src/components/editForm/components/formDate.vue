@@ -24,19 +24,20 @@ const dateToInt = (date: Date | number | string) =>
 @Component
 export default class FormDate extends ViewBase {
   /** 格式：20180901 */
-  // TODO: type 设置为 String 是为了消除开发错误
-  @Prop({ type: [Number, String], default: 0 }) value!: number
+  // TODO: type 设置为 String、Date 是为了消除开发错误
+  @Prop({ type: [Number, String, Date], default: 0 }) value!: number | string | Date
 
   /** placeholder */
   @Prop({ type: String, default: '选择日期' }) placeholder!: string
 
-  model = this.value
+  model = 0
 
   get date(): Date | undefined {
-    if (this.value == 0) {
+    const value = this.value
+    if (value == 0) {
       return undefined
     }
-    const m = moment(String(this.value))
+    const m = moment(value instanceof Date ? value : String(value))
     const date = m.isValid() ? m.toDate() : undefined
     return date
   }
@@ -52,9 +53,16 @@ export default class FormDate extends ViewBase {
   }
 
   @Watch('value', { immediate: true })
-  watchValue(value: number) {
-    const castValue = dateToInt(value) || 0
-    this.model = castValue
+  watchValue(value: number | string | Date) {
+    const intValue = dateToInt(value) || 0
+    if (intValue != this.model) {
+      this.model = intValue
+    } else {
+      // 纠正数据类型错误
+      if (typeof value !== 'number') {
+        this.$emit('input', intValue)
+      }
+    }
   }
 
   @Watch('model')

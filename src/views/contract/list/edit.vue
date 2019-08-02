@@ -16,9 +16,9 @@
 import { Component, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import EditForm, { Field, Validator } from '@/components/editForm'
-import { queryItem, queryProvince, queryCity, editItem, auditItem } from './data'
-
-import LogTable from './components/logTable.vue'
+import { queryItem, editItem, auditItem } from './data'
+import PriceTable from './components/priceTable.vue'
+// import LogTable from './components/logTable.vue'
 import { success } from '@/ui/modal'
 import { MapType } from '@/util/types'
 import { devLog } from '@/util/dev'
@@ -154,6 +154,87 @@ export default class EditPage extends ViewBase {
         labelWidth: 172,
         span: 10,
         switch: true,
+      },
+
+      {
+        name: 'freeVideo',
+        defaultValue: false,
+        label: '是否提供15秒免费鲸娱广告片',
+        labelWidth: 172,
+        span: 10,
+        switch: true,
+      },
+
+      {
+        name: 'resourceTimeLimit',
+        defaultValue: false,
+        label: '是否限制资源时间区间',
+        labelWidth: 172,
+        span: 6,
+        switch: true,
+        autoWidth: true,
+      },
+
+      {
+        name: 'resourceTimeSection',
+        defaultValue: '',
+        required: true,
+        input: {
+          prepend: '资源时间区间'
+        },
+        span: 6,
+        visible: item => item.resourceTimeLimit,
+      },
+
+      {
+        name: 'settlementType',
+        defaultValue: '',
+        select: {
+          enumKey: 'settlementTypeList',
+        },
+        label: '结算周期',
+        group: '普通广告片结算规则',
+        span: 8,
+      },
+
+      {
+        name: 'settlementPrice',
+        defaultValue: {},
+        label: '结算价格',
+        component: PriceTable,
+        props: {
+          enumKey: 'cityGradeList',
+        },
+        span: 22,
+      },
+
+      {
+        name: 'accountBank',
+        defaultValue: '',
+        label: '结算账号',
+        placeholder: '请输入开户行',
+        span: 7,
+        input: {
+          autocomplete: 'on',
+        },
+      },
+
+      {
+        name: 'accountName',
+        defaultValue: '',
+        placeholder: '请输入账户名',
+        span: 5,
+        input: true,
+      },
+
+      {
+        name: 'accountNumber',
+        defaultValue: '',
+        placeholder: '请输入账号',
+        span: 10,
+        input: {
+          type: 'number'
+        },
       },
     ]
 
