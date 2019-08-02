@@ -1,4 +1,4 @@
-export const auditfetch = [
+export const auditfetch: any = [
   {
     name: 'applyNumber',
     defaultValue: '',
@@ -50,7 +50,7 @@ export const auditfetch = [
   }
 ]
 
-export const auditcoulm = [
+export const auditcoulm: any = [
   { title: '请款单编号', key: 'applyNumber', minWidth: 65 },
   { title: '可申请的付款金额', key: 'mayApplyAmount', minWidth: 100 },
   { title: '申请付款金额', key: 'applyAmount', minWidth: 60, editor: 'deprecated' },
@@ -65,7 +65,7 @@ export const auditcoulm = [
   { title: '操作', slot: 'audit',  minWidth: 120 }
 ]
 
-export const auditenum = [
+export const auditenum: any = [
   'approveStatusList',
 ]
 

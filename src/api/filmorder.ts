@@ -34,4 +34,8 @@ export async function changestatus(id: any , query: any) {
   return data
 }
 
-
+//  修改状态
+export async function movielist(id: any) {
+  const data = await get(`/movie/resource/movie/${id}`)
+  return data
+}

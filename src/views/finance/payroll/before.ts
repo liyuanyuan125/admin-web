@@ -2,7 +2,7 @@ import moouth from './mouth.vue'
 import remoteselect from './data/index.vue'
 import company from './data/company.vue'
 
-export const beforefetch =  [
+export const beforefetch: any =  [
   {
     name: 'cinemaId',
     defaultValue: 0,
@@ -92,7 +92,7 @@ export const beforefetch =  [
   }
 ]
 
-export const beforenum = [
+export const beforenum: any = [
   'applyTypeList',
   'billStatusList',
   'invoiceContentCodeList',
@@ -101,7 +101,7 @@ export const beforenum = [
   'payStatusList'
 ]
 
-export const beforcoulm = [
+export const beforcoulm: any = [
   { title: '账单编号', key: 'id', minWidth: 65 },
   { title: '影城名称', key: 'cinemaName', minWidth: 100 },
   { title: '影城专资码', key: 'code', minWidth: 60, editor: 'deprecated' },
