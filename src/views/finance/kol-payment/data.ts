@@ -15,34 +15,15 @@ const nullBaifen = (value: any) => nullNumber(value, baifen)
 const nullWanfen = (value: any) => nullNumber(value, wanfen)
 
 /**
- * 查询 KOL 平台账号
+ * 分页获取付款单列表
  * @param query 查询条件
- * https://yapi.aiads-dev.com/project/142/interface/api/3198
+ * http://yapi.aiads-dev.com/project/142/interface/api/2894
  */
 export async function queryList(query: any = {}) {
-  const { data } = await get('/kol/channel-accounts', query)
+  const { data } = await get('/kol/playment-bills', query)
 
   const result = {
-    ...data,
-
-    items: (data.items as any[] || []).map(it => ({
-      ...it,
-      fansCount: dot(it, 'customFans.totalCount'),
-      provideInvoiceText: it.provideInvoice ? '是' : '否',
-      priceList: (it.settlementPrices as any[] || []).map(sub => {
-        const price = readableThousands(sub.settlementPrice, '-', '0,0.00')
-        return {
-          name: sub.categoryName,
-          price: price != '-' ? `￥${price}` : '-',
-          date: sub.effectiveDate ? intDate(sub.effectiveDate) : '-'
-        }
-      }),
-    })),
-
-    hasSettlementPriceList: [
-      { key: 1, text: '有' },
-      { key: 2, text: '无' },
-    ]
+    ...data
   }
 
   return result
@@ -86,8 +67,8 @@ const makePriceList = (
 }
 
 /**
- * 查询 KOL 详情
- * https://yapi.aiads-dev.com/project/142/interface/api/3054
+ * 付款单详情
+ * http://yapi.aiads-dev.com/project/142/interface/api/2902
  * @param query 查询条件
  */
 export async function queryItem(query: any = {}) {
@@ -135,6 +116,27 @@ export async function queryItem(query: any = {}) {
   }
 
   return result
+}
+
+/**
+ * 付首款
+ * http://yapi.aiads-dev.com/project/142/interface/api/2918
+ * @param item 数据
+ */
+ export async function editItem(item: any) {
+  const pdata = dealEditItem(item)
+  const { data } = await put(`/kol/payment-bills/pay-advance-fee`, pdata)
+  return data
+}
+
+/**
+ * 付尾款
+ * http://yapi.aiads-dev.com/project/142/interface/api/2926
+ * @param postData 数据
+ */
+export async function auditItem(postData: any) {
+  const { data } = await put(`/kol/payment-bills/pay-rest-fee`, postData)
+  return data
 }
 
 /**
@@ -250,23 +252,4 @@ export async function newItem(postData: any) {
   return data
 }
 
-/**
- * 编辑平台账号
- * https://yapi.aiads-dev.com/project/142/interface/api/3014
- * @param item 数据
- */
-export async function editItem(item: any) {
-  const pdata = dealEditItem(item)
-  const { data } = await put(`/kol/channel-accounts/${item.channel}/${item.id}`, pdata)
-  return data
-}
 
-/**
- * 审核平台账号
- * https://yapi.aiads-dev.com/project/142/interface/api/3030
- * @param postData 数据
- */
-export async function auditItem(postData: any) {
-  const { data } = await put(`/kol/channel-accounts/approve`, postData)
-  return data
-}

@@ -38,7 +38,7 @@
                 </p>
                 <p>
                   <label>其他职业</label>
-                  <!-- <em v-for="(item, index) in restPro" :key="index">{{item}} &nbsp; </em> -->
+                  <em v-for="(item, index) in restPro" :key="index">{{item}} &nbsp; </em>
                 </p>
               </Col>
               <Col :span="12"><img :src="itemList.headImgBig" class="head-img" /></Col>
@@ -130,8 +130,7 @@
             </Row>
       </div>
       <div class="detail-btn">
-          <Button class="btn">浏览</Button>
-          <Button class="btn">返回</Button>
+          <Button class="btn" :to="{name: 'data-person'}">返回</Button>
       </div>
     </div>
     <!-- 影人相册 -->
