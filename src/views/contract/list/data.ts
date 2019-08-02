@@ -1,27 +1,8 @@
 import { get, post, put } from '@/fn/ajax'
 import {
-  dot,
-  intDate,
-  readableThousands,
-  validDate,
   formatIntDateRange,
   formatTimestamp,
-  baifen,
-  wanfen
 } from '@/util/dealData'
-import { KeyText, MapType } from '@/util/types'
-import { keyBy } from 'lodash'
-import moment from 'moment'
-import { devLog } from '@/util/dev'
-
-const nullNumber = (value: any, format?: (num: number) => any) => {
-  const num = parseFloat(value)
-  return isNaN(num) ? null : format ? format(num) : num
-}
-
-const nullBaifen = (value: any) => nullNumber(value, baifen)
-
-const nullWanfen = (value: any) => nullNumber(value, wanfen)
 
 /**
  * 查询合同列表
@@ -60,10 +41,12 @@ export async function queryItem(query: any = {}) {
     validityEndDate = 0
   } = data.item || {}
 
+  const item = data.item || {}
+
   const result = {
     ...data,
     item: {
-      ...data.item,
+      ...item,
       validityDate: [
         validityStartDate,
         validityEndDate
@@ -72,6 +55,7 @@ export async function queryItem(query: any = {}) {
       accountBank: '',
       accountName: '',
       accountNumber: '',
+      cinemaList: item.details || [],
     },
   }
 

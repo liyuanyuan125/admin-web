@@ -18,6 +18,7 @@ import ViewBase from '@/util/ViewBase'
 import EditForm, { Field, Validator } from '@/components/editForm'
 import { queryItem, editItem, auditItem } from './data'
 import PriceTable from './components/priceTable.vue'
+import CinemaTable from './components/cinemaTable.vue'
 // import LogTable from './components/logTable.vue'
 import { success } from '@/ui/modal'
 import { MapType } from '@/util/types'
@@ -213,9 +214,10 @@ export default class EditPage extends ViewBase {
         defaultValue: '',
         label: '结算账号',
         placeholder: '请输入开户行',
-        span: 7,
+        span: 8,
         input: {
           autocomplete: 'on',
+          poptip: true,
         },
       },
 
@@ -223,18 +225,29 @@ export default class EditPage extends ViewBase {
         name: 'accountName',
         defaultValue: '',
         placeholder: '请输入账户名',
-        span: 5,
-        input: true,
+        span: 4,
+        input: {
+          poptip: true,
+        }
       },
 
       {
         name: 'accountNumber',
         defaultValue: '',
         placeholder: '请输入账号',
-        span: 10,
+        span: 8,
         input: {
-          type: 'number'
+          type: 'number',
+          poptip: 'bank',
         },
+      },
+
+      {
+        name: 'cinemaList',
+        defaultValue: [],
+        // label: '影院列表',
+        component: CinemaTable,
+        span: 22,
       },
     ]
 
