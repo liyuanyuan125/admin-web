@@ -4,7 +4,8 @@
     trigger="focus"
     transfer
     class="form-input-number-wrap"
-    popper-class="edit-form-form-input-number-poptip"
+    :popper-class="`edit-form-form-input-number-poptip ${!poptipText ? 'edit-form-empty-poptip' : ''}`"
+    :content="poptipText || undefined"
   >
     <span
       class="form-input-number"
@@ -19,7 +20,6 @@
       <InputNumber
         v-model="model"
         class="input-number"
-        :placeholder="placeholder"
         v-bind="$attrs"
         ref="input"
       />
@@ -27,42 +27,27 @@
         <slot name="append"><i v-html="append"></i></slot>
       </span>
     </span>
-
-    <div slot="content" v-if="poptip !== false">{{poptipValue}}</div>
   </component>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Watch } from 'vue-property-decorator'
+import { Component, Prop, Watch, Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { triggerValidate } from '@/util/form'
-import { realThousands } from '@/util/dealData'
-
-// 默认 poptip 函数，将数字千分位显示
-const defaultPoptip = (value: number) => realThousands(value)
+import WithPoptip from './withPoptip'
 
 @Component
-export default class FormInputNumber extends ViewBase {
+export default class FormInputNumber extends Mixins(ViewBase, WithPoptip) {
   @Prop({ type: [Number, String, Object], default: null }) value!: number | string | null
 
   @Prop({ type: String, default: '' }) prepend!: string
 
   @Prop({ type: String, default: '' }) append!: string
 
-  @Prop({ type: String, default: '' }) placeholder!: string
-
-  // TODO: 未来可以扩展，增加 String，设置成内置类型
-  @Prop({ type: [Boolean, Function], default: false }) poptip!: boolean | ((value: number) => string)
-
   model = this.value
 
-  get poptipValue() {
-    if (this.poptip === false) {
-      return false
-    }
-    const poptipFormatter = typeof this.poptip === 'function' ? this.poptip : defaultPoptip
-    const value = this.model
-    const result = (typeof value == 'number' ? poptipFormatter(value) : '') || this.placeholder
+  get poptipText() {
+    const result = this.getPoptipText(this.model, [0], 'thousands')
     return result
   }
 
@@ -94,6 +79,9 @@ export default class FormInputNumber extends ViewBase {
 .edit-form-form-input-number-poptip {
   font-family: monospace;
   font-size: 16px;
+}
+.edit-form-empty-poptip {
+  display: none;
 }
 </style>
 
