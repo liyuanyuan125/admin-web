@@ -6,7 +6,7 @@
     title="申请付款"
     @on-cancel="cancel('dataForm')"
     >
-     <Form ref="formCustom" :model="query" :rules="ruleCustom" :label-width="80">
+     <Form ref="formCustom" :model="query" :label-width="80">
       <FormItem label="审批意见：" prop="approvalType">
          <RadioGroup v-model="query.approvalType">
             <Radio :label="true">同意</Radio>

@@ -86,8 +86,6 @@ export default class IndexPage extends ViewBase {
     return beforcoulm
   }
 
-  typeCode = this.type
-
   selectedIds = [] as number[]
 
   pay(id: any) {
