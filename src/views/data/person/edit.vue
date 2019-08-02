@@ -15,7 +15,7 @@
                 <Col :span="12">
                     <FormItem label="系统评论热词:">
                         <Input type="textarea" v-model="form.tags" placeholder="关键词中文‘，’隔开，按照顺序优先显示热词，数量不足再显示抓取的"></Input>
-                        <p>关键词中文‘，’隔开，按照顺序优先显示热词，数量不足再显示抓取的</p>
+                        <p>关键词‘，’隔开，按照顺序优先显示热词，数量不足再显示抓取的</p>
                     </FormItem>
                 </Col>
             </Row>
@@ -223,7 +223,7 @@
                 </FormItem>
           </div>
           <div class="footer-btn">
-              <Button type="primary" class="btn">浏览</Button>
+              <Button type="primary" :to="{name: 'data-person'}" class="btn">返回</Button>
               <Button type="primary" @click="editSubmit">保存</Button>
           </div>
       </Form>
@@ -411,7 +411,7 @@ export default class Main extends ViewBase {
         const intro = item.introduction ? formatIntro : item.introduction
         this.form = {
             tip: item.tip || '',
-            tags: item.tags ? item.tags.join('，') : null,
+            tags: item.tags ? item.tags.join() : null,
             introduction: intro,
             biJyIndex: item.biJyIndex,
             jyIndex: item.jyIndex,
@@ -455,10 +455,9 @@ export default class Main extends ViewBase {
         }
 
         // 标签转换
-        const findIsCount = this.form.tags
-        const noFlag = findIsCount == null ? [] : Array.of(findIsCount)
+        const formTag = this.form.tags.trim()
+        const tags = formTag ? formTag.split(/,|，/) : []
 
-        const tags = findIsCount && findIsCount.indexOf('，') ? findIsCount.split('，') : noFlag
         delete this.form.primaryPro
         delete this.form.restPro
         delete this.form.biJyIndex

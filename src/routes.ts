@@ -742,12 +742,13 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 财务管理 - 请款单管理
   {
-    path: '/finance/payroll/:id?',
+    path: '/finance/payroll/:type?',
     name: 'finance-payroll',
     component: () => import('./views/finance/payroll/index.vue'),
     meta: {
       authKey: ''
-    }
+    },
+    props: true
   },
 
   {

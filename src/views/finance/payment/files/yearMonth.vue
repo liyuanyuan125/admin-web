@@ -14,7 +14,7 @@ export default class CompanyList extends ViewBase {
   /**
    * 值本身，可以使用 v-model 进行双向绑定
    */
-  @Prop({ type: Number, default: 0 }) value!: number
+  @Prop({ default: null }) value!: any
   @Prop({ default: true }) type!: boolean
   /**
    * 提示文字
@@ -33,13 +33,6 @@ export default class CompanyList extends ViewBase {
     } else {
       this.inValue = null
     }
-  }
-
-  @Watch('value')
-  watchValue(val: number) {
-    this.inValue = val
-    // 触发 form item 验证
-    ; (this.$refs.ui as any).dispatch('FormItem', 'on-form-change', val)
   }
 
   @Watch('inValue')

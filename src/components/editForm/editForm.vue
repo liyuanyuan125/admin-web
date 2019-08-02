@@ -30,6 +30,7 @@
           >
             <FormItem
               :label="it.label"
+              :label-width="it.labelWidth"
               :prop="it.name"
               :error="errorMap[it.name]"
               :class="it.class"
