@@ -378,16 +378,6 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
-  // 基础数据 - 品牌管理 - 产品 - 查看 - 详情
-  {
-    path: '/data/brand/product/viewdetail/:id',
-    name: 'data-brand-product-view-detail',
-    component: () => import('./views/data/brand/product/viewDetail.vue'),
-    meta: {
-      authKey: ''
-    }
-  },
-
   // 基础数据 - 品牌管理 - 产品 - 编辑 - 列表
   {
     path: '/data/brand/product/modifylist/:brandId',
@@ -400,13 +390,20 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 基础数据 - 品牌管理 - 产品 - 编辑 - 详情
   {
-    path: '/data/brand/product/modifydetail/:id/:brandId/:action',
-    name: 'data-brand-product-modify-detail',
-    component: () => import('./views/data/brand/product/modifyDetail.vue'),
+    path: '/data/brand/product/detail/:id?/:brandId/:action',
+    name: 'data-brand-product-detail',
+    component: () => import('./views/data/brand/product/detail.vue'),
     meta: {
       authKey: '',
       title({ params: { action } }) {
-        return action == 'view' ? '查看' : (action == 'edit' ? '编辑' : '审核')
+        switch (action) {
+          case 'view':
+            return '查看'
+          case 'edit':
+            return '编辑'
+          default:
+            return '添加新产品'
+        }
       }
     },
     props: paramTypes({ id: Number, brandId: Number, action: String })
