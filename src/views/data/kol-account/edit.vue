@@ -56,8 +56,6 @@ export default class EditPage extends ViewBase {
 
   @Prop({ type: String, default: '' }) action!: 'view' | 'edit' | 'audit'
 
-  item: any = null
-
   get isView() {
     return this.action == 'view'
   }

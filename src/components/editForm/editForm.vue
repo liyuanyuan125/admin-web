@@ -46,6 +46,7 @@
                   enumList: enumMap[it.name],
                   ...it.props
                 }"
+                v-on="it.handlers"
               />
             </FormItem>
           </Col>
@@ -181,6 +182,13 @@ export default class EditForm extends ViewBase {
       {} as MapType<Rule[]>
     )
     return result
+  }
+
+  /**
+   * 获取正在编辑的数据
+   */
+  public getData() {
+    return cloneDeep(this.item)
   }
 
   init() {

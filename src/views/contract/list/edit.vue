@@ -7,6 +7,7 @@
       :hideSubmit="isView"
       :labelWidth="88"
       @done="onDone"
+      ref="editForm"
     >
     </EditForm>
   </div>
@@ -20,8 +21,8 @@ import { queryItem, editItem, auditItem } from './data'
 import PriceTable from './components/priceTable.vue'
 import CinemaTable from './components/cinemaTable.vue'
 // import LogTable from './components/logTable.vue'
-import { success } from '@/ui/modal'
-import { MapType } from '@/util/types'
+import { alert, success } from '@/ui/modal'
+import { MapType, CancelableEvent } from '@/util/types'
 import { devLog } from '@/util/dev'
 
 const ratioValidator: Validator = (rule, value: Array<{ value: number }>, callback) => {
@@ -42,6 +43,8 @@ const actionMap: MapType<any> = {
   }),
 }
 
+const isEmptyString = (string: string) => String(string).trim() == ''
+
 @Component({
   components: {
     EditForm
@@ -52,7 +55,9 @@ export default class EditPage extends ViewBase {
 
   @Prop({ type: String, default: '' }) action!: 'new' | 'edit' | 'view' | 'audit' | 'copy'
 
-  item: any = null
+  get editForm() {
+    return this.$refs.editForm as EditForm
+  }
 
   get isNew() {
     return this.action == 'new'
@@ -247,6 +252,20 @@ export default class EditPage extends ViewBase {
         defaultValue: [],
         label: '　',
         component: CinemaTable,
+        props: {
+          filterCinema: this.filterCinema
+        },
+        handlers: {
+          beforeSelect: (ev: CancelableEvent) => {
+            const { accountBank, accountName, accountNumber } = this.editForm.getData()
+            if (isEmptyString(accountBank)
+              || isEmptyString(accountName)
+              || isEmptyString(accountNumber)) {
+              ev.canceled = true
+              alert('结算账号必须填写完整')
+            }
+          }
+        },
         span: 22,
       },
     ]
@@ -289,10 +308,28 @@ export default class EditPage extends ViewBase {
 
   submit = actionMap[this.action]
 
-  fetch() {
-    return queryItem({
+  filterCinema: ((item: any) => any) | null = null
+
+  async fetch() {
+    const data = await queryItem({
       id: this.id
     })
+    const { filterCinema } = data
+    this.filterCinema = (item: any) => {
+      const { accountBank, accountName, accountNumber, settlementPrice } = this.editForm.getData()
+      const cityGrade = item.cityGradeCode
+      const { commonPrice = null, trailerPrice = null } = settlementPrice[cityGrade] || {}
+      const result = {
+        ...filterCinema(item),
+        commonPrice,
+        trailerPrice,
+        accountBank,
+        accountName,
+        accountNumber,
+      }
+      return result
+    }
+    return data
   }
 
   async onDone() {

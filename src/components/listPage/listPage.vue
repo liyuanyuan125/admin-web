@@ -63,6 +63,7 @@
           show-total
           show-sizer
           show-elevator
+          v-bind="pageProps"
         />
       </div>
     </slot>
@@ -125,9 +126,19 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
   @Prop({ type: Array, default: () => [] }) selectedIds!: Array<number | string>
 
   /**
+   * 禁用选择的 id 列表
+   */
+  @Prop({ type: Array, default: () => [] }) disabledIds!: Array<number | string>
+
+  /**
    * 禁用 url manager 的行为
    */
   @Prop({ type: Boolean, default: false }) disableUrlManager!: boolean
+
+  /**
+   * Page 属性配置
+   */
+  @Prop({ type: Object, default: () => ({}) }) pageProps!: object
 
   allSelectedIds = this.selectedIds
 
@@ -238,10 +249,12 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
     const idKey = this.idKey
     const selectable = this.selectable
     const selectedMap = toMap(this.selectedIds)
+    const disabledMap = toMap(this.disabledIds)
     this.list = list.map(it => {
       return {
         ...it,
-        _checked: selectable ? it[idKey] in selectedMap : false
+        _checked: selectable ? it[idKey] in selectedMap : false,
+        _disabled: selectable ? it[idKey] in disabledMap : false,
       }
     })
   }
@@ -291,6 +304,11 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
     // 那么应该直接使用传入的 value，否则会导致无限循环
     const ids = uniqIds.length == value.length ? value : uniqIds
     this.$emit('update:selectedIds', ids)
+  }
+
+  @Watch('disabledIds')
+  watchDisabledIds() {
+    this.updateList()
   }
 }
 </script>

@@ -7,15 +7,17 @@
     @on-ok="onSubmit"
   >
     <main class="modal-main">
-      <EditForm
-        :key="formKey"
-        v-bind="$attrs"
-        v-on="$listeners"
-        @validateFail="resetSubmitLoading()"
-        @submitPrevented="resetSubmitLoading()"
-        @always="resetSubmitLoading()"
-        ref="editForm"
-      />
+      <slot>
+        <EditForm
+          :key="formKey"
+          v-bind="$attrs"
+          v-on="$listeners"
+          @validateFail="resetSubmitLoading()"
+          @submitPrevented="resetSubmitLoading()"
+          @always="resetSubmitLoading()"
+          ref="editForm"
+        />
+      </slot>
     </main>
   </Modal>
 </template>
