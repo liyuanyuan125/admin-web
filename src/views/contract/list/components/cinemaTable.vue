@@ -17,6 +17,20 @@
         />
       </template>
 
+      <template slot="commonPrice" slot-scope="{ row: { cinemaId, commonPrice } }">
+        <FormInputNumber
+          :value="commonPrice"
+          @input="updateField(cinemaId, 'commonPrice', $event)"
+        />
+      </template>
+
+      <template slot="trailerPrice" slot-scope="{ row: { cinemaId, trailerPrice } }">
+        <FormInputNumber
+          :value="trailerPrice"
+          @input="updateField(cinemaId, 'trailerPrice', $event)"
+        />
+      </template>
+
       <template slot="action" slot-scope="{ row: { cinemaId } }">
         <div class="row-acts">
           <a @click="remove(cinemaId)">删除</a>
@@ -32,6 +46,7 @@ import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import CinemaDialog, { AddToListEvent } from '@/components/cinemaDialog'
 import { CancelableEvent } from '@/util/types'
+import { FormInputNumber } from '@/components/editForm'
 
 export interface CinemaItem {
   cinemaId: number
@@ -50,7 +65,8 @@ export interface CinemaItem {
 @Component({
   components: {
     ListPage,
-    CinemaDialog
+    CinemaDialog,
+    FormInputNumber
   }
 })
 export default class CinemaTable extends ViewBase {
@@ -85,8 +101,8 @@ export default class CinemaTable extends ViewBase {
       { title: '所属城市', key: 'cityName', minWidth: 60 },
       { title: '城市等级', key: 'cityGradeCodeMappedText', minWidth: 60 },
 
-      { title: '单人次结算价格（元/人次）', key: 'commonPrice', minWidth: 90 },
-      { title: '预告片单人次结算价格（元/人次）', key: 'trailerPrice', minWidth: 90 },
+      { title: '单人次结算价格（元/人次）', slot: 'commonPrice', minWidth: 90 },
+      { title: '预告片单人次结算价格（元/人次）', slot: 'trailerPrice', minWidth: 90 },
 
       { title: '开户行', key: 'accountBank', minWidth: 90 },
       { title: '账户名', key: 'accountName', minWidth: 60 },
@@ -138,6 +154,11 @@ export default class CinemaTable extends ViewBase {
       this.model.splice(index, 1)
       this.listPage.update()
     }
+  }
+
+  updateField(cinemaId: number, field: string, value: number) {
+    const item = this.model.find(it => it.cinemaId == cinemaId) as any
+    item && (item[field] = value)
   }
 
   @Watch('value', { deep: true, immediate: true })
