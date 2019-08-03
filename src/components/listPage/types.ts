@@ -418,7 +418,7 @@ export function normalizeColumns(list: ColumnExtra[], param: ColumnParam) {
 }
 
 /**
- * liet fetch 调用结果
+ * list fetch 调用结果
  */
 export interface ListFetchResult {
   code: number

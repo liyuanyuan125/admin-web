@@ -153,6 +153,27 @@ export function textList(list: KeyText[], keys: Array<(string | number)>) {
 }
 
 /**
+ * 将 item 使用 map 进行补充字段，补充的字段，会在 map 的 key 的基础上加上 MappedText 后缀
+ * @param item 数据项
+ * @param enumMap 枚举 Map
+ */
+export function fillByKeyText(item: any, enumMap: MapType<KeyText[]>) {
+  const distList = Object.entries(enumMap).map(([key, enums]) => ({
+    key,
+    dict: keyBy(enums, 'key')
+  }))
+
+  const mapped = distList.reduce((ret, { key, dict }) => {
+    const value = item[key]
+    ret[key + 'MappedText'] = (dict[value] || {}).text
+    return ret
+  }, {} as MapType)
+
+  const result = { ...item, ...mapped }
+  return result
+}
+
+/**
  * 通过 lodash at 访问对象的值
  * @param object 对象
  * @param path 路径

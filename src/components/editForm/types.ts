@@ -166,6 +166,11 @@ export interface Field extends Param {
   props?: MapType<any>
 
   /**
+   * 传递给组件的事件处理函数
+   */
+  handlers?: MapType<any>
+
+  /**
    * 占用的空间大小，从 1 ~ 24
    */
   span?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14

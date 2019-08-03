@@ -1,8 +1,10 @@
 import { get, post, put } from '@/fn/ajax'
 import {
+  fillByKeyText,
   formatIntDateRange,
   formatTimestamp,
 } from '@/util/dealData'
+import { KeyText } from '@/util/types'
 
 /**
  * 查询合同列表
@@ -37,11 +39,21 @@ export async function queryItem(query: any = {}) {
   const { data } = await get(`/customer/contracts/${id}`)
 
   const {
+    cityGradeList = []
+  } = data
+
+  const {
     validityStartDate = 0,
     validityEndDate = 0
   } = data.item || {}
 
   const item = data.item || {}
+
+  const filterCinema = (it: any) => {
+    return fillByKeyText(it, {
+      cityGradeCode: cityGradeList
+    })
+  }
 
   const result = {
     ...data,
@@ -55,8 +67,9 @@ export async function queryItem(query: any = {}) {
       accountBank: '',
       accountName: '',
       accountNumber: '',
-      cinemaList: item.details || [],
+      cinemaList: (item.details || []).map(filterCinema),
     },
+    filterCinema,
   }
 
   return result

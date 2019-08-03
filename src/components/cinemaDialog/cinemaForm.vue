@@ -1,17 +1,23 @@
 <template>
-  <div class="index-page">
+  <div class="cinema-form">
     <ListPage
       :fetch="fetch"
       :filters="filters"
       :columns="columns"
-      :selectedIds.sync="selectedIds"
+      selectable
+      :selectedIds.sync="allSelectedIds"
+      :disabledIds="disabledIds"
+      v-bind="$attrs"
+      v-on="$listeners"
+      disableUrlManager
     >
       <template slot="acts">
         <Button
           type="success"
           icon="md-add-circle"
-          :to="addToList"
-        >添加到列表</Button>
+          @click="onAddToList"
+          :disabled="ids.length == 0"
+        >添加到列表{{ids.length > 0 ? `（已选 ${ids.length} 个）` : ''}}</Button>
       </template>
     </ListPage>
   </div>
@@ -22,6 +28,9 @@ import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import { queryList } from './data'
+import { Cinema, AddToListEvent } from './types'
+import { cloneDeep, difference, unionBy } from 'lodash'
+import { devLog } from '@/util/dev'
 
 @Component({
   components: {
@@ -29,7 +38,17 @@ import { queryList } from './data'
   }
 })
 export default class CinemaForm extends ViewBase {
-  fetch = queryList
+  /**
+   * 已选择的项的 ids（不限于当前页，所有页），与 ListPage 不同，不支持双向绑定
+   */
+  @Prop({ type: Array, default: () => [] }) selectedIds!: number[]
+
+  /**
+   * 禁用选择的 id 列表
+   */
+  @Prop({ type: Array, default: () => [] }) disabledIds!: number[]
+
+  allSelectedIds = this.selectedIds
 
   get filters(): Filter[] {
     return [
@@ -58,26 +77,61 @@ export default class CinemaForm extends ViewBase {
 
       {
         name: 'pageSize',
-        defaultValue: 20
+        defaultValue: 10
       }
     ]
   }
 
   get columns() {
     return [
-      { title: '专资编码', key: 'code', minWidth: 90 },
-      { title: '名称', key: 'shortName', minWidth: 90 },
+      { title: 'ID', key: 'id', width: 90 },
+      { title: '专资编码', key: 'code', width: 120 },
+      { title: '名称', key: 'shortName', align: 'left' },
     ] as ColumnExtra[]
   }
 
-  selectedIds: number[] = []
+  get ids() {
+    const selectedIds = this.allSelectedIds as number[] || []
+    const disabledIds = this.disabledIds as number[] || []
+    const ids = difference(selectedIds, disabledIds)
+    return ids
+  }
 
-  addToList() {
-    const ids = this.selectedIds || []
-    debugger
+  list: Cinema[] = []
+
+  selectedList: Cinema[] = []
+
+  async fetch(query: any) {
+    const data = await queryList(query)
+    this.list = data.items || []
+    return data
+  }
+
+  onAddToList() {
+    const list = cloneDeep(this.selectedList)
+    this.$emit('addToList', { list } as AddToListEvent)
+  }
+
+  @Watch('selectedIds', { immediate: true })
+  watchSelectedIds(value: number[]) {
+    this.allSelectedIds = value
+  }
+
+  @Watch('allSelectedIds')
+  watchAllSelectedIds(value: number[]) {
+    // 及时更新 selectedList，以免 list 失效
+    const ids = this.ids
+    const unionList = unionBy(this.list, this.selectedList, 'id')
+    const list = cloneDeep(unionList.filter(it => ids.includes(it.id)))
+    this.selectedList = list
   }
 }
 </script>
 
 <style lang="less" scoped>
+.cinema-form {
+  /deep/ .list-page {
+    margin-bottom: 0;
+  }
+}
 </style>
