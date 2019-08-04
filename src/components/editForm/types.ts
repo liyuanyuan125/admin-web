@@ -12,6 +12,7 @@ import FormImage from './components/formImage.vue'
 import FormImageList from './components/formImageList.vue'
 import AreaSelect from '@/components/areaSelect'
 import CompanySelect from '@/components/companySelect'
+import AdminUserSelect from '@/components/adminUserSelect'
 import { Switch } from 'iview'
 import { AjaxResult, MapType, KeyText } from '@/util/types'
 import { Formatter } from './components/formatter'
@@ -133,7 +134,11 @@ const componentMap: MapType<ComponentItem> = {
 
   company: {
     component: CompanySelect
-  }
+  },
+
+  adminUser: {
+    component: AdminUserSelect
+  },
 }
 
 /**
@@ -361,6 +366,15 @@ export interface Field extends Param {
    * 组件 CompanySelect 的选项
    */
   company?: true | {
+    /** 附加查询数据 */
+    query?: MapType<any>
+    [key: string]: any
+  },
+
+  /**
+   * 组件 AdminUserSelect 的选项
+   */
+  adminUser?: true | {
     /** 附加查询数据 */
     query?: MapType<any>
     [key: string]: any

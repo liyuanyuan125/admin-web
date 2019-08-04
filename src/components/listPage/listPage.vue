@@ -321,7 +321,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
   margin-bottom: 88px;
 }
 
-.act-bar ~ .act-bar {
+.act-bar ~ .act-bar:not(:empty) {
   margin-top: 15px;
 }
 
