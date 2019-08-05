@@ -18,10 +18,10 @@ import { Component, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import EditForm, { Field, Validator } from '@/components/editForm'
 import { queryItem, newItem, editItem, auditItem, copyItem } from './data'
-import PriceTable from './components/priceTable.vue'
+import PriceTable, { PriceItem } from './components/priceTable.vue'
 import CinemaTable, { CinemaItem } from './components/cinemaTable.vue'
 import AttachmentTable from './components/attachmentTable.vue'
-// import LogTable from './components/logTable.vue'
+import LogTable from './components/logTable.vue'
 import { alert, success } from '@/ui/modal'
 import { MapType, CancelableEvent } from '@/util/types'
 import { devLog } from '@/util/dev'
@@ -380,6 +380,14 @@ export default class EditPage extends ViewBase {
         visible: item => !item.auditPass,
         visibleCol: item => isAudit || item.audited
       },
+
+      {
+        name: 'logList',
+        defaultValue: [],
+        component: LogTable,
+        group: '操作日志',
+        visibleCol: () => isView
+      }
     )
 
     return list
