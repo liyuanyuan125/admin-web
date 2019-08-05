@@ -17,9 +17,10 @@
 import { Component, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import EditForm, { Field, Validator } from '@/components/editForm'
-import { queryItem, editItem, auditItem } from './data'
+import { queryItem, newItem, editItem, auditItem, copyItem } from './data'
 import PriceTable from './components/priceTable.vue'
 import CinemaTable from './components/cinemaTable.vue'
+import AttachmentTable from './components/attachmentTable.vue'
 // import LogTable from './components/logTable.vue'
 import { alert, success } from '@/ui/modal'
 import { MapType, CancelableEvent } from '@/util/types'
@@ -34,13 +35,14 @@ const ratioValidator: Validator = (rule, value: Array<{ value: number }>, callba
 }
 
 const actionMap: MapType<any> = {
-  view: null,
+  new: newItem,
   edit: editItem,
-  audit: (item: any) => auditItem({
-    ids: [item.id],
-    agree: item.auditPass,
-    remark: item.auditPass ? '' : item.remark
+  view: null,
+  audit: (item: any) => auditItem(item.id, {
+    approveStatus: item.auditPass,
+    refuseReason: item.auditPass ? '' : item.remark
   }),
+  copy: copyItem,
 }
 
 const isEmptyString = (string: string) => String(string).trim() == ''
@@ -132,8 +134,8 @@ export default class EditPage extends ViewBase {
         name: 'companyBId',
         defaultValue: 0,
         label: '公司名称',
-        span: 10,
         group: '乙方信息',
+        span: 10,
         company: true,
       },
 
@@ -268,6 +270,80 @@ export default class EditPage extends ViewBase {
         },
         span: 22,
       },
+
+      {
+        name: 'provideInvoice',
+        defaultValue: false,
+        // disabled: isView,
+        label: '是否提供发票',
+        span: 6,
+        switch: true,
+        autoWidth: true,
+      },
+
+      {
+        name: 'invoiceType',
+        defaultValue: '',
+        // disabled: isView,
+        label: '发票类型',
+        span: 6,
+        visible: item => item.provideInvoice,
+        select: {
+          enumKey: 'invoiceTypeList',
+        },
+      },
+
+      {
+        name: 'invoiceContent',
+        defaultValue: '',
+        // disabled: isView,
+        label: '发票内容',
+        span: 6,
+        visible: item => item.provideInvoice,
+        select: {
+          enumKey: 'invoiceContentList',
+        },
+      },
+
+      {
+        name: 'attachmentList',
+        defaultValue: [],
+        label: '　',
+        component: AttachmentTable,
+        // disabled: isView,
+        group: '附件信息',
+        span: 20,
+        visible: item => item.provideInvoice,
+      },
+
+      {
+        name: 'signingUser',
+        defaultValue: 0,
+        label: '签订人',
+        span: 8,
+        group: '责任人',
+        adminUser: true,
+      },
+
+      {
+        name: 'followUser',
+        defaultValue: 0,
+        label: '跟进人',
+        span: 8,
+        adminUser: true,
+      },
+
+      {
+        name: 'remark',
+        defaultValue: '',
+        label: '　',
+        group: '备注',
+        span: 20,
+        input: {
+          type: 'textarea',
+          autosize: { maxRows: 8 },
+        }
+      },
     ]
 
     readonly && list.forEach(it => it.disabled = true)
@@ -286,11 +362,12 @@ export default class EditPage extends ViewBase {
         group: '审核意见',
         label: '审核通过',
         span: 6,
-        visibleCol: item => isAudit || item.audited
+        visibleCol: item => isAudit || item.audited,
+        autoWidth: true,
       },
 
       {
-        name: 'remark',
+        name: 'refuseReason',
         defaultValue: '',
         disabled: isView,
         required: true,
@@ -342,5 +419,8 @@ export default class EditPage extends ViewBase {
 <style lang="less" scoped>
 /deep/ .col-field-cinema-list {
   margin-top: -7px;
+}
+/deep/ .cinema-table .page-wrap {
+  margin-bottom: 0;
 }
 </style>

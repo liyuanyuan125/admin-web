@@ -1,8 +1,9 @@
 import { get, post, put } from '@/fn/ajax'
 import {
-  fillByKeyText,
+  dot,
   formatIntDateRange,
   formatTimestamp,
+  fillByKeyText,
 } from '@/util/dealData'
 import { KeyText } from '@/util/types'
 
@@ -29,14 +30,24 @@ export async function queryList(query: any = {}) {
   return result
 }
 
+const filterAttachment = (item: any) => {
+  const result = {
+    ...item,
+    uploadTimeText: formatTimestamp(item.uploadTime)
+  }
+  return result
+}
+
 /**
  * 查询合同详情
  * https://yapi.aiads-dev.com/project/34/interface/api/5212
+ * https://yapi.aiads-dev.com/project/34/interface/api/5226
  * @param query 查询条件
  */
 export async function queryItem(query: any = {}) {
   const { id } = query
-  const { data } = await get(`/customer/contracts/${id}`)
+  const url = `/customer/contracts/${id > 0 ? id : 'view'}`
+  const { data } = await get(url)
 
   const {
     cityGradeList = []
@@ -48,6 +59,9 @@ export async function queryItem(query: any = {}) {
   } = data.item || {}
 
   const item = data.item || {}
+
+  // 审核状态：0 未知，1 待审核，2 通过，3 拒绝，4 作废
+  const status = parseInt(item.approveStatus, 10) || 0
 
   const filterCinema = (it: any) => {
     return fillByKeyText(it, {
@@ -68,6 +82,13 @@ export async function queryItem(query: any = {}) {
       accountName: '',
       accountNumber: '',
       cinemaList: (item.details || []).map(filterCinema),
+      attachmentList: (item.attachments || []).map(filterAttachment),
+
+      // 审核是否通过，默认通过
+      auditPass: status != 3 && status != 4,
+
+      // 是否被审核过（通过或拒绝）
+      audited: status == 2 || status == 3 || status == 4,
     },
     filterCinema,
   }
@@ -88,32 +109,43 @@ const dealEditItem = (item: any) => {
 }
 
 /**
- * 新建平台账号
- * https://yapi.aiads-dev.com/project/142/interface/api/2654
- * @param postData 数据
+ * 新建合同
+ * https://yapi.aiads-dev.com/project/34/interface/api/5170
+ * @param item 数据
  */
-export async function newItem(postData: any) {
-  const { data } = await post('/kol/channel-accounts', postData)
+export async function newItem(item: any) {
+  const pdata = dealEditItem(item)
+  const { data } = await post('/customer/contracts', pdata)
   return data
 }
 
 /**
- * 编辑平台账号
- * https://yapi.aiads-dev.com/project/142/interface/api/3014
+ * 修改合同
+ * https://yapi.aiads-dev.com/project/34/interface/api/5268
  * @param item 数据
  */
 export async function editItem(item: any) {
   const pdata = dealEditItem(item)
-  const { data } = await put(`/kol/channel-accounts/${item.channel}/${item.id}`, pdata)
+  const { data } = await put(`/customer/contracts/${item.id}`, pdata)
   return data
 }
 
 /**
- * 审核平台账号
- * https://yapi.aiads-dev.com/project/142/interface/api/3030
- * @param postData 数据
+ * 复制合同
+ * @param item 数据
  */
-export async function auditItem(postData: any) {
-  const { data } = await put(`/kol/channel-accounts/approve`, postData)
+export async function copyItem(item: any) {
+  delete item.id
+  return newItem(item)
+}
+
+/**
+ * 审核平台账号
+ * https://yapi.aiads-dev.com/project/34/interface/api/5240
+ * @param id 账号ID
+ * @param pdata 数据
+ */
+export async function auditItem(id: number, pdata: any) {
+  const { data } = await put(`/customer/contracts/${id}/status`, pdata)
   return data
 }

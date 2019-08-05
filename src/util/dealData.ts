@@ -259,15 +259,32 @@ export function intDate(date: number, format = 'YYYY-MM-DD') {
 }
 
 /**
- * 将形如 20190622 形式的整数，格式化成日期
- * @param date 数字日期
+ * 将形如 20190622 形式的整数，或者其他一些符合要求的字符串，转换成日期
+ * @param date 数字日期或其他形式的日期字符串
  */
-export function validDate(date: number | null) {
-  if (date == null || date == 0) {
+export function validDate(date: number | string | null) {
+  if (date == null || date == 0 || date == '') {
     return null
   }
   const d = moment(String(date))
   return d.isValid() ? d.toDate() : null
+}
+
+/**
+ * 将形如 20190622 形式的整数，或者其他一些符合要求的字符串，转换成日期，然后返回格式化结果
+ * @param date 数字日期或其他形式的日期字符串
+ * @param options 选项
+ */
+export function formatValidDate(
+  date: number | string | null,
+  {
+    format = 'YYYY-MM-DD',
+    blank = '-',
+  }: any = {}
+) {
+  const d = validDate(date)
+  const result = d != null ? moment(d).format(format) : blank
+  return result
 }
 
 /**

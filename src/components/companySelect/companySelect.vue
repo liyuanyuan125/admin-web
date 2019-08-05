@@ -4,6 +4,8 @@
     :fetch="fetch"
     :backfill="backfill"
     placeholder="输入公司名搜索"
+    class="company-select"
+    v-bind="$attrs"
     ref="ui"
   />
 </template>

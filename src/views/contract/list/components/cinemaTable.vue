@@ -7,13 +7,29 @@
       disableUrlManager
       ref="listPage"
     >
-      <template slot="acts">
+      <template slot="acts" v-if="!disabled">
         <Button type="success" @click="onSelect">选择影城</Button>
         <CinemaDialog
           v-model="dialogOpen"
           :selectedIds="allIds"
           :disabledIds="allIds"
           @addToList="onAddToList"
+        />
+      </template>
+
+      <template slot="commonPrice" slot-scope="{ row: { cinemaId, commonPrice } }">
+        <FormInputNumber
+          :value="commonPrice"
+          :disabled="disabled"
+          @input="updateField(cinemaId, 'commonPrice', $event)"
+        />
+      </template>
+
+      <template slot="trailerPrice" slot-scope="{ row: { cinemaId, trailerPrice } }">
+        <FormInputNumber
+          :value="trailerPrice"
+          :disabled="disabled"
+          @input="updateField(cinemaId, 'trailerPrice', $event)"
         />
       </template>
 
@@ -32,6 +48,7 @@ import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import CinemaDialog, { AddToListEvent } from '@/components/cinemaDialog'
 import { CancelableEvent } from '@/util/types'
+import { FormInputNumber } from '@/components/editForm'
 
 export interface CinemaItem {
   cinemaId: number
@@ -50,13 +67,16 @@ export interface CinemaItem {
 @Component({
   components: {
     ListPage,
-    CinemaDialog
+    CinemaDialog,
+    FormInputNumber
   }
 })
 export default class CinemaTable extends ViewBase {
   @Prop({ type: Array, default: () => [] }) value!: CinemaItem[]
 
   @Prop({ type: Function }) filterCinema!: (item: any) => CinemaItem
+
+  @Prop({ type: Boolean, default: false }) disabled!: boolean
 
   model: CinemaItem[] = []
 
@@ -79,21 +99,23 @@ export default class CinemaTable extends ViewBase {
   }
 
   get columns() {
-    return [
+    const list = [
       { title: '影院名称', key: 'cinemaName', minWidth: 90 },
       { title: '专资编码', key: 'code', minWidth: 60 },
       { title: '所属城市', key: 'cityName', minWidth: 60 },
       { title: '城市等级', key: 'cityGradeCodeMappedText', minWidth: 60 },
 
-      { title: '单人次结算价格（元/人次）', key: 'commonPrice', minWidth: 90 },
-      { title: '预告片单人次结算价格（元/人次）', key: 'trailerPrice', minWidth: 90 },
+      { title: '单人次结算价格（元/人次）', slot: 'commonPrice', minWidth: 90 },
+      { title: '预告片单人次结算价格（元/人次）', slot: 'trailerPrice', minWidth: 90 },
 
       { title: '开户行', key: 'accountBank', minWidth: 90 },
       { title: '账户名', key: 'accountName', minWidth: 60 },
       { title: '账号', key: 'accountNumber', minWidth: 90 },
-
-      { title: '操作', slot: 'action', minWidth: 50 },
     ] as ColumnExtra[]
+
+    !this.disabled && list.push({ title: '操作', slot: 'action', minWidth: 50 })
+
+    return list
   }
 
   get allIds() {
@@ -140,6 +162,11 @@ export default class CinemaTable extends ViewBase {
     }
   }
 
+  updateField(cinemaId: number, field: string, value: number) {
+    const item = this.model.find(it => it.cinemaId == cinemaId) as any
+    item && (item[field] = value)
+  }
+
   @Watch('value', { deep: true, immediate: true })
   watchValue(value: CinemaItem[]) {
     this.model = value
@@ -155,6 +182,10 @@ export default class CinemaTable extends ViewBase {
 <style lang="less" scoped>
 .cinema-table {
   line-height: 1.5;
+  /deep/ .list-page {
+    margin-bottom: 0;
+    min-height: auto;
+  }
   /deep/ th,
   /deep/ td {
     padding: 6px 3px;

@@ -21,7 +21,7 @@ export const appId = 2
 const permCache: MapType<Promise<PermResult>> = {}
 
 export interface User {
-  id: string
+  id: number
   name: string
 }
 
