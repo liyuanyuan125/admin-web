@@ -6,6 +6,7 @@ import {
   fillByKeyText,
 } from '@/util/dealData'
 import { KeyText } from '@/util/types'
+import { slice } from '@/fn/object'
 
 /**
  * 查询合同列表
@@ -99,10 +100,39 @@ export async function queryItem(query: any = {}) {
 // 按照接口要求，处理数据
 const dealEditItem = (item: any) => {
   const data = {
-    // 基本信息
+    // 合同主体信息
+    contractName: item.contractName,
+    companyACode: item.companyACode,
+    contractNo: item.contractNo,
+    validityStartDate: item.validityDate[0] || 0,
+    validityEndDate: item.validityDate[1] || 0,
 
-    // 审核意见
-    remark: item.remark
+    // 乙方信息
+    companyBId: item.companyBId,
+    companyBContact: item.companyBContact,
+    companyBPhone: item.companyBPhone,
+    provideQuery: item.provideQuery,
+    freeVideo: item.freeVideo,
+    resourceTimeLimit: item.resourceTimeLimit,
+    resourceTimeSection: item.resourceTimeSection,
+
+    // 普通广告片结算规则
+    settlementType: item.settlementType,
+    details: (item.cinemaList as any[]).map(it => slice(it,
+      'cinemaId,commonPrice,trailerPrice,accountBank,accountName,accountNumber')),
+    provideInvoice: item.provideInvoice,
+    invoiceType: item.invoiceType,
+    invoiceContent: item.invoiceContent,
+
+    // 附件信息
+    attachments: (item.attachmentList as any[]).map(it => slice(it, 'name,fileId')),
+
+    // 责任人
+    signingUser: item.signingUser,
+    followUser: item.followUser,
+
+    // 备注
+    remark: item.remark,
   }
 
   return data

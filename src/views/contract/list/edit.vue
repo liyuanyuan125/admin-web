@@ -126,6 +126,7 @@ export default class EditPage extends ViewBase {
         name: 'validityDate',
         defaultValue: [0, 0],
         label: '合同有效期',
+        required: !readonly,
         span: 10,
         dateRange: true,
       },
@@ -244,7 +245,6 @@ export default class EditPage extends ViewBase {
         placeholder: '请输入账号',
         span: 8,
         input: {
-          type: 'number',
           poptip: 'bank',
         },
       },
@@ -405,6 +405,9 @@ export default class EditPage extends ViewBase {
         accountNumber,
       }
       return result
+    }
+    if (this.isCopy) {
+      data.item.validityDate = [0, 0]
     }
     return data
   }
