@@ -4,6 +4,8 @@
     :fetch="fetch"
     :backfill="backfill"
     placeholder="输入公司名搜索"
+    class="company-select"
+    v-bind="$attrs"
     ref="ui"
   />
 </template>
@@ -16,7 +18,10 @@ import { queryList } from './data'
 import { MapType } from '@/util/types'
 
 const defaultQuery: MapType<any> = {
+  // 0 未知，1 启用，2 停用
   status: 1,
+  // 0 未知，1 待审核，2 通过，3 拒绝
+  approveStatus: 2,
 }
 
 @Component({
@@ -36,7 +41,7 @@ export default class CompanySelect extends ViewBase {
     const query = {
       ...defaultQuery,
       ...this.query,
-      query: keyword,
+      shortName: keyword,
       pageIndex: 1,
       pageSize: 88,
     }

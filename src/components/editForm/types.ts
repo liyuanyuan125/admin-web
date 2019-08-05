@@ -12,8 +12,10 @@ import FormImage from './components/formImage.vue'
 import FormImageList from './components/formImageList.vue'
 import AreaSelect from '@/components/areaSelect'
 import CompanySelect from '@/components/companySelect'
+import AdminUserSelect from '@/components/adminUserSelect'
 import { Switch } from 'iview'
 import { AjaxResult, MapType, KeyText } from '@/util/types'
+import { Formatter } from './components/formatter'
 import { devLog, devError } from '@/util/dev'
 
 export type ValidatorCallback = (error?: Error) => any
@@ -132,7 +134,11 @@ const componentMap: MapType<ComponentItem> = {
 
   company: {
     component: CompanySelect
-  }
+  },
+
+  adminUser: {
+    component: AdminUserSelect
+  },
 }
 
 /**
@@ -163,6 +169,11 @@ export interface Field extends Param {
    * 传递给组件的 props
    */
   props?: MapType<any>
+
+  /**
+   * 传递给组件的事件处理函数
+   */
+  handlers?: MapType<any>
 
   /**
    * 占用的空间大小，从 1 ~ 24
@@ -248,20 +259,38 @@ export interface Field extends Param {
   text?: true
 
   /**
-   * 使用组件 Input
+   * 组件 Input 的选项
+   * 更多属性详见 iview 文档 https://www.iviewui.com/components/input
    */
   input?: true | {
+    /** 类型 */
+    type?: 'text' | 'password' | 'textarea' | 'url' | 'email' | 'date' | 'number' | 'tel'
     prepend?: string
     append?: string
+    /**
+     * 是否显示 poptip，以及用什么格式化函数
+     * 当 poptip 为 true 时，则使用组件默认的格式化函数显示提示
+     * 当 poptip 为 string 时，则使用 formatter.ts 中的函数名对应的格式化函数显示提示
+     * 当 poptip 为函数时，则只用该函数本身
+     */
+    poptip?: boolean | string | Formatter
     [key: string]: any
   }
 
   /**
    * 组件 InputNumber 的选项
+   * 更多属性详见 iview 文档 https://www.iviewui.com/components/input-number
    */
   number?: true | {
     min?: number
     max?: number
+    /**
+     * 是否显示 poptip，以及用什么格式化函数
+     * 当 poptip 为 true 时，则使用组件默认的格式化函数显示提示
+     * 当 poptip 为 string 时，则使用 formatter.ts 中的函数名对应的格式化函数显示提示
+     * 当 poptip 为函数时，则只用该函数本身
+     */
+    poptip?: boolean | string | Formatter
     [key: string]: any
   }
 
@@ -337,6 +366,15 @@ export interface Field extends Param {
    * 组件 CompanySelect 的选项
    */
   company?: true | {
+    /** 附加查询数据 */
+    query?: MapType<any>
+    [key: string]: any
+  },
+
+  /**
+   * 组件 AdminUserSelect 的选项
+   */
+  adminUser?: true | {
     /** 附加查询数据 */
     query?: MapType<any>
     [key: string]: any

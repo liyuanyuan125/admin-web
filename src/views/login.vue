@@ -100,7 +100,7 @@ export default class Main extends ViewBase {
 .box {
   position: relative;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   background: url('https://file.iviewui.com/iview-admin/login_bg.jpg') no-repeat center;
   background-size: cover;
 }

@@ -7,6 +7,7 @@
       :hideSubmit="isView"
       :labelWidth="88"
       @done="onDone"
+      ref="editForm"
     >
     </EditForm>
   </div>
@@ -16,11 +17,13 @@
 import { Component, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import EditForm, { Field, Validator } from '@/components/editForm'
-import { queryItem, editItem, auditItem } from './data'
+import { queryItem, newItem, editItem, auditItem, copyItem } from './data'
 import PriceTable from './components/priceTable.vue'
+import CinemaTable from './components/cinemaTable.vue'
+import AttachmentTable from './components/attachmentTable.vue'
 // import LogTable from './components/logTable.vue'
-import { success } from '@/ui/modal'
-import { MapType } from '@/util/types'
+import { alert, success } from '@/ui/modal'
+import { MapType, CancelableEvent } from '@/util/types'
 import { devLog } from '@/util/dev'
 
 const ratioValidator: Validator = (rule, value: Array<{ value: number }>, callback) => {
@@ -32,14 +35,18 @@ const ratioValidator: Validator = (rule, value: Array<{ value: number }>, callba
 }
 
 const actionMap: MapType<any> = {
-  view: null,
+  new: newItem,
   edit: editItem,
-  audit: (item: any) => auditItem({
-    ids: [item.id],
-    agree: item.auditPass,
-    remark: item.auditPass ? '' : item.remark
+  view: null,
+  audit: (item: any) => auditItem(item.id, {
+    // 审核状态：0 未知，1 待审核，2 通过，3 拒绝，4 作废
+    approveStatus: item.auditPass ? 2 : 3,
+    refuseReason: item.auditPass ? '' : item.remark
   }),
+  copy: copyItem,
 }
+
+const isEmptyString = (string: string) => String(string).trim() == ''
 
 @Component({
   components: {
@@ -51,7 +58,9 @@ export default class EditPage extends ViewBase {
 
   @Prop({ type: String, default: '' }) action!: 'new' | 'edit' | 'view' | 'audit' | 'copy'
 
-  item: any = null
+  get editForm() {
+    return this.$refs.editForm as EditForm
+  }
 
   get isNew() {
     return this.action == 'new'
@@ -118,6 +127,7 @@ export default class EditPage extends ViewBase {
         name: 'validityDate',
         defaultValue: [0, 0],
         label: '合同有效期',
+        required: !readonly,
         span: 10,
         dateRange: true,
       },
@@ -126,8 +136,8 @@ export default class EditPage extends ViewBase {
         name: 'companyBId',
         defaultValue: 0,
         label: '公司名称',
-        span: 10,
         group: '乙方信息',
+        span: 10,
         company: true,
       },
 
@@ -213,9 +223,10 @@ export default class EditPage extends ViewBase {
         defaultValue: '',
         label: '结算账号',
         placeholder: '请输入开户行',
-        span: 7,
+        span: 8,
         input: {
           autocomplete: 'on',
+          poptip: true,
         },
       },
 
@@ -223,18 +234,116 @@ export default class EditPage extends ViewBase {
         name: 'accountName',
         defaultValue: '',
         placeholder: '请输入账户名',
-        span: 5,
-        input: true,
+        span: 4,
+        input: {
+          poptip: true,
+        }
       },
 
       {
         name: 'accountNumber',
         defaultValue: '',
         placeholder: '请输入账号',
-        span: 10,
+        span: 8,
         input: {
-          type: 'number'
+          poptip: 'bank',
         },
+      },
+
+      {
+        name: 'cinemaList',
+        defaultValue: [],
+        label: '　',
+        component: CinemaTable,
+        props: {
+          filterCinema: this.filterCinema
+        },
+        handlers: {
+          beforeSelect: (ev: CancelableEvent) => {
+            const { accountBank, accountName, accountNumber } = this.editForm.getData()
+            if (isEmptyString(accountBank)
+              || isEmptyString(accountName)
+              || isEmptyString(accountNumber)) {
+              ev.canceled = true
+              alert('结算账号必须填写完整')
+            }
+          }
+        },
+        span: 22,
+      },
+
+      {
+        name: 'provideInvoice',
+        defaultValue: false,
+        // disabled: isView,
+        label: '是否提供发票',
+        span: 6,
+        switch: true,
+        autoWidth: true,
+      },
+
+      {
+        name: 'invoiceType',
+        defaultValue: '',
+        // disabled: isView,
+        label: '发票类型',
+        span: 6,
+        visible: item => item.provideInvoice,
+        select: {
+          enumKey: 'invoiceTypeList',
+        },
+      },
+
+      {
+        name: 'invoiceContent',
+        defaultValue: '',
+        // disabled: isView,
+        label: '发票内容',
+        span: 6,
+        visible: item => item.provideInvoice,
+        select: {
+          enumKey: 'invoiceContentList',
+        },
+      },
+
+      {
+        name: 'attachmentList',
+        defaultValue: [],
+        label: '　',
+        component: AttachmentTable,
+        // disabled: isView,
+        group: '附件信息',
+        span: 20,
+        visible: item => item.provideInvoice,
+      },
+
+      {
+        name: 'signingUser',
+        defaultValue: 0,
+        label: '签订人',
+        span: 8,
+        group: '责任人',
+        adminUser: true,
+      },
+
+      {
+        name: 'followUser',
+        defaultValue: 0,
+        label: '跟进人',
+        span: 8,
+        adminUser: true,
+      },
+
+      {
+        name: 'remark',
+        defaultValue: '',
+        label: '　',
+        group: '备注',
+        span: 20,
+        input: {
+          type: 'textarea',
+          autosize: { maxRows: 8 },
+        }
       },
     ]
 
@@ -254,11 +363,12 @@ export default class EditPage extends ViewBase {
         group: '审核意见',
         label: '审核通过',
         span: 6,
-        visibleCol: item => isAudit || item.audited
+        visibleCol: item => isAudit || item.audited,
+        autoWidth: true,
       },
 
       {
-        name: 'remark',
+        name: 'refuseReason',
         defaultValue: '',
         disabled: isView,
         required: true,
@@ -276,10 +386,31 @@ export default class EditPage extends ViewBase {
 
   submit = actionMap[this.action]
 
-  fetch() {
-    return queryItem({
+  filterCinema: ((item: any) => any) | null = null
+
+  async fetch() {
+    const data = await queryItem({
       id: this.id
     })
+    const { filterCinema } = data
+    this.filterCinema = (item: any) => {
+      const { accountBank, accountName, accountNumber, settlementPrice } = this.editForm.getData()
+      const cityGrade = item.cityGradeCode
+      const { commonPrice = null, trailerPrice = null } = settlementPrice[cityGrade] || {}
+      const result = {
+        ...filterCinema(item),
+        commonPrice,
+        trailerPrice,
+        accountBank,
+        accountName,
+        accountNumber,
+      }
+      return result
+    }
+    if (this.isCopy) {
+      data.item.validityDate = [0, 0]
+    }
+    return data
   }
 
   async onDone() {
@@ -290,21 +421,10 @@ export default class EditPage extends ViewBase {
 </script>
 
 <style lang="less" scoped>
-/deep/ .col-field-auth,
-/deep/ .col-field-male-percent,
-/deep/ .col-field-audit-pass {
-  width: auto;
+/deep/ .col-field-cinema-list {
+  margin-top: -7px;
 }
-
-/deep/ .col-field-auth-name,
-/deep/ .col-field-remark {
-  left: 4px;
-}
-
-/deep/ .ui-field-male-percent,
-/deep/ .ui-field-female-percent {
-  .input-number {
-    width: 78px;
-  }
+/deep/ .cinema-table .page-wrap {
+  margin-bottom: 0;
 }
 </style>

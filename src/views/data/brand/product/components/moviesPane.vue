@@ -1,46 +1,19 @@
 <template>
   <section class="fans-pane">
     <div class="action-bar">
+
       <RemoteSelect
         v-model="id"
         :fetch="fetchWrap"
         class="search-select"
-        placeholder="请输入名称"
-        :disabled="disabled"
-        v-if="remote"
-      />
-
-      <Select
-        v-model="id"
-        filterable
-        clearable
-        transfer
-        class="search-select"
-        placeholder="请选择"
-        :disabled="disabled"
-        v-else
-      >
-        <Option
-          v-for="(it, i) in selectList"
-          :key="i"
-          :value="it.id"
-        >{{it.name}}</Option>
-      </Select>
-
-      <FormInputNumber
-        v-model="ratio"
-        :min="0"
-        :max="100"
-        :disabled="disabled"
-        placeholder="粉丝数占比"
-        append="%"
-        class="ratio-input"
+        style="margin-left: 10px;"
+        placeholder="请输入影片名称"
       />
 
       <Button
         type="primary"
         class="btn-add"
-        :disabled="!(id > 0 && ratio > 0)"
+        :disabled="!id"
         @click="addItem"
       >添加进列表</Button>
     </div>
@@ -56,9 +29,15 @@
         border
         disabled-hover
       >
-        <div slot="value" slot-scope="{ row: { value } }">
-          <span>{{value}}%</span>
+        <!-- <div slot="channelCode" slot-scope="{ row: { channelCode } }">
+          <span>{{getName(channelCode, channelList)}}</span>
         </div>
+        <div slot="channelDataId" slot-scope="{ row: { channelDataId } }">
+          <span>{{channelDataId}}</span>
+        </div>
+        <div slot="channelName" slot-scope="{ row: { channelName } }">
+          <span>{{channelName}}</span>
+        </div> -->
         <div slot="action" slot-scope="{ row: { id } }">
           <a class="act-del" @click="delItem(id)">删除</a>
         </div>
@@ -75,14 +54,20 @@ import { toast } from '@/ui/modal'
 import RemoteSelect from '@/components/remoteSelect'
 import { FormInputNumber } from '@/components/editForm'
 import InputHidden from '@/components/inputHidden'
+import { findIndex } from 'lodash'
+import { AjaxResult } from '@/util/types'
 
-export interface IdName {
-  id: number
-  name: string
+const getName = (key: string, list: any[]) => {
+  const i: number = findIndex(list, (it: any) => {
+    return key === it.key
+  })
+  const res: string = list[i].text || '-'
+  return res
 }
 
-export interface FansItem extends IdName {
-  value: number
+export interface IdName {
+  id: number|string
+  name: string
 }
 
 @Component({
@@ -92,10 +77,10 @@ export interface FansItem extends IdName {
     InputHidden
   }
 })
-export default class FansPane extends ViewBase {
-  @Prop({ type: Array, default: () => [] }) value!: FansItem[]
+export default class KolsPane extends ViewBase {
+  @Prop({ type: Array, default: () => [] }) value!: any[]
 
-  @Prop({ type: Function }) fetch!: (keyword: string) => Promise<IdName[]>
+  @Prop({ type: Function }) fetch!: (keyword: string) => Promise<AjaxResult>
 
   @Prop({ type: String, default: '' }) type!: string
 
@@ -103,44 +88,78 @@ export default class FansPane extends ViewBase {
 
   @Prop({ type: Boolean, default: false }) disabled!: boolean
 
-  model = this.value
+  // 双向绑定
+  model: any[] = this.value
 
-  id = 0
+  // 所选 id
+  id: number = 0
 
-  ratio: number | null = null
-
-  selectList: IdName[] = []
+  // 枚举
+  idsList: any[] = [
+    // {
+    //   id: 1,
+    //   name: '账号名称1'
+    // },
+    // {
+    //   id: 2,
+    //   name: '账号名称2'
+    // },
+    // {
+    //   id: 3,
+    //   name: '账号名称3'
+    // },
+    // {
+    //   id: 4,
+    //   name: '账号名称4'
+    // },
+  ]
 
   get columns() {
     return [
-      { title: this.type, key: 'name', align: 'center' },
-      { title: '粉丝数占比', slot: 'value', width: 120, align: 'center' },
-      !this.disabled && { title: '操作', slot: 'action', width: 120, align: 'center' },
+      { title: '影片ID', align: 'center', key: 'id' },
+      { title: '影片名称', key: 'name', minWidth: 150, align: 'center' },
+      !this.disabled && { title: '操作', slot: 'action', align: 'center' },
     ]
     .filter(it => !!it)
   }
 
-  mounted() {
-    this.fetchWrap()
-  }
+  mounted() {}
 
   async fetchWrap(keyword = '') {
-    const list = await this.fetch(keyword)
-    this.selectList = list
-    return list
+    if ( keyword == '' ) {
+      toast('请输入影片名称', { type: 'error' })
+      return
+    }
+    const { data } = await this.fetch(keyword)
+    const items = data.items || null
+    const res = (items as any[] || []).map(it => ({
+      id: it.id,
+      name: it.name
+    }))
+    this.idsList = res
+    return res
   }
 
   exists(id: number) {
-    return this.model.find(it => it.id == id) != null
+    return this.model.find(it => (it.id == id)) != null
   }
 
   addItem() {
+    if ( !this.id || this.id === 0 ) {
+      return toast('请选择影片', { type: 'error' })
+    }
     const exists = this.exists(this.id)
     if (exists) {
       return toast('已存在', { type: 'error' })
     }
-    const item = this.selectList.find(it => it.id == this.id)!
-    this.model.push({ ...item, value: this.ratio! })
+    const idItem = this.idsList.find(it => it.id == this.id)!
+
+    // console.log(idItem)
+
+    this.model.push({
+      id: idItem.id,
+      name: idItem.name
+    })
   }
 
   delItem(id: number) {
@@ -149,12 +168,12 @@ export default class FansPane extends ViewBase {
   }
 
   @Watch('value', { deep: true, immediate: true })
-  watchValue(value: FansItem[]) {
+  watchValue(value: any[]) {
     !isEqual(this.model, value) && (this.model = value)
   }
 
   @Watch('model', { deep: true })
-  watchModel(value: FansItem[]) {
+  watchModel(value: any[]) {
     !isEqual(this.value, value) && this.$emit('input', value)
   }
 }
@@ -162,7 +181,7 @@ export default class FansPane extends ViewBase {
 
 <style lang="less" scoped>
 .fans-pane {
-  width: 388px;
+  width: 450px;
 }
 
 .action-bar {

@@ -43,6 +43,11 @@ const idProps = paramTypes({ id: Number })
 interface RouteMetaBase {
   /** 页面标题 */
   title?: string | ((route: Route) => string)
+  /**
+   * 面包屑导航 route name 列表
+   * 只需设置中间的 route name 就行，页面本身与主导航，会自动添加
+   */
+  breadcrumbs?: string[]
   [key: string]: any
 }
 
@@ -378,16 +383,6 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
-  // 基础数据 - 品牌管理 - 产品 - 查看 - 详情
-  {
-    path: '/data/brand/product/viewdetail/:id',
-    name: 'data-brand-product-view-detail',
-    component: () => import('./views/data/brand/product/viewDetail.vue'),
-    meta: {
-      authKey: ''
-    }
-  },
-
   // 基础数据 - 品牌管理 - 产品 - 编辑 - 列表
   {
     path: '/data/brand/product/modifylist/:brandId',
@@ -400,13 +395,20 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 基础数据 - 品牌管理 - 产品 - 编辑 - 详情
   {
-    path: '/data/brand/product/modifydetail/:id/:brandId/:action',
-    name: 'data-brand-product-modify-detail',
-    component: () => import('./views/data/brand/product/modifyDetail.vue'),
+    path: '/data/brand/product/detail/:id?/:brandId/:action',
+    name: 'data-brand-product-detail',
+    component: () => import('./views/data/brand/product/detail.vue'),
     meta: {
       authKey: '',
       title({ params: { action } }) {
-        return action == 'view' ? '查看' : (action == 'edit' ? '编辑' : '审核')
+        switch (action) {
+          case 'view':
+            return '查看'
+          case 'edit':
+            return '编辑'
+          default:
+            return '添加新产品'
+        }
       }
     },
     props: paramTypes({ id: Number, brandId: Number, action: String })
@@ -608,7 +610,10 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
           copy: '复制',
         }
         return actionTextMap[action]
-      }
+      },
+      breadcrumbs: [
+        'contract-list'
+      ]
     },
     props: paramTypes({ id: Number, action: String })
   },
@@ -793,7 +798,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 财务管理 - KOL付款单管理
   {
-    path: '/finance/kol-payment/',
+    path: '/finance/kol-payment/:channel?',
     name: 'finance-kol-payment',
     component: () => import('./views/finance/kol-payment/index.vue'),
     meta: {
@@ -804,16 +809,16 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 财务管理 - KOL付款单管理 - 查看、登记、付款
   {
-    path: '/finance/kol-payment/edit/:id/:channel/:action',
+    path: '/finance/kol-payment/edit/:id/:action',
     name: 'finance-kol-payment-edit',
     component: () => import('./views/finance/kol-payment/edit.vue'),
     meta: {
       authKey: '',
       title({ params: { action } }) {
-        return action == 'view' ? '查看' : (action == 'edit' ? '登记' : '付款')
+        return action == 'view' ? '查看' : '财务付款'
       }
     },
-    props: paramTypes({ id: Number, channel: String, action: String })
+    props: paramTypes({ id: Number, action: String })
   },
 
   // 财务管理 - 映前广告资源方账单管理 list

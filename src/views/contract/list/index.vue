@@ -32,8 +32,8 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { queryList, auditItem, newItem } from './data'
-import { alert, toast } from '@/ui/modal'
+import { queryList, auditItem } from './data'
+import { alert, toast, confirm } from '@/ui/modal'
 
 import {
   updateStatus,
@@ -143,8 +143,15 @@ export default class IndexPage extends ViewBase {
   }
 
   // 作废
-  cancel(id: number) {
-    debugger
+  async cancel(id: number) {
+    await confirm('确定要作废该项吗？')
+    try {
+      await auditItem(id, { approveStatus: 4 })
+      toast('操作成功')
+      this.listPage.update()
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
 }
 </script>

@@ -2,7 +2,7 @@ import moouth from './mouth.vue'
 import remoteselect from './data/index.vue'
 import company from './data/company.vue'
 
-export const finishfetch =  [
+export const finishfetch: any =  [
   {
     name: 'cinemaId',
     defaultValue: 0,
@@ -116,13 +116,13 @@ export const finishfetch =  [
   }
 ]
 
-export const finishnum = [
+export const finishnum: any = [
   'statusList',
   'invoiceTypeList',
   'invoiceContentList',
 ]
 
-export const finshcoulm = [
+export const finshcoulm: any = [
   { title: '账单编号', key: 'id', minWidth: 65 },
   { title: '请款单编号', key: 'applyId', minWidth: 65 },
   { title: '影城名称', key: 'cinemaName', minWidth: 100 },

@@ -1,5 +1,14 @@
 <template>
   <div class="index-page">
+    <Tabs v-model="channelCode" type="card" class="tabs">
+      <TabPane
+        v-for="it in channelList"
+        :key="it.value"
+        :name="it.value"
+        :label="it.name"
+      />
+    </Tabs>
+
     <ListPage
       :fetch="fetch"
       :filters="filters"
@@ -9,12 +18,6 @@
       :selectedIds.sync="selectedIds"
       ref="listPage"
     >
-      <template slot="acts">
-        <!-- <Button
-          type="success"
-          icon="md-add-circle"
-        >新建</Button> -->
-      </template>
 
       <template slot="acts-2">
         <Button
@@ -22,27 +25,20 @@
           class="button-audit"
           :disabled="!(selectedIds.length > 0)"
           @click="auditVisible = true"
-        >批量审核</Button>
-
-        <Button
-          type="primary"
-          class="button-crawl"
-          @click="crawlVisible = true"
-        >抓取平台账号</Button>
+        >批量发票登记</Button>
       </template>
 
-      <template slot="action" slot-scope="{ row: { id, status } }">
+      <template slot="action" slot-scope="{ row: { id } }">
         <div class="row-acts">
           <router-link
             :to="{
-              name: 'data-kol-account-edit',
+              name: 'finance-kol-payment-edit',
               params: {
                 id,
-                channel,
-                action: status == 1 ? 'audit' : 'edit'
+                action: 'edit'
               }
             }"
-          >{{status == 1 ? '审核' : '编辑'}}</router-link>
+          >财务付款</router-link>
         </div>
       </template>
     </ListPage>
@@ -59,23 +55,33 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { queryList, auditItem, newItem } from './data'
+import { queryList, auditItem, newItem, queryKolAcounts } from './data'
 import { alert, toast } from '@/ui/modal'
 import { EditDialog, Field } from '@/components/editForm'
 import BatchAudit from '@/components/batchAudit'
+
+import { getChannelList } from '@/util/types'
+
+const channelList = getChannelList()
+const defaultChannel = channelList[0].value
 
 @Component({
   components: {
     ListPage,
     EditDialog,
-    BatchAudit
+    BatchAudit,
   }
 })
 export default class IndexPage extends ViewBase {
+  @Prop({ type: String, default: defaultChannel }) channel!: string
 
   get listPage() {
     return this.$refs.listPage as ListPage
   }
+
+  channelCode = this.channel
+
+  channelList = channelList
 
   fetch = queryList
 
@@ -83,21 +89,66 @@ export default class IndexPage extends ViewBase {
 
   get filters(): Filter[] {
     return [
-
       {
-        name: 'accountCategoryCode',
-        defaultValue: 0,
-        type: 'select',
-        width: 108,
-        placeholder: '账号分类'
+        name: 'channelCode',
+        defaultValue: this.channel,
       },
 
       {
-        name: 'channelDataId',
+        name: 'kolId',
         defaultValue: '',
         type: 'input',
         width: 88,
-        placeholder: '账号 Id'
+        placeholder: 'KOL ID'
+      },
+
+      {
+        name: 'mainOrderNo',
+        defaultValue: '',
+        type: 'input',
+        width: 120,
+        placeholder: '订单编号'
+      },
+
+      {
+        name: 'subOrderNo',
+        defaultValue: '',
+        type: 'input',
+        width: 120,
+        placeholder: '子订单编号'
+      },
+
+      {
+        name: 'dateRange',
+        defaultValue: '',
+        type: 'dateRange',
+        width: 200,
+        placeholder: '选择时间',
+        dealParam(value: string) {
+          // const [startTime, endTime] = value ? value.split('-') : [null, null]
+          // return {
+          //   queryStartTime : startTime,
+          //   queryEndTime : endTime,
+          // }
+          const [startTime, endTime] = value ? value.split('-') : [null, null]
+          return {
+            queryStartTime : startTime ? Number(new Date(String(startTime).slice(0, 4) + '-'
+              + String(startTime).slice(4, 6) + '-' +
+              String(startTime).slice(6, 8)).getTime() - (8 * 60 * 60 * 1000)) : null,
+            queryEndTime : endTime ? Number(new Date(String(endTime).slice(0, 4) + '-'
+              + String(endTime).slice(4, 6) + '-' +
+              String(endTime).slice(6, 8)).getTime() + (16 * 60 * 60 * 1000 - 1)) : null,
+          }
+        }
+      },
+
+      {
+        name: 'payStatus',
+        defaultValue: 0,
+        enumKey: 'payStatusList',
+        type: 'select',
+        width: 128,
+        placeholder: '付款状态'
       },
 
       {
@@ -124,32 +175,37 @@ export default class IndexPage extends ViewBase {
   enums = [
     'invoiceStatusList',
     'payStatusList',
+    'channelCodeList',
   ]
 
   get columns() {
     return [
       { title: '序号', key: 'id', minWidth: 65 },
-      { title: '订单编号', key: 'mainOrderNo', minWidth: 65 },
+      {
+        title: '订单编号',
+        key: 'mainOrderNo',
+        minWidth: 65,
+        link: {
+          name: 'order-kollist-detail',
+          params: it => ({ id: it.id ,  orders: 0})
+        }
+      },
       { title: '子订单编号', key: 'subOrderNo', minWidth: 100 },
       { title: 'KOL编号', key: 'kolId', minWidth: 60 },
       { title: 'KOL名称', key: 'kolName', minWidth: 60 },
       // { title: '平台', key: 'channelCode', editor: 'channelCodeList', minWidth: 100 },
-      { title: '订单创建时间', key: 'subOrderCreateTime', slot: 'price', minWidth: 270 },
+      { title: '订单创建时间', key: 'subOrderCreateTime', minWidth: 135, editor: 'dateTime' },
       { title: '推广品牌', key: 'brandName', minWidth: 65 },
       { title: '结算金额', key: 'status', minWidth: 65 },
-
-
       { title: '已付款金额', key: 'paidAmount', minWidth: 65 },
       { title: '待付款金额', key: 'unpaidAmount', minWidth: 65 },
-      { title: '付款状态', key: 'payStatus', minWidth: 65 },
-      { title: '发票状态', key: 'invoiceStatus', minWidth: 65, editor: 'invoiceStatusList'},
+      { title: '付款状态', key: 'payStatus', minWidth: 65, editor: 'enum' },
+      { title: '发票状态', key: 'invoiceStatus', minWidth: 65, editor: 'enum'},
       { title: '操作', slot: 'action', minWidth: 50 }
     ] as ColumnExtra[]
   }
 
   auditVisible = false
-
-  crawlVisible = false
 
   get auditSummary() {
     const count = this.selectedIds.length
@@ -173,14 +229,12 @@ export default class IndexPage extends ViewBase {
     this.refresh()
   }
 
-  async crawlSubmit({ channel, account }: any) {
-    const pdata = {
-      channelDataId: account
-    }
-    await newItem(pdata)
-    toast('操作成功')
-    this.crawlVisible = false
-    this.refresh()
+  @Watch('channelCode')
+  watchChannelCode(channel: string) {
+    this.$router.push({
+      name: 'finance-kol-payment',
+      params: channel == defaultChannel ? {} : { channel }
+    })
   }
 
   @Watch('channel')

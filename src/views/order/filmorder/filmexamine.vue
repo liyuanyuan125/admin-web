@@ -50,20 +50,22 @@
         </div>
         <div v-if='$route.params.status == 0' class='title'>图片视频类物料</div>
         <div v-if='$route.params.status == 0' class='bos'>
-          <Row>物料下载地址： {{detailList.materialUrl}}</Row>
-          <Row>资源使用说明：{{detailList.materialDescription}}</Row>
+          <Row>物料下载地址： <span>{{detailList.material.url}}</span></Row>
+          <Row>资源使用说明：<span>{{detailList.material.description}}</span></Row>
         </div>
         <!-- 电子券资源 -->
         <div v-if='$route.params.status == 0' class='title'>电子券资源</div>
         <div v-if='$route.params.status == 0' class='bos'>
-          <Table :columns="ticketcolumns" :data='ticketlist' border stripe disabled-hover size="small" class="table">
-          </Table>
-          <Row>资源使用说明：滴入酚酞遇古巴和你几门课烫染头发v共一百年后你们家门口日方提供v抱回家呢</Row>
+          <div style='display: flex'>
+            <span>电子券列表：</span>
+            <Table style='width: 430px' :columns="ticketcolumns" :data='ticketlist' border stripe disabled-hover size="small" class="table">
+            </Table>
+          </div>
+          <Row>资源使用说明: <span>{{description}}</span></Row>
         </div>
         <div v-if='$route.params.status == 0' class='title'>效果图</div>
         <div v-if='$route.params.status == 0' class='bos imgs'>
-          <img src="//fanyi.bdstatic.com/static/translation/img/header/logo_40c4f13.svg" alt="">
-          <img src="//fanyi.bdstatic.com/static/translation/img/header/logo_40c4f13.svg" alt="">
+          <img :src="list.reportImages" alt="">
         </div>
         <!-- 操作日志 -->
         <div v-if='$route.params.status == 0' class='title'>操作日志</div>
@@ -81,7 +83,7 @@ import jsxReactToVue from '@/util/jsxReactToVue'
 import moment from 'moment'
 
 import {
-  itemlist, changestatus
+  itemlist, changestatus, movielist
 } from '@/api/filmorder'
 import { moviedetail } from '@/api/resourceFilm'
 import EditDialog, { Field } from '@/components/editDialog'
@@ -110,13 +112,14 @@ export default class Main extends ViewBase {
   // 操作日志
   loglist: any = []
   ticketlist: any = []
+  description: string = ''
   approveStatusList: any = [
     {
-      key: 1,
+      key: 2,
       text: '审核通过'
     },
     {
-      key: 2,
+      key: 5,
       text: '审核不通过'
     }
   ]
@@ -133,9 +136,9 @@ export default class Main extends ViewBase {
   ]
 
   ticketcolumns = [
-    { title: '序号',  key: 'id', align: 'center' },
-    { title: '票券名称',  key: 'companyName', align: 'center' },
-    { title: '票券编码',  key: 'companyName', align: 'center' },
+    { title: '序号',  key: 'code', align: 'center' },
+    { title: '票券名称',  key: 'name', align: 'center' },
+    { title: '票券编码',  key: 'cooperationId', align: 'center' },
   ]
 
   dataForm: any = { ...dataForm }
@@ -149,9 +152,17 @@ export default class Main extends ViewBase {
         // 订单列表
       const { data } = await itemlist(this.$route.params.id)
       this.list = data
-
-      const datas = await moviedetail(this.$route.params.id)
+      if (this.$route.params.status == '1') {
+        return
+      }
+      const datas = await movielist(data.movieId)
       this.detailList = datas.data
+      if (datas.data.coupon) {
+        this.ticketlist = (datas.data.coupon.batches || []).length > 0 ? datas.data.coupon.batches[0].items : []
+      }
+      if (datas.data.coupon && datas.data.coupon.description) {
+        this.description = datas.data.coupon.description
+      }
     } catch (ex) {
       this.handleError(ex)
     } finally {

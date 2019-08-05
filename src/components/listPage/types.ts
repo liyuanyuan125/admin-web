@@ -6,7 +6,7 @@ import NumberInput from '@/components/numberInput'
 import { kebabCase, isPlainObject } from 'lodash'
 import Deprecated from '@/components/Deprecated.vue'
 import PoptipSelect from '@/components/PoptipSelect.vue'
-import { devError } from '@/util/dev'
+import { devError, devWarn } from '@/util/dev'
 import { ParamDeal, Param } from '@/util/param'
 import moment from 'moment'
 import DatePicker from './components/datePicker.vue'
@@ -291,7 +291,7 @@ const getEnum = (column: ColumnExtra, enumMap: MapType<any>, row: any) => {
   }
   const dataKey = row[key!]
   if (dataKey == null) {
-    devError(`dataKey 为 null`)
+    devWarn(`dataKey 为 null`)
   }
   const enumItem = textMap[dataKey]
   return enumItem
@@ -418,7 +418,7 @@ export function normalizeColumns(list: ColumnExtra[], param: ColumnParam) {
 }
 
 /**
- * liet fetch 调用结果
+ * list fetch 调用结果
  */
 export interface ListFetchResult {
   code: number

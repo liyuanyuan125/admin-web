@@ -2,7 +2,11 @@
   <div class="list-page">
     <slot name="act-bar">
       <div class="act-bar flex-box">
-        <form class="form flex-1" @submit.prevent>
+        <form
+          class="form flex-1"
+          @submit.prevent
+          v-if="normalFilter && normalFilter.length > 0"
+        >
           <component
             v-for="it in normalFilter"
             v-model="query[it.name]"
@@ -59,6 +63,7 @@
           show-total
           show-sizer
           show-elevator
+          v-bind="pageProps"
         />
       </div>
     </slot>
@@ -119,6 +124,21 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
    * 已选择的项的 ids（不限于当前页，所有页），支持通过 .sync 双向绑定
    */
   @Prop({ type: Array, default: () => [] }) selectedIds!: Array<number | string>
+
+  /**
+   * 禁用选择的 id 列表
+   */
+  @Prop({ type: Array, default: () => [] }) disabledIds!: Array<number | string>
+
+  /**
+   * 禁用 url manager 的行为
+   */
+  @Prop({ type: Boolean, default: false }) disableUrlManager!: boolean
+
+  /**
+   * Page 属性配置
+   */
+  @Prop({ type: Object, default: () => ({}) }) pageProps!: object
 
   allSelectedIds = this.selectedIds
 
@@ -181,7 +201,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
   }
 
   mounted() {
-    this.updateQueryByParam()
+    this.disableUrlManager ? this.updateQuery() : this.updateQueryByParam()
   }
 
   // 简单包装一下，以便适应两种数据结构
@@ -200,7 +220,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
 
     this.oldQuery = { ...this.query }
 
-    this.updateUrl()
+    this.disableUrlManager || this.updateUrl()
 
     this.loading = true
     const query = dealParams(this.filters, this.query, { cleanDefault: true })
@@ -229,10 +249,12 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
     const idKey = this.idKey
     const selectable = this.selectable
     const selectedMap = toMap(this.selectedIds)
+    const disabledMap = toMap(this.disabledIds)
     this.list = list.map(it => {
       return {
         ...it,
-        _checked: selectable ? it[idKey] in selectedMap : false
+        _checked: selectable ? it[idKey] in selectedMap : false,
+        _disabled: selectable ? it[idKey] in disabledMap : false,
       }
     })
   }
@@ -283,6 +305,11 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
     const ids = uniqIds.length == value.length ? value : uniqIds
     this.$emit('update:selectedIds', ids)
   }
+
+  @Watch('disabledIds')
+  watchDisabledIds() {
+    this.updateList()
+  }
 }
 </script>
 
@@ -294,7 +321,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
   margin-bottom: 88px;
 }
 
-.act-bar ~ .act-bar {
+.act-bar ~ .act-bar:not(:empty) {
   margin-top: 15px;
 }
 

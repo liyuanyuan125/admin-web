@@ -20,18 +20,21 @@
         class="upload-item"
         :class="{ 'has-error': !!it.error }"
       >
-        <Tooltip
-          placement="right" :max-width="400"
+        <component
+          :is="canViewImage(it) ? 'tooltip' : 'span'"
+          placement="right"
+          :max-width="400"
           class="upload-item-tooltip"
           transfer
         >
           <div class="file-name">{{it.clientName}}</div>
           <Progress :percent="it.percent" :status="it.progressStatus"/>
           <div class="error" v-if="it.error">{{it.error}}</div>
-          <div slot="content" v-if="canViewImage">
+
+          <div slot="content" v-if="canViewImage(it)">
             <img :src="it.url" class="upload-img">
           </div>
-        </Tooltip>
+        </component>
       </DropdownItem>
     </DropdownMenu>
   </Dropdown>
@@ -109,11 +112,6 @@ export default class UploadButton extends ViewBase {
    * 接受的文件类型
    */
   @Prop({ type: String, default: '*' }) accept!: string
-
-  /**
-   * 上传文件的最大个数，默认 1 个
-   */
-  @Prop({ type: Number, default: 1 }) maxCount!: number
 
   /**
    * Button Type，详见 https://www.iviewui.com/components/button
@@ -214,7 +212,7 @@ export default class UploadButton extends ViewBase {
     if (!this.isUploading) {
       const files = this.list.filter(it => it.status == 'done')
         .map(it => slice(it, 'url,fileId,clientName,clientSize,clientType'))
-      this.$emit('success', { files })
+      this.$emit('success', { files } as SuccessEvent)
     }
   }
 }

@@ -1,13 +1,6 @@
 <template>
   <div class="edit-page">
-    <EditForm
-      :fields="fields"
-      :fetch="fetch"
-      :submit="submit"
-      :hideSubmit="isView"
-      :labelWidth="88"
-      @done="onDone"
-    >
+    <EditForm :fields="fields" :fetch="fetch" :submit="submit" :hideSubmit="isView" :labelWidth="120" @done="onDone">
     </EditForm>
   </div>
 </template>
@@ -16,32 +9,43 @@
 import { Component, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import EditForm, { Field, Validator } from '@/components/editForm'
-import { queryItem, queryProvince, queryCity, editItem, auditItem } from './data'
-import AgeTable, { KeyTextValue } from './components/ageTable.vue'
-import FansPane, { FansItem } from './components/fansPane.vue'
-import PriceTable, { PriceItem } from './components/priceTable.vue'
-import LogTable from './components/logTable.vue'
 import { success } from '@/ui/modal'
 import { MapType } from '@/util/types'
 import { devLog } from '@/util/dev'
+import AgeTable, { KeyTextValue } from './components/ageTable.vue'
+import FansPane, { FansItem } from './components/fansPane.vue'
+import KolsPane from './components/kolsPane.vue'
+import MoivesPane from './components/moviesPane.vue'
+// import PriceTable, { PriceItem } from './components/priceTable.vue'
+// import LogTable from './components/logTable.vue'
+import {
+  beforeCreate,
+  queryItem,
+  newItem,
+  editItem,
+  auditItem,
+  queryProvince,
+  queryCity,
+  queryKolAcounts,
+  queryMoives
+} from './data'
 
 const ratioValidator: Validator = (rule, value: Array<{ value: number }>, callback) => {
-  const total = value.reduce((sum, it) => sum += it.value, 0)
-  const error = isNaN(total)
-    ? '请输入数字'
-    : (total > 100 ? '占比之和不能大于 100' : '')
+  const total = value.reduce((sum, it) => (sum += it.value), 0)
+  const error = isNaN(total) ? '请输入数字' : total > 100 ? '占比之和不能大于 100' : ''
   error ? callback(new Error(error)) : callback()
 }
 
 const actionMap: MapType<any> = {
   view: null,
   edit: editItem,
-  audit: (item: any) => auditItem({
-    channelCode: item.channel,
-    ids: [item.id],
-    agree: item.auditPass,
-    remark: item.auditPass ? '' : item.remark
-  }),
+  create: newItem,
+  audit: (item: any) =>
+    auditItem({
+      ids: [item.id],
+      agree: item.auditPass,
+      remark: item.auditPass ? '' : item.remark
+    })
 }
 
 @Component({
@@ -49,12 +53,17 @@ const actionMap: MapType<any> = {
     EditForm
   }
 })
-export default class EditPage extends ViewBase {
+export default class BrandProductDetail extends ViewBase {
   @Prop({ type: Number, default: 0 }) id!: number
 
-  @Prop({ type: String, default: '' }) channel!: string
+  @Prop({ type: Number, default: 0 }) brandId!: number
 
-  @Prop({ type: String, default: '' }) action!: 'view' | 'edit' | 'audit'
+  @Prop({ type: String, default: '' }) action!: 'view' | 'edit' | 'audit' | 'create'
+
+  channelList: any[] = []
+
+  // 用于创建产品
+  ageCodeList: any[] = []
 
   get isView() {
     return this.action == 'view'
@@ -75,115 +84,84 @@ export default class EditPage extends ViewBase {
 
     const list: Field[] = [
       {
+        name: 'brandId',
+        defaultValue: this.brandId
+      },
+
+      {
         name: 'id',
         defaultValue: this.id,
-      },
-
-      {
-        name: 'channel',
-        defaultValue: this.channel,
-      },
-
-      {
-        name: 'channelDataId',
-        defaultValue: '',
+        label: '产品ID',
         text: true,
-        label: '账号',
-        span: 8,
-        group: '基本信息',
-      },
-
-      {
-        name: 'photo',
-        defaultValue: '',
-        label: '头像',
-        span: 8,
-        image: true
+        span: 24,
+        group: '基础信息',
+        visible: item => (this.action == 'create' ? false : true)
       },
 
       {
         name: 'name',
         defaultValue: '',
-        text: true,
-        label: '账号名称',
+        input: true,
+        label: '产品中文名称',
+        span: 8,
+        required: true
+      },
+
+      {
+        name: 'enName',
+        defaultValue: '',
+        input: true,
+        label: '产品外文名称',
+        span: 8,
+        offsetLeft: 6
+      },
+
+      {
+        name: 'imgsList',
+        defaultValue: [],
+        label: '产品图片',
+        disabled: false,
+        imageList: {
+          withExtra: true,
+          maxCount: 6
+        },
+        span: 22,
+        offsetRight: 6
+      },
+
+      {
+        name: 'marketDate',
+        defaultValue: 0,
+        date: true,
+        placeholder: '选择日期',
+        label: '产品上市日期',
         span: 22
       },
 
       {
-        name: 'intro',
+        name: 'description',
         defaultValue: '',
         input: {
           type: 'textarea',
           autosize: { minRows: 2, maxRows: 8 }
         },
-        label: '功能介绍',
-        span: 22
-      },
-
-      {
-        name: 'accountCategoryCode',
-        defaultValue: '',
-        select: {
-          enumKey: 'accountCategoryList',
-        },
-        label: '账号分类',
-        required: !readonly,
-        span: 8,
-      },
-
-      {
-        name: 'area',
-        defaultValue: [0, 0],
-        label: '所在地区',
-        span: 8,
-        area: {
-          maxLevel: 2,
-          noSelf: true,
-        },
-        offsetRight: 6,
-      },
-
-      {
-        name: 'type',
-        defaultValue: 0,
+        label: '产品简述',
         required: true,
-        radio: {
-          enumKey: 'typeList'
-        },
-        label: '账号类型',
-        span: 8,
+        span: 22,
+        offsetRight: 6
       },
 
       {
-        name: 'auth',
-        defaultValue: false,
-        switch: true,
-        label: '是否认证',
-        span: 6,
-      },
-
-      {
-        name: 'authName',
+        name: 'keyWordsContent',
         defaultValue: '',
-        required: true,
         input: {
-          prepend: '认证企业名称'
+          type: 'textarea',
+          autosize: { minRows: 2, maxRows: 8 }
         },
-        span: 10,
-        visible: item => item.auth
-      },
-
-      {
-        name: 'fansCount',
-        defaultValue: 0,
-        label: '粉丝数',
-        required: !readonly,
-        placeholder: '粉丝数',
-        span: 8,
-        group: '粉丝画像',
-        number: {
-          poptip: true
-        }
+        label: '搜索关键字',
+        required: true,
+        span: 22,
+        offsetRight: 6
       },
 
       {
@@ -192,10 +170,11 @@ export default class EditPage extends ViewBase {
         label: '粉丝性别',
         placeholder: '百分比',
         span: 7,
+        group: '粉丝画像',
         number: {
           prepend: '男性',
           append: '%',
-          max: 100,
+          max: 100
         }
       },
 
@@ -207,7 +186,7 @@ export default class EditPage extends ViewBase {
         number: {
           prepend: '女性',
           append: '%',
-          max: 100,
+          max: 100
         }
       },
 
@@ -259,25 +238,34 @@ export default class EditPage extends ViewBase {
       },
 
       {
-        name: 'priceList',
+        name: 'kols',
         defaultValue: [],
-        group: '结算信息',
-        label: '结算价',
-        component: PriceTable,
+        label: '推荐的KOL列表',
+        component: KolsPane,
+        props: {
+          type: '平台',
+          channelList: this.channelList,
+          fetch: queryKolAcounts
+        },
         span: 22,
+        group: '推荐信息'
       },
 
       {
-        name: 'provideInvoice',
-        defaultValue: false,
-        switch: true,
-        label: '是否提供发票',
-        span: 6,
-      },
+        name: 'movies',
+        defaultValue: [],
+        label: '推荐的影片列表',
+        component: MoivesPane,
+        props: {
+          type: '影片ID',
+          fetch: queryMoives
+        },
+        span: 22
+      }
     ]
 
-    readonly && list.forEach(it => it.disabled = true)
-
+    readonly && list.forEach(it => (it.disabled = true))
+    /*
     readonly && list.push(
       {
         name: 'audited',
@@ -316,17 +304,33 @@ export default class EditPage extends ViewBase {
         visibleCol: () => isView
       }
     )
-
+    */
     return list
   }
 
+  item: any = null
+
   submit = actionMap[this.action]
 
-  fetch() {
-    return queryItem({
-      id: this.id,
-      channel: this.channel
-    })
+  created() {}
+
+  async fetch() {
+    let data = null
+    if (this.action === 'edit' || this.action === 'view') {
+      data = await queryItem({
+        id: this.id
+      })
+      if (data.channelCodeList && data.channelCodeList.length > 0) {
+        this.channelList = data.channelCodeList
+      }
+    } else {
+      data = await beforeCreate()
+      this.channelList =
+        data.channelCodeList && data.channelCodeList.length > 0
+          ? data.channelCodeList
+          : []
+    }
+    return data
   }
 
   async onDone() {
