@@ -59,7 +59,7 @@
           </Col>
           <Col :span="10" :offset="2" >
             <FormItem label="创立时间:">
-              <DatePicker type="date" v-model="form.foundDate" :options="options" placeholder="请选择创立时间"></DatePicker>
+              <DatePicker type="date" v-model="form.foundDate" placeholder="请选择创立时间"></DatePicker>
             </FormItem>
           </Col>
         </Row>
@@ -352,7 +352,7 @@ export default class Main extends ViewBase {
             fileId: item.logo
           }
         ] : []
-        this.form.foundDate = moment(this.formatDate(item.foundDate)).toDate()
+        this.form.foundDate = item.foundDate ? moment(this.formatDate(item.foundDate)).toDate() : ''
         this.form.countryCode = item.countryCode
         this.form.tradeCode = item.tradeCode
         this.form.founder = item.founder
@@ -525,7 +525,7 @@ export default class Main extends ViewBase {
       const agetable = this.ageCodeList.map((it: any) => {
         return {
           k: it.key,
-          v: it.key
+          v: it.k
         }
       })
       const kols = this.kollist.map((it: any) => {
@@ -548,7 +548,7 @@ export default class Main extends ViewBase {
         foundDate: this.form.foundDate[0] ? moment(this.form.foundDate).format(timeFormat) : '',
         movies: this.filmlist,
         malePercent: this.form.malePercent ? this.form.malePercent * 100 : '',
-        femalePercent: this.form.femalePercent ? this.form.femalePercent * 100 : '',
+        femalePercent: this.form.femalePercent ? ~~(this.form.femalePercent * 100) : '',
       })
       if (this.$route.params.id) {
         await editbrand(query)
