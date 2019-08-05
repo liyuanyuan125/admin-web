@@ -59,7 +59,7 @@
           </Col>
           <Col :span="10" :offset="2" >
             <FormItem label="创立时间:">
-              <DatePicker type="date" v-model="form.foundDate" placeholder="请选择创立时间"></DatePicker>
+              <DatePicker type="date" v-model="form.foundDate" :options='options' placeholder="请选择创立时间"></DatePicker>
             </FormItem>
           </Col>
         </Row>
@@ -85,6 +85,13 @@
           <Col :span="10" >
             <FormItem label="搜索关键字:">
               <Input v-model="form.keyWords" placeholder></Input>
+            </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col :span="10" >
+            <FormItem label="系统评论热词:">
+              <Input v-model="form.hotWords" placeholder="'词组之间以','隔开'"></Input>
             </FormItem>
           </Col>
         </Row>
@@ -233,6 +240,7 @@ export default class Main extends ViewBase {
     femalePercent: '',
     malePercent: '',
     headImgBig: [],
+    hotWords: ''
   }
 
   fans: any = {
@@ -370,6 +378,7 @@ export default class Main extends ViewBase {
         this.fans.provinces = item.provinces || []
         this.fans.citys = item.citys || []
         this.form.keyWords = (item.keyWords || []).join(';')
+        this.form.hotWords = (item.hotWords || []).join(',')
         this.filmlist = item.movies || []
         this.form.headImgBig = item.headImgBig ? [
           {
@@ -536,11 +545,13 @@ export default class Main extends ViewBase {
         }
       })
       const keyWords = (this.form.keyWords || '').split(';')
+      const hotWords = (this.form.hotWords || '').split(',')
       const query = clean({
         id: this.$route.params.id,
         ...this.form,
         ...this.fans,
         keyWords,
+        hotWords,
         headImgBig: this.form.headImgBig.map((it: any) => it.fileId).join(''),
         logo: this.form.logo.map((it: any) => it.fileId).join(''),
         ages: agetable,
