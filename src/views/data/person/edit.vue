@@ -407,12 +407,12 @@ export default class Main extends ViewBase {
         }
 
         // 处理粉丝展示
-        const formatIntro = item.introduction.replace(/&nbsp;/g, ' ').replace(/\<br\/>/g, '\r\n')
-        const intro = item.introduction ? formatIntro : item.introduction
+        const intro =  item.introduction ?
+                       item.introduction.replace(/&nbsp;/g, ' ').replace(/\<br\/>/g, '\r\n') : item.introduction
         this.form = {
             tip: item.tip || '',
             tags: item.tags ? item.tags.join() : null,
-            introduction: intro,
+            introduction: '',
             biJyIndex: item.biJyIndex,
             jyIndex: item.jyIndex,
             jyIndexWeight: item.jyIndexWeight,
@@ -420,7 +420,6 @@ export default class Main extends ViewBase {
             primaryPro: this.primaryPro[0] || null, // 主要职业
             restPro: this.restPro, // 其他职业
         }
-
         } catch (ex) {
             this.handleError(ex)
         }
