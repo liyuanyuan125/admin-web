@@ -60,7 +60,6 @@ export default class BrandProductDetail extends ViewBase {
     const readonly = isView
 
     const list: Field[] = [
-
       {
         name: 'id',
         defaultValue: this.id,
@@ -79,7 +78,6 @@ export default class BrandProductDetail extends ViewBase {
         span: 8,
         required: true
       },
-
 
       // {
       //   name: 'marketDate',
@@ -167,11 +165,11 @@ export default class BrandProductDetail extends ViewBase {
         this.channelList = data.channelCodeList
       }
     } else {
-      data = await beforeCreate()
-      this.channelList =
-        data.channelCodeList && data.channelCodeList.length > 0
-          ? data.channelCodeList
-          : []
+      // data = await beforeCreate()
+      // this.channelList =
+      //   data.channelCodeList && data.channelCodeList.length > 0
+      //     ? data.channelCodeList
+      //     : []
     }
     return data
   }
