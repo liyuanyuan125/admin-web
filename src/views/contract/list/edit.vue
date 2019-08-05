@@ -39,7 +39,8 @@ const actionMap: MapType<any> = {
   edit: editItem,
   view: null,
   audit: (item: any) => auditItem(item.id, {
-    approveStatus: item.auditPass,
+    // 审核状态：0 未知，1 待审核，2 通过，3 拒绝，4 作废
+    approveStatus: item.auditPass ? 2 : 3,
     refuseReason: item.auditPass ? '' : item.remark
   }),
   copy: copyItem,
