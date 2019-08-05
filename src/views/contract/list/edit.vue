@@ -19,12 +19,13 @@ import ViewBase from '@/util/ViewBase'
 import EditForm, { Field, Validator } from '@/components/editForm'
 import { queryItem, newItem, editItem, auditItem, copyItem } from './data'
 import PriceTable from './components/priceTable.vue'
-import CinemaTable from './components/cinemaTable.vue'
+import CinemaTable, { CinemaItem } from './components/cinemaTable.vue'
 import AttachmentTable from './components/attachmentTable.vue'
 // import LogTable from './components/logTable.vue'
 import { alert, success } from '@/ui/modal'
 import { MapType, CancelableEvent } from '@/util/types'
 import { devLog } from '@/util/dev'
+import { debounce } from 'lodash'
 
 const ratioValidator: Validator = (rule, value: Array<{ value: number }>, callback) => {
   const total = value.reduce((sum, it) => sum += it.value, 0)
@@ -416,6 +417,21 @@ export default class EditPage extends ViewBase {
   async onDone() {
     await success('操作成功')
     this.$router.back()
+  }
+
+  mounted() {
+    const editForm = this.editForm
+    editForm.$watch('item.settlementPrice', (value: MapType<PriceItem>) => {
+      debounce(() => {
+        const newCinemaList = editForm.item.cinemaList.map((it: CinemaItem) => {
+          const { commonPrice, trailerPrice } = value[it.cityGradeCode]
+          commonPrice != null && (it.commonPrice = commonPrice)
+          trailerPrice != null && (it.trailerPrice = trailerPrice)
+          return it
+        })
+        editForm.item.cinemaList = newCinemaList
+      }, 300)()
+    }, { deep: true })
   }
 }
 </script>

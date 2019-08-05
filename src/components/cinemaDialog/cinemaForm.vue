@@ -56,8 +56,8 @@ export default class CinemaForm extends ViewBase {
         name: 'query',
         defaultValue: '',
         type: 'input',
-        width: 288,
-        placeholder: '输入影院专资编码或名称进行搜索'
+        width: 328,
+        placeholder: '输入影院专资编码或名称，回车搜索'
       },
 
       {
@@ -132,6 +132,9 @@ export default class CinemaForm extends ViewBase {
 .cinema-form {
   /deep/ .list-page {
     margin-bottom: 0;
+  }
+  /deep/ .btn-reset {
+    display: none;
   }
 }
 </style>

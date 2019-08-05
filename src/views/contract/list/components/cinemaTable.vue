@@ -175,6 +175,7 @@ export default class CinemaTable extends ViewBase {
   @Watch('model', { deep: true })
   watchModel(value: CinemaItem[]) {
     this.$emit('input', value)
+    this.listPage && this.listPage.update()
   }
 }
 </script>
