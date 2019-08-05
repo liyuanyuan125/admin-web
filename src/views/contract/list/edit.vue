@@ -39,7 +39,8 @@ const actionMap: MapType<any> = {
   edit: editItem,
   view: null,
   audit: (item: any) => auditItem(item.id, {
-    approveStatus: item.auditPass,
+    // 审核状态：0 未知，1 待审核，2 通过，3 拒绝，4 作废
+    approveStatus: item.auditPass ? 2 : 3,
     refuseReason: item.auditPass ? '' : item.remark
   }),
   copy: copyItem,
@@ -126,6 +127,7 @@ export default class EditPage extends ViewBase {
         name: 'validityDate',
         defaultValue: [0, 0],
         label: '合同有效期',
+        required: !readonly,
         span: 10,
         dateRange: true,
       },
@@ -244,7 +246,6 @@ export default class EditPage extends ViewBase {
         placeholder: '请输入账号',
         span: 8,
         input: {
-          type: 'number',
           poptip: 'bank',
         },
       },
@@ -405,6 +406,9 @@ export default class EditPage extends ViewBase {
         accountNumber,
       }
       return result
+    }
+    if (this.isCopy) {
+      data.item.validityDate = [0, 0]
     }
     return data
   }

@@ -43,6 +43,11 @@ const idProps = paramTypes({ id: Number })
 interface RouteMetaBase {
   /** 页面标题 */
   title?: string | ((route: Route) => string)
+  /**
+   * 面包屑导航 route name 列表
+   * 只需设置中间的 route name 就行，页面本身与主导航，会自动添加
+   */
+  breadcrumbs?: string[]
   [key: string]: any
 }
 
@@ -605,7 +610,10 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
           copy: '复制',
         }
         return actionTextMap[action]
-      }
+      },
+      breadcrumbs: [
+        'contract-list'
+      ]
     },
     props: paramTypes({ id: Number, action: String })
   },

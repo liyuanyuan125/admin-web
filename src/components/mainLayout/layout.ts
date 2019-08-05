@@ -150,16 +150,26 @@ export function getBreadcrumbListFromRoute(route: Route, permMenu: PermPage[]) {
 
   let key = (name || '').toLowerCase()
 
-  const list: BreadcrumbConfig[] = []
+  const breadcrumbs = route.meta.breadcrumbs as string[]
+  const nameList = breadcrumbs != null
+    // 若明确配置了 breadcrumbs，则直接使用，但会在前后加上导航、页面本身的 name
+    ? [ key.replace(/([^-]+).*/, '$1'), ...breadcrumbs, key ]
+    // 否则，执行基于 - 的自动推断
+    : (() => {
+      const ret = []
+      while (key != '') {
+        ret.unshift(key)
+        if (!hasHyphen.test(key)) {
+          break
+        }
+        key = key.replace(lastHyphen, '')
+      }
+      return ret
+    })()
 
-  while (key != '') {
-    const item = configMap[key]
-    item && list.unshift(item)
-    if (!hasHyphen.test(key)) {
-      break
-    }
-    key = key.replace(lastHyphen, '')
-  }
+  const list = nameList
+    .map(it => configMap[it])
+    .filter(it => it != null)
 
   return list
 }
