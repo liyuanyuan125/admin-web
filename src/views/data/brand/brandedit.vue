@@ -412,7 +412,7 @@ export default class Main extends ViewBase {
         return {
           ...it,
           k: it.key,
-          v: it.key,
+          v: null,
         }
       })
       this.channelCodeList = channelCodeList
@@ -534,7 +534,7 @@ export default class Main extends ViewBase {
       const agetable = this.ageCodeList.map((it: any) => {
         return {
           k: it.key,
-          v: it.k
+          v: it.v
         }
       })
       const kols = this.kollist.map((it: any) => {
