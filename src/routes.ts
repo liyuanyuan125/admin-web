@@ -790,7 +790,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 财务管理 - KOL付款单管理
   {
-    path: '/finance/kol-payment/',
+    path: '/finance/kol-payment/:channel?',
     name: 'finance-kol-payment',
     component: () => import('./views/finance/kol-payment/index.vue'),
     meta: {
@@ -801,16 +801,16 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 财务管理 - KOL付款单管理 - 查看、登记、付款
   {
-    path: '/finance/kol-payment/edit/:id/:channel/:action',
+    path: '/finance/kol-payment/edit/:id/:action',
     name: 'finance-kol-payment-edit',
     component: () => import('./views/finance/kol-payment/edit.vue'),
     meta: {
       authKey: '',
       title({ params: { action } }) {
-        return action == 'view' ? '查看' : (action == 'edit' ? '登记' : '付款')
+        return action == 'view' ? '查看' : '财务付款'
       }
     },
-    props: paramTypes({ id: Number, channel: String, action: String })
+    props: paramTypes({ id: Number, action: String })
   },
 
   // 财务管理 - 映前广告资源方账单管理 list

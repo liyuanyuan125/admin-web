@@ -1,13 +1,6 @@
 <template>
   <div class="edit-page">
-    <EditForm
-      :fields="fields"
-      :fetch="fetch"
-      :submit="submit"
-      :hideSubmit="isView"
-      :labelWidth="88"
-      @done="onDone"
-    >
+    <EditForm :fields="fields" :fetch="fetch" :submit="submit" :hideSubmit="isView" :labelWidth="120" @done="onDone">
     </EditForm>
   </div>
 </template>
@@ -16,32 +9,27 @@
 import { Component, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import EditForm, { Field, Validator } from '@/components/editForm'
-import { queryItem, queryProvince, queryCity, editItem, auditItem } from './data'
-import AgeTable, { KeyTextValue } from './components/ageTable.vue'
-import FansPane, { FansItem } from './components/fansPane.vue'
-import PriceTable, { PriceItem } from './components/priceTable.vue'
-import LogTable from './components/logTable.vue'
 import { success } from '@/ui/modal'
 import { MapType } from '@/util/types'
 import { devLog } from '@/util/dev'
+// import PriceTable, { PriceItem } from './components/priceTable.vue'
+// import LogTable from './components/logTable.vue'
+import {
+  queryItem,
+  editItem,
+  auditItem,
+  queryKolAcounts,
+} from './data'
 
 const ratioValidator: Validator = (rule, value: Array<{ value: number }>, callback) => {
-  const total = value.reduce((sum, it) => sum += it.value, 0)
-  const error = isNaN(total)
-    ? '请输入数字'
-    : (total > 100 ? '占比之和不能大于 100' : '')
+  const total = value.reduce((sum, it) => (sum += it.value), 0)
+  const error = isNaN(total) ? '请输入数字' : total > 100 ? '占比之和不能大于 100' : ''
   error ? callback(new Error(error)) : callback()
 }
 
 const actionMap: MapType<any> = {
   view: null,
-  edit: editItem,
-  audit: (item: any) => auditItem({
-    channelCode: item.channel,
-    ids: [item.id],
-    agree: item.auditPass,
-    remark: item.auditPass ? '' : item.remark
-  }),
+  edit: editItem
 }
 
 @Component({
@@ -49,14 +37,15 @@ const actionMap: MapType<any> = {
     EditForm
   }
 })
-export default class EditPage extends ViewBase {
+export default class BrandProductDetail extends ViewBase {
   @Prop({ type: Number, default: 0 }) id!: number
 
-  @Prop({ type: String, default: '' }) channel!: string
+  @Prop({ type: String, default: '' }) action!: 'view' | 'edit'
 
-  @Prop({ type: String, default: '' }) action!: 'view' | 'edit' | 'audit'
+  channelList: any[] = []
 
-  item: any = null
+  // 用于创建产品
+  ageCodeList: any[] = []
 
   get isView() {
     return this.action == 'view'
@@ -66,220 +55,60 @@ export default class EditPage extends ViewBase {
     return this.action == 'edit'
   }
 
-  get isAudit() {
-    return this.action == 'audit'
-  }
-
   get fields() {
     const isView = this.isView
-    const isAudit = this.isAudit
-    const readonly = isView || isAudit
+    const readonly = isView
 
     const list: Field[] = [
+
       {
         name: 'id',
         defaultValue: this.id,
-      },
-
-      {
-        name: 'channel',
-        defaultValue: this.channel,
-      },
-
-      {
-        name: 'channelDataId',
-        defaultValue: '',
+        label: '产品ID',
         text: true,
-        label: '账号',
-        span: 8,
-        group: '基本信息',
-      },
-
-      {
-        name: 'photo',
-        defaultValue: '',
-        label: '头像',
-        span: 8,
-        image: true
+        span: 24,
+        group: '订单基本信息',
+        // visible: item => (this.action == 'edit' ? false : true)
       },
 
       {
         name: 'name',
         defaultValue: '',
-        text: true,
-        label: '账号名称',
-        span: 22
-      },
-
-      {
-        name: 'intro',
-        defaultValue: '',
-        input: {
-          type: 'textarea',
-          autosize: { minRows: 2, maxRows: 8 }
-        },
-        label: '功能介绍',
-        span: 22
-      },
-
-      {
-        name: 'accountCategoryCode',
-        defaultValue: '',
-        select: {
-          enumKey: 'accountCategoryList',
-        },
-        label: '账号分类',
-        required: !readonly,
+        input: true,
+        label: '产品中文名称',
         span: 8,
+        required: true
       },
 
-      {
-        name: 'area',
-        defaultValue: [0, 0],
-        label: '所在地区',
-        span: 8,
-        area: {
-          maxLevel: 2,
-          noSelf: true,
-        },
-        offsetRight: 6,
-      },
 
-      {
-        name: 'type',
-        defaultValue: 0,
-        required: true,
-        radio: {
-          enumKey: 'typeList'
-        },
-        label: '账号类型',
-        span: 8,
-      },
+      // {
+      //   name: 'marketDate',
+      //   defaultValue: 0,
+      //   date: true,
+      //   placeholder: '选择日期',
+      //   label: '产品上市日期',
+      //   span: 22
+      // },
 
-      {
-        name: 'auth',
-        defaultValue: false,
-        switch: true,
-        label: '是否认证',
-        span: 6,
-      },
 
-      {
-        name: 'authName',
-        defaultValue: '',
-        required: true,
-        input: {
-          prepend: '认证企业名称'
-        },
-        span: 10,
-        visible: item => item.auth
-      },
+      // {
+      //   name: 'kols',
+      //   defaultValue: [],
+      //   label: '推荐的KOL列表',
+      //   component: KolsPane,
+      //   props: {
+      //     type: '平台',
+      //     channelList: this.channelList,
+      //     fetch: queryKolAcounts
+      //   },
+      //   span: 22,
+      //   group: '推荐信息'
+      // },
 
-      {
-        name: 'fansCount',
-        defaultValue: 0,
-        label: '粉丝数',
-        required: !readonly,
-        placeholder: '粉丝数',
-        span: 8,
-        group: '粉丝画像',
-        number: {
-          poptip: true
-        }
-      },
-
-      {
-        name: 'malePercent',
-        defaultValue: 0,
-        label: '粉丝性别',
-        placeholder: '百分比',
-        span: 7,
-        number: {
-          prepend: '男性',
-          append: '%',
-          max: 100,
-        }
-      },
-
-      {
-        name: 'femalePercent',
-        defaultValue: 0,
-        placeholder: '百分比',
-        span: 5,
-        number: {
-          prepend: '女性',
-          append: '%',
-          max: 100,
-        }
-      },
-
-      {
-        name: 'ageList',
-        defaultValue: [],
-        label: '粉丝年龄区间',
-        component: AgeTable,
-        span: 22,
-        rules: [
-          {
-            validator: ratioValidator
-          }
-        ]
-      },
-
-      {
-        name: 'provinceList',
-        defaultValue: [],
-        label: '粉丝省份分布',
-        component: FansPane,
-        props: {
-          type: '省份',
-          fetch: queryProvince
-        },
-        span: 22,
-        rules: [
-          {
-            validator: ratioValidator
-          }
-        ]
-      },
-
-      {
-        name: 'cityList',
-        defaultValue: [],
-        label: '粉丝城市分布',
-        component: FansPane,
-        props: {
-          type: '城市',
-          fetch: queryCity
-        },
-        span: 22,
-        rules: [
-          {
-            validator: ratioValidator
-          }
-        ]
-      },
-
-      {
-        name: 'priceList',
-        defaultValue: [],
-        group: '结算信息',
-        label: '结算价',
-        component: PriceTable,
-        span: 22,
-      },
-
-      {
-        name: 'provideInvoice',
-        defaultValue: false,
-        switch: true,
-        label: '是否提供发票',
-        span: 6,
-      },
     ]
 
-    readonly && list.forEach(it => it.disabled = true)
-
+    readonly && list.forEach(it => (it.disabled = true))
+    /*
     readonly && list.push(
       {
         name: 'audited',
@@ -318,17 +147,33 @@ export default class EditPage extends ViewBase {
         visibleCol: () => isView
       }
     )
-
+    */
     return list
   }
 
+  item: any = null
+
   submit = actionMap[this.action]
 
-  fetch() {
-    return queryItem({
-      id: this.id,
-      channel: this.channel
-    })
+  created() {}
+
+  async fetch() {
+    let data = null
+    if (this.action === 'edit' || this.action === 'view') {
+      data = await queryItem({
+        id: this.id
+      })
+      if (data.channelCodeList && data.channelCodeList.length > 0) {
+        this.channelList = data.channelCodeList
+      }
+    } else {
+      data = await beforeCreate()
+      this.channelList =
+        data.channelCodeList && data.channelCodeList.length > 0
+          ? data.channelCodeList
+          : []
+    }
+    return data
   }
 
   async onDone() {
