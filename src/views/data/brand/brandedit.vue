@@ -104,7 +104,8 @@
             <FormItem label="粉丝性别占比" prop="malePercent" class="rest-input">
               <div>
                 男性：
-                <Input v-model="form.malePercent" placeholder style="width: 100px"></Input>%
+                <InputNumber :max="100" :min="0" v-model="form.malePercent" style="width: 100px"></InputNumber>%
+                <!-- <Input v-model="form.malePercent" placeholder style="width: 100px"></Input>% -->
               </div>
             </FormItem>
           </Col>
@@ -112,7 +113,8 @@
             <FormItem label prop="femalePercent" :labelWidth="0" class="rest-input">
               <div>
                 女性：
-                <Input v-model="form.femalePercent" placeholder style="width: 100px"></Input>%
+                <InputNumber :max="100" :min="0" v-model="form.femalePercent" style="width: 100px"></InputNumber>%
+                <!-- <Input v-model="form.femalePercent" placeholder style="width: 100px"></Input>% -->
               </div>
             </FormItem>
           </Col>
@@ -127,7 +129,8 @@
             disabled-hover
           >
             <template slot="v" slot-scope="{row, index}">
-              <Input style="width:100px" v-model="row.v" @on-change="updataRow(row, index)" /><span>%</span>
+              <InputNumber :max="100" :min="0" v-model="row.v" style="width: 100px"></InputNumber><span>%</span>
+              <!-- <Input style="width:100px" v-model="row.v" @on-change="updataRow(row, index)" /><span>%</span> -->
             </template>
           </Table>
         </FormItem>
