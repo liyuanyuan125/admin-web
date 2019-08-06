@@ -151,7 +151,7 @@ export default class EditForm extends ViewBase {
 
   submitLoading = true
 
-  item: any = null
+  public item: any = null
 
   defItem: any = {}
 
