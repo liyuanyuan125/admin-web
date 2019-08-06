@@ -1,190 +1,16 @@
 import { Component } from 'vue'
-import { MapType, AjaxResult } from '@/util/types'
-import { Select } from 'iview'
-import LazyInput from '@/components/LazyInput'
-import NumberInput from '@/components/numberInput'
-import { kebabCase, isPlainObject } from 'lodash'
+import { MapType, AjaxResult, KeyText, KeyTextControlStatus } from '@/util/types'
 import Deprecated from '@/components/Deprecated.vue'
 import PoptipSelect from '@/components/PoptipSelect.vue'
 import { devError, devWarn } from '@/util/dev'
-import { ParamDeal, Param } from '@/util/param'
 import moment from 'moment'
-import DatePicker from './components/datePicker.vue'
-import DateRangePicker from './components/dateRangePicker.vue'
-import RemoteSelect, {
-  Fetch as RemoteSelectFetch,
-  Backfill as RemoteSelectBackfill
-} from '@/components/remoteSelect'
+
 import {
   resolveRender as listResolveRender,
   LinkOptions as ListLinkOptions
 } from './list'
 
-/**
- * 固定类型列表
- */
-export type InnateTypes = 'input' | 'number' | 'select' | 'date' | 'dateRange'
-
-/**
- * 固定类型 Map
- */
-const innateTypeMap: MapType<Component> = {
-  input: LazyInput,
-
-  number: NumberInput,
-
-  select: Select,
-
-  date: DatePicker,
-
-  dateRange: DateRangePicker,
-}
-
-/**
- * 默认的 props
- */
-const defaultPropsMap: MapType<object> = {
-  select: {
-    clearable: true
-  }
-}
-
-/**
- * fetch 动作
- */
-export type FetchAction = (query: any) => Promise<AjaxResult>
-
-const filterComponentMap: MapType<Component> = {
-  remoteSelect: RemoteSelect
-}
-
-/**
- * 查询项
- */
-export interface Filter extends Param {
-  /** 要使用 component 类型 */
-  type?: InnateTypes | Component
-
-  /** placeholder */
-  placeholder?: string
-
-  /** width */
-  width?: number
-
-  /** minWidth */
-  minWidth?: number
-
-  /** maxWidth */
-  maxWidth?: number
-
-  /**
-   * 当 enumKey 为 select 时，渲染 select 的枚举列表的 key
-   * 如果没有明确设置，则 enumKey 会被设置为 name.replace(/Code$|$/, 'List')
-   */
-  enumKey?: string
-
-  /**
-   * 传递给组件的 props
-   * TODO: 在新的方式下，该属性没用了
-   */
-  props?: MapType<any>
-
-  /**
-   * 权限配置
-   */
-  auth?: string
-
-  // --------------------------------------------------
-  // 新的语法，参考 echarts 的配置语法，每个组件占用一个 key
-  // --------------------------------------------------
-
-  /**
-   * 组件 remoteSelect 的选项，若设置了该项，
-   * 则说明会用 RemoteSelect 组件渲染该项
-   */
-  remoteSelect?: {
-    fetch: RemoteSelectFetch,
-    backfill?: RemoteSelectBackfill
-  }
-}
-
-/**
- * 规范化后的查询项
- */
-export interface NormalFilter extends Filter {
-  /** 确定要使用的 component */
-  component: Component
-
-  /** class 或 class 列表 */
-  class: string | string[]
-
-  /** 样式对象 */
-  style: MapType
-}
-
-// 为了支持 true 作为属性的占位符
-const resolveProps = (item: any, name: string) => {
-  const props = item[name]
-  return isPlainObject(props) ? props : {}
-}
-
-// 新的方式：解析组件
-const resolveComponent = (item: Filter) => {
-  let part: any = null
-  if (item.type != null) {
-    // 老的方式，通过 type
-    const isStringType = typeof item.type === 'string'
-    const stringType = item.type as string
-    const component = isStringType ? innateTypeMap[stringType] : item.type as Component
-    const props = isStringType ? defaultPropsMap[stringType] : {}
-    part = { component, props }
-  } else {
-    // 新的方式，通过组件名
-    const name = Object.keys(filterComponentMap).find(key => key in item)
-    part = name && {
-      component: filterComponentMap[name],
-      props: resolveProps(item, name)
-    }
-  }
-  return {
-    ...item,
-    component: part && part.component,
-    props: {
-      ...item.props,
-      ...(part && part.props),
-    }
-  }
-}
-
-/**
- * 规范化查询项
- * @param list 待规范化的查询项列表
- */
-export function normalizeFilter(list: Filter[]) {
-  const result = list.map(resolveComponent)
-  .filter(it => it.component != null)
-  .map(it => {
-    const { component } = it
-    const item: NormalFilter = {
-      ...it,
-      class: [
-        'ui-filter',
-        kebabCase(component.name + '-' + it.name),
-      ],
-      style: {
-        width: it.width ? `${it.width}px` : '',
-        minWidth: it.minWidth ? `${it.minWidth}px` : '',
-        maxWidth: it.maxWidth ? `${it.maxWidth}px` : '',
-      },
-      enumKey: it.enumKey || it.name.replace(/Code$|$/, 'List'),
-      auth: it.auth || '',
-    }
-
-    return item
-  })
-
-  return result
-}
+export * from './filter'
 
 type RenderFunction = (h: any, ctx: any) => any
 
@@ -263,7 +89,16 @@ export interface ColumnExtra extends Column {
   /**
    * 使用组件 route-link
    */
-  link?: ListLinkOptions
+  link?: ListLinkOptions,
+
+  /**
+   * 使用组件 ListEnum，以及该组件的选项，若传递 string，则为 enumKey
+   */
+  enum?: string | {
+    enumKey?: string
+    updateField?: (id: any, value: any) => Promise<any>
+    [key: string]: any
+  }
 }
 
 /**
@@ -276,10 +111,14 @@ export type Editors = 'deprecated' | 'poptipSelect' | 'enum'
  */
 export interface ColumnParam {
   scopedSlots: any
+  list: any[]
+  // 新版列表枚举
+  listEnumMap: MapType<KeyTextControlStatus[]>
+  handleError: (ex: any) => any
+
+  // TODO: 老版枚举，将慢慢优化掉
   enumType: MapType<any[]>
   enumMap: MapType<any>
-  list: any[]
-  handleError: (ex: any) => any
 }
 
 const getEnum = (column: ColumnExtra, enumMap: MapType<any>, row: any) => {
@@ -310,6 +149,7 @@ const getTimeEditor = (format: string) => {
 
 /**
  * 编辑器到 RenderFunction 的 Map
+ * TODO: 重构掉老式的实现
  */
 const editorMap: MapType<(column: ColumnExtra, param: ColumnParam) => RenderFunction> = {
   deprecated(column: ColumnExtra, { enumMap }) {
@@ -339,6 +179,7 @@ const editorMap: MapType<(column: ColumnExtra, param: ColumnParam) => RenderFunc
         value: row[key!],
         list: enumType[listKey]
       }
+
       return h(PoptipSelect, {
         props: {
           value: model,
@@ -386,6 +227,7 @@ const editorMap: MapType<(column: ColumnExtra, param: ColumnParam) => RenderFunc
  * @param param 参数
  */
 export function normalizeColumns(list: ColumnExtra[], param: ColumnParam) {
+
   const result = list.map(it => {
     if (it.slot && it.render) {
       devError('slot 与 render 是互斥的')
@@ -403,9 +245,9 @@ export function normalizeColumns(list: ColumnExtra[], param: ColumnParam) {
       // TODO: 老式的方法，会逐渐优化掉
       const factory = editorMap[it.editor]
       it.render = factory(it, param)
-    } else if (it.render == null) {
+    } else {
       // 新版方法
-      const render = listResolveRender(it)
+      const render = listResolveRender(it, param)
       render && (it.render = render)
     }
 

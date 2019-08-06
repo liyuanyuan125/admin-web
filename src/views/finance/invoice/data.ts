@@ -14,37 +14,49 @@ const nullBaifen = (value: any) => nullNumber(value, baifen)
 
 const nullWanfen = (value: any) => nullNumber(value, wanfen)
 
+export const typeList = [
+  {
+    name: 'sale',
+    label: '销售发票',
+    route: { name: 'finance-invoice' },
+  },
+  {
+    name: 'purchase',
+    label: '采购发票',
+    route: { name: 'finance-invoice-purchase' },
+  },
+]
+
 /**
- * 查询发票
+ * 查询销售发票
+ * @param query 查询条件
+ * https://yapi.aiads-dev.com/project/142/interface/api/2726
+ */
+export async function querySaleList(query: any = {}) {
+  const { data } = await get('/kol/sale-invoices', query)
+  const result = {
+    ...data,
+    items: (data.items as any[] || []).map(it => ({
+      ...it,
+      orderNoText: (it.orderNo || []).join('; ')
+    }))
+  }
+  return result
+}
+
+/**
+ * 查询采购发票
  * @param query 查询条件
  * https://yapi.aiads-dev.com/project/193/interface/api/5399
  */
-export async function queryList(query: any = {}) {
+export async function queryPurchaseList(query: any = {}) {
   const { data } = await get('/invoice/purchase-invoices', query)
-
   const result = {
     ...data,
-
     items: (data.items as any[] || []).map(it => ({
       ...it,
-      fansCount: dot(it, 'customFans.totalCount'),
-      provideInvoiceText: it.provideInvoice ? '是' : '否',
-      priceList: (it.settlementPrices as any[] || []).map(sub => {
-        const price = readableThousands(sub.settlementPrice, '-', '0,0.00')
-        return {
-          name: sub.categoryName,
-          price: price != '-' ? `￥${price}` : '-',
-          date: sub.effectiveDate ? intDate(sub.effectiveDate) : '-'
-        }
-      }),
-    })),
-
-    hasSettlementPriceList: [
-      { key: 1, text: '有' },
-      { key: 2, text: '无' },
-    ]
+    }))
   }
-
   return result
 }
 

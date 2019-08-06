@@ -785,11 +785,22 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
-  // 财务管理 - 发票管理
+  // 财务管理 - 发票管理 - 财务发票
   {
-    path: '/finance/invoice/:type?',
+    path: '/finance/invoice',
     name: 'finance-invoice',
-    component: () => import('./views/finance/invoice/index.vue'),
+    component: () => import('./views/finance/invoice/sale.vue'),
+    meta: {
+      authKey: ''
+    },
+    props: true,
+  },
+
+  // 财务管理 - 发票管理 - 采购发票
+  {
+    path: '/finance/invoice/purchase',
+    name: 'finance-invoice-purchase',
+    component: () => import('./views/finance/invoice/purchase.vue'),
     meta: {
       authKey: ''
     },

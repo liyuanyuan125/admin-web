@@ -5,12 +5,14 @@ import Vue, { Component } from 'vue'
 import { MapType } from '@/util/types'
 import { ColumnExtra } from './types'
 import { isPlainObject, cloneDeep } from 'lodash'
+import ListEnum from './components/listEnum.vue'
+import { ColumnParam } from './types'
 import { devAssert } from '@/util/dev'
 
 /**
  * GetProps、GetText 等函数的传入参数，可扩展其他值
  */
-export interface GetParam {
+export interface GetParam extends ColumnParam {
   item: any
   index: number
   options?: any
@@ -56,7 +58,9 @@ const defaultGetText = ({ item, column }: GetParam) => {
  * Link 组件的选项配置
  */
 export interface LinkOptions {
-  /** 跳转到的 route name */
+  /**
+   * 跳转到的 route name
+   */
   name: string
 
   /**
@@ -81,6 +85,31 @@ const componentMap: MapType<ListComponent> = {
         }
       }
       return result
+    }
+  },
+  // TODO: 完善之
+  enum: {
+    component: ListEnum,
+    props: ({ list, item, listEnumMap, column }) => {
+      const { key, auth = '', enum: inOption } = column!
+      const inProps = typeof inOption == 'string' ? { enumKey: inOption } : inOption
+      const { enumKey, updateField } = inProps!
+      // TODO: 自动 pick enumKey 的方案
+      return {
+        value: item[key!],
+        enumList: listEnumMap[enumKey!],
+        auth,
+
+        ...inProps,
+
+        // TODO: 还不够完善
+        updateField: updateField && (async (value: any) => {
+          const id = item.id
+          await updateField(id, value)
+          const editItem = list.find(it => it.id == id)
+          editItem[key!] = value
+        })
+      }
     }
   }
 }
@@ -144,7 +173,7 @@ const defaultEmptyValues = [ undefined, null, 0, '' ]
  * 将列配置，解析成 render 函数
  * @param column 列配置
  */
-export function resolveRender(column: ColumnExtra) {
+export function resolveRender(column: ColumnExtra, columnParam: ColumnParam) {
   const name = getComponentName(column)
   return name
     ? (h: any, { row: item, index }: any) => {
@@ -159,8 +188,17 @@ export function resolveRender(column: ColumnExtra) {
         }
       }
 
-      const param: GetParam = { item, index, column }
-      const { component = null, props = null, text = '' } = resolveComponent(column, param) || {}
+      const param: GetParam = {
+        ...columnParam,
+        item,
+        index,
+        column,
+      }
+      const {
+        component = null,
+        props = null,
+        text = ''
+      } = resolveComponent(column, param) || {}
       devAssert(component != null)
       return h(component, { props }, text)
     }

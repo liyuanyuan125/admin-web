@@ -15,7 +15,10 @@
             :class="it.class"
             :style="it.style"
             :placeholder="it.placeholder"
-            v-bind="it.props"
+            v-bind="{
+              enumList: filterEnumMap[it.name],
+              ...it.props
+            }"
             v-auth="it.auth"
           >
             <Option
@@ -74,7 +77,7 @@
 import { Component, Prop, Watch, Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
-import { MapType } from '@/util/types'
+import { MapType, KeyTextControlStatus, isKeyTextEnum } from '@/util/types'
 import {
   Filter,
   normalizeFilter,
@@ -89,6 +92,7 @@ import { toMap } from '@/fn/array'
 import { clean } from '@/fn/object'
 import { defaultParams, dealParams } from '@/util/param'
 import { uniq, difference, union, isEqual } from 'lodash'
+import { filterByControlStatus } from '@/util/dealData'
 
 const makeMap = (list: any[]) => toMap(list, 'key')
 
@@ -169,10 +173,16 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
   // 数据总数
   total = 0
 
-  // 枚举类型列表
+  // 新版的筛选枚举，旧版会被慢慢重构掉
+  filterEnumMap: MapType<KeyTextControlStatus[]> = {}
+
+  // 新版的列表枚举，旧版会被慢慢重构掉
+  listEnumMap: MapType<KeyTextControlStatus[]> = {}
+
+  // 旧版枚举类型列表，慢慢优化掉
   enumType: MapType<any[]> = {}
 
-  // 枚举类型 Map，key 为去掉后置 List 后的枚举名称
+  // 旧版枚举类型 Map，key 为去掉后置 List 后的枚举名称，慢慢优化掉
   get enumMap() {
     return Object.keys(this.enumType).reduce((map: any, it) => {
       const name = it.replace(/List$/, '')
@@ -188,6 +198,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
       enumType: this.enumType,
       enumMap: this.enumMap,
       list: this.list,
+      listEnumMap: this.listEnumMap,
       handleError: this.handleError.bind(this)
     })
 
@@ -226,9 +237,10 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
     const query = dealParams(this.filters, this.query, { cleanDefault: true })
     try {
       const { data } = await this.fetchWrap(query)
-
       this.total = data.totalCount || 0
       this.updateList(data.items || [])
+
+      // TODO: 老式枚举，基于 enums 属性，将慢慢优化掉
       const enumType = this.enums.reduce(
         (map, key) => {
           map[key] = data[key] || []
@@ -237,6 +249,30 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
         {} as MapType<any[]>
       )
       this.enumType = enumType
+
+      // 新版的 enumMap，自动判断，不再依赖配置中的 enumKey
+      // TODO: 可以清理对 enumKey 的提升代码
+      const enumList = Object.entries(data).filter(([key, list]) => isKeyTextEnum(list))
+
+      // 筛选条件使用有效的枚举（去掉废弃的值）
+      const filterEnumMap = enumList.reduce(
+        (map, [name, list]) => {
+          map[name] = filterByControlStatus(list)
+          return map
+        },
+        {} as MapType<KeyTextControlStatus[]>
+      )
+      this.filterEnumMap = filterEnumMap
+
+      // 列表使用全部枚举（废弃的值也要保留）
+      const listEnumMap = enumList.reduce(
+        (map, [name, list]) => {
+          map[name] = list
+          return map
+        },
+        {} as MapType<KeyTextControlStatus[]>
+      )
+      this.listEnumMap = listEnumMap
     } catch (ex) {
       this.handleError(ex)
     } finally {
