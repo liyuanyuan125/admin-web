@@ -172,6 +172,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
       enumType: this.enumType,
       enumMap: this.enumMap,
       list: this.list,
+      listEnumMap: {},
       handleError: this.handleError.bind(this)
     })
 
