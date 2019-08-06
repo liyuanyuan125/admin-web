@@ -5,7 +5,6 @@
     <ListPage
       :fetch="fetch"
       :filters="filters"
-      :enums="enums"
       :columns="columns"
       ref="listPage"
     >
@@ -135,19 +134,11 @@ export default class IndexPage extends ViewBase {
 
   typeList = typeList
 
-  // TODO: 可以跟进 data 自动判断是否为枚举列表
-  enums = [
-    'invoiceContentList',
-    'invoiceTypeList',
-    'payStatusList',
-    'statusList',
-  ]
-
   get columns() {
     return [
       { title: '序号', key: 'id', minWidth: 65 },
       { title: '发票金额', key: 'totalTaxFee', minWidth: 65 },
-      { title: '发票类型', key: 'invoiceType', minWidth: 65, enum: 'invoiceTypeList' },
+      { title: '发票类型', key: 'invoiceType', minWidth: 85, enum: 'invoiceTypeList' },
       { title: '发票内容', key: 'invoiceContent', minWidth: 65 },
       { title: '单位名称', key: 'name', minWidth: 65 },
       { title: '纳税人识别号', key: 'taxId', minWidth: 65 },
