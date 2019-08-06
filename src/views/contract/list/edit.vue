@@ -257,12 +257,19 @@ export default class EditPage extends ViewBase {
         label: '　',
         component: CinemaTable,
         props: {
-          filterCinema: this.filterCinema
+          filterCinema: this.filterCinema,
+          getCompanyId: () => {
+            const { companyBId } = this.editForm.getData()
+            return companyBId
+          }
         },
         handlers: {
           beforeSelect: (ev: CancelableEvent) => {
-            const { accountBank, accountName, accountNumber } = this.editForm.getData()
-            if (isEmptyString(accountBank)
+            const { companyBId, accountBank, accountName, accountNumber } = this.editForm.getData()
+            if (!(companyBId > 0)) {
+              ev.canceled = true
+              alert('乙方公司必须填写')
+            } else if (isEmptyString(accountBank)
               || isEmptyString(accountName)
               || isEmptyString(accountNumber)) {
               ev.canceled = true

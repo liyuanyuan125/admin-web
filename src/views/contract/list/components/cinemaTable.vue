@@ -13,6 +13,7 @@
           v-model="dialogOpen"
           :selectedIds="allIds"
           :disabledIds="allIds"
+          :companyId="companyId"
           @addToList="onAddToList"
         />
       </template>
@@ -78,7 +79,11 @@ export default class CinemaTable extends ViewBase {
 
   @Prop({ type: Boolean, default: false }) disabled!: boolean
 
+  @Prop({ type: Function }) getCompanyId!: () => number
+
   model: CinemaItem[] = []
+
+  companyId = 0
 
   get listPage() {
     return this.$refs.listPage as ListPage
@@ -151,7 +156,11 @@ export default class CinemaTable extends ViewBase {
   onSelect() {
     const evdata: CancelableEvent = { canceled: false }
     this.$emit('beforeSelect', evdata)
-    evdata.canceled || (this.dialogOpen = true)
+
+    if (!evdata.canceled) {
+      this.companyId = this.getCompanyId && this.getCompanyId() || 0
+      this.dialogOpen = true
+    }
   }
 
   remove(id: number) {
