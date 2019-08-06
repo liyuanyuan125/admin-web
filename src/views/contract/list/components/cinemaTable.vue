@@ -22,7 +22,8 @@
         <FormInputNumber
           :value="commonPrice"
           :disabled="disabled"
-          @input="updateField(cinemaId, 'commonPrice', $event)"
+          :active-change="false"
+          @on-change="updateField(cinemaId, 'commonPrice', $event)"
         />
       </template>
 
@@ -30,7 +31,8 @@
         <FormInputNumber
           :value="trailerPrice"
           :disabled="disabled"
-          @input="updateField(cinemaId, 'trailerPrice', $event)"
+          :active-change="false"
+          @on-change="updateField(cinemaId, 'trailerPrice', $event)"
         />
       </template>
 
@@ -130,6 +132,8 @@ export default class CinemaTable extends ViewBase {
 
   dialogOpen = false
 
+  inUpdateField = false
+
   fetch({ pageIndex: index, pageSize: size }: any) {
     const store = this.model || []
     const totalCount = store.length
@@ -174,6 +178,7 @@ export default class CinemaTable extends ViewBase {
   updateField(cinemaId: number, field: string, value: number) {
     const item = this.model.find(it => it.cinemaId == cinemaId) as any
     item && (item[field] = value)
+    this.inUpdateField = true
   }
 
   @Watch('value', { deep: true, immediate: true })
@@ -184,6 +189,10 @@ export default class CinemaTable extends ViewBase {
   @Watch('model', { deep: true })
   watchModel(value: CinemaItem[]) {
     this.$emit('input', value)
+    if (this.inUpdateField) {
+      this.inUpdateField = false
+      return
+    }
     this.listPage && this.listPage.update()
   }
 }
