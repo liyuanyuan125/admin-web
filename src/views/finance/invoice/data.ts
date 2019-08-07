@@ -14,7 +14,7 @@ export const typeList = [
   {
     name: 'sale',
     label: '销售发票',
-    route: { name: 'finance-invoice' },
+    route: { name: 'finance-invoice-sale' },
   },
   {
     name: 'purchase',
