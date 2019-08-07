@@ -100,7 +100,14 @@ export interface ColumnExtra extends Column {
     [key: string]: any
   }
 
-  date?: string
+  /** 格式化成日期 */
+  date?: true
+
+  /** 格式化成时间 */
+  time?: true
+
+  /** 格式化成日期带时间 */
+  dateTime?: true
 }
 
 /**

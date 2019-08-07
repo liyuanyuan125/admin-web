@@ -8,24 +8,10 @@
       :columns="columns"
       ref="listPage"
     >
-      <template slot="acts">
-        <!-- <Button
-          type="success"
-          icon="md-add-circle"
-        >新建</Button> -->
-      </template>
-
       <template slot="action" slot-scope="{ row: { id, status } }">
         <div class="row-acts">
-          <!-- <router-link
-            :to="{
-              name: 'data-kol-account-edit',
-              params: {
-                id,
-                action: status == 1 ? 'audit' : 'edit'
-              }
-            }"
-          >{{status == 1 ? '审核' : '编辑'}}</router-link> -->
+          <router-link :to="editRoute('audit', id)" v-if="status == 1">商务审核</router-link>
+          <router-link :to="editRoute('new', id)" v-if="status == 3">开票</router-link>
         </div>
       </template>
     </ListPage>
@@ -40,6 +26,8 @@ import { typeList, querySaleList } from './data'
 import { alert, toast } from '@/ui/modal'
 import { EditDialog, Field } from '@/components/editForm'
 import TabNav from '@/components/tabNav'
+
+// status: 1 待商务审核，2 商务审核不通过，3 待开票，4 已开票
 
 @Component({
   components: {
@@ -136,7 +124,15 @@ export default class IndexPage extends ViewBase {
 
   get columns() {
     return [
-      { title: '序号', key: 'id', minWidth: 65 },
+      {
+        title: '序号',
+        key: 'id',
+        minWidth: 65,
+        link: {
+          name: 'finance-invoice-sale-edit',
+          params: item => ({ action: 'view', id: item.id })
+        }
+      },
       { title: '发票金额', key: 'totalTaxFee', minWidth: 65 },
       { title: '发票类型', key: 'invoiceType', width: 100, enum: 'invoiceTypeList' },
       { title: '发票内容', key: 'invoiceContent', minWidth: 65 },
@@ -152,12 +148,15 @@ export default class IndexPage extends ViewBase {
       { title: '开票时间', key: 'billingTime', width: 130, dateTime: true },
       { title: '发票编号', key: 'invoiceNo', minWidth: 65 },
       { title: '发票状态', key: 'status', width: 100, enum: 'statusList' },
-      { title: '操作', slot: 'action', minWidth: 50 }
+      { title: '操作', slot: 'action', minWidth: 70 }
     ] as ColumnExtra[]
   }
 
-  refresh() {
-    this.listPage.update()
+  editRoute(action: string, id: number) {
+    return {
+      name: 'finance-invoice-sale-edit',
+      params: { action, id }
+    }
   }
 }
 </script>

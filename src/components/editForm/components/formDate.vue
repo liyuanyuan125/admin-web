@@ -73,7 +73,7 @@ export default class FormDate extends ViewBase {
 </script>
 
 <style lang="less" scoped>
-.form-date-range {
+.form-date {
   width: 100%;
 }
 </style>
