@@ -434,7 +434,7 @@ export default class Main extends ViewBase {
       } = await queryPro({
         parentIds: 0,
         pageIndex: 1,
-        pageSize: 8888888
+        pageSize: 8888
       })
       this.proSearchList = items || []
     } catch (ex) {
@@ -448,7 +448,7 @@ export default class Main extends ViewBase {
         data: { items }
       } = await queryCtiy({
         pageIndex: 1,
-        pageSize: 8888888
+        pageSize: 8888
       })
       this.citySearchList = items || []
     } catch (ex) {
