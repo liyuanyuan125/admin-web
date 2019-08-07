@@ -51,7 +51,7 @@
             <Row>
                 <Col :span="5">
                 <FormItem label="上传大图:"> 
-                     <Upload v-model="imageList" :maxCount="1" accept="image/*" />
+                     <Upload v-model="form.imageList" :maxCount="1" accept="image/*" />
                      <p>点击上传大图</p>
                 </FormItem>
                 </Col>
@@ -175,15 +175,14 @@
                     <Col :span="12">
                         <FormItem label="粉丝性别占比" class="rest-input">
                             <div class="flex-box">
-                                <div>男性：<InputNumber :max="100" :min="0" style="width: 120px"  v-model="formFans.male" ></InputNumber>%</div>
-                                <div>女性：<InputNumber :max="100" :min="0" style="width: 120px" v-model="formFans.female" ></InputNumber>%</div>
-                            
+                                <div>男性：<InputNumber :max="100" :min="0" style="width: 120px"  v-model="form.male" ></InputNumber>%</div>
+                                <div>女性：<InputNumber :max="100" :min="0" style="width: 120px" v-model="form.female" ></InputNumber>%</div>
                             </div>
                         </FormItem>
                     </Col>
                 </Row>
                 <FormItem label="粉丝年龄区间">
-                    <Table :columns="ageColumns" :data="(formFans.ages || [])" class="brand-table rest-input" border stripe disabled-hover>
+                    <Table :columns="ageColumns" :data="(form.ages || [])" class="brand-table rest-input" border stripe disabled-hover>
                         <template slot="v" slot-scope="{row, index}">
                             <InputNumber :max="100" :min="0" 
                             v-model="row.v"
@@ -194,30 +193,30 @@
                 <FormItem label="粉丝省市分布">
                     <div class="brand-select rest-input">
                         <Select v-model="promodel" filterable clearable  style="width: 120px" 
-                        :label-in-value="true" @on-change="handleProSelect">
+                        :label-in-value="true" @on-change="(val) => provinceObject = val">
                             <Option v-for="option in proSearchList" :value="option.id" :key="option.id" :label="option.nameCn">{{option.nameCn}}</Option>
                         </Select>
                         <InputNumber  :max="100" :min="0"  v-model="provinceRatio" placeholder="粉丝数占比" style="width: 120px"  />
                         <Button class="add-list" :disabled="isDisble" @click="addProvinceList">添加列表</Button>
                     </div>
-                    <Table :columns="provinceColumns" :data="(formFans.provinces || [])" class="brand-table" border stripe disabled-hover>
+                    <Table :columns="provinceColumns" :data="(itemList.fansProvinces || [])" class="brand-table" border stripe disabled-hover>
                         <template slot="operate" slot-scope="{row, index}">
-                            <span class="del-col" @click="formFans.provinces.splice(index, 1)">删除</span>
+                            <span class="del-col" @click="itemList.fansProvinces.splice(index, 1)">删除</span>
                         </template>
                     </Table>
                 </FormItem>
                  <FormItem label="粉丝城市分布">
                     <div class="brand-select rest-input">
                         <Select v-model="citymodel" filterable clearable  style="width: 120px"
-                        :label-in-value="true" @on-change="handleCitySelect">
+                        :label-in-value="true" @on-change="(val) => cityObject = val">
                             <Option v-for="option in citySearchList" :value="option.id" :key="option.id">{{option.nameCn}}</Option>
                         </Select>
                         <InputNumber  :max="100" :min="0"  v-model="cityRatio" placeholder="粉丝数占比" style="width: 120px"  />
                         <Button class="add-list" :disabled="isCityDisble" @click="addCityList">添加列表</Button>
                     </div>
-                    <Table :columns="cityColumns" :data="(formFans.cities || [])" class="brand-table" border stripe disabled-hover>
+                    <Table :columns="cityColumns" :data="(itemList.fansCities || [])" class="brand-table" border stripe disabled-hover>
                         <template slot="operate" slot-scope="{row, index}">
-                            <span class="del-col" @click="formFans.cities.splice(index, 1)">删除</span>
+                            <span class="del-col" @click="itemList.fansCities.splice(index, 1)">删除</span>
                         </template>
                     </Table>
                 </FormItem>
@@ -266,31 +265,18 @@ export default class Main extends ViewBase {
         {key: 0, text: '基本信息'},
         {key: 1, text: '相关影片'}
     ]
-    ass = []
+    // ass = []
     form: any = {}
-    formFans: any = {
-        count: null,
-        male: null,
-        femalenu: null,
-        ages: [], // 年龄分布
-        provinces: [], // 省份分布
-        cities: [] // 城市分布
-    }
     formId: any = {}
     rule = {}
     // 擅长类型， 职业
     movieTypes: any[] = []
     occupationType: any[] = []
 
-    detaiId = ''
     itemList: any = {}
-    // 主要职业，其他职业
-    professionsList = []
-    primaryPro: any[] = []
-    restPro: any[] = []
 
     // 上传图片
-    imageList: any[] = []
+    // imageList: any[] = []
     exts: any[] = []
 
     // 合作品牌信息
@@ -310,11 +296,12 @@ export default class Main extends ViewBase {
     // 粉丝年龄区间
     ageColumns = [
         { title: '年龄区间', key: 'k', width: 180, align: 'center'},
-        { title: '粉丝占比', slot: 'v', width: 180, align: 'center'},
+        { title: '粉丝占比%', slot: 'v', width: 180, align: 'center'},
     ]
+
     // 省份分布
     isDisble = true
-    promodel = ''
+    promodel =  null
     provinceObject: any = null
     proSearchList = []
     provinceRatio = null
@@ -328,7 +315,7 @@ export default class Main extends ViewBase {
     isCityDisble = true
     cityObject: any = null
     citySearchList = []
-    citymodel = ''
+    citymodel = null
     cityRatio = null
     cityColumns = [
         {title: '城市', key: 'name', width: 120, align: 'center'},
@@ -340,7 +327,6 @@ export default class Main extends ViewBase {
     movieIds: any[] = []
 
     mounted() {
-      this.detaiId = this.$route.params.id
       this.goodTypes()
       this.handleOccupation()
       this.list()
@@ -350,77 +336,31 @@ export default class Main extends ViewBase {
 
     async list() {
         try {
-          const { data: {
-            item, genders, status, professions, imageTypes, brandTrades
-          }} = await personDetail(this.detaiId)
+          const {  item, genders, status, professions, imageTypes, brandTrades} = await personDetail(this.id)
           this.itemList = item || {}
-
-        // imageList
-        const imgObj = [{
-            fileId: '',
-            url: item.headImgBig
-        }]
-        this.imageList = item.headImgBig ? imgObj : []
-
-        // 筛选主要和其他职业
-        this.professionsList = professions || []
-        const primaryPro: any = [] // 主要职业
-        const restPro: any = []; // 其他职业(演员，编辑)
-        (item.professions || []).map( (tem: any) => {
-            if (tem.primary) { // 主要职业
-            this.professionsList.filter( (it: any) => {
-                if (it.key == tem.code) {
-                    primaryPro.push(it.key)
-                }
-            })
-            } else { // 其他职业
-            const ary = this.professionsList.filter( (it: any) => {
-                if (it.key == tem.code) {
-                   restPro.push(it.key)
-                }
-            })
-            }
-        })
-        this.primaryPro = primaryPro
-        this.restPro = restPro
-
-        // 品牌名称
-        this.brandData = item.brands || []
-
-        // 平台id
-        this.exts = item.exts || []
-        this.exts.map((it: any) => {
-            this.formId[it.channelCode] = it.channelDataId
-        })
-
-        // 品牌分类
-        this.tradeCodeList = brandTrades
-        if (item.fans) {
-            this.formFans = {
-                count: item.fans.count ? item.fans.count : null,
-                male: item.fans.male ? Number(item.fans.male) : 0,
-                female: item.fans.female ? Number(item.fans.female) : 0,
-                ages: item.fans.ages ? item.fans.ages : [], // 年龄分布
-                provinces: item.fans.provinces ? item.fans.provinces : [], // 省份分布
-                cities: item.fans.cities ? item.fans.cities : [] // 城市分布
-            }
-        }
+          this.brandData = item.brands || []
+          this.formId = item.formId || {}
+          this.tradeCodeList = brandTrades
 
         // 处理粉丝展示
-        const formatIntro = item.introduction.replace(/&nbsp;/g, ' ').replace(/\<br\/>/g, '\r\n')
-        const intro = item.introduction ? formatIntro : item.introduction
+        const intro =  item.introduction ?
+                       item.introduction.replace(/&nbsp;/g, ' ').replace(/\<br\/>/g, '\r\n') : item.introduction
         this.form = {
-            tip: item.tip || '',
+            tip: item.tip || null,
             tags: item.tags ? item.tags.join() : null,
             introduction: intro,
+            imageList: item.setImageList,
             biJyIndex: item.biJyIndex,
             jyIndex: item.jyIndex,
             jyIndexWeight: item.jyIndexWeight,
             goodMovieTypes: item.goodMovieTypes ? item.goodMovieTypes[0] : null, // 擅长类型只有一个
-            primaryPro: this.primaryPro[0] || null, // 主要职业
-            restPro: this.restPro, // 其他职业
-        }
+            primaryPro: item.primaryPro[0] || null, // 主要职业
+            restPro: item.restPro, // 其他职业
+            male: Number(item.fansMale),
+            female: Number(item.fansFemale),
+            ages: item.fansAges,
 
+        }
         } catch (ex) {
             this.handleError(ex)
         }
@@ -428,59 +368,25 @@ export default class Main extends ViewBase {
 
     // 提交
     async editSubmit() {
-        // 1.处理粉丝转换
-        const fans = this.formFans
-        // 处理职业转换
-        const professions: any[] = [] // 主要，其他职业
-        this.form.primaryPro ? professions.push({code: this.form.primaryPro, primary: true}) : null;
-        (this.form.restPro || []).map((item: any) => {
-            professions.push({
-                code: item,
-                primary: false
-            })
-        })
-
-        // 处理平台id转换
-        const {keys, values, entries} = Object
-        const exts: any[] = []
-        const channelDataName = this.itemList.name
-        for (const [key, value] of entries(this.formId)) {
-            if (key) {
-                exts.push({
-                    channelCode: key,
-                    channelDataId: value,
-                    channelDataName
-                })
-            }
+        const obj = {
+            formId: this.formId,
+            items: this.itemList,
+            form: this.form,
+            brands: this.brandData,
         }
-
-        // 标签转换
-        const formTag = this.form.tags.trim()
-        const tags = formTag ? formTag.split(/,|，/) : []
-
-        delete this.form.primaryPro
-        delete this.form.restPro
-        delete this.form.biJyIndex
-
-        const intro = this.form.introduction
-        const format = intro.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;')
-        const introduction = intro ? format : intro
         try {
-            const { data } = await editPersonal(this.detaiId, {
-                ...this.form,
-                introduction,
-                tags,
-                headImgBig: this.imageList.length > 0 ? this.imageList[0].url : null, // 上传大图
-                brands: this.brandData, // 品牌
-                exts, // 平台id
-                professions, // 职业
-                fans, // 粉丝画像
-                goodMovieTypes: this.form.goodMovieTypes ? Array.of(this.form.goodMovieTypes) : null, // 擅长类型转化为数组传给后台
-            })
+            const { data } = await editPersonal(obj)
             this.$router.push({name: 'data-person'})
         } catch (ex) {
             this.handleError(ex)
         }
+    }
+
+    updataRow(row: any, ind: number) {
+        if (row.v == '') {
+            row.v = null
+        }
+        this.itemList.fansAges.splice(ind, 1, row)
     }
 
     async addList() {
@@ -528,59 +434,39 @@ export default class Main extends ViewBase {
 
     // 省查询
     async queryProvince() {
-         try {
-            const { data: { items}} = await queryPro({
-                parentIds: 0,
-                pageIndex: 1,
-                pageSize: 8888888
-            })
-            this.proSearchList = items
-        } catch (ex) {
-            this.handleError(ex)
-        }
+        this.proSearchList = await queryPro()
     }
     // 市查询
     async queryCity() {
-         try {
-            const { data: { items}} = await queryCtiy({
-                pageIndex: 1,
-                pageSize: 8888888
-            })
-            this.citySearchList = items
-        } catch (ex) {
-            this.handleError(ex)
-        }
-    }
-
-    handleProSelect(val: any) {
-      this.provinceObject = val
-    }
-    handleCitySelect(val: any) {
-      this.cityObject = val
+        this.citySearchList = await queryCtiy()
     }
 
     async addProvinceList() {
         // 省是否存在
-        const ishas = this.formFans.provinces.some( (item: any) => item.id == this.promodel)
+        const ishas = this.itemList.fansProvinces.some( (item: any) => item.id == this.promodel)
         if (!ishas) {
-            this.formFans.provinces.push({
+            this.itemList.fansProvinces.push({
                 id: this.promodel,
                 name: this.provinceObject.label,
                 rate: this.provinceRatio
             })
+            this.promodel = null
+            this.provinceRatio = null
         } else {
             await info('请选择城市已经存在', {title: '提示'})
         }
     }
     async addCityList() {
         // 城市是否存在
-        const ishas = this.formFans.cities.some( (item: any) => item.id == this.citymodel)
+        const ishas = this.itemList.fansCities.some( (item: any) => item.id == this.citymodel)
         if (!ishas) {
-            this.formFans.cities.push({
+            this.itemList.fansCities.push({
                 id: this.citymodel,
                 name: this.cityObject.label,
                 rate: this.cityRatio
             })
+            this.citymodel = null
+            this.cityRatio = null
         } else {
             await info('请选择城市已经存在', {
                 title: '提示'
@@ -596,10 +482,7 @@ export default class Main extends ViewBase {
                 pageIndex: 1
             })
             this.brandNames = items || []
-            // 确定选择数据
-            if (items.length == 1) {
-              this.brandTradeCode = items[0].tradeCode
-            }
+            this.brandTradeCode = items[0].tradeCode
         }
     }
     // 根据品牌分类筛选出品牌名称
@@ -609,12 +492,6 @@ export default class Main extends ViewBase {
             pageIndex: 1
         })
         this.brandNames = items || []
-    }
-    updataRow(row: any, ind: number) {
-        if (row.v == '') {
-            row.v = 0
-        }
-        this.formFans.ages.splice(ind, 1, row)
     }
 
     selectIds(val: any) {
