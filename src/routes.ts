@@ -785,15 +785,35 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
-  // 财务管理 - 发票管理 - 财务发票
+  // 财务管理 - 发票管理 - 销售发票
   {
-    path: '/finance/invoice',
-    name: 'finance-invoice',
+    path: '/finance/invoice/sale',
+    name: 'finance-invoice-sale',
     component: () => import('./views/finance/invoice/sale.vue'),
     meta: {
-      authKey: ''
+      authKey: '',
+      title: '销售发票'
     },
     props: true,
+  },
+
+  // 财务管理 - 发票管理 - 销售发票
+  {
+    path: '/finance/invoice/sale/:action(new|view|audit)/:id?',
+    name: 'finance-invoice-sale-edit',
+    component: () => import('./views/finance/invoice/saleEdit.vue'),
+    meta: {
+      authKey: '',
+      title({ params: { action } }) {
+        const actionTextMap: MapType = {
+          new: '开票',
+          view: '查看',
+          audit: '商务审核',
+        }
+        return actionTextMap[action]
+      },
+    },
+    props: paramTypes({ id: Number, action: String })
   },
 
   // 财务管理 - 发票管理 - 采购发票
@@ -802,7 +822,8 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'finance-invoice-purchase',
     component: () => import('./views/finance/invoice/purchase.vue'),
     meta: {
-      authKey: ''
+      authKey: '',
+      title: '采购发票'
     },
     props: true,
   },
