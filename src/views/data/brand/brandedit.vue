@@ -431,11 +431,7 @@ export default class Main extends ViewBase {
     try {
       const {
         data: { items }
-      } = await queryPro({
-        parentIds: 0,
-        pageIndex: 1,
-        pageSize: 8888888
-      })
+      } = await queryPro()
       this.proSearchList = items
     } catch (ex) {
       this.handleError(ex)
@@ -446,10 +442,7 @@ export default class Main extends ViewBase {
     try {
       const {
         data: { items }
-      } = await queryCtiy({
-        pageIndex: 1,
-        pageSize: 8888888
-      })
+      } = await queryCtiy()
       this.citySearchList = items
     } catch (ex) {
       this.handleError(ex)

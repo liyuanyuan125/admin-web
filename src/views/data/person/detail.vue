@@ -167,7 +167,7 @@
 <script lang='ts'>
 import {Component, Prop, Watch} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import { personDetail, log, dicItems } from '@/api/person'
+import { Detail, log, dicItems } from '@/api/person'
 import personMovies from './personMovies.vue'
 import {formatConversion} from '@/util/validateRules'
 import { readableNumber } from '@/util/dealData'
@@ -263,7 +263,7 @@ export default class Main extends ViewBase {
     try {
       const { data: {
         item, genders, status, professions, imageTypes, brandTrades
-      }} = await personDetail(this.id)
+      }} = await Detail(this.id)
       this.genders = genders || []
       this.professionsList = professions || []
       this.brandTrades = brandTrades || []
