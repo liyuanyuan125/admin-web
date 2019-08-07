@@ -16,7 +16,7 @@
             :style="it.style"
             :placeholder="it.placeholder"
             v-bind="{
-              enumList: filterEnumMap[it.name],
+              enumList: filterEnumMap[it.enumKey],
               ...it.props
             }"
             v-auth="it.auth"

@@ -21,6 +21,7 @@
         v-model="model"
         class="input-number"
         v-bind="$attrs"
+        v-on="$listeners"
         ref="input"
       />
       <span class="input-number-append" v-if="append">

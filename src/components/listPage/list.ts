@@ -8,6 +8,7 @@ import { isPlainObject, cloneDeep } from 'lodash'
 import ListEnum from './components/listEnum.vue'
 import { ColumnParam } from './types'
 import { devAssert } from '@/util/dev'
+import { formatValidDate } from '@/util/dealData'
 
 /**
  * GetProps、GetText 等函数的传入参数，可扩展其他值
@@ -87,12 +88,13 @@ const componentMap: MapType<ListComponent> = {
       return result
     }
   },
+
   // TODO: 完善之
   enum: {
     component: ListEnum,
-    props: ({ list, item, listEnumMap, column }) => {
-      const { key, auth = '', enum: inOption } = column!
-      const inProps = typeof inOption == 'string' ? { enumKey: inOption } : inOption
+    props: ({ list, item, listEnumMap, column, options }) => {
+      const { key, auth = '' } = column!
+      const inProps = typeof options == 'string' ? { enumKey: options } : options
       const { enumKey, updateField } = inProps!
       // TODO: 自动 pick enumKey 的方案
       return {
@@ -110,6 +112,30 @@ const componentMap: MapType<ListComponent> = {
           editItem[key!] = value
         })
       }
+    },
+  },
+
+  date: {
+    component: 'span',
+    text({ item, column }) {
+      const value = item[column!.key!]
+      return formatValidDate(value, { format: 'YYYY-MM-DD' })
+    }
+  },
+
+  time: {
+    component: 'span',
+    text({ item, column }) {
+      const value = item[column!.key!]
+      return formatValidDate(value, { format: 'HH:mm:ss' })
+    }
+  },
+
+  dateTime: {
+    component: 'span',
+    text({ item, column }) {
+      const value = item[column!.key!]
+      return formatValidDate(value, { format: 'YYYY-MM-DD HH:mm:ss' })
     }
   }
 }

@@ -89,7 +89,7 @@ export interface ColumnExtra extends Column {
   /**
    * 使用组件 route-link
    */
-  link?: ListLinkOptions,
+  link?: ListLinkOptions
 
   /**
    * 使用组件 ListEnum，以及该组件的选项，若传递 string，则为 enumKey
@@ -99,6 +99,8 @@ export interface ColumnExtra extends Column {
     updateField?: (id: any, value: any) => Promise<any>
     [key: string]: any
   }
+
+  date?: string
 }
 
 /**

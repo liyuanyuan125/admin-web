@@ -5,7 +5,6 @@
     <ListPage
       :fetch="fetch"
       :filters="filters"
-      :enums="enums"
       :columns="columns"
       ref="listPage"
     >
@@ -135,56 +134,24 @@ export default class IndexPage extends ViewBase {
 
   typeList = typeList
 
-  // TODO: 可以跟进 data 自动判断是否为枚举列表
-  enums = [
-    'invoiceContentList',
-    'invoiceTypeList',
-    'payStatusList',
-    'statusList',
-  ]
-
   get columns() {
     return [
       { title: '序号', key: 'id', minWidth: 65 },
       { title: '发票金额', key: 'totalTaxFee', minWidth: 65 },
-      { title: '发票类型', key: 'invoiceType', minWidth: 65, enum: 'invoiceTypeList' },
+      { title: '发票类型', key: 'invoiceType', width: 100, enum: 'invoiceTypeList' },
       { title: '发票内容', key: 'invoiceContent', minWidth: 65 },
       { title: '单位名称', key: 'name', minWidth: 65 },
-      { title: '纳税人识别号', key: 'taxId', minWidth: 65 },
+
+      { title: '纳税人识别号', key: 'taxId', minWidth: 80 },
       { title: '公司ID', key: 'companyId', minWidth: 65 },
       { title: '公司名称', key: 'companyName', minWidth: 65 },
       { title: '订单编号', key: 'orderNoText', minWidth: 65 },
-      { title: '业务类型', key: 'businessType', minWidth: 65 },
-      { title: '申请时间', key: 'applyTime', minWidth: 65 },
-      { title: '开票时间', key: 'billingTime', minWidth: 65 },
+      { title: '业务类型', key: 'businessType', minWidth: 65, enum: 'businessTypeList' },
+
+      { title: '申请时间', key: 'applyTime', width: 130, dateTime: true },
+      { title: '开票时间', key: 'billingTime', width: 130, dateTime: true },
       { title: '发票编号', key: 'invoiceNo', minWidth: 65 },
-      { title: '发票状态', key: 'status', minWidth: 65 },
-      // {
-      //   title: '账号',
-      //   key: 'channelDataId',
-      //   minWidth: 100,
-      //   link: {
-      //     name: 'data-kol-account-edit',
-      //     params: it => ({ id: it.id, channel: this.channel, action: 'view' }),
-      //   }
-      // },
-      // { title: '名称', key: 'name', minWidth: 100 },
-      // { title: '分类', key: 'accountCategoryCode', minWidth: 60, editor: 'deprecated' },
-      // { title: '粉丝数', key: 'fansCount', minWidth: 60 },
-
-      // {
-      //   title: '关联KOL编号',
-      //   key: 'kolId',
-      //   minWidth: 90,
-      //   link: {
-      //     name: 'data-kol-associated-detail',
-      //     params: it => ({ id: it.kolId })
-      //   }
-      // },
-      // { title: '关联KOL名称', key: 'kolName', minWidth: 100 },
-      // { title: '是否提供发票', key: 'provideInvoiceText', minWidth: 90 },
-      // { title: '审核状态', key: 'status', minWidth: 65, editor: 'enum' },
-
+      { title: '发票状态', key: 'status', width: 100, enum: 'statusList' },
       { title: '操作', slot: 'action', minWidth: 50 }
     ] as ColumnExtra[]
   }

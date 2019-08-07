@@ -266,7 +266,8 @@ export function validDate(date: number | string | null) {
   if (date == null || date == 0 || date == '') {
     return null
   }
-  const d = moment(String(date))
+  // 如果是很大的数字，则说明这是一个时间戳
+  const d = moment(date > 28880000 ? +date : String(date))
   return d.isValid() ? d.toDate() : null
 }
 
