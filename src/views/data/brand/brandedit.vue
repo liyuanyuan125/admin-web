@@ -110,7 +110,7 @@
             </FormItem>
           </Col>
           <Col :span="6">
-            <FormItem label :labelWidth="0" class="rest-input">
+            <FormItem label  :labelWidth="0" class="rest-input">
               <div>
                 女性：
                 <InputNumber :max="100" :min="0" v-model="form.femalePercent" style="width: 100px"></InputNumber>%
@@ -436,7 +436,7 @@ export default class Main extends ViewBase {
         pageIndex: 1,
         pageSize: 8888888
       })
-      this.proSearchList = items
+      this.proSearchList = items || []
     } catch (ex) {
       this.handleError(ex)
     }
@@ -450,7 +450,7 @@ export default class Main extends ViewBase {
         pageIndex: 1,
         pageSize: 8888888
       })
-      this.citySearchList = items
+      this.citySearchList = items || []
     } catch (ex) {
       this.handleError(ex)
     }
