@@ -209,6 +209,20 @@ export default class EditPage extends ViewBase {
           enumKey: 'cityGradeList',
         },
         span: 22,
+        watch: {
+          handler(value: MapType<PriceItem>, oldVal, { vm, item }) {
+            debounce(() => {
+              const newCinemaList = item.cinemaList.map((it: CinemaItem) => {
+                const { commonPrice, trailerPrice } = value[it.cityGradeCode]
+                commonPrice != null && (it.commonPrice = commonPrice)
+                trailerPrice != null && (it.trailerPrice = trailerPrice)
+                return it
+              })
+              item.cinemaList = newCinemaList
+            }, 300)()
+          },
+          deep: true
+        }
       },
 
       {
@@ -424,21 +438,6 @@ export default class EditPage extends ViewBase {
   async onDone() {
     await success('操作成功')
     this.$router.back()
-  }
-
-  mounted() {
-    const editForm = this.editForm
-    editForm.$watch('item.settlementPrice', (value: MapType<PriceItem>) => {
-      debounce(() => {
-        const newCinemaList = editForm.item.cinemaList.map((it: CinemaItem) => {
-          const { commonPrice, trailerPrice } = value[it.cityGradeCode]
-          commonPrice != null && (it.commonPrice = commonPrice)
-          trailerPrice != null && (it.trailerPrice = trailerPrice)
-          return it
-        })
-        editForm.item.cinemaList = newCinemaList
-      }, 300)()
-    }, { deep: true })
   }
 }
 </script>

@@ -93,7 +93,9 @@ import {
   FetchData,
   FetchResult,
   fetchDataToResult,
-  EditErrorHandlers
+  EditErrorHandlers,
+  WatchParam,
+  WatchOptionsWithHandler
 } from './types'
 import { cloneDeep, isEqual, isEmpty } from 'lodash'
 import { defaultParams, dealParams, backfillParams } from '@/util/param'
@@ -158,6 +160,8 @@ export default class EditForm extends ViewBase {
   enumMap: MapType<KeyTextControlStatus[]> = {}
 
   errorMap: MapType = {}
+
+  unwatches: any[] = []
 
   get normalFields() {
     const list = normalizeField(this.fields)
@@ -257,11 +261,33 @@ export default class EditForm extends ViewBase {
         })
 
       this.item = item
+
+      this.initWatches()
     } catch (ex) {
       this.handleError(ex)
     } finally {
       this.loading = false
     }
+  }
+
+  initWatches() {
+    // 取消监听原有的
+    this.unwatches.forEach(handler => handler())
+
+    const param: WatchParam = { vm: this, item: this.item }
+    const unwatches = this.normalFields
+    .filter(it => it.watch != null)
+    .map(({ name, watch }) => {
+      const exp = `item.${name}`
+      const { handler, deep, immediate } = watch as WatchOptionsWithHandler
+      const unwatch = this.$watch(
+        exp,
+        (val: any, oldVal: any) => handler(val, oldVal, param),
+        { deep, immediate }
+      )
+      return unwatch
+    })
+    this.unwatches = unwatches
   }
 
   public async onSubmit() {
@@ -404,9 +430,13 @@ export default class EditForm extends ViewBase {
 .submit-line {
   margin: 30px 0;
   text-align: center;
+  user-select: none;
   /deep/ .ivu-btn {
     margin: 0 15px;
     padding: 8px 26px;
+  }
+  /deep/ span {
+    user-select: none;
   }
 }
 

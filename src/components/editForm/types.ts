@@ -1,4 +1,4 @@
-import { Component } from 'vue'
+import { Component, WatchOptions } from 'vue'
 import { kebabCase, isPlainObject, cloneDeep, isEqual } from 'lodash'
 import { Param } from '@/util/param'
 import FormText from './components/formText.vue'
@@ -16,6 +16,7 @@ import AdminUserSelect from '@/components/adminUserSelect'
 import { Switch } from 'iview'
 import { AjaxResult, MapType, KeyText } from '@/util/types'
 import { Formatter } from './components/formatter'
+import EditForm from './editForm.vue'
 import { devLog, devError } from '@/util/dev'
 
 export type ValidatorCallback = (error?: Error) => any
@@ -142,6 +143,33 @@ const componentMap: MapType<ComponentItem> = {
 }
 
 /**
+ * WatchFunction 的第三个参数
+ */
+export interface WatchParam {
+  /**
+   * EditForm 实例
+   */
+  vm: EditForm
+
+  /**
+   * 内部编辑的数据对象，可以直接赋值，以便更新内部数据
+   */
+  item: any
+}
+
+/**
+ * 观察者函数，与 Vue 官方不同的是，加了第三个参数 param
+ */
+export type WatchHandler = (val: any, oldVal: any, param: WatchParam) => void
+
+/**
+ * 带选项的观察者函数
+ */
+export interface WatchOptionsWithHandler extends WatchOptions {
+  handler: WatchHandler
+}
+
+/**
  * 字段配置
  */
 export interface Field extends Param {
@@ -174,6 +202,11 @@ export interface Field extends Param {
    * 传递给组件的事件处理函数
    */
   handlers?: MapType<any>
+
+  /**
+   * 观察本字段变化的函数
+   */
+  watch?: WatchHandler | WatchOptionsWithHandler
 
   /**
    * 占用的空间大小，从 1 ~ 24
@@ -451,12 +484,16 @@ const resolveComponent = (field: Field) => {
 export function normalizeField(list: Field[]) {
   const result = list.map(resolveComponent)
   .filter(it => it.component != null)
-  .map(it => {
+  .map((it: Field) => {
     const { component, props = {}, placeholder } = it
 
     // 单独处理 enumKey
     const enumKey = props.enumKey
     delete props.enumKey
+
+    const watch = it.watch && (
+      typeof it.watch === 'function' ? { handler: it.watch } : it.watch
+    )
 
     const field: NormalField = {
       span: 1,
@@ -464,7 +501,9 @@ export function normalizeField(list: Field[]) {
       offsetRight: 0,
       visible: () => true,
       visibleCol: () => true,
-      ...it,
+
+      ...(it as any),
+
       component,
       enumKey,
       props: {
@@ -472,6 +511,8 @@ export function normalizeField(list: Field[]) {
         // 优先使用 placeholder
         placeholder: placeholder != null ? placeholder : (props && props.placeholder)
       },
+      watch,
+
       style: {
         width: it.width ? `${it.width}px` : '',
         minWidth: it.minWidth ? `${it.minWidth}px` : '',
