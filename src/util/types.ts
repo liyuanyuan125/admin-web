@@ -19,6 +19,27 @@ export interface KeyText {
   text: string
 }
 
+/**
+ * 判断 object 是否为 KeyText（包含 key、text）
+ * @param object 对象
+ */
+export function isKeyText(object: any) {
+  return !!(
+    object
+    && typeof object === 'object'
+    && 'key' in object
+    && 'text' in object
+  )
+}
+
+/**
+ * 判断列表是否为 KeyText 枚举
+ * @param list 列表
+ */
+export function isKeyTextEnum(list: any[]) {
+  return Array.isArray(list) && list.every(isKeyText)
+}
+
 /** 全站枚举类型 ControlStatus 字段的类型  */
 export type ControlStatus = 1 | 2
 

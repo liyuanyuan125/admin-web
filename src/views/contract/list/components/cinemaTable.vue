@@ -13,6 +13,7 @@
           v-model="dialogOpen"
           :selectedIds="allIds"
           :disabledIds="allIds"
+          :companyId="companyId"
           @addToList="onAddToList"
         />
       </template>
@@ -21,7 +22,8 @@
         <FormInputNumber
           :value="commonPrice"
           :disabled="disabled"
-          @input="updateField(cinemaId, 'commonPrice', $event)"
+          :active-change="false"
+          @on-change="updateField(cinemaId, 'commonPrice', $event)"
         />
       </template>
 
@@ -29,7 +31,8 @@
         <FormInputNumber
           :value="trailerPrice"
           :disabled="disabled"
-          @input="updateField(cinemaId, 'trailerPrice', $event)"
+          :active-change="false"
+          @on-change="updateField(cinemaId, 'trailerPrice', $event)"
         />
       </template>
 
@@ -78,7 +81,11 @@ export default class CinemaTable extends ViewBase {
 
   @Prop({ type: Boolean, default: false }) disabled!: boolean
 
+  @Prop({ type: Function }) getCompanyId!: () => number
+
   model: CinemaItem[] = []
+
+  companyId = 0
 
   get listPage() {
     return this.$refs.listPage as ListPage
@@ -103,7 +110,7 @@ export default class CinemaTable extends ViewBase {
       { title: '影院名称', key: 'cinemaName', minWidth: 90 },
       { title: '专资编码', key: 'code', minWidth: 60 },
       { title: '所属城市', key: 'cityName', minWidth: 60 },
-      { title: '城市等级', key: 'cityGradeCodeMappedText', minWidth: 60 },
+      { title: '城市等级', key: 'cityGradeCodeText', minWidth: 60 },
 
       { title: '单人次结算价格（元/人次）', slot: 'commonPrice', minWidth: 90 },
       { title: '预告片单人次结算价格（元/人次）', slot: 'trailerPrice', minWidth: 90 },
@@ -124,6 +131,8 @@ export default class CinemaTable extends ViewBase {
   }
 
   dialogOpen = false
+
+  inUpdateField = false
 
   fetch({ pageIndex: index, pageSize: size }: any) {
     const store = this.model || []
@@ -151,7 +160,11 @@ export default class CinemaTable extends ViewBase {
   onSelect() {
     const evdata: CancelableEvent = { canceled: false }
     this.$emit('beforeSelect', evdata)
-    evdata.canceled || (this.dialogOpen = true)
+
+    if (!evdata.canceled) {
+      this.companyId = this.getCompanyId && this.getCompanyId() || 0
+      this.dialogOpen = true
+    }
   }
 
   remove(id: number) {
@@ -165,6 +178,7 @@ export default class CinemaTable extends ViewBase {
   updateField(cinemaId: number, field: string, value: number) {
     const item = this.model.find(it => it.cinemaId == cinemaId) as any
     item && (item[field] = value)
+    this.inUpdateField = true
   }
 
   @Watch('value', { deep: true, immediate: true })
@@ -175,6 +189,11 @@ export default class CinemaTable extends ViewBase {
   @Watch('model', { deep: true })
   watchModel(value: CinemaItem[]) {
     this.$emit('input', value)
+    if (this.inUpdateField) {
+      this.inUpdateField = false
+      return
+    }
+    this.listPage && this.listPage.update()
   }
 }
 </script>

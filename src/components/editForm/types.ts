@@ -470,7 +470,7 @@ export function normalizeField(list: Field[]) {
       props: {
         ...props,
         // 优先使用 placeholder
-        placeholder: placeholder || (props && props.placeholder)
+        placeholder: placeholder != null ? placeholder : (props && props.placeholder)
       },
       style: {
         width: it.width ? `${it.width}px` : '',

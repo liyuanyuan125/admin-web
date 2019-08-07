@@ -92,17 +92,6 @@ import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import { queryList, auditItem, newItem } from './data'
 import { alert, toast } from '@/ui/modal'
-
-import {
-  updateStatus,
-  updateControlStatus,
-  updatePricingLevelCode,
-  updateBoxLevelCode,
-  queryItem,
-  addItem,
-  updateItem
-} from '@/api/cinema'
-
 import { EditDialog, Field } from '@/components/editForm'
 import BatchAudit from '@/components/batchAudit'
 

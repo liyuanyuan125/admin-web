@@ -17,6 +17,7 @@
       selectable
       :selectedIds.sync="selectedIds"
       ref="listPage"
+      :disabledIds="disabledIds"
     >
 
       <template slot="acts-2">
@@ -28,9 +29,20 @@
         >批量发票登记</Button>
       </template>
 
-      <template slot="action" slot-scope="{ row: { id } }">
+      <template slot="action" slot-scope="{ row: { id, payStatus, invoiceStatus } }">
         <div class="row-acts">
           <router-link
+            :to="{
+              name: 'finance-kol-payment-edit',
+              params: {
+                id,
+                action: 'view'
+              }
+            }"
+          >查看</router-link>
+          
+          <router-link
+            v-if="payStatus !== 3"
             :to="{
               name: 'finance-kol-payment-edit',
               params: {
@@ -39,6 +51,16 @@
               }
             }"
           >财务付款</router-link>
+
+          <router-link
+            v-if="invoiceStatus === 1"
+            :to="{
+              name: 'fapiao',
+              params: {
+                id
+              }
+            }"
+          >发票登记</router-link>
         </div>
       </template>
     </ListPage>
@@ -55,11 +77,11 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { queryList, auditItem, newItem, queryKolAcounts } from './data'
+import { queryList, queryKolAcounts } from './data'
 import { alert, toast } from '@/ui/modal'
 import { EditDialog, Field } from '@/components/editForm'
 import BatchAudit from '@/components/batchAudit'
-
+import KolSelect from './components/kolSelect.vue'
 import { getChannelList } from '@/util/types'
 
 const channelList = getChannelList()
@@ -70,6 +92,7 @@ const defaultChannel = channelList[0].value
     ListPage,
     EditDialog,
     BatchAudit,
+    KolSelect
   }
 })
 export default class IndexPage extends ViewBase {
@@ -83,8 +106,7 @@ export default class IndexPage extends ViewBase {
 
   channelList = channelList
 
-  fetch = queryList
-
+  disabledIds = [] as number[]
   selectedIds = [] as number[]
 
   get filters(): Filter[] {
@@ -97,9 +119,13 @@ export default class IndexPage extends ViewBase {
       {
         name: 'kolId',
         defaultValue: '',
-        type: 'input',
-        width: 88,
-        placeholder: 'KOL ID'
+        type: KolSelect,
+        props: {
+          value: 0,
+          channelCode: this.channelCode
+        },
+        width: 150,
+        placeholder: 'KOL名称'
       },
 
       {
@@ -193,7 +219,6 @@ export default class IndexPage extends ViewBase {
       { title: '子订单编号', key: 'subOrderNo', minWidth: 100 },
       { title: 'KOL编号', key: 'kolId', minWidth: 60 },
       { title: 'KOL名称', key: 'kolName', minWidth: 60 },
-      // { title: '平台', key: 'channelCode', editor: 'channelCodeList', minWidth: 100 },
       { title: '订单创建时间', key: 'subOrderCreateTime', minWidth: 135, editor: 'dateTime' },
       { title: '推广品牌', key: 'brandName', minWidth: 65 },
       { title: '结算金额', key: 'status', minWidth: 65 },
@@ -201,7 +226,7 @@ export default class IndexPage extends ViewBase {
       { title: '待付款金额', key: 'unpaidAmount', minWidth: 65 },
       { title: '付款状态', key: 'payStatus', minWidth: 65, editor: 'enum' },
       { title: '发票状态', key: 'invoiceStatus', minWidth: 65, editor: 'enum'},
-      { title: '操作', slot: 'action', minWidth: 50 }
+      { title: '操作', slot: 'action', minWidth: 95 }
     ] as ColumnExtra[]
   }
 
@@ -209,24 +234,37 @@ export default class IndexPage extends ViewBase {
 
   get auditSummary() {
     const count = this.selectedIds.length
-    return `您选择了${count}条KOL平台账号，审核通过后可以在“KOL资源列表”中操作定价和上架。`
+    return `您选择了${count}条。如需发票登记请点击“确认”`
   }
 
   refresh() {
     this.listPage.update()
   }
 
-  async auditSubmit({ agree, remark }: any) {
-    const pdata = {
-      ids: this.selectedIds,
-      agree,
-      remark: agree ? '' : remark
+  auditSubmit({ agree, remark }: any) {
+    if (this.selectedIds.length === 0) {
+      return
     }
-    await auditItem(pdata)
-    toast('操作成功')
-    this.selectedIds = []
-    this.auditVisible = false
-    this.refresh()
+    const ids = this.selectedIds.join(',')
+    this.$router.push({
+      name: 'fapiao',
+      params: {
+        ids
+      }
+    })
+  }
+
+  async fetch(query: any) {
+    const res = await queryList(query)
+    const items = res.items || null
+    if ( items && items.length > 0 ) {
+      this.disabledIds = items.filter((it: any) => {
+        return it.invoiceStatus === 3 || it.invoiceStatus === 2
+      }).map((item: any) => {
+        return item.id
+      })
+    }
+    return res
   }
 
   @Watch('channelCode')

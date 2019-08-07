@@ -27,7 +27,7 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { queryList } from './data'
+import { queryAllList, queryCompanyList } from './data'
 import { Cinema, AddToListEvent } from './types'
 import { cloneDeep, difference, unionBy } from 'lodash'
 import { devLog } from '@/util/dev'
@@ -38,6 +38,13 @@ import { devLog } from '@/util/dev'
   }
 })
 export default class CinemaForm extends ViewBase {
+  /**
+   * 公司关联查询模式
+   * 1、若未传该字段，则调用 https://yapi.aiads-dev.com/project/22/interface/api/56
+   * 2、若传了该字段，则调用 https://yapi.aiads-dev.com/project/22/interface/api/1442
+   */
+  @Prop({ type: Number, default: 0 }) companyId!: number
+
   /**
    * 已选择的项的 ids（不限于当前页，所有页），与 ListPage 不同，不支持双向绑定
    */
@@ -51,13 +58,14 @@ export default class CinemaForm extends ViewBase {
   allSelectedIds = this.selectedIds
 
   get filters(): Filter[] {
+    const companyMode = this.companyId > 0
     return [
       {
-        name: 'query',
+        name: companyMode ? 'name' : 'query',
         defaultValue: '',
         type: 'input',
-        width: 288,
-        placeholder: '输入影院专资编码或名称进行搜索'
+        width: 328,
+        placeholder: companyMode ? '输入影院名称，回车搜索' : '输入影院专资编码或名称，回车搜索'
       },
 
       {
@@ -102,7 +110,9 @@ export default class CinemaForm extends ViewBase {
   selectedList: Cinema[] = []
 
   async fetch(query: any) {
-    const data = await queryList(query)
+    const data = this.companyId > 0
+      ? await queryCompanyList({ companyId: this.companyId, ...query })
+      : await queryAllList(query)
     this.list = data.items || []
     return data
   }
@@ -132,6 +142,9 @@ export default class CinemaForm extends ViewBase {
 .cinema-form {
   /deep/ .list-page {
     margin-bottom: 0;
+  }
+  /deep/ .btn-reset {
+    display: none;
   }
 }
 </style>

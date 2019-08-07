@@ -16,7 +16,10 @@ export async function queryList( query: any = {}) {
  * @param query 查询条件，参见接口文档
  */
 export async function directorList() {
-    const res = await get('/auth/users')
+    const res = await get('/auth/users', {
+      pageIndex: 1,
+      pageSize: 888
+    })
     return res
 }
 

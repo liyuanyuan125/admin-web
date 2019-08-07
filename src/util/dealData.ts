@@ -153,7 +153,18 @@ export function textList(list: KeyText[], keys: Array<(string | number)>) {
 }
 
 /**
- * 将 item 使用 map 进行补充字段，补充的字段，会在 map 的 key 的基础上加上 MappedText 后缀
+ * 获取枚举 key 对应的 text
+ * @param list 枚举列表
+ * @param key KEY
+ */
+export function getEnumText(list: KeyText[], key: string | number) {
+  const [ text ] = textList(list, [key])
+  return text
+}
+
+/**
+ * 将 item 使用 map 进行补充字段，补充的字段，会在 map 的 key 的基础上
+ * 加上 Text 后缀或 MappedText 后缀（如果前者已存在）
  * @param item 数据项
  * @param enumMap 枚举 Map
  */
@@ -165,7 +176,9 @@ export function fillByKeyText(item: any, enumMap: MapType<KeyText[]>) {
 
   const mapped = distList.reduce((ret, { key, dict }) => {
     const value = item[key]
-    ret[key + 'MappedText'] = (dict[value] || {}).text
+    const goodKey = key + 'Text'
+    const mappedKey = goodKey in item ? key + 'MappedText' : goodKey
+    ret[mappedKey] = (dict[value] || {}).text
     return ret
   }, {} as MapType)
 
@@ -266,7 +279,8 @@ export function validDate(date: number | string | null) {
   if (date == null || date == 0 || date == '') {
     return null
   }
-  const d = moment(String(date))
+  // 如果是很大的数字，则说明这是一个时间戳
+  const d = moment(date > 28880000 ? +date : String(date))
   return d.isValid() ? d.toDate() : null
 }
 
@@ -285,6 +299,16 @@ export function formatValidDate(
   const d = validDate(date)
   const result = d != null ? moment(d).format(format) : blank
   return result
+}
+
+/**
+ * formatValidDate 的快捷版本，带上时间
+ * @param date 数字日期或其他形式的日期字符串
+ */
+export function formatValidDateTime(date: number | string | null) {
+  return formatValidDate(date, {
+    format: 'YYYY-MM-DD HH:mm:ss',
+  })
 }
 
 /**
