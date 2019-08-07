@@ -429,13 +429,7 @@ export default class Main extends ViewBase {
   // 省查询
   async queryProvince() {
     try {
-      const {
-        data: { items }
-      } = await queryPro({
-        parentIds: 0,
-        pageIndex: 1,
-        pageSize: 8888
-      })
+      const items = await queryPro()
       this.proSearchList = items || []
     } catch (ex) {
       this.handleError(ex)
@@ -444,12 +438,7 @@ export default class Main extends ViewBase {
   // 市查询
   async queryCity() {
     try {
-      const {
-        data: { items }
-      } = await queryCtiy({
-        pageIndex: 1,
-        pageSize: 8888
-      })
+      const items = await queryCtiy()
       this.citySearchList = items || []
     } catch (ex) {
       this.handleError(ex)
