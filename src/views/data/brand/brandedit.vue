@@ -101,7 +101,7 @@
         <h2 class="title">粉丝画像信息</h2>
         <Row>
           <Col :span="6">
-            <FormItem label="粉丝性别占比" prop="malePercent" class="rest-input">
+            <FormItem label="粉丝性别占比" class="rest-input">
               <div>
                 男性：
                 <InputNumber :max="100" :min="0" v-model="form.malePercent" style="width: 100px"></InputNumber>%
@@ -110,7 +110,7 @@
             </FormItem>
           </Col>
           <Col :span="6">
-            <FormItem label prop="femalePercent" :labelWidth="0" class="rest-input">
+            <FormItem label :labelWidth="0" class="rest-input">
               <div>
                 女性：
                 <InputNumber :max="100" :min="0" v-model="form.femalePercent" style="width: 100px"></InputNumber>%
