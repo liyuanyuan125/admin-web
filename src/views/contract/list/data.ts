@@ -85,8 +85,8 @@ export async function queryItem(query: any = {}) {
       cinemaList: (item.details || []).map(filterCinema),
       attachmentList: (item.attachments || []).map(filterAttachment),
 
-      // 审核是否通过，默认通过
-      auditPass: status != 3 && status != 4,
+      // 审核是否通过，默认拒绝
+      auditPass: status == 2,
 
       // 是否被审核过（通过或拒绝）
       audited: status == 2 || status == 3 || status == 4,
@@ -170,7 +170,7 @@ export async function copyItem(item: any) {
 }
 
 /**
- * 审核平台账号
+ * 审核/作废合同
  * https://yapi.aiads-dev.com/project/34/interface/api/5240
  * @param id 账号ID
  * @param pdata 数据

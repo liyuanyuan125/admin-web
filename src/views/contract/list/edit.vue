@@ -210,7 +210,7 @@ export default class EditPage extends ViewBase {
         },
         span: 22,
         watch: {
-          handler(value: MapType<PriceItem>, oldVal, { vm, item }) {
+          handler(value: MapType<PriceItem>, { item }) {
             debounce(() => {
               const newCinemaList = item.cinemaList.map((it: CinemaItem) => {
                 const { commonPrice, trailerPrice } = value[it.cityGradeCode]

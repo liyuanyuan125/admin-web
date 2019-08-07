@@ -17,7 +17,7 @@
 import { Component, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import EditForm, { Field, Validator } from '@/components/editForm'
-import { querySaleItem, newItem, auditItem } from './data'
+import { querySaleItem, getTaxFee, newSaleItem, auditSaleItem } from './data'
 import OrderTable from './components/orderTable.vue'
 import BivariateTable from '@/components/bivariateTable'
 import LogTable from './components/logTable.vue'
@@ -27,9 +27,9 @@ import { devLog } from '@/util/dev'
 import { debounce } from 'lodash'
 
 const actionMap: MapType<any> = {
-  new: newItem,
+  new: newSaleItem,
   view: null,
-  audit: auditItem
+  audit: auditSaleItem
 }
 
 @Component({
@@ -173,7 +173,21 @@ export default class EditPage extends ViewBase {
         select: {
           enumKey: 'taxRateList'
         },
-        offsetRight: 8
+        offsetRight: 8,
+        watch: async (taxRate, { item }) => {
+          try {
+            item.taxFreeFee = 0
+            item.taxFee = 0
+            const { taxFreeFee, taxFee } = await getTaxFee({
+              taxRate,
+              totalTaxFee: item.totalTaxFee
+            })
+            item.taxFreeFee = taxFreeFee
+            item.taxFee = taxFee
+          } catch (ex) {
+            this.handleError(ex)
+          }
+        }
       },
 
       {
@@ -190,7 +204,7 @@ export default class EditPage extends ViewBase {
         label: '未税金额',
         span: 7,
         text: true,
-        placeholder: '选择税率后计算',
+        placeholder: '待计算',
       },
 
       {
@@ -199,7 +213,7 @@ export default class EditPage extends ViewBase {
         label: '税金',
         span: 7,
         text: true,
-        placeholder: '选择税率后计算',
+        placeholder: '待计算',
       },
 
       {
@@ -208,7 +222,7 @@ export default class EditPage extends ViewBase {
         label: '发票材质',
         span: 7,
         select: {
-          enumKey: 'materialQualityList'
+          enumKey: 'invoiceMaterialQualityList'
         }
       },
 

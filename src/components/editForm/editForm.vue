@@ -274,7 +274,6 @@ export default class EditForm extends ViewBase {
     // 取消监听原有的
     this.unwatches.forEach(handler => handler())
 
-    const param: WatchParam = { vm: this, item: this.item }
     const unwatches = this.normalFields
     .filter(it => it.watch != null)
     .map(({ name, watch }) => {
@@ -282,7 +281,11 @@ export default class EditForm extends ViewBase {
       const { handler, deep, immediate } = watch as WatchOptionsWithHandler
       const unwatch = this.$watch(
         exp,
-        (val: any, oldVal: any) => handler(val, oldVal, param),
+        (value: any, oldValue: any) => handler(value, {
+          vm: this,
+          oldValue,
+          item: this.item,
+        }),
         { deep, immediate }
       )
       return unwatch

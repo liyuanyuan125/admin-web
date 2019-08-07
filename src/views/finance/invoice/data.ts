@@ -56,7 +56,7 @@ export async function querySaleItem(query: any = {}) {
 
   // status: 1 待商务审核，2 商务审核不通过，3 待开票，4 已开票
 
-  const agree = data.agree || true
+  const { agree = false, refuseReason = '', status = 0 } = invoiceApply
 
   const taxRateList = (data.taxRateList as number[] || []).map(key => ({ key, text: `${key}%` }))
 
@@ -102,13 +102,59 @@ export async function querySaleItem(query: any = {}) {
 
       // 审核是否通过，默认通过
       auditPass: agree,
-      // TODO: 是否被审核过（通过或拒绝）
-      audited: agree,
+      // 是否被审核过（通过或拒绝）
+      audited: status > 1,
+      refuseReason,
+
       logList,
     },
   }
 
   return result
+}
+
+/**
+ * 保存销售发票
+ * https://yapi.aiads-dev.com/project/142/interface/api/2838
+ * @param item 数据
+ */
+export async function newSaleItem(item: any) {
+  const pdata = {
+    invoiceNo: item.invoiceNo,
+    invoiceType: item.invoiceType,
+    invoiceDate: item.invoiceDate,
+    taxRate: item.taxRate,
+    materialQuality: item.materialQuality,
+    expressCompany: item.expressCompany,
+    expressNo: item.expressNo,
+    applyId: item.applyId
+  }
+  const { data } = await post('/kol/sale-invoices', pdata)
+  return data
+}
+
+/**
+ * 商务审核发票
+ * https://yapi.aiads-dev.com/project/142/interface/api/2750
+ * @param item 数据
+ */
+export async function auditSaleItem(item: any) {
+  const pdata = {
+    agree: item.auditPass,
+    refuseReason: item.refuseReason
+  }
+  const { data } = await put(`/kol/sale-invoices/${item.id}/approval`, pdata)
+  return data
+}
+
+/**
+ * 计算税金
+ * https://yapi.aiads-dev.com/project/193/interface/api/5456
+ * @param query 查询条件
+ */
+export async function getTaxFee(query: any = {}) {
+  const { data } = await get('/invoice/tax-fee', query)
+  return data
 }
 
 /**
@@ -127,30 +173,4 @@ export async function queryPurchaseList(query: any = {}) {
   return result
 }
 
-// 按照接口要求，处理数据
-const dealEditItem = (item: any) => {
-  const data = {
-  }
 
-  return data
-}
-
-/**
- * 新建平台账号
- * https://yapi.aiads-dev.com/project/142/interface/api/2654
- * @param postData 数据
- */
-export async function newItem(postData: any) {
-  const { data } = await post('/kol/channel-accounts', postData)
-  return data
-}
-
-/**
- * 审核平台账号
- * https://yapi.aiads-dev.com/project/142/interface/api/3030
- * @param postData 数据
- */
-export async function auditItem(postData: any) {
-  const { data } = await put(`/kol/channel-accounts/approve`, postData)
-  return data
-}

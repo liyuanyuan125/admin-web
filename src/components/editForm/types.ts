@@ -152,15 +152,23 @@ export interface WatchParam {
   vm: EditForm
 
   /**
+   * 旧值
+   * 摘自 Vue 官方文档：
+   * 注意：在变异 (不是替换) 对象或数组时，旧值将与新值相同，因为它们
+   * 的引用指向同一个对象/数组。Vue 不会保留变异之前值的副本。
+   */
+  oldValue: any
+
+  /**
    * 内部编辑的数据对象，可以直接赋值，以便更新内部数据
    */
   item: any
 }
 
 /**
- * 观察者函数，与 Vue 官方不同的是，加了第三个参数 param
+ * 观察者函数，与 Vue 不同，第二个参数是 WatchParam
  */
-export type WatchHandler = (val: any, oldVal: any, param: WatchParam) => void
+export type WatchHandler = (value: any, param: WatchParam) => void
 
 /**
  * 带选项的观察者函数
