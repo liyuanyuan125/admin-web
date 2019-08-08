@@ -273,6 +273,13 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
         {} as MapType<KeyTextControlStatus[]>
       )
       this.listEnumMap = listEnumMap
+
+      this.$emit('inspect', {
+        list: this.list,
+        total: this.total,
+        filterEnumMap,
+        listEnumMap,
+      })
     } catch (ex) {
       this.handleError(ex)
     } finally {

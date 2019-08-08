@@ -26,6 +26,7 @@ import { typeList, querySaleList } from './data'
 import { alert, toast } from '@/ui/modal'
 import { EditDialog, Field } from '@/components/editForm'
 import TabNav from '@/components/tabNav'
+import { startDayTimestamp, endDayTimestamp } from '@/util/dealData'
 
 // status: 1 待商务审核，2 商务审核不通过，3 待开票，4 已开票
 
@@ -87,8 +88,8 @@ export default class IndexPage extends ViewBase {
         dealParam(value: any) {
           const [start, end] = value.split('-')
           return {
-            applyStartTime: start || null,
-            applyEndTime: end || null,
+            applyStartTime: startDayTimestamp(start),
+            applyEndTime: endDayTimestamp(end),
           }
         }
       },
@@ -102,8 +103,8 @@ export default class IndexPage extends ViewBase {
         dealParam(value: any) {
           const [start, end] = value.split('-')
           return {
-            BillingStartTime: start || null,
-            BillingEndTime: end || null,
+            billingStartTime: startDayTimestamp(start),
+            billingEndTime: endDayTimestamp(end),
           }
         }
       },

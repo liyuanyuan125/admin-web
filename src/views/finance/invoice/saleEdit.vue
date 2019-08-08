@@ -42,6 +42,11 @@ export default class EditPage extends ViewBase {
 
   @Prop({ type: String, default: '' }) action!: 'new' | 'view' | 'audit'
 
+  /**
+   * status: 1 待商务审核，2 商务审核不通过，3 待开票，4 已开票
+   */
+  status = 0
+
   get editForm() {
     return this.$refs.editForm as EditForm
   }
@@ -102,7 +107,7 @@ export default class EditPage extends ViewBase {
       {
         name: 'auditPass',
         defaultValue: true,
-        disabled: isView,
+        disabled: isView || this.status != 1,
         switch: true,
         group: '审核意见',
         label: '审核通过',
@@ -114,7 +119,7 @@ export default class EditPage extends ViewBase {
       {
         name: 'refuseReason',
         defaultValue: '',
-        disabled: isView,
+        disabled: isView || this.status != 1,
         required: true,
         input: {
           prepend: '审核不通过的理由'
@@ -133,7 +138,7 @@ export default class EditPage extends ViewBase {
       }
     )
 
-    isNew && list.push(
+    isNew && this.status == 3 && list.push(
       {
         name: 'invoiceNo',
         defaultValue: '',
@@ -254,6 +259,7 @@ export default class EditPage extends ViewBase {
     const data = await querySaleItem({
       id: this.id
     })
+    this.status = data.item.status
     return data
   }
 

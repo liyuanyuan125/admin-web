@@ -3,7 +3,8 @@ import {
   dot,
   fillByKeyText,
   getEnumText,
-  formatValidDateTime
+  formatValidDateTime,
+  joinAddress
 } from '@/util/dealData'
 import { KeyText, MapType } from '@/util/types'
 import { keyBy } from 'lodash'
@@ -78,7 +79,16 @@ export async function querySaleItem(query: any = {}) {
 
         ['通讯地址', '联系人', invoiceApply.contact || '-'],
         ['', '联系电话', invoiceApply.contactTelphone || '-'],
-        ['', '联系地址', invoiceApply.addressDetail || '-'],
+        [
+          '',
+          '联系地址',
+          joinAddress([
+            invoiceApply.contactProvinceName,
+            invoiceApply.contactCityName,
+            invoiceApply.contactCountyName,
+            invoiceApply.addressDetail
+          ])
+        ],
 
         ['开票信息', '开票内容', invoiceApply.invoiceContent || '-'],
         ['', '开票金额', invoiceApply.totalTaxFee || '-'],
@@ -99,6 +109,8 @@ export async function querySaleItem(query: any = {}) {
       materialQuality: 0,
       expressCompany: '',
       expressNo: '',
+
+      status,
 
       // 审核是否通过，默认通过
       auditPass: agree,
@@ -127,7 +139,7 @@ export async function newSaleItem(item: any) {
     materialQuality: item.materialQuality,
     expressCompany: item.expressCompany,
     expressNo: item.expressNo,
-    applyId: item.applyId
+    applyId: item.id
   }
   const { data } = await post('/kol/sale-invoices', pdata)
   return data
@@ -172,5 +184,3 @@ export async function queryPurchaseList(query: any = {}) {
   }
   return result
 }
-
-

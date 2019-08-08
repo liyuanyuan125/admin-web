@@ -263,6 +263,9 @@ export default class EditForm extends ViewBase {
       this.item = item
 
       this.initWatches()
+
+      // 允许外部代码，获取内部属性的引用
+      this.$emit('inspect', { item, enumMap })
     } catch (ex) {
       this.handleError(ex)
     } finally {
