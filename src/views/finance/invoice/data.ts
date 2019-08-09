@@ -278,9 +278,8 @@ export async function newPurchaseItem(item: any) {
     expressNo: item.expressNo,
 
     businessType: item.businessType,
-
     billIds: (item.orderList as any[]).map(it => it.billId),
   }
-  const { data } = await post('/kol/sale-invoices', pdata)
+  const { data } = await post('/invoice/purchase-invoices/save', pdata)
   return data
 }
