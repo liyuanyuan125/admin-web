@@ -853,6 +853,9 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: '',
       title: '发票登记'
     },
+    // 当 action 为 view 时，是发票 ID，
+    // 当 action 为 new 时，是数据 ID 列表
+    // businessType: 业务类型：1 kol、2 映前广告
     props: paramTypes({ action: String, ids: Array, businessType: Number })
   },
 

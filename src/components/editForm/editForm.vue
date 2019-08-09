@@ -195,19 +195,6 @@ export default class EditForm extends ViewBase {
     return cloneDeep(this.item)
   }
 
-  init() {
-    const item = defaultParams(this.fields)
-    this.defItem = cloneDeep(item)
-    this.formKey = randomKey()
-    this.errorMap = Object.keys(item).reduce(
-      (map, key) => {
-        map[key] = ''
-        return map
-      },
-      {} as MapType
-    )
-  }
-
   // 简单包装一下，以便适应两种数据结构
   async fetchWrap() {
     const res = await this.fetch()
@@ -224,6 +211,9 @@ export default class EditForm extends ViewBase {
     try {
       const { data } = await this.fetchWrap()
 
+      this.initFields()
+
+      // TODO: 老式 enumMap ？改为自动枚举判断？
       const enumMap = this.normalFields
         .filter(it => !!it.enumKey)
         .reduce(
@@ -271,6 +261,18 @@ export default class EditForm extends ViewBase {
     } finally {
       this.loading = false
     }
+  }
+
+  initFields() {
+    const item = defaultParams(this.fields)
+    this.defItem = cloneDeep(item)
+    this.errorMap = Object.keys(item).reduce(
+      (map, key) => {
+        map[key] = ''
+        return map
+      },
+      {} as MapType
+    )
   }
 
   initWatches() {
@@ -353,7 +355,7 @@ export default class EditForm extends ViewBase {
   }
 
   created() {
-    this.init()
+    this.formKey = randomKey()
     this.load()
   }
 }

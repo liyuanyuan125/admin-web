@@ -1,13 +1,16 @@
-import { MapType, KeyTextControlStatus, KeyText } from '@/util/types'
-import { parse } from '@/fn/array'
-
-import moment from 'moment'
-import { at, keyBy } from 'lodash'
-import numeral from 'numeral'
-
 /**
  * 提供一组处理数据的工具方法
  */
+import { MapType, KeyTextControlStatus, KeyText } from '@/util/types'
+import moment from 'moment'
+import { at, keyBy } from 'lodash'
+import { parse } from '@/fn/array'
+import numeral from 'numeral'
+
+const isZero = (n: number | string | null) => {
+  const num = parseInt(n as string, 10)
+  return isNaN(num) || num == 0
+}
 
 /**
  * 将数字 0 以及字符串 '0' 作为空串，其他保留原值
@@ -62,18 +65,22 @@ export function normalizeList(list: any[], idKey: string, nameKey: string) {
 }
 
 /**
- * 格式化数字（每三位加逗号
+ * 格式化数字（每三位加逗号）
  * @param nums 数字
  */
 export function toThousands(nums: any) {
-  let num = (nums || 0).toString()
+  // 分割整数、小数部分，小数部分不参与逗号分割
+  const [, integer = '', decimal = ''] = String(nums || 0).match(/(\d+)\.?(\d+)?/) || []
+  let num = integer
   let result = ''
   while (num.length > 3) {
-      result = ',' + num.slice(-3) + result
-      num = num.slice(0, num.length - 3)
+    result = ',' + num.slice(-3) + result
+    num = num.slice(0, num.length - 3)
   }
-  if (num) { result = num + result }
-  return result
+  if (num) {
+    result = num + result
+  }
+  return result + (decimal ? `.${decimal}` : '')
 }
 
 /**
@@ -81,7 +88,12 @@ export function toThousands(nums: any) {
  * @param list 列表
  */
 export function filterByControlStatus(list: any[]) {
-  return (list || []).filter(it => !('controlStatus' in it) || it.controlStatus == 1)
+  return (list || []).filter(it =>
+    it != null
+    && typeof it === 'object'
+    // it 中不存在 controlStatus，或，存在但需 == 1
+    && (!('controlStatus' in it) || it.controlStatus == 1)
+  )
 }
 
 interface KeyTextControlStatusMap {
@@ -188,17 +200,30 @@ export function fillByKeyText(item: any, enumMap: MapType<KeyText[]>) {
 }
 
 /**
+ * 将后台万分比率转成百分比
+ * @param rate 万分比率值
+ * @param digits 保留位数，默认为 0
+ */
+export function percent(rate: number | null, digits = 0) {
+  return +((rate || 0) / 100).toFixed(digits)
+}
+
+/**
+ * 加工鲸娱指数
+ * @param index 指数数据
+ * @param digits 保留位数，默认为 2
+ */
+export function jyIndex(index: number | null, digits = 2) {
+  return isZero(index) ? '-' : percent(index, digits)
+}
+
+/**
  * 通过 lodash at 访问对象的值
  * @param object 对象
  * @param path 路径
  */
 export function dot(object: any, path: string) {
   return at(object, path)[0]
-}
-
-const isZero = (n: number | string) => {
-  const num = parseInt(n as string, 10)
-  return isNaN(num) || num == 0
 }
 
 const WAN = 10000

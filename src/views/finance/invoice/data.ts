@@ -5,6 +5,8 @@ import {
   formatValidDateTime,
   joinAddress
 } from '@/util/dealData'
+import { sum } from 'lodash'
+import { devLog } from '@/util/dev'
 
 export const navList = [
   {
@@ -185,6 +187,53 @@ export async function queryPurchaseList(query: any = {}) {
   return result
 }
 
+const dealPurchaseItem = (data: any) => {
+  const {
+    billStatusList = [],
+  } = data
+
+  const taxRateList = (data.taxRateList as number[] || []).map(key => ({ key, text: `${key}%` }))
+
+  const orderList = (data.items as any[] || []).map(it => ({
+    ...it,
+    billMonthText: it.billMonth > 0
+      ? String(it.billMonth).replace(/(\d{4})(\d{2})/, '$1-$2')
+      : '-',
+    billCreateTimeText: formatValidDateTime(it.billCreateTime),
+    billStatusText: getEnumText(billStatusList, it.billStatus)
+  }))
+
+  const totalTaxFee = sum(orderList.map(it => it.billFee || 0))
+
+  const result = {
+    ...data,
+    taxRateList,
+    item: {
+      orderList,
+
+      // 开票信息
+      invoiceNo: '',
+      invoiceType: '',
+      invoiceContent: '',
+      memo: '',
+
+      invoiceDate: 0,
+      totalTaxFee,
+      taxRate: '',
+      taxFreeFee: null,
+      taxFee: null,
+
+      materialQuality: 0,
+      expressCompany: '',
+      expressNo: '',
+
+      logList: data.logList || [],
+    },
+  }
+
+  return result
+}
+
 /**
  * 查询采购发票详情
  * https://yapi.aiads-dev.com/project/193/interface/api/5398
@@ -193,24 +242,7 @@ export async function queryPurchaseList(query: any = {}) {
 export async function queryPurchaseItem(query: any = {}) {
   const { id } = query
   const { data } = await get(`/invoice/purchase-invoices/${id}`)
-  const {
-    billStatusList = [],
-  } = data
-
-  const result = {
-    ...data,
-    item: {
-      orderList: (data.items as any[] || []).map(it => ({
-        ...it,
-        billMonthText: it.billMonth > 0
-          ? String(it.billMonth).replace(/(\d{4})(\d{2})/, '$1-$2')
-          : '-',
-        billCreateTimeText: formatValidDateTime(it.billCreateTime),
-        billStatusText: getEnumText(billStatusList, it.billStatus)
-      }))
-    },
-  }
-
+  const result = dealPurchaseItem(data)
   return result
 }
 
@@ -220,16 +252,8 @@ export async function queryPurchaseItem(query: any = {}) {
  * @param query 查询条件
  */
 export async function queryPurchaseItemByIds(query: any = {}) {
-  const { data } = await get('/invoice/purchase-invoices')
-  const {
-  } = data
-
-  const result = {
-    ...data,
-    item: {
-    },
-  }
-
+  const { data } = await get('/invoice/purchase-invoices/register', query)
+  const result = dealPurchaseItem(data)
   return result
 }
 
@@ -242,12 +266,20 @@ export async function newPurchaseItem(item: any) {
   const pdata = {
     invoiceNo: item.invoiceNo,
     invoiceType: item.invoiceType,
+    invoiceContent: item.invoiceContent,
+    memo: item.memo,
+
     invoiceDate: item.invoiceDate,
+    totalTaxFee: item.totalTaxFee,
     taxRate: item.taxRate,
+
     materialQuality: item.materialQuality,
     expressCompany: item.expressCompany,
     expressNo: item.expressNo,
-    applyId: item.id
+
+    businessType: item.businessType,
+
+    billIds: (item.orderList as any[]).map(it => it.billId),
   }
   const { data } = await post('/kol/sale-invoices', pdata)
   return data

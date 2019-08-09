@@ -17,7 +17,12 @@
 import { Component, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import EditForm, { Field, Validator } from '@/components/editForm'
-import { queryPurchaseItem, queryPurchaseItemByIds, getTaxFee, newPurchaseItem } from './data'
+import {
+  queryPurchaseItem,
+  queryPurchaseItemByIds,
+  getTaxFee,
+  newPurchaseItem
+} from './data'
 import OrderTable from './components/orderTable.vue'
 import BivariateTable from '@/components/bivariateTable'
 import LogTable from './components/logTable.vue'
@@ -68,10 +73,10 @@ export default class EditPage extends ViewBase {
     const readonly = isView
 
     const list: Field[] = [
-      // {
-      //   name: 'id',
-      //   defaultValue: this.ids[0],
-      // },
+      {
+        name: 'businessType',
+        defaultValue: this.businessType
+      },
 
       {
         name: 'orderList',
@@ -91,18 +96,6 @@ export default class EditPage extends ViewBase {
             { title: '账单金额', key: 'billFee', width: 100, align: 'center' },
             { title: '账单状态', key: 'billStatusText', width: 100, align: 'center' },
           ]
-        },
-        span: 23,
-      },
-
-      {
-        name: 'basicInfo',
-        defaultValue: [],
-        group: '发票申请单信息',
-        component: BivariateTable,
-        props: {
-          widths: [100, 130],
-          aligns: [, 'left', 'left'],
         },
         span: 23,
       },
@@ -140,7 +133,26 @@ export default class EditPage extends ViewBase {
         select: {
           enumKey: 'invoiceTypeList'
         },
-        offsetRight: 8
+      },
+
+      {
+        name: 'invoiceContent',
+        defaultValue: '',
+        label: '发票内容',
+        span: 4,
+        required: true,
+        select: {
+          enumKey: 'invoiceContentList'
+        },
+      },
+
+      {
+        name: 'memo',
+        defaultValue: '',
+        span: 3,
+        input: true,
+        placeholder: '内容备注',
+        visible: item => item.invoiceContent == 'other'
       },
 
       {
@@ -153,6 +165,19 @@ export default class EditPage extends ViewBase {
       },
 
       {
+        name: 'totalTaxFee',
+        defaultValue: 0,
+        label: '含税金额',
+        span: 7,
+        offsetRight: 8,
+        number: true,
+        required: true,
+        watch: async (_, { item }) => {
+          this.updateTax(item)
+        }
+      },
+
+      {
         name: 'taxRate',
         defaultValue: '',
         label: '税率',
@@ -160,29 +185,10 @@ export default class EditPage extends ViewBase {
         select: {
           enumKey: 'taxRateList'
         },
-        offsetRight: 8,
-        watch: async (taxRate, { item }) => {
-          try {
-            item.taxFreeFee = 0
-            item.taxFee = 0
-            const { taxFreeFee, taxFee } = await getTaxFee({
-              taxRate,
-              totalTaxFee: item.totalTaxFee
-            })
-            item.taxFreeFee = taxFreeFee
-            item.taxFee = taxFee
-          } catch (ex) {
-            this.handleError(ex)
-          }
+        required: true,
+        watch: async (_, { item }) => {
+          this.updateTax(item)
         }
-      },
-
-      {
-        name: 'totalTaxFee',
-        defaultValue: 0,
-        label: '含税金额',
-        span: 7,
-        text: true,
       },
 
       {
@@ -235,7 +241,24 @@ export default class EditPage extends ViewBase {
 
   submit = actionMap[this.action]
 
-  filterCinema: ((item: any) => any) | null = null
+  async updateTax(item: any) {
+    const { taxRate, totalTaxFee } = item
+    if (!(taxRate > 0 && totalTaxFee > 0)) {
+      return
+    }
+    try {
+      item.taxFreeFee = 0
+      item.taxFee = 0
+      const { taxFreeFee, taxFee } = await getTaxFee({
+        taxRate,
+        totalTaxFee
+      })
+      item.taxFreeFee = taxFreeFee
+      item.taxFee = taxFee
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
 
   async fetch() {
     const data = this.isView
