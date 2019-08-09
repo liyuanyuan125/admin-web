@@ -99,21 +99,8 @@ export default class EditPage extends ViewBase {
         },
         span: 23,
       },
-    ]
 
-    readonly && list.forEach(it => it.disabled = true)
-
-    readonly && list.push(
-      {
-        name: 'logList',
-        defaultValue: [],
-        component: LogTable,
-        group: '操作日志',
-        visibleCol: () => isView
-      }
-    )
-
-    isNew && list.push(
+      // 开票信息
       {
         name: 'invoiceNo',
         defaultValue: '',
@@ -234,6 +221,18 @@ export default class EditPage extends ViewBase {
         span: 7,
         input: true,
       },
+    ]
+
+    readonly && list.forEach(it => it.disabled = true)
+
+    readonly && list.push(
+      {
+        name: 'logList',
+        defaultValue: [],
+        component: LogTable,
+        group: '操作日志',
+        visibleCol: () => isView
+      }
     )
 
     return list
