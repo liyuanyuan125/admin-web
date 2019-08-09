@@ -4,6 +4,7 @@ import Deprecated from '@/components/Deprecated.vue'
 import PoptipSelect from '@/components/PoptipSelect.vue'
 import { devError, devWarn } from '@/util/dev'
 import moment from 'moment'
+import { kebabCase } from 'lodash'
 
 import {
   resolveRender as listResolveRender,
@@ -236,7 +237,6 @@ const editorMap: MapType<(column: ColumnExtra, param: ColumnParam) => RenderFunc
  * @param param 参数
  */
 export function normalizeColumns(list: ColumnExtra[], param: ColumnParam) {
-
   const result = list.map(it => {
     if (it.slot && it.render) {
       devError('slot 与 render 是互斥的')
@@ -262,6 +262,12 @@ export function normalizeColumns(list: ColumnExtra[], param: ColumnParam) {
 
     // 默认 center
     it.align || (it.align = 'center')
+
+    it.className = Array.from(new Set([
+      'col-' + kebabCase(it.key || it.slot),
+      it.className || ''
+    ])).join(' ').trim()
+
     return it
   })
 

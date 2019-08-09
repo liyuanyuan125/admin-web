@@ -3,7 +3,7 @@
     v-model="model"
     :fetch="fetch"
     :backfill="backfill"
-    placeholder="输入公司名搜索"
+    :placeholder="placeholder"
     class="company-select"
     v-bind="$attrs"
     ref="ui"
@@ -34,6 +34,8 @@ export default class CompanySelect extends ViewBase {
 
   // 附加查询条件，参见：https://yapi.aiads-dev.com/project/34/interface/api/287
   @Prop({ type: Object, default: () => ({}) }) query!: MapType<any>
+
+  @Prop({ type: String, default: '输入公司名搜索' }) placeholder!: string
 
   model: number = 0
 

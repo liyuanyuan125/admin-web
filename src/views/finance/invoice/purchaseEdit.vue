@@ -17,7 +17,7 @@
 import { Component, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import EditForm, { Field, Validator } from '@/components/editForm'
-import { querySaleItem, getTaxFee, newSaleItem, auditSaleItem } from './data'
+import { queryPurchaseItem, queryPurchaseItemByIds, getTaxFee, newPurchaseItem } from './data'
 import OrderTable from './components/orderTable.vue'
 import BivariateTable from '@/components/bivariateTable'
 import LogTable from './components/logTable.vue'
@@ -27,9 +27,8 @@ import { devLog } from '@/util/dev'
 import { debounce } from 'lodash'
 
 const actionMap: MapType<any> = {
-  new: newSaleItem,
   view: null,
-  audit: auditSaleItem
+  new: newPurchaseItem,
 }
 
 @Component({
@@ -38,42 +37,41 @@ const actionMap: MapType<any> = {
   }
 })
 export default class EditPage extends ViewBase {
-  @Prop({ type: Number, default: 0 }) id!: number
-
-  @Prop({ type: String, default: '' }) action!: 'new' | 'view' | 'audit'
+  @Prop({ type: String, default: 'view' }) action!: 'view' | 'new'
 
   /**
-   * status: 1 待商务审核，2 商务审核不通过，3 待开票，4 已开票
+   * 当 action 为 view 时，是发票 ID，
+   * 当 action 为 new 时，是数据 ID 列表
    */
-  status = 0
+  @Prop({ type: Array, default: () => [] }) ids!: number[]
+
+  /**
+   * 业务类型：1 kol、2 映前广告
+   */
+  @Prop({ type: Number }) businessType!: number
 
   get editForm() {
     return this.$refs.editForm as EditForm
-  }
-
-  get isNew() {
-    return this.action == 'new'
   }
 
   get isView() {
     return this.action == 'view'
   }
 
-  get isAudit() {
-    return this.action == 'audit'
+  get isNew() {
+    return this.action == 'new'
   }
 
   get fields() {
     const isNew = this.isNew
     const isView = this.isView
-    const isAudit = this.isAudit
-    const readonly = isView || isAudit
+    const readonly = isView
 
     const list: Field[] = [
-      {
-        name: 'id',
-        defaultValue: this.id,
-      },
+      // {
+      //   name: 'id',
+      //   defaultValue: this.ids[0],
+      // },
 
       {
         name: 'orderList',
@@ -82,16 +80,16 @@ export default class EditPage extends ViewBase {
         component: OrderTable,
         props: {
           columns: [
-            { title: '订单编号', key: 'orderNo', width: 100, align: 'center' },
-            { title: '订单名称', key: 'projectName', minWidth: 120, align: 'center' },
-            { title: '客户ID', key: 'companyId', width: 80, align: 'center' },
-            { title: '客户名称', key: 'companyName', width: 150, align: 'center' },
-            { title: '下单时间', key: 'createTimeText', width: 130, align: 'center' },
-            { title: '订单金额', key: 'confirmFee', width: 90, align: 'center' },
-            { title: '支付首款金额', key: 'advanceFee', width: 90, align: 'center' },
-            { title: '支付尾款金额', key: 'restFee', width: 90, align: 'center' },
-            { title: '退款金额', key: 'refundFee', width: 90, align: 'center' },
-            { title: '订单状态', key: 'orderStatusText', width: 90, align: 'center' },
+            { title: '账单编号', key: 'billNo', width: 100, align: 'center' },
+            { title: '影院名称', key: 'cinemaName', minWidth: 150, align: 'center' },
+            { title: '影院专资码', key: 'cinemaCode', width: 100, align: 'center' },
+            { title: '资源方名称', key: 'resourceName', minWidth: 100, align: 'center' },
+            { title: '账单月份', key: 'billMonthText', width: 80, align: 'center' },
+
+            { title: '账单生成时间', key: 'billCreateTimeText', width: 135, align: 'center' },
+            { title: '曝光人次/千人次', key: 'personCount', width: 110, align: 'center' },
+            { title: '账单金额', key: 'billFee', width: 100, align: 'center' },
+            { title: '账单状态', key: 'billStatusText', width: 100, align: 'center' },
           ]
         },
         span: 23,
@@ -114,36 +112,6 @@ export default class EditPage extends ViewBase {
 
     readonly && list.push(
       {
-        name: 'audited',
-        defaultValue: false,
-      },
-
-      {
-        name: 'auditPass',
-        defaultValue: true,
-        disabled: isView || this.status != 1,
-        switch: true,
-        group: '审核意见',
-        label: '审核通过',
-        span: 6,
-        visibleCol: item => isAudit || item.audited,
-        autoWidth: true,
-      },
-
-      {
-        name: 'refuseReason',
-        defaultValue: '',
-        disabled: isView || this.status != 1,
-        required: true,
-        input: {
-          prepend: '审核不通过的理由'
-        },
-        span: 8,
-        visible: item => !item.auditPass,
-        visibleCol: item => isAudit || item.audited
-      },
-
-      {
         name: 'logList',
         defaultValue: [],
         component: LogTable,
@@ -152,7 +120,7 @@ export default class EditPage extends ViewBase {
       }
     )
 
-    isNew && this.status == 3 && list.push(
+    isNew && list.push(
       {
         name: 'invoiceNo',
         defaultValue: '',
@@ -270,10 +238,12 @@ export default class EditPage extends ViewBase {
   filterCinema: ((item: any) => any) | null = null
 
   async fetch() {
-    const data = await querySaleItem({
-      id: this.id
-    })
-    this.status = data.item.status
+    const data = this.isView
+      ? await queryPurchaseItem({ id: this.ids[0] })
+      : await queryPurchaseItemByIds({
+        ids: this.ids.join(','),
+        businessType: this.businessType,
+      })
     return data
   }
 

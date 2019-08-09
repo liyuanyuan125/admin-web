@@ -12,8 +12,8 @@ type ToMapCallback = (v: any) => string
  * @example
  *
  * const list = [
- *     { name: 'lip', age: 24, sex: 1 },
- *     { name: 'coco', age: 16, sex: 0 },
+ *   { name: 'lip', age: 24, sex: 1 },
+ *   { name: 'coco', age: 16, sex: 0 },
  * ]
  *
  * const ageMap = toMap(list, 'name', 'age')    // { lip: 24, coco: 16 }
@@ -29,7 +29,11 @@ type ToMapCallback = (v: any) => string
  *        传函数时，用 `val(it)` 的结果做 value，其中 it 为数组中的每一项；
  *        不传，则取 it 本身作为 value
  */
-export function toMap(list: any[], key?: string|ToMapCallback, val?: string|ToMapCallback) {
+export function toMap(
+  list: any[],
+  key?: string | ToMapCallback,
+  val?: string | ToMapCallback
+) {
   const keyIsFn = typeof key === 'function'
   const valIsFn = typeof val === 'function'
   return (list || []).reduce((map, it) => {
@@ -47,7 +51,7 @@ export function toMap(list: any[], key?: string|ToMapCallback, val?: string|ToMa
  *
  * @param str 要解析的字符串
  */
-export function parse<T = string>(str: string|T[], def: any[] = []): T[] {
+export function parse<T = string>(str: string | T[], def: any[] = []): T[] {
   if (str instanceof Array) {
     return str
   }
@@ -56,7 +60,7 @@ export function parse<T = string>(str: string|T[], def: any[] = []): T[] {
   if (s != null && s !== '') {
     try {
       const a = JSON.parse(s)
-      return a instanceof Array ? a : [ a ]
+      return a instanceof Array ? a : [a]
     } catch (_) {
       return typeof s === 'string' ? s.split(',') : def
     }

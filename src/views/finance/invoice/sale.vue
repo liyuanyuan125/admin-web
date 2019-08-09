@@ -1,6 +1,6 @@
 <template>
   <div class="index-page">
-    <TabNav value="sale" :list="typeList"/>
+    <TabNav value="sale" :list="navList"/>
 
     <ListPage
       :fetch="fetch"
@@ -22,7 +22,7 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { typeList, querySaleList } from './data'
+import { navList, querySaleList } from './data'
 import { alert, toast } from '@/ui/modal'
 import { EditDialog, Field } from '@/components/editForm'
 import TabNav from '@/components/tabNav'
@@ -121,7 +121,7 @@ export default class IndexPage extends ViewBase {
     ]
   }
 
-  typeList = typeList
+  navList = navList
 
   get columns() {
     return [
@@ -136,7 +136,7 @@ export default class IndexPage extends ViewBase {
       },
       { title: '发票金额', key: 'totalTaxFee', minWidth: 65 },
       { title: '发票类型', key: 'invoiceType', width: 100, enum: 'invoiceTypeList' },
-      { title: '发票内容', key: 'invoiceContent', minWidth: 65 },
+      { title: '发票内容', key: 'invoiceContent', width: 80, enum: 'invoiceContentList' },
       { title: '单位名称', key: 'name', minWidth: 65 },
 
       { title: '纳税人识别号', key: 'taxId', minWidth: 80 },

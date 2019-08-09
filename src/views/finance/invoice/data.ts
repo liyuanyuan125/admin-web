@@ -1,17 +1,12 @@
 import { get, post, put } from '@/fn/ajax'
 import {
   dot,
-  fillByKeyText,
   getEnumText,
   formatValidDateTime,
   joinAddress
 } from '@/util/dealData'
-import { KeyText, MapType } from '@/util/types'
-import { keyBy } from 'lodash'
-import moment from 'moment'
-import { devLog } from '@/util/dev'
 
-export const typeList = [
+export const navList = [
   {
     name: 'sale',
     label: '销售发票',
@@ -51,13 +46,15 @@ export async function querySaleItem(query: any = {}) {
   const { data } = await get(`/kol/sale-invoices/${id}`)
   const {
     logList = [],
-    invoiceApply = {},
-    invoiceTypeList = []
+    invoiceApply: basic = {},
+    invoiceTypeList = [],
+    invoiceContentList = [],
+    orderStatusList = []
   } = data
 
   // status: 1 待商务审核，2 商务审核不通过，3 待开票，4 已开票
 
-  const { agree = false, refuseReason = '', status = 0 } = invoiceApply
+  const { agree = false, refuseReason = '', status = 0 } = basic
 
   const taxRateList = (data.taxRateList as number[] || []).map(key => ({ key, text: `${key}%` }))
 
@@ -66,34 +63,36 @@ export async function querySaleItem(query: any = {}) {
     taxRateList,
     item: {
       orderList: (data.items as any[]).map(
-        it => fillByKeyText(it, {
-          orderStatus: data.orderStatusList
+        it => ({
+          ...it,
+          orderStatusText: getEnumText(orderStatusList, it.orderStatus),
+          createTimeText: formatValidDateTime(it.createTime)
         })
       ),
       basicInfo: [
-        ['资质信息', '开户名', invoiceApply.name || '-'],
-        ['', '注册地址', invoiceApply.address || '-'],
-        ['', '纳税人识别号', invoiceApply.taxId || '-'],
-        ['', '开户行支行名称', invoiceApply.accountBank || '-'],
-        ['', '银行账号', invoiceApply.accountNumber || '-'],
+        ['资质信息', '开户名', basic.name || '-'],
+        ['', '注册地址', basic.address || '-'],
+        ['', '纳税人识别号', basic.taxId || '-'],
+        ['', '开户行支行名称', basic.accountBank || '-'],
+        ['', '银行账号', basic.accountNumber || '-'],
 
-        ['通讯地址', '联系人', invoiceApply.contact || '-'],
-        ['', '联系电话', invoiceApply.contactTelphone || '-'],
+        ['通讯地址', '联系人', basic.contact || '-'],
+        ['', '联系电话', basic.contactTelphone || '-'],
         [
           '',
           '联系地址',
           joinAddress([
-            invoiceApply.contactProvinceName,
-            invoiceApply.contactCityName,
-            invoiceApply.contactCountyName,
-            invoiceApply.addressDetail
+            basic.contactProvinceName,
+            basic.contactCityName,
+            basic.contactCountyName,
+            basic.addressDetail
           ])
         ],
 
-        ['开票信息', '开票内容', invoiceApply.invoiceContent || '-'],
-        ['', '开票金额', invoiceApply.totalTaxFee || '-'],
-        ['', '开票类型', getEnumText(invoiceTypeList, invoiceApply.invoiceType)],
-        ['', '申请时间', formatValidDateTime(invoiceApply.applyTime)],
+        ['开票信息', '开票内容', getEnumText(invoiceContentList, basic.invoiceContent)],
+        ['', '开票金额', basic.totalTaxFee || '-'],
+        ['', '开票类型', getEnumText(invoiceTypeList, basic.invoiceType)],
+        ['', '申请时间', formatValidDateTime(basic.applyTime)],
       ],
 
       // 开票信息
@@ -102,7 +101,7 @@ export async function querySaleItem(query: any = {}) {
       invoiceDate: 0,
       taxRate: '',
 
-      totalTaxFee: invoiceApply.totalTaxFee,
+      totalTaxFee: basic.totalTaxFee,
       taxFreeFee: null,
       taxFee: null,
 
@@ -180,7 +179,76 @@ export async function queryPurchaseList(query: any = {}) {
     ...data,
     items: (data.items as any[] || []).map(it => ({
       ...it,
+      billINoText: (it.billINo || []).join('\n'),
     }))
   }
   return result
+}
+
+/**
+ * 查询采购发票详情
+ * https://yapi.aiads-dev.com/project/193/interface/api/5398
+ * @param query 查询条件
+ */
+export async function queryPurchaseItem(query: any = {}) {
+  const { id } = query
+  const { data } = await get(`/invoice/purchase-invoices/${id}`)
+  const {
+    billStatusList = [],
+  } = data
+
+  const result = {
+    ...data,
+    item: {
+      orderList: (data.items as any[] || []).map(it => ({
+        ...it,
+        billMonthText: it.billMonth > 0
+          ? String(it.billMonth).replace(/(\d{4})(\d{2})/, '$1-$2')
+          : '-',
+        billCreateTimeText: formatValidDateTime(it.billCreateTime),
+        billStatusText: getEnumText(billStatusList, it.billStatus)
+      }))
+    },
+  }
+
+  return result
+}
+
+/**
+ * 查询采购登记发票详情
+ * https://yapi.aiads-dev.com/project/193/interface/api/5395
+ * @param query 查询条件
+ */
+export async function queryPurchaseItemByIds(query: any = {}) {
+  const { data } = await get('/invoice/purchase-invoices')
+  const {
+  } = data
+
+  const result = {
+    ...data,
+    item: {
+    },
+  }
+
+  return result
+}
+
+/**
+ * 保存采购发票
+ * https://yapi.aiads-dev.com/project/193/interface/api/5393
+ * @param item 数据
+ */
+export async function newPurchaseItem(item: any) {
+  const pdata = {
+    invoiceNo: item.invoiceNo,
+    invoiceType: item.invoiceType,
+    invoiceDate: item.invoiceDate,
+    taxRate: item.taxRate,
+    materialQuality: item.materialQuality,
+    expressCompany: item.expressCompany,
+    expressNo: item.expressNo,
+    applyId: item.id
+  }
+  const { data } = await post('/kol/sale-invoices', pdata)
+  return data
 }
