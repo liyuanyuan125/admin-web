@@ -12,14 +12,14 @@
       <template slot="acts-2">
         <Button
           type="primary"
-          class="button-audit"
+          class="button-invoice"
           :disabled="!(selectedIds.length > 0)"
-          @click="auditVisible = true"
+          @click="batchInvoice"
         >批量发票登记</Button>
 
         <Button
           type="primary"
-          class="button-audit"
+          class="button-pay"
           :disabled="!(selectedIds.length > 0)"
           @click="pay(selectedIds)"
         >批量发票付款</Button>
@@ -33,7 +33,7 @@
 
       <template slot="action" slot-scope="{ row: { id, invoiceStatus, payStatus } }">
         <div class="row-acts">
-          <a v-if='invoiceStatus < 2'>发票登记</a>
+          <router-link :to="invoiceRoute([id])" v-if="invoiceStatus < 2">发票登记</router-link>
           <a v-if='payStatus < 2' @click='pay([id])'>发票付款</a>
         </div>
       </template>
@@ -88,6 +88,22 @@ export default class IndexPage extends ViewBase {
 
   selectedIds = [] as number[]
 
+  batchInvoice() {
+    const ids = this.selectedIds
+    this.$router.push(this.invoiceRoute(ids))
+  }
+
+  invoiceRoute(ids: number[]) {
+    return {
+      name: 'finance-invoice-purchase-new',
+      params: {
+        action: 'new',
+        ids: ids.join(','),
+        businessType: '2'
+      }
+    }
+  }
+
   pay(id: any) {
     this.$nextTick(() => {
       (this.$refs.pay as any).init(id)
@@ -97,21 +113,11 @@ export default class IndexPage extends ViewBase {
   refresh() {
     this.listPage.update()
   }
-
 }
 </script>
 
 <style lang="less" scoped>
-.button-crawl {
-  margin-left: 12px;
-}
-
-.price-table {
-  margin: 4px 0;
-  /deep/ th,
-  /deep/ td {
-    height: 24px;
-    background-color: #fff !important;
-  }
+.button-pay {
+  margin-left: 8px;
 }
 </style>

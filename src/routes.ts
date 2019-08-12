@@ -3,8 +3,9 @@ import login from './views/login.vue'
 import MainLayout from '@/components/mainLayout'
 import Error from './views/error/index.vue'
 import { MapType } from '@/util/types'
-import { stringToBoolean } from '@/fn/typeCast'
+import { stringToBoolean, castArray } from '@/fn/typeCast'
 import { RouteConfig, Route } from 'vue-router'
+import { parse } from '@/fn/array'
 import { devInfo, devError } from './util/dev'
 
 /**
@@ -12,15 +13,18 @@ import { devInfo, devError } from './util/dev'
  * @param config 配置
  */
 const paramTypes = (
-  config: MapType<NumberConstructor | BooleanConstructor | StringConstructor>
+  config: MapType<NumberConstructor | BooleanConstructor | StringConstructor | ArrayConstructor>
 ) => {
   return ({ params }: Route) => {
-    const props = Object.entries(config).reduce((map, [key, type]) => {
+    const props = Object.entries(config)
+    .reduce((map, [key, type]) => {
       const strVal = params[key]
       const value = type === Number
         ? (+strVal || 0)
         : type === Boolean
         ? stringToBoolean(strVal)
+        : type === Array
+        ? castArray(parse(strVal))
         : strVal
       map[key] = value
       return map
@@ -797,7 +801,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: true,
   },
 
-  // 财务管理 - 发票管理 - 销售发票
+  // 财务管理 - 发票管理 - 销售发票 - 查看、编辑、审核
   {
     path: '/finance/invoice/sale/:action(new|view|audit)/:id?',
     name: 'finance-invoice-sale-edit',
@@ -813,7 +817,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
         return actionTextMap[action]
       },
     },
-    props: paramTypes({ id: Number, action: String })
+    props: paramTypes({ action: String, id: Number })
   },
 
   // 财务管理 - 发票管理 - 采购发票
@@ -826,6 +830,33 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       title: '采购发票'
     },
     props: true,
+  },
+
+  // 财务管理 - 发票管理 - 销售发票 - 查看
+  {
+    path: '/finance/invoice/purchase/view/:ids',
+    name: 'finance-invoice-purchase-view',
+    component: () => import('./views/finance/invoice/purchaseEdit.vue'),
+    meta: {
+      authKey: '',
+      title: '查看',
+    },
+    props: paramTypes({ ids: Array })
+  },
+
+  // 财务管理 - 发票管理 - 销售发票 - 发票登记
+  {
+    path: '/finance/invoice/purchase/:action(new)/:ids/:businessType',
+    name: 'finance-invoice-purchase-new',
+    component: () => import('./views/finance/invoice/purchaseEdit.vue'),
+    meta: {
+      authKey: '',
+      title: '发票登记'
+    },
+    // 当 action 为 view 时，是发票 ID，
+    // 当 action 为 new 时，是数据 ID 列表
+    // businessType: 业务类型：1 kol、2 映前广告
+    props: paramTypes({ action: String, ids: Array, businessType: Number })
   },
 
   // 财务管理 - KOL付款单管理

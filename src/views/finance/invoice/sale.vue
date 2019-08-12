@@ -1,6 +1,6 @@
 <template>
   <div class="index-page">
-    <TabNav value="sale" :list="typeList"/>
+    <TabNav value="sale" :list="navList"/>
 
     <ListPage
       :fetch="fetch"
@@ -22,10 +22,11 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { typeList, querySaleList } from './data'
+import { navList, querySaleList } from './data'
 import { alert, toast } from '@/ui/modal'
 import { EditDialog, Field } from '@/components/editForm'
 import TabNav from '@/components/tabNav'
+import { startDayTimestamp, endDayTimestamp } from '@/util/dealData'
 
 // status: 1 待商务审核，2 商务审核不通过，3 待开票，4 已开票
 
@@ -87,8 +88,8 @@ export default class IndexPage extends ViewBase {
         dealParam(value: any) {
           const [start, end] = value.split('-')
           return {
-            applyStartTime: start || null,
-            applyEndTime: end || null,
+            applyStartTime: startDayTimestamp(start),
+            applyEndTime: endDayTimestamp(end),
           }
         }
       },
@@ -102,8 +103,8 @@ export default class IndexPage extends ViewBase {
         dealParam(value: any) {
           const [start, end] = value.split('-')
           return {
-            BillingStartTime: start || null,
-            BillingEndTime: end || null,
+            billingStartTime: startDayTimestamp(start),
+            billingEndTime: endDayTimestamp(end),
           }
         }
       },
@@ -120,7 +121,7 @@ export default class IndexPage extends ViewBase {
     ]
   }
 
-  typeList = typeList
+  navList = navList
 
   get columns() {
     return [
@@ -135,7 +136,7 @@ export default class IndexPage extends ViewBase {
       },
       { title: '发票金额', key: 'totalTaxFee', minWidth: 65 },
       { title: '发票类型', key: 'invoiceType', width: 100, enum: 'invoiceTypeList' },
-      { title: '发票内容', key: 'invoiceContent', minWidth: 65 },
+      { title: '发票内容', key: 'invoiceContent', width: 80, enum: 'invoiceContentList' },
       { title: '单位名称', key: 'name', minWidth: 65 },
 
       { title: '纳税人识别号', key: 'taxId', minWidth: 80 },

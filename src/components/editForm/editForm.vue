@@ -93,7 +93,9 @@ import {
   FetchData,
   FetchResult,
   fetchDataToResult,
-  EditErrorHandlers
+  EditErrorHandlers,
+  WatchParam,
+  WatchOptionsWithHandler
 } from './types'
 import { cloneDeep, isEqual, isEmpty } from 'lodash'
 import { defaultParams, dealParams, backfillParams } from '@/util/param'
@@ -159,6 +161,8 @@ export default class EditForm extends ViewBase {
 
   errorMap: MapType = {}
 
+  unwatches: any[] = []
+
   get normalFields() {
     const list = normalizeField(this.fields)
     return list
@@ -191,19 +195,6 @@ export default class EditForm extends ViewBase {
     return cloneDeep(this.item)
   }
 
-  init() {
-    const item = defaultParams(this.fields)
-    this.defItem = cloneDeep(item)
-    this.formKey = randomKey()
-    this.errorMap = Object.keys(item).reduce(
-      (map, key) => {
-        map[key] = ''
-        return map
-      },
-      {} as MapType
-    )
-  }
-
   // 简单包装一下，以便适应两种数据结构
   async fetchWrap() {
     const res = await this.fetch()
@@ -220,6 +211,9 @@ export default class EditForm extends ViewBase {
     try {
       const { data } = await this.fetchWrap()
 
+      this.initFields()
+
+      // TODO: 老式 enumMap ？改为自动枚举判断？
       const enumMap = this.normalFields
         .filter(it => !!it.enumKey)
         .reduce(
@@ -257,11 +251,51 @@ export default class EditForm extends ViewBase {
         })
 
       this.item = item
+
+      this.initWatches()
+
+      // 允许外部代码，获取内部属性的引用
+      this.$emit('inspect', { item, enumMap })
     } catch (ex) {
       this.handleError(ex)
     } finally {
       this.loading = false
     }
+  }
+
+  initFields() {
+    const item = defaultParams(this.fields)
+    this.defItem = cloneDeep(item)
+    this.errorMap = Object.keys(item).reduce(
+      (map, key) => {
+        map[key] = ''
+        return map
+      },
+      {} as MapType
+    )
+  }
+
+  initWatches() {
+    // 取消监听原有的
+    this.unwatches.forEach(handler => handler())
+
+    const unwatches = this.normalFields
+    .filter(it => it.watch != null)
+    .map(({ name, watch }) => {
+      const exp = `item.${name}`
+      const { handler, deep, immediate } = watch as WatchOptionsWithHandler
+      const unwatch = this.$watch(
+        exp,
+        (value: any, oldValue: any) => handler(value, {
+          vm: this,
+          oldValue,
+          item: this.item,
+        }),
+        { deep, immediate }
+      )
+      return unwatch
+    })
+    this.unwatches = unwatches
   }
 
   public async onSubmit() {
@@ -321,7 +355,7 @@ export default class EditForm extends ViewBase {
   }
 
   created() {
-    this.init()
+    this.formKey = randomKey()
     this.load()
   }
 }
@@ -404,9 +438,13 @@ export default class EditForm extends ViewBase {
 .submit-line {
   margin: 30px 0;
   text-align: center;
+  user-select: none;
   /deep/ .ivu-btn {
     margin: 0 15px;
     padding: 8px 26px;
+  }
+  /deep/ span {
+    user-select: none;
   }
 }
 

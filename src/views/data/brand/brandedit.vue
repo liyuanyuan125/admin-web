@@ -110,7 +110,7 @@
             </FormItem>
           </Col>
           <Col :span="6">
-            <FormItem label :labelWidth="0" class="rest-input">
+            <FormItem label  :labelWidth="0" class="rest-input">
               <div>
                 女性：
                 <InputNumber :max="100" :min="0" v-model="form.femalePercent" style="width: 100px"></InputNumber>%
@@ -429,10 +429,8 @@ export default class Main extends ViewBase {
   // 省查询
   async queryProvince() {
     try {
-      const {
-        data: { items }
-      } = await queryPro()
-      this.proSearchList = items
+      const items = await queryPro()
+      this.proSearchList = items || []
     } catch (ex) {
       this.handleError(ex)
     }
@@ -440,10 +438,8 @@ export default class Main extends ViewBase {
   // 市查询
   async queryCity() {
     try {
-      const {
-        data: { items }
-      } = await queryCtiy()
-      this.citySearchList = items
+      const items = await queryCtiy()
+      this.citySearchList = items || []
     } catch (ex) {
       this.handleError(ex)
     }

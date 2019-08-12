@@ -252,6 +252,7 @@ export default class MainLayout extends ViewBase {
   position: relative;
   background-color: transparent;
   padding-top: 50px;
+  min-height: 100vh;
 }
 
 .site-sider {

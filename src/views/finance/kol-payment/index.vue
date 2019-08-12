@@ -25,7 +25,7 @@
           type="primary"
           class="button-audit"
           :disabled="!(selectedIds.length > 0)"
-          @click="auditVisible = true"
+          @click="batchInvoice"
         >批量发票登记</Button>
       </template>
 
@@ -40,7 +40,7 @@
               }
             }"
           >查看</router-link>
-          
+
           <router-link
             v-if="payStatus !== 3"
             :to="{
@@ -53,13 +53,8 @@
           >财务付款</router-link>
 
           <router-link
+            :to="invoiceRoute([id])"
             v-if="invoiceStatus === 1"
-            :to="{
-              name: 'fapiao',
-              params: {
-                id
-              }
-            }"
           >发票登记</router-link>
         </div>
       </template>
@@ -235,6 +230,22 @@ export default class IndexPage extends ViewBase {
   get auditSummary() {
     const count = this.selectedIds.length
     return `您选择了${count}条。如需发票登记请点击“确认”`
+  }
+
+  batchInvoice() {
+    const ids = this.selectedIds
+    this.$router.push(this.invoiceRoute(ids))
+  }
+
+  invoiceRoute(ids: number[]) {
+    return {
+      name: 'finance-invoice-purchase-new',
+      params: {
+        action: 'new',
+        ids: ids.join(','),
+        businessType: '1'
+      }
+    }
   }
 
   refresh() {

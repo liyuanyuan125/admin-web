@@ -17,7 +17,7 @@
 import { Component, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import EditForm, { Field, Validator } from '@/components/editForm'
-import { querySaleItem, newItem, auditItem } from './data'
+import { querySaleItem, getTaxFee, newSaleItem, auditSaleItem } from './data'
 import OrderTable from './components/orderTable.vue'
 import BivariateTable from '@/components/bivariateTable'
 import LogTable from './components/logTable.vue'
@@ -27,9 +27,9 @@ import { devLog } from '@/util/dev'
 import { debounce } from 'lodash'
 
 const actionMap: MapType<any> = {
-  new: newItem,
+  new: newSaleItem,
   view: null,
-  audit: auditItem
+  audit: auditSaleItem
 }
 
 @Component({
@@ -41,6 +41,11 @@ export default class EditPage extends ViewBase {
   @Prop({ type: Number, default: 0 }) id!: number
 
   @Prop({ type: String, default: '' }) action!: 'new' | 'view' | 'audit'
+
+  /**
+   * status: 1 待商务审核，2 商务审核不通过，3 待开票，4 已开票
+   */
+  status = 0
 
   get editForm() {
     return this.$refs.editForm as EditForm
@@ -75,6 +80,20 @@ export default class EditPage extends ViewBase {
         defaultValue: [],
         group: '订单基本信息',
         component: OrderTable,
+        props: {
+          columns: [
+            { title: '订单编号', key: 'orderNo', width: 100, align: 'center' },
+            { title: '订单名称', key: 'projectName', minWidth: 120, align: 'center' },
+            { title: '客户ID', key: 'companyId', width: 80, align: 'center' },
+            { title: '客户名称', key: 'companyName', width: 150, align: 'center' },
+            { title: '下单时间', key: 'createTimeText', width: 130, align: 'center' },
+            { title: '订单金额', key: 'confirmFee', width: 90, align: 'center' },
+            { title: '支付首款金额', key: 'advanceFee', width: 90, align: 'center' },
+            { title: '支付尾款金额', key: 'restFee', width: 90, align: 'center' },
+            { title: '退款金额', key: 'refundFee', width: 90, align: 'center' },
+            { title: '订单状态', key: 'orderStatusText', width: 90, align: 'center' },
+          ]
+        },
         span: 23,
       },
 
@@ -102,7 +121,7 @@ export default class EditPage extends ViewBase {
       {
         name: 'auditPass',
         defaultValue: true,
-        disabled: isView,
+        disabled: isView || this.status != 1,
         switch: true,
         group: '审核意见',
         label: '审核通过',
@@ -114,7 +133,7 @@ export default class EditPage extends ViewBase {
       {
         name: 'refuseReason',
         defaultValue: '',
-        disabled: isView,
+        disabled: isView || this.status != 1,
         required: true,
         input: {
           prepend: '审核不通过的理由'
@@ -133,7 +152,7 @@ export default class EditPage extends ViewBase {
       }
     )
 
-    isNew && list.push(
+    isNew && this.status == 3 && list.push(
       {
         name: 'invoiceNo',
         defaultValue: '',
@@ -173,7 +192,21 @@ export default class EditPage extends ViewBase {
         select: {
           enumKey: 'taxRateList'
         },
-        offsetRight: 8
+        offsetRight: 8,
+        watch: async (taxRate, { item }) => {
+          try {
+            item.taxFreeFee = 0
+            item.taxFee = 0
+            const { taxFreeFee, taxFee } = await getTaxFee({
+              taxRate,
+              totalTaxFee: item.totalTaxFee
+            })
+            item.taxFreeFee = taxFreeFee
+            item.taxFee = taxFee
+          } catch (ex) {
+            this.handleError(ex)
+          }
+        }
       },
 
       {
@@ -190,7 +223,7 @@ export default class EditPage extends ViewBase {
         label: '未税金额',
         span: 7,
         text: true,
-        placeholder: '选择税率后计算',
+        placeholder: '待计算',
       },
 
       {
@@ -199,7 +232,7 @@ export default class EditPage extends ViewBase {
         label: '税金',
         span: 7,
         text: true,
-        placeholder: '选择税率后计算',
+        placeholder: '待计算',
       },
 
       {
@@ -208,7 +241,7 @@ export default class EditPage extends ViewBase {
         label: '发票材质',
         span: 7,
         select: {
-          enumKey: 'materialQualityList'
+          enumKey: 'invoiceMaterialQualityList'
         }
       },
 
@@ -240,6 +273,7 @@ export default class EditPage extends ViewBase {
     const data = await querySaleItem({
       id: this.id
     })
+    this.status = data.item.status
     return data
   }
 

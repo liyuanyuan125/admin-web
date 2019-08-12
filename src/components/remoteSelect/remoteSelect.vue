@@ -10,6 +10,7 @@
     :label="backfillLabel"
     class="remote-select"
     v-bind="$attrs"
+    ref="select"
   >
     <Option
       v-for="(it, i) in list"
@@ -26,6 +27,7 @@ import LazyInput from '@/components/LazyInput'
 import { MapType } from '@/util/types'
 import { IdName, Fetch, Backfill } from './types'
 import { devLog } from '@/util/dev'
+import Vue from 'vue'
 
 @Component({
   components: {
@@ -39,6 +41,11 @@ export default class RemoteSelect extends ViewBase {
 
   @Prop({ type: Function }) backfill!: Backfill
 
+  get select() {
+    const select = this.$refs.select as Vue
+    return select
+  }
+
   model: number | string = 0
 
   loading = false
@@ -51,6 +58,22 @@ export default class RemoteSelect extends ViewBase {
 
   // 记录下最后的搜索关键词
   lastQuery = ''
+
+  // TODO: 试图解决初始化搜索关键字被清空的问题
+  // mounted() {
+  //   this.fixInputValue()
+  // }
+
+  // fixInputValue() {
+  //   const el = this.select.$el
+  //   const input = el.querySelector('.ivu-select-input') as HTMLInputElement
+  //   input.addEventListener('focus', () => {
+  //     devLog('---> focus')
+  //   })
+  //   input.addEventListener('blur', () => {
+  //     devLog('**** blur')
+  //   })
+  // }
 
   // 提供刷新的方法，以便可以重新执行 fetch
   public refresh() {
@@ -66,11 +89,17 @@ export default class RemoteSelect extends ViewBase {
 
     if (query == this.backfillLabel) {
       // devLog(`==> [search] backfillLabel: ${query}`)
-      this.backfillLabel = ''
+      // this.backfillLabel = ''
       return
     }
 
     const keyword = query.trim()
+
+    // 在列表中查找，如果恰好找到，就不用调用接口了
+    if (this.list.find(it => it.name == keyword && it.id == this.value) != null) {
+      // devLog(`==> [search] exists: ${keyword}`)
+      return
+    }
 
     this.lastQuery = keyword
 
@@ -95,7 +124,7 @@ export default class RemoteSelect extends ViewBase {
     try {
       const list = await this.backfill(id) || []
       this.list = list.map(it => ({
-        id: isString ? String(it.id) : parseFloat(it.id as string),
+        id: isString ? String(it.id) : +it.id,
         name: it.name
       }))
       this.backfillLabel = list[0].name || ''

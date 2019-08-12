@@ -1,43 +1,17 @@
 <template>
   <div class="index-page">
-    <TabNav value="purchase" :list="typeList"/>
+    <TabNav value="purchase" :list="navList"/>
 
     <ListPage
       :fetch="fetch"
       :filters="filters"
-      :enums="enums"
       :columns="columns"
       ref="listPage"
     >
-      <template slot="acts">
-        <!-- <Button
-          type="success"
-          icon="md-add-circle"
-        >新建</Button> -->
-      </template>
-
-      <template slot="price" slot-scope="{ row: { priceList } }">
-        <Table
-          :columns="priceColumns"
-          :data="priceList"
-          size="small"
-          disabled-hover
-          class="price-table"
-          v-if="priceList.length > 0"
-        />
-      </template>
-
       <template slot="action" slot-scope="{ row: { id, status } }">
         <div class="row-acts">
-          <router-link
-            :to="{
-              name: 'data-kol-account-edit',
-              params: {
-                id,
-                action: status == 1 ? 'audit' : 'edit'
-              }
-            }"
-          >{{status == 1 ? '审核' : '编辑'}}</router-link>
+          <router-link :to="editRoute('audit', id)" v-if="status == 1">商务审核</router-link>
+          <router-link :to="editRoute('new', id)" v-if="status == 3">开票</router-link>
         </div>
       </template>
     </ListPage>
@@ -48,10 +22,17 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { typeList, querySaleList } from './data'
+import { navList, queryPurchaseList } from './data'
 import { alert, toast } from '@/ui/modal'
 import { EditDialog, Field } from '@/components/editForm'
 import TabNav from '@/components/tabNav'
+import { startDayTimestamp, endDayTimestamp } from '@/util/dealData'
+import { MapType } from '@/util/types'
+
+const typeMap: MapType = {
+  1: 'kol',   // KOL业务
+  2: 'before' // 映前广告
+}
 
 @Component({
   components: {
@@ -65,71 +46,82 @@ export default class IndexPage extends ViewBase {
     return this.$refs.listPage as ListPage
   }
 
-  fetch = querySaleList
+  fetch = queryPurchaseList
 
   get filters(): Filter[] {
     return [
       {
-        name: 'companyId',
+        name: 'customerId',
         defaultValue: 0,
         company: true,
-        width: 238,
+        width: 188,
+        placeholder: '客户名，输入名称搜索',
       },
 
       {
-        name: 'orderNo',
+        name: 'billNo',
         defaultValue: '',
         input: true,
-        width: 188,
-        placeholder: '订单编号'
+        width: 138,
+        placeholder: '子订单编号/账单标号'
       },
 
       {
         name: 'invoiceNo',
         defaultValue: '',
         input: true,
-        width: 188,
+        width: 128,
         placeholder: '发票编号'
       },
 
       {
-        name: 'status',
+        name: 'invoiceType',
         defaultValue: 0,
         select: {
-          enumKey: 'statusList',
+          enumKey: 'invoiceTypeList',
         },
         width: 128,
-        placeholder: '发票状态'
+        placeholder: '发票类型'
       },
 
       {
-        name: 'applyTime',
+        name: 'invoiceTime',
         defaultValue: '',
         dateRange: true,
         width: 178,
-        placeholder: '申请时间',
+        placeholder: '发票时间',
         dealParam(value: any) {
           const [start, end] = value.split('-')
           return {
-            applyStartTime: start || null,
-            applyEndTime: end || null,
+            invoiceStartTime: startDayTimestamp(start),
+            invoiceEndTime: endDayTimestamp(end),
           }
         }
       },
 
       {
-        name: 'billingTime',
+        name: 'registrationStartTime',
         defaultValue: '',
         dateRange: true,
         width: 178,
-        placeholder: '开票时间',
+        placeholder: '登记时间',
         dealParam(value: any) {
           const [start, end] = value.split('-')
           return {
-            BillingStartTime: start || null,
-            BillingEndTime: end || null,
+            registrationStartTime: startDayTimestamp(start),
+            registrationEndTime: endDayTimestamp(end),
           }
         }
+      },
+
+      {
+        name: 'businessType',
+        defaultValue: 0,
+        select: {
+          enumKey: 'businessTypeList',
+        },
+        width: 98,
+        placeholder: '业务类型'
       },
 
       {
@@ -144,71 +136,47 @@ export default class IndexPage extends ViewBase {
     ]
   }
 
-  typeList = typeList
-
-  enums = [
-    'accountCategoryList',
-    'statusList',
-    'hasSettlementPriceList',
-  ]
+  navList = navList
 
   get columns() {
     return [
-      { title: '序号', key: 'id', minWidth: 65 },
-      // {
-      //   title: '账号',
-      //   key: 'channelDataId',
-      //   minWidth: 100,
-      //   link: {
-      //     name: 'data-kol-account-edit',
-      //     params: it => ({ id: it.id, channel: this.channel, action: 'view' }),
-      //   }
-      // },
-      { title: '名称', key: 'name', minWidth: 100 },
-      { title: '分类', key: 'accountCategoryCode', minWidth: 60, editor: 'deprecated' },
-      { title: '粉丝数', key: 'fansCount', minWidth: 60 },
-
       {
-        title: '关联KOL编号',
-        key: 'kolId',
-        minWidth: 90,
+        title: '序号',
+        key: 'id',
+        width: 70,
         link: {
-          name: 'data-kol-associated-detail',
-          params: it => ({ id: it.kolId })
+          name: 'finance-invoice-purchase-view',
+          params: ({ id }) => ({ ids: id })
         }
       },
-      { title: '关联KOL名称', key: 'kolName', minWidth: 100 },
-      { title: '是否提供发票', key: 'provideInvoiceText', minWidth: 90 },
-      { title: '结算价/有效期', slot: 'price', minWidth: 270 },
-      { title: '审核状态', key: 'status', minWidth: 65, editor: 'enum' },
+      { title: '业务类型', key: 'businessType', width: 70, enum: 'businessTypeList' },
+      { title: '单据类型', key: 'billType', width: 70, enum: 'billTypeList' },
+      { title: '单据编号', key: 'billINoText', minWidth: 100 },
+      { title: '发票编号', key: 'invoiceNo', minWidth: 65 },
 
-      { title: '操作', slot: 'action', minWidth: 50 }
+      { title: '客户编号', key: 'customerId', minWidth: 65 },
+      { title: '客户名称', key: 'customerName', minWidth: 65 },
+      { title: '发票类型', key: 'invoiceType', width: 100, enum: 'invoiceTypeList' },
+      { title: '发票内容', key: 'invoiceContent', minWidth: 65, enum: 'invoiceContentList' },
+      { title: '发票日期', key: 'invoiceDate', width: 80, date: true },
+
+      { title: '发票金额', key: 'totalTaxFee', minWidth: 65 },
+      { title: '快递公司', key: 'expressCompany', minWidth: 65 },
+      { title: '快递单号', key: 'expressNo', minWidth: 65 },
     ] as ColumnExtra[]
   }
 
-  priceColumns = [
-    { title: '类别', key: 'name', minWidth: 100 },
-    { title: '价格', key: 'price', minWidth: 85, align: 'center' },
-    { title: '有效期', key: 'date', minWidth: 75, align: 'center' },
-  ]
-
-  refresh() {
-    this.listPage.update()
+  editRoute(action: string, id: number) {
+    return {
+      name: 'finance-invoice-sale-edit',
+      params: { action, id }
+    }
   }
 }
 </script>
 
 <style lang="less" scoped>
-.button-crawl {
-  margin-left: 12px;
-}
-
-.price-table {
-  margin: 4px 0;
-  /deep/ th,
-  /deep/ td {
-    height: 24px;
-    background-color: #fff !important;
-  }
+/deep/ .col-bill-i-no-text span {
+  white-space: pre-line;
 }
 </style>

@@ -1,13 +1,16 @@
-import { MapType, KeyTextControlStatus, KeyText } from '@/util/types'
-import { parse } from '@/fn/array'
-
-import moment from 'moment'
-import { at, keyBy } from 'lodash'
-import numeral from 'numeral'
-
 /**
  * 提供一组处理数据的工具方法
  */
+import { MapType, KeyTextControlStatus, KeyText } from '@/util/types'
+import moment from 'moment'
+import { at, keyBy } from 'lodash'
+import { parse } from '@/fn/array'
+import numeral from 'numeral'
+
+const isZero = (n: number | string | null) => {
+  const num = parseInt(n as string, 10)
+  return isNaN(num) || num == 0
+}
 
 /**
  * 将数字 0 以及字符串 '0' 作为空串，其他保留原值
@@ -62,18 +65,22 @@ export function normalizeList(list: any[], idKey: string, nameKey: string) {
 }
 
 /**
- * 格式化数字（每三位加逗号
+ * 格式化数字（每三位加逗号）
  * @param nums 数字
  */
 export function toThousands(nums: any) {
-  let num = (nums || 0).toString()
+  // 分割整数、小数部分，小数部分不参与逗号分割
+  const [, integer = '', decimal = ''] = String(nums || 0).match(/(\d+)\.?(\d+)?/) || []
+  let num = integer
   let result = ''
   while (num.length > 3) {
-      result = ',' + num.slice(-3) + result
-      num = num.slice(0, num.length - 3)
+    result = ',' + num.slice(-3) + result
+    num = num.slice(0, num.length - 3)
   }
-  if (num) { result = num + result }
-  return result
+  if (num) {
+    result = num + result
+  }
+  return result + (decimal ? `.${decimal}` : '')
 }
 
 /**
@@ -81,7 +88,12 @@ export function toThousands(nums: any) {
  * @param list 列表
  */
 export function filterByControlStatus(list: any[]) {
-  return (list || []).filter(it => !('controlStatus' in it) || it.controlStatus == 1)
+  return (list || []).filter(it =>
+    it != null
+    && typeof it === 'object'
+    // it 中不存在 controlStatus，或，存在但需 == 1
+    && (!('controlStatus' in it) || it.controlStatus == 1)
+  )
 }
 
 interface KeyTextControlStatusMap {
@@ -112,7 +124,8 @@ interface InListDefValMap {
 export function filterItemInList(
   item: any,
   listMap: KeyTextControlStatusMap,
-  defValMap: InListDefValMap) {
+  defValMap: InListDefValMap
+) {
   const newItem = { ...item }
   Object.entries(listMap).forEach(([key, list]) => {
     if (key in newItem) {
@@ -187,17 +200,30 @@ export function fillByKeyText(item: any, enumMap: MapType<KeyText[]>) {
 }
 
 /**
+ * 将后台万分比率转成百分比
+ * @param rate 万分比率值
+ * @param digits 保留位数，默认为 0
+ */
+export function percent(rate: number | null, digits = 0) {
+  return +((rate || 0) / 100).toFixed(digits)
+}
+
+/**
+ * 加工鲸娱指数
+ * @param index 指数数据
+ * @param digits 保留位数，默认为 2
+ */
+export function jyIndex(index: number | null, digits = 2) {
+  return isZero(index) ? '-' : percent(index, digits)
+}
+
+/**
  * 通过 lodash at 访问对象的值
  * @param object 对象
  * @param path 路径
  */
 export function dot(object: any, path: string) {
   return at(object, path)[0]
-}
-
-const isZero = (n: number | string) => {
-  const num = parseInt(n as string, 10)
-  return isNaN(num) || num == 0
 }
 
 const WAN = 10000
@@ -272,16 +298,23 @@ export function intDate(date: number, format = 'YYYY-MM-DD') {
 }
 
 /**
+ * 将形如 20190622 形式的整数，或者其他一些符合要求的字符串，转换成 Moment 对象
+ * @param date 数字日期或其他形式的日期字符串
+ */
+export function toMoment(date: number | string | null) {
+  return date == null || date == 0 || date == ''
+    ? moment.invalid()
+    // 如果是很大的数字，则说明这是一个时间戳
+    : moment(date > 28880000 ? +date : String(date))
+}
+
+/**
  * 将形如 20190622 形式的整数，或者其他一些符合要求的字符串，转换成日期
  * @param date 数字日期或其他形式的日期字符串
  */
 export function validDate(date: number | string | null) {
-  if (date == null || date == 0 || date == '') {
-    return null
-  }
-  // 如果是很大的数字，则说明这是一个时间戳
-  const d = moment(date > 28880000 ? +date : String(date))
-  return d.isValid() ? d.toDate() : null
+  const m = toMoment(date)
+  return m.isValid() ? m.toDate() : null
 }
 
 /**
@@ -296,8 +329,8 @@ export function formatValidDate(
     blank = '-',
   }: any = {}
 ) {
-  const d = validDate(date)
-  const result = d != null ? moment(d).format(format) : blank
+  const m = toMoment(date)
+  const result = m.isValid() ? m.format(format) : blank
   return result
 }
 
@@ -326,12 +359,12 @@ export function formatIntDateRange(
     blank = '-',
   }: any = {}
 ) {
-  const start = validDate(dateStart)
-  const end = validDate(dateEnd)
-  if (start == null && end == null) {
+  const start = toMoment(dateStart)
+  const end = toMoment(dateEnd)
+  if (!start.isValid() && !end.isValid()) {
     return blank
   }
-  const pairs = [start, end].map(d => d != null ? moment(d).format(format) : blank)
+  const pairs = [start, end].map(m => m.isValid() ? m.format(format) : blank)
   const result = pairs.join(separator)
   return result
 }
@@ -353,6 +386,26 @@ export function formatTimestamp(
 }
 
 /**
+ * 获取开始日期的时间戳
+ * @param date
+ */
+export function startDayTimestamp(date: number | string | null) {
+  const m = toMoment(date)
+  const result = m.isValid() ? m.startOf('day').valueOf() : null
+  return result
+}
+
+/**
+ * 获取结束日期的时间戳
+ * @param date
+ */
+export function endDayTimestamp(date: number | string | null) {
+  const m = toMoment(date)
+  const result = m.isValid() ? m.endOf('day').valueOf() : null
+  return result
+}
+
+/**
  * 将万分转成百分
  * @param num 万分值
  * @param digits 保留位数，默认为 2
@@ -367,4 +420,20 @@ export function baifen(wan: number | null, digits = 2) {
  */
 export function wanfen(bai: number | null) {
   return Math.floor((bai || 0) * 100) || 0
+}
+
+/**
+ * 将地址组件，组装出地址信息
+ * @param parts 地址组件，例如 ['北京市', '北京市', '朝阳区', '北京文化中心']
+ * @param options 选项
+ */
+export function joinAddress(
+  parts: string[],
+  {
+    separator = ' ',
+    blank = '-',
+  }: any = {}
+) {
+  const result = Array.from(new Set(parts)).join(separator).trim() || blank
+  return result
 }
