@@ -3,7 +3,6 @@
     <ListPage
       :fetch="fetch"
       :filters="filters"
-      :enums="enums"
       :columns="columns"
       ref="listPage"
     >
@@ -21,7 +20,6 @@
           <router-link :to="editRoute('audit', id)" v-if="status == 1">审批</router-link>
           <a @click="cancel(id)" v-if="status == 2">作废</a>
           <router-link :to="editRoute('copy', id)">复制</router-link>
-          <router-link :to="editRoute('view', id)">详情</router-link>
         </div>
       </template>
     </ListPage>
@@ -115,21 +113,22 @@ export default class IndexPage extends ViewBase {
     ]
   }
 
-  enums = [
-    'approveStatusList',
-  ]
-
   get columns() {
     return [
-      { title: '合同编号', key: 'contractNo', minWidth: 90 },
+      {
+        title: '合同编号',
+        key: 'contractNo',
+        width: 90,
+        link: ({ item }) => this.editRoute('view', item.id)
+      },
       { title: '合同名称', key: 'contractName', minWidth: 90 },
       { title: '乙方公司名称', key: 'companyBName', minWidth: 100 },
       { title: '有效期', key: 'validityDate', minWidth: 150 },
       { title: '创建时间', key: 'createTimeText', minWidth: 150 },
       { title: '签订人', key: 'signingUserName', minWidth: 70 },
       { title: '跟进人', key: 'followUserName', minWidth: 70 },
-      { title: '状态', key: 'approveStatus', minWidth: 65, editor: 'enum' },
-      { title: '操作', slot: 'action', minWidth: 160 }
+      { title: '状态', key: 'approveStatus', width: 70, enum: true },
+      { title: '操作', slot: 'action', width: 130 }
     ] as ColumnExtra[]
   }
 

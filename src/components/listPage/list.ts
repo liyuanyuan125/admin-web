@@ -1,24 +1,29 @@
 /// ==================
 /// 新版构造：列表
 /// ==================
-import Vue, { Component } from 'vue'
-import { MapType } from '@/util/types'
-import { ColumnExtra } from './types'
+import { Component } from 'vue'
+import { ColumnParam, ColumnExtra } from './types'
 import { isPlainObject, cloneDeep } from 'lodash'
 import ListEnum from './components/listEnum.vue'
-import { ColumnParam } from './types'
-import { devAssert } from '@/util/dev'
+import { MapType } from '@/util/types'
 import { formatValidDate } from '@/util/dealData'
+import { Location } from 'vue-router'
+import { devAssert } from '@/util/dev'
 
 /**
- * GetProps、GetText 等函数的传入参数，可扩展其他值
+ * GetProps 等函数的传入参数，可扩展其他值
  */
 export interface GetParam extends ColumnParam {
   item: any
   index: number
-  options?: any
   column?: ColumnExtra
+  options?: any
 }
+
+/**
+ * 选项以及获取选项的函数
+ */
+export type OptionsType<T = any> = T | ((param: GetParam) => T)
 
 /**
  * 获取 Props 的函数
@@ -28,17 +33,12 @@ export type GetProps<T = any> = (param: GetParam) => MapType<T>
 /**
  * Props 配置的类型
  */
-export type PropsType<T = any> = MapType<T> | GetProps<T>
-
-/**
- * 获取文本的函数
- */
-export type GetText = (param: GetParam) => string
+export type PropsType<T = GetParam> = OptionsType<MapType<T | any>>
 
 /**
  * 本文配置的类型
  */
-export type TextType = string | GetText
+export type TextType = OptionsType<string>
 
 /**
  * 描述列表组件配置
@@ -56,34 +56,18 @@ const defaultGetText = ({ item, column }: GetParam) => {
 }
 
 /**
- * Link 组件的选项配置
- */
-export interface LinkOptions {
-  /**
-   * 跳转到的 route name
-   */
-  name: string
-
-  /**
-   * 获取 params 对象的函数，参数 item 为当前行的数据
-   */
-  params?: (item: any) => MapType<any>
-}
-
-/**
  * 列表组件配置
  */
 const componentMap: MapType<ListComponent> = {
   link: {
     component: 'router-link',
-    props: ({ item, options }) => {
-      const { name, params: getParams } = options as LinkOptions
-      const params = getParams && getParams(item) || {}
+    props: param => {
+      const { options } = param
+      const location = typeof options === 'function'
+        ? options(param)
+        : options
       const result = {
-        to: {
-          name,
-          params
-        }
+        to: location as Location
       }
       return result
     }
@@ -94,7 +78,11 @@ const componentMap: MapType<ListComponent> = {
     component: ListEnum,
     props: ({ list, item, listEnumMap, column, options }) => {
       const { key, auth = '' } = column!
-      const inProps = typeof options == 'string' ? { enumKey: options } : options
+      const inProps = options === true
+        ? { enumKey: key + 'List' }
+        : typeof options == 'string'
+        ? { enumKey: options }
+        : options
       const { enumKey, updateField } = inProps!
       // TODO: 自动 pick enumKey 的方案
       return {
@@ -145,7 +133,7 @@ const resolveProps = (
   propsType: PropsType,
   param: GetParam,
 ): MapType<any> => {
-  const props = typeof propsType == 'function' ? propsType(param) : propsType
+  const props = typeof propsType === 'function' ? propsType(param) : propsType
   return isPlainObject(props) ? cloneDeep(props) : {}
 }
 
