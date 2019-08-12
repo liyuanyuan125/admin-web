@@ -21,7 +21,7 @@ export interface GetParam extends ColumnParam {
 }
 
 /**
- * 选项以及获取选项的函数
+ * 选项或获取选项的函数
  */
 export type OptionsType<T = any> = T | ((param: GetParam) => T)
 
