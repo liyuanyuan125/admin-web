@@ -31,6 +31,30 @@
 
      <div class="base-mess" v-if="audit">
         <h2 class="title">运营确认</h2>
+         <Row>
+          <Col :span="8"><p><label>系统账单人次</label><em>{{items.personCount || '-'}}</em></p></Col>
+        </Row>
+         <Row>
+          <Col :span="8"><p><label>影城系统人次</label><em>{{items.resourcePersonCount}}</em></p></Col>
+        </Row>
+        <Row>
+          <Col :span="8"><p><label>差异比例</label><em>{{items.proportion}}</em></p></Col>
+        </Row>
+        <Form ref="form" :model="form" :label-width="100" label-position="left">
+          <FormItem label="是否审核">
+              <RadioGroup v-model="form.agree">
+                <Radio :label="1" >确定通过</Radio>
+                <Radio :label="0">确定不通过</Radio>
+            </RadioGroup>
+          </FormItem>
+           <FormItem label="备注">
+             <Input type="textarea" v-model="form.remark" :rows="6"/>
+          </FormItem>
+        </Form>
+        <div class="footer-btn">
+              <Button type="primary" :to="{name: 'finance-billmanage'}" class="btn">返回</Button>
+              <Button type="primary" @click="editSubmit">提交</Button>
+          </div>
      </div>
      <div class="base-mess logs" v-if="!audit">
        <h2 class="title">操作日志</h2>
@@ -47,7 +71,7 @@
 <script lang='ts'>
 import {Component, Prop} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import {detail, resourceBillDetail} from '@/api/financeBill'
+import {detail, resourceBillDetail, sureAduit} from '@/api/financeBill'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import {intDate, toThousands} from '@/util/dealData'
 import {formatNumber } from '@/util/validateRules'
@@ -64,6 +88,9 @@ const dateFormat = 'YYYY-MM-DD HH:mm:ss'
 export default class Main extends ViewBase {
   @Prop({ type: Number}) id!: number
   @Prop({ type: Number, default: 0}) audit!: number
+
+  // 审核
+  form: any = {}
 
   // 操作日志
   resourceBillLogs: any[] = []
@@ -122,7 +149,6 @@ export default class Main extends ViewBase {
         amount: formatNumber(it.amount)
       }
     })
-    this.items = item
     return {
       ...data,
       items: item
@@ -138,6 +164,21 @@ export default class Main extends ViewBase {
           createTime: moment(it.createTime).format(dateFormat)
         }
       })
+      this.items = item
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
+  async editSubmit() {
+    const agree = this.form.agree ? true : false
+    try {
+      const { data } = await sureAduit({
+        ...this.form,
+        agree,
+        id: this.id,
+      })
+      this.$router.push({name: 'finance-billmanage'})
     } catch (ex) {
       this.handleError(ex)
     }
@@ -160,6 +201,12 @@ export default class Main extends ViewBase {
   display: flex;
   img {
     margin: 10px 10px 0 0;
+  }
+}
+.footer-btn {
+  text-align: center;
+  .btn {
+    margin-right: 15px;
   }
 }
 </style>

@@ -40,6 +40,16 @@ export async function operateConfirm(data: any) {
   return res
 }
 
+/**
+ * 确定审核
+ * 参数 id / agree / remark
+ * http://yapi.aiads-dev.com/project/140/interface/api/5491
+ */
+export async function sureAduit(data: any) {
+  const res = await put('/xadvert/resource-bill/approval', data)
+  return res
+}
+
 
 
 

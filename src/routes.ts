@@ -896,7 +896,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   },
   // 财务管理 - 映前广告资源方账单管理 detail
   {
-    path: '/finance/billmanage/detail/:id//:audit?',
+    path: '/finance/billmanage/detail/:id/:audit?',
     name: 'finance-billmanage-detail',
     component: () => import('./views/finance/bill-manage/detail.vue'),
     meta: {
