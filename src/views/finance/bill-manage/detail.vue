@@ -11,7 +11,28 @@
       </ListPage>
      </div>
 
-     <div class="base-mess logs">
+     <div class="base-mess">
+       <h2 class="title">资源方审核信息</h2>
+       <Row>
+          <Col :span="8"><p><label>影城系统人次</label><em>{{items.personCount || '-'}}</em></p></Col>
+        </Row>
+        <Row>
+          <Col :span="8"><p><label>影城系统截图</label>
+            <em class="imgs-list" v-for="(img, index) in (items.picturesUrl || [])" :key="index">
+              <img src="" width="80px"/>
+            </em>
+            </p>
+          </Col>
+        </Row>
+        <Row>
+          <Col :span="8"><p><label>备注</label><em>{{items.remark || '-'}}</em></p></Col>
+        </Row>
+     </div>
+
+     <div class="base-mess" v-if="audit">
+        <h2 class="title">运营确认</h2>
+     </div>
+     <div class="base-mess logs" v-if="!audit">
        <h2 class="title">操作日志</h2>
         <p v-for="(item, index) in resourceBillLogs" :key="index">
           <span>{{item.createName}}</span>
@@ -42,9 +63,11 @@ const dateFormat = 'YYYY-MM-DD HH:mm:ss'
 
 export default class Main extends ViewBase {
   @Prop({ type: Number}) id!: number
+  @Prop({ type: Number, default: 0}) audit!: number
 
   // 操作日志
   resourceBillLogs: any[] = []
+  items: any = {}
 
   // fetch = resourceBillDetail
   filters: Filter[] = [
@@ -99,6 +122,7 @@ export default class Main extends ViewBase {
         amount: formatNumber(it.amount)
       }
     })
+    this.items = item
     return {
       ...data,
       items: item
@@ -130,6 +154,12 @@ export default class Main extends ViewBase {
   }
   .form {
     display: none;
+  }
+}
+.imgs-list {
+  display: flex;
+  img {
+    margin: 10px 10px 0 0;
   }
 }
 </style>

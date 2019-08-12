@@ -865,14 +865,16 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   },
   // 财务管理 - 映前广告资源方账单管理 detail
   {
-    path: '/finance/billmanage/detail/:id',
+    path: '/finance/billmanage/detail/:id//:audit?',
     name: 'finance-billmanage-detail',
     component: () => import('./views/finance/bill-manage/detail.vue'),
     meta: {
       authKey: '',
-      title: '详情'
+      title({ params: { audit } }) {
+        return !audit ? '查看' : '审核'
+      }
     },
-    props: idProps,
+    props: paramTypes({ id: Number, audit: Number })
   },
 
   // 财务管理 - 映前广告资源方账单管理 - 运营确定账单
