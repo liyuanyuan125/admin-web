@@ -33,7 +33,7 @@
 
       <template slot="action" slot-scope="{row}">
         <a v-auth="'basis.districts:modify'" @click="edit(row.id, row, 1)">编辑</a>
-        <a style="margin-left: 8px" v-auth="'basis.districts:delete'" @click="deletes(edit.id)">删除</a>
+        <a style="margin-left: 8px" v-auth="'basis.districts:delete'" @click="deletes(row.id)">删除</a>
       </template>
     </Table>
 
