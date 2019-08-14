@@ -32,16 +32,6 @@
       <template slot="action" slot-scope="{ row: { id, payStatus, invoiceStatus } }">
         <div class="row-acts">
           <router-link
-            :to="{
-              name: 'finance-kol-payment-edit',
-              params: {
-                id,
-                action: 'view'
-              }
-            }"
-          >查看</router-link>
-
-          <router-link
             v-if="payStatus !== 3"
             :to="{
               name: 'finance-kol-payment-edit',
@@ -201,27 +191,38 @@ export default class IndexPage extends ViewBase {
 
   get columns() {
     return [
-      { title: '序号', key: 'id', minWidth: 65 },
+      {
+        title: '序号',
+        key: 'id',
+        width: 65,
+        link: ({ item }) => ({
+          name: 'finance-kol-payment-edit',
+          params: {
+            id: item.id,
+            action: 'view'
+          }
+        })
+      },
       {
         title: '订单编号',
         key: 'mainOrderNo',
-        minWidth: 65,
-        link: {
+        width: 100,
+        link: ({ item }) => ({
           name: 'order-kollist-detail',
-          params: it => ({ id: it.id ,  orders: 0})
-        }
+          params: { id: item.id, orders: 0 }
+        })
       },
       { title: '子订单编号', key: 'subOrderNo', minWidth: 100 },
       { title: 'KOL编号', key: 'kolId', minWidth: 60 },
       { title: 'KOL名称', key: 'kolName', minWidth: 60 },
-      { title: '订单创建时间', key: 'subOrderCreateTime', minWidth: 135, editor: 'dateTime' },
+      { title: '订单创建时间', key: 'subOrderCreateTime', width: 135, dateTime: true },
       { title: '推广品牌', key: 'brandName', minWidth: 65 },
       { title: '结算金额', key: 'status', minWidth: 65 },
       { title: '已付款金额', key: 'paidAmount', minWidth: 65 },
       { title: '待付款金额', key: 'unpaidAmount', minWidth: 65 },
-      { title: '付款状态', key: 'payStatus', minWidth: 65, editor: 'enum' },
-      { title: '发票状态', key: 'invoiceStatus', minWidth: 65, editor: 'enum'},
-      { title: '操作', slot: 'action', minWidth: 95 }
+      { title: '付款状态', key: 'payStatus', minWidth: 65, enum: true },
+      { title: '发票状态', key: 'invoiceStatus', minWidth: 65, enum: true },
+      { title: '操作', slot: 'action', width: 70 }
     ] as ColumnExtra[]
   }
 

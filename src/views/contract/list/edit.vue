@@ -289,7 +289,6 @@ export default class EditPage extends ViewBase {
       {
         name: 'provideInvoice',
         defaultValue: false,
-        // disabled: isView,
         label: '是否提供发票',
         span: 6,
         switch: true,
@@ -299,7 +298,6 @@ export default class EditPage extends ViewBase {
       {
         name: 'invoiceType',
         defaultValue: '',
-        // disabled: isView,
         label: '发票类型',
         span: 6,
         visible: item => item.provideInvoice,
@@ -311,7 +309,6 @@ export default class EditPage extends ViewBase {
       {
         name: 'invoiceContent',
         defaultValue: '',
-        // disabled: isView,
         label: '发票内容',
         span: 6,
         visible: item => item.provideInvoice,
@@ -325,10 +322,8 @@ export default class EditPage extends ViewBase {
         defaultValue: [],
         label: '　',
         component: AttachmentTable,
-        // disabled: isView,
         group: '附件信息',
         span: 20,
-        visible: item => item.provideInvoice,
       },
 
       {

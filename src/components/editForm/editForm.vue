@@ -7,7 +7,6 @@
       :rules="rules"
       :style="{ visibility: loading ? 'hidden' : 'visible' }"
       :loading="submitLoading"
-      autocomplete="on"
       @submit.native.prevent="onSubmit"
       class="form"
       ref="form"

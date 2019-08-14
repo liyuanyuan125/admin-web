@@ -8,12 +8,6 @@
       :columns="columns"
       ref="listPage"
     >
-      <template slot="action" slot-scope="{ row: { id, status } }">
-        <div class="row-acts">
-          <router-link :to="editRoute('audit', id)" v-if="status == 1">商务审核</router-link>
-          <router-link :to="editRoute('new', id)" v-if="status == 3">开票</router-link>
-        </div>
-      </template>
     </ListPage>
   </div>
 </template>
@@ -144,33 +138,26 @@ export default class IndexPage extends ViewBase {
         title: '序号',
         key: 'id',
         width: 70,
-        link: {
+        link: ({ item }) => ({
           name: 'finance-invoice-purchase-view',
-          params: ({ id }) => ({ ids: id })
-        }
+          params: { ids: item.id }
+        })
       },
-      { title: '业务类型', key: 'businessType', width: 70, enum: 'businessTypeList' },
-      { title: '单据类型', key: 'billType', width: 70, enum: 'billTypeList' },
+      { title: '业务类型', key: 'businessType', width: 70, enum: true },
+      { title: '单据类型', key: 'billType', width: 70, enum: true },
       { title: '单据编号', key: 'billINoText', minWidth: 100 },
       { title: '发票编号', key: 'invoiceNo', minWidth: 65 },
 
       { title: '客户编号', key: 'customerId', minWidth: 65 },
       { title: '客户名称', key: 'customerName', minWidth: 65 },
-      { title: '发票类型', key: 'invoiceType', width: 100, enum: 'invoiceTypeList' },
-      { title: '发票内容', key: 'invoiceContent', minWidth: 65, enum: 'invoiceContentList' },
+      { title: '发票类型', key: 'invoiceType', width: 100, enum: true },
+      { title: '发票内容', key: 'invoiceContent', minWidth: 65, enum: true },
       { title: '发票日期', key: 'invoiceDate', width: 80, date: true },
 
       { title: '发票金额', key: 'totalTaxFee', minWidth: 65 },
       { title: '快递公司', key: 'expressCompany', minWidth: 65 },
       { title: '快递单号', key: 'expressNo', minWidth: 65 },
     ] as ColumnExtra[]
-  }
-
-  editRoute(action: string, id: number) {
-    return {
-      name: 'finance-invoice-sale-edit',
-      params: { action, id }
-    }
   }
 }
 </script>

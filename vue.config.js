@@ -5,30 +5,8 @@ const resolve = dir => path.join(__dirname, 'src', dir)
 
 module.exports = {
   devServer: {
-    headers: {
-      'Access-Control-Allow-Origin': '*'
-    },
-    proxy: {
-      '/': {
-        target: 'http://mapi.aiads-dev.com',
-        changeOrigin: true,
-        ws: false,
-        bypass(req) {
-          if (req.headers.accept.indexOf('html') !== -1) {
-            return '/index.html'
-          }
-        },
-        onProxyRes(proxy) {
-          const cookies = proxy.headers['set-cookie']
-          if (cookies) {
-            const newCookies = cookies.map(it =>
-              it.replace(/Domain=[^\s;]+;?/i, 'Domain=localhost;')
-            )
-            proxy.headers['set-cookie'] = newCookies
-          }
-        }
-      }
-    }
+    host: 'mdev.aiads-dev.com',
+    disableHostCheck: true,
   },
 
   chainWebpack: config => {
@@ -38,7 +16,7 @@ module.exports = {
       {
         env: 'dev',
         baseUrl: isDev ? '/' : '//admin.aiads-dev.com',
-        ajaxBaseUrl: isDev ? '/' : '//mapi.aiads-dev.com'
+        ajaxBaseUrl: '//mapi.aiads-dev.com'
       },
       {
         env: 'qas',

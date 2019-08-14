@@ -28,6 +28,7 @@ import { MapType } from '@/util/types'
 import { IdName, Fetch, Backfill } from './types'
 import { devLog } from '@/util/dev'
 import Vue from 'vue'
+import { debounce } from 'lodash'
 
 @Component({
   components: {
@@ -59,21 +60,7 @@ export default class RemoteSelect extends ViewBase {
   // 记录下最后的搜索关键词
   lastQuery = ''
 
-  // TODO: 试图解决初始化搜索关键字被清空的问题
-  // mounted() {
-  //   this.fixInputValue()
-  // }
-
-  // fixInputValue() {
-  //   const el = this.select.$el
-  //   const input = el.querySelector('.ivu-select-input') as HTMLInputElement
-  //   input.addEventListener('focus', () => {
-  //     devLog('---> focus')
-  //   })
-  //   input.addEventListener('blur', () => {
-  //     devLog('**** blur')
-  //   })
-  // }
+  fetchTimer: any = null
 
   // 提供刷新的方法，以便可以重新执行 fetch
   public refresh() {
@@ -103,18 +90,34 @@ export default class RemoteSelect extends ViewBase {
 
     this.lastQuery = keyword
 
-    if (keyword) {
-      this.loading = true
-      try {
-        const list = await this.fetch(keyword)
-        this.list = list
-      } catch (ex) {
-        this.handleError(ex)
-      } finally {
-        this.loading = false
+    this.fetchTimer && this.fetchTimer.cancel()
+    this.fetchTimer = debounce(async () => {
+      if (keyword) {
+        this.loading = true
+        try {
+          const list = await this.fetch(keyword)
+          this.list = list
+          this.$nextTick(this.fixInputValue)
+        } catch (ex) {
+          this.handleError(ex)
+        } finally {
+          this.loading = false
+        }
+      } else {
+        this.list = []
       }
-    } else {
-      this.list = []
+    }, 588)
+    this.fetchTimer()
+  }
+
+  // 解决搜索关键字被清空的问题
+  fixInputValue() {
+    const el = this.select.$el
+    const input = el.querySelector('.ivu-select-input') as HTMLInputElement
+    const keyword = this.lastQuery
+    if (input.value === '' && keyword) {
+      devLog('[RemoteSelect] keyword is clear, refill it')
+      input.value = keyword
     }
   }
 
