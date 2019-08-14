@@ -356,8 +356,8 @@ export default class Main extends ViewBase {
             goodMovieTypes: item.goodMovieTypes ? item.goodMovieTypes[0] : null, // 擅长类型只有一个
             primaryPro: item.primaryPro[0] || null, // 主要职业
             restPro: item.restPro, // 其他职业
-            male: Number(item.fansMale),
-            female: Number(item.fansFemale),
+            male: parseFloat(item.fansMale) || null,
+            female: parseFloat(item.fansFemale) || null,
             ages: item.fansAges,
 
         }
