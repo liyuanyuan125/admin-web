@@ -29,7 +29,7 @@
     </ListPage>
     
     <Modal v-model="visibleAudit" width="500" title="批量审核操作" class="audit-modal" @on-ok="handleSubmit" >
-        <p v-if="isSingFlag">您选择了1条片商资源申请</p>
+        <p v-if="isSingFlag">您选择了  条片商资源申请</p>
         <p v-else>您选择了{{auditCheck.length}}条片商资源申请</p>
         <RadioGroup class="audit-radio" v-model="auditOpinion"> <Radio label="2">审核通过</Radio> <Radio label="3">审核不通过</Radio> </RadioGroup>
         <p class="flex-box"  v-if="auditOpinion == 3">
@@ -130,12 +130,15 @@ export default class Main extends ViewBase {
     }
     this.visibleAudit = true
   }
+
   // 单个审核
   handleSingAudit(id: number) {
     this.visibleAudit = true
     this.isSingFlag = true
     this.singAuditId = id
   }
+
+
   // 电子卷总数量累加
   reduceCoupon(ary: any[]) {
     const reduceAry = ary.map((item: any) => {
@@ -144,10 +147,12 @@ export default class Main extends ViewBase {
     const count = reduceAry.reduce((prev, next) => prev + next)
     return count
   }
+
   // table 全选
   async selectionChange(list: any) {
     this.auditCheck = list.map((item: any) => item.id)
   }
+
   async handleSubmit() {
     let checkIds: any[] = []
     if (this.isSingFlag) {

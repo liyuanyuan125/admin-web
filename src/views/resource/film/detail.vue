@@ -5,16 +5,18 @@
         <FormItem label="选择影片:" prop="cinemaName">{{detailList.name}}</FormItem>
       </div>
       <div class="modal-item">
-          <h2>图片/视频类物料2</h2>
-          <FormItem label="物料下载地址：">{{detailList.materialUrl}} </FormItem>
-          <FormItem label="资源使用说明：">{{detailList.materialDescription}}</FormItem>
+          <h2>图片/视频类物料</h2>
+          <FormItem label="物料下载地址：">{{detailList.material.url}} </FormItem>
+          <FormItem label="资源使用说明：">{{detailList.material.description}}</FormItem>
       </div>
       <div class="modal-item">
           <h2>导入券资源</h2>
           <FormItem label="已有的电子券">
             <Table :columns="columns" :data="dataList" border stripe disabled-hover size="small" class="table" ></Table>
           </FormItem>
-          <FormItem label="资源使用说明："></FormItem>
+          <FormItem label="资源使用说明：">
+            <span>{{detailList.coupon.description}}</span>
+          </FormItem>
       </div>
       <div class="modal-item">
           <h2>审核意见</h2>

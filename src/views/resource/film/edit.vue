@@ -22,7 +22,7 @@
       <div class="modal-item">
           <h2>导入券资源</h2>
           <FormItem label="已有的电子券" v-if="id">
-            <Table :columns="columns" :data="dataList" border stripe disabled-hover size="small" class="table" ></Table>
+           <!-- 组件引入 -->
           </FormItem>
           <FormItem label="导入电子券：">
             <input type="file" @change="onChange" :accept="accept" />
@@ -45,6 +45,7 @@ import {Component, Prop} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { relevanceFilm, queryDetail } from '@/api/resourceFilm'
 import Uploader from '@/util/Uploader'
+import couponTable from '../component/table.vue'
 
 @Component
 export default class Main extends ViewBase {
@@ -62,20 +63,12 @@ export default class Main extends ViewBase {
   filmList = []
 
   detailList: any = {}
-  columns = [
-    { title: '导入时间', key: 'uploadTime', align: 'center'},
-    { title: '导入数量', key: 'totalCount', align: 'center'},
-    { title: '已占用数量', key: 'usedCount', align: 'center'},
-    { title: '剩余可用数量', key: 'remainingCount', align: 'center'},
-  ]
 
   dataList = []
-  // rule = {
-  //   movieId:  [{ required: true, message: 'Please select the city2', trigger: 'blur' }]
-  // }
+
   get rule() {
     return {
-      // movieId: [{ required: true, message: 'Please select the city4', type: 'number', trigger: 'change' }]
+       movieId: [{ required: true, message: '请选择影片', type: 'number', trigger: 'change' }]
     }
   }
   mounted() {
@@ -125,10 +118,10 @@ export default class Main extends ViewBase {
   // 提交数据
   async handleSubmit(dataForms: string) {
     const vali = await (this.$refs[dataForms] as any).validate()
-    if (this.file == null) {
+    // if (this.file == null) {
       // TODO: 如果文件是必选的，提示选择文件
-      return
-    }
+      // return
+    // }
 
     // TODO: 加 loading 等操作
 
@@ -150,7 +143,6 @@ export default class Main extends ViewBase {
     }
   }
 }
-
 </script>
 <style lang='less' scoped>
 @import '../less/common.less';
