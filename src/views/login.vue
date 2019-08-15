@@ -37,6 +37,7 @@ import ViewBase from '@/util/ViewBase'
 import { login, getUserInfo } from '@/api/auth'
 import event from '@/fn/event'
 import { logout, setUser, appId } from '@/store'
+import { decodeRoute } from '@/util/base64Route'
 
 @Component
 export default class Main extends ViewBase {
@@ -76,7 +77,9 @@ export default class Main extends ViewBase {
         const user = { id: data.userId, name: data.name }
         setUser(user)
 
-        this.$router.push({ name: 'home' })
+        const { ret = '' } = this.$route.query || {}
+        const route = ret && decodeRoute(ret as string) || { name: 'home' }
+        this.$router.push(route)
       } catch (ex) {
         const { code } = ex
         ; ((this as any)[`ajax${code}`] || this.handleError).call(this, ex)
