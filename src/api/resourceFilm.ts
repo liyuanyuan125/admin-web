@@ -1,4 +1,6 @@
 import { get , post , put } from '@/fn/ajax'
+import { item } from './refund'
+import {formatValidDate} from '@/util/dealData'
 
 // 资源位管理
 
@@ -10,8 +12,22 @@ export async function queryList(data: any) {
 
 // 影片资源管理 - 详情
 export async function queryDetail(id: any) {
-  const res = await get(`/movie/resource/${id}`)
-  return res
+  const {data} = await get(`/movie/resource/${id}`)
+  // 包装 物料和电子卷数据
+  const coupon = data.coupon || {}
+  const material = data.material || {}
+  return {
+    ...data,
+    couponBatches: (coupon.batches || []).map((it: any) => {
+      return {
+        ...it,
+        uploadTime: formatValidDate(it.uploadTime)
+      }
+    }),
+    couponDescription: coupon.description || '',
+    materialUrl: material.url,
+    materialDescription: material.description
+  }
 }
 
 // 影片资源管理 - 详情

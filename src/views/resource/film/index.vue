@@ -5,36 +5,38 @@
       :filters="filters"
       :enums="enums"
       :columns="columns"
-      @selectionChange="selectionChange"
+      :selectedIds.sync="selectedIds"
       ref="listPage">
       <template slot="acts-2">
         <div class="table-btn">
-          <Button  type="primary" class="btn" @click="handleAudit">批量审核</Button>
+          <Button  type="primary" class="btn" @click="handleAudit()">批量审核</Button>
           <Button  type="primary"  @click="$router.push({name: 'resource-film-index-edit'})">新建影片资源</Button>
         </div>
       </template>
       <template slot="materialUrl" slot-scope="{row: {material}}">
-        <a :href="material.url" target="_brank">{{material.url}}</a>
+        <a :href="material.url" target="_brank">{{material.url || '-'}}</a>
       </template>
       <template slot="coupon" slot-scope="{row: {coupon}}">
         <span>{{reduceCoupon(coupon.batches)}}</span>
       </template>
       <template slot="operate" slot-scope="{row}">
         <div class="operate-btn">
-          <span v-if="row.status == 1" @click="handleSingAudit(row.id)" >审核</span>
+          <span v-if="row.status == 1" @click="handleAudit(row.id)" >审核</span>
           <span @click="$router.push({name: 'resource-film-index-edit', params: {id: row.id}})">编辑</span>
           <span @click="$router.push({name: 'resource-film-index-detail', params: {id: row.id}})">查看</span>
         </div>
       </template>
     </ListPage>
     
-    <Modal v-model="visibleAudit" width="500" title="批量审核操作" class="audit-modal" @on-ok="handleSubmit" >
-        <p v-if="isSingFlag">您选择了  条片商资源申请</p>
-        <p v-else>您选择了{{auditCheck.length}}条片商资源申请</p>
-        <RadioGroup class="audit-radio" v-model="auditOpinion"> <Radio label="2">审核通过</Radio> <Radio label="3">审核不通过</Radio> </RadioGroup>
-        <p class="flex-box"  v-if="auditOpinion == 3">
+    <Modal v-model="visibleAudit" 
+     width="500" title="审核操作"
+     @on-ok="handleSubmit"
+     @on-cancel="handleCancle">
+        <p>您选择了{{selectedIds.length}}条片商资源申请</p>
+        <RadioGroup class="audit-radio" v-model="form.status"> <Radio label="2">审核通过</Radio> <Radio label="3">审核不通过</Radio> </RadioGroup>
+        <p class="flex-box"  v-if="form.status == 3">
           <span class="label-dese">备注：</span>
-          <Input v-model="desc" type="textarea" placeholder="请输入备注"></Input>
+          <Input v-model="form.reviewMessage" type="textarea" placeholder="请输入备注"></Input>
         </p>
     </Modal>
   </div>
@@ -114,28 +116,20 @@ export default class Main extends ViewBase {
     ] as ColumnExtra[]
   }
 
-  // 批量审核
-  auditCheck: any[] = []
-  visibleAudit = false
-  auditOpinion = ''
-  desc = ''
-  singAuditId: number = 0
-  isSingFlag = false // 是否单个审核
+  selectedIds: any[] = []
 
   // 批量审核
-  async handleAudit() {
-    if (this.auditCheck.length == 0) {
+  visibleAudit = false
+  form = {}
+
+  // 批量审核
+  async handleAudit(id?: number, option?: string) {
+    this.selectedIds = id ? Array.of(id) : this.selectedIds
+    if (this.selectedIds.length == 0) {
         await info('请选择数据审核')
         return
     }
     this.visibleAudit = true
-  }
-
-  // 单个审核
-  handleSingAudit(id: number) {
-    this.visibleAudit = true
-    this.isSingFlag = true
-    this.singAuditId = id
   }
 
 
@@ -148,28 +142,22 @@ export default class Main extends ViewBase {
     return count
   }
 
-  // table 全选
-  async selectionChange(list: any) {
-    this.auditCheck = list.map((item: any) => item.id)
-  }
 
   async handleSubmit() {
-    let checkIds: any[] = []
-    if (this.isSingFlag) {
-      checkIds = [this.singAuditId]
-    } else {
-      checkIds = this.auditCheck
-    }
     try {
       const { data } = await batchUpdate({
-        movieResourceIds: checkIds,
-        status: this.auditOpinion,
-        reviewMessage: this.desc
+        ...this.form,
+        movieResourceIds: this.selectedIds,
       });
       (this.$refs.listPage as any).update()
+      this.form = {}
     } catch (ex) {
       this.handleError(ex)
     }
+  }
+
+  handleCancle() {
+    this.form = {}
   }
 }
 

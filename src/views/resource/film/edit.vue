@@ -22,7 +22,7 @@
       <div class="modal-item">
           <h2>导入券资源</h2>
           <FormItem label="已有的电子券" v-if="id">
-           <!-- 组件引入 -->
+            <Table :columns="columns" :data="detailList.couponBatches" border stripe disabled-hover size="small" ></Table>
           </FormItem>
           <FormItem label="导入电子券：">
             <input type="file" @change="onChange" :accept="accept" />
@@ -45,16 +45,24 @@ import {Component, Prop} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { relevanceFilm, queryDetail } from '@/api/resourceFilm'
 import Uploader from '@/util/Uploader'
-import couponTable from '../component/table.vue'
+import couponTable from './component/table.vue'
 
-@Component
+@Component({
+  components: {
+    couponTable
+  }
+})
 export default class Main extends ViewBase {
   @Prop({ type: String, default: '*' }) accept!: string
   @Prop({type: Number, default: 0}) id!: number
 
   form: any = {
-    movieId: ''
+    movieId: '',
+    materialUrl: '',
+    materialDescription: '',
+    couponDescription: ''
   }
+
   uploader: any = {}
   uploaderEdit: any = {}
 
@@ -63,23 +71,28 @@ export default class Main extends ViewBase {
   filmList = []
 
   detailList: any = {}
-
-  dataList = []
+  columns = [
+    { title: '导入时间', key: 'uploadTime', align: 'center'},
+    { title: '导入数量', key: 'totalCount', align: 'center'},
+    { title: '已占用数量', key: 'usedCount', align: 'center'},
+    { title: '剩余可用数量', key: 'remainingCount', align: 'center'},
+  ]
 
   get rule() {
     return {
        movieId: [{ required: true, message: '请选择影片', type: 'number', trigger: 'change' }]
     }
   }
+
   mounted() {
     if (this.id) { // 编辑
+      this.queryDetail()
       this.uploaderEdit = new Uploader({
         filePostUrl: `/movie/resource/${this.id}`,
         fileFieldName: 'file',
         fileSubmitMethod: 'put'
       })
-      this.queryDetail()
-    } else {
+    } else { // 新建
       this.uploader = new Uploader({
         filePostUrl: '/movie/resource',
         fileFieldName: 'file'
@@ -87,20 +100,17 @@ export default class Main extends ViewBase {
       this.relevanceFilm()
     }
   }
+
   async queryDetail() {
-    try {
-      const { data } = await queryDetail(this.id)
-      this.detailList = data || {}
-      this.form = {
-        materialUrl: this.detailList.material.url,
-        materialDescription: this.detailList.material.description,
-        couponDescription: this.detailList.coupon.description  // batches
-      }
-      this.dataList = this.detailList.coupon.batches || [] // 已有的电子券
-    } catch (ex) {
-      this.handleError(ex)
+    const data = await queryDetail(this.id)
+    this.detailList = data || {}
+    this.form = {
+      materialUrl: data.materialUrl,
+      materialDescription: data.materialDescription,
+      couponDescription: data.couponDescription
     }
   }
+
   onChange(ev: Event) {
     const input = ev.target as HTMLInputElement
     this.file = input.files && input.files[0]
@@ -134,7 +144,6 @@ export default class Main extends ViewBase {
         const data = await this.uploaderEdit.upload(this.file, {
           ...this.form,
           status: this.detailList.status,
-          reviewMessage: this.detailList.reviewMessage
         })
       }
       this.$router.push({name: 'resource-film-index'})

@@ -1,6 +1,9 @@
 <template>
   <div>
-     <Table :columns="columns" :data="dataList" border stripe disabled-hover size="small" class="table" ></Table>
+     <Table 
+      v-bind="$attrs"
+      v-on="$listeners"
+     :columns="columns" :data="dataList" border stripe disabled-hover size="small" ></Table>
   </div>
 </template>
 
@@ -9,7 +12,7 @@ import {Component, Prop} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 @Component
 export default class Table extends ViewBase {
-  @Prop({ type: Array, default: []}) dataList!: any
+  @Prop({ type: Array, default: () => [] }) data!: any[]
 
   columns = [
     { title: '导入时间', key: 'uploadTime', align: 'center'},
@@ -18,6 +21,9 @@ export default class Table extends ViewBase {
     { title: '剩余可用数量', key: 'remainingCount', align: 'center'},
   ]
 
+  get dataList() {
+    return this.data
+  }
 }
 
 </script>
