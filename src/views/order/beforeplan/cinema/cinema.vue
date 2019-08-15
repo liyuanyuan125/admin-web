@@ -1,7 +1,7 @@
 <template>
   <div class="pages" >
-    <div class='title'>投放影院({{total}}家)
-      <span style='float: right'>导出影院列表</span>
+    <div class='title'>投放影院({{total}}家) <!-- 接单影院 / 派单影院 : 3 / 5 -->
+      <span style='float: right;cursor: pointer;' @click="exportData">导出影院列表</span>
     </div>
     <div class='bos'>
       <Row class="shouDlg-header">
@@ -18,12 +18,18 @@
           </Select> -->
           <compangList v-model='dataForm.resourceId' @done="dlgEditDone"/>
         </Col>
+        <!-- <Col span='5' offset="1"> -->
+          <!-- <Select v-model="dataForm.resourceId" placeholder="接单状态" style='width: 200px;'  filterable>
+            <Option v-for="it in []" :key="it.id" :value="it.id"
+              :label="it.name">{{it.name}}</Option>
+          </Select> -->
+        <!-- </Col> -->
         <Col span="4" offset="1">
-          <Button type="primary" @click="search">搜索</Button>
+          <Button type="primary" @click="searchrrr">搜索</Button>
         </Col>
       </Row>
       <Button type="primary" @click="changeAll" v-if='$route.params.status == 2 || $route.params.status == 3 || $route.params.status == 9 || $route.params.status == 10'>批量删除</Button>
-      <Table :columns="columns" @on-selection-change="onselect" :data="list" :loading="loading"
+      <Table ref="table" :columns="columns" @on-selection-change="onselect" :data="list" :loading="loading"
         border stripe disabled-hover size="small" class="table">
         <template slot="resourceId" slot-scope="{row}" >
           <div v-for='(it, index) in reslist'>
@@ -44,6 +50,7 @@
       </div>
       <div class="act-bar">
         <a @click="onAdd" v-if="!type && $route.params.status == 2 || $route.params.status == 3 || $route.params.status == 9 || $route.params.status == 10" @done="dlgEditDone">添加影院</a>
+        <!-- <Button type="primary">批量导入</Button> -->
       </div>
       <!-- <singDlg ref="addOrUpdate" v-if='addOrUpdateVisible' @done="dlgEditDone" /> -->
       <changeDlg ref="change" v-if='changeVisible' @done="dlgEditDone" />
@@ -72,6 +79,17 @@ import AddCinemaModel from './addCinemaModel.vue'
 import compangList from '../../supervision/companyList.vue'
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
+
+import { findIndex } from 'lodash'
+// 导出影院公司名称
+const getName = (id: number, list: any[]) => {
+  const i: number = findIndex(list, (it: any) => {
+    return id === it.id
+  })
+  const res: string = (!list[i].name || list[i].name == '') ? '-' : list[i].name
+  return res
+}
+
 
 const dataForm = {
   status: 1
@@ -124,7 +142,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   area: any = []
   totalPage = 0
   loading = false
-  list = []
+  list: any = []
   total = 0
   typeList = []
   showTime: any = []
@@ -134,6 +152,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   reasd: any = []
   aaa = false
   viewcinema = false
+  dataList: any = []
 
 
   get columns() {
@@ -146,6 +165,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       { title: '所属资源方', slot: 'resourceId', align: 'center' },
       { title: '联系人', width: 120, key: 'contract', align: 'center' },
       { title: '联系电话', width: 120, key: 'contractTel', align: 'center' },
+      // { title: '接单状态', width: 120, key: 'contractTel', align: 'center' },
     ]
     const check = [
        {
@@ -169,6 +189,20 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     [...check, ...data, ...opernation] : data
   }
 
+  get columnsData() {
+    const data: any = [
+      { title: '影院名称', key: 'cinemaName', align: 'center' },
+      { title: '专资编码', key: 'code', align: 'center' , width: 80 },
+      { title: '所在省', key: 'provinceName', align: 'center', width: 80 },
+      { title: '所在市', key: 'cityName', align: 'center', width: 80 },
+      { title: '所在区', key: 'countyName', align: 'center', width: 80 },
+      { title: '所属资源方', key: 'resourceName', align: 'center' },
+      { title: '联系人', width: 120, key: 'contract', align: 'center' },
+      { title: '联系电话', width: 120, key: 'contractTel', align: 'center' },
+    ]
+    return data
+  }
+
   dlgEditDone(id: any) {
     this.viewcinema = true
     this.$emit('getcine', this.viewcinema)
@@ -178,6 +212,22 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   onselect(row: any , selection: any) {
     this.ids = row.map((it: any) => {
       return it.cinemaId
+    })
+  }
+
+  // 下载
+  exportData() {
+    const res: any = (this.list || []).map((it: any) => {
+      return {
+        ...it,
+        resourceName: getName(it.resourceId, this.reslist)
+      }
+    })
+
+    ~(this.$refs.table as any).exportCsv({
+      filename: '投放影院列表',
+      columns: this.columnsData,
+      data: res
     })
   }
 
@@ -220,6 +270,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
 
   mounted() {
+    this.search()
+  }
+
+  searchrrr() {
+    this.dataForm.pageIndex = 1
     this.search()
   }
 
@@ -303,6 +358,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   watchcinemas(val: number[]) {
     this.cinemaArray = val
+  }
+
+  @Watch('dataForm', {deep: true})
+
+  watchDataForm(val: number[]) {
+    this.search()
   }
 }
 </script>

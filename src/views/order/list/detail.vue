@@ -23,7 +23,7 @@
         <Row class='row-list'>
             <Col span='3' class='hui'>广告主</Col>
             <Col span='9'>【{{item.advertiserId}}】{{item.advertiserName}}</Col>
-            <!-- <Col span='3' class='hui'>订单类型</Col>
+            <!-- <Col span='3' class='hui'>广告类型</Col>
             <Col span='9'><span v-for='it in planTypeList' :key='it.key' v-if='it.key == item.planType'>{{it.text}}单</span></Col> -->
         </Row>
         <Row class='row-list'>

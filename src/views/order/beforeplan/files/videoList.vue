@@ -1,7 +1,7 @@
 <template>
   <Select v-model="inValue" placeholder="广告片" filterable
     clearable class="component" ref="ui">
-    <Option v-for="it in list" :key="it.name" :value="it.name"
+    <Option v-for="(it,index) in list" :key="index" :value="it.name"
       :label="it.name" class="flex-box">
       <span>{{it.name}}</span>
     </Option>

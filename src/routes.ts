@@ -928,7 +928,8 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     meta: {
       authKey: '',
       title: '映前广告付款单列表'
-    }
+    },
+    props: true
   },
   {
     path: '/plan/ggtising',
@@ -1261,14 +1262,36 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 映前广告计划 - 列表
   {
-    path: '/order/beforeplan/addplan',
-    name: 'order-beforeplan-addplan',
-    component: () => import('./views/order/beforeplan/addplan.vue'),
+    path: '/order/beforeplan/newindex/:pay?',
+    name: 'order-beforeplan-newindex',
+    component: () => import('./views/order/beforeplan/newindex.vue'),
     meta: {
       authKey: '',
-      title: '映前广告计划列表'
-    }
+      title: '映前广告计划列表new'
+    },
+    props: true,
   },
+
+  // {
+  //   path: '/finance/kol-payment/:channel?',
+  //   name: 'finance-kol-payment',
+  //   component: () => import('./views/finance/kol-payment/index.vue'),
+  //   meta: {
+  //     authKey: ''
+  //   },
+  //   props: true,
+  // },
+
+  // 映前广告计划 - 添加广告计划
+  // {
+  //   path: '/order/beforeplan/addplan',
+  //   name: 'order-beforeplan-addplan',
+  //   component: () => import('./views/order/beforeplan/addplan.vue'),
+  //   meta: {
+  //     authKey: '',
+  //     title: '添加广告计划'
+  //   }
+  // },
 
   // 映前广告计划 - 详情
   {
@@ -1299,6 +1322,16 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: '',
       title: '映前广告监播列表'
     }
+  },
+  {
+    path: '/order/supervision/newindex/:pay?',
+    name: 'order-supervision-newindex',
+    component: () => import('./views/order/supervision/newindex.vue'),
+    meta: {
+      authKey: '',
+      title: '映前广告监播列表'
+    },
+    props: true,
   },
   // 映前广告监播 - 列表详情
   {
