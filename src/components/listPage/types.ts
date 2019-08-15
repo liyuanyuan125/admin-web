@@ -1,14 +1,14 @@
-import { Component } from 'vue'
-import { MapType, AjaxResult, KeyText, KeyTextControlStatus } from '@/util/types'
+import { MapType, KeyTextControlStatus } from '@/util/types'
 import Deprecated from '@/components/Deprecated.vue'
 import PoptipSelect from '@/components/PoptipSelect.vue'
 import { devError, devWarn } from '@/util/dev'
 import moment from 'moment'
 import { kebabCase } from 'lodash'
+import { Location } from 'vue-router'
 
 import {
   resolveRender as listResolveRender,
-  LinkOptions as ListLinkOptions
+  OptionsType as ListOptionsType,
 } from './list'
 
 export * from './filter'
@@ -90,12 +90,14 @@ export interface ColumnExtra extends Column {
   /**
    * 使用组件 route-link
    */
-  link?: ListLinkOptions
+  link?: ListOptionsType<Location>
 
   /**
-   * 使用组件 ListEnum，以及该组件的选项，若传递 string，则为 enumKey
+   * 使用组件 ListEnum，以及该组件的选项
+   * 若传递 true，则设置 enumKey 为 name + 'List'
+   * 若传递 string，则为 enumKey
    */
-  enum?: string | {
+  enum?: true | string | {
     enumKey?: string
     updateField?: (id: any, value: any) => Promise<any>
     [key: string]: any
@@ -254,6 +256,7 @@ export function normalizeColumns(list: ColumnExtra[], param: ColumnParam) {
       // TODO: 老式的方法，会逐渐优化掉
       const factory = editorMap[it.editor]
       it.render = factory(it, param)
+      devWarn('=> [ListPage] editor 已过时，请使用新形式，KEY:', it.key)
     } else {
       // 新版方法
       const render = listResolveRender(it, param)

@@ -128,27 +128,24 @@ export default class IndexPage extends ViewBase {
       {
         title: '序号',
         key: 'id',
-        minWidth: 65,
-        link: {
-          name: 'finance-invoice-sale-edit',
-          params: item => ({ action: 'view', id: item.id })
-        }
+        width: 65,
+        link: ({ item }) => this.editRoute('view', item.id)
       },
       { title: '发票金额', key: 'totalTaxFee', minWidth: 65 },
-      { title: '发票类型', key: 'invoiceType', width: 100, enum: 'invoiceTypeList' },
-      { title: '发票内容', key: 'invoiceContent', width: 80, enum: 'invoiceContentList' },
+      { title: '发票类型', key: 'invoiceType', width: 100, enum: true },
+      { title: '发票内容', key: 'invoiceContent', width: 80, enum: true },
       { title: '单位名称', key: 'name', minWidth: 65 },
 
-      { title: '纳税人识别号', key: 'taxId', minWidth: 80 },
+      { title: '纳税人识别号', key: 'taxId', minWidth: 90 },
       { title: '公司ID', key: 'companyId', minWidth: 65 },
       { title: '公司名称', key: 'companyName', minWidth: 65 },
       { title: '订单编号', key: 'orderNoText', minWidth: 65 },
-      { title: '业务类型', key: 'businessType', minWidth: 65, enum: 'businessTypeList' },
+      { title: '业务类型', key: 'businessType', minWidth: 65, enum: true },
 
       { title: '申请时间', key: 'applyTime', width: 130, dateTime: true },
       { title: '开票时间', key: 'billingTime', width: 130, dateTime: true },
       { title: '发票编号', key: 'invoiceNo', minWidth: 65 },
-      { title: '发票状态', key: 'status', width: 100, enum: 'statusList' },
+      { title: '发票状态', key: 'status', width: 100, enum: true },
       { title: '操作', slot: 'action', minWidth: 70 }
     ] as ColumnExtra[]
   }

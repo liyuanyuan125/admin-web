@@ -19,7 +19,7 @@ const MAIN = 'master'
 
 const thisTag = async () => {
   await shell('git fetch --tags')
-  const tag = await shell('git describe --tags `git rev-list --tags --max-count=1`').catch(() => '1.0')
+  const tag = await shell('git describe --abbrev=0').catch(() => '1.0')
   const version = extract(tag, /(\d+\.\d+)/) || '1.0'
   return 'v' + version
 }
@@ -78,4 +78,3 @@ const main = async () => {
     console.error(ex)
   }
 })()
-

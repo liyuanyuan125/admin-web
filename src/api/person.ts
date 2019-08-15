@@ -101,7 +101,7 @@ export async function editPersonal(obj: any) {
     const introduction = intro ? format : intro
 
     // 评论热词
-    const formTag = form.tags.trim()
+    const formTag = form.tags ? form.tags.trim() : null
     const tags = formTag ? formTag.split(/,|，/) : []
 
     // 主要和其他职业

@@ -3,7 +3,6 @@
     <ListPage
       :fetch="fetch"
       :filters="filters"
-      :enums="enums"
       :columns="columns"
       ref="listPage"
     >
@@ -21,7 +20,6 @@
           <router-link :to="editRoute('audit', id)" v-if="status == 1">审批</router-link>
           <a @click="cancel(id)" v-if="status == 2">作废</a>
           <router-link :to="editRoute('copy', id)">复制</router-link>
-          <router-link :to="editRoute('view', id)">详情</router-link>
         </div>
       </template>
     </ListPage>
@@ -67,24 +65,24 @@ export default class IndexPage extends ViewBase {
       {
         name: 'contractNo',
         defaultValue: '',
-        type: 'input',
-        width: 218,
-        placeholder: '合同编号/合同名称'
+        input: true,
+        width: 168,
+        placeholder: '合同编号/合同名称',
       },
 
       {
         name: 'companyBName',
         defaultValue: '',
-        type: 'input',
-        width: 218,
+        input: true,
+        width: 168,
         placeholder: '乙方公司名称'
       },
 
       {
         name: 'validityDate',
         defaultValue: '',
-        type: 'dateRange',
-        width: 218,
+        dateRange: true,
+        width: 188,
         placeholder: '到期时间',
         dealParam(value: string) {
           const [validityStartDate, validityEndDate] = value ? value.split('-') : [null, null]
@@ -98,8 +96,8 @@ export default class IndexPage extends ViewBase {
       {
         name: 'approveStatus',
         defaultValue: -1,
-        type: 'select',
-        width: 128,
+        select: true,
+        width: 88,
         placeholder: '状态'
       },
 
@@ -115,21 +113,23 @@ export default class IndexPage extends ViewBase {
     ]
   }
 
-  enums = [
-    'approveStatusList',
-  ]
-
   get columns() {
     return [
-      { title: '合同编号', key: 'contractNo', minWidth: 90 },
+      {
+        title: '合同编号',
+        key: 'contractNo',
+        minWidth: 90,
+        maxWidth: 120,
+        link: ({ item }) => this.editRoute('view', item.id)
+      },
       { title: '合同名称', key: 'contractName', minWidth: 90 },
       { title: '乙方公司名称', key: 'companyBName', minWidth: 100 },
-      { title: '有效期', key: 'validityDate', minWidth: 150 },
-      { title: '创建时间', key: 'createTimeText', minWidth: 150 },
-      { title: '签订人', key: 'signingUserName', minWidth: 70 },
-      { title: '跟进人', key: 'followUserName', minWidth: 70 },
-      { title: '状态', key: 'approveStatus', minWidth: 65, editor: 'enum' },
-      { title: '操作', slot: 'action', minWidth: 160 }
+      { title: '有效期', key: 'validityDate', width: 150 },
+      { title: '创建时间', key: 'createTimeText', width: 135 },
+      { title: '签订人', key: 'signingUserName', minWidth: 80, maxWidth: 100 },
+      { title: '跟进人', key: 'followUserName', minWidth: 80, maxWidth: 100 },
+      { title: '状态', key: 'approveStatus', width: 60, enum: true },
+      { title: '操作', slot: 'action', width: 120 }
     ] as ColumnExtra[]
   }
 

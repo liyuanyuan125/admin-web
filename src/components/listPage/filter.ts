@@ -6,13 +6,13 @@ import { kebabCase, isPlainObject, cloneDeep } from 'lodash'
 import DatePicker from './components/datePicker.vue'
 import DateRangePicker from './components/dateRangePicker.vue'
 import { FormSelect } from '@/components/editForm'
-import { ParamDeal, Param } from '@/util/param'
 import RemoteSelect, {
   Fetch as RemoteSelectFetch,
   Backfill as RemoteSelectBackfill
 } from '@/components/remoteSelect'
 import CompanySelect from '@/components/companySelect'
 import { OldFilter, resolveByType } from './oldFilter'
+import { devWarn } from '@/util/dev'
 
 interface ComponentItem {
   component: Component
@@ -23,24 +23,30 @@ const componentMap: MapType<ComponentItem> = {
   input: {
     component: LazyInput
   },
+
   number: {
     component: NumberInput
   },
+
   select: {
     component: FormSelect,
     props: {
       clearable: true,
     }
   },
+
   date: {
     component: DatePicker
   },
+
   dateRange: {
     component: DateRangePicker
   },
+
   remoteSelect: {
     component: RemoteSelect
   },
+
   company: {
     component: CompanySelect
   }
@@ -148,6 +154,7 @@ const resolveComponent = (item: Filter) => {
 
   if (item.type != null) {
     part = resolveByType(item)
+    devWarn('=> [ListPage] filter type 已过时，请使用新形式，name:', item.name)
   } else {
     // 新的方式，通过组件名
     const name = Object.keys(componentMap).find(key => key in item)

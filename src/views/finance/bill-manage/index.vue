@@ -14,7 +14,11 @@
       <template slot="operate" slot-scope="{row: {billStatus, id}}">
         <div class="operate-btn">
           <span @click="$router.push({name: 'finance-billmanage-detail', params: {id}})">详情</span><br />
-          <span v-if="billStatus != 4" @click="$router.push({name: 'finance-billmanage-confirmbill', params: {id}})">确定运营账单</span>
+          <span v-if="billStatus == 1"
+           @click="$router.push({name: 'finance-billmanage-confirmbill', params: {id}})">确定运营账单</span>
+
+           <span v-if="billStatus == 3"
+           @click="$router.push({name: 'finance-billmanage-confirmbill', params: {id}})">确定审核账单</span>
         </div>
       </template>
     </ListPage>

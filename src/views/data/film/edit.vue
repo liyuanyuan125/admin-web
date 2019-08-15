@@ -29,7 +29,7 @@
                 </FormItem>
             </Col>
             <Col :span="6">
-                <FormItem label="调整鲸鱼指数所占权重:" :label-width="160" >
+                <FormItem label="调整鲸娱指数所占权重:" :label-width="160" >
                   <InputNumber :min="0" style="width: 120px"  v-model="form.customJyIndexRate" />
                 </FormItem>
             </Col>
