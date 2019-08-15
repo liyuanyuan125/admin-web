@@ -319,9 +319,21 @@ export default class IndexPage extends ViewBase {
   }
 
 
+  // @Watch('status')
+  // watchstatus(pay: any) {
+  //   this.listPage.query.status = pay
+  //   this.$router.push({
+  //     name: 'finance-payment',
+  //     params: pay == defaultPay ? {} : { pay }
+  //   })
+  // }
+
+  // @Watch('pay')
+  // watchPay(pay: any) {
+  //   this.listPage.query.status = pay
+  // }
   @Watch('status')
   watchstatus(pay: any) {
-    this.listPage.query.status = pay
     this.$router.push({
       name: 'finance-payment',
       params: pay == defaultPay ? {} : { pay }

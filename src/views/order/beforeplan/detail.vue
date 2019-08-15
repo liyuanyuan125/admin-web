@@ -10,6 +10,10 @@
         <Col :span='12'>计划名称&nbsp;：&nbsp;{{listitem.name == null ? '暂无' : listitem.name}}</Col>
         <Col :span='12'>广告片&nbsp;：&nbsp;{{listitem.videoName == null ? '-' : listitem.videoName}}({{listitem.specification == null ? '-' : listitem.specification}}s)【{{listitem.customerName == null ? '-' : listitem.customerName}}】</Col>
       </Row>
+     <!--  <Row>
+        <Col :span='12'>广告主公司名称&nbsp;：&nbsp;{{listitem.name == null ? '暂无' : listitem.name}}</Col>
+        <Col :span='12'>广告类型&nbsp;：&nbsp;{{listitem.videoName == null ? '-' : listitem.videoName}}({{listitem.specification == null ? '-' : listitem.specification}}s)【{{listitem.customerName == null ? '-' : listitem.customerName}}】</Col>
+      </Row> -->
       <Row>
         <Col :span='12'>投放排期&nbsp;：&nbsp;{{listitem.beginDate == null ? '暂无' : start}} ~ {{listitem.endDate == null ? '暂无' : end}}</Col>
         <Col :span='12'>推广预算&nbsp;：&nbsp;{{formatNumber(listitem.budgetAmount)}}元</Col>
@@ -75,6 +79,15 @@
     </div>
     <div class='title'>应收款项</div>
     <Row class='bos'>
+      <!-- <Row>
+        <Col :span='2'>设置折扣</Col>
+        <Col :span='4'>
+            <Input style="width:100px" v-if='listitem.status != 2 && listitem.status != 3' disabled v-model="dataplan.depositAmount"></Input>
+            <Input style="width:100px" v-if='listitem.status == 2 || listitem.status == 3' v-model="dataplan.depositAmount"></Input>
+        </Col>
+        <Col>请输入0-1的小数</Col>
+        <Col style='color: red'>设置的折扣额度已超过权限范围，需要下一级主管审批</Col>
+      </Row> -->
       <Row>
         <Col :span='2'>定金</Col>
         <Col :span='4'>
@@ -93,7 +106,7 @@
     </Row>
     <div style='padding: 20px 0 30px 0'>
         <Form ref="dataplan" :model="dataplan"  :rules="ruleValidate" label-position="left" :label-width="100">
-          <Col :span='15'>预估曝光人次【{{formatNumber(listitem.estimatePersonCount , 2)}}】预估曝光场次【{{formatNumber(listitem.estimateShowCount , 2)}}】预估花费【{{formatNumber(listitem.estimateCostAmount)}}】
+          <Col :span='15'>预估曝光人次【{{formatNumber(listitem.estimatePersonCount , 2)}}】预估曝光场次【{{formatNumber(listitem.estimateShowCount , 2)}}】预估花费【{{formatNumber(listitem.estimateCostAmount)}}】 <!-- <span>, 折扣后总价{{formatNumber(listitem.estimateShowCount , 2)}}】</span> -->
             <Button type="primary" :loading="loading2" @click="shuaxin()">刷新</Button>
         </Col>
           
@@ -108,6 +121,11 @@
               <Button v-if='(viewfilm == false && viewcinema == false) && (listitem.status == 2 || listitem.status == 3 || listitem.status == 9 || listitem.status == 10) ' type="primary" @click="save('dataplan')">保存并发送至广告主</Button>
             <Button style='margin-left: 30px;' @click="back">取消</Button>
           </Col>
+          <!-- <Col :span='6'>
+              <Button v-if='(viewfilm == true || viewcinema == true) || (listitem.status != 2 && listitem.status != 3 && listitem.status != 9 && listitem.status != 10) ' type="primary" disabled>保存并提交下一级审批</Button>
+              <Button v-if='(viewfilm == false && viewcinema == false) && (listitem.status == 2 || listitem.status == 3 || listitem.status == 9 || listitem.status == 10) ' type="primary" @click="save('dataplan')">保存并提交下一级审批</Button>
+            <Button style='margin-left: 30px;' @click="back">取消</Button>
+          </Col> -->
     </div>
     <close  ref="over"   v-if="overVisible" @done="dlgEditDone"/>
     <addfilm  ref="adds" v-if='addVisible' @done="dlgEditDones"/>
