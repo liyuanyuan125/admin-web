@@ -275,6 +275,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
       this.listEnumMap = listEnumMap
 
       this.$emit('inspect', {
+        query: this.query,
         list: this.list,
         total: this.total,
         filterEnumMap,
