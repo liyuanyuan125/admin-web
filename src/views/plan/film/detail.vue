@@ -10,42 +10,90 @@
       <div class='titop'>基础信息</div>
       <div class="detail-header">
         <Row>
-          <Col span="2"><div>公司名称</div></Col>
-          <Col span="8"><span>{{detail.companyName}}</span></Col>
+          <Col span="2"><div>广告主公司名称</div></Col>
+          <Col span="5"><span>{{detail.companyName}}</span></Col>
+          <Col span="2"><div>客户类型</div></Col>
+          <Col span="5"><span>{{detail.companyName}}</span></Col>
+          <Col span="2"><div>所属行业</div></Col>
+          <Col span="5"><span>{{detail.companyName}}</span></Col>
         </Row>
         <Row>
+          <Col span="2"><div>营业执照</div></Col>
+          <Col span="5"><span>{{detail.companyName}}</span></Col>
           <Col span="2"><div>客户ID</div></Col>
-          <Col span="8"><span>{{detail.customerId}}</span></Col>
+          <Col span="5"><span>{{detail.customerId}}</span></Col>
           <Col span="2"><div>客户名称</div></Col>
-          <Col span="8"><span>{{detail.customerName}}</span></Col>
+          <Col span="5"><span>{{detail.customerName}}</span></Col>
         </Row>
         <Row>
           <Col span="2"><div>上传人</div></Col>
-          <Col span="8"><span>{{detail.applyUser}}</span></Col>
+          <Col span="5"><span>{{detail.applyUser}}</span></Col>
           <Col span="2"><div>上传时间</div></Col>
-          <Col span="8"><span>{{applyTime}}</span></Col>
+          <Col span="5"><span>{{applyTime}}</span></Col>
         </Row>
       </div>
-      <div class='titop'>广告片</div>
+      <div class='titop'>行业资质</div>
+      <div class="detail-header">
+        <Row>
+          <Col span="2"><div>主体资质</div></Col>
+          <Col span="5"><span>{{detail.companyName}}</span></Col>
+          <Col span="2"><div>可选资质</div></Col>
+          <Col span="5"><span>{{detail.companyName}}</span></Col>
+        </Row>
+      </div>
+      <div class='titop'>广告片素材</div>
       <Row class="detail-content">
         <Row>
-          <Col span="2"><div>ID</div></Col>
-          <Col span="8"><span>{{detail.id}}</span></Col>
-          <Col span="2"><div>名称</div></Col>
-          <Col span="8"><span>{{detail.name}}</span></Col>
+          <Col span="2"><div>广告片ID</div></Col>
+          <Col span="5"><span>{{detail.id}}</span></Col>
+          <Col span="2"><div>广告片名称</div></Col>
+          <Col span="5"><span>{{detail.name}}</span></Col>
+          <Col span="2"><div>规格</div></Col>
+          <Col span="5"><span>{{detail.specification}}s</span></Col>
         </Row>
         <Row>
-          <Col span="2"><div>规格/时长</div></Col>
-          <Col span="8"><span>{{detail.specification}}s/{{detail.length}}s</span></Col>
+          <Col span="2"><div>是否已转制</div></Col>
+          <Col span="5"><span>{{detail.specification}}s/{{detail.length}}s</span></Col>
           <Col span="2"><div>转制费</div></Col>
-          <Col span="8"><span>{{detail.transFee}}</span></Col>
+          <Col span="5"><span>{{detail.transFee}}</span></Col>
+          <Col span="2"><div>广告片(小样)</div></Col>
+          <Col span="5"><span>查看</span></Col>
         </Row>
         <Row>
+          <Col span="2"><div>广告下载地址</div></Col>
+          <Col span="5"><span>hahahhahahahhammmmmmmmmmmmmmmmmmmmmmmmmm</span></Col>
+        </Row>
+        <!-- <Row>
           <Col span="12">
             <video :src="detail.srcFileUrl" width='100%' height='50%' controls="controls">
             </video>
              <a class="operation" v-if='showedit' href="" :download=detail.srcFileUrl>下载源文件</a>
           </Col>
+        </Row> -->
+      </Row>
+      <div  class='titop' v-if='showStatus'>整体审核</div>
+      <Row  class='detail-content' v-if='showStatus'>
+        <Row style='margin-top: 15px;'>审核说明：</Row>
+        <Row>请参考下列表中的审核拒绝原因，核对在监播中已出现的行业资质及广告内容。如广告内容符合审核未通过的原因，请对应选择审核未通过的原因。</Row>
+        <Row style='color: red'>如未勾选，则表示该广告审核成功</Row>
+        <Row>审核未通过原因（勾选其他时）：</Row>
+        <Row>
+          <Input style="width:240px" type='textarea' v-model="dataForm.refuseReason"></Input>
+        </Row>
+        <Row>
+          <Button  type="primary" @click="dataFormSubmit">提交</Button>
+          <Button  type="primary" @click="nextSubmit">提交并继续审核</Button>
+        </Row>
+        
+      </Row>
+      <div class='titop' v-if='showStatus'>批注</div>
+      <Row  class='detail-content' v-if='showStatus'>
+        <Row>仅公司内容运营人员使用</Row>
+        <Row>
+          <Input style="width:240px" type='textarea' v-model="dataForm.refuseReason"></Input>
+        </Row>
+        <Row>
+          <Button style='margin-left: 49%;' type="primary" @click="dataFormSubmit">提交</Button>
         </Row>
       </Row>
       <div v-if='showedit' class='titop'>转制</div>
@@ -66,7 +114,7 @@
         </template> 
         </Table>
       </Row>
-      <div class='titop' v-if='showStatus'>审核</div>
+      <!-- <div class='titop' v-if='showStatus'>审核</div>
       <Row class="detail-content" v-if='showStatus'>
         <div>
           <Form ref="dataForm" :model="dataForm"  label-position="left" :label-width="100">
@@ -82,7 +130,7 @@
           <Button style='margin-left:20px; margin-bottom: 20px;' type="primary"  @click="change('dataForm')">确定</Button>
           <Button style='margin-left:20px; margin-bottom: 20px;' @click="goback()">取消</Button>
         </div>
-      </Row>
+      </Row> -->
       <div class='titop' v-if='!showStatus'>操作记录</div>
       <Row class='detail-content' v-if='!showStatus'>
         <div class="logs-item" v-for="(it,index) in logList">
@@ -156,6 +204,10 @@ export default class Main extends ViewBase {
 
 
   addOrUpdateVisible = false
+
+  // 需要跳过的数量
+  jumpNum: any = 0
+  // 读取的下一个数据列表
 
 
   id = 0
@@ -281,10 +333,8 @@ export default class Main extends ViewBase {
   ]
 
   async doSearch() {
-     (this.$Spin as any).show()
-     this.oldQuery = { ...this.query }
-
-
+    (this.$Spin as any).show()
+    this.oldQuery = { ...this.query }
     const query = clean({ ...this.query })
     try {
       const res = await queryItem(this.$route.params.id)
@@ -335,6 +385,19 @@ export default class Main extends ViewBase {
     })
   }
 
+  // 提交并继续审核
+  nextSubmit() {
+    const dataItem: any = JSON.parse((sessionStorage.getItem('info' + this.$route.params.id) as any))
+    if (dataItem.pageidx == 1) {
+      this.jumpNum = dataItem.index
+    } else {
+      this.jumpNum = ((dataItem.pageidx) * dataItem.pagese) + dataItem.index
+    }
+  }
+  // 提交
+  dataFormSubmit() {
+
+  }
   dlgeditdone() {
     this.doSearch()
   }
@@ -529,15 +592,21 @@ export default class Main extends ViewBase {
 .logs-item {
   height: 35px;
 }
-/deep/ .ivu-btn:hover {
-  color: #000;
-  background-color: #fff;
-  border-color: #fff;
-}
+// /deep/ .ivu-btn:hover {
+//   color: #000;
+//   background-color: #fff;
+//   border-color: #fff;
+// }
 /deep/ .ivu-btn {
   border-color: #fff;
 }
 /deep/ .ivu-btn:focus {
   box-shadow: 0;
+}
+/deep/ textarea {
+  min-width: 500px;
+  min-height: 100px;
+  max-height: 100px;
+  max-width: 500px;
 }
 </style>

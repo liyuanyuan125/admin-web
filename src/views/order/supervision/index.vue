@@ -25,8 +25,8 @@
       <Button style='margin-top: 16px;' type="primary" @click="changeAll">批量审核</Button>
     <Table ref="selection" :columns="columns" @on-selection-change="onselect" :data="list" :loading="loading"
       border stripe disabled-hover size="small" class="table">
-      <template  slot="action" slot-scope="{row}" >
-        <a style='margin-right: 6px;' v-show='row.approvalStatus == 2' @click="change( row.id , row )">审核</a>
+      <template  slot="action" slot-scope="{row , index}" >
+        <a style='margin-right: 6px;' v-show='row.approvalStatus == 2' @click.native="change( row.id , row , index )">审核</a>
         <router-link  :to="{ name: 'order-supervision-detail', params: { id: row.id} }">详情</router-link>
       </template>
       <template  slot="video" slot-scope="{row}" >
@@ -232,12 +232,18 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     })
   }
 
-  change(id: number, row: any) {
-    this.addOrUpdateVisible = true
-    this.$nextTick(() => {
-      const myThis: any = this
-      myThis.$refs.addOrUpdate.init(id , row)
-    })
+  change(id: number, row: any , index: any) {
+    // this.addOrUpdateVisible = true
+    // this.$nextTick(() => {
+    //   const myThis: any = this
+    //   myThis.$refs.addOrUpdate.init(id , row)
+    // })
+    const infos: any = {
+      index,
+      pageidx: this.query.pageIndex,
+      pagese: this.query.pageSize
+    }
+    sessionStorage.setItem('supinfo' + id, JSON.stringify(infos))
   }
 
   @Watch('query', { deep: true })

@@ -12,8 +12,11 @@
     <div class="act-bar flex-box">
       <form class="form flex-1" @submit.prevent="search">
         <LazyInput v-model="query.query" placeholder="广告片ID/名称" class="input"/>
-        <Select v-model="query.companyId" filterable clearable class="select-company">
+        <Select v-model="query.companyId" placeholder="公司名称" filterable clearable class="select-company">
           <Option v-for="it in companys" :key="it.id" :value="it.id">{{it.name}}</Option>
+        </Select>
+        <Select v-model="query.companyId" style='width: 100px;' placeholder="是否转制" filterable clearable class="select-company">
+          <Option v-for="it in []" :key="it.id" :value="it.id">{{it.name}}</Option>
         </Select>
         <Button type="default" class="btn-reset" @click="reset">清空</Button>
       </form>
@@ -58,9 +61,9 @@
         <span class="datetime">{{cancelTime|dateTime}}</span>
       </template>
 
-      <template slot="action" slot-scope="{ row: { id, status } }">
+      <template slot="action" slot-scope="{ row: { id, status } , index }">
         <div class="row-acts">
-          <router-link v-auth="'advert.videos:approval'" v-show='status == 1' :to="{ name: 'gg-film-detail',
+          <router-link v-auth="'advert.videos:approval'" @click.native='localitem(id , index)' v-show='status == 1' :to="{ name: 'gg-film-detail',
             params: { id , status } }">审核</router-link>
             <router-link v-auth="'advert.videos:info'" v-show='status != 1' :to="{ name: 'gg-film-detail',
             params: { id , status } }">详情</router-link>
@@ -117,8 +120,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     return [
       { title: '广告片ID', key: 'id', width: 70 },
       { title: '广告片名称', key: 'name' },
+      { title: '广告主公司名称', key: 'name' },
       { title: '客户', slot: 'customerName' },
       { title: '规格', slot: 'specification', width: 60 },
+      { title: '广告片下载地址', slot: 'specification'},
+      { title: '是否已转制', slot: 'specification', width: 60 },
       { title: '转制费(元)', slot: 'transFee', width: 110 },
       { title: '创建时间', slot: 'applyTime', width: 135 },
       status in { 2: 1, 5: 1 } && { title: '审核人', slot: 'approvalUser', width: 110 },
@@ -144,6 +150,17 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   reset() {
     this.resetQuery('status,pageSize')
+  }
+
+  // 审核时保存数据需要
+  localitem(id: any , index: any) {
+    // console.log(index)
+    const info: any = {
+      index,
+      pageidx: this.query.pageIndex,
+      pagese: this.query.pageSize
+    }
+    sessionStorage.setItem('info' + id, JSON.stringify(info))
   }
 
   async fetch() {

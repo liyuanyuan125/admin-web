@@ -118,6 +118,8 @@ export default class Main extends ViewBase {
     }
   ]
 
+  jumpNum: any = 0
+
 
 
   mounted() {
@@ -156,6 +158,16 @@ export default class Main extends ViewBase {
         }
       }
     })
+  }
+
+  // 提交并继续审核
+  nextSubmit() {
+    const dataItem: any = JSON.parse((sessionStorage.getItem('supinfo' + this.$route.params.id) as any))
+    if (dataItem.pageidx == 1) {
+      this.jumpNum = dataItem.index
+    } else {
+      this.jumpNum = ((dataItem.pageidx) * dataItem.pagese) + dataItem.index
+    }
   }
 
   async search() {

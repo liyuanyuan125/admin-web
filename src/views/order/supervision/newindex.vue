@@ -17,28 +17,34 @@
       selectable
       :selectedIds.sync="selectedIds"
       ref="listPage"
+      @inspect='onInspect'
     >
-      <template slot="acts">
-        <!-- <Button
-          type="success"
-          icon="md-add-circle"
-        >新建</Button> -->
-      </template>
 
       <template slot="acts-2">
         <Button
+          v-if=' astatus == 2'
           type="primary"
           class="button-audit"
           :disabled="!(selectedIds.length > 0)"
           @click="changeAll"
+          
         >批量审核</Button>
-      </template>
+        <Button
+          v-else-if=' astatus == 4'
+          type="primary"
+          :disabled="!(selectedIds.length > 0)"
+          @click="changeAll"
+        >批量恢复</Button>
+        <span v-else  ></span>
+         </template>
+
       <template  slot="video" slot-scope="{row}" >
         <a style='margin-left: 5px;' v-for='(item,index) in row.videoDetails' :key='index'>{{item.videoName}} ({{item.videoLength}})s</a>
       </template>
       <template  slot="action" slot-scope="{row}" >
         <a style='margin-right: 6px;' v-show='row.approvalStatus == 2' @click="change( row.id , row )">审核</a>
-        <router-link  :to="{ name: 'order-supervision-detail', params: { id: row.id} }">详情</router-link>
+        <a style='margin-right: 6px;' v-show='row.approvalStatus == 4' @click="change( row.id , row )">恢复</a>
+        <router-link v-if='row.approvalStatus != 2'  :to="{ name: 'order-supervision-detail', params: { id: row.id} }">详情</router-link>
       </template>
     </ListPage>
      <singvideoDlg ref="addOrUpdatevideo" v-if='videoVisible' @done="dlgEditDone" />
@@ -67,10 +73,10 @@ import singvideoDlg from './singvideoDlg.vue'
 import { getChannelList } from '@/util/types'
 
 const statusList: any = [
-  {name: '未上传', value: '1'},
   {name: '待审核', value: '2'},
   {name: '已通过', value: '3'},
-  {name: '已拒绝', value: '4'}
+  {name: '已拒绝', value: '4'},
+  {name: '未上传', value: '1'},
 ]
 const defaultPay = statusList[0].value
 
@@ -95,10 +101,16 @@ export default class IndexPage extends ViewBase {
 
   fetch = queryList
 
+  query: any = null
+
   selectedIds = [] as number[]
 
+  get astatus() {
+    return this.query && this.query.status
+  }
+
   get filters(): Filter[] {
-    return [
+    const aaa: any = [
       {
         name: 'status',
         defaultValue: this.pay,
@@ -129,6 +141,37 @@ export default class IndexPage extends ViewBase {
       },
 
       {
+        name: 'name',
+        defaultValue: '',
+        type: 'input',
+        width: 140,
+        placeholder: '影片名称'
+      },
+
+      {
+        name: 'dateRange',
+        defaultValue: '',
+        type: 'dateRange',
+        width: 200,
+        placeholder: '投放周期',
+        dealParam(value: string) {
+          const [beginDate, endDate] = value ? value.split('-') : [null, null]
+          return {
+            beginDate,
+            endDate
+          }
+        }
+      },
+
+      {
+        name: 'name2',
+        defaultValue: '',
+        type: 'input',
+        width: 140,
+        placeholder: '商务负责人'
+      },
+
+      {
         name: 'status',
         defaultValue: null,
         type: 'select',
@@ -136,7 +179,32 @@ export default class IndexPage extends ViewBase {
         placeholder: '状态',
         enumKey: 'statusList'
       },
+    ]
+    const bbb: any = [
+      {
+        name: 'name3',
+        defaultValue: '',
+        type: 'input',
+        width: 140,
+        placeholder: '审核人'
+      },
 
+      {
+        name: 'dateRang3e',
+        defaultValue: '',
+        type: 'dateRange',
+        width: 200,
+        placeholder: '审核时间',
+        dealParam(value: string) {
+          const [beginDate, endDate] = value ? value.split('-') : [null, null]
+          return {
+            beginDate,
+            endDate
+          }
+        }
+      },
+    ]
+    const ccc: any = [
       {
         name: 'pageIndex',
         defaultValue: 1
@@ -147,6 +215,9 @@ export default class IndexPage extends ViewBase {
         defaultValue: 20
       }
     ]
+
+    return this.status == '3' || this.status == '4' ? [...aaa , ...bbb , ...ccc] :
+    [...aaa, ...ccc ]
   }
 
   enums = [
@@ -154,9 +225,10 @@ export default class IndexPage extends ViewBase {
   ]
 
   get columns() {
-    return [
+    const aaa: any = [
       { title: '资源方公司名称', key: 'resourceName',  align: 'center' },
       { title: '影院名称', key: 'cinemaName', align: 'center' },
+      { title: '影片名称', key: 'cinemaName', align: 'center' },
       { title: '广告片', slot: 'video', align: 'center' },
       {
         title: '投放周期',
@@ -174,17 +246,22 @@ export default class IndexPage extends ViewBase {
           /* tslint:enable */
         }
       },
+      { title: '商务负责人', key: 'cinemaName', align: 'center' },
+      { title: '上传人', key: 'cinemaName', align: 'center' },
+      { title: '上传时间', key: 'cinemaName', align: 'center' },
+    ]
+    const ccc: any = [
+      { title: '审核人', key: 'cinemaName', align: 'center' },
+      { title: '审核时间', key: 'cinemaName', align: 'center' },
+    ]
+    const ddd: any = [
       { title: '状态', key: 'status', width: 100 , editor: 'enum' },
-
       { title: '操作', slot: 'action', maxWidth: 100 }
-    ] as ColumnExtra[]
-  }
+    ]
 
-  priceColumns = [
-    // { title: '类别', key: 'name', minWidth: 100 },
-    // { title: '价格', key: 'price', minWidth: 85, align: 'center' },
-    // { title: '有效期', key: 'date', minWidth: 75, align: 'center' },
-  ]
+    return this.status == '3' || this.status == '4' ? [...aaa , ...ccc , ...ddd] :
+    [...aaa, ...ddd ] as ColumnExtra[]
+  }
 
   auditVisible = false
   changeAll() {
@@ -201,6 +278,10 @@ export default class IndexPage extends ViewBase {
 
   refresh() {
     this.listPage.update()
+  }
+
+  onInspect({ query }: any) {
+    this.query = query
   }
 
   @Watch('status')
