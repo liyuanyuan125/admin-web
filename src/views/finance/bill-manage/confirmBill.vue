@@ -60,7 +60,7 @@ export default class Main extends ViewBase {
 
     {
       name: 'pageSize',
-      defaultValue: 2
+      defaultValue: 20
     }
   ]
 
@@ -96,7 +96,6 @@ export default class Main extends ViewBase {
   }
 
   async handleBill() {
-    // 根据条件去除某个元素
     const items = (this.dataList || []).filter((it: any) => it.status == 1)
     const billDetails = items.map((it: any) => {
       return {
