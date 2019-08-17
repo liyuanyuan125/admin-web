@@ -190,6 +190,7 @@ export async function queryPurchaseList(query: any = {}) {
 const dealPurchaseItem = (data: any) => {
   const {
     billStatusList = [],
+    purchaseInvoice,
   } = data
 
   const taxRateList = (data.taxRateList as number[] || []).map(key => ({ key, text: `${key}%` }))
@@ -205,6 +206,8 @@ const dealPurchaseItem = (data: any) => {
 
   const totalTaxFee = sum(orderList.map(it => it.billFee || 0))
 
+  const invoice = purchaseInvoice || {}
+
   const result = {
     ...data,
     taxRateList,
@@ -212,20 +215,20 @@ const dealPurchaseItem = (data: any) => {
       orderList,
 
       // 开票信息
-      invoiceNo: '',
-      invoiceType: '',
-      invoiceContent: '',
-      memo: '',
+      invoiceNo: invoice.invoiceNo || '',
+      invoiceType: invoice.invoiceType || '',
+      invoiceContent: invoice.invoiceContent || '',
+      memo: invoice.memo || '',
 
-      invoiceDate: 0,
-      totalTaxFee,
-      taxRate: '',
-      taxFreeFee: null,
-      taxFee: null,
+      invoiceDate: invoice.invoiceDate || 0,
+      totalTaxFee: invoice.totalTaxFee || totalTaxFee,
+      taxRate: +invoice.taxRate || 0,
+      taxFreeFee: invoice.taxFreeFee || null,
+      taxFee: invoice.taxFee || null,
 
-      materialQuality: 0,
-      expressCompany: '',
-      expressNo: '',
+      materialQuality: invoice.materialQuality || 0,
+      expressCompany: invoice.expressCompany || '',
+      expressNo: invoice.expressNo || '',
 
       logList: data.logList || [],
     },

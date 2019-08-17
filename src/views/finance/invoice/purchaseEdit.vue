@@ -112,21 +112,10 @@ export default class EditPage extends ViewBase {
       },
 
       {
-        name: 'invoiceType',
-        defaultValue: '',
-        label: '发票类型',
-        span: 7,
-        required: true,
-        select: {
-          enumKey: 'invoiceTypeList'
-        },
-      },
-
-      {
         name: 'invoiceContent',
         defaultValue: '',
         label: '发票内容',
-        span: 4,
+        span: 7,
         required: true,
         select: {
           enumKey: 'invoiceContentList'
@@ -136,10 +125,21 @@ export default class EditPage extends ViewBase {
       {
         name: 'memo',
         defaultValue: '',
-        span: 3,
+        span: 7,
         input: true,
         placeholder: '内容备注',
         visible: item => item.invoiceContent == 'other'
+      },
+
+      {
+        name: 'invoiceType',
+        defaultValue: '',
+        label: '发票类型',
+        span: 7,
+        required: true,
+        select: {
+          enumKey: 'invoiceTypeList'
+        },
       },
 
       {
@@ -156,7 +156,6 @@ export default class EditPage extends ViewBase {
         defaultValue: 0,
         label: '含税金额',
         span: 7,
-        offsetRight: 8,
         number: true,
         required: true,
         watch: async (_, { item }) => {
