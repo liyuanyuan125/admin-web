@@ -36,7 +36,7 @@ export default class CinemaChainSelect extends ViewBase {
   async mounted() {
     try {
       const { data } =  await companylist(clean({
-        pageSize: 888888,
+        pageSize: 8888,
         typeCode: 'resource'
       }))
       const list: any[] = data.items || []

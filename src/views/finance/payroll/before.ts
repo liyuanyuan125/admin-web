@@ -7,7 +7,7 @@ export const beforefetch: any =  [
     name: 'cinemaId',
     defaultValue: 0,
     type: remoteselect,
-    width: 108,
+    width: 128,
     placeholder: '影城名称'
   },
 
@@ -57,7 +57,7 @@ export const beforefetch: any =  [
     name: 'time',
     defaultValue: '',
     type: moouth,
-    width: 200,
+    width: 100,
     placeholder: '账单月份',
     dealParam(value: string) {
       return {
@@ -87,6 +87,16 @@ export const beforefetch: any =  [
   },
 
   {
+    name: 'applyStatus',
+    defaultValue: 1
+  },
+
+  {
+    name: 'billStatus',
+    defaultValue: 4
+  },
+
+  {
     name: 'pageSize',
     defaultValue: 20
   }
@@ -102,7 +112,7 @@ export const beforenum: any = [
 ]
 
 export const beforcoulm: any = [
-  { title: '账单编号', key: 'id', minWidth: 65 },
+  { title: '账单编号', key: 'resourceBillNo', minWidth: 65 },
   { title: '影城名称', key: 'cinemaName', minWidth: 100 },
   { title: '影城专资码', key: 'code', minWidth: 60, editor: 'deprecated' },
   { title: '资源方名称', key: 'resourceName', minWidth: 60 },
