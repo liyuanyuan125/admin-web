@@ -8,7 +8,20 @@
         :enums="enums"
         :columns="columns"
         ref="listPage">
+
+        <template slot="status" slot-scope="{row}">
+          <Select v-model="row.status" size="small" @on-change="handleSelect(row)" style="width:90px">
+            <Option :value="2" :key="2" >是</Option>
+            <Option :value="1" :key="1" >否</Option>
+          </Select>
+        </template>
+
       </ListPage>
+     </div>
+
+     <div class="footer">
+       <Button type="primary" @click="handleBill" class="btn">提交</Button>
+       <Button @click="$router.push({name: 'finance-billmanage'})">取消</Button>
      </div>
   </div>
 </template>
@@ -19,9 +32,8 @@ import ViewBase from '@/util/ViewBase'
 import { resourceBillDetail, operateConfirm} from '@/api/financeBill'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import {intDate, toThousands} from '@/util/dealData'
-import {formatNumber } from '@/util/validateRules'
-import moment from 'moment'
-const dateFormat = 'YYYY-MM-DD HH:mm:ss'
+import { formatNumber } from '@/util/validateRules'
+import { uniqBy, reject, pick } from 'lodash'
 
 @Component({
   components: {
@@ -34,6 +46,7 @@ export default class Main extends ViewBase {
   @Prop({ type: Number}) id!: number
 
   statusList = []
+  dataList: any[] = []
 
   filters: Filter[] = [
     {
@@ -47,7 +60,7 @@ export default class Main extends ViewBase {
 
     {
       name: 'pageSize',
-      defaultValue: 20
+      defaultValue: 2
     }
   ]
 
@@ -68,26 +81,45 @@ export default class Main extends ViewBase {
     { title: '单价/元/人次', key: 'unitPrice', minWidth: 90 },
     { title: '金额', key: 'amount', minWidth: 90 },
     { title: '监播文件', key: 'playMonitorStatus', minWidth: 90, editor: 'enum' },
-    { title: '是否需要结算', key: 'status', minWidth: 90,
-      editor: 'poptipSelect',
-      updateField: this.updateStatus,
-      auth: 'theater.cinemas:change-status'
-    },
+    { title: '是否需要结算', slot: 'status', minWidth: 90, },
+    // { title: '是否需要结算', key: 'status', minWidth: 90,
+    //   editor: 'poptipSelect',
+    //   updateField: this.updateStatus,
+    //   auth: 'theater.cinemas:change-status'
+    // },
     { title: '备注', key: 'remark', minWidth: 90 },
   ]
 
-  async updateStatus(id: any, status: any, remark: any) {
-    const res = await operateConfirm({
-      id: this.id,
-      billDetails: [
-        {id, status, remark}
-      ]
+  handleSelect(val: any) {
+    this.dataList = uniqBy(this.dataList, 'id')
+    this.dataList.push(val)
+  }
+
+  async handleBill() {
+    // 根据条件去除某个元素
+    const items = (this.dataList || []).filter((it: any) => it.status == 1)
+    const billDetails = items.map((it: any) => {
+      return {
+        id: it.id,
+        status: it.status,
+        remark: it.remark
+      }
     })
-    return res
+
+    try {
+      const { data } = await operateConfirm({
+        id: this.id,
+        billDetails
+      })
+      this.$router.push({name: 'finance-billmanage'})
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
 
   async fetch(query: any) {
     const {data } = await resourceBillDetail(query)
+
     this.statusList = data.statusList
     const item = (data.items || []).map((it: any) => {
       return {
@@ -98,6 +130,7 @@ export default class Main extends ViewBase {
         amount: formatNumber(it.amount)
       }
     })
+
     return {
       ...data,
       items: item
@@ -108,6 +141,13 @@ export default class Main extends ViewBase {
 </script>
 <style lang='less' scoped>
 @import '~@/views/data/person/less/common.less';
+
+.footer {
+  text-align: center;
+  .btn {
+    margin-right: 30px;
+  }
+}
 /deep/ .ivu-table-wrapper {
   overflow: inherit;
 }
