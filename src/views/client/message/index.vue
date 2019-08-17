@@ -8,10 +8,10 @@
         </div>
       </template>
       <template slot="createTime" slot-scope="{row}">
-        <span>{{ moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') }}</span>
+        <span>{{ (row.createTime && row.createTime !==0) ? moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') : '-' }}</span>
       </template>
       <template slot="updateTime" slot-scope="{row}">
-        <span>{{ moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') }}</span>
+        <span>{{ (row.updateTime && row.updateTime !==0) ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-' }}</span>
       </template>
     </ListPage>
     <EditDialog v-if='editDialogVisible' okText='确定' title='登记处理结果' :fields="fields" :fetch="editFetch" :submit="editSubmit" ref="editDlg" >
