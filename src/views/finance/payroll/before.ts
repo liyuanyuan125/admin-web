@@ -28,7 +28,7 @@ export const beforefetch: any =  [
   },
 
   {
-    name: 'hasSettlementPrice',
+    name: 'resourceBillNo',
     defaultValue: '',
     type: 'input',
     width: 128,
