@@ -16,6 +16,10 @@
           </Select>
         </template>
 
+        <template slot="remark" slot-scope="{row}">
+          <Input v-model="row.remark" style="width: 90px" />
+        </template>
+
       </ListPage>
      </div>
 
@@ -84,12 +88,7 @@ export default class Main extends ViewBase {
     { title: '金额', key: 'amount', minWidth: 90 },
     { title: '监播文件', key: 'playMonitorStatus', minWidth: 90, editor: 'enum' },
     { title: '是否需要结算', slot: 'status', minWidth: 90, },
-    // { title: '是否需要结算', key: 'status', minWidth: 90,
-    //   editor: 'poptipSelect',
-    //   updateField: this.updateStatus,
-    //   auth: 'theater.cinemas:change-status'
-    // },
-    { title: '备注', key: 'remark', minWidth: 90 },
+    { title: '备注', slot: 'remark', minWidth: 90 },
   ]
 
   handleSelect(val: any, index: number) {
@@ -140,7 +139,7 @@ export default class Main extends ViewBase {
         endDate: intDate(it.endDate),
         personCount: toThousands(it.personCount),
         amount: formatNumber(it.amount),
-        status: ids.includes(it.id) ? 1 : it.status
+        status: ids.includes(it.id) ? 1 : it.status,
       }
     })
 
