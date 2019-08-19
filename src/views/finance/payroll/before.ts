@@ -87,7 +87,7 @@ export const beforefetch: any =  [
   },
 
   {
-    name: 'applyStatus',
+    name: 'applyType',
     defaultValue: 1
   },
 
