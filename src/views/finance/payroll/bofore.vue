@@ -33,7 +33,7 @@
 
       <template slot="action" slot-scope="{ row: { id, invoiceStatus, payStatus } }">
         <div class="row-acts">
-          <router-link :to="invoiceRoute([id])" v-if="invoiceStatus < 2">发票登记</router-link>
+          <router-link :to="invoiceRoute([id])" v-if="invoiceStatus == 2">发票登记</router-link>
           <a v-if='payStatus < 2' @click='pay([id])'>发票付款</a>
         </div>
       </template>
