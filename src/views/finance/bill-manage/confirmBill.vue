@@ -66,7 +66,7 @@ export default class Main extends ViewBase {
 
     {
       name: 'pageSize',
-      defaultValue: 1
+      defaultValue: 20
     }
   ]
 
