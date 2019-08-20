@@ -307,6 +307,17 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  // 客户管理 - 签约影院
+  {
+    path: '/client/signedCinema/',
+    name: 'client-signedCinema',
+    component: () => import('./views/client/signedCinema/index.vue'),
+    meta: {
+      authKey: '',
+      title: '签约影院管理'
+    }
+  },
+
   // 基础数据 - 系统字典 - 分类列表
   {
     path: '/data/dict/',
