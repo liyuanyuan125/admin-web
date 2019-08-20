@@ -310,7 +310,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   // 客户管理 - 签约影院
   {
     path: '/client/signedCinema/',
-    name: 'client-signedCinema',
+    name: 'client-signedcinema',
     component: () => import('./views/client/signedCinema/index.vue'),
     meta: {
       authKey: '',
