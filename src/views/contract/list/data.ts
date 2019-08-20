@@ -4,6 +4,7 @@ import {
   formatIntDateRange,
   formatTimestamp,
   fillByKeyText,
+  getEnumText,
 } from '@/util/dealData'
 import { KeyText } from '@/util/types'
 import { slice } from '@/fn/object'
@@ -51,7 +52,7 @@ export async function queryItem(query: any = {}) {
   const { data } = await get(url)
 
   const {
-    cityGradeList = []
+    pricingLevelList = []
   } = data
 
   const {
@@ -65,9 +66,8 @@ export async function queryItem(query: any = {}) {
   const status = parseInt(item.approveStatus, 10) || 0
 
   const filterCinema = (it: any) => {
-    return fillByKeyText(it, {
-      cityGradeCode: cityGradeList
-    })
+    it.pricingLevelName = getEnumText(pricingLevelList, it.pricingLevelCode)
+    return it
   }
 
   const result = {
