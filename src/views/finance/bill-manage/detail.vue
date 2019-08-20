@@ -14,18 +14,18 @@
      <div class="base-mess">
        <h2 class="title">资源方审核信息</h2>
        <Row>
-          <Col :span="8"><p><label>影城系统人次</label><em>{{items.personCount || '-'}}</em></p></Col>
+          <Col :span="8"><p><label>影城系统人次</label><em>{{items.resourcePersonCount || '-'}}</em></p></Col>
         </Row>
         <Row>
           <Col :span="8"><p><label>影城系统截图</label>
             <em class="imgs-list" v-for="(img, index) in (items.picturesUrl || [])" :key="index">
-              <img src="" width="80px"/>
+              <img :src="img" width="100px"/>
             </em>
             </p>
           </Col>
         </Row>
         <Row>
-          <Col :span="8"><p><label>备注</label><em>{{items.remark || '-'}}</em></p></Col>
+          <Col :span="8"><p><label>备注</label><em>{{items.resourceRemark || '-'}}</em></p></Col>
         </Row>
      </div>
 
