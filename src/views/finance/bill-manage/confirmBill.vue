@@ -17,7 +17,7 @@
         </template>
 
         <template slot="remark" slot-scope="{row}">
-          <Input v-model="row.remark" style="width: 90px" @on-blur="handleSelect(row)" />
+          <Input v-model="row.remark" style="width: 90px" placeholder="请输入备注" @on-blur="handleSelect(row)" />
         </template>
 
       </ListPage>
@@ -93,7 +93,7 @@ export default class Main extends ViewBase {
   ]
 
   handleSelect(val: any) {
-    // 修改状态往dataList数组push， 如果ids已经存在则修改status的状态
+    // 如果不存在追加，如果存在则替换
     const ind = findIndex(this.dataList, (it: any) => it.id == val.id)
     if (ind >= 0) {
       this.dataList[ind] = val
@@ -127,15 +127,12 @@ export default class Main extends ViewBase {
     const {data } = await resourceBillDetail(query)
     this.statusList = data.statusList
 
-    // this.dataList 里面的数据和当前页 data.items 数据做比较
-    // 记住 status 状态和 remark 注释
-    // console.log(this.dataList)
-    // console.log()
+    // 交集元素
     const remarkList = intersectionBy(this.dataList, data.items, 'id')
 
-    const items = (this.dataList || []).filter((it: any) => it.status == 1)
-    const intersection = intersectionBy(items, data.items, 'id')
-    const ids = map(intersection, 'id')
+    // const items = (this.dataList || []).filter((it: any) => it.status == 1)
+    // const intersection = intersectionBy(items, data.items, 'id')
+    // const ids = map(intersection, 'id')
 
     // 如果ids存在则表示修改
     const item = (data.items || []).map((it: any) => {
@@ -146,8 +143,8 @@ export default class Main extends ViewBase {
         endDate: intDate(it.endDate),
         personCount: toThousands(it.personCount),
         amount: formatNumber(it.amount),
-        status: ids.includes(it.id) ? 1 : it.status,
-        remark: remInd >= 0 ? remarkList[remInd].remark : null
+        status: remInd >= 0 ? remarkList[remInd].status : it.status,
+        remark: remInd >= 0 ? remarkList[remInd].remark : it.remark
       }
     })
 
