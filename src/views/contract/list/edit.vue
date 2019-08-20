@@ -206,14 +206,14 @@ export default class EditPage extends ViewBase {
         label: '结算价格',
         component: PriceTable,
         props: {
-          enumKey: 'cityGradeList',
+          enumKey: 'pricingLevelList',
         },
         span: 22,
         watch: {
           handler(value: MapType<PriceItem>, { item }) {
             debounce(() => {
               const newCinemaList = item.cinemaList.map((it: CinemaItem) => {
-                const { commonPrice, trailerPrice } = value[it.cityGradeCode]
+                const { commonPrice = null, trailerPrice = null } = value[it.pricingLevelCode] || {}
                 commonPrice != null && (it.commonPrice = commonPrice)
                 trailerPrice != null && (it.trailerPrice = trailerPrice)
                 return it
@@ -412,8 +412,8 @@ export default class EditPage extends ViewBase {
     const { filterCinema } = data
     this.filterCinema = (item: any) => {
       const { accountBank, accountName, accountNumber, settlementPrice } = this.editForm.getData()
-      const cityGrade = item.cityGradeCode
-      const { commonPrice = null, trailerPrice = null } = settlementPrice[cityGrade] || {}
+      const pricingLevelCode = item.pricingLevelCode
+      const { commonPrice = null, trailerPrice = null } = settlementPrice[pricingLevelCode] || {}
       const result = {
         ...filterCinema(item),
         commonPrice,
