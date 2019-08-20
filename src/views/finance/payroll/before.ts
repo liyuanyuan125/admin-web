@@ -28,7 +28,7 @@ export const beforefetch: any =  [
   },
 
   {
-    name: 'hasSettlementPrice',
+    name: 'resourceBillNo',
     defaultValue: '',
     type: 'input',
     width: 128,
@@ -123,8 +123,8 @@ export const beforcoulm: any = [
     slot: 'month'
   },
   { title: '对账完成时间', key: 'approvalTime', minWidth: 100, editor: 'dateTime' },
-  { title: '发票类型', key: 'invoiceType', minWidth: 100,  editor: 'enum', enumKey: 'invoiceTypeCodeList' },
-  { title: '发票内容', key: 'invoiceContentCode', minWidth: 65, editor: 'enum', enumKey: 'invoiceContentCodeList'},
+  { title: '发票类型', key: 'invoiceType', minWidth: 100,  editor: 'enum', enumKey: 'invoiceTypeCodeCode' },
+  { title: '发票内容', key: 'invoiceContentCode', minWidth: 65, editor: 'enum', enumKey: 'invoiceContentCodeCode'},
   { title: '账单金额', key: 'amount', minWidth: 90 },
   { title: '发票号', key: 'invoiceNo', minWidth: 100 },
   { title: '收款账户名', key: 'accountName', minWidth: 90 },
