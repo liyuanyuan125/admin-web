@@ -985,6 +985,18 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: true,
   },
 
+  // 财务管理 - 退款单管理
+  {
+    path: '/finance/refundOrder',
+    name: 'finance-refund-order',
+    component: () => import('./views/finance/refund-order/index.vue'),
+    meta: {
+      authKey: '',
+      title: '退款单管理'
+    },
+    props: true
+  },
+
   {
     path: '/plan/ggtising',
     name: 'plan-ggtising',
