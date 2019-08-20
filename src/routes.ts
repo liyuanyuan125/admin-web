@@ -961,8 +961,6 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: idProps,
   },
 
-
-
   // 映前广告付款单管理 - 列表
   {
     path: '/finance/payment/:pay?',
@@ -974,6 +972,19 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     },
     props: true
   },
+
+  // 财务管理 - 支付流水管理
+  {
+    path: '/finance/paymentflow',
+    name: 'finance-paymentflow',
+    component: () => import('./views/finance/payment-flow/index.vue'),
+    meta: {
+      authKey: '',
+      title: '支付流水'
+    },
+    props: true,
+  },
+
   {
     path: '/plan/ggtising',
     name: 'plan-ggtising',
