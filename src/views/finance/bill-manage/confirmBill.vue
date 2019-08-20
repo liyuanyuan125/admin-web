@@ -10,14 +10,14 @@
         ref="listPage">
 
         <template slot="status" slot-scope="{row, index}">
-          <Select v-model="row.status" size="small" @on-change="handleSelect(row, index)" style="width:90px">
+          <Select v-model="row.status" size="small" @on-change="handleSelect(row)" style="width:90px">
             <Option :value="2" :key="2" >是</Option>
             <Option :value="1" :key="1" >否</Option>
           </Select>
         </template>
 
         <template slot="remark" slot-scope="{row}">
-          <Input v-model="row.remark" style="width: 90px" />
+          <Input v-model="row.remark" style="width: 90px" @on-blur="handleSelect(row)" />
         </template>
 
       </ListPage>
@@ -50,9 +50,10 @@ export default class Main extends ViewBase {
   @Prop({ type: Number}) id!: number
 
   statusList = []
-  dataList: any[] = []
 
-  billDetails: any[] = []
+  // status and remark
+  dataList: any[] = []
+  remarkList: any[] = []
 
   filters: Filter[] = [
     {
@@ -66,7 +67,7 @@ export default class Main extends ViewBase {
 
     {
       name: 'pageSize',
-      defaultValue: 20
+      defaultValue: 2
     }
   ]
 
@@ -91,7 +92,7 @@ export default class Main extends ViewBase {
     { title: '备注', slot: 'remark', minWidth: 90 },
   ]
 
-  handleSelect(val: any, index: number) {
+  handleSelect(val: any) {
     // 修改状态往dataList数组push， 如果ids已经存在则修改status的状态
     const ind = findIndex(this.dataList, (it: any) => it.id == val.id)
     if (ind >= 0) {
@@ -102,8 +103,8 @@ export default class Main extends ViewBase {
   }
 
   async handleBill() {
-    const items = (this.dataList || []).filter((it: any) => it.status == 1)
-    const billDetails = items.map((it: any) => {
+    // const items = (this.dataList || []).filter((it: any) => it.status == 1)
+    const billDetails = this.dataList.map((it: any) => {
       return {
         id: it.id,
         status: it.status,
@@ -127,12 +128,18 @@ export default class Main extends ViewBase {
     this.statusList = data.statusList
 
     // this.dataList 里面的数据和当前页 data.items 数据做比较
+    // 记住 status 状态和 remark 注释
+    // console.log(this.dataList)
+    // console.log()
+    const remarkList = intersectionBy(this.dataList, data.items, 'id')
+
     const items = (this.dataList || []).filter((it: any) => it.status == 1)
     const intersection = intersectionBy(items, data.items, 'id')
     const ids = map(intersection, 'id')
 
     // 如果ids存在则表示修改
     const item = (data.items || []).map((it: any) => {
+       const remInd = findIndex(remarkList, (rem: any) => it.id == rem.id)
        return {
         ...it,
         beginDate: intDate(it.beginDate),
@@ -140,6 +147,7 @@ export default class Main extends ViewBase {
         personCount: toThousands(it.personCount),
         amount: formatNumber(it.amount),
         status: ids.includes(it.id) ? 1 : it.status,
+        remark: remInd >= 0 ? remarkList[remInd].remark : null
       }
     })
 
