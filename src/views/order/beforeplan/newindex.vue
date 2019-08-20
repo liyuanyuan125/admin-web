@@ -45,7 +45,6 @@
       </template>
     </ListPage>
 
-    <!-- <payDlg  ref="addOrUpdate" v-if="addOrUpdateVisible" @done="done"/> -->
   </div>
 </template>
 
@@ -68,19 +67,9 @@ import { formatNumber } from '@/util/validateRules'
 
 // 广告计划状态列表
   const statusList: any = [
-    // { name: '未知', value: '0'},
+    { name: '待支付', value: '4'},
     { name: '草稿', value: '1'},
-    { name: '待审核', value: '2'},
-    { name: '待确认', value: '3'},
-    // { name: '待支付', value: '4'},
-    // { name: '已支付', value: '5'},
-    // { name: '接单中', value: '6'},
-    // { name: '待执行', value: '7'},
-    // { name: '执行中', value: '8'},
     { name: '核对中', value: '9'},
-    // { name: '待结算', value: '10'},
-    // { name: '已完成', value: '11'},
-    // { name: '已失效', value: '12'},
     { name: '其他', value: '50'},
   ]
   const defaultPay: any = statusList[0].value

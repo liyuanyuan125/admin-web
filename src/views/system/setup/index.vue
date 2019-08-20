@@ -3,31 +3,51 @@
   <Form  :model='dataForm' :label-width='93' :rules='rules' label-position="left" class='form page' ref='dataForm'>
     <div class="edit-box">
       <!-- 充值信息 -->
-      <div v-auth="'finance.settings:set-bank-account'" class='titop' v-if='showbank'>充值信息
+      <div v-auth="'finance.settings:set-bank-account'" class='titop' v-if='showbank'>收款账户及发票信息
         <Button type='success' style='float: right;' @click="editbank('dataForm')">保存</Button>
       </div>
       <Row v-auth="'finance.settings:set-bank-account'" class="cinema-header"  v-if='showbank'>
-        <FormItem label="开户行" prop="accountBank">
-          <Row>
-            <Col span="8">
-              <Input v-model="dataForm.accountBank" placeholder=""/>
-            </Col>
-          </Row>
-        </FormItem>
-        <FormItem label="开户名" prop="accountName">
-          <Row>
-            <Col span="8">
-              <Input v-model="dataForm.accountName" placeholder=""/>
-            </Col>
-          </Row>
-        </FormItem>
-        <FormItem label="银行账号" prop="accountNumber">
-          <Row>
-            <Col span="8">
-              <Input v-model="dataForm.accountNumber" placeholder=""/>
-            </Col>
-          </Row>
-        </FormItem>
+        <Row>
+          <Col :span='8'>
+            <FormItem label="开户行" prop="accountBank">
+              <Input v-model="dataForm.accountBank" style='width: 200px;' placeholder=""/>
+            </FormItem>
+          </Col>
+          <Col :span='8'>
+            <FormItem label="公司名称" prop="companyName">
+              <Input v-model="dataForm.companyName" style='width: 200px;' placeholder=""/>
+            </FormItem>
+          </Col>
+          <Col :span='8'>
+            <FormItem label="纳税人识别号" prop="taxPayerNo">
+              <Input v-model="dataForm.taxPayerNo" style='width: 200px;' placeholder=""/>
+            </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col :span='8'>
+            <FormItem label="开户名" prop="accountName">
+              <Input v-model="dataForm.accountName" style='width: 200px;' placeholder=""/>
+            </FormItem>
+          </Col>
+          <Col :span='8'>
+            <FormItem label="公司地址" prop="companyAddress">
+              <Input v-model="dataForm.companyAddress" style='width: 200px;' placeholder=""/>
+            </FormItem>
+          </Col>
+          <Col :span='8'>
+            <FormItem label="公司电话" prop="companyPhone">
+              <Input v-model="dataForm.companyPhone" style='width: 200px;' placeholder=""/>
+            </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col :span='8'>    
+            <FormItem label="银行账号" prop="accountNumber">
+              <Input v-model="dataForm.accountNumber" style='width: 200px;' placeholder=""/>
+            </FormItem>
+          </Col>
+        </Row>
       </Row>
       <div v-auth="'finance.settings:default'" class='titop' v-if='!showbank'>充值信息
         <Button type='success' style='float: right;' @click='showbanktrue'>修改</Button>
@@ -35,15 +55,23 @@
       <div v-auth="'finance.settings:default'" class="cinema-header" v-if='!showbank'>
         <Row>
           <Col span="2"><div>开户行</div></Col>
-          <Col span="8"><span>{{detail.accountBank}}</span></Col>
+          <Col span="6"><span>{{detail.accountBank}}</span></Col>
+          <Col span="2"><div>公司名称</div></Col>
+          <Col span="6"><span>{{detail.companyName}}</span></Col>
+          <Col span="2"><div>纳税人识别号</div></Col>
+          <Col span="6"><span>{{detail.taxPayerNo}}</span></Col>
         </Row>
         <Row>
           <Col span="2"><div>开户名</div></Col>
-          <Col span="8"><span>{{detail.accountName}}</span></Col>
+          <Col span="6"><span>{{detail.accountName}}</span></Col>
+          <Col span="2"><div>公司地址</div></Col>
+          <Col span="6"><span>{{detail.companyAddress}}</span></Col>
+          <Col span="2"><div>公司电话</div></Col>
+          <Col span="6"><span>{{detail.companyPhone}}</span></Col>
         </Row>
         <Row>
           <Col span="2"><div>银行账号</div></Col>
-          <Col span="8"><span>{{detail.accountNumber}}</span></Col>
+          <Col span="6"><span>{{detail.accountNumber}}</span></Col>
         </Row>
       </div>
       <!-- 交易信息 -->
@@ -239,6 +267,10 @@ const dataForm = {
   accountBank: null,
   accountName: null,
   accountNumber: null,
+  companyName: null,
+  companyAddress: null,
+  companyPhone: null,
+  taxPayerNo: null,
   proportion: null,
   timeStep: null,
   stepCost: null,
@@ -401,6 +433,10 @@ export default class Main extends ViewBase {
     this.dataForm.accountBank = this.detail.accountBank
     this.dataForm.accountName = this.detail.accountName
     this.dataForm.accountNumber = this.detail.accountNumber
+    this.dataForm.companyName = this.detail.companyName
+    this.dataForm.companyAddress = this.detail.companyAddress
+    this.dataForm.companyPhone = this.detail.companyPhone
+    this.dataForm.taxPayerNo = this.detail.taxPayerNo
   }
 
   // 刊例价

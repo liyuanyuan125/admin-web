@@ -749,6 +749,16 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  {
+    path: '/finance/examine/newindex/:pay?',
+    name: 'finance-examine-newindex',
+    component: () => import('./views/finance/examine/newindex.vue'),
+    meta: {
+      authKey: ''
+    },
+    props: true,
+  },
+
   // 财务管理 - 请款单管理
   {
     path: '/finance/payroll/:type?',

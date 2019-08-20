@@ -47,7 +47,7 @@ dlgEditDone          </Select>
       <Table :columns="columns" :data="tableData" :loading="loading"
         border stripe disabled-hover size="small" class="table">
         <template slot="targetCount" slot-scope="{row}">
-          <span>{{row.targetCount}} / {{row.receiveCount}}</span>
+          <span>{{row.receiveCount}} / {{row.targetCount}}</span>
         </template>
           <template slot="spaction" slot-scope="{row}">
           <!-- <a v-show='row.status == 3' v-auth="'advert.executeOrder:settlement'" @click="change(row.id, row)">结算</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->

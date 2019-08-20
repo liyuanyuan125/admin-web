@@ -1,110 +1,189 @@
 <template>
-  <div class="page">
-    <div  v-if="shows">
-      <div class="act-bar flex-box">
-        <form class="form flex-1" @submit.prevent="search">
-          <LazyInput v-model="query.companyName" placeholder="公司名称" class="input" style="width: 200px"/>
-          <DatePicker type="daterange" @on-change="dateChange" @on-clear="formatTime" v-model="showTime" placement="bottom-end" placeholder="汇款日期" class="input" style="width: 200px"></DatePicker>
-          <Button type="default" @click="reset" class="btn-reset">清空</Button>
-        </form>
-        <div class="acts">
-          <Button v-auth="'finance.recharges:add'" type="success" icon="md-add-circle" @click="edit(0)">新建充值</Button>
-        </div>
-      </div>
-      <Table :columns="columns" :data="tableData" :loading="loading"
-        border stripe disabled-hover size="small" class="table">
-          <template slot="spaction" slot-scope="{row}">
-          <router-link v-show='row.approvalStatus == 1' v-auth="'finance.recharges:approval'" :to="{ name: 'finance-examine-detail', params: { id : row.id , approvalStatus : row.approvalStatus } }">审核</router-link>
-          <router-link v-show='row.approvalStatus != 1' v-auth="'finance.recharges:info'" :to="{ name: 'finance-examine-detail', params: { id : row.id , approvalStatus : row.approvalStatus } }">详情</router-link>
-        </template>
-        </Table>
+  <div class="index-page">
+    <Tabs v-model="status" type="card" class="tabs">
+      <TabPane
+        v-for="it in statusList"
+        :key="it.value"
+        :name="it.value"
+        :label="it.name"
+      />
+    </Tabs>
 
-      <div class="page-wrap" v-if="total > 0">
-        <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
-          show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-          @on-change="page => query.pageIndex = page"
-          @on-page-size-change="pageSize => query.pageSize = pageSize"/>
-      </div>
-    </div>
-    <!-- <DlgEdit  ref="addOrUpdate"   @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/> -->
+    <ListPage
+      :fetch="fetch"
+      :filters="filters"
+      :enums="enums"
+      :columns="columns"
+      ref="listPage"
+    >
+     <!--  <template slot="acts">
+        <Button
+          type="success"
+          icon="md-add-circle"
+          :to="{
+            name: 'finance-examine-edit'
+          }"
+        >新建</Button>
+      </template> -->
+      <template slot="action" slot-scope="{ row }">
+        <div class="row-acts">
+         <span style='color: #2b85e4;cursor: pointer;' @click='view(row.id , row.applyAmount)'>确认汇款</span>
+        </div>
+      </template>
+    </ListPage>
+    <Modal v-model="viewerShow" title="查看图片" width="500" height="500">
+      <img style="width: 100%;" :src="viewerImage" alt sizes srcset>
+    </Modal>
+
   </div>
 </template>
 
 <script lang="tsx">
-import { Component, Watch , Mixins } from 'vue-property-decorator'
+import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import UrlManager from '@/util/UrlManager'
-import { get } from '@/fn/ajax'
+import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import { queryList } from '@/api/examine'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
-import { slice, clean } from '@/fn/object'
-// import DlgEdit from './dlgEdit.vue'
 
-import {confirm , warning , success, toast } from '@/ui/modal'
+import EditDialog, { Field } from '@/components/editDialog'
+import { formatNumber } from '@/util/validateRules'
 
-const years = new Date().getFullYear()
-const months = new Date().getMonth() + 1
-const date = new Date()
-// const currentMonth=date.getMonth()
-// const nextMonth=months
-const nextMonthFirstDay = new Date(years, months, 1)
-const oneDay = 1000 * 60 * 60 * 24
-
-
-
-const makeMap = (list: any[]) => toMap(list, 'id', 'name')
-const timeFormat = 'YYYY-MM-DD'
-
+  const statusList: any = [
+    { name: '待审核', value: '1' },
+    { name: '已通过', value: '2' },
+    { name: '已拒绝', value: '3' },
+  ]
+  const defaultPay: any = statusList[0].value
 
 @Component({
   components: {
-    // DlgEdit,
+    ListPage,
+    EditDialog,
   }
 })
-export default class Main extends Mixins(ViewBase, UrlManager) {
-  defQuery = {
-    id: '',
-    companyName: '',
-    pageIndex: 1,
-    pageSize: 20,
-    beginDate: new Date(`${years}/${months}/1`).getTime(),
-    endDate: nextMonthFirstDay.getTime() - oneDay
+export default class IndexPage extends ViewBase {
+  @Prop({ type: String, default: defaultPay }) pay!: string
+
+  get listPage() {
+    return this.$refs.listPage as ListPage
   }
-  query: any = {}
-  shows = true
-  showDlg = false
+
   addOrUpdateVisible = false
-  changeVisible = false
 
 
-  examine = false
-  // query = { ...defQuery }
+  status = this.pay
 
-  loading = false
-  list = []
-  total = 0
-  oldQuery: any = {}
-  typeList = []
-  showTime: any = []
+  statusList = statusList
 
-  // 状态列表
-  approveStatusList = []
-
-  // 公司列表
-  company: any = []
+  // 查看图片
+  viewerShow = false
+  viewerImage = ''
 
 
-  newend = ''
-  count = 0
+  fetch = queryList
 
-  columns = [
-    { title: '序号', key: 'id', width: 100 , align: 'center' },
-    { title: '公司名称', key: 'companyName', align: 'center' },
-    { title: '汇款人姓名', key: 'accountName', align: 'center' },
-    { title: '充值金额', key: 'amount', align: 'center' ,
-      render: (hh: any, { row: { amount } }: any) => {
+
+  get filters(): Filter[] {
+    return [
+      {
+        name: 'status',
+        defaultValue: this.pay,
+      },
+
+      {
+        name: 'companyName1',
+        defaultValue: '',
+        type: 'input',
+        width: 168,
+        placeholder: '订单号'
+      },
+
+      {
+        name: 'companyName2',
+        defaultValue: '',
+        type: 'input',
+        width: 168,
+        placeholder: '汇款账户名称'
+      },
+
+      {
+        name: 'invoiceContent',
+        defaultValue: 0,
+        type: 'select',
+        width: 108,
+        placeholder: '汇款方式'
+      },
+
+      {
+        name: 'companyName3',
+        defaultValue: '',
+        type: 'input',
+        width: 168,
+        placeholder: '公司名称'
+      },
+
+      {
+        name: 'companyName',
+        defaultValue: '',
+        type: 'input',
+        width: 168,
+        placeholder: '汇款交易流水'
+      },
+
+      {
+        name: 'dateRange1',
+        defaultValue: '',
+        type: 'dateRange',
+        width: 200,
+        placeholder: '汇款日期',
+        dealParam(value: string) {
+          const [beginDate, endDate] = value ? value.split('-') : [null, null]
+            return {
+              beginDate : beginDate ? Number(new Date(String(beginDate).slice(0, 4) + '-'
+              + String(beginDate).slice(4, 6) + '-' +
+              String(beginDate).slice(6, 8)).getTime() - (8 * 60 * 60 * 1000)) : null,
+              endDate : endDate ? Number(new Date(String(endDate).slice(0, 4) + '-'
+              + String(endDate).slice(4, 6) + '-' +
+              String(endDate).slice(6, 8)).getTime() + (16 * 60 * 60 * 1000 - 1)) : null,
+            }
+          }
+      },
+
+      {
+        name: 'pageIndex',
+        defaultValue: 1
+      },
+
+      {
+        name: 'pageSize',
+        defaultValue: 20
+      }
+    ]
+  }
+
+  enums = [
+    'typeList',
+    'approvalStatusList',
+  ]
+
+  get formatNumber() {
+    return formatNumber
+  }
+
+  get columns() {
+    const two: any = [
+      { title: '序号', key: 'id' , maxWidth: 65},
+      { title: '订单号', key: 'id' , maxWidth: 65},
+      { title: '公司名称', key: 'companyName'},
+      { title: '业务类型', key: 'approvalStatus', maxWidth: 65, editor: 'enum' },
+      { title: '汇款人姓名', key: 'accountName', maxWidth: 60 },
+      { title: '汇款账户名称', key: 'accountName' },
+      { title: '汇款方式', key: 'approvalStatus', width: 65, editor: 'enum' },
+      { title: '汇款交易流水', key: 'accountName', },
+      { title: '汇款金额', key: 'amount', maxWidth: 100,
+        render: (hh: any, { row: { amount } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
         const html = String(amount)
@@ -117,281 +196,124 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
             return <span class='datetime' v-html={amount}></span>
           }
         }
-        // return amount == null ? <span class='datetime' v-html='-'></span> : <span class='datetime' v-html={amount}></span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '汇款日期',
-      key: 'remittanceDate',
-      align: 'center',
-      render: (hh: any, { row: { remittanceDate } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        const html = moment(remittanceDate).format(timeFormat)
-        return remittanceDate == null ? <span class='datetime' v-html='-'></span> : <span class='datetime' v-html={html}></span>
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '状态',
-      key: 'statusText',
-      width: 100,
-      align: 'center',
-      render: (hh: any, { row: { approvalStatus, statusText } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        if (approvalStatus == 0){
-          return <span class={`status-${0}`}>-</span>
-        } else if (approvalStatus == 1) {
-          return <span class={`status-${1}`}>待审核</span>
-        } else if (approvalStatus == 2) {
-          return <span class={`status-${2}`}>通过</span>
-        } else if (approvalStatus == 3) {
-          return <span class={`status-${3}`}>拒绝</span>
-        }
-        
-        /* tslint:enable */
-      }
-    },
-    {
-      title: '操作',
-      slot: 'spaction',
-      width: 100,
-      align: 'center',
-    }
-  ]
-  get cachedMap() {
-    return {
-      approvalStatus: this.approveStatusList,
-    }
+       }
+      },
+      { title: '汇款日期', key: 'remittanceDate', width: 75, editor: 'dateTime' },
+      { title: '汇款底单', key: 'imageList', },
+      // {
+      //   title: '汇款底单',
+      //   align: 'center',
+      //   width: 100,
+      //   render: (hh: any, { row: { imageList } }: any) => {
+      //     /* tslint:disable */
+      //     const h = jsxReactToVue(hh)
+      //     // const url = imageList.url
+      //     // console.log(url)
+      //     return (
+      //       <a
+      //         href="javascript:;"
+      //         on-click={this.onView.bind(this , imageList.url)}
+      //         class="operation">
+      //         查看
+      //       </a>
+      //     )
+      //     /* tslint:enable */
+      //   }
+      // },
+      { title: '状态', key: 'approvalStatus', width: 65, editor: 'enum' }
+    ]
+    const threeID = [
+      { title: '操作时间', key: 'remittanceDate', width: 75, editor: 'dateTime' },
+      { title: '操作人', key: 'imageList', width: 60 },
+      { title: '操作备注信息', key: 'imageList', },
+    ]
+    const threeN = [
+      { title: '操作', slot: 'action', width: 65 }
+    ]
+
+    return this.status == '1' ? [ ...two , ...threeN] :
+    [ ...two , ...threeID ] as ColumnExtra[]
   }
 
-  get tableData() {
-    const cachedMap = this.cachedMap
-    const list = (this.list || []).map((it: any) => {
-      return {
-        ...it,
-        statusText: it.approveStatus,
-      }
+  // mounted() {
+  //   this.pay = this.statusList[0].value
+  // }
+
+  done() {
+    this.refresh()
+  }
+
+  refresh() {
+    this.listPage.update()
+  }
+
+   // 新增
+  view(id: number, applyAmount: any) {
+    this.addOrUpdateVisible = true
+    this.$nextTick(() => {
+      const myThis: any = this
+      myThis.$refs.addOrUpdate.init(id , applyAmount)
     })
-    return list
-  }
-  // 新建
-  edit(id: number) {
-    const params: any = id > 0 ? { id } : {}
-    this.$router.push({ name: 'finance-examine-edit', params })
   }
 
-  created() {
-    // this.formatTime()
-
-    if ( this.showTime.length < 2 ) {
-      this.showTime = [new Date(`${years}/${months}/1`) , new Date(nextMonthFirstDay.getTime() - oneDay)]
-    }
+  // 查看图片
+  onView(url: string) {
+    this.viewerImage = url
+    this.viewerShow = true
   }
 
-  mounted() {
 
-    this.updateQueryByParam()
+  // @Watch('status')
+  // watchstatus(pay: any) {
+  //   this.listPage.query.status = pay
+  //   this.$router.push({
+  //     name: 'finance-payment',
+  //     params: pay == defaultPay ? {} : { pay }
+  //   })
+  // }
 
-    !!this.query.beginDate ? this.$set(this.showTime, 0, new Date(moment(this.query.beginDate).format(timeFormat)))
-     : ''
-    !!this.query.endDate ? this.$set(this.showTime, 1,  new Date(moment(this.query.endDate).format(timeFormat)))
-    : ''
-    // console.log(this.query.endDate)
+  // @Watch('pay')
+  // watchPay(pay: any) {
+  //   this.listPage.query.status = pay
+  // }
+  @Watch('status')
+  watchstatus(pay: any) {
+    this.$router.push({
+      name: 'finance-examine-newindex',
+      params: pay == defaultPay ? {} : { pay }
+    })
   }
 
-  formatTime() {
-    this.showTime = [new Date(`${years}/${months}/1`), new Date(nextMonthFirstDay.getTime() - oneDay)]
-  }
-
-  dateChange(data: any) {
-     // 获取时间戳
-     !!data[0] ? (this.query.beginDate = new Date(data[0]).getTime() - 28800000) : this.query.beginDate = 0
-     !!data[1] ? (this.query.endDate = new Date(data[1]).getTime() + 57600000) : this.query.endDate = 0
-    //  console.log(data[1])
-  }
-
-  search() {
-    this.query.pageIndex = 1
-  }
-  reloadSearch() {
-    this.doSearch()
-  }
-  reset() {
-    this.resetQuery()
-    this.showTime = []
-  }
-
-  async doSearch() {
-    if (this.loading) {
-      return
-    }
-
-    this.oldQuery = { ...this.query }
-    this.updateUrl()
-    this.loading = true
-    // const query = clean({ ...this.query })
-    const query: any = {}
-    for (const [key, value] of Object.entries(this.oldQuery)) {
-      if (key != 'beginDate' && value != 0) {
-        query[key] = value
-      }
-      if (key != 'endDate' && value != 0) {
-        query[key] = value
-      }
-    }
-    try {
-      // 获取列表页
-      const { data: {
-        items: list,
-        totalCount: total,
-        approvalStatusList: approvalStatusList,
-      } } = await queryList(query)
-      this.list = list
-      this.total = total
-      this.approveStatusList = approvalStatusList
-    } catch (ex) {
-      this.handleError(ex)
-    } finally {
-      this.loading = false
-    }
-  }
-
-  @Watch('query', { deep: true })
-  watchQuery() {
-    if (this.query.pageIndex == this.oldQuery.pageIndex) {
-      this.query.pageIndex = 1
-    }
-    this.doSearch()
+  @Watch('pay')
+  watchPay(pay: any) {
+    this.listPage.query.status = pay
   }
 }
 </script>
 
 <style lang="less" scoped>
-.form {
-  .input,
-  /deep/ .ivu-select {
-    width: 100px;
-    margin-left: 8px;
-    &:first-child {
-      margin-left: 0;
-    }
-  }
-
-  .input-corp-id {
-    width: 80px;
-  }
+.settlement-price-list {
+  text-align: left;
 }
 
-.btn-search,
-.btn-reset {
-  margin-left: 8px;
-}
-.page-wrap {
-  margin: 20px 0 18px;
-  text-align: center;
-}
-.Add-Inp {
-  width: 100%;
-  height: 60px;
-  line-height: 60px;
-  font-size: 15px;
-}
-.Add-Inp span {
-  display: inline-block;
-  width: 7%;
-  text-align: right;
-  margin-right: 4%;
-}
-.Add-Inp input {
-  display: inline-block;
-}
-.button2 {
-  width: 6%;
-  height: 40px;
-  margin-left: 5%;
-}
-.page-f {
-  margin-top: 10px;
-  font-size: 15px;
-}
-.bge {
-  background: #fff;
-  padding: 5px;
-}
-.info {
-  width: 35%;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  position: absolute;
-  top: 20%;
-  left: 20%;
-  font-size: 14px;
-  z-index: 10;
-}
-.info-ver {
-  width: 100%;
-  height: 43px;
-  line-height: 43px;
-  padding-left: 3%;
-  border-bottom: 1px solid #ccc;
-}
-.info-ver .info-Icon {
-  float: right;
-  margin-right: 3%;
-  font-weight: bold;
-  margin-top: 10px;
-}
-.info-type {
-  padding: 17px;
-}
-.info-type-t {
-  width: 100%;
-  height: 50px;
-  line-height: 50px;
-}
-.info-type-t div {
-  display: inline-block;
-  width: 50%;
-}
-.info-type-t div span {
-  margin-left: 10%;
-}
-.info-type-t .ivu-radio-group {
-  margin-left: 5%;
-}
-.info-inp {
-  margin-left: 5%;
-}
-.table {
-  margin-top: 16px;
-  /deep/ .status-2,
-  /deep/ .aptitude-status-3 {
-    color: #19be6b;
-  }
-  /deep/ .aptitude-status-2 {
-    color: #000;
-  }
-  /deep/ .aptitude-status-4 {
-    color: #ed4014;
-  }
-  /deep/ .ivu-table-cell > span:only-child:empty {
-    &::before {
-      content: '-';
-    }
+.price-table {
+  margin: 4px 0;
+  /deep/ th,
+  /deep/ td {
+    height: 24px;
+    background-color: #fff !important;
   }
 }
-// .info-type-inp span {
-//   margin-left: 1%;
-//   color: #53A1F3;
-//   cursor: pointer;
-//   text-decoration: underline;
-// }
-// .info-type Button {
-//   margin-top: 2%;
-//   margin-left: 24%;
-// }
-  </style>
+/deep/ .ivu-input {
+  margin-bottom: 15px;
+}
+/deep/ .ivu-select {
+  margin-bottom: 15px;
+}
+/deep/ .ivu-btn {
+  margin-bottom: 15px;
+}
+/deep/ .ivu-page .ivu-select {
+  margin-bottom: 0;
+}
+</style>

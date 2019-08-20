@@ -42,7 +42,8 @@
         <a style='margin-left: 5px;' v-for='(item,index) in row.videoDetails' :key='index'>{{item.videoName}} ({{item.videoLength}})s</a>
       </template>
       <template  slot="action" slot-scope="{row}" >
-        <a style='margin-right: 6px;' v-show='row.approvalStatus == 2' @click="change( row.id , row )">审核</a>
+        <router-link v-if='row.approvalStatus == 2' @click.native="localitem( row.id , row , index )"  :to="{ name: 'order-supervision-detail', params: { id: row.id} }">审核</router-link>
+        <!-- <a style='margin-right: 6px;' v-show='row.approvalStatus == 2' @click="change( row.id , row )">审核</a> -->
         <a style='margin-right: 6px;' v-show='row.approvalStatus == 4' @click="change( row.id , row )">恢复</a>
         <router-link v-if='row.approvalStatus != 2'  :to="{ name: 'order-supervision-detail', params: { id: row.id} }">详情</router-link>
       </template>
@@ -282,6 +283,19 @@ export default class IndexPage extends ViewBase {
 
   onInspect({ query }: any) {
     this.query = query
+  }
+
+  mounted() {
+    this.listPage.query.status = 2
+  }
+
+  localitem(id: number, row: any , index: any) {
+    const infos: any = {
+      index,
+      pageidx: this.query.pageIndex,
+      pagese: this.query.pageSize
+    }
+    sessionStorage.setItem('supinfo' + id, JSON.stringify(infos))
   }
 
   @Watch('status')
