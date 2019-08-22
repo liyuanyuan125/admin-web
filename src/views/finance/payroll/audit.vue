@@ -22,7 +22,7 @@
           type="primary"
           class="button-audit"
           :disabled="!(selectedIds.length > 0)"
-          @click="auditVisible = true"
+          @click="pay(selectedIds)"
         >批量审批</Button>
       </template>
 

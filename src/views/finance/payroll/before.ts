@@ -153,5 +153,5 @@ export const commoncolums: any = [
   { title: '收款账户名', align: 'center', key: 'accountName', minWidth: 90 },
   { title: '收款银行', align: 'center', key: 'accountBank', minWidth: 120 },
   { title: '收款账号', align: 'center', key: 'accountNumber',  minWidth: 120 },
-  { title: '操作', align: 'center', slot: 'action',  minWidth: 120 }
+  { title: '申请付款金额', align: 'center', slot: 'action',  minWidth: 120 }
 ]

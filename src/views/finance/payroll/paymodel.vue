@@ -72,9 +72,9 @@ export default class ComponentMain extends ViewBase {
     const list = (this.items || []).map((it: any) => {
       return {
         ...it,
-        invoiceContentList: cachedMap.invoiceContentList[it.invoiceContentCode],
-        invoiceTypeList: cachedMap.invoiceTypeList[it.invoiceType],
-        approvalTime: it.approvalTime ? moment(it.approvalTime).format('YYYY/MM/DD') : ''
+        invoiceContentCode: cachedMap.invoiceContentList[it.invoiceContentCode],
+        invoiceType: cachedMap.invoiceTypeList[it.invoiceType],
+        approvalTime: it.approvalTime ? moment(it.approvalTime).format('YYYY/MM/DD hh:mm:ss') : ''
       }
     })
     return list
@@ -90,6 +90,9 @@ export default class ComponentMain extends ViewBase {
       this.invoiceTypeList = invoiceTypeList
       this.invoiceContentList = invoiceContentList
       this.items = items || []
+      this.items.forEach((it: any) => {
+        this.$set(this.tablemoney, it.id, it.mayApplyAmount)
+      })
     } catch (ex) {
       this.handleError(ex)
     }
