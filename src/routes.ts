@@ -193,6 +193,16 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  // 客户管理 - 广告主管理 - 审核
+  {
+    path: '/client/ggiser/edit/:id?',
+    name: 'client-ggiser-edit',
+    component: () => import('./views/client/ggiser/edit.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
   // 客户管理 - 公司管理 - 添加、编辑
   {
     path: '/client/corp/edit/:id?',
@@ -207,16 +217,6 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   },
 
   // 客户管理 - 公司管理 - 详情
-  {
-    path: '/client/corp/detail/:id?',
-    name: 'client-corp-detail',
-    component: () => import('./views/client/corp/detail.vue'),
-    meta: {
-      authKey: 'customer.companies:info'
-    }
-  },
-
-   // 客户管理 - 公司管理 - 详情
   {
     path: '/client/corp/detail/:id?',
     name: 'client-corp-detail',
