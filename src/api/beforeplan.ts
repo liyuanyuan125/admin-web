@@ -6,7 +6,12 @@ import { mockGet, tid, title20, typeInt, dateRange } from './mock'
 //  列表
 export async function queryList(query: any) {
   const data = await get('/xadvert/plans', query)
-  return data
+  const result = {
+    ...data,
+    advertTypeCodeList: [],
+    channelCodeList: [],
+  }
+  return result
 }
 
 //  查看详情
@@ -64,12 +69,6 @@ export async function conpanylist(query: any) {
   return data
 }
 
-// // 添加影片列表
-// export async function filmList(query: any) {
-//   const data = await get(`/xadvert/plans/search-movie` , query)
-//   return data
-// }
-
 // 添加影片列表
 export async function filmList(query: any) {
   const data = await get(`/movie/` , query)
@@ -101,7 +100,7 @@ export async function revuew(id: any ) {
   return data
 }
 
-// 修改应结金额
+// 修改应结金额.
 // http://yapi.aiads-dev.com/project/140/interface/api/5381
 export async function needamount(id: any, query: any) {
   const data = await post(`/xadvert/plans/${id}/set-need-pay-amount`, query )
@@ -110,16 +109,29 @@ export async function needamount(id: any, query: any) {
 
 // 核对广告计划
 // http://yapi.aiads-dev.com/project/140/interface/api/5380
-export async function check(id: any, query: any) {
-  const data = await post(`/xadvert/plans/${id}/check`, query )
-  return data
-}
+// export async function check(id: any, query: any) {
+//   const data = await post(`/xadvert/plans/${id}/check`, query )
+//   return data
+// }
 
-// 商务审核方案（设置定金）
-// http://yapi.aiads-dev.com/project/140/interface/api/5379
+// // 商务审核方案（设置定金）
+// // http://yapi.aiads-dev.com/project/140/interface/api/5379
+// export async function business(id: any, query: any) {
+//   const data = await post(`/xadvert/plans/{id}/business-approve_1564030188070`, query )
+//   return data
+// }
+
+// 设置定金跟应结金额
+// http://yapi.aiads-dev.com/project/140/interface/api/5876
 export async function business(id: any, query: any) {
-  const data = await post(`/xadvert/plans/{id}/business-approve_1564030188070`, query )
+  const data = await post(`/xadvert/plans/${id}/set-discount-deposit`, query )
   return data
 }
 
+// 补单操作
+// http://yapi.aiads-dev.com/project/140/interface/api/5981
+export async function addList(id: any) {
+  const data = await post(`/xadvert/plans/${id}/confirm-supplement` )
+  return data
+}
 

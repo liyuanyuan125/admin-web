@@ -19,7 +19,7 @@
         </Row>
         <Row>
           <Col span="2"><div>营业执照</div></Col>
-          <Col span="5"><span class='ingbo' @click='onView(detail.customerId)'> </span></Col>
+          <Col span="5"><span class='ingbo' @click='onView(detail.licenseFileUrl)'><img :src="detail.licenseFileUrl" alt=""></span></Col>
           <Col span="2"><div>客户ID</div></Col>
           <Col span="5"><span>{{detail.customerId}}</span></Col>
           <Col span="2"><div>客户名称</div></Col>
@@ -38,7 +38,7 @@
           <Col span="2"><div>主体资质</div></Col>
           <Col span="5"><span class='ingbo' @click='onView()'> </span></Col>
           <Col span="2"><div>可选资质</div></Col>
-          <Col span="12"><span class='ingbo' @click='onView(detail.customerId)'> </span></Col>
+          <Col span="12"><span class='ingbo' v-for='(itd,index) in detail.grantFileIds'><img @click='onView(itd.fileUrl)' :src="itd.fileUrl" alt=""></span></Col>
         </Row>
       </div>
       <div class='titop'>广告片素材</div>
@@ -53,15 +53,15 @@
         </Row>
         <Row>
           <Col span="2"><div>是否已转制</div></Col>
-          <Col span="5"><span>{{detail.specification}}s/{{detail.length}}s</span></Col>
+          <Col span="5"><span>{{detail.translated == 1 ? '已转制' : '未转制'}}</span></Col>
           <Col span="2"><div>转制费</div></Col>
           <Col span="5"><span>{{detail.transFee}}</span></Col>
           <Col span="2"><div>广告片(小样)</div></Col>
-          <Col span="5"><span style='cursor: pointer;' @click='onView(detail.customerId)'>查看</span></Col>
+          <Col span="5"><span style='cursor: pointer;' @click='onView(detail.srcFiledAddr)'>查看</span></Col>
         </Row>
         <Row>
           <Col span="2"><div>广告下载地址</div></Col>
-          <Col span="10"><span>hahahhahahahhagyuhbjjnjnjkjkjkjkjkjnjkkjkkjjkjkjkk</span></Col>
+          <Col span="10"><span>{{detail.srcFileUrl}}</span></Col>
         </Row>
         <!-- <Row>
           <Col span="12">
@@ -98,7 +98,7 @@
       <Row  class='detail-content' v-if='showStatus'>
         <Row style='padding: 15px 0;'>仅公司内容运营人员使用:</Row>
         <Row>
-          <Input style="width:240px" type='textarea' v-model="dataForm.refuseReason"></Input>
+          <Input style="width:240px" type='textarea' v-model="dataForm.annotationInfo"></Input>
         </Row>
         <Row style='padding: 15px 0;'>
           <Button  type="primary" @click="beizhuSubmit">提交</Button>
@@ -160,7 +160,7 @@
 import { Component, Watch , Mixins  } from 'vue-property-decorator'
 import moment from 'moment'
 import ViewBase from '@/util/ViewBase'
-import { queryList , queryItem , sapproval , dataFrom , dels , addvideo } from '@/api/planfilm'
+import { queryList , queryItem , sapproval , dataFrom , dels , addvideo , getVideoIds } from '@/api/planfilm'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import { slice , clean } from '@/fn/object'
@@ -180,8 +180,10 @@ const defQuery = {
 }
 
 const dataForm = {
-  refuseReason: '',
-  agree: true
+  refuseReason: '', // 审核拒绝原因
+  agree: true, // 审核结果
+  annotationInfo: '', // 批注
+  fixedRefuseReasons: [] // 审核原因数组
 }
 
 const getName = (ptypeCode: any, list: any[]) => {
@@ -228,10 +230,8 @@ export default class Main extends ViewBase {
 
   addOrUpdateVisible = false
 
-  // 需要跳过的数量
-  jumpNum: any = 0
-  // 读取的下一个数据列表
-
+  // 存储数据需要调用接口的参数列
+  videoIdsList: any = {}
   dataList: any = [
     {
       value: '行业资质',
@@ -325,10 +325,11 @@ export default class Main extends ViewBase {
 
   applyTime = ''
 
-//   // 审核
+  // 审核
   dataForm: any = { ...dataForm }
 
   mounted() {
+    // 审核原因列表
     this.columnsReason = [
       { title: '审核内容', key: 'ptypeName',  align: 'center' },
       { title: '审核拒绝的原因', key: 'stypeName',   align: 'center' },
@@ -494,22 +495,58 @@ export default class Main extends ViewBase {
   }
 
   // 提交并继续审核
-  nextSubmit() {
-    const dataItem: any = JSON.parse((sessionStorage.getItem('info' + this.$route.params.id) as any))
-    if (dataItem.pageidx == 1) {
-      this.jumpNum = dataItem.index
-    } else {
-      this.jumpNum = ((dataItem.pageidx) * dataItem.pagese) + dataItem.index
+  async nextSubmit() {
+    const dataItem: any = JSON.parse((sessionStorage.getItem('info') as any))
+    this.videoIdsList = {
+      query: dataItem.query, // 广告片id或者名称
+      companyId: dataItem.companyId, // 公司Id
+      status: dataItem.status, // 状态
+      translated: dataItem.translated, // 1：转制；2：未转制
+      skip: dataItem.skip, // 跳过的记录数
+      maxSize: dataItem.maxSize, // 最大返回数据量
+    }
+    // 如果没有videoIds存储值则代表没有请求过ids列表
+    if (JSON.parse((sessionStorage.getItem('videoIds') as any)) == null ) {
+      try {
+        const res =  await getVideoIds (this.videoIdsList) // 请求500的存储总量
+        const videoIds = res.data.items || []
+        sessionStorage.setItem('videoIds', JSON.stringify(videoIds.slice(1))) // 存储总量-1
+        this.$router.push({ name : 'gg-film-detail' , params: {id: videoIds[0] , status: '1'} })
+      } catch (ex) {
+        this.handleError(ex)
+      }
+    } else { // 如果有则是详情-详情页面
+      const dataItemIds: any = JSON.parse((sessionStorage.getItem('videoIds') as any))
+      if (dataItemIds.length > 0 && dataItemIds.length < 499) { // 判断剩余存储的数值是否超过存储总量
+        sessionStorage.removeItem('videoIds') // 先清空原存值，在存新值
+        sessionStorage.setItem('videoIds', JSON.stringify(dataItemIds.slice(1))) // 存储新值
+        this.$router.push({ name : 'gg-film-detail' , params: {id: dataItemIds[0] , status: '1'} })
+      }
     }
   }
   // 提交审核拒绝原因
-  dataFormSubmit() {
-
+  async dataFormSubmit() {
+    const query: any = {
+      refuseReason: this.dataForm.refuseReason ,
+      agree: this.dataForm.agree,
+      fixedRefuseReasons: this.dataForm.fixedRefuseReasons
+    }
+    try {
+      const res =  await sapproval (this.$route.params.id, query)
+      this.$router.push({ name : 'gg-film' })
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
 
   // 提交批注
-  beizhuSubmit() {
-
+  async beizhuSubmit() {
+    try {
+      const res =  await sapproval (this.$route.params.id , {annotationInfo : this.dataForm.annotationInfo})
+      this.$router.push({ name : 'gg-film' })
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
 
   dlgeditdone() {
@@ -713,7 +750,6 @@ export default class Main extends ViewBase {
   height: 35px;
 }
 .ingbo {
-  border: 1px solid #ccc;
   width: 80px;
   height: 80px;
   margin-right: 10px;

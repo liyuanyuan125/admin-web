@@ -16,24 +16,21 @@
       :columns="columns"
       ref="listPage"
     >
-     <!--  <template slot="acts">
-        <Button
-          type="success"
-          icon="md-add-circle"
-          :to="{
-            name: 'finance-examine-edit'
-          }"
-        >新建</Button>
-      </template> -->
+      <template slot="sort" slot-scope="{ row , index }">
+        <div class="row-acts">
+         <span>{{index + 1}}</span>
+        </div>
+      </template>
       <template slot="action" slot-scope="{ row }">
         <div class="row-acts">
-         <span style='color: #2b85e4;cursor: pointer;' @click='view(row.id , row.applyAmount)'>确认汇款</span>
+         <span style='color: #2b85e4;cursor: pointer;' @click='view(row.id)'>确认汇款</span>
         </div>
       </template>
     </ListPage>
     <Modal v-model="viewerShow" title="查看图片" width="500" height="500">
       <img style="width: 100%;" :src="viewerImage" alt sizes srcset>
     </Modal>
+    <DlgEdit  ref="addOrUpdate" v-if="addOrUpdateVisible" @done="done"/>
 
   </div>
 </template>
@@ -49,6 +46,8 @@ import moment from 'moment'
 
 import EditDialog, { Field } from '@/components/editDialog'
 import { formatNumber } from '@/util/validateRules'
+import DlgEdit from './dlgEdit.vue'
+
 
   const statusList: any = [
     { name: '待审核', value: '1' },
@@ -61,6 +60,7 @@ import { formatNumber } from '@/util/validateRules'
   components: {
     ListPage,
     EditDialog,
+    DlgEdit
   }
 })
 export default class IndexPage extends ViewBase {
@@ -93,7 +93,7 @@ export default class IndexPage extends ViewBase {
       },
 
       {
-        name: 'companyName1',
+        name: 'id',
         defaultValue: '',
         type: 'input',
         width: 168,
@@ -101,7 +101,7 @@ export default class IndexPage extends ViewBase {
       },
 
       {
-        name: 'companyName2',
+        name: 'accountName',
         defaultValue: '',
         type: 'input',
         width: 168,
@@ -109,7 +109,7 @@ export default class IndexPage extends ViewBase {
       },
 
       {
-        name: 'invoiceContent',
+        name: 'remittanceType',
         defaultValue: 0,
         type: 'select',
         width: 108,
@@ -117,7 +117,7 @@ export default class IndexPage extends ViewBase {
       },
 
       {
-        name: 'companyName3',
+        name: 'companyName',
         defaultValue: '',
         type: 'input',
         width: 168,
@@ -125,7 +125,7 @@ export default class IndexPage extends ViewBase {
       },
 
       {
-        name: 'companyName',
+        name: 'remittanceNo',
         defaultValue: '',
         type: 'input',
         width: 168,
@@ -164,8 +164,9 @@ export default class IndexPage extends ViewBase {
   }
 
   enums = [
-    'typeList',
-    'approvalStatusList',
+    'statusList',
+    'remittanceTypeList',
+    'businessTypeList'
   ]
 
   get formatNumber() {
@@ -174,14 +175,14 @@ export default class IndexPage extends ViewBase {
 
   get columns() {
     const two: any = [
-      { title: '序号', key: 'id' , maxWidth: 65},
+      { title: '序号', slot: 'sort' , maxWidth: 65},
       { title: '订单号', key: 'id' , maxWidth: 65},
       { title: '公司名称', key: 'companyName'},
-      { title: '业务类型', key: 'approvalStatus', maxWidth: 65, editor: 'enum' },
+      { title: '业务类型', key: 'businessType', maxWidth: 65, editor: 'enum' },
       { title: '汇款人姓名', key: 'accountName', maxWidth: 60 },
-      { title: '汇款账户名称', key: 'accountName' },
-      { title: '汇款方式', key: 'approvalStatus', width: 65, editor: 'enum' },
-      { title: '汇款交易流水', key: 'accountName', },
+      { title: '汇款账户名称', key: 'accountNumber' },
+      { title: '汇款方式', key: 'remittanceType', width: 65, editor: 'enum' },
+      { title: '汇款交易流水', key: 'remittanceNo', },
       { title: '汇款金额', key: 'amount', maxWidth: 100,
         render: (hh: any, { row: { amount } }: any) => {
         /* tslint:disable */
@@ -199,33 +200,31 @@ export default class IndexPage extends ViewBase {
        }
       },
       { title: '汇款日期', key: 'remittanceDate', width: 75, editor: 'dateTime' },
-      { title: '汇款底单', key: 'imageList', },
-      // {
-      //   title: '汇款底单',
-      //   align: 'center',
-      //   width: 100,
-      //   render: (hh: any, { row: { imageList } }: any) => {
-      //     /* tslint:disable */
-      //     const h = jsxReactToVue(hh)
-      //     // const url = imageList.url
-      //     // console.log(url)
-      //     return (
-      //       <a
-      //         href="javascript:;"
-      //         on-click={this.onView.bind(this , imageList.url)}
-      //         class="operation">
-      //         查看
-      //       </a>
-      //     )
-      //     /* tslint:enable */
-      //   }
-      // },
-      { title: '状态', key: 'approvalStatus', width: 65, editor: 'enum' }
+      // { title: '汇款底单', key: 'receipt', },
+      {
+        title: '汇款底单',
+        align: 'center',
+        width: 100,
+        render: (hh: any, { row: { receipt } }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          return (
+            <a
+              href="javascript:;"
+              on-click={this.onView.bind(this , receipt)}
+              class="operation">
+              查看
+            </a>
+          )
+          /* tslint:enable */
+        }
+      },
+      { title: '状态', key: 'status', width: 65, editor: 'enum' }
     ]
     const threeID = [
-      { title: '操作时间', key: 'remittanceDate', width: 75, editor: 'dateTime' },
-      { title: '操作人', key: 'imageList', width: 60 },
-      { title: '操作备注信息', key: 'imageList', },
+      { title: '操作时间', key: 'approvalTime', width: 75, editor: 'dateTime' },
+      { title: '操作人', key: 'approvalName', width: 60 },
+      { title: '操作备注信息', key: 'rejectReason', },
     ]
     const threeN = [
       { title: '操作', slot: 'action', width: 65 }
@@ -235,10 +234,6 @@ export default class IndexPage extends ViewBase {
     [ ...two , ...threeID ] as ColumnExtra[]
   }
 
-  // mounted() {
-  //   this.pay = this.statusList[0].value
-  // }
-
   done() {
     this.refresh()
   }
@@ -247,12 +242,12 @@ export default class IndexPage extends ViewBase {
     this.listPage.update()
   }
 
-   // 新增
-  view(id: number, applyAmount: any) {
+   // 确认汇款
+  view(id: number) {
     this.addOrUpdateVisible = true
     this.$nextTick(() => {
       const myThis: any = this
-      myThis.$refs.addOrUpdate.init(id , applyAmount)
+      myThis.$refs.addOrUpdate.init(id)
     })
   }
 
@@ -262,20 +257,6 @@ export default class IndexPage extends ViewBase {
     this.viewerShow = true
   }
 
-
-  // @Watch('status')
-  // watchstatus(pay: any) {
-  //   this.listPage.query.status = pay
-  //   this.$router.push({
-  //     name: 'finance-payment',
-  //     params: pay == defaultPay ? {} : { pay }
-  //   })
-  // }
-
-  // @Watch('pay')
-  // watchPay(pay: any) {
-  //   this.listPage.query.status = pay
-  // }
   @Watch('status')
   watchstatus(pay: any) {
     this.$router.push({

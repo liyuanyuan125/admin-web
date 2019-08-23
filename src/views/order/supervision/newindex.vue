@@ -41,7 +41,7 @@
       <template  slot="video" slot-scope="{row}" >
         <a style='margin-left: 5px;' v-for='(item,index) in row.videoDetails' :key='index'>{{item.videoName}} ({{item.videoLength}})s</a>
       </template>
-      <template  slot="action" slot-scope="{row}" >
+      <template  slot="action" slot-scope="{row , index}" >
         <router-link v-if='row.approvalStatus == 2' @click.native="localitem( row.id , row , index )"  :to="{ name: 'order-supervision-detail', params: { id: row.id} }">审核</router-link>
         <!-- <a style='margin-right: 6px;' v-show='row.approvalStatus == 2' @click="change( row.id , row )">审核</a> -->
         <a style='margin-right: 6px;' v-show='row.approvalStatus == 4' @click="change( row.id , row )">恢复</a>
@@ -105,6 +105,9 @@ export default class IndexPage extends ViewBase {
   query: any = null
 
   selectedIds = [] as number[]
+
+  // 跳转数量
+  jumpNum: any = 0
 
   get astatus() {
     return this.query && this.query.status
@@ -290,12 +293,25 @@ export default class IndexPage extends ViewBase {
   }
 
   localitem(id: number, row: any , index: any) {
+    // 列表点击清空本地存储值
+    sessionStorage.clear()
+    if (this.query.pageIndex == 1) {
+      this.jumpNum = index
+    } else {
+      this.jumpNum = ((this.query.pageIndex) * this.query.pageSize) + index
+    }
     const infos: any = {
       index,
       pageidx: this.query.pageIndex,
-      pagese: this.query.pageSize
+      pagese: this.query.pageSize,
+      companyId: this.query.companyId,
+      cinemaId: this.query.cinemaId,
+      videoId: this.query.videoId,
+      status: this.query.status,
+      skip: this.jumpNum, // 跳过的记录数
+      maxSize: 500, // 最大返回数据量
     }
-    sessionStorage.setItem('supinfo' + id, JSON.stringify(infos))
+    sessionStorage.setItem('supinfo', JSON.stringify(infos))
   }
 
   @Watch('status')

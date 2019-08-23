@@ -21,7 +21,7 @@ dlgEditDone          </Select>
               :label="it.text">{{it.text}}</Option>
           </Select>
           <Select v-model="query.xadvertType" placeholder="广告类型" style='width: 200px;' clearable>
-            <Option v-for="it in planTypeList" v-if='it.key != 0' :key="it.key" :value="it.key"
+            <Option v-for="it in advertTypeCodeList" v-if='it.key != 0' :key="it.key" :value="it.key"
               :label="it.text">{{it.text}}</Option>
           </Select>
            <Select
@@ -128,7 +128,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   // 状态列表
   statusList: any = []
   // 计划状态列表
-  planTypeList: any = []
+  advertTypeCodeList: any = []
   // 计划列表
   planlist: any = []
   // 广告主公司列表
@@ -285,12 +285,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         items: list,
         totalCount: total,
         statusList: statusList,
-        planTypeList: planTypeList
+        advertTypeCodeList: advertTypeCodeList
       } } = await queryList(query)
       this.list = list
       this.total = total
       this.statusList = statusList
-      this.planTypeList = planTypeList
+      this.advertTypeCodeList = advertTypeCodeList
     // 广告计划列表
     const plandata = await planlist({pageSize: 100000})
     this.planlist = plandata.data.items

@@ -1305,9 +1305,9 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   //   }
   // },
 
-  // 映前广告计划 - 详情
+  // 映前广告计划 - 详情 ifs 0 为详情查看页面 1为非详情查看页面
   {
-    path: '/order/beforeplan/detail/:id/:status',
+    path: '/order/beforeplan/detail/:id/:status/:ifs',
     name: 'order-beforeplan-detail',
     component: () => import('./views/order/beforeplan/detail.vue'),
     meta: {

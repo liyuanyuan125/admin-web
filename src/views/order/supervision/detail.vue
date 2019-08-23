@@ -191,7 +191,8 @@ export default class Main extends ViewBase {
     }
   ]
 
-  jumpNum: any = 0
+  // 存储数据需要调用接口的参数列
+  videoIdsList: any = {}
 
 
 
@@ -209,43 +210,64 @@ export default class Main extends ViewBase {
     this.statusform.status = 1
   }
 
-  // 审核确定按钮
-  change(dataForms: any) {
-    const myThis: any = this
-    myThis.$refs[dataForms].validate(async ( valid: any ) => {
-      if (valid) {
-        if (this.statusform.status == 1) {
-          try {
-            const res =  await okpass (this.$route.params.id , {orderIds : this.dataForm.orderIds})
-            this.$router.push({ name : 'order-supervision' })
-          } catch (ex) {
-            this.handleError(ex)
-          }
-        } else if (this.statusform.status == 2) {
-          try {
-            const res =  await refuse (this.$route.params.id , {closeReason : this.dataForm.closeReason})
-            this.$router.push({ name : 'order-supervision' })
-          } catch (ex) {
-            this.handleError(ex)
-          }
-        }
-      }
-    })
-  }
+  // // 审核确定按钮
+  // change(dataForms: any) {
+  //   const myThis: any = this
+  //   myThis.$refs[dataForms].validate(async ( valid: any ) => {
+  //     if (valid) {
+  //       if (this.statusform.status == 1) {
+  //         try {
+  //           const res =  await okpass (this.$route.params.id , {orderIds : this.dataForm.orderIds})
+  //           this.$router.push({ name : 'order-supervision' })
+  //         } catch (ex) {
+  //           this.handleError(ex)
+  //         }
+  //       } else if (this.statusform.status == 2) {
+  //         try {
+  //           const res =  await refuse (this.$route.params.id , {closeReason : this.dataForm.closeReason})
+  //           this.$router.push({ name : 'order-supervision' })
+  //         } catch (ex) {
+  //           this.handleError(ex)
+  //         }
+  //       }
+  //     }
+  //   })
+  // }
 
   // 提交并继续审核
-  nextSubmit() {
+  async nextSubmit() {
     if (this.dataForm.orderIds.length != 0) {
       if (this.dataForm.reasonOrderIds.length == 0) {
         info('请选择未通过原因')
         return
       }
     }
-    const dataItem: any = JSON.parse((sessionStorage.getItem('supinfo' + this.$route.params.id) as any))
-    if (dataItem.pageidx == 1) {
-      this.jumpNum = dataItem.index
-    } else {
-      this.jumpNum = ((dataItem.pageidx) * dataItem.pagese) + dataItem.index
+    const dataItem: any = JSON.parse((sessionStorage.getItem('supinfo') as any))
+    this.videoIdsList = {
+      query: dataItem.query, // 广告片id或者名称
+      companyId: dataItem.companyId, // 公司Id
+      status: dataItem.status, // 状态
+      translated: dataItem.translated, // 1：转制；2：未转制
+      skip: dataItem.skip, // 跳过的记录数
+      maxSize: dataItem.maxSize, // 最大返回数据量
+    }
+    // 如果没有videoIds存储值则代表没有请求过ids列表
+    if (JSON.parse((sessionStorage.getItem('videoIds') as any)) == null ) {
+      try {
+        // const res =  await okpass (this.videoIdsList) // 请求500的存储总量
+        // const videoIds = res.data.items || []
+        // sessionStorage.setItem('videoIds', JSON.stringify(videoIds.slice(1))) // 存储总量-1
+        // this.$router.push({ name : 'order-supervision' , params: {id: videoIds[0]} })
+      } catch (ex) {
+        this.handleError(ex)
+      }
+    } else { // 如果有则是详情-详情页面
+      const dataItemIds: any = JSON.parse((sessionStorage.getItem('videoIds') as any))
+      if (dataItemIds.length > 0 && dataItemIds.length < 499) { // 判断剩余存储的数值是否超过存储总量
+        sessionStorage.removeItem('videoIds') // 先清空原存值，在存新值
+        sessionStorage.setItem('videoIds', JSON.stringify(dataItemIds.slice(1))) // 存储新值
+        this.$router.push({ name : 'order-supervision' , params: {id: dataItemIds[0]} })
+      }
     }
   }
 
