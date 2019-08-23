@@ -1,37 +1,31 @@
 <template>
-  <Select
-    v-model="inner"
-    :placeholder="placeholder"
-    filterable
-    clearable
-    class="power-select"
-    ref="ui"
-  >
-    <Option
-      v-for="it in list"
-      :key="it.id"
-      :value="it.id"
-      :label="it.shortName || it.name"
-      class="flex-box"
-    >
-      <span class="flex-1">{{it.shortName || it.name}}</span>
-      <i v-if="it.chainControlStatus == 2" class="offline">下架</i>
-    </Option>
-  </Select>
+  <div>
+    <Cascader
+     v-model='inner'
+     :data="businessParentTypeList"
+     :load-data="loadData"
+     :render-format="format"
+     ></Cascader>
+  </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { queryList } from '@/api/cinemaChain'
-
+import { codeList } from '@/api/ggsiter'
 import { brandSelect } from '@/api/clientBrand.ts'
+
+const isAllZero = (list: number[] | null) => (list || []).every(it => it == 0)
 
 @Component
 export default class BrandsSelect extends ViewBase {
   /**
    * 值本身，可以使用 v-model 进行双向绑定
    */
+
+  @Prop() value!: any
+
   @Prop() businessParentTypeList!: any
 
   /**
@@ -50,19 +44,44 @@ export default class BrandsSelect extends ViewBase {
 
   list: any[] = []
 
-  async mounted() {
+  mounted() {
+    this.init()
+  }
+
+  async init() {
     try {
-      const { data } = await brandSelect({
-        pageSize: 888888
-      })
-      let list: any[] = data.items || []
-      if (this.controlStatus > 0) {
-        list = list.filter(it => it.controlStatus == this.controlStatus)
-      }
-      this.list = list
+
     } catch (ex) {
       this.handleError(ex)
     }
+  }
+
+  loadData: any = async (item: any, callback: any) => {
+    item.loading = true
+    try {
+      const { data } = await codeList(item.value)
+      const query = [{
+        key: '0',
+        text: '本行业',
+        isFake: true
+      }].concat(data.dictionary)
+      item.children = query.map((it: any) => {
+        return {
+          value: it.key,
+          label: it.text
+        }
+      })
+      item.loading = false
+      callback()
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
+  format(labels: any[], selectedData: any[]) {
+    const list = selectedData.filter(it => it.value != '0').map(it => it.label)
+    const result = list.length > 0 ? list.join(' / ') : ''
+    return result
   }
 
   @Watch('value')

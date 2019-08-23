@@ -20,7 +20,6 @@
         <FormItem label="广告主身份" prop="name">
           <Row>
             <Col span="10">
-            {{item.but}}
               <RadioGroup v-model="item.but" type="button" size="large">
                 <Radio label="1">企业</Radio>
                 <Radio label="2">个人</Radio>
@@ -49,15 +48,20 @@
         <FormItem label="所属行业" prop="shortName">
           <Row>
             <Col span="8">
-              <Input v-model="item.shortName" />
+              <Industry v-model='item.shortName' :businessParentTypeList='businessParentTypeList' />
             </Col>
           </Row>
         </FormItem>
 
-        <FormItem label="二级行业" prop="shortName">
+        <CitySelectDialog
+          v-model="visible"
+          :cityIds.sync="cityIds"
+          @ok="onCitySelectOk"
+        />
+        <FormItem label="覆盖区域" prop="shortName">
           <Row>
             <Col span="8">
-              <Input v-model="item.shortName" />
+              <a @click="visible = true">设置覆盖区域</a>
             </Col>
           </Row>
         </FormItem>
@@ -95,6 +99,18 @@
         </Row>
         <Row>
           <Col span="5">
+            <FormItem label="推荐人电话">
+              <Input v-model="item.contact" />
+            </FormItem>
+          </Col>
+          <Col span="6" offset="1">
+            <FormItem label="推荐人姓名" prop="contactPhone">
+              <Input v-model="item.contactTel" />
+            </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col span="5">
             <FormItem label="资质" prop="qualificationType">
               <Select v-model="item.qualificationType" clearable>
                 <Option
@@ -111,6 +127,25 @@
             </FormItem>
           </Col>
         </Row>
+
+        <Row>
+           <!-- 动态添加资质审核 -->
+            <FormItem
+                style='width: 50%;'
+                v-for="(item, index) in item.qualificationArray"
+                v-if="item.status"
+                :key="index"
+                label="资质编号"
+                :prop="'qualificationArray.' + index + '.value'"
+                :rules="{required: true, message: '请填写资质编号', trigger: 'blur'}">
+                  <div style='display: flex'>
+                      <Input type="text" v-model="item.value" placeholder="请填写资质编号"></Input>
+                      <Button @click="handleAdd">追加</Button>
+                      <Button @click="handleRemove(index)">删除</Button>
+                  </div>
+            </FormItem>
+        </Row>
+        <!-- 上传图片 -->
         <Row class="upload">
           <Col span="12" style="margin-left: 88px">
             <Upload v-model="imageList" multiple :maxCount="3" accept="image/*" v-if="loadingShow" />
@@ -278,7 +313,8 @@ import { slice, clean } from '@/fn/object'
 import moment from 'moment'
 import { toast } from '@/ui/modal'
 import BrandPane from '../corp/brandPane'
-// import Industry from './industry.vue'
+import Industry from './industry.vue'
+import CitySelectDialog from '@/components/citySelectDialog'
 
 const timeFormat = 'YYYY-MM-DD'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
@@ -306,6 +342,15 @@ const defItem = {
   qualificationType: 'BL',
   qualificationCode: '',
   images: [],
+
+  // 动态表单
+  qualificationArray: [
+    {
+      value: '',
+      index: 1,
+      status: 1
+    }
+  ],
   types: [
     {
       typeCode: '',
@@ -328,48 +373,36 @@ const defItem = {
   components: {
     AreaSelect,
     PartBindCinema,
+    Industry,
     Upload,
-    BrandPane
+    BrandPane,
+    CitySelectDialog
   }
 })
 export default class Main extends ViewBase {
   title = ''
-
   loading = false
-
   loadingShow = false
-
   item: any = { ...defItem }
-
   shows = true
-
   show0 = true
-
+  visible = false
+  cityIds: any = []
   b: any = {}
-
   levelList = []
-
   customerTypeList = [] // 区代理
-
   bizUserList = []
-
   businessParentTypeList = [] // 一级行业
-
   typeList = []
-
   qualificationTypeList = []
-
   typeListSubMap = {}
-
   profitUnitList = []
-
   profitTypeList = []
-
   area: number[] = []
-
   businessDirector = []
-
   imageList = []
+
+  index = 1 // 资质编号长度
 
   options1 = {
     disabledDate(date: any) {
@@ -482,6 +515,21 @@ export default class Main extends ViewBase {
     this.business()
   }
 
+  // 删除资质编号
+  handleRemove(index: number) {
+    this.item.qualificationArray[index].status = 0
+  }
+
+  // 添加资质编号
+  handleAdd() {
+    this.index++
+    this.item.qualificationArray.push({
+        value: '',
+        index: this.index,
+        status: 1
+    })
+  }
+
   async business() {
     try {
       const res = await directorList()
@@ -538,6 +586,10 @@ export default class Main extends ViewBase {
     this.load()
   }
 
+  onCitySelectOk() {
+
+  }
+
   async load() {
     this.loading = true
     ; (this.$Spin as any).show()
@@ -551,7 +603,14 @@ export default class Main extends ViewBase {
         this.levelList = levelList
         this.qualificationTypeList = qualificationTypeList
         this.customerTypeList = customerTypeList
-        this.businessParentTypeList = businessParentTypeList
+        this.businessParentTypeList = businessParentTypeList.map((it: any) => {
+          return {
+            value: it.key,
+            label: it.text,
+            children: [],
+            loading: false
+          }
+        })
         this.item.types[0] = {
           typeCode: 'ads',
           typeCategoryCode: 'zhike'
