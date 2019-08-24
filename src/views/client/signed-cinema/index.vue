@@ -15,6 +15,8 @@ import { formatConversion } from '@/util/validateRules'
 import { cloneDeep } from 'lodash'
 import { confirm, info } from '@/ui/modal.ts'
 import moment from 'moment'
+import remoteSelectCinema from './remoteSelectCinema.vue'
+import remoteSelectCinemaCompany from './remoteSelectCinemaCompany.vue'
 
 @Component({
   components: {
@@ -28,41 +30,38 @@ export default class Main extends ViewBase {
 
   fetch = queryList
   filters: Filter[] = [
+
     {
       name: 'cinemaId',
-      defaultValue: '',
-      input: true,
-      width: 85,
-      placeholder: '影院ID'
+      defaultValue: 0,
+      type: remoteSelectCinema,
+      width: 238,
+      placeholder: '影院名称'
     },
-    // {
-    //   name: 'brandName',
-    //   defaultValue: '',
-    //   type: 'input',
-    //   width: 85,
-    //   placeholder: '品牌名称待处理'
-    // },
-    // {
-    //   name: 'companyName',
-    //   defaultValue: '',
-    //   type: 'input',
-    //   width: 200,
-    //   placeholder: '公司名称'
-    // },
-    // {
-    //   name: 'dateRange',
-    //   defaultValue: '',
-    //   type: 'dateRange',
-    //   width: 200,
-    //   placeholder: '选择时间',
-    //   dealParam(value: string) {
-    //     const [applyStartTime, applyEndTime] = value ? value.split('-') : [null, null]
-    //     return {
-    //       applyStartTime,
-    //       applyEndTime
-    //     }
-    //   }
-    // }
+
+    {
+      name: 'cinemaCode',
+      defaultValue: '',
+      type: 'input',
+      width: 100,
+      placeholder: '专资编码',
+    },
+
+    {
+      name: 'companyId',
+      defaultValue: 0,
+      company: true,
+      width: 238,
+      placeholder: '关联资源方'
+    },
+
+    {
+      name: 'cinemaCompanyId',
+      defaultValue: 0,
+      type: remoteSelectCinemaCompany,
+      width: 150,
+      placeholder: '所属影管'
+    },
 
     {
       name: 'pageIndex',
@@ -83,10 +82,10 @@ export default class Main extends ViewBase {
     return [
       { title: '序号', key: 'id', width: 65 },
       { title: '影院ID', key: 'cinemaId', width: 80 },
-      // { title: '影院名称', key: 'companyName', minWidth: 120 },
-      // { title: '专资编码', key: 'brandId', width: 80 },
-      // { title: '所属影管', key: 'brandName', minWidth: 120 },
-      // { title: '关联资源方', key: 'brandName', minWidth: 120 }
+      { title: '影院名称', key: 'cinemaName', minWidth: 120 },
+      { title: '专资编码', key: 'cinemaCode', width: 80 },
+      { title: '所属影管', key: 'cinemaCompanyName', minWidth: 120 },
+      { title: '关联资源方', key: 'companyName', minWidth: 120 }
     ] as ColumnExtra[]
   }
 }
