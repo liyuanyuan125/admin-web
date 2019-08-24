@@ -8,9 +8,9 @@
       ref="listPage"
     >
 
-      <template slot="month" slot-scope="{ row: { year, month } }">
+      <template slot="month" slot-scope="{ row: { billMonth } }">
         <div class="row-acts">
-          {{year}}-{{month}}
+          {{format(billMonth)}}
         </div>
       </template>
 
@@ -183,34 +183,41 @@ export default class IndexPage extends ViewBase {
 
   get columns() {
     return [
-      { title: '账单编号', key: 'id', minWidth: 65 },
-      { title: '请款单编号', key: 'applyId', minWidth: 65 },
+      { title: '账单编号', key: 'billNo', minWidth: 65 },
+      { title: '请款单编号', key: 'applyNo', minWidth: 65 },
       { title: '影城名称', key: 'cinemaName', minWidth: 100 },
-      { title: '影城专资码', key: 'code', minWidth: 60, editor: 'deprecated' },
+      { title: '影城专资码', key: 'cinemaCode', minWidth: 60 },
       { title: '资源方名称', key: 'resourceName', minWidth: 60 },
       {
         title: '账单月份',
-        key: 'kolId',
+        key: 'billMonth',
         minWidth: 90,
         slot: 'month'
       },
       { title: '账单金额', key: 'billAmount', minWidth: 90 },
       { title: '可申请付款金额单金额', key: 'availableApplyAmount', minWidth: 130 },
       { title: '申请付款金额', key: 'applyAmount', minWidth: 90 },
-      { title: '发票类型', key: 'invoiceType', minWidth: 100,  editor: 'enum', enumKey: 'invoiceTypeList' },
-      { title: '发票内容', key: 'invoiceContent', minWidth: 65, editor: 'enum', enumKey: 'invoiceContentList'},
+      { title: '请款状态', key: 'status', minWidth: 100,  editor: 'enum', enumKey: 'status' },
+      { title: '发票类型', key: 'invoiceType', minWidth: 100,  editor: 'enum', enumKey: 'invoiceType' },
+      { title: '发票内容', key: 'invoiceContent', minWidth: 65, editor: 'enum', enumKey: 'invoiceContent'},
       { title: '发票号', key: 'invoiceNo', minWidth: 100 },
       { title: '收款账户名', key: 'receiveAccountName', minWidth: 90 },
       { title: '收款银行', key: 'receiveBank', minWidth: 120 },
       { title: '收款账号', key: 'receiveNo',  minWidth: 120 },
-      { title: '操作', slot: 'action',  minWidth: 120 },
       { title: '对账完成时间', key: 'finishTime', minWidth: 100, editor: 'dateTime' },
       { title: '申请付款时间', key: 'payTime', minWidth: 100, editor: 'dateTime' },
     ]
   }
 
-
   selectedIds = [] as number[]
+
+  format(val: any) {
+    if (val) {
+      const month = `${(val + '').substr(0, 4)} 年 ${(val + '').substr(4)}月`
+      return month
+    }
+    return '-'
+  }
 
   pay(id: any) {
     this.$nextTick(() => {

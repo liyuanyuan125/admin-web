@@ -75,7 +75,7 @@ export default class Main extends ViewBase {
   }
 
   time(time: any) {
-    return time ? moment(time).format('YYYY-MM-DD hh:ss') : '-'
+    return time ? moment(time).format('YYYY-MM-DD hh:mm:ss') : '-'
   }
 
   async detail() {
