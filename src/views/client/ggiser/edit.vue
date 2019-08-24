@@ -17,100 +17,125 @@
     <div class="edit-box">
       <!-- header -->
       <Row class="cinema-header">
-        <FormItem label="广告主身份" prop="name">
+        <FormItem label="广告主身份">
           <Row>
             <Col span="10">
-              <RadioGroup v-model="item.but" type="button" size="large">
-                <Radio label="1">企业</Radio>
-                <Radio label="2">个人</Radio>
+              <RadioGroup v-model="item.companyType" type="button" size="large">
+                <Radio :label="1">企业</Radio>
+                <Radio :label="2">个人</Radio>
               </RadioGroup>
             </Col>
           </Row>
         </FormItem>
-        <div v-if='item.but == 1'>
-
-        </div>
-        <FormItem label="公司名称" prop="name">
-          <Row>
-            <Col span="8">
-              <Input v-model="item.name" placeholder="请填写公司全称，与营业执照保持一致" />
-            </Col>
-          </Row>
-        </FormItem>
-        <FormItem label="简称" prop="shortName">
-          <Row>
-            <Col span="8">
-              <Input v-model="item.shortName" />
-            </Col>
-          </Row>
-        </FormItem>
-
-        <FormItem label="所属行业" prop="shortName">
-          <Row>
-            <Col span="8">
-              <Industry v-model='item.shortName' :businessParentTypeList='businessParentTypeList' />
-            </Col>
-          </Row>
-        </FormItem>
-
-        <CitySelectDialog
-          v-model="visible"
-          :cityIds.sync="cityIds"
-          @ok="onCitySelectOk"
-        />
-        <FormItem label="覆盖区域" prop="shortName">
-          <Row>
-            <Col span="8">
-              <a @click="visible = true">设置覆盖区域</a>
-            </Col>
-          </Row>
-        </FormItem>
-
-        <Row>
-          <FormItem label="公司地址" prop="provinceId">
+        <!-- 公司 -->
+        <div v-if='item.companyType == 1'>
+          <FormItem label="公司名称" prop="name">
             <Row>
               <Col span="8">
-                <AreaSelect v-model="area" />
-              </Col>
-              <Col span="10" offset="1">
-                <FormItem prop="addressDetail">
-                  <Input v-model="item.addressDetail" placeholder="详细地址" class="input-address" />
-                </FormItem>
+                <Input v-model="item.name" placeholder="请填写公司全称，与营业执照保持一致" />
               </Col>
             </Row>
           </FormItem>
-        </Row>
-        <Row>
-          <Col span="5">
-            <FormItem label="联系人">
-              <Input v-model="item.contact" />
+          <FormItem label="简称">
+            <Row>
+              <Col span="8">
+                <Input v-model="item.shortName" />
+              </Col>
+            </Row>
+          </FormItem>
+
+          <FormItem label="所属行业" prop="businessParentCode">
+            <Row>
+              <Col span="8">
+                <Industry v-model='item.businessParentCode' :businessParentTypeList='businessParentTypeList' />
+              </Col>
+            </Row>
+          </FormItem>
+
+          <CitySelectDialog
+            v-model="visible"
+            :cityIds.sync="item.coverCityIdList"
+            @ok="onCitySelectOk"
+          />
+          <FormItem label="覆盖区域">
+            <Row>
+              <Col span="8">
+                <a @click="visible = true">设置覆盖区域</a>
+              </Col>
+            </Row>
+          </FormItem>
+
+          <Row>
+            <FormItem label="公司地址" prop="provinceId">
+              <Row>
+                <Col span="8">
+                  <AreaSelect v-model="area" />
+                </Col>
+                <Col span="10" offset="1">
+                  <FormItem prop="addressDetail">
+                    <Input v-model="item.addressDetail" placeholder="详细地址" class="input-address" />
+                  </FormItem>
+                </Col>
+              </Row>
             </FormItem>
-          </Col>
-          <Col span="6" offset="1">
-            <FormItem label="联系电话" prop="contactPhone">
-              <Input v-model="item.contactTel" />
-            </FormItem>
-          </Col>
-          <Col span="7" offset="1">
-            <FormItem label="邮箱" prop="email">
-              <Input v-model="item.email" />
-            </FormItem>
-          </Col>
-        </Row>
+          </Row>
+          <Row>
+            <Col span="5">
+              <FormItem label="联系人">
+                <Input v-model="item.contact" />
+              </FormItem>
+            </Col>
+            <Col span="6" offset="1">
+              <FormItem label="联系电话" prop="contactPhone">
+                <Input v-model="item.contactTel" />
+              </FormItem>
+            </Col>
+            <Col span="7" offset="1">
+              <FormItem label="邮箱" prop="email">
+                <Input v-model="item.email" />
+              </FormItem>
+            </Col>
+          </Row>
+        </div>
+
+        <!-- 个人 -->
+        <div v-if='item.companyType != 1'>
+          <Row>
+          <FormItem label="姓名" prop="singcontact">
+            <Row>
+              <Col span="8">
+                <Input v-model="item.singcontact" placeholder="" />
+              </Col>
+            </Row>
+          </FormItem>
+          <FormItem label="手机号" prop="singcontactTel">
+            <Row>
+              <Col span="8">
+                <Input v-model="item.singcontactTel" placeholder="" />
+              </Col>
+            </Row>
+          </FormItem>
+          <FormItem label="邮箱" prop="singemail">
+            <Row>
+              <Col span="8">
+                <Input v-model="item.singemail" placeholder="" />
+              </Col>
+            </Row>
+          </FormItem>
+          </Row>
+        </div>
         <Row>
           <Col span="5">
             <FormItem label="推荐人电话">
-              <Input v-model="item.contact" />
+              <Input v-model="item.recommendMobile" />
             </FormItem>
           </Col>
           <Col span="6" offset="1">
-            <FormItem label="推荐人姓名" prop="contactPhone">
-              <Input v-model="item.contactTel" />
+            <FormItem label="推荐人姓名" prop="recommendUserName">
+              <Input v-model="item.recommendUserName" />
             </FormItem>
           </Col>
-        </Row>
-        <Row>
-          <Col span="5">
+           <Col span="6" offset="1">
             <FormItem label="资质" prop="qualificationType">
               <Select v-model="item.qualificationType" clearable>
                 <Option
@@ -121,30 +146,32 @@
               </Select>
             </FormItem>
           </Col>
-          <Col span="6" offset="1">
+        </Row>
+        <Row>
+          <Col span="5">
             <FormItem label="资质编号" prop="qualificationCode">
               <Input v-model="item.qualificationCode" placeholder="资质编号" />
             </FormItem>
           </Col>
         </Row>
 
-        <Row>
-           <!-- 动态添加资质审核 -->
+        <!-- <Row v-if='item.companyType == 1'>
             <FormItem
                 style='width: 50%;'
-                v-for="(item, index) in item.qualificationArray"
+                v-for="(item, it) in item.qualificationArray"
                 v-if="item.status"
-                :key="index"
+                :key="it"
                 label="资质编号"
-                :prop="'qualificationArray.' + index + '.value'"
+                :prop="'qualificationArray.' + it + '.value'"
                 :rules="{required: true, message: '请填写资质编号', trigger: 'blur'}">
                   <div style='display: flex'>
                       <Input type="text" v-model="item.value" placeholder="请填写资质编号"></Input>
-                      <Button @click="handleAdd">追加</Button>
-                      <Button @click="handleRemove(index)">删除</Button>
+                      <Button v-if='it == 0' @click="handleAdd">追加</Button>
+                      <Button v-if='it != 0' @click="handleRemove(it)">删除</Button>
                   </div>
             </FormItem>
-        </Row>
+        </Row> -->
+
         <!-- 上传图片 -->
         <Row class="upload">
           <Col span="12" style="margin-left: 88px">
@@ -169,6 +196,7 @@
             </Col>
           </Row>
         </FormItem>
+
         <div class="124" v-if="item.approveStatus==2">
           <Row>
             <Col span="8">
@@ -228,9 +256,10 @@
           </Col>
         </Row>
 
-        <Row class="client-type-row">
+        <Row class="client-type-row" v-if='item.companyType == 1'>
           <Col v-for="(it, index) in customerTypeList" :key="index" span="8">
             <FormItem
+              v-if="it.typeCode != 'agent' || it.typeCode != 'film'"
               :label="index == 0 ? '客户类型' : ''"
               :prop="'typearr['+ index + ']'"
               :show-message="index == 0 ? show0 : true"
@@ -268,6 +297,27 @@
                   >{{sub.typeName}}</Option>
                 </Select>
               </span>
+            </FormItem>
+          </Col>
+        </Row>
+
+        <Row v-else>
+          <Col span='5'>
+            <FormItem
+              label="客户类型"
+            >
+            <Select
+                v-model="item.typeCategoryCode0"
+                class="flex-1"
+                clearable
+              >
+                <Option
+                  v-if="sub.controlStatus == 1"
+                  v-for="sub in customerTypeList[0].typeCategoryList"
+                  :key="sub.typeCode"
+                  :value="sub.typeCode"
+                >{{sub.typeName}}</Option>
+              </Select>
             </FormItem>
           </Col>
         </Row>
@@ -324,7 +374,10 @@ const defItem = {
   cinemasList: [],
   name: '',
   shortName: '',
-  but: 1,
+  businessParentCode: [],
+  coverCityIdList: [],
+
+  companyType: 1,
   typeCategoryCode0: '',
   typeCategoryCode1: '',
   aptitudeNo: '',
@@ -344,13 +397,13 @@ const defItem = {
   images: [],
 
   // 动态表单
-  qualificationArray: [
-    {
-      value: '',
-      index: 1,
-      status: 1
-    }
-  ],
+  // qualificationArray: [
+  //   {
+  //     value: '',
+  //     index: 1,
+  //     status: 1
+  //   }
+  // ]
   types: [
     {
       typeCode: '',
@@ -366,7 +419,11 @@ const defItem = {
   businessDirector: '',
   cinemas: [],
   approveStatus: 2,
-  validityPeriodDate: ''
+  validityPeriodDate: '',
+
+  singcontact: '',
+  singcontactTel: '',
+  singemail: ''
 }
 
 @Component({
@@ -453,7 +510,10 @@ export default class Main extends ViewBase {
 
     const rule: any = {
       name: [{ required: true, message: '请填写公司名称', trigger: 'blur' }],
-      shortName: [{ required: true, message: '请填写公司简称', trigger: 'blur' }],
+      sing: [{ required: true, message: '请填写公司名称', trigger: 'blur' }],
+      singcontact: [{ required: true, message: '请填写姓名', trigger: 'blur' }],
+      singcontactTel: [{ required: true, message: '请填写手机号', trigger: 'blur' }],
+      singemail: [{ required: true, message: '请填写邮箱', trigger: 'blur' }],
       provinceId: [
         {
           required: true,
@@ -462,6 +522,15 @@ export default class Main extends ViewBase {
           trigger: 'change'
         }
       ],
+      businessParentCode: [{
+        required: true,
+        type: 'array',
+        message: '请选择所属行业',
+        trigger: 'change',
+        fields: {
+          0: {type: 'string', required: true},
+        }
+      }],
       addressDetail: [
         { required: true, message: '请填写公司详细地址', trigger: 'blur' }
       ],
@@ -515,20 +584,20 @@ export default class Main extends ViewBase {
     this.business()
   }
 
-  // 删除资质编号
-  handleRemove(index: number) {
-    this.item.qualificationArray[index].status = 0
-  }
+  // // 删除资质编号
+  // handleRemove(index: number) {
+  //   this.item.qualificationArray[index].status = 0
+  // }
 
-  // 添加资质编号
-  handleAdd() {
-    this.index++
-    this.item.qualificationArray.push({
-        value: '',
-        index: this.index,
-        status: 1
-    })
-  }
+  // // 添加资质编号
+  // handleAdd() {
+  //   this.index++
+  //   this.item.qualificationArray.push({
+  //       value: '',
+  //       index: this.index,
+  //       status: 1
+  //   })
+  // }
 
   async business() {
     try {
@@ -602,7 +671,7 @@ export default class Main extends ViewBase {
         this.loadingShow = true
         this.levelList = levelList
         this.qualificationTypeList = qualificationTypeList
-        this.customerTypeList = customerTypeList
+        this.customerTypeList = customerTypeList.slice(2)
         this.businessParentTypeList = businessParentTypeList.map((it: any) => {
           return {
             value: it.key,
@@ -757,22 +826,30 @@ export default class Main extends ViewBase {
               typeCategoryCode: it.typeCategoryCode ? it.typeCategoryCode : ''
             })
         })
-
+        const business = this.item.businessParentCode.length > 0 ? {
+          businessParentCode: this.item.businessParentCode[0],
+          businessChildCode: this.item.businessParentCode[1] || '',
+        } : {}
         const formData: any = {
           ...newqQuery,
           types: (types as any[] || []).filter(it => it.typeCode != ''),
           cinemas: this.item.typearr[1] ? this.cinemas : [],
           brandIds: this.item.typearr[0] ? this.brandIds : [],
+          email: this.item.companyType == 1 ? this.item.email : this.item.singemail,
+          contactTel: this.item.companyType == 1 ? this.item.contactTel : this.item.singcontactTel,
+          contact: this.item.companyType == 1 ? this.item.contact : this.item.singcontact,
         }
 
         // 删除某些多余的字段
         delete formData.brandList
-
+        delete formData.singcontactTel
+        delete formData.singcontact
+        delete formData.singemail
         try {
-          const data: any = route == 0
-            ? await addQuery(formData)
-            : await setQuery(route, formData)
-          toast(data.msg)
+          // const data: any = route == 0
+          //   ? await addQuery(formData)
+          //   : await setQuery(route, formData)
+          // toast(data.msg)
           this.$router.go(-1)
         } catch (ex) {
           this.handleError(ex)
