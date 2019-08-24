@@ -2,18 +2,24 @@
   <div class='page'>
     <header>
       <Button icon="md-return-left" @click="back" class="btn-back">返回上一页</Button>
-      <Button v-if='$route.params.status != 12' class="bth" style='float: right' @click="close($route.params.id)">关闭订单</Button><br>
+      <Button v-if='$route.params.ifs == 1 && $route.params.status != 12 && $route.params.status != 9' class="bth" style='float: right' @click="close($route.params.id)">关闭订单</Button><br>
     </header>
-    <div class='title'>基础信息</div>
+
+    <div class='title'>广告信息</div>
     <div class='bos'>
       <Row>
         <Col :span='12'>计划名称&nbsp;：&nbsp;{{listitem.name == null ? '暂无' : listitem.name}}</Col>
         <Col :span='12'>广告片&nbsp;：&nbsp;{{listitem.videoName == null ? '-' : listitem.videoName}}({{listitem.specification == null ? '-' : listitem.specification}}s)【{{listitem.customerName == null ? '-' : listitem.customerName}}】</Col>
       </Row>
-     <!--  <Row>
+      <Row>
         <Col :span='12'>广告主公司名称&nbsp;：&nbsp;{{listitem.name == null ? '暂无' : listitem.name}}</Col>
-        <Col :span='12'>广告类型&nbsp;：&nbsp;{{listitem.videoName == null ? '-' : listitem.videoName}}({{listitem.specification == null ? '-' : listitem.specification}}s)【{{listitem.customerName == null ? '-' : listitem.customerName}}】</Col>
-      </Row> -->
+        <Col :span='12'>广告类型&nbsp;：&nbsp;
+          <span v-if='listitem.advertTypeCode == null'>暂无广告类型</span>
+          <span v-else v-for='(item , index) in advertTypeList' :key='index' v-if='item.key == listitem.advertTypeCode'>
+            {{item.text}}
+          </span>
+        </Col>
+      </Row>
       <Row>
         <Col :span='12'>投放排期&nbsp;：&nbsp;{{listitem.beginDate == null ? '暂无' : start}} ~ {{listitem.endDate == null ? '暂无' : end}}</Col>
         <Col :span='12'>推广预算&nbsp;：&nbsp;{{formatNumber(listitem.budgetAmount)}}元</Col>
@@ -34,27 +40,49 @@
         <Col :span='12' v-if='view'>受众性别(比例较多)&nbsp;：&nbsp;<span v-if='listitem.deliveryGroups != null' v-for='(item , index) in tags[2].values' :key='index'><em v-for='(it,index) in listitem.deliveryGroups' :key='index' v-if='item.key == it.text'>{{item.text +' '}}</em></span><span v-if='ifsex'>暂无</span></Col>
         <Col :span='12' v-if='view'>受众年龄&nbsp;：&nbsp;<span v-if='listitem.deliveryGroups != null' v-for='(item , index) in tags[1].values' :key='index'><em v-for='(it,index) in listitem.deliveryGroups' :key='index' v-if='item.key == it.text'>{{item.text +' '}}</em></span><span v-if='ifage'>暂无</span></Col>
       </Row>
+    </div>
+
+    <div class='title'>基础信息</div>
+    <div class='bos'>
       <Row>
-        <Col :span='12'>创建时间&nbsp;：&nbsp;{{applyTime}}</Col>
+        <Col :span='12'>计划ID&nbsp;：&nbsp;{{listitem.id == null ? '暂无' : listitem.id}}</Col>
+        <Col :span='12'>渠道&nbsp;：&nbsp;{{listitem.videoName == null ? '-' : listitem.videoName}}({{listitem.specification == null ? '-' : listitem.specification}}s)【{{listitem.customerName == null ? '-' : listitem.customerName}}】</Col>
+      </Row>
+      <Row>
+        <Col :span='12'>计划状态&nbsp;：&nbsp;
+          <span v-for='(item , index) in statusList' :key='index' v-if='item.key == listitem.status'>
+            {{item.text}}
+          </span>
+        </Col>
+        <Col :span='12'>支付成功时间&nbsp;：&nbsp;{{listitem.videoName == null ? '-' : listitem.videoName}}({{listitem.specification == null ? '-' : listitem.specification}}s)【{{listitem.customerName == null ? '-' : listitem.customerName}}】</Col>
+      </Row>
+      <Row>
+        <Col :span='12'>创建时间&nbsp;：&nbsp;{{listitem.applyTime == null ? '暂无' : applyTime}}</Col>
+        <Col :span='12'>支付方式&nbsp;：&nbsp;{{formatNumber(listitem.budgetAmount)}}元</Col>
+      </Row>
+      <Row>
         <Col :span='12'>创建人&nbsp;：&nbsp;{{listitem.applyName == null ? '暂无创建人' : listitem.applyName}}</Col>
+        <Col :span='12'>审批状态&nbsp;：&nbsp;{{listitem.applyName == null ? '暂无创建人' : listitem.applyName}}</Col>
       </Row>
     </div>
+
     <div class='title'>投放影片(系统推荐 / 用户自选)</div>
     <div class='bos'>
       <Table :columns="itemcolumns" :data='films' border stripe disabled-hover size="small" class="table">
-        <template v-if='$route.params.status == 2 || $route.params.status == 3 || $route.params.status == 9 || $route.params.status == 10' slot="action" slot-scope="{row}" >
+        <template v-if='$route.params.status == 2 || $route.params.status == 3 || $route.params.status == 4 || $route.params.status == 10' slot="action" slot-scope="{row}" >
           <a  @click="deletefilm(row.movieId)">删除</a>
         </template>
      </Table>
-     <div style='cursor: pointer;' v-if='$route.params.status == 2 || $route.params.status == 3 || $route.params.status == 9 || $route.params.status == 10' @click='addfilm(listitem.beginDate , listitem.endDate)'>添加影片</div>
+      <div style='cursor: pointer;' 
+        v-if='$route.params.ifs == 1 && ($route.params.status == 2 || $route.params.status == 3 || $route.params.status == 4 || $route.params.status == 10)' 
+        @click='addfilm(listitem.beginDate , listitem.endDate)'>
+        添加影片
+      </div>
     </div>
-    <!-- <div class='title'>投放影院(532家)
-      <span style='float: right' @click='chgRes'>导出影院列表</span>
-    </div> -->
-    <!-- <div class='bos'> -->
-      <!-- <Cinema :value="it.cinemaList"/> -->
-      <Cinema  @getcine="getcinemas" />
-    <!-- </div> -->
+
+    <!-- 投放影院 -->
+    <Cinema  @getcine="getcinemas" />
+
     <div class='title'>备注</div>
     <div class='bos' >
       <Row v-if='(listitem.remarks == null)'>暂无备注</Row>
@@ -63,13 +91,14 @@
           {{it.operationEmail}}【{{it.operationName}}】 
           {{it.remarks}}
     </Row>
-      <Form ref="databeizhu" :model="databeizhu" label-position="left"  :label-width="50">
+      <Form v-if='$route.params.ifs == 1' ref="databeizhu" :model="databeizhu" label-position="left"  :label-width="50">
         <FormItem label="备注" prop="closeReason">
           <Input type='textarea' v-model="databeizhu.remarks"></Input>
         </FormItem>
         <Button style='margin-left: 49%;' type="primary" @click="dataFormSubmit">提交备注</Button>
     </Form>
     </div>
+
     <div class='title'>操作记录</div>
     <div class='bos'>
       <Row v-if='logList.length == 0'>暂无操作日志</Row>
@@ -77,56 +106,99 @@
         <Row>{{it.createTime}}  {{it.createUserEmail}}【{{it.createUserName}}】 {{it.eventName}}{{it.description}}</Row>
       </Row>
     </div>
+
     <div class='title'>应收款项</div>
     <Row class='bos'>
-      <!-- <Row>
+      <Row>
         <Col :span='2'>设置折扣</Col>
         <Col :span='4'>
-            <Input style="width:100px" v-if='listitem.status != 2 && listitem.status != 3' disabled v-model="dataplan.depositAmount"></Input>
-            <Input style="width:100px" v-if='listitem.status == 2 || listitem.status == 3' v-model="dataplan.depositAmount"></Input>
-        </Col>
-        <Col>请输入0-1的小数</Col>
-        <Col style='color: red'>设置的折扣额度已超过权限范围，需要下一级主管审批</Col>
-      </Row> -->
-      <Row>
-        <Col :span='2'>定金</Col>
-        <Col :span='4'>
-            <Input style="width:100px" v-if='listitem.status != 2 && listitem.status != 3' disabled v-model="dataplan.depositAmount"></Input>
-            <Input style="width:100px" v-if='listitem.status == 2 || listitem.status == 3' v-model="dataplan.depositAmount"></Input>
+            <Input style="width:100px" 
+              disabled 
+              v-model="dataplan.discount">
+            </Input>
         </Col>
       </Row>
       <Row>
+        <Col :span='2'>定金</Col>
+        <Col :span='4'>
+            <Input style="width:100px" 
+              disabled 
+              v-model="dataplan.depositAmount">
+            </Input>
+        </Col>
+      </Row>
+      <Row v-if='$route.params.ifs == 0'>
         <Col :span='2'>应结金额</Col>
         <Col :span='3'>
-            <Input style="width:100px" v-if='listitem.status != 9 && listitem.status != 10' disabled v-model="dataplan.needPayAmount"></Input>
-            <Input style="width:100px" v-if='listitem.status == 9 || listitem.status == 10' v-model="dataplan.needPayAmount"></Input>
+            <Input style="width:100px" 
+              :disabled='this.$route.params.ifs != 1 || (listitem.status != 9 && listitem.status != 10)' 
+              v-model="dataplan.needPayAmount">
+            </Input>
+        </Col>
+        <Col :span='10' v-if='listitem.totalCost && listitem.totalCost != null'>实际投放花费 ￥ ({{formatNumber(listitem.totalCost)}})</Col>
+      </Row>
+      <Row v-else-if='$route.params.status != 6 && $route.params.status != 7'>
+        <Col :span='2'>应结金额</Col>
+        <Col :span='3'>
+            <Input style="width:100px" 
+              :disabled='this.$route.params.ifs != 1 || (listitem.status != 9 && listitem.status != 10)' 
+              v-model="dataplan.needPayAmount">
+            </Input>
+        </Col>
+        <Col :span='10' v-if='listitem.totalCost && listitem.totalCost != null'>实际投放花费 ￥ ({{formatNumber(listitem.totalCost)}})</Col>
+      </Row>
+      <Row v-if='$route.params.ifs == 1 && $route.params.status != 6 && $route.params.status != 7 && $route.params.status != 4'>
+        <Col :span='2'>确认应结金额</Col>
+        <Col :span='3'>
+            <Input style="width:100px" 
+              :disabled='this.$route.params.ifs != 1 || (listitem.status != 9 && listitem.status != 10)' 
+              v-model="dataplan.needPayAmount">
+            </Input>
         </Col>
         <Col :span='10' v-if='listitem.totalCost && listitem.totalCost != null'>实际投放花费 ￥ ({{formatNumber(listitem.totalCost)}})</Col>
       </Row>
     </Row>
+
     <div style='padding: 20px 0 30px 0'>
-        <Form ref="dataplan" :model="dataplan"  :rules="ruleValidate" label-position="left" :label-width="100">
-          <Col :span='15'>预估曝光人次【{{formatNumber(listitem.estimatePersonCount , 2)}}】预估曝光场次【{{formatNumber(listitem.estimateShowCount , 2)}}】预估花费【{{formatNumber(listitem.estimateCostAmount)}}】 <!-- <span>, 折扣后总价{{formatNumber(listitem.estimateShowCount , 2)}}】</span> -->
-            <Button type="primary" :loading="loading2" @click="shuaxin()">刷新</Button>
+      <Form ref="dataplan" :model="dataplan"  :rules="ruleValidate" label-position="left" :label-width="100">
+        <Col :span='15'>
+          预估曝光人次【{{formatNumber(listitem.estimatePersonCount , 2)}}】
+          预估曝光场次【{{formatNumber(listitem.estimateShowCount , 2)}}】
+          预估花费【{{formatNumber(listitem.estimateCostAmount)}}】 
+          <span>, 折扣后总价【{{formatNumber(listitem.estimateShowCount , 2)}}】</span>
+          <Button v-if='this.$route.params.ifs == 1' type="primary" :loading="loading2" @click="shuaxin()">刷新</Button>
+      </Col>
+        
+        <!-- <Col :span='4'>
+          <FormItem label="应收金额" prop="money">
+            <Input style="width:100px" v-model="dataplan.money"></Input>
+          </FormItem>
+        </Col> -->
+        </Form>
+        <!-- 详情操作 -->
+        <Col :span='6' v-if='this.$route.params.ifs == 0'>
+            <Button type="primary" @click="back()">返回</Button>
         </Col>
-          
-          <!-- <Col :span='4'>
-            <FormItem label="应收金额" prop="money">
-              <Input style="width:100px" v-model="dataplan.money"></Input>
-            </FormItem>
-          </Col> -->
-          </Form>
-          <Col :span='6'>
-              <Button v-if='(viewfilm == true || viewcinema == true) || (listitem.status != 2 && listitem.status != 3 && listitem.status != 9 && listitem.status != 10) ' type="primary" disabled>保存并发送方案至广告主</Button>
-              <Button v-if='(viewfilm == false && viewcinema == false) && (listitem.status == 2 || listitem.status == 3 || listitem.status == 9 || listitem.status == 10) ' type="primary" @click="save('dataplan')">保存并发送至广告主</Button>
-            <Button style='margin-left: 30px;' @click="back">取消</Button>
-          </Col>
-          <!-- <Col :span='6'>
-              <Button v-if='(viewfilm == true || viewcinema == true) || (listitem.status != 2 && listitem.status != 3 && listitem.status != 9 && listitem.status != 10) ' type="primary" disabled>保存并提交下一级审批</Button>
-              <Button v-if='(viewfilm == false && viewcinema == false) && (listitem.status == 2 || listitem.status == 3 || listitem.status == 9 || listitem.status == 10) ' type="primary" @click="save('dataplan')">保存并提交下一级审批</Button>
-            <Button style='margin-left: 30px;' @click="back">取消</Button>
-          </Col> -->
+        <!-- 补单操作 -->
+        <Col :span='6' v-if='this.$route.params.ifs == 1 && (this.$route.params.status == 6 || this.$route.params.status == 7)'>
+          <Button type="primary" @click='addlist'>确认补单</Button>
+          <Button style='margin-left: 30px;' @click="back">取消</Button>
+        </Col>
+        <Col :span='6' v-if='this.$route.params.ifs == 1 && (this.$route.params.status != 6 && this.$route.params.status != 7)'>
+            <Button 
+              v-if='(viewfilm == true || viewcinema == true) || (listitem.status != 9 && listitem.status != 10) ' 
+              type="primary" 
+              disabled>
+            保存并发送方案至广告主</Button>
+            <Button 
+            v-if='(viewfilm == false && viewcinema == false) && (listitem.status == 9 || listitem.status == 10) ' 
+            type="primary"
+            @click="save('dataplan')">
+            保存并发送至广告主</Button>
+          <Button style='margin-left: 30px;' @click="back">取消</Button>
+        </Col>
     </div>
+    
     <close  ref="over"   v-if="overVisible" @done="dlgEditDone"/>
     <addfilm  ref="adds" v-if='addVisible' @done="dlgEditDones"/>
   </div>
@@ -137,7 +209,7 @@ import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { itemlist , delfilm , beizhu  , closeid , save , revuew , needamount , check } from '@/api/beforeplan'
+import { itemlist , delfilm , beizhu  , closeid , save , revuew , needamount , addList } from '@/api/beforeplan'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import close from './closeorder.vue'
@@ -186,6 +258,7 @@ export default class Main extends ViewBase {
     remarks : ''
   }
   dataplan: any = {
+    discount: '',
     depositAmount : '',
     needPayAmount: ''
   }
@@ -208,6 +281,11 @@ export default class Main extends ViewBase {
   deliveryCityTypeList: any = []
   // 电影类型
   tags: any = []
+  // 广告类型
+  advertTypeList: any = []
+  // 状态编码列表
+  statusList: any = []
+
   deliveryGroups: any = []
   ifmovie = false
   ifage = false
@@ -265,9 +343,8 @@ export default class Main extends ViewBase {
         slot: 'action'
       }
     ]
-    return this.$route.params.status == '2' || this.$route.params.status == '3' ||
-    this.$route.params.status == '9' || this.$route.params.status == '10' ?
-    [...data, ...opernation] : data
+    return this.$route.params.ifs == '1' && (this.$route.params.status == '2' || this.$route.params.status == '3' ||
+      this.$route.params.status == '4' || this.$route.params.status == '10') ? [...data, ...opernation] : data
   }
 
   get ruleValidate() {
@@ -402,6 +479,8 @@ export default class Main extends ViewBase {
       this.tags = data.tags
       this.view = true
       this.deliveryGroups = data.item.deliveryGroups
+      this.advertTypeList = data.advertTypeList
+      this.statusList = data.statusList
       // 判断电影标签的展示
       if (this.deliveryGroups == null) {
         this.ifmovie = true
@@ -421,6 +500,7 @@ export default class Main extends ViewBase {
           this.ifsex = true
         }
       }
+      this.dataplan.discount = data.item.discount
       this.dataplan.depositAmount = data.item.depositAmount
       this.dataplan.needPayAmount = data.item.needPayAmount
     } catch (ex) {
@@ -475,29 +555,22 @@ export default class Main extends ViewBase {
         info('请输入应结金额')
         return
       }
-      const rescheck = await check (this.$route.params.id , {needPayAmount : this.dataplan.needPayAmount})
+      const rescheck = await needamount (this.$route.params.id ,
+        {needPayAmount : this.dataplan.needPayAmount , confirm: true})
     } else if (this.listitem.status == 10) { // 修改应结金额
       if (this.dataplan.needPayAmount == '') {
         info('请输入应结金额')
         return
       }
-      const resneed = await needamount (this.$route.params.id , {needPayAmount : this.dataplan.needPayAmount})
+      const resneed = await needamount (this.$route.params.id ,
+        {needPayAmount : this.dataplan.needPayAmount , confirm: false})
     }
     this.$router.go(-1)
-    // const myThis: any = this
-    // myThis.$refs[dataplan].validate(async ( valid: any ) => {
-    //   if (valid) {
-    //     try {
-    //       const res = await save (this.$route.params.id , {depositAmount : this.dataplan.depositAmount})
-    //       // 核对中/待结算 ---  修改应结金额
-    //       if (this.listitem.status == 9 || this.listitem.status == 10) {
-    //         const resneed = await needamount (this.$route.params.id , {needPayAmount : this.dataplan.needPayAmount})
-    //       }
-    //     } catch (ex) {
-    //       this.handleError(ex)
-    //     }
-    //   }
-    // })
+  }
+
+  async addlist() {
+    const addlist = await addList (this.$route.params.id)
+    this.$router.go(-1)
   }
 
   // 每页数
@@ -541,6 +614,11 @@ export default class Main extends ViewBase {
   em {
     font-size: 16px;
     color: @c-base;
+  }
+}
+span:only-child:empty {
+  &::before {
+    content: '暂无';
   }
 }
 .title {

@@ -22,6 +22,9 @@
           {{depositAmount == null ? '-' : formatNumber(depositAmount)}}
         </div>
       </template>
+      <template slot="targetCount" slot-scope="{row}">
+          <span>{{row.acceptCinemaCount}} / {{row.cinemaCount}}</span>
+      </template>
       <template slot="needPayAmount" slot-scope="{ row: { needPayAmount   } }">
         <div class="row-acts">
           {{needPayAmount == null ? '-' : formatNumber(needPayAmount)}}
@@ -30,22 +33,28 @@
       <template slot="action" slot-scope="{ row: { id , status  } }">
         <div class="row-acts">
           <router-link
-            :to="{ name: 'order-beforeplan-detail', params: { id , status } }"
+            :to="{ name: 'order-beforeplan-detail', params: { id , status, ifs: '0' } }"
           >详情</router-link>
-          <router-link v-if='status == 2'
-            :to="{ name: 'order-beforeplan-detail', params: { id , status } }"
-          >一级审核</router-link>
-          <router-link v-if='status == 2'
-            :to="{ name: 'order-beforeplan-detail', params: { id , status } }"
-          >二级审核</router-link>
-          <router-link v-if='status == 6 || status == 7'
-            :to="{ name: 'order-beforeplan-detail', params: { id , status } }"
+          <!-- 核对操作 -->
+          <router-link  v-if='status == 9'
+            :to="{ name: 'order-beforeplan-detail', params: { id , status, ifs: '1' } }"
+          >核对</router-link>
+          <!-- 补单操作 -->
+          <router-link  v-if='status == 6'
+            :to="{ name: 'order-beforeplan-detail', params: { id , status, ifs: '1' } }"
           >补单</router-link>
+          <router-link  v-if='status == 7'
+            :to="{ name: 'order-beforeplan-detail', params: { id , status, ifs: '1' } }"
+          >补单</router-link>
+          <!-- 待支付操作 -->
+          <router-link  v-if='status == 4'
+            :to="{ name: 'order-beforeplan-detail', params: { id , status, ifs: '1' } }"
+          >修改</router-link>
+          <a  href="javascript:;" @click='view(id , discount)'>设置定金</a>
         </div>
       </template>
     </ListPage>
-
-    <!-- <payDlg  ref="addOrUpdate" v-if="addOrUpdateVisible" @done="done"/> -->
+    <DlgEdit  ref="addOrUpdate" v-if="addOrUpdateVisible" @done="done"/>
   </div>
 </template>
 
@@ -65,22 +74,14 @@ import EditDialog, { Field } from '@/components/editDialog'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import moment from 'moment'
 import { formatNumber } from '@/util/validateRules'
+// 设置定金
+import DlgEdit from './dlgEdit.vue'
 
 // 广告计划状态列表
   const statusList: any = [
-    // { name: '未知', value: '0'},
+    { name: '待支付', value: '4'},
     { name: '草稿', value: '1'},
-    { name: '待审核', value: '2'},
-    { name: '待确认', value: '3'},
-    // { name: '待支付', value: '4'},
-    // { name: '已支付', value: '5'},
-    // { name: '接单中', value: '6'},
-    // { name: '待执行', value: '7'},
-    // { name: '执行中', value: '8'},
     { name: '核对中', value: '9'},
-    // { name: '待结算', value: '10'},
-    // { name: '已完成', value: '11'},
-    // { name: '已失效', value: '12'},
     { name: '其他', value: '50'},
   ]
   const defaultPay: any = statusList[0].value
@@ -89,10 +90,7 @@ import { formatNumber } from '@/util/validateRules'
   components: {
     ListPage,
     EditDialog,
-    // CompanyList,
-    // cinemaList,
-    // yearMonth,
-    // payDlg
+    DlgEdit
   }
 })
 export default class IndexPage extends ViewBase {
@@ -119,6 +117,15 @@ export default class IndexPage extends ViewBase {
         name: 'status',
         defaultValue: this.pay,
       },
+
+      {
+        name: 'id',
+        defaultValue: '',
+        type: 'input',
+        width: 140,
+        placeholder: '计划ID'
+      },
+
       {
         name: 'companyName',
         defaultValue: 0,
@@ -159,7 +166,7 @@ export default class IndexPage extends ViewBase {
       },
 
       {
-        name: 'status2',
+        name: 'advertTypeCode',
         defaultValue: null,
         type: 'select',
         width: 100,
@@ -168,11 +175,11 @@ export default class IndexPage extends ViewBase {
       },
 
       {
-        name: 'status3',
+        name: 'channelCode',
         defaultValue: null,
         type: 'select',
         width: 100,
-        placeholder: '支付状态',
+        placeholder: '渠道',
         enumKey: 'statusList'
       },
 
@@ -212,8 +219,9 @@ export default class IndexPage extends ViewBase {
   }
 
   enums = [
-    // 'invoiceTypeList',
     'statusList',
+    'advertTypeList',
+    'channelList'
   ]
 
   get formatNumber() {
@@ -222,15 +230,15 @@ export default class IndexPage extends ViewBase {
 
   get columns() {
     const firstN: any = [
-      { title: '计划id', key: 'id', width: 65 },
+      { title: '计划id', key: 'id', width: 60 },
       { title: '计划名称', key: 'name' },
       { title: '广告主公司名称', key: 'companyName'},
-      { title: '广告片', key: 'videoName', maxWidth: 100 },
-      { title: '广告类型', key: 'name' },
+      { title: '广告片', key: 'videoName'},
+      { title: '广告类型', key: 'status', editor: 'enum' , width: 60 },
+      { title: '渠道', key: 'channelCode', editor: 'enum' , width: 60 },
       {
         title: '投放周期',
         key: 'beginDate',
-        width: 150,
         align: 'center',
         render: (hh: any, { row: { beginDate , endDate} }: any) => {
           /* tslint:disable */
@@ -241,17 +249,40 @@ export default class IndexPage extends ViewBase {
           /* tslint:enable */
         }
       },
-      { title: '接单影院/派单影院', key: 'name' },
-      // { title: '预算', slot: 'budgetAmount', width: 100},
-      { title: '定金', slot: 'depositAmount', width: 100},
-      { title: '应结金额', slot: 'needPayAmount', width: 100},
-      { title: '提交时间', key: 'applyTime', editor: 'dateTime', width: 135 },
-      { title: '支付状态', key: 'status', width: 100 , editor: 'enum' },
-      { title: '状态', key: 'status', width: 100 , editor: 'enum' },
-      { title: '操作', slot: 'action', width: 55 }
+      { title: '接单影院/派单影院', slot: 'targetCount' },
+      { title: '折扣', key: 'discount' , width: 60 },
+      { title: '定金', slot: 'depositAmount' , width: 60 },
+      { title: '应结金额', slot: 'needPayAmount'},
+      { title: '提交时间', key: 'applyTime', editor: 'dateTime' },
+      { title: '订单状态', key: 'status' , editor: 'enum' , width: 60 },
+    ]
+    const aaa = [
+      { title: '审批状态', key: 'auditStatus'  , editor: 'enum' , width: 60 },
     ]
 
-     return  [...firstN ] as ColumnExtra[]
+    const bbb = [
+      { title: '操作', slot: 'action' },
+    ]
+
+     return  this.status == '4' ? [...firstN , ...aaa , ...bbb] :
+    [...firstN, ...bbb ] as ColumnExtra[]
+  }
+
+  done() {
+    this.refresh()
+  }
+
+  refresh() {
+    this.listPage.update()
+  }
+
+  // 设置定金
+  view(id: any , discount: any) {
+    this.addOrUpdateVisible = true
+    this.$nextTick(() => {
+      const myThis: any = this
+      myThis.$refs.addOrUpdate.init(id , discount)
+    })
   }
 
   @Watch('status')

@@ -1,6 +1,6 @@
 <template>
   <div class="pages" >
-    <div class='title'>投放影院({{total}}家) <!-- 接单影院 / 派单影院 : 3 / 5 -->
+    <div class='title'><!-- 投放影院({{total}}家) --> 接单影院 / 派单影院 : 3 / 5
       <span style='float: right;cursor: pointer;' @click="exportData">导出影院列表</span>
     </div>
     <div class='bos'>
@@ -8,32 +8,35 @@
         <Col span="5">
           <AreaSelect v-model="area"/>
         </Col>
-        <Col span="5" offset="1">
+        <Col span="4" offset="1">
           <Input v-model="dataForm.cinemaName" placeholder="【专资编码】或 影院名称" />
         </Col>
-        <Col span='5' offset="1">
+        <Col span='4' offset="1">
           <!-- <Select v-model="dataForm.resourceId" placeholder="资源方公司名称" style='width: 200px;'  filterable>
             <Option v-for="it in []" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
           </Select> -->
           <compangList v-model='dataForm.resourceId' @done="dlgEditDone"/>
         </Col>
-        <!-- <Col span='5' offset="1"> -->
-          <!-- <Select v-model="dataForm.resourceId" placeholder="接单状态" style='width: 200px;'  filterable>
+        <Col span='4' offset="1">
+          <Select v-model="dataForm.resourceId" placeholder="接单状态" style='width: 200px;'  filterable>
             <Option v-for="it in []" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
-          </Select> -->
-        <!-- </Col> -->
-        <Col span="4" offset="1">
+          </Select>
+        </Col>
+        <Col span="3" offset="1">
           <Button type="primary" @click="searchrrr">搜索</Button>
         </Col>
       </Row>
-      <Button type="primary" @click="changeAll" v-if='$route.params.status == 2 || $route.params.status == 3 || $route.params.status == 9 || $route.params.status == 10'>批量删除</Button>
+      <Button type="primary" @click="changeAll" v-if='$route.params.ifs == 1 && ($route.params.status == 2 || $route.params.status == 3 || $route.params.status == 4 || $route.params.status == 10)'>批量删除</Button>
       <Table ref="table" :columns="columns" @on-selection-change="onselect" :data="list" :loading="loading"
         border stripe disabled-hover size="small" class="table">
         <template slot="resourceId" slot-scope="{row}" >
           <div v-for='(it, index) in reslist'>
-            <span v-if='row.resourceId == it.id'>{{it.name}}&nbsp;&nbsp;&nbsp;<a v-if='$route.params.status == 2 || $route.params.status == 3 || $route.params.status == 9 || $route.params.status == 10' @click="change( row.cinemaId , row.cinemaName ,  it.name , it.id)">变更</a></span>
+            <span v-if='row.resourceId == it.id'>{{it.name}}&nbsp;&nbsp;&nbsp;
+              <a v-if='$route.params.ifs == 1 && ($route.params.status == 2 || $route.params.status == 3 || $route.params.status == 4 || $route.params.status == 10)' 
+                @click="change( row.cinemaId , row.cinemaName ,  it.name , it.id)">变更</a>
+            </span>
           </div>
           <div v-if='reasd.indexOf(row.resourceId) == -1'>暂无资源方公司</div>
           <!-- <a @click="delcinema( row.id )">变更</a> -->
@@ -49,10 +52,9 @@
             @on-page-size-change="currentChangeHandle"/>
       </div>
       <div class="act-bar">
-        <a @click="onAdd" v-if="!type && $route.params.status == 2 || $route.params.status == 3 || $route.params.status == 9 || $route.params.status == 10" @done="dlgEditDone">添加影院</a>
-        <!-- <Button type="primary">批量导入</Button> -->
+        <a @click="onAdd" v-if="!type && $route.params.status == 2 || $route.params.status == 3 || $route.params.status == 4 || $route.params.status == 10 || $route.params.status == 6 || $route.params.status == 7" @done="dlgEditDone">添加影院</a>&nbsp;&nbsp;&nbsp;
+        <Button v-if='$route.params.ifs == 1 && ($route.params.status == 4 || $route.params.status == 6 || $route.params.status == 7)' type="primary">批量导入</Button>
       </div>
-      <!-- <singDlg ref="addOrUpdate" v-if='addOrUpdateVisible' @done="dlgEditDone" /> -->
       <changeDlg ref="change" v-if='changeVisible' @done="dlgEditDone" />
       <AddCinemaModel v-if="type != 'detail'" ref="addCinemaModel" :cinemaend = "incinematype" :addData="inValue" @done="dlgEditDone" />
     </div>
@@ -73,7 +75,6 @@ import moment from 'moment'
 import { slice, clean } from '@/fn/object'
 import {confirm , warning , success, toast , info } from '@/ui/modal'
 import AreaSelect from '@/components/areaSelect'
-import singDlg from '../singDlg.vue'
 import changeDlg from '../changeDlg.vue'
 import AddCinemaModel from './addCinemaModel.vue'
 import compangList from '../../supervision/companyList.vue'
@@ -98,7 +99,6 @@ const dataForm = {
 @Component({
   components: {
     AreaSelect,
-    singDlg,
     changeDlg,
     AddCinemaModel,
     compangList,
@@ -165,7 +165,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       { title: '所属资源方', slot: 'resourceId', align: 'center' },
       { title: '联系人', width: 120, key: 'contract', align: 'center' },
       { title: '联系电话', width: 120, key: 'contractTel', align: 'center' },
-      // { title: '接单状态', width: 120, key: 'contractTel', align: 'center' },
+      { title: '接单状态', width: 120, key: 'contractTel', align: 'center' },
     ]
     const check = [
        {
@@ -184,9 +184,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         slot: 'action'
       }
     ]
-    return this.$route.params.status == '2' || this.$route.params.status == '3' ||
-    this.$route.params.status == '9' || this.$route.params.status == '10' ?
-    [...check, ...data, ...opernation] : data
+    return this.$route.params.ifs == '1' && (this.$route.params.status == '2' || this.$route.params.status == '3' ||
+    this.$route.params.status == '4' || this.$route.params.status == '10') ? [...check, ...data, ...opernation] : data
   }
 
   get columnsData() {

@@ -780,6 +780,16 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  {
+    path: '/finance/examine/newindex/:pay?',
+    name: 'finance-examine-newindex',
+    component: () => import('./views/finance/examine/newindex.vue'),
+    meta: {
+      authKey: ''
+    },
+    props: true,
+  },
+
   // 财务管理 - 请款单管理
   {
     path: '/finance/payroll/:type?',
@@ -1359,9 +1369,9 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   //   }
   // },
 
-  // 映前广告计划 - 详情
+  // 映前广告计划 - 详情 ifs 0 为详情查看页面 1为非详情查看页面
   {
-    path: '/order/beforeplan/detail/:id/:status',
+    path: '/order/beforeplan/detail/:id/:status/:ifs',
     name: 'order-beforeplan-detail',
     component: () => import('./views/order/beforeplan/detail.vue'),
     meta: {

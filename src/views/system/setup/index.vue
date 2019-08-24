@@ -3,31 +3,51 @@
   <Form  :model='dataForm' :label-width='93' :rules='rules' label-position="left" class='form page' ref='dataForm'>
     <div class="edit-box">
       <!-- 充值信息 -->
-      <div v-auth="'finance.settings:set-bank-account'" class='titop' v-if='showbank'>充值信息
+      <div v-auth="'finance.settings:set-bank-account'" class='titop' v-if='showbank'>收款账户及发票信息
         <Button type='success' style='float: right;' @click="editbank('dataForm')">保存</Button>
       </div>
-      <Row v-auth="'finance.settings:set-bank-account'" class="cinema-header" v-if='showbank'>
-        <FormItem label="开户行" prop="accountBank">
-          <Row>
-            <Col span="8">
-              <Input v-model="dataForm.accountBank" placeholder=""/>
-            </Col>
-          </Row>
-        </FormItem>
-        <FormItem label="开户名" prop="accountName">
-          <Row>
-            <Col span="8">
-              <Input v-model="dataForm.accountName" placeholder=""/>
-            </Col>
-          </Row>
-        </FormItem>
-        <FormItem label="银行账号" prop="accountNumber">
-          <Row>
-            <Col span="8">
-              <Input v-model="dataForm.accountNumber" placeholder=""/>
-            </Col>
-          </Row>
-        </FormItem>
+      <Row v-auth="'finance.settings:set-bank-account'" class="cinema-header"  v-if='showbank'>
+        <Row>
+          <Col :span='8'>
+            <FormItem label="开户行" prop="accountBank">
+              <Input v-model="dataForm.accountBank" style='width: 200px;' placeholder=""/>
+            </FormItem>
+          </Col>
+          <Col :span='8'>
+            <FormItem label="公司名称" prop="companyName">
+              <Input v-model="dataForm.companyName" style='width: 200px;' placeholder=""/>
+            </FormItem>
+          </Col>
+          <Col :span='8'>
+            <FormItem label="纳税人识别号" prop="taxPayerNo">
+              <Input v-model="dataForm.taxPayerNo" style='width: 200px;' placeholder=""/>
+            </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col :span='8'>
+            <FormItem label="开户名" prop="accountName">
+              <Input v-model="dataForm.accountName" style='width: 200px;' placeholder=""/>
+            </FormItem>
+          </Col>
+          <Col :span='8'>
+            <FormItem label="公司地址" prop="companyAddress">
+              <Input v-model="dataForm.companyAddress" style='width: 200px;' placeholder=""/>
+            </FormItem>
+          </Col>
+          <Col :span='8'>
+            <FormItem label="公司电话" prop="companyPhone">
+              <Input v-model="dataForm.companyPhone" style='width: 200px;' placeholder=""/>
+            </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col :span='8'>    
+            <FormItem label="银行账号" prop="accountNumber">
+              <Input v-model="dataForm.accountNumber" style='width: 200px;' placeholder=""/>
+            </FormItem>
+          </Col>
+        </Row>
       </Row>
       <div v-auth="'finance.settings:default'" class='titop' v-if='!showbank'>充值信息
         <Button type='success' style='float: right;' @click='showbanktrue'>修改</Button>
@@ -35,19 +55,27 @@
       <div v-auth="'finance.settings:default'" class="cinema-header" v-if='!showbank'>
         <Row>
           <Col span="2"><div>开户行</div></Col>
-          <Col span="8"><span>{{detail.accountBank}}</span></Col>
+          <Col span="6"><span>{{detail.accountBank}}</span></Col>
+          <Col span="2"><div>公司名称</div></Col>
+          <Col span="6"><span>{{detail.companyName}}</span></Col>
+          <Col span="2"><div>纳税人识别号</div></Col>
+          <Col span="6"><span>{{detail.taxPayerNo}}</span></Col>
         </Row>
         <Row>
           <Col span="2"><div>开户名</div></Col>
-          <Col span="8"><span>{{detail.accountName}}</span></Col>
+          <Col span="6"><span>{{detail.accountName}}</span></Col>
+          <Col span="2"><div>公司地址</div></Col>
+          <Col span="6"><span>{{detail.companyAddress}}</span></Col>
+          <Col span="2"><div>公司电话</div></Col>
+          <Col span="6"><span>{{detail.companyPhone}}</span></Col>
         </Row>
         <Row>
           <Col span="2"><div>银行账号</div></Col>
-          <Col span="8"><span>{{detail.accountNumber}}</span></Col>
+          <Col span="6"><span>{{detail.accountNumber}}</span></Col>
         </Row>
       </div>
       <!-- 交易信息 -->
-      <div v-auth="'finance.settings:set-transaction-info'" class='titop' v-if='showmoney'>交易信息
+      <!-- <div v-auth="'finance.settings:set-transaction-info'" class='titop' v-if='showmoney'>交易信息
         <Button type='success' style='float: right;' @click="edittransaction('dataForm')">保存</Button>
       </div>
       <Row v-auth="'finance.settings:set-transaction-info'" class="jiaoyi cinema-header" v-if='showmoney'>
@@ -72,8 +100,8 @@
           </Col>
           <Col span='14' class='tex-al'>&nbsp;元 ， <span style='color:red;'>&nbsp;注：超出部分按照一整个阶梯收取费用</span></Col>
         </Row>
-      </Row>
-      <div v-auth="'finance.settings:default'" class='titop' v-if='!showmoney'>交易信息
+      </Row> -->
+      <!-- <div v-auth="'finance.settings:default'" class='titop' v-if='!showmoney'>交易信息
         <Button type='success' style='float: right;' @click='showmoneytrue'>修改</Button>
       </div>
       <Row v-auth="'finance.settings:default'" class="cinema-header" v-if='!showmoney'>
@@ -85,6 +113,44 @@
           <Col span="2"><div>数字转制费用&nbsp;&nbsp;</div></Col>
           <Col span="14"><span>每{{detail.timeStep}}秒，收取{{detail.stepCost}}元 </span><span style='color:red;margin-left:15px;'>注：超出部分按照一整个阶梯收取费用</span></Col>
         </Row>
+      </Row> -->
+      <div v-auth="'finance.settings:set-transaction-info'" class='titop'>交易信息
+        <Button type='success' style='float: right;' v-if="editIndex === 1" @click="edittransaction('dataForm')">保存</Button>
+        <Button type='success' style='float: right;' @click='chgindex' v-if="editIndex === -1"  >修改</Button>
+      </div>
+      <Row v-auth="'finance.settings:set-transaction-info'" style='padding-bottom: 30px;' class="jiaoyi cinema-header">
+        <Button type="success" @click="handleAdd" icon="md-add" v-if="editIndex === 1">新增</Button>
+        <Table :columns="columns" :data="formDynamic" 
+        border stripe disabled-hover size="small" class="table">
+          <template slot-scope="{ row, index }" slot="begin">
+            <!-- <Input type="text" v-model="editbegin" v-if="editIndex === index" />
+            <span v-else>{{ row.begin }}</span> -->
+            <Input type="text" v-model="row.begin" @on-change='chg(row , index , begin)' v-if="editIndex === 1" />
+            <span v-else>{{ row.begin }}</span>
+          </template>
+          <template slot-scope="{ row, index }" slot="end">
+            <!-- <Input type="text" v-model="editend" v-if="editIndex === index" />
+            <span v-else>{{ row.end }}</span> -->
+             <Input type="text" v-model="row.end" @on-change='chg(row , index , end)' v-if="editIndex === 1" />
+            <span v-else>{{ row.end }}</span>
+          </template>
+          <template slot-scope="{ row, index }" slot="cost">
+            <!-- <Input type="text" v-model="editcost" v-if="editIndex === index" />
+            <span v-else>{{ row.cost }}</span> -->
+            <Input type="text" v-model="row.cost" @on-change='chg(row , index , cost)' v-if="editIndex === 1" />
+            <span v-else>{{ row.cost }}</span>
+          </template>
+          <template  slot="action" slot-scope="{row , index}" >
+            <!-- <div v-if="editIndex === index">
+              <Button @click="handleok(index)">保存</Button>
+              <Button style='margin-left: 10px;' @click="editIndex = -1">取消</Button>
+            </div>
+            <div v-else>
+              <Button @click="handleEdit(row, index)">修改</Button> -->
+              <Button style='margin-left: 10px;' @click="handleRemove(row, index)">删除</Button>
+            <!-- </div> -->
+          </template>
+        </Table>
       </Row>
       <!-- 刊例价 -->
       <div class='titop' v-if='showprice'>默认刊例价
@@ -180,7 +246,7 @@
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import { queryList , bank , transaction , price ,  dataFrom} from '@/api/setup'
+import { queryList , bank , transaction , price ,  dataFrom , cost} from '@/api/setup'
 import { directorList } from '@/api/corpReal'
 import jsxReactToVue from '@/util/jsxReactToVue'
 
@@ -201,6 +267,10 @@ const dataForm = {
   accountBank: null,
   accountName: null,
   accountNumber: null,
+  companyName: null,
+  companyAddress: null,
+  companyPhone: null,
+  taxPayerNo: null,
   proportion: null,
   timeStep: null,
   stepCost: null,
@@ -212,6 +282,7 @@ const dataForm = {
   timeDiscount: null,
   timeShowCount: null,
 }
+
 
 @Component({
   components: {
@@ -225,12 +296,40 @@ export default class Main extends ViewBase {
 
 
   id = 0
+  index: any = 0
 
   showbank = false
   showmoney = false
   showprice = false
 
   dataForm: any = { ...dataForm }
+
+
+  formDynamic: any = [
+    {
+      value: '',
+      index: 1,
+      status: 1
+    }
+  ]
+
+  editIndex: any = -1
+  editbegin: any =  ''
+  editend: any =  ''
+  editcost: any =  ''
+  convertCosts: any = []
+
+  get columns() {
+    const a: any = [
+      { title: '时长起止区间s', slot: 'begin',  align: 'center' },
+      { title: '时长截止区间s', slot: 'end', align: 'center' },
+      { title: '转制费（元）', slot: 'cost', align: 'center' },
+    ]
+    const b: any = [
+      { title: '操作',   slot: 'action', align: 'center' },
+    ]
+    return this.editIndex == 1 ? [...a , ...b] : [...a]
+  }
 
 
   get rules() {
@@ -242,6 +341,57 @@ export default class Main extends ViewBase {
     this.doSearch()
   }
 
+  chgindex() {
+    this.editIndex = 1
+  }
+
+  handleAdd() {
+    this.index = this.formDynamic.length - 1
+    this.index++
+    this.formDynamic.push({
+        begin: '',
+        end: '',
+        cost: '',
+    })
+    this.editIndex = 1
+  }
+  handleRemove(row: any , index: any) {
+    this.editIndex = 1
+    this.formDynamic.splice(index, 1)
+  }
+
+  // handleEdit(row: any, index: any) {
+  //   this.editbegin = row.begin
+  //   this.editend = row.end
+  //   this.editcost = row.cost
+  //   this.editIndex = 1
+  // }
+
+  // handleok(index: any) {
+  //   this.formDynamic[index].begin =  this.editbegin
+  //   this.formDynamic[index].end =  this.editend
+  //   this.formDynamic[index].cost =  this.editcost
+  //   this.editIndex = -1
+  //   this.editbegin = ''
+  //   this.editend = ''
+  //   this.editcost = ''
+  // }
+  // 修改开始时间
+  chgbegin(row: any , index: any) {
+    this.formDynamic[index].begin =  row.begin
+  }
+  // 修改结束时间
+  chgend(row: any , index: any) {
+    this.formDynamic[index].end =  row.end
+  }
+  // 修改转制费
+  chgcost(row: any , index: any) {
+    this.formDynamic[index].cost =  row.cost
+  }
+  chg(row: any , index: any , item: any) {
+    this.formDynamic[index].item =  row.item
+  }
+
   async doSearch() {
      (this.$Spin as any).show()
      this.oldQuery = { ...this.query }
@@ -251,6 +401,14 @@ export default class Main extends ViewBase {
     try {
       const res = await queryList(query)
       this.detail = res.data
+      this.formDynamic = (res.data.convertCosts || []).map((it: any , key: any) => {
+        return {
+          begin: it.begin,
+          end: it.end,
+          cost: it.cost,
+          index: key + 1,
+        }
+      })
       setTimeout(() => {
         (this.$Spin as any).hide()
       }, 1000)
@@ -275,6 +433,10 @@ export default class Main extends ViewBase {
     this.dataForm.accountBank = this.detail.accountBank
     this.dataForm.accountName = this.detail.accountName
     this.dataForm.accountNumber = this.detail.accountNumber
+    this.dataForm.companyName = this.detail.companyName
+    this.dataForm.companyAddress = this.detail.companyAddress
+    this.dataForm.companyPhone = this.detail.companyPhone
+    this.dataForm.taxPayerNo = this.detail.taxPayerNo
   }
 
   // 刊例价
@@ -313,26 +475,37 @@ export default class Main extends ViewBase {
   }
 
   // 提交交易信息
-  edittransaction(dataForms: any) {
-    const myThis: any = this
-    myThis.$refs[dataForms].validate(async ( valid: any ) => {
-      if (valid) {
-        const query =  !this.id ? this.dataForm : {
-          id: this.id,
-          ...this.dataForm
-        }
-        try {
-          const res =  await transaction (query)
+  async edittransaction(dataForms: any) {
+    // const myThis: any = this
+    // myThis.$refs[dataForms].validate(async ( valid: any ) => {
+    //   if (valid) {
+    //     const query =  !this.id ? this.dataForm : {
+    //       id: this.id,
+    //       ...this.dataForm
+    //     }
+    //     try {
+    //       const res =  await transaction (query)
+    //       toast('交易信息操作成功')
+    //       setTimeout(() => {
+    //         this.doSearch()
+    //         this.showmoney = false
+    //       }, 1000)
+    //     } catch (ex) {
+    //       this.handleError(ex)
+    //     }
+    //   }
+    // })
+    this.convertCosts = this.formDynamic
+    try {
+          const res =  await cost ({convertCosts: this.formDynamic})
           toast('交易信息操作成功')
           setTimeout(() => {
             this.doSearch()
-            this.showmoney = false
+            this.editIndex = -1
           }, 1000)
         } catch (ex) {
           this.handleError(ex)
         }
-      }
-    })
   }
 
   // 提交刊例价信息
@@ -453,5 +626,8 @@ export default class Main extends ViewBase {
 }
 .tex-al {
   line-height: 34px;
+}
+/deep/ .ivu-table-wrapper {
+  width: 522px;
 }
 </style>

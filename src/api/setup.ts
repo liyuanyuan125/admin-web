@@ -28,3 +28,10 @@ export async function dataFrom(query: any) {
   return data
 }
 
+// 设置转制费用
+export async function cost(query: any) {
+  const data = await put(`/finance/settings/set-convert-cost` , query)
+  return data
+}
+
+
