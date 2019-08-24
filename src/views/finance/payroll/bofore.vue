@@ -31,6 +31,15 @@
         </div>
       </template>
 
+      <template slot="invoiceType" slot-scope="{ row: { invoiceStatus, invoiceType} }">
+        <div class="row-acts" v-if='invoiceStatus == 1'>
+          无发票
+        </div>
+        <div v-else>
+          {{format(invoiceType)}}
+        </div>
+      </template>
+
       <template slot="action" slot-scope="{ row: { id, invoiceStatus, payStatus } }">
         <div class="row-acts">
           <router-link :to="invoiceRoute([id])" v-if="invoiceStatus == 2">发票登记</router-link>
@@ -54,7 +63,9 @@ import { finishfetch } from './finnish'
 import Pay from './paymodel.vue'
 import { EditDialog, Field } from '@/components/editForm'
 import BatchAudit from '@/components/batchAudit'
+import { toMap } from '@/fn/array'
 
+const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
 @Component({
   components: {
@@ -91,6 +102,11 @@ export default class IndexPage extends ViewBase {
   batchInvoice() {
     const ids = this.selectedIds
     this.$router.push(this.invoiceRoute(ids))
+  }
+
+  format(val: any) {
+    const invkey = makeMap((this.listPage.enumType as any).invoiceTypeCodeList)
+    return val ? invkey[val] : '-'
   }
 
   invoiceRoute(ids: number[]) {
