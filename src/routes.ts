@@ -193,6 +193,16 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  // 客户管理 - 广告主管理 - 审核
+  {
+    path: '/client/ggiser/edit/:id?',
+    name: 'client-ggiser-edit',
+    component: () => import('./views/client/ggiser/edit.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
   // 客户管理 - 公司管理 - 添加、编辑
   {
     path: '/client/corp/edit/:id?',
@@ -207,16 +217,6 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   },
 
   // 客户管理 - 公司管理 - 详情
-  {
-    path: '/client/corp/detail/:id?',
-    name: 'client-corp-detail',
-    component: () => import('./views/client/corp/detail.vue'),
-    meta: {
-      authKey: 'customer.companies:info'
-    }
-  },
-
-   // 客户管理 - 公司管理 - 详情
   {
     path: '/client/corp/detail/:id?',
     name: 'client-corp-detail',
@@ -778,6 +778,16 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     meta: {
       authKey: ''
     }
+  },
+
+  {
+    path: '/finance/examine/newindex/:pay?',
+    name: 'finance-examine-newindex',
+    component: () => import('./views/finance/examine/newindex.vue'),
+    meta: {
+      authKey: ''
+    },
+    props: true,
   },
 
   // 财务管理 - 请款单管理
@@ -1359,9 +1369,9 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   //   }
   // },
 
-  // 映前广告计划 - 详情
+  // 映前广告计划 - 详情 ifs 0 为详情查看页面 1为非详情查看页面
   {
-    path: '/order/beforeplan/detail/:id/:status',
+    path: '/order/beforeplan/detail/:id/:status/:ifs',
     name: 'order-beforeplan-detail',
     component: () => import('./views/order/beforeplan/detail.vue'),
     meta: {

@@ -6,28 +6,55 @@
     <div class='title'>基础信息</div>
     <div class='bos'>
       <Row>
-        <Col :span='12'><span class='spons'>资源方公司&nbsp;：&nbsp;</span>{{listitem.resourceName == null ? '暂无资源方公司' : listitem.resourceName}}</Col>        
+        <Col :span='12'><span class='spons'>资源方公司&nbsp;：&nbsp;</span>{{listitem.resourceName == null ? '暂无资源方公司' : listitem.resourceName}}</Col>
+        <Col :span='12'><span class='spons'>资源方影院名称&nbsp;：&nbsp;</span>【{{listitem.cinemaCode == null ? '暂无影院专资编码' : listitem.cinemaCode}}】 {{listitem.cinemaName == null ? '暂无影院名称' : listitem.cinemaName}}</Col>
       </Row>
       <Row>      
-        <Col :span='12'><span class='spons'>影院名称&nbsp;：&nbsp;</span>【{{listitem.cinemaCode == null ? '暂无影院专资编码' : listitem.cinemaCode}}】 {{listitem.cinemaName == null ? '暂无影院名称' : listitem.cinemaName}}</Col>
+        <Col :span='12'><span class='spons'>影片名称&nbsp;：&nbsp;</span>{{listitem.resourceName == null ? '暂无资源方公司' : listitem.resourceName}}</Col>
+        <Col :span='12'><span class='spons'>包含广告片&nbsp;：&nbsp;</span>共计{{listitem.totalLength}}s
+        <a style='margin-left: 5px;' v-for='(item,index) in listitem.videoDetails' :key='index'>{{item.videoName}} ({{item.videoLength}})s</a>  </Col>
       </Row>
       <Row>
         <Col :span='12'><span class='spons'>投放周期&nbsp;：&nbsp;</span>{{start}} ~ {{end}} &nbsp; 【{{day + 1}}天】</Col>
-      </Row>
-      <Row>
-        <span class='spons'>包含广告片&nbsp;：&nbsp;</span>共计{{listitem.totalLength}}s
-        <a style='margin-left: 5px;' v-for='(item,index) in listitem.videoDetails' :key='index'>{{item.videoName}} ({{item.videoLength}})s</a>  
+        <Col :span='12'><span class='spons'>上传渠道&nbsp;：&nbsp;</span>{{start}} ~ {{end}} &nbsp; 【{{day + 1}}天】</Col>
       </Row>
     </div>
-    <div class='title'>监播文件</div>
-    <div class='bos'>
-      <span v-if='listitem.fileUrl == null'>暂无监播文件</span>
-      <video v-if='listitem.fileUrl != null'  :src='listitem.fileUrl' width='100%' height='50%' controls="controls"></video>
-    </div>
-    <div class='title' v-if='listitem.approvalStatus == 2'>审核</div>
+    <div class='title' v-if='listitem.approvalStatus == 2 || listitem.approvalStatus == 4'>监播审核</div>
+    <Row class='bos' v-if='listitem.approvalStatus == 2 || listitem.approvalStatus == 4'>
+      <Col :span='15'>
+        <span v-if='listitem.fileUrl == null'>暂无监播文件</span>
+        <video v-if='listitem.fileUrl != null'  :src='listitem.fileUrl'  width='93%' height='60%'  controls="controls"></video>
+      </Col>
+      <Col :span='9'>
+        <Row style='margin-top: -14px;font-size: 12px;'>通过监播视频选择未通过审核的广告片，并选择审核未通过的原因</Row>
+        <Row style='margin-top: -18px;color: red;font-size: 12px;'>如未勾选，则表示该广告审核成功，正常财务结算</Row>
+        <Row  class='mainRow'>
+          <Form style='margin-top: -18px;padding-left: 20px;' ref="dataForm" :model="dataForm" label-position="left" :label-width="80">
+             <Checkbox  :indeterminate="indeterminate" :value="checkAll"  @click.prevent.native="handleCheckAll">全选</Checkbox>
+              <FormItem label="" prop="closeReason">
+                <CheckboxGroup  v-model="dataForm.orderIds" >
+                  <Checkbox  v-for="(it,index) in listitem.videoDetails" :key="it.index" :value="it.orderId" :label="it.orderId" :disabled='listitem.approvalStatus == 4'>{{it.videoName}} ({{it.videoLength}})s</Checkbox ></br>
+                </CheckboxGroup >
+              </FormItem>
+          </Form>
+          <Form style='margin-top: -27px;padding-left: 20px;background: #eee;' v-if='dataForm.orderIds.length != 0'  ref="dataForm" :model="dataForm" label-position="left" :label-width="80">
+            <Row>审核未通过的原因</Row>
+            <FormItem label="" prop="closeReason">
+              <CheckboxGroup  v-model="dataForm.reasonOrderIds" >
+                <Checkbox  v-for="(it,index) in reason" :key="it.index" :value="it.orderId" :label="it.orderId" :disabled='listitem.approvalStatus == 4'>{{it.videoName}} </Checkbox>
+              </CheckboxGroup >
+            </FormItem>
+          </Form>
+        </Row>
+        <div   class="dialog-footer">
+          <Button type="primary"   @click="dataFormSubmit">提交</Button>
+          <Button type="primary" style='margin-left: 20px;' @click="nextSubmit">提交并继续审核</Button>
+        </div>
+      </Col>
+    </Row>
+<!--     <div class='title' v-if='listitem.approvalStatus == 2'>审核</div>
     <div class='bos' v-if='listitem.approvalStatus == 2'>
        <Form ref="dataForm" :model="dataForm" label-position="left" :label-width="80">
-      <!-- <video src="" width='100%' height='50%' controls="controls"></video> -->
       <FormItem label="审核意见" prop="closeReason">
         <RadioGroup v-model="statusform.status" >
           <Radio v-for="it in appList" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
@@ -47,14 +74,14 @@
       <Button @click="cancel">取消</Button>
       <Button type="primary" style='margin-left: 20px;' @click="change('dataForm')">确定</Button>
     </div>
-    </div>
-    <div class='title'>操作记录</div>
-    <div class='bos' v-if='logList.length != 0'>
+    </div> -->
+    <div v-if='listitem.approvalStatus != 2' class='title'>操作记录</div>
+    <div class='bos' v-if='listitem.approvalStatus != 2 && logList.length != 0'>
       <Row v-for='(logit,index) in logList' :key='index'>
         {{logit.createTime}} {{logit.email}}【{{logit.userName}}】{{logit.description}}
       </Row>
     </div>
-    <div class='bos' v-if='logList.length == 0'>
+    <div class='bos' v-if='listitem.approvalStatus != 2 && logList.length == 0'>
       暂无操作日志
     </div>
   </div>
@@ -88,7 +115,8 @@ const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 export default class Main extends ViewBase {
   dataForm = {
     closeReason: '',
-    orderIds: []
+    orderIds: [],
+    reasonOrderIds: []
   }
 
 
@@ -118,6 +146,54 @@ export default class Main extends ViewBase {
     }
   ]
 
+  reason: any = [
+    {
+      orderId: 113,
+      orderStatus: 0,
+      videoId: 300,
+      videoLength: 15,
+      videoName: '视频未展示完整屏幕'
+    },
+    {
+      orderId: 113,
+      orderStatus: 0,
+      videoId: 300,
+      videoLength: 15,
+      videoName: '视频未出现广告'
+    },
+    {
+      orderId: 113,
+      orderStatus: 0,
+      videoId: 300,
+      videoLength: 15,
+      videoName: '视频未出现广告品牌的名称'
+    },
+    {
+      orderId: 113,
+      orderStatus: 0,
+      videoId: 300,
+      videoLength: 15,
+      videoName: '视频未播放完整的广告'
+    },
+    {
+      orderId: 113,
+      orderStatus: 0,
+      videoId: 300,
+      videoLength: 15,
+      videoName: '视频未出现影片龙标'
+    },
+    {
+      orderId: 113,
+      orderStatus: 0,
+      videoId: 300,
+      videoLength: 15,
+      videoName: '视频未出现影片名称'
+    }
+  ]
+
+  // 存储数据需要调用接口的参数列
+  videoIdsList: any = {}
+
 
 
   mounted() {
@@ -134,28 +210,76 @@ export default class Main extends ViewBase {
     this.statusform.status = 1
   }
 
-  // 审核确定按钮
-  change(dataForms: any) {
-    const myThis: any = this
-    myThis.$refs[dataForms].validate(async ( valid: any ) => {
-      if (valid) {
-        if (this.statusform.status == 1) {
-          try {
-            const res =  await okpass (this.$route.params.id , {orderIds : this.dataForm.orderIds})
-            this.$router.push({ name : 'order-supervision' })
-          } catch (ex) {
-            this.handleError(ex)
-          }
-        } else if (this.statusform.status == 2) {
-          try {
-            const res =  await refuse (this.$route.params.id , {closeReason : this.dataForm.closeReason})
-            this.$router.push({ name : 'order-supervision' })
-          } catch (ex) {
-            this.handleError(ex)
-          }
-        }
+  // // 审核确定按钮
+  // change(dataForms: any) {
+  //   const myThis: any = this
+  //   myThis.$refs[dataForms].validate(async ( valid: any ) => {
+  //     if (valid) {
+  //       if (this.statusform.status == 1) {
+  //         try {
+  //           const res =  await okpass (this.$route.params.id , {orderIds : this.dataForm.orderIds})
+  //           this.$router.push({ name : 'order-supervision' })
+  //         } catch (ex) {
+  //           this.handleError(ex)
+  //         }
+  //       } else if (this.statusform.status == 2) {
+  //         try {
+  //           const res =  await refuse (this.$route.params.id , {closeReason : this.dataForm.closeReason})
+  //           this.$router.push({ name : 'order-supervision' })
+  //         } catch (ex) {
+  //           this.handleError(ex)
+  //         }
+  //       }
+  //     }
+  //   })
+  // }
+
+  // 提交并继续审核
+  async nextSubmit() {
+    if (this.dataForm.orderIds.length != 0) {
+      if (this.dataForm.reasonOrderIds.length == 0) {
+        info('请选择未通过原因')
+        return
       }
-    })
+    }
+    const dataItem: any = JSON.parse((sessionStorage.getItem('supinfo') as any))
+    this.videoIdsList = {
+      query: dataItem.query, // 广告片id或者名称
+      companyId: dataItem.companyId, // 公司Id
+      status: dataItem.status, // 状态
+      translated: dataItem.translated, // 1：转制；2：未转制
+      skip: dataItem.skip, // 跳过的记录数
+      maxSize: dataItem.maxSize, // 最大返回数据量
+    }
+    // 如果没有videoIds存储值则代表没有请求过ids列表
+    if (JSON.parse((sessionStorage.getItem('videoIds') as any)) == null ) {
+      try {
+        // const res =  await okpass (this.videoIdsList) // 请求500的存储总量
+        // const videoIds = res.data.items || []
+        // sessionStorage.setItem('videoIds', JSON.stringify(videoIds.slice(1))) // 存储总量-1
+        // this.$router.push({ name : 'order-supervision' , params: {id: videoIds[0]} })
+      } catch (ex) {
+        this.handleError(ex)
+      }
+    } else { // 如果有则是详情-详情页面
+      const dataItemIds: any = JSON.parse((sessionStorage.getItem('videoIds') as any))
+      if (dataItemIds.length > 0 && dataItemIds.length < 499) { // 判断剩余存储的数值是否超过存储总量
+        sessionStorage.removeItem('videoIds') // 先清空原存值，在存新值
+        sessionStorage.setItem('videoIds', JSON.stringify(dataItemIds.slice(1))) // 存储新值
+        this.$router.push({ name : 'order-supervision' , params: {id: dataItemIds[0]} })
+      }
+    }
+  }
+
+    // 提交审核拒绝原因
+  dataFormSubmit() {
+    if (this.dataForm.orderIds.length != 0) {
+      if (this.dataForm.reasonOrderIds.length == 0) {
+        info('请选择未通过原因')
+        return
+      }
+    }
+
   }
 
   async search() {
@@ -234,10 +358,28 @@ export default class Main extends ViewBase {
 }
 .spons {
   display: inline-block;
-  width: 100px;
-  text-align: right;
+  width: 120px;
+  text-align: left;
+}
+.mainRow {
+  overflow-y: auto;
+  padding: 4px;
+  height: 320px;
+  &&::-webkit-scrollbar {
+    display: none;
+  }
 }
 /deep/ .ivu-form .ivu-form-item-label {
   font-size: 14px;
+}
+/deep/ .ivu-form-item-content {
+  margin-left: 0 !important;
+  line-height: 26px !important;
+}
+/deep/ video {
+  height: 350px;
+}
+/deep/ .ivu-checkbox-group-item {
+  width: 100%;
 }
 </style>

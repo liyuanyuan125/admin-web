@@ -3,11 +3,11 @@
     <div  v-if="shows">
       <div class="act-bar flex-box">
         <form class="form flex-1" @submit.prevent="search">
-          <!-- <LazyInput v-model="query.id" placeholder="订单编号" class="input"/> -->
+          <LazyInput v-model="query.id" placeholder="订单编号" class="input"/>
           <Select v-model="query.xadvertiserId" placeholder="广告主公司名称" style='width: 200px;'  filterable>
             <Option v-for="it in adscompany" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
-          </Select>
+dlgEditDone          </Select>
           <Select v-model="query.planId" placeholder="广告计划名称" style='width: 200px;'  filterable>
             <Option v-for="it in planlist" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
@@ -20,16 +20,35 @@
             <Option v-for="it in statusList" v-if='it.key != 0' :key="it.key" :value="it.key"
               :label="it.text">{{it.text}}</Option>
           </Select>
-          <!-- <Select v-model="query.status" placeholder="广告类型" style='width: 200px;' clearable>
-            <Option v-for="it in statusList" v-if='it.key != 0' :key="it.key" :value="it.key"
+          <Select v-model="query.xadvertType" placeholder="广告类型" style='width: 200px;' clearable>
+            <Option v-for="it in advertTypeCodeList" v-if='it.key != 0' :key="it.key" :value="it.key"
               :label="it.text">{{it.text}}</Option>
-          </Select> -->
-          <!-- <LazyInput v-model="query.id" placeholder="影院名称/专资编码查询" class="input"/> -->
+          </Select>
+           <Select
+             class='sels'
+             v-model='query.cinemaId'
+             clearable
+             filterable
+             placeholder="请输入影院名称/专资编码查询"
+             style='width: 200px;'
+             remote
+             :remote-method="remoteMethod"
+             @on-clear="movieList = []"
+              >
+              <Option
+                v-for="(item, index) in movieList"
+                :key="index"
+                :value="item.id"
+              >【{{item.code}}】{{item.shortName}}</Option>
+            </Select>
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </form>
       </div>
       <Table :columns="columns" :data="tableData" :loading="loading"
         border stripe disabled-hover size="small" class="table">
+        <template slot="targetCount" slot-scope="{row}">
+          <span>{{row.receiveCount}} / {{row.targetCount}}</span>
+        </template>
           <template slot="spaction" slot-scope="{row}">
           <!-- <a v-show='row.status == 3' v-auth="'advert.executeOrder:settlement'" @click="change(row.id, row)">结算</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
           <router-link v-show='row.status == 3' v-auth="'advert.executeOrder:info'" :to="{ name: 'order-list-detail', params: { id: row.id , status: row.status } }">详情</router-link>
@@ -54,7 +73,7 @@ import { Component, Watch , Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { queryList , company , planlist } from '@/api/orderSys'
+import { queryList , company , planlist , movielist} from '@/api/orderSys'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
@@ -81,10 +100,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   defQuery = {
     pageIndex: 1,
     pageSize: 20,
+    id: null,
     resourceId: null,
     xadvertiserId: null,
+    cinemaId: null,
     planId: null,
-    planType: null,
+    xadvertType: null,
     status: null,
   }
   query: any = {}
@@ -97,6 +118,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   examine = false
 
   loading = false
+  loadings = false
   list = []
   total = 0
   oldQuery: any = {}
@@ -106,13 +128,15 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   // 状态列表
   statusList: any = []
   // 计划状态列表
-  planTypeList: any = []
+  advertTypeCodeList: any = []
   // 计划列表
   planlist: any = []
   // 广告主公司列表
   adscompany: any = []
   // 资源方公司列表
   resourcescompany: any = []
+  // 影院列表
+  movieList: any = []
 
 
 
@@ -121,34 +145,21 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     { title: '广告主公司名称', key: 'advertiserName', align: 'center' },
     { title: '广告计划',  key: 'planName', align: 'center' },
     { title: '资源方公司名称', key: 'resourceName', align: 'center' },
-    // { title: '广告类型', key: 'planType', align: 'center', width: 90,
-    //   render: (hh: any, { row: { planType } }: any) => {
-    //     /* tslint:disable */
-    //     const h = jsxReactToVue(hh)
-    //     if (planType == 1) {
-    //       return <span>标准单</span>
-    //     } else if (planType == 2) {
-    //       return <span>加速单</span>
-    //     } else if (planType == 3) {
-    //       return <span>优享单</span>
-    //     }
-    //     /* tslint:enable */
-    //   }
-    // },
-    // { title: '接单影院/派单影院', key: 'planType', align: 'center', width: 90,
-    //   render: (hh: any, { row: { planType } }: any) => {
-    //     /* tslint:disable */
-    //     const h = jsxReactToVue(hh)
-    //     if (planType == 1) {
-    //       return <span>标准单</span>
-    //     } else if (planType == 2) {
-    //       return <span>加速单</span>
-    //     } else if (planType == 3) {
-    //       return <span>优享单</span>
-    //     }
-    //     /* tslint:enable */
-    //   }
-    // },
+    { title: '广告类型', key: 'advertType', align: 'center', width: 90,
+      render: (hh: any, { row: { advertType } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        if (advertType == 1) {
+          return <span>品牌</span>
+        } else if (advertType == 2) {
+          return <span>预告片</span>
+        } else {
+          return <span>-</span>
+        }
+        /* tslint:enable */
+      }
+    },
+    { title: '接单影院/派单影院', slot: 'targetCount', align: 'center', width: 90},
     {
       title: '接单时间',
       key: 'createTime',
@@ -216,6 +227,25 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     return list
   }
 
+
+  async remoteMethod(querys: any) {
+    try {
+      if (querys) {
+        this.loadings = true
+        const {
+          data: { items }
+        } = await movielist({
+          query: querys,
+        })
+        this.movieList = items || []
+      }
+      this.loading = false
+    } catch (ex) {
+      this.handleError(ex)
+      this.loading = false
+    }
+  }
+
   mounted() {
     this.updateQueryByParam()
   }
@@ -255,12 +285,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         items: list,
         totalCount: total,
         statusList: statusList,
-        planTypeList: planTypeList
+        advertTypeCodeList: advertTypeCodeList
       } } = await queryList(query)
       this.list = list
       this.total = total
       this.statusList = statusList
-      this.planTypeList = planTypeList
+      this.advertTypeCodeList = advertTypeCodeList
     // 广告计划列表
     const plandata = await planlist({pageSize: 100000})
     this.planlist = plandata.data.items
