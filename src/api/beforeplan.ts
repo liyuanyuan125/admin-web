@@ -135,3 +135,16 @@ export async function addList(id: any) {
   return data
 }
 
+
+// 导入影院
+// https://yapi.aiads-dev.com/project/140/interface/api/6093
+export async function importCinema(id: any) {
+  const data = await post(`/xadvert/plans/${id}/import-cinema` )
+  return data
+}
+
+
+
+
+
+
