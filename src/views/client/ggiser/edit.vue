@@ -308,7 +308,7 @@
               label="客户类型"
             >
             <Select
-                v-model="item.typeCategoryCode0"
+                v-model="singtype[0].typeCategoryCode"
                 class="flex-1"
                 clearable
               >
@@ -323,7 +323,7 @@
           </Col>
         </Row>
 
-        <Row v-if="item.typearr[0]">
+        <Row v-if="item.typearr[0] || item.companyType == 2">
           <FormItem label="关联品牌">
             <BrandPane
               v-model="brandIds"
@@ -396,7 +396,6 @@ const defItem = {
   qualificationType: 'BL',
   qualificationCode: '',
   images: [],
-
   // 动态表单
   // qualificationArray: [
   //   {
@@ -405,6 +404,7 @@ const defItem = {
   //     status: 1
   //   }
   // ]
+
   types: [
     {
       typeCode: '',
@@ -448,6 +448,7 @@ export default class Main extends ViewBase {
   cityIds: any = []
   b: any = {}
   levelList = []
+  singtype: any = [{typeCode: 'ads', typeCategoryCode: 'zhike'}]
   customerTypeList: any = [] // 区代理
   bizUserList = []
   businessParentTypeList = [] // 一级行业
@@ -849,12 +850,12 @@ export default class Main extends ViewBase {
         })
         const business = this.item.businessParentCode.length > 0 ? {
           businessParentCode: this.item.businessParentCode[0],
-          businessChildCode: this.item.businessParentCode[1] || '',
+          businessChildCode: this.item.businessParentCode[1] == '0' ? '' : this.item.businessParentCode[1],
         } : {}
         const formData: any = {
           ...newqQuery,
           ...business,
-          types: (types as any[] || []).filter(it => it.typeCode != ''),
+          types: this.item.companyType == 2 ? this.singtype : (types as any[] || []).filter(it => it.typeCode != ''),
           cinemas: this.item.typearr[1] ? this.cinemas : [],
           brandIds: this.item.typearr[0] ? this.brandIds : [],
           email: this.item.companyType == 1 ? this.item.email : this.item.singemail,
@@ -863,6 +864,18 @@ export default class Main extends ViewBase {
         }
 
         // 删除某些多余的字段
+        if (this.item.companyType == 2) {
+          delete formData.coverCityIdList
+          delete formData.businessParentCode
+          delete formData.businessParentCode
+          delete formData.cinemas
+          delete formData.provinceId
+          delete formData.cityId
+          delete formData.countyId
+          delete formData.addressDetail
+          delete formData.name
+          delete formData.shortName
+        }
         delete formData.brandList
         delete formData.singcontactTel
         delete formData.singcontact
