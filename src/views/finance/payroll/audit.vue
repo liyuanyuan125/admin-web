@@ -93,7 +93,7 @@ export default class IndexPage extends ViewBase {
     this.items = res.data.items || null
     if ( this.items && this.items.length > 0 ) {
       this.disabledIds = this.items.filter((it: any) => {
-        return it.approveStatus === 1
+        return it.approveStatus !== 1
       }).map((item: any) => {
         return item.id
       })
