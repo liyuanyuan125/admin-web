@@ -251,6 +251,7 @@ export default class IndexPage extends ViewBase {
   enums = [
     'invoiceTypeList',
     'invoiceContentList',
+    'invoiceStatusList'
   ]
 
   get formatNumber() {
@@ -283,6 +284,7 @@ export default class IndexPage extends ViewBase {
       { title: '付款金额', slot: 'actualAmount', width: 60},
     ]
     const overlist: any = [
+      { title: '发票状态', key: 'invoiceStatus', width: 65, editor: 'enum' },
       { title: '发票类型', key: 'invoiceType', width: 65, editor: 'enum' },
       { title: '发票内容', key: 'invoiceContent', width: 65, editor: 'enum' },
       { title: '发票号', key: 'invoiceNo', width: 65},
