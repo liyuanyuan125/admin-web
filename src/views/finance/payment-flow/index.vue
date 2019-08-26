@@ -15,6 +15,7 @@ import { formatConversion } from '@/util/validateRules'
 import { cloneDeep } from 'lodash'
 import { confirm, info } from '@/ui/modal.ts'
 import moment from 'moment'
+import { startDayTimestamp, endDayTimestamp } from '@/util/dealData'
 
 @Component({
   components: {
@@ -33,36 +34,59 @@ export default class Main extends ViewBase {
       defaultValue: '',
       input: true,
       width: 85,
+      placeholder: '广告计划单编号'
+    },
+
+    {
+      name: 'applyTime',
+      defaultValue: '',
+      dateRange: true,
+      width: 178,
+      placeholder: '支付创建日期区间',
+      dealParam(value: any) {
+        const [start, end] = value.split('-')
+        return {
+          applyStartTime: startDayTimestamp(start),
+          applyEndTime: endDayTimestamp(end),
+        }
+      }
+    },
+
+    {
+      name: 'busType',
+      defaultValue: 0,
+      select: {
+        enumKey: 'busTypeList',
+      },
+      width: 128,
+      placeholder: '业务类型'
+    },
+
+    {
+      name: 'payTypeList',
+      defaultValue: 0,
+      select: {
+        enumKey: 'payStatusList',
+      },
+      width: 128,
+      placeholder: '支付方式'
+    },
+
+    {
+      name: 'payNumber',
+      defaultValue: '',
+      input: true,
+      width: 188,
+      placeholder: '支付流水'
+    },
+
+    {
+      name: 'orderNo',
+      defaultValue: '',
+      input: true,
+      width: 188,
       placeholder: '订单号'
     },
-    // {
-    //   name: 'brandName',
-    //   defaultValue: '',
-    //   type: 'input',
-    //   width: 85,
-    //   placeholder: '品牌名称待处理'
-    // },
-    // {
-    //   name: 'companyName',
-    //   defaultValue: '',
-    //   type: 'input',
-    //   width: 200,
-    //   placeholder: '公司名称'
-    // },
-    // {
-    //   name: 'dateRange',
-    //   defaultValue: '',
-    //   type: 'dateRange',
-    //   width: 200,
-    //   placeholder: '选择时间',
-    //   dealParam(value: string) {
-    //     const [applyStartTime, applyEndTime] = value ? value.split('-') : [null, null]
-    //     return {
-    //       applyStartTime,
-    //       applyEndTime
-    //     }
-    //   }
-    // }
 
     {
       name: 'pageIndex',
@@ -75,18 +99,20 @@ export default class Main extends ViewBase {
     }
   ]
 
-  enums = [
-    'brandRelationType'
-  ]
+  enums = []
 
   get columns() {
     return [
       { title: '序号', key: 'id', width: 65 },
-      { title: '订单号', key: 'orderNo', width: 80 },
-      // { title: '影院名称', key: 'companyName', minWidth: 120 },
-      // { title: '专资编码', key: 'brandId', width: 80 },
-      // { title: '所属影管', key: 'brandName', minWidth: 120 },
-      // { title: '关联资源方', key: 'brandName', minWidth: 120 }
+      { title: '广告计划单编号', key: 'planId', width: 120 },
+      { title: '订单号', key: 'orderNo', minWidth: 120 },
+      { title: '支付流水', key: 'payNumber', width: 120 },
+      { title: '支付金额', key: 'payAmount', minWidth: 120 },
+      { title: '渠道', key: 'payChannel', minWidth: 120, enum: true },
+      { title: '业务类型', key: 'busType', minWidth: 120, enum: true },
+      { title: '支付状态', key: 'payStatus', minWidth: 120, enum: true },
+      { title: '支付创建时间', key: 'createTime', minWidth: 120, dateTime: true },
+      { title: '支付完成时间', key: 'finishTime', minWidth: 120, dateTime: true }
     ] as ColumnExtra[]
   }
 }

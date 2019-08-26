@@ -15,6 +15,7 @@ import { formatConversion } from '@/util/validateRules'
 import { cloneDeep } from 'lodash'
 import { confirm, info } from '@/ui/modal.ts'
 import moment from 'moment'
+import { startDayTimestamp, endDayTimestamp } from '@/util/dealData'
 
 @Component({
   components: {
@@ -33,36 +34,69 @@ export default class Main extends ViewBase {
       defaultValue: '',
       input: true,
       width: 85,
-      placeholder: '广告计划单号'
+      placeholder: '广告计划单编号'
     },
-    // {
-    //   name: 'brandName',
-    //   defaultValue: '',
-    //   type: 'input',
-    //   width: 85,
-    //   placeholder: '品牌名称待处理'
-    // },
-    // {
-    //   name: 'companyName',
-    //   defaultValue: '',
-    //   type: 'input',
-    //   width: 200,
-    //   placeholder: '公司名称'
-    // },
-    // {
-    //   name: 'dateRange',
-    //   defaultValue: '',
-    //   type: 'dateRange',
-    //   width: 200,
-    //   placeholder: '选择时间',
-    //   dealParam(value: string) {
-    //     const [applyStartTime, applyEndTime] = value ? value.split('-') : [null, null]
-    //     return {
-    //       applyStartTime,
-    //       applyEndTime
-    //     }
-    //   }
-    // }
+
+    {
+      name: 'applyTime',
+      defaultValue: '',
+      dateRange: true,
+      width: 178,
+      placeholder: '支付创建日期区间',
+      dealParam(value: any) {
+        const [start, end] = value.split('-')
+        return {
+          applyStartTime: startDayTimestamp(start),
+          applyEndTime: endDayTimestamp(end),
+        }
+      }
+    },
+
+    {
+      name: 'refundBusType',
+      defaultValue: 0,
+      select: {
+        enumKey: 'refundBusTypeList',
+      },
+      width: 128,
+      placeholder: '业务类型'
+    },
+
+    {
+      name: 'refundPayType',
+      defaultValue: 0,
+      select: {
+        enumKey: 'refundPayTypeList',
+      },
+      width: 128,
+      placeholder: '支付方式'
+    },
+
+    {
+      name: 'refundNumber',
+      defaultValue: '',
+      input: true,
+      width: 188,
+      placeholder: '支付流水'
+    },
+
+    {
+      name: 'refundNo',
+      defaultValue: '',
+      input: true,
+      width: 188,
+      placeholder: '退款单'
+    },
+
+    {
+      name: 'refundStatus',
+      defaultValue: 0,
+      select: {
+        enumKey: 'refundStatusList',
+      },
+      width: 128,
+      placeholder: '退款状态'
+    },
 
     {
       name: 'pageIndex',
@@ -75,18 +109,22 @@ export default class Main extends ViewBase {
     }
   ]
 
-  enums = [
-    'brandRelationType'
-  ]
+  enums = []
 
   get columns() {
     return [
       { title: '序号', key: 'id', width: 65 },
-      { title: '订单号', key: 'planId', width: 80 },
-      // { title: '影院名称', key: 'companyName', minWidth: 120 },
-      // { title: '专资编码', key: 'brandId', width: 80 },
-      // { title: '所属影管', key: 'brandName', minWidth: 120 },
-      // { title: '关联资源方', key: 'brandName', minWidth: 120 }
+      { title: '广告计划单编号', key: 'planId', width: 120 },
+      { title: '支付流水', key: 'refundNumber', minWidth: 120 },
+      { title: '退款单', key: 'refundNo', width: 120 },
+      { title: '支付方式', key: 'refundPayType', minWidth: 120, enum: true },
+      { title: '退款方式', key: 'refundType', minWidth: 120, enum: true },
+      { title: '退款金额', key: 'refundAmount', minWidth: 120 },
+      { title: '业务类型', key: 'refundBusType', minWidth: 120, enum: true },
+      { title: '退款原因', key: 'refundReason', minWidth: 120, enumKey: 'refundTypeList' },
+      { title: '退款状态', key: 'refundStatus', minWidth: 120, enum: true },
+      { title: '退款创建时间', key: 'createTime', minWidth: 120, dateTime: true },
+      { title: '退款完成时间', key: 'finishTime', minWidth: 120, dateTime: true }
     ] as ColumnExtra[]
   }
 }
