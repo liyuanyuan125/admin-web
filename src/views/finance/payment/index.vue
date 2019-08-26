@@ -301,7 +301,7 @@ export default class IndexPage extends ViewBase {
       { title: '付款完成时间', key: 'payTime', width: 75, editor: 'dateTime' },
     ]
 
-    return this.status == '2' ? [...firstID, ...two , ...overmoney , ...overlist, ...threeID] :
+    return this.status == '2' ? [...firstN, ...two , ...overmoney , ...overlist, ...threeID] :
     [...firstN, ...two , ...overlist, ...threeN ] as ColumnExtra[]
   }
 

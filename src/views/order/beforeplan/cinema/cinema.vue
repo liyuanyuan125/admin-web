@@ -97,10 +97,7 @@ const getName = (id: number, list: any[]) => {
   return res
 }
 
-const uploader: any = new Uploader({
-  // filePostUrl: `/xadvert/plans/` + ((this.$route.params.id) as any) + `/import-cinema`,
-  fileFieldName: 'file',
-})
+
 
 
 const dataForm = {
@@ -248,6 +245,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   // 批量导入影院
   async onChange(ev: Event) {
+    const uploader: any = new Uploader({
+      filePostUrl: `/xadvert/plans/` + this.$route.params.id + `/import-cinema`,
+      fileFieldName: 'file',
+    })
     const input = ev.target as HTMLInputElement
     this.file = input.files && input.files[0]
     this.inputhtml = this.file.name
