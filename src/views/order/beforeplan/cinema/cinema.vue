@@ -53,9 +53,8 @@
       </div>
       <div class="act-bar">
         <a @click="onAdd" v-if="!type && $route.params.status == 2 || $route.params.status == 3 || $route.params.status == 4 || $route.params.status == 10 || $route.params.status == 6 || $route.params.status == 7" @done="dlgEditDone">添加影院</a>&nbsp;&nbsp;&nbsp;
-        <Button v-if='$route.params.ifs == 1 && ($route.params.status == 4 || $route.params.status == 6 || $route.params.status == 7)' type="primary" @click='cinemaImport'>批量导入</Button>
-        <Form class="create-form form-item"   enctype="multipart/form-data" ref="form"
-          :label-width="120">上传文件
+        <Form v-if='$route.params.ifs == 1 && ($route.params.status == 4 || $route.params.status == 6 || $route.params.status == 7)' class="create-form form-item"   enctype="multipart/form-data" ref="form"
+          :label-width="120">批量导入
           <input type="file" class='adds' @change="onChange" />
         </Form>
         <span class='viewhtml'>{{inputhtml}}</span>
@@ -509,4 +508,28 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   border: 1px solid #ccc;
   padding: 15px;
 }
+.create-form {
+  position: relative;
+  display: block;
+  float: left;
+  width: 83px;
+  background: #2d8cf0;
+  border: 1px solid #99d3f5;
+  border-radius: 4px;
+  padding: 4px 12px;
+  overflow: hidden;
+  color: #fff;
+  text-decoration: none;
+  text-indent: 0;
+  line-height: 26px;
+}
+.adds {
+  width: 200px;
+  position: absolute;
+  font-size: 100px;
+  left: 0;
+  top: 0;
+  opacity: 0;
+}
+
 </style>

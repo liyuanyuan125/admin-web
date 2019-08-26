@@ -20,6 +20,14 @@
       @inspect='onInspect'
     >
 
+      <template slot="acts">
+        <Button
+          type="default"
+          class="button-audit"
+          @click="exportData"
+        >导出</Button>
+      </template>
+
       <template slot="acts-2">
         <Button
           v-if=' astatus == 2'
@@ -36,7 +44,7 @@
           @click="changeAll"
         >批量恢复</Button>
         <span v-else  ></span>
-         </template>
+      </template>
 
       <template  slot="video" slot-scope="{row}" >
         <a style='margin-left: 5px;' v-for='(item,index) in row.videoList' :key='index'>{{item.videoName}} ({{item.videoLength}})s</a>
@@ -109,6 +117,7 @@ export default class IndexPage extends ViewBase {
   fetch = queryList
 
   query: any = null
+  list: any = []
 
   selectedIds = [] as number[]
 
@@ -291,12 +300,22 @@ export default class IndexPage extends ViewBase {
     this.listPage.update()
   }
 
-  onInspect({ query }: any) {
+  onInspect({ query , list }: any) {
     this.query = query
+    this.list = list
   }
 
   async mounted() {
     this.listPage.query.status = 2
+  }
+
+  // 下载
+  exportData() {
+    (this.$refs.listPage as any).exportCsv({
+      filename: '映前广告监播列表',
+      columns: this.columns,
+      data: this.list
+    })
   }
 
   localitem(id: number, row: any , index: any) {

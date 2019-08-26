@@ -251,6 +251,7 @@ export default class IndexPage extends ViewBase {
   enums = [
     'invoiceTypeList',
     'invoiceContentList',
+    'invoiceStatusList'
   ]
 
   get formatNumber() {
@@ -283,6 +284,7 @@ export default class IndexPage extends ViewBase {
       { title: '付款金额', slot: 'actualAmount', width: 60},
     ]
     const overlist: any = [
+      { title: '发票状态', key: 'invoiceStatus', width: 65, editor: 'enum' },
       { title: '发票类型', key: 'invoiceType', width: 65, editor: 'enum' },
       { title: '发票内容', key: 'invoiceContent', width: 65, editor: 'enum' },
       { title: '发票号', key: 'invoiceNo', width: 65},
@@ -342,11 +344,30 @@ export default class IndexPage extends ViewBase {
   // }
   @Watch('status')
   watchstatus(pay: any) {
+    this.listPage.query = {
+      applyNo: '',
+      billMonth: null,
+      billNo: '',
+      cinemaCode: '',
+      cinemaId: 0,
+      dateRange1: '',
+      dateRange2: '',
+      dateRange3: '',
+      invoiceContent: 0,
+      invoiceType: 0,
+      no: '',
+      pageIndex: 1,
+      pageSize: 20,
+      resourceId: 0,
+      status: pay,
+    }
+
     this.$router.push({
       name: 'finance-payment',
       params: pay == defaultPay ? {} : { pay }
     })
   }
+
 
   @Watch('pay')
   watchPay(pay: any) {
