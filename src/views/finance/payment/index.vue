@@ -345,6 +345,24 @@ export default class IndexPage extends ViewBase {
   // }
   @Watch('status')
   watchstatus(pay: any) {
+    this.listPage.query = {
+      applyNo: '',
+      billMonth: null,
+      billNo: '',
+      cinemaCode: '',
+      cinemaId: 0,
+      dateRange1: '',
+      dateRange2: '',
+      dateRange3: '',
+      invoiceContent: 0,
+      invoiceType: 0,
+      no: '',
+      pageIndex: 1,
+      pageSize: 20,
+      resourceId: 0,
+      status: pay,
+    }
+
     this.$router.push({
       name: 'finance-payment',
       params: pay == defaultPay ? {} : { pay }
