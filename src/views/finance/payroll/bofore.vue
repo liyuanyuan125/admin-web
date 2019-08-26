@@ -5,12 +5,14 @@
       :filters="filters"
       :enums="enums"
       :columns="columns"
-      selectable
+      :selectable='val ? true : false'
+      :disabledIds="disabledIds"
       :selectedIds.sync="selectedIds"
       ref="listPage"
     >
       <template slot="acts-2">
         <Button
+          v-if='val && val == 1'
           type="primary"
           class="button-invoice"
           :disabled="!(selectedIds.length > 0)"
@@ -18,11 +20,16 @@
         >批量发票登记</Button>
 
         <Button
+          v-if='val && val == 2'
           type="primary"
           class="button-pay"
           :disabled="!(selectedIds.length > 0)"
           @click="pay(selectedIds)"
-        >批量发票付款</Button>
+        >批量申请付款</Button>
+        <Select @on-change='chanselect' v-model="val" placeholder='发票操作' clearable style="width:150px">
+            <Option :value="1" >批量发票登记</Option>
+            <Option :value="2" >批量申请付款</Option>
+        </Select>
       </template>
 
       <template slot="month" slot-scope="{ row: { year, month } }">
@@ -43,7 +50,7 @@
       <template slot="action" slot-scope="{ row: { id, invoiceStatus, payStatus } }">
         <div class="row-acts">
           <router-link :to="invoiceRoute([id])" v-if="invoiceStatus == 2">发票登记</router-link>
-          <a v-if='payStatus < 2' @click='pay([id])'>发票付款</a>
+          <a v-if='payStatus < 2' @click='pay([id])'>申请付款</a>
         </div>
       </template>
     </ListPage>
@@ -77,12 +84,30 @@ const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 })
 export default class IndexPage extends ViewBase {
 
+  disabledIds: any = []
+  val: any = 1
+  items: any = null
+  selectvalue: any = 1
   get listPage() {
     return this.$refs.listPage as ListPage
   }
 
-  get fetch() {
-    return beforeList
+  selectedIds = [] as number[]
+  // get fetch() {
+  //   return beforeList
+  // }
+
+  async fetch(query: any) {
+    const res = await beforeList(query)
+    this.items = res.data.items || null
+    if ( this.items && this.items.length > 0 && this.val ) {
+      this.disabledIds = this.items.filter((it: any) => {
+        return this.val == 1 ? it.approveStatus === 1 : it.invoiceStatus == 2
+      }).map((item: any) => {
+        return item.id
+      })
+    }
+    return res
   }
 
   get filters() {
@@ -97,8 +122,6 @@ export default class IndexPage extends ViewBase {
     return beforcoulm
   }
 
-  selectedIds = [] as number[]
-
   batchInvoice() {
     const ids = this.selectedIds
     this.$router.push(this.invoiceRoute(ids))
@@ -107,6 +130,12 @@ export default class IndexPage extends ViewBase {
   format(val: any) {
     const invkey = makeMap((this.listPage.enumType as any).invoiceTypeCodeList)
     return val ? invkey[val] : '-'
+  }
+
+  chanselect(val: any) {
+    this.listPage.update()
+    this.selectvalue = val
+    this.selectedIds = []
   }
 
   invoiceRoute(ids: number[]) {
