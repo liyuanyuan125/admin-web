@@ -178,6 +178,7 @@ export default class IndexPage extends ViewBase {
       'statusList',
       'invoiceTypeList',
       'invoiceContentList',
+      'invoiceStatusList'
     ]
   }
 
@@ -198,6 +199,7 @@ export default class IndexPage extends ViewBase {
       { title: '可申请付款金额单金额', key: 'availableApplyAmount', minWidth: 130 },
       { title: '申请付款金额', key: 'applyAmount', minWidth: 90 },
       { title: '请款状态', key: 'status', minWidth: 100,  editor: 'enum', enumKey: 'status' },
+      { title: '发票状态', key: 'invoiceStatus', minWidth: 60, editor: 'enum', enumKey: 'invoiceStatus' },
       { title: '发票类型', key: 'invoiceType', minWidth: 100,  editor: 'enum', enumKey: 'invoiceType' },
       { title: '发票内容', key: 'invoiceContent', minWidth: 65, editor: 'enum', enumKey: 'invoiceContent'},
       { title: '发票号', key: 'invoiceNo', minWidth: 100 },

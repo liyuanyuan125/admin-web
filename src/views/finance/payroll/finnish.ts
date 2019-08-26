@@ -130,6 +130,7 @@ export const finishnum: any = [
   'statusList',
   'invoiceTypeList',
   'invoiceContentList',
+  'invoiceStatusList'
 ]
 
 export const finshcoulm: any = [

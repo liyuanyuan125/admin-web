@@ -6,7 +6,7 @@
       :enums="enums"
       :columns="columns"
       selectable
-      @on-select-change='selectchange'
+      @selectionChange='selectchange'
       :selectedIds.sync="selectedIds"
       ref="listPage"
     >
@@ -78,32 +78,37 @@ const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 })
 export default class IndexPage extends ViewBase {
 
+  flag: any = true
+  allselectdata: any = []
+  checkId: any = []
   disabledIds: any = []
   val: any = 1
   items: any = null
+  data: any = null
   selectvalue: any = 1
   get listPage() {
     return this.$refs.listPage as ListPage
   }
 
   selectedIds = [] as number[]
-  // get fetch() {
-  //   return beforeList
-  // }
 
-  selectchange(val: any) {
+  selectchange(data: any) {
+    const ids = this.data.map((it: any) => it.id)
+    const dataId = data.map((it: any) => it.id)
+    data.forEach((item: any) => {
+      if (!this.checkId.includes(item.id)) {
+        this.checkId.push(item.id)
+        this.allselectdata.push(item)
+      }
+    })
+    const filterId = ids.filter((it: any) => !dataId.includes(it))
+    this.checkId = this.checkId.filter((it: any) => !filterId.includes(it))
+    this.allselectdata = this.allselectdata.filter((it: any) => !filterId.includes(it.id))
   }
 
   async fetch(query: any) {
     const res = await beforeList(query)
-    this.items = res.data.items || null
-    if ( this.items && this.items.length > 0 && this.val ) {
-      this.disabledIds = this.items.filter((it: any) => {
-        return this.val == 1 ? it.approveStatus === 1 : it.invoiceStatus == 2
-      }).map((item: any) => {
-        return item.id
-      })
-    }
+    this.data = res.data.items || null
     return res
   }
 
@@ -121,7 +126,18 @@ export default class IndexPage extends ViewBase {
 
   batchInvoice() {
     const ids = this.selectedIds
-    this.$router.push(this.invoiceRoute(ids))
+    this.allselectdata.forEach((it: any) => {
+      if (it.invoiceStatus != 2) {
+        this.flag = false
+      } else {
+        this.flag = true
+      }
+    })
+    if (this.flag) {
+      this.$router.push(this.invoiceRoute(ids))
+    } else {
+      this.showWaring('该账单发票状态不对，请检查选中的账单')
+    }
   }
 
   format(val: any) {

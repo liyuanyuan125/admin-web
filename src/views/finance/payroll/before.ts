@@ -123,6 +123,7 @@ export const beforcoulm: any = [
     slot: 'month'
   },
   { title: '对账完成时间', key: 'approvalTime', minWidth: 100, editor: 'dateTime' },
+  { title: '发票状态', key: 'invoiceStatus', minWidth: 100, editor: 'enum', enumKey: 'invoiceStatus' },
   { title: '发票类型', key: 'invoiceType', minWidth: 100, slot: 'invoiceType' },
   { title: '发票内容', key: 'invoiceContentCode', minWidth: 65, editor: 'enum', enumKey: 'invoiceContentCodeCode'},
   { title: '账单金额', key: 'amount', minWidth: 90 },
