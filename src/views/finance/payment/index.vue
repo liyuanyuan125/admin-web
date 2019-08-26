@@ -29,6 +29,9 @@
       <template  slot="applyAmount" slot-scope="{row}" >
           {{row.applyAmount == null ? '-' : formatNumber(row.applyAmount)}}
       </template>
+      <template  slot="actualAmount" slot-scope="{row}" >
+          {{row.actualAmount == null ? '-' : formatNumber(row.actualAmount)}}
+      </template>
       <template slot="action" slot-scope="{ row }">
         <div class="row-acts">
          <span style='color: #2b85e4;cursor: pointer;' @click='view(row.id , row.applyAmount)'>付款</span>
@@ -275,6 +278,11 @@ export default class IndexPage extends ViewBase {
       { title: '账单金额', slot: 'billAmount', width: 60 },
       { title: '可申请付款金额', slot: 'availableApplyAmount', width: 60},
       { title: '请款金额', slot: 'applyAmount', width: 60},
+    ]
+    const overmoney: any = [
+      { title: '付款金额', slot: 'actualAmount', width: 60},
+    ]
+    const overlist: any = [
       { title: '发票类型', key: 'invoiceType', width: 65, editor: 'enum' },
       { title: '发票内容', key: 'invoiceContent', width: 65, editor: 'enum' },
       { title: '发票号', key: 'invoiceNo', width: 65},
@@ -282,6 +290,7 @@ export default class IndexPage extends ViewBase {
       { title: '收款银行', key: 'receiveBank', width: 65},
       { title: '对账完成时间', key: 'finishTime', width: 75, editor: 'dateTime' },
     ]
+
 
     const threeN = [
       { title: '请款时间', key: 'applyTime', width: 75, editor: 'dateTime' },
@@ -293,8 +302,8 @@ export default class IndexPage extends ViewBase {
       { title: '付款完成时间', key: 'payTime', width: 75, editor: 'dateTime' },
     ]
 
-    return this.status == '2' ? [...firstID, ...two , ...threeID] :
-    [...firstN, ...two , ...threeN ] as ColumnExtra[]
+    return this.status == '2' ? [...firstID, ...two , ...overmoney , ...overlist, ...threeID] :
+    [...firstN, ...two , ...overlist, ...threeN ] as ColumnExtra[]
   }
 
   // mounted() {
