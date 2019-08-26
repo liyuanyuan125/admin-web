@@ -40,6 +40,15 @@
         <Col :span='12' v-if='view'>受众性别(比例较多)&nbsp;：&nbsp;<span v-if='listitem.deliveryGroups != null' v-for='(item , index) in tags[2].values' :key='index'><em v-for='(it,index) in listitem.deliveryGroups' :key='index' v-if='item.key == it.text'>{{item.text +' '}}</em></span><span v-if='ifsex'>暂无</span></Col>
         <Col :span='12' v-if='view'>受众年龄&nbsp;：&nbsp;<span v-if='listitem.deliveryGroups != null' v-for='(item , index) in tags[1].values' :key='index'><em v-for='(it,index) in listitem.deliveryGroups' :key='index' v-if='item.key == it.text'>{{item.text +' '}}</em></span><span v-if='ifage'>暂无</span></Col>
       </Row>
+      <Row>
+        <Col :span='12' v-if='$route.params.status == 4 && $route.params.ifs == 1'>投放位置:
+          <Select v-model="placement.position" placeholder="状态" style='width: 200px;'  filterable>
+            <Option v-for="it in []" :key="it.key" :value="it.key"
+                :label="it.text">{{it.text}}</Option>
+          </Select>
+        </Col>
+        <Col :span='12' v-else >投放位置: 随便</Col>
+      </Row>
     </div>
 
     <div class='title'>基础信息</div>
@@ -253,6 +262,10 @@ export default class Main extends ViewBase {
     cityId: 0,
     countyId: 0,
     resourceCompanyId: 0,
+  }
+
+  placement: any = {
+    position: null
   }
   databeizhu: any = {
     remarks : ''

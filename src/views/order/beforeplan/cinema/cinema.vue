@@ -165,7 +165,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       { title: '所属资源方', slot: 'resourceId', align: 'center' },
       { title: '联系人', width: 120, key: 'contract', align: 'center' },
       { title: '联系电话', width: 120, key: 'contractTel', align: 'center' },
-      { title: '接单状态', width: 120, key: 'contractTel', align: 'center' },
+      { title: '接单状态', width: 120, key: 'acceptStatus', align: 'center' },
     ]
     const check = [
        {
