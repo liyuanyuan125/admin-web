@@ -323,11 +323,21 @@
           </Col>
         </Row>
 
-        <Row v-if="item.typearr[0] || item.companyType == 2">
+        <Row v-if="item.typearr[0] && item.companyType == 1">
           <FormItem label="关联品牌">
             <BrandPane
               v-model="brandIds"
               :bindList="item.brandList"
+            />
+          </FormItem>
+        </Row>
+
+        <Row v-if="item.companyType == 2">
+          <FormItem label="关联品牌">
+            {{singbrandIds}}
+            <BrandPane
+              v-model="singbrandIds"
+              :bindList="item.singbrandList"
             />
           </FormItem>
         </Row>
@@ -387,7 +397,6 @@ const defItem = {
   cityId: 0,
   countyId: 0,
   addressDetail: '',
-
   contact: '',
   contactTel: '',
 
@@ -442,6 +451,7 @@ export default class Main extends ViewBase {
   loading = false
   loadingShow = false
   item: any = { ...defItem }
+  singbrandIds: any = []
   shows = true
   show0 = true
   visible = false
@@ -857,7 +867,7 @@ export default class Main extends ViewBase {
           ...business,
           types: this.item.companyType == 2 ? this.singtype : (types as any[] || []).filter(it => it.typeCode != ''),
           cinemas: this.item.typearr[1] ? this.cinemas : [],
-          brandIds: this.item.typearr[0] ? this.brandIds : [],
+          brandIds: this.item.companyType == 2 ? this.singbrandIds : (this.item.typearr[0] ? this.brandIds : []),
           email: this.item.companyType == 1 ? this.item.email : this.item.singemail,
           contactTel: this.item.companyType == 1 ? this.item.contactTel : this.item.singcontactTel,
           contact: this.item.companyType == 1 ? this.item.contact : this.item.singcontact,
@@ -872,6 +882,7 @@ export default class Main extends ViewBase {
           delete formData.provinceId
           delete formData.cityId
           delete formData.countyId
+          delete formData.typeCategoryCode0
           delete formData.addressDetail
           delete formData.name
           delete formData.shortName
