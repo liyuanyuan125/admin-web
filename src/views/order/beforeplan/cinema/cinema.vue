@@ -53,7 +53,12 @@
       </div>
       <div class="act-bar">
         <a @click="onAdd" v-if="!type && $route.params.status == 2 || $route.params.status == 3 || $route.params.status == 4 || $route.params.status == 10 || $route.params.status == 6 || $route.params.status == 7" @done="dlgEditDone">添加影院</a>&nbsp;&nbsp;&nbsp;
-        <Button v-if='$route.params.ifs == 1 && ($route.params.status == 4 || $route.params.status == 6 || $route.params.status == 7)' type="primary">批量导入</Button>
+        <Button v-if='$route.params.ifs == 1 && ($route.params.status == 4 || $route.params.status == 6 || $route.params.status == 7)' type="primary" @click='cinemaImport'>批量导入</Button>
+        <Form class="create-form form-item"   enctype="multipart/form-data" ref="form"
+          :label-width="120">上传文件
+          <input type="file" class='adds' @change="onChange" />
+        </Form>
+        <span class='viewhtml'>{{inputhtml}}</span>
       </div>
       <changeDlg ref="change" v-if='changeVisible' @done="dlgEditDone" />
       <AddCinemaModel v-if="type != 'detail'" ref="addCinemaModel" :cinemaend = "incinematype" :addData="inValue" @done="dlgEditDone" />
@@ -67,7 +72,7 @@ import { Component, Watch , Mixins, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { cinemaList , delcin , aresids } from '@/api/beforeplan'
+import { cinemaList , delcin , aresids , importCinema } from '@/api/beforeplan'
 import { queryList } from '@/api/corpReal'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
@@ -78,6 +83,7 @@ import AreaSelect from '@/components/areaSelect'
 import changeDlg from '../changeDlg.vue'
 import AddCinemaModel from './addCinemaModel.vue'
 import compangList from '../../supervision/companyList.vue'
+import Uploader from '@/util/Uploader'
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
@@ -90,6 +96,11 @@ const getName = (id: number, list: any[]) => {
   const res: string = (!list[i].name || list[i].name == '') ? '-' : list[i].name
   return res
 }
+
+const uploader: any = new Uploader({
+  // filePostUrl: `/xadvert/plans/` + ((this.$route.params.id) as any) + `/import-cinema`,
+  fileFieldName: 'file',
+})
 
 
 const dataForm = {
@@ -153,6 +164,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   aaa = false
   viewcinema = false
   dataList: any = []
+
+
+  // 批量导入影院
+  file: File | any = null
+  inputhtml: any = ''
 
 
   get columns() {
@@ -228,6 +244,15 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       columns: this.columnsData,
       data: res
     })
+  }
+
+  // 批量导入影院
+  async onChange(ev: Event) {
+    const input = ev.target as HTMLInputElement
+    this.file = input.files && input.files[0]
+    this.inputhtml = this.file.name
+
+    const  a = await uploader.upload(this.file)
   }
 
   // 删除影院
