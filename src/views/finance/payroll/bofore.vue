@@ -126,11 +126,10 @@ export default class IndexPage extends ViewBase {
 
   batchInvoice() {
     const ids = this.selectedIds
+    this.flag = true
     this.allselectdata.forEach((it: any) => {
       if (it.invoiceStatus != 2) {
         this.flag = false
-      } else {
-        this.flag = true
       }
     })
     if (this.flag) {
