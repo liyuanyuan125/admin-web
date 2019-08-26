@@ -61,6 +61,7 @@
             <Row>
               <Col span="8">
                 <a @click="visible = true">设置覆盖区域</a>
+                <span> 已选城市 {{item.coverCityIdList.length}}个</span>
               </Col>
             </Row>
           </FormItem>
@@ -331,7 +332,7 @@
           </FormItem>
         </Row>
 
-        <Row v-if="item.typearr[1]">
+        <Row v-if="item.typearr[1] && item.companyType == 1">
           <FormItem label="关联影院" prop="cinemasList" :show-message="!(item.cinemasList.length>0)">
             <PartBindCinema
               v-if="loadingShow"
@@ -447,7 +448,7 @@ export default class Main extends ViewBase {
   cityIds: any = []
   b: any = {}
   levelList = []
-  customerTypeList = [] // 区代理
+  customerTypeList: any = [] // 区代理
   bizUserList = []
   businessParentTypeList = [] // 一级行业
   typeList = []
@@ -699,13 +700,17 @@ export default class Main extends ViewBase {
             aptitudeNo,
             provinceId,
             cityId,
+            businessParentTypeList,
             countyId,
             addressDetail,
             contact,
             contactTel,
             email,
+            recommendMobile,
+            recommendUserName,
             qualificationType,
             qualificationCode,
+            coverCityIdList,
             images,
             types,
             refusedReason,
@@ -717,11 +722,28 @@ export default class Main extends ViewBase {
             qualificationTypeList,
             status,
             imageList,
+            businessParentCode,
+            businessChildCode,
             cinemaList,
             brandList
           }
         } = await queryId(query)
         this.item.name = name
+        this.businessParentTypeList = businessParentTypeList.map((it: any) => {
+          return {
+            value: it.key,
+            label: it.text,
+            children: [],
+            loading: false
+          }
+        })
+        this.item.businessParentCode = [
+          businessParentCode,
+          (businessChildCode || '0')
+        ]
+        this.item.coverCityIdList = coverCityIdList
+        this.item.recommendMobile = recommendMobile
+        this.item.recommendUserName = recommendUserName
         this.item.shortName = shortName
         this.item.aptitudeType = aptitudeType
         this.item.aptitudeNo = aptitudeNo
@@ -740,9 +762,9 @@ export default class Main extends ViewBase {
           id: it.brandId,
           name: it.brandName,
         }))
-
+        this.customerTypeList = customerTypeList.slice(2)
         if (types.length == 1) {
-          if (customerTypeList[0].typeCode == types[0].typeCode) {
+          if (this.customerTypeList[0].typeCode == types[0].typeCode) {
             this.item.types[0] = types[0]
             this.item.typeCategoryCode0 = types[0].typeCategoryCode
             this.item.typearr[0] = true
@@ -764,7 +786,6 @@ export default class Main extends ViewBase {
         this.item.cinemas = cinemas || []
         this.imageList = imageList || []
         this.item.approveStatus = Number(approveStatus)
-        this.customerTypeList = customerTypeList
         this.item.validityPeriodDate = validityPeriodDate
           ? new Date(this.formatValid(validityPeriodDate))
           : ''
@@ -832,6 +853,7 @@ export default class Main extends ViewBase {
         } : {}
         const formData: any = {
           ...newqQuery,
+          ...business,
           types: (types as any[] || []).filter(it => it.typeCode != ''),
           cinemas: this.item.typearr[1] ? this.cinemas : [],
           brandIds: this.item.typearr[0] ? this.brandIds : [],
@@ -846,11 +868,11 @@ export default class Main extends ViewBase {
         delete formData.singcontact
         delete formData.singemail
         try {
-          // const data: any = route == 0
-          //   ? await addQuery(formData)
-          //   : await setQuery(route, formData)
+          const data: any = route == 0
+            ? await addQuery(formData)
+            : await setQuery(route, formData)
           // toast(data.msg)
-          this.$router.go(-1)
+          // this.$router.go(-1)
         } catch (ex) {
           this.handleError(ex)
         }
