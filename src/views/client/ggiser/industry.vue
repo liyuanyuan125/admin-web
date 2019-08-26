@@ -1,6 +1,7 @@
 <template>
   <div>
     <Cascader
+     ref='ui'
      v-model='inner'
      :data="businessParentTypeList"
      :load-data="loadData"
@@ -85,13 +86,15 @@ export default class BrandsSelect extends ViewBase {
   }
 
   @Watch('value')
-  watchValue(value: number) {
+  watchValue(value: any) {
     this.inner = value
   }
 
   @Watch('inner')
-  watchInner(value: number) {
+  watchInner(value: any) {
+    const val = value.filter((it: any) => it != '0')
     this.$emit('input', value)
+    ; (this.$refs.ui as any).dispatch('FormItem', 'on-form-change', value)
   }
 }
 </script>

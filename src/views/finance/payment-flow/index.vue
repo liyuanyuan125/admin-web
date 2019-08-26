@@ -29,7 +29,7 @@ export default class Main extends ViewBase {
   fetch = queryList
   filters: Filter[] = [
     {
-      name: 'orderNo',
+      name: 'planId',
       defaultValue: '',
       input: true,
       width: 85,

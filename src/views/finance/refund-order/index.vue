@@ -29,11 +29,11 @@ export default class Main extends ViewBase {
   fetch = queryList
   filters: Filter[] = [
     {
-      name: 'orderNo',
+      name: 'planId',
       defaultValue: '',
       input: true,
       width: 85,
-      placeholder: '订单号'
+      placeholder: '广告计划单号'
     },
     // {
     //   name: 'brandName',
@@ -82,7 +82,7 @@ export default class Main extends ViewBase {
   get columns() {
     return [
       { title: '序号', key: 'id', width: 65 },
-      { title: '订单号', key: 'orderNo', width: 80 },
+      { title: '订单号', key: 'planId', width: 80 },
       // { title: '影院名称', key: 'companyName', minWidth: 120 },
       // { title: '专资编码', key: 'brandId', width: 80 },
       // { title: '所属影管', key: 'brandName', minWidth: 120 },

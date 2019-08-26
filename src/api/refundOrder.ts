@@ -1,9 +1,13 @@
 import { get, post, put } from '@/fn/ajax'
 import { mockGet, tid, title20, typeInt, dateRange } from './mock'
 
+/**
+ *
+ * @description https://yapi.aiads-dev.com/project/76/interface/api/5995
+ */
 export async function queryList(query: any) {
-  // const res = await get('/list', query)
-  // return res
+  const res = await get('/finance/refundOrders', query)
+  return res
   return await mockGet(query, {
     totalCount: 1,
     items: [
