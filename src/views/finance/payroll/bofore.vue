@@ -5,14 +5,13 @@
       :filters="filters"
       :enums="enums"
       :columns="columns"
-      :selectable='val ? true : false'
-      :disabledIds="disabledIds"
+      selectable
+      @on-select-change='selectchange'
       :selectedIds.sync="selectedIds"
       ref="listPage"
     >
       <template slot="acts-2">
         <Button
-          v-if='val && val == 1'
           type="primary"
           class="button-invoice"
           :disabled="!(selectedIds.length > 0)"
@@ -20,16 +19,11 @@
         >批量发票登记</Button>
 
         <Button
-          v-if='val && val == 2'
           type="primary"
           class="button-pay"
           :disabled="!(selectedIds.length > 0)"
           @click="pay(selectedIds)"
         >批量申请付款</Button>
-        <Select @on-change='chanselect' v-model="val" placeholder='发票操作' clearable style="width:150px">
-            <Option :value="1" >批量发票登记</Option>
-            <Option :value="2" >批量申请付款</Option>
-        </Select>
       </template>
 
       <template slot="month" slot-scope="{ row: { year, month } }">
@@ -96,6 +90,9 @@ export default class IndexPage extends ViewBase {
   // get fetch() {
   //   return beforeList
   // }
+
+  selectchange(val: any) {
+  }
 
   async fetch(query: any) {
     const res = await beforeList(query)
