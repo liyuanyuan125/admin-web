@@ -28,7 +28,7 @@
         >导出</Button>
       </template>
 
-      <template slot="acts-2">
+      <!-- <template slot="acts-2">
         <Button
           v-if=' astatus == 2'
           type="primary"
@@ -44,10 +44,10 @@
           @click="changeAll"
         >批量恢复</Button>
         <span v-else  ></span>
-      </template>
+      </template> -->
 
       <template  slot="video" slot-scope="{row}" >
-        <a style='margin-left: 5px;' v-for='(item,index) in row.videoList' :key='index'>{{item.videoName}} ({{item.videoLength}})s</a>
+        <a style='margin-left: 5px;' v-for='(item,index) in row.videoDetails' :key='index'>{{item.videoName}} ({{item.videoLength}})s</a>
       </template>
       <template  slot="action" slot-scope="{row , index}" >
         <router-link v-if='row.approvalStatus == 2' @click.native="localitem( row.id , row , index )"  :to="{ name: 'order-supervision-detail', params: { id: row.id} }">审核</router-link>
@@ -66,6 +66,7 @@ import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 // import { queryList, auditItem, newItem } from './data'
+import moment from 'moment'
 import { queryList , okpass ,  refuse } from '@/api/supervision'
 import { alert, toast } from '@/ui/modal'
 import { EditDialog, Field } from '@/components/editForm'
@@ -82,10 +83,12 @@ import People from './peopleList.vue'
 
 import singvideoDlg from './singvideoDlg.vue'
 
-
-
-
 import { getChannelList } from '@/util/types'
+
+import { findIndex } from 'lodash'
+
+const makeMap = (list: any[]) => toMap(list, 'id', 'name')
+const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
 const statusList: any = [
   {name: '待审核', value: '2'},
@@ -246,7 +249,7 @@ export default class IndexPage extends ViewBase {
 
   get columns() {
     const aaa: any = [
-      { title: '资源方公司名称', key: 'companyName',  align: 'center' },
+      { title: '资源方公司名称', key: 'resourceName',  align: 'center' },
       { title: '影院名称', key: 'cinemaName', align: 'center' },
       { title: '影片名称', key: 'movieName', align: 'center' },
       { title: '广告片', slot: 'video', align: 'center' },
@@ -283,6 +286,29 @@ export default class IndexPage extends ViewBase {
     [...aaa, ...ddd ] as ColumnExtra[]
   }
 
+  get columnsData() {
+    const aaa: any = [
+      { title: '资源方公司名称', key: 'resourceName',  align: 'center' },
+      { title: '影院名称', key: 'cinemaName', align: 'center' },
+      { title: '影片名称', key: 'movieName', align: 'center' },
+      { title: '投放周期', key: 'scrollDate', align: 'center' },
+      { title: '商务负责人', key: 'businessDirectorName', align: 'center' },
+      { title: '上传人', key: 'uploadName', align: 'center' },
+      { title: '上传时间', key: 'uploadTime', align: 'center' },
+    ]
+    const ccc: any = [
+      { title: '审核人', key: 'approvalName', align: 'center' },
+      { title: '审核时间', key: 'approvalTime', align: 'center', },
+    ]
+    const ddd: any = [
+      { title: '状态', key: 'status', editor: 'enum' },
+      { title: '广告片', key: 'videoDetails', align: 'center' },
+    ]
+
+    return this.status == '3' || this.status == '4' ? [...aaa , ...ccc , ...ddd] :
+    [...aaa, ...ddd ] as ColumnExtra[]
+  }
+
   auditVisible = false
   changeAll() {
     this.videoVisible = true
@@ -306,15 +332,34 @@ export default class IndexPage extends ViewBase {
   }
 
   async mounted() {
-    this.listPage.query.status = 2
+    // this.listPage.query.status = 2
   }
 
   // 下载
   exportData() {
-    (this.$refs.listPage as any).exportCsv({
+    // 导出状态值
+    const getName = (value: any, list: any[]) => {
+      const i: any = findIndex(list, (it: any) => {
+        return value == it.value
+      })
+      const res: any = (!list[i].name || list[i].name == '') ? '-' : list[i].name
+      return res
+    }
+    this.listPage.exportCsv({
       filename: '映前广告监播列表',
-      columns: this.columns,
-      data: this.list
+      columns: this.columnsData,
+      data: (this.list || []).map((it: any) => {
+        return {
+          ...it,
+          scrollDate: it.beginDate + '~' + it.endDate,
+          uploadTime: it.uploadTime == null ? '' : moment(it.uploadTime).format(timeFormat),
+          approvalTime: it.approvalTime == null ? '' : moment(it.approvalTime).format(timeFormat),
+          status: getName(it.approvalStatus, this.statusList),
+          videoDetails: (it.videoDetails || []).map((its: any) => {
+            return its.videoName + '(' + its.videoLength + 's)'
+          })
+        }
+      })
     })
   }
 
