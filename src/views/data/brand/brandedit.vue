@@ -129,7 +129,8 @@
             disabled-hover
           >
             <template slot="v" slot-scope="{row, index}">
-              <InputNumber :max="100" :min="0" v-model="row.v" style="width: 100px"></InputNumber><span>%</span>
+              <InputNumber :max="100" :min="0" v-model="ageCodeList[index].v" style="width: 100px"></InputNumber>
+              <span>%</span>
               <!-- <Input style="width:100px" v-model="row.v" @on-change="updataRow(row, index)" /><span>%</span> -->
             </template>
           </Table>
@@ -240,8 +241,8 @@ export default class Main extends ViewBase {
     founder: '',
     companySlogan: '',
     description: '',
-    femalePercent: '',
-    malePercent: '',
+    femalePercent: null,
+    malePercent: null,
     headImgBig: [],
     hotWords: ''
   }
@@ -369,8 +370,8 @@ export default class Main extends ViewBase {
         this.form.founder = item.founder
         this.form.companySlogan = (item.companySlogan || '')
         this.form.description = item.description
-        this.form.femalePercent = item.femalePercent ? item.femalePercent / 100 : ''
-        this.form.malePercent = item.malePercent ? item.malePercent / 100 : ''
+        this.form.femalePercent = item.femalePercent ? item.femalePercent / 100 : null
+        this.form.malePercent = item.malePercent ? item.malePercent / 100 : null
         this.ageCodeList = item.ages ? (this.ageCodeList || []).map((it: any, index: number) => {
           return {
             ...it,

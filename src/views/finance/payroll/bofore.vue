@@ -6,6 +6,7 @@
       :enums="enums"
       :columns="columns"
       selectable
+      @selectionChange='selectchange'
       :selectedIds.sync="selectedIds"
       ref="listPage"
     >
@@ -22,7 +23,7 @@
           class="button-pay"
           :disabled="!(selectedIds.length > 0)"
           @click="pay(selectedIds)"
-        >批量发票付款</Button>
+        >批量申请付款</Button>
       </template>
 
       <template slot="month" slot-scope="{ row: { year, month } }">
@@ -31,10 +32,19 @@
         </div>
       </template>
 
+      <template slot="invoiceType" slot-scope="{ row: { invoiceStatus, invoiceType} }">
+        <div class="row-acts" v-if='invoiceStatus == 1'>
+          无发票
+        </div>
+        <div v-else>
+          {{format(invoiceType)}}
+        </div>
+      </template>
+
       <template slot="action" slot-scope="{ row: { id, invoiceStatus, payStatus } }">
         <div class="row-acts">
-          <router-link :to="invoiceRoute([id])" v-if="invoiceStatus < 2">发票登记</router-link>
-          <a v-if='payStatus < 2' @click='pay([id])'>发票付款</a>
+          <router-link :to="invoiceRoute([id])" v-if="invoiceStatus == 2">发票登记</router-link>
+          <a v-if='payStatus < 2' @click='pay([id])'>申请付款</a>
         </div>
       </template>
     </ListPage>
@@ -54,7 +64,9 @@ import { finishfetch } from './finnish'
 import Pay from './paymodel.vue'
 import { EditDialog, Field } from '@/components/editForm'
 import BatchAudit from '@/components/batchAudit'
+import { toMap } from '@/fn/array'
 
+const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
 @Component({
   components: {
@@ -66,12 +78,38 @@ import BatchAudit from '@/components/batchAudit'
 })
 export default class IndexPage extends ViewBase {
 
+  flag: any = true
+  allselectdata: any = []
+  checkId: any = []
+  disabledIds: any = []
+  val: any = 1
+  items: any = null
+  data: any = null
+  selectvalue: any = 1
   get listPage() {
     return this.$refs.listPage as ListPage
   }
 
-  get fetch() {
-    return beforeList
+  selectedIds = [] as number[]
+
+  selectchange(data: any) {
+    const ids = this.data.map((it: any) => it.id)
+    const dataId = data.map((it: any) => it.id)
+    data.forEach((item: any) => {
+      if (!this.checkId.includes(item.id)) {
+        this.checkId.push(item.id)
+        this.allselectdata.push(item)
+      }
+    })
+    const filterId = ids.filter((it: any) => !dataId.includes(it))
+    this.checkId = this.checkId.filter((it: any) => !filterId.includes(it))
+    this.allselectdata = this.allselectdata.filter((it: any) => !filterId.includes(it.id))
+  }
+
+  async fetch(query: any) {
+    const res = await beforeList(query)
+    this.data = res.data.items || null
+    return res
   }
 
   get filters() {
@@ -86,11 +124,30 @@ export default class IndexPage extends ViewBase {
     return beforcoulm
   }
 
-  selectedIds = [] as number[]
-
   batchInvoice() {
     const ids = this.selectedIds
-    this.$router.push(this.invoiceRoute(ids))
+    this.flag = true
+    this.allselectdata.forEach((it: any) => {
+      if (it.invoiceStatus != 2) {
+        this.flag = false
+      }
+    })
+    if (this.flag) {
+      this.$router.push(this.invoiceRoute(ids))
+    } else {
+      this.showWaring('该账单发票状态不对，请检查选中的账单')
+    }
+  }
+
+  format(val: any) {
+    const invkey = makeMap((this.listPage.enumType as any).invoiceTypeCodeList)
+    return val ? invkey[val] : '-'
+  }
+
+  chanselect(val: any) {
+    this.listPage.update()
+    this.selectvalue = val
+    this.selectedIds = []
   }
 
   invoiceRoute(ids: number[]) {

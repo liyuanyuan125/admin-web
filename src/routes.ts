@@ -1043,7 +1043,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 映前广告付款单管理 - 列表
   {
-    path: '/finance/payment/:pay?',
+    path: '/finance/payment/:status?',
     name: 'finance-payment',
     component: () => import('./views/finance/payment/index.vue'),
     meta: {
