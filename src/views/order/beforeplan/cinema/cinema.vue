@@ -1,6 +1,6 @@
 <template>
   <div class="pages" >
-    <div class='title'>投放影院({{total}}家) <!-- 接单影院 / 派单影院 : 3 / 5 -->
+    <div class='title'><!-- 投放影院({{total}}家) --> 接单影院 / 派单影院 : 3 / 5
       <span style='float: right;cursor: pointer;' @click="exportData">导出影院列表</span>
     </div>
     <div class='bos'>
@@ -8,32 +8,35 @@
         <Col span="5">
           <AreaSelect v-model="area"/>
         </Col>
-        <Col span="5" offset="1">
+        <Col span="4" offset="1">
           <Input v-model="dataForm.cinemaName" placeholder="【专资编码】或 影院名称" />
         </Col>
-        <Col span='5' offset="1">
+        <Col span='4' offset="1">
           <!-- <Select v-model="dataForm.resourceId" placeholder="资源方公司名称" style='width: 200px;'  filterable>
             <Option v-for="it in []" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
           </Select> -->
           <compangList v-model='dataForm.resourceId' @done="dlgEditDone"/>
         </Col>
-        <!-- <Col span='5' offset="1"> -->
-          <!-- <Select v-model="dataForm.resourceId" placeholder="接单状态" style='width: 200px;'  filterable>
+        <Col span='4' offset="1">
+          <Select v-model="dataForm.resourceId" placeholder="接单状态" style='width: 200px;'  filterable>
             <Option v-for="it in []" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
-          </Select> -->
-        <!-- </Col> -->
-        <Col span="4" offset="1">
+          </Select>
+        </Col>
+        <Col span="3" offset="1">
           <Button type="primary" @click="searchrrr">搜索</Button>
         </Col>
       </Row>
-      <Button type="primary" @click="changeAll" v-if='$route.params.status == 2 || $route.params.status == 3 || $route.params.status == 9 || $route.params.status == 10'>批量删除</Button>
+      <Button type="primary" @click="changeAll" v-if='$route.params.ifs == 1 && ($route.params.status == 2 || $route.params.status == 3 || $route.params.status == 4 || $route.params.status == 10)'>批量删除</Button>
       <Table ref="table" :columns="columns" @on-selection-change="onselect" :data="list" :loading="loading"
         border stripe disabled-hover size="small" class="table">
         <template slot="resourceId" slot-scope="{row}" >
           <div v-for='(it, index) in reslist'>
-            <span v-if='row.resourceId == it.id'>{{it.name}}&nbsp;&nbsp;&nbsp;<a v-if='$route.params.status == 2 || $route.params.status == 3 || $route.params.status == 9 || $route.params.status == 10' @click="change( row.cinemaId , row.cinemaName ,  it.name , it.id)">变更</a></span>
+            <span v-if='row.resourceId == it.id'>{{it.name}}&nbsp;&nbsp;&nbsp;
+              <a v-if='$route.params.ifs == 1 && ($route.params.status == 2 || $route.params.status == 3 || $route.params.status == 4 || $route.params.status == 10)' 
+                @click="change( row.cinemaId , row.cinemaName ,  it.name , it.id)">变更</a>
+            </span>
           </div>
           <div v-if='reasd.indexOf(row.resourceId) == -1'>暂无资源方公司</div>
           <!-- <a @click="delcinema( row.id )">变更</a> -->
@@ -49,10 +52,13 @@
             @on-page-size-change="currentChangeHandle"/>
       </div>
       <div class="act-bar">
-        <a @click="onAdd" v-if="!type && $route.params.status == 2 || $route.params.status == 3 || $route.params.status == 9 || $route.params.status == 10" @done="dlgEditDone">添加影院</a>
-        <!-- <Button type="primary">批量导入</Button> -->
+        <a @click="onAdd" v-if="!type && $route.params.status == 2 || $route.params.status == 3 || $route.params.status == 4 || $route.params.status == 10 || $route.params.status == 6 || $route.params.status == 7" @done="dlgEditDone">添加影院</a>&nbsp;&nbsp;&nbsp;
+        <Form v-if='$route.params.ifs == 1 && ($route.params.status == 4 || $route.params.status == 6 || $route.params.status == 7)' class="create-form form-item"   enctype="multipart/form-data" ref="form"
+          :label-width="120">批量导入
+          <input type="file" class='adds' @change="onChange" />
+        </Form>
+        <span class='viewhtml'>{{inputhtml}}</span>
       </div>
-      <!-- <singDlg ref="addOrUpdate" v-if='addOrUpdateVisible' @done="dlgEditDone" /> -->
       <changeDlg ref="change" v-if='changeVisible' @done="dlgEditDone" />
       <AddCinemaModel v-if="type != 'detail'" ref="addCinemaModel" :cinemaend = "incinematype" :addData="inValue" @done="dlgEditDone" />
     </div>
@@ -65,7 +71,7 @@ import { Component, Watch , Mixins, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { cinemaList , delcin , aresids } from '@/api/beforeplan'
+import { cinemaList , delcin , aresids , importCinema } from '@/api/beforeplan'
 import { queryList } from '@/api/corpReal'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
@@ -73,10 +79,10 @@ import moment from 'moment'
 import { slice, clean } from '@/fn/object'
 import {confirm , warning , success, toast , info } from '@/ui/modal'
 import AreaSelect from '@/components/areaSelect'
-import singDlg from '../singDlg.vue'
 import changeDlg from '../changeDlg.vue'
 import AddCinemaModel from './addCinemaModel.vue'
 import compangList from '../../supervision/companyList.vue'
+import Uploader from '@/util/Uploader'
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
@@ -91,6 +97,8 @@ const getName = (id: number, list: any[]) => {
 }
 
 
+
+
 const dataForm = {
   status: 1
 }
@@ -98,7 +106,6 @@ const dataForm = {
 @Component({
   components: {
     AreaSelect,
-    singDlg,
     changeDlg,
     AddCinemaModel,
     compangList,
@@ -155,6 +162,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   dataList: any = []
 
 
+  // 批量导入影院
+  file: File | any = null
+  inputhtml: any = ''
+
+
   get columns() {
     const data: any = [
       { title: '影院名称', key: 'cinemaName', align: 'center' },
@@ -165,7 +177,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       { title: '所属资源方', slot: 'resourceId', align: 'center' },
       { title: '联系人', width: 120, key: 'contract', align: 'center' },
       { title: '联系电话', width: 120, key: 'contractTel', align: 'center' },
-      // { title: '接单状态', width: 120, key: 'contractTel', align: 'center' },
+      { title: '接单状态', width: 120, key: 'acceptStatus', align: 'center' },
     ]
     const check = [
        {
@@ -184,9 +196,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         slot: 'action'
       }
     ]
-    return this.$route.params.status == '2' || this.$route.params.status == '3' ||
-    this.$route.params.status == '9' || this.$route.params.status == '10' ?
-    [...check, ...data, ...opernation] : data
+    return this.$route.params.ifs == '1' && (this.$route.params.status == '2' || this.$route.params.status == '3' ||
+    this.$route.params.status == '4' || this.$route.params.status == '10') ? [...check, ...data, ...opernation] : data
   }
 
   get columnsData() {
@@ -229,6 +240,19 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       columns: this.columnsData,
       data: res
     })
+  }
+
+  // 批量导入影院
+  async onChange(ev: Event) {
+    const uploader: any = new Uploader({
+      filePostUrl: `/xadvert/plans/` + this.$route.params.id + `/import-cinema`,
+      fileFieldName: 'file',
+    })
+    const input = ev.target as HTMLInputElement
+    this.file = input.files && input.files[0]
+    this.inputhtml = this.file.name
+
+    const  a = await uploader.upload(this.file)
   }
 
   // 删除影院
@@ -484,4 +508,28 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   border: 1px solid #ccc;
   padding: 15px;
 }
+.create-form {
+  position: relative;
+  display: block;
+  float: left;
+  width: 83px;
+  background: #2d8cf0;
+  border: 1px solid #99d3f5;
+  border-radius: 4px;
+  padding: 4px 12px;
+  overflow: hidden;
+  color: #fff;
+  text-decoration: none;
+  text-indent: 0;
+  line-height: 26px;
+}
+.adds {
+  width: 200px;
+  position: absolute;
+  font-size: 100px;
+  left: 0;
+  top: 0;
+  opacity: 0;
+}
+
 </style>

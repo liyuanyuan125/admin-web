@@ -12,8 +12,11 @@
     <div class="act-bar flex-box">
       <form class="form flex-1" @submit.prevent="search">
         <LazyInput v-model="query.query" placeholder="广告片ID/名称" class="input"/>
-        <Select v-model="query.companyId" filterable clearable class="select-company">
+        <Select v-model="query.companyId" placeholder="公司名称" filterable clearable class="select-company">
           <Option v-for="it in companys" :key="it.id" :value="it.id">{{it.name}}</Option>
+        </Select>
+        <Select v-model="query.translated" style='width: 100px;' placeholder="是否转制" filterable clearable class="select-company">
+          <Option v-for="it in translatedList" :key="it.id" :value="it.id">{{it.name}}</Option>
         </Select>
         <Button type="default" class="btn-reset" @click="reset">清空</Button>
       </form>
@@ -58,9 +61,9 @@
         <span class="datetime">{{cancelTime|dateTime}}</span>
       </template>
 
-      <template slot="action" slot-scope="{ row: { id, status } }">
+      <template slot="action" slot-scope="{ row: { id, status } , index }">
         <div class="row-acts">
-          <router-link v-auth="'advert.videos:approval'" v-show='status == 1' :to="{ name: 'gg-film-detail',
+          <router-link v-auth="'advert.videos:approval'" @click.native='localitem(id , index)' v-show='status == 1' :to="{ name: 'gg-film-detail',
             params: { id , status } }">审核</router-link>
             <router-link v-auth="'advert.videos:info'" v-show='status != 1' :to="{ name: 'gg-film-detail',
             params: { id , status } }">详情</router-link>
@@ -97,6 +100,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     status: '1',
     pageIndex: 1,
     pageSize: 20,
+    translated: null,
   }
 
   oldQuery: any = {}
@@ -111,14 +115,20 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   // 公司列表
   companys = []
+  translatedList: any = []
+  // 跳转数量
+  jumpNum: any = 0
 
   get columns() {
     const status = this.query.status
     return [
       { title: '广告片ID', key: 'id', width: 70 },
       { title: '广告片名称', key: 'name' },
-      { title: '客户', slot: 'customerName' },
+      { title: '广告主公司名称', key: 'companyName' },
+      { title: '客户', key: 'customerName' },
       { title: '规格', slot: 'specification', width: 60 },
+      { title: '广告片下载地址', key: 'srcFileId'},
+      { title: '是否已转制', slot: 'specification', width: 60 },
       { title: '转制费(元)', slot: 'transFee', width: 110 },
       { title: '创建时间', slot: 'applyTime', width: 135 },
       status in { 2: 1, 5: 1 } && { title: '审核人', slot: 'approvalUser', width: 110 },
@@ -146,6 +156,29 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     this.resetQuery('status,pageSize')
   }
 
+  // 审核时保存数据需要
+  localitem(id: any , index: any) {
+    // 列表点击清空本地存储值
+    sessionStorage.clear()
+    if (this.query.pageIndex == 1) {
+      this.jumpNum = index
+    } else {
+      this.jumpNum = ((this.query.pageIndex) * this.query.pageSize) + index
+    }
+    const info: any = {
+      index,
+      pageidx: this.query.pageIndex,
+      pagese: this.query.pageSize,
+      query: this.query.query, // 广告片id或者名称
+      companyId: this.query.companyId, // 公司Id
+      status: this.query.status, // 状态
+      translated: this.query.translated, // 1：转制；2：未转制
+      skip: this.jumpNum, // 跳过的记录数
+      maxSize: 500, // 最大返回数据量
+    }
+    sessionStorage.setItem('info', JSON.stringify(info))
+  }
+
   async fetch() {
     if (this.loading) {
       return
@@ -159,9 +192,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     try {
       this.list = [] // 确保在切换 tab 时，不显示前一个 tab 的数据
 
-      const { data: { items: list, totalCount: total } } = await queryList(query)
+      const { data: { items: list, totalCount: total , translatedList: translatedList } } = await queryList(query)
       this.list = list
       this.total = total
+      this.translatedList = translatedList
     } catch (ex) {
       this.handleError(ex)
     } finally {

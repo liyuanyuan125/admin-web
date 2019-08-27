@@ -6,14 +6,14 @@
     :title="!id ? '新建' : '编辑'"
     @on-cancel="cancel('dataForm')" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
-      <FormItem label="用户邮箱账号" prop="email">
-        <Input style="width:240px" v-model="dataForm.email"></Input>
+      <FormItem label="手机号" prop="mobile">
+        <Input style="width:240px" v-model="dataForm.mobile" placeholder="可使用手机号登录"></Input>
       </FormItem>
       <FormItem label="姓名" prop="name">
         <Input style="width:240px" v-model="dataForm.name"></Input>
       </FormItem>
-      <FormItem label="手机号" prop="mobile">
-        <Input style="width:240px" v-model="dataForm.mobile"></Input>
+       <FormItem label="邮箱" prop="email">
+        <Input style="width:240px" v-model="dataForm.email"></Input>
       </FormItem>
       <FormItem label="密码" prop="password" >
         <Input style="width:240px" type="password" v-model="dataForm.password"></Input>
@@ -85,7 +85,7 @@ export default class ComponentMain extends ViewBase {
     }
     const rules = {
       email: [
-        { required: true, message: '请输入邮箱账号', trigger: 'blur' },
+        // { required: true, message: '请输入邮箱账号', trigger: 'blur' },
         {
           pattern: /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/,
           message: '请输入正确的邮箱格式',
