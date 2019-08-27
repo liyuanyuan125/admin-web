@@ -17,28 +17,43 @@
       selectable
       :selectedIds.sync="selectedIds"
       ref="listPage"
+      @inspect='onInspect'
     >
+
       <template slot="acts">
-        <!-- <Button
-          type="success"
-          icon="md-add-circle"
-        >新建</Button> -->
+        <Button
+          type="default"
+          class="button-audit"
+          @click="exportData"
+        >导出</Button>
       </template>
 
       <template slot="acts-2">
         <Button
+          v-if=' astatus == 2'
           type="primary"
           class="button-audit"
           :disabled="!(selectedIds.length > 0)"
           @click="changeAll"
+          
         >批量审核</Button>
+        <Button
+          v-else-if=' astatus == 4'
+          type="primary"
+          :disabled="!(selectedIds.length > 0)"
+          @click="changeAll"
+        >批量恢复</Button>
+        <span v-else  ></span>
       </template>
+
       <template  slot="video" slot-scope="{row}" >
-        <a style='margin-left: 5px;' v-for='(item,index) in row.videoDetails' :key='index'>{{item.videoName}} ({{item.videoLength}})s</a>
+        <a style='margin-left: 5px;' v-for='(item,index) in row.videoList' :key='index'>{{item.videoName}} ({{item.videoLength}})s</a>
       </template>
-      <template  slot="action" slot-scope="{row}" >
-        <a style='margin-right: 6px;' v-show='row.approvalStatus == 2' @click="change( row.id , row )">审核</a>
-        <router-link  :to="{ name: 'order-supervision-detail', params: { id: row.id} }">详情</router-link>
+      <template  slot="action" slot-scope="{row , index}" >
+        <router-link v-if='row.approvalStatus == 2' @click.native="localitem( row.id , row , index )"  :to="{ name: 'order-supervision-detail', params: { id: row.id} }">审核</router-link>
+        <!-- <a style='margin-right: 6px;' v-show='row.approvalStatus == 2' @click="change( row.id , row )">审核</a> -->
+        <a style='margin-right: 6px;' v-show='row.approvalStatus == 4' @click="change( row.id , row )">恢复</a>
+        <router-link v-if='row.approvalStatus != 2'  :to="{ name: 'order-supervision-detail', params: { id: row.id} }">详情</router-link>
       </template>
     </ListPage>
      <singvideoDlg ref="addOrUpdatevideo" v-if='videoVisible' @done="dlgEditDone" />
@@ -56,21 +71,27 @@ import { alert, toast } from '@/ui/modal'
 import { EditDialog, Field } from '@/components/editForm'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
-
+// 公司名称
 import compangList from './companyList.vue'
+// 广告片
 import videoList from './videoList.vue'
+// 影院名称
 import cinemaList from './cinemaList.vue'
+// 商务负责人
+import People from './peopleList.vue'
+
 import singvideoDlg from './singvideoDlg.vue'
+
 
 
 
 import { getChannelList } from '@/util/types'
 
 const statusList: any = [
-  {name: '未上传', value: '1'},
   {name: '待审核', value: '2'},
   {name: '已通过', value: '3'},
-  {name: '已拒绝', value: '4'}
+  {name: '已拒绝', value: '4'},
+  {name: '未上传', value: '1'},
 ]
 const defaultPay = statusList[0].value
 
@@ -95,10 +116,21 @@ export default class IndexPage extends ViewBase {
 
   fetch = queryList
 
+  query: any = null
+  list: any = []
+
   selectedIds = [] as number[]
 
+
+  // 跳转数量
+  jumpNum: any = 0
+
+  get astatus() {
+    return this.query && this.query.status
+  }
+
   get filters(): Filter[] {
-    return [
+    const aaa: any = [
       {
         name: 'status',
         defaultValue: this.pay,
@@ -129,14 +161,70 @@ export default class IndexPage extends ViewBase {
       },
 
       {
-        name: 'status',
-        defaultValue: null,
-        type: 'select',
-        width: 100,
-        placeholder: '状态',
-        enumKey: 'statusList'
+        name: 'movieName',
+        defaultValue: '',
+        type: 'input',
+        width: 140,
+        placeholder: '影片名称'
       },
 
+      {
+        name: 'dateRange',
+        defaultValue: '',
+        type: 'dateRange',
+        width: 200,
+        placeholder: '投放周期',
+        dealParam(value: string) {
+          const [beginDate, endDate] = value ? value.split('-') : [null, null]
+          return {
+            beginDate,
+            endDate
+          }
+        }
+      },
+
+      {
+        name: 'businessDirector',
+        defaultValue: 0,
+        type: People,
+        width: 140,
+        placeholder: '商务负责人'
+      },
+
+      // {
+      //   name: 'status',
+      //   defaultValue: null,
+      //   type: 'select',
+      //   width: 100,
+      //   placeholder: '状态',
+      //   enumKey: 'statusList'
+      // },
+    ]
+    const bbb: any = [
+      {
+        name: 'approvalUserName',
+        defaultValue: '',
+        type: 'input',
+        width: 140,
+        placeholder: '审核人'
+      },
+
+      {
+        name: 'dateRang3e',
+        defaultValue: '',
+        type: 'dateRange',
+        width: 200,
+        placeholder: '审核时间',
+        dealParam(value: string) {
+          const [approvalBeginTime, approvalEndTime] = value ? value.split('-') : [null, null]
+          return {
+            approvalBeginTime,
+            approvalEndTime
+          }
+        }
+      },
+    ]
+    const ccc: any = [
       {
         name: 'pageIndex',
         defaultValue: 1
@@ -147,6 +235,9 @@ export default class IndexPage extends ViewBase {
         defaultValue: 20
       }
     ]
+
+    return this.status == '3' || this.status == '4' ? [...aaa , ...bbb , ...ccc] :
+    [...aaa, ...ccc ]
   }
 
   enums = [
@@ -154,9 +245,10 @@ export default class IndexPage extends ViewBase {
   ]
 
   get columns() {
-    return [
-      { title: '资源方公司名称', key: 'resourceName',  align: 'center' },
+    const aaa: any = [
+      { title: '资源方公司名称', key: 'companyName',  align: 'center' },
       { title: '影院名称', key: 'cinemaName', align: 'center' },
+      { title: '影片名称', key: 'movieName', align: 'center' },
       { title: '广告片', slot: 'video', align: 'center' },
       {
         title: '投放周期',
@@ -174,17 +266,22 @@ export default class IndexPage extends ViewBase {
           /* tslint:enable */
         }
       },
+      { title: '商务负责人', key: 'businessDirectorName', align: 'center' },
+      { title: '上传人', key: 'uploadName', align: 'center' },
+      { title: '上传时间', key: 'uploadTime', align: 'center', editor: 'dateTime' },
+    ]
+    const ccc: any = [
+      { title: '审核人', key: 'approvalName', align: 'center' },
+      { title: '审核时间', key: 'approvalTime', align: 'center', editor: 'dateTime' },
+    ]
+    const ddd: any = [
       { title: '状态', key: 'status', width: 100 , editor: 'enum' },
-
       { title: '操作', slot: 'action', maxWidth: 100 }
-    ] as ColumnExtra[]
-  }
+    ]
 
-  priceColumns = [
-    // { title: '类别', key: 'name', minWidth: 100 },
-    // { title: '价格', key: 'price', minWidth: 85, align: 'center' },
-    // { title: '有效期', key: 'date', minWidth: 75, align: 'center' },
-  ]
+    return this.status == '3' || this.status == '4' ? [...aaa , ...ccc , ...ddd] :
+    [...aaa, ...ddd ] as ColumnExtra[]
+  }
 
   auditVisible = false
   changeAll() {
@@ -201,6 +298,46 @@ export default class IndexPage extends ViewBase {
 
   refresh() {
     this.listPage.update()
+  }
+
+  onInspect({ query , list }: any) {
+    this.query = query
+    this.list = list
+  }
+
+  async mounted() {
+    this.listPage.query.status = 2
+  }
+
+  // 下载
+  exportData() {
+    (this.$refs.listPage as any).exportCsv({
+      filename: '映前广告监播列表',
+      columns: this.columns,
+      data: this.list
+    })
+  }
+
+  localitem(id: number, row: any , index: any) {
+    // 列表点击清空本地存储值
+    sessionStorage.clear()
+    if (this.query.pageIndex == 1) {
+      this.jumpNum = index
+    } else {
+      this.jumpNum = ((this.query.pageIndex) * this.query.pageSize) + index
+    }
+    const infos: any = {
+      index,
+      pageidx: this.query.pageIndex,
+      pagese: this.query.pageSize,
+      companyId: this.query.companyId,
+      cinemaId: this.query.cinemaId,
+      videoId: this.query.videoId,
+      status: this.query.status,
+      skip: this.jumpNum, // 跳过的记录数
+      maxSize: 500, // 最大返回数据量
+    }
+    sessionStorage.setItem('supinfo', JSON.stringify(infos))
   }
 
   @Watch('status')

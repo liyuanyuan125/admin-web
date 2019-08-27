@@ -29,6 +29,9 @@
       <template  slot="applyAmount" slot-scope="{row}" >
           {{row.applyAmount == null ? '-' : formatNumber(row.applyAmount)}}
       </template>
+      <template  slot="actualAmount" slot-scope="{row}" >
+          {{row.actualAmount == null ? '-' : formatNumber(row.actualAmount)}}
+      </template>
       <template slot="action" slot-scope="{ row }">
         <div class="row-acts">
          <span style='color: #2b85e4;cursor: pointer;' @click='view(row.id , row.applyAmount)'>付款</span>
@@ -248,6 +251,7 @@ export default class IndexPage extends ViewBase {
   enums = [
     'invoiceTypeList',
     'invoiceContentList',
+    'invoiceStatusList'
   ]
 
   get formatNumber() {
@@ -275,6 +279,12 @@ export default class IndexPage extends ViewBase {
       { title: '账单金额', slot: 'billAmount', width: 60 },
       { title: '可申请付款金额', slot: 'availableApplyAmount', width: 60},
       { title: '请款金额', slot: 'applyAmount', width: 60},
+    ]
+    const overmoney: any = [
+      { title: '付款金额', slot: 'actualAmount', width: 60},
+    ]
+    const overlist: any = [
+      { title: '发票状态', key: 'invoiceStatus', width: 65, editor: 'enum' },
       { title: '发票类型', key: 'invoiceType', width: 65, editor: 'enum' },
       { title: '发票内容', key: 'invoiceContent', width: 65, editor: 'enum' },
       { title: '发票号', key: 'invoiceNo', width: 65},
@@ -293,8 +303,8 @@ export default class IndexPage extends ViewBase {
       { title: '付款完成时间', key: 'payTime', width: 75, editor: 'dateTime' },
     ]
 
-    return this.status == '2' ? [...firstID, ...two , ...threeID] :
-    [...firstN, ...two , ...threeN ] as ColumnExtra[]
+    return this.status == '2' ? [...firstN, ...two , ...overmoney , ...overlist, ...threeID] :
+    [...firstN, ...two , ...overlist, ...threeN ] as ColumnExtra[]
   }
 
   // mounted() {
@@ -334,11 +344,30 @@ export default class IndexPage extends ViewBase {
   // }
   @Watch('status')
   watchstatus(pay: any) {
+    this.listPage.query = {
+      applyNo: '',
+      billMonth: null,
+      billNo: '',
+      cinemaCode: '',
+      cinemaId: 0,
+      dateRange1: '',
+      dateRange2: '',
+      dateRange3: '',
+      invoiceContent: 0,
+      invoiceType: 0,
+      no: '',
+      pageIndex: 1,
+      pageSize: 20,
+      resourceId: 0,
+      status: pay,
+    }
+
     this.$router.push({
       name: 'finance-payment',
       params: pay == defaultPay ? {} : { pay }
     })
   }
+
 
   @Watch('pay')
   watchPay(pay: any) {
