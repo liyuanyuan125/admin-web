@@ -17,126 +17,53 @@
     <div class="edit-box">
       <!-- header -->
       <Row class="cinema-header">
-        <FormItem label="广告主身份">
+        <FormItem label="公司名称" prop="name">
           <Row>
             <Col span="10">
-              <RadioGroup v-model="item.companyType" type="button" size="large">
-                <Radio :label="1">企业</Radio>
-                <Radio :label="2">个人</Radio>
-              </RadioGroup>
+              <Input v-model="item.name" placeholder="请填写公司全称，与营业执照保持一致" />
             </Col>
           </Row>
         </FormItem>
-        <!-- 公司 -->
-        <div v-if='item.companyType == 1'>
-          <FormItem label="公司名称" prop="name">
-            <Row>
-              <Col span="8">
-                <Input v-model="item.name" placeholder="请填写公司全称，与营业执照保持一致" />
-              </Col>
-            </Row>
-          </FormItem>
-          <FormItem label="简称">
-            <Row>
-              <Col span="8">
-                <Input v-model="item.shortName" />
-              </Col>
-            </Row>
-          </FormItem>
-
-          <FormItem label="所属行业" prop="businessParentCode">
-            <Row>
-              <Col span="8">
-                <Industry v-model='item.businessParentCode' :businessParentTypeList='businessParentTypeList' />
-              </Col>
-            </Row>
-          </FormItem>
-
-          <CitySelectDialog
-            v-model="visible"
-            :cityIds.sync="item.coverCityIdList"
-            @ok="onCitySelectOk"
-          />
-          <FormItem label="覆盖区域">
-            <Row>
-              <Col span="8">
-                <a @click="visible = true">设置覆盖区域</a>
-                <span> 已选城市 {{item.coverCityIdList.length}}个</span>
-              </Col>
-            </Row>
-          </FormItem>
-
+        <FormItem label="简称" prop="shortName">
           <Row>
-            <FormItem label="公司地址" prop="provinceId">
-              <Row>
-                <Col span="8">
-                  <AreaSelect v-model="area" />
-                </Col>
-                <Col span="10" offset="1">
-                  <FormItem prop="addressDetail">
-                    <Input v-model="item.addressDetail" placeholder="详细地址" class="input-address" />
-                  </FormItem>
-                </Col>
-              </Row>
-            </FormItem>
-          </Row>
-          <Row>
-            <Col span="5">
-              <FormItem label="联系人">
-                <Input v-model="item.contact" />
-              </FormItem>
-            </Col>
-            <Col span="6" offset="1">
-              <FormItem label="联系电话" prop="contactPhone">
-                <Input v-model="item.contactTel" />
-              </FormItem>
-            </Col>
-            <Col span="7" offset="1">
-              <FormItem label="邮箱" prop="email">
-                <Input v-model="item.email" />
-              </FormItem>
+            <Col span="8">
+              <Input v-model="item.shortName" />
             </Col>
           </Row>
-        </div>
-
-        <!-- 个人 -->
-        <div v-if='item.companyType != 1'>
-          <Row>
-          <FormItem label="姓名" prop="singcontact">
+        </FormItem>
+        <Row>
+          <FormItem label="公司地址" prop="provinceId">
             <Row>
               <Col span="8">
-                <Input v-model="item.singcontact" placeholder="" />
+                <AreaSelect v-model="area" />
+              </Col>
+              <Col span="10" offset="1">
+                <FormItem prop="addressDetail">
+                  <Input v-model="item.addressDetail" placeholder="详细地址" class="input-address" />
+                </FormItem>
               </Col>
             </Row>
           </FormItem>
-          <FormItem label="手机号" prop="singcontactTel">
-            <Row>
-              <Col span="8">
-                <Input v-model="item.singcontactTel" placeholder="" />
-              </Col>
-            </Row>
-          </FormItem>
-          <FormItem label="邮箱" prop="singemail">
-            <Row>
-              <Col span="8">
-                <Input v-model="item.singemail" placeholder="" />
-              </Col>
-            </Row>
-          </FormItem>
-          </Row>
-        </div>
+        </Row>
         <Row>
           <Col span="5">
-            <FormItem label="推荐人电话">
-              <Input v-model="item.recommendMobile" />
+            <FormItem label="联系人">
+              <Input v-model="item.contact" />
             </FormItem>
           </Col>
           <Col span="6" offset="1">
-            <FormItem label="推荐人姓名" prop="recommendUserName">
-              <Input v-model="item.recommendUserName" />
+            <FormItem label="联系电话" prop="contactPhone">
+              <Input v-model="item.contactTel" />
             </FormItem>
           </Col>
-           <Col span="6" offset="1">
+          <Col span="7" offset="1">
+            <FormItem label="邮箱" prop="email">
+              <Input v-model="item.email" />
+            </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col span="5">
             <FormItem label="资质" prop="qualificationType">
               <Select v-model="item.qualificationType" clearable>
                 <Option
@@ -147,33 +74,12 @@
               </Select>
             </FormItem>
           </Col>
-        </Row>
-        <Row>
-          <Col span="5">
+          <Col span="6" offset="1">
             <FormItem label="资质编号" prop="qualificationCode">
               <Input v-model="item.qualificationCode" placeholder="资质编号" />
             </FormItem>
           </Col>
         </Row>
-
-        <!-- <Row v-if='item.companyType == 1'>
-            <FormItem
-                style='width: 50%;'
-                v-for="(item, it) in item.qualificationArray"
-                v-if="item.status"
-                :key="it"
-                label="资质编号"
-                :prop="'qualificationArray.' + it + '.value'"
-                :rules="{required: true, message: '请填写资质编号', trigger: 'blur'}">
-                  <div style='display: flex'>
-                      <Input type="text" v-model="item.value" placeholder="请填写资质编号"></Input>
-                      <Button v-if='it == 0' @click="handleAdd">追加</Button>
-                      <Button v-if='it != 0' @click="handleRemove(it)">删除</Button>
-                  </div>
-            </FormItem>
-        </Row> -->
-
-        <!-- 上传图片 -->
         <Row class="upload">
           <Col span="12" style="margin-left: 88px">
             <Upload v-model="imageList" multiple :maxCount="3" accept="image/*" v-if="loadingShow" />
@@ -197,7 +103,6 @@
             </Col>
           </Row>
         </FormItem>
-
         <div class="124" v-if="item.approveStatus==2">
           <Row>
             <Col span="8">
@@ -257,10 +162,9 @@
           </Col>
         </Row>
 
-        <Row class="client-type-row" v-if='item.companyType == 1'>
+        <!-- <Row class="client-type-row">
           <Col v-for="(it, index) in customerTypeList" :key="index" span="8">
             <FormItem
-              v-if="it.typeCode != 'agent' || it.typeCode != 'film'"
               :label="index == 0 ? '客户类型' : ''"
               :prop="'typearr['+ index + ']'"
               :show-message="index == 0 ? show0 : true"
@@ -300,54 +204,23 @@
               </span>
             </FormItem>
           </Col>
-        </Row>
+        </Row> -->
 
-        <Row v-else>
-          <Col span='5'>
-            <FormItem
-              label="客户类型"
-            >
-            <Select
-                v-model="singtype[0].typeCategoryCode"
-                class="flex-1"
-                clearable
-              >
-                <Option
-                  v-if="sub.controlStatus == 1"
-                  v-for="sub in customerTypeList[0].typeCategoryList"
-                  :key="sub.typeCode"
-                  :value="sub.typeCode"
-                >{{sub.typeName}}</Option>
-              </Select>
-            </FormItem>
-          </Col>
-        </Row>
-
-        <Row v-if="item.typearr[0] && item.companyType == 1">
+        <!-- <Row v-if="item.typearr[0]">
           <FormItem label="关联品牌">
             <BrandPane
               v-model="brandIds"
               :bindList="item.brandList"
             />
           </FormItem>
-        </Row>
+        </Row> -->
 
-        <Row v-if="item.companyType == 2">
-          <FormItem label="关联品牌">
-            <BrandPane
-              v-model="singbrandIds"
-              :bindList="item.singbrandList"
-            />
-          </FormItem>
-        </Row>
-
-        <Row v-if="item.typearr[1] && item.companyType == 1">
+        <Row>
           <FormItem label="关联影院" prop="cinemasList" :show-message="!(item.cinemasList.length>0)">
             <PartBindCinema
               v-if="loadingShow"
               v-model="item.cinemasList"
               :unitList="profitUnitList"
-              :incinematype="cinematype"
               class="part-bind-cinema"
             />
           </FormItem>
@@ -367,14 +240,12 @@ import ViewBase from '@/util/ViewBase'
 import { queryId, addSeach, addQuery, setQuery, directorList } from '@/api/corpReal'
 import AreaSelect from '@/components/areaSelect'
 import Upload from '@/components/Upload.vue'
-import PartBindCinema from '../corp/partBindCinema.vue'
+import PartBindCinema from './partBindCinema.vue'
 import { toMap } from '@/fn/array'
 import { slice, clean } from '@/fn/object'
 import moment from 'moment'
 import { toast } from '@/ui/modal'
 import BrandPane from '../corp/brandPane'
-import Industry from './industry.vue'
-import CitySelectDialog from '@/components/citySelectDialog'
 
 const timeFormat = 'YYYY-MM-DD'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
@@ -384,10 +255,6 @@ const defItem = {
   cinemasList: [],
   name: '',
   shortName: '',
-  businessParentCode: [],
-  coverCityIdList: [],
-
-  companyType: 1,
   typeCategoryCode0: '',
   typeCategoryCode1: '',
   aptitudeNo: '',
@@ -396,6 +263,7 @@ const defItem = {
   cityId: 0,
   countyId: 0,
   addressDetail: '',
+
   contact: '',
   contactTel: '',
 
@@ -404,73 +272,58 @@ const defItem = {
   qualificationType: 'BL',
   qualificationCode: '',
   images: [],
-  // 动态表单
-  // qualificationArray: [
-  //   {
-  //     value: '',
-  //     index: 1,
-  //     status: 1
-  //   }
-  // ]
-
-  types: [
-    {
-      typeCode: '',
-      typeCategoryCode: ''
-    },
-    {
-      typeCode: '',
-      typeCategoryCode: ''
-    }
-  ],
   refusedReason: '',
   levelCode: '',
   businessDirector: '',
   cinemas: [],
   approveStatus: 2,
-  validityPeriodDate: '',
-
-  singcontact: '',
-  singcontactTel: '',
-  singemail: ''
+  validityPeriodDate: ''
 }
 
 @Component({
   components: {
     AreaSelect,
     PartBindCinema,
-    Industry,
     Upload,
-    BrandPane,
-    CitySelectDialog
+    BrandPane
   }
 })
 export default class Main extends ViewBase {
   title = ''
-  loading = false
-  loadingShow = false
-  item: any = { ...defItem }
-  singbrandIds: any = []
-  shows = true
-  show0 = true
-  visible = false
-  cityIds: any = []
-  b: any = {}
-  levelList = []
-  singtype: any = [{typeCode: 'ads', typeCategoryCode: 'zhike'}]
-  customerTypeList: any = [] // 区代理
-  bizUserList = []
-  businessParentTypeList = [] // 一级行业
-  typeList = []
-  qualificationTypeList = []
-  typeListSubMap = {}
-  profitUnitList = []
-  profitTypeList = []
-  area: number[] = []
-  businessDirector = []
-  imageList = []
 
-  index = 1 // 资质编号长度
+  loading = false
+
+  loadingShow = false
+
+  item: any = { ...defItem }
+
+  shows = true
+
+  show0 = true
+
+  b: any = {}
+
+  levelList = []
+
+  customerTypeList = []
+
+  bizUserList = []
+
+  typeList = []
+
+  qualificationTypeList = []
+
+  typeListSubMap = {}
+
+  profitUnitList = []
+
+  profitTypeList = []
+
+  area: number[] = []
+
+  businessDirector = []
+
+  imageList = []
 
   options1 = {
     disabledDate(date: any) {
@@ -521,10 +374,7 @@ export default class Main extends ViewBase {
 
     const rule: any = {
       name: [{ required: true, message: '请填写公司名称', trigger: 'blur' }],
-      sing: [{ required: true, message: '请填写公司名称', trigger: 'blur' }],
-      singcontact: [{ required: true, message: '请填写姓名', trigger: 'blur' }],
-      singcontactTel: [{ required: true, message: '请填写手机号', trigger: 'blur' }],
-      singemail: [{ required: true, message: '请填写邮箱', trigger: 'blur' }],
+      shortName: [{ required: true, message: '请填写公司简称', trigger: 'blur' }],
       provinceId: [
         {
           required: true,
@@ -533,15 +383,6 @@ export default class Main extends ViewBase {
           trigger: 'change'
         }
       ],
-      businessParentCode: [{
-        required: true,
-        type: 'array',
-        message: '请选择所属行业',
-        trigger: 'change',
-        fields: {
-          0: {type: 'string', required: true},
-        }
-      }],
       addressDetail: [
         { required: true, message: '请填写公司详细地址', trigger: 'blur' }
       ],
@@ -583,32 +424,8 @@ export default class Main extends ViewBase {
   }
 
   created() {
-    if (this.$route.params) {
-      this.item.typearr = [false, false]
-      this.item.types = this.item.types.map((val: any) => {
-        return {
-          typeCode: '',
-          typeCategoryCode: ''
-        }
-      })
-    }
     this.business()
   }
-
-  // // 删除资质编号
-  // handleRemove(index: number) {
-  //   this.item.qualificationArray[index].status = 0
-  // }
-
-  // // 添加资质编号
-  // handleAdd() {
-  //   this.index++
-  //   this.item.qualificationArray.push({
-  //       value: '',
-  //       index: this.index,
-  //       status: 1
-  //   })
-  // }
 
   async business() {
     try {
@@ -616,23 +433,6 @@ export default class Main extends ViewBase {
       this.businessDirector = res.data.items
     } catch (ex) {
       this.handleError(ex)
-    }
-  }
-
-  typeCode(val: any, index: any) {
-    if (!this.item.typearr[index]) {
-      this.item.types[index].typeCode = val
-    } else {
-      this.item.types[index].typeCode = ''
-      this.item.types[index].typeCategoryCode = ''
-    }
-  }
-
-  get cinematype() {
-    if (this.item.types[1].typeCategoryCode == 'cinema') {
-      return 1
-    } else {
-      return 0
     }
   }
 
@@ -666,10 +466,6 @@ export default class Main extends ViewBase {
     this.load()
   }
 
-  onCitySelectOk() {
-
-  }
-
   async load() {
     this.loading = true
     ; (this.$Spin as any).show()
@@ -677,27 +473,13 @@ export default class Main extends ViewBase {
     try {
       if (!query.id) {
         const {
-          data: { levelList, customerTypeList, qualificationTypeList, businessParentTypeList }
+          data: { levelList, customerTypeList, qualificationTypeList }
         } = await addSeach()
         this.loadingShow = true
         this.levelList = levelList
         this.qualificationTypeList = qualificationTypeList
-        this.customerTypeList = customerTypeList.slice(2)
-        this.businessParentTypeList = businessParentTypeList.map((it: any) => {
-          return {
-            value: it.key,
-            label: it.text,
-            children: [],
-            loading: false
-          }
-        })
-        this.item.types[0] = {
-          typeCode: 'ads',
-          typeCategoryCode: 'zhike'
-        }
-        this.item.typeCategoryCode0 = 'zhike'
-        this.item.typearr[0] = true
-        this.title = '新建广告主'
+        this.customerTypeList = customerTypeList
+        this.title = '新建公司'
         ; (this.$Spin as any).hide()
       } else {
         const {
@@ -710,19 +492,14 @@ export default class Main extends ViewBase {
             aptitudeNo,
             provinceId,
             cityId,
-            businessParentTypeList,
             countyId,
             addressDetail,
             contact,
             contactTel,
             email,
-            recommendMobile,
-            recommendUserName,
             qualificationType,
             qualificationCode,
-            coverCityIdList,
             images,
-            types,
             refusedReason,
             levelCode,
             businessDirector,
@@ -732,90 +509,42 @@ export default class Main extends ViewBase {
             qualificationTypeList,
             status,
             imageList,
-            businessParentCode,
-            businessChildCode,
             cinemaList,
-            brandList,
-            companyType
+            brandList
           }
         } = await queryId(query)
         this.item.name = name
-        this.businessParentTypeList = businessParentTypeList.map((it: any) => {
-          return {
-            value: it.key,
-            label: it.text,
-            children: [],
-            loading: false
-          }
-        })
-        this.item.businessParentCode = [
-          businessParentCode,
-          (businessChildCode || '0')
-        ]
-        this.item.companyType = companyType
-        if ( companyType == 2) {
-          this.item.singcontact = contact
-          this.item.singcontactTel = contactTel
-          this.item.singemail = email
-          this.item.singbrandList = (brandList as any[] || []).map(it => ({
-            id: it.brandId,
-            name: it.brandName,
-          }))
-          // this.item.types = types
-        } else {
-          this.item.contact = contact
-          this.item.contactTel = contactTel
-          this.item.email = email
-          this.area = [provinceId || 0, cityId || 0, countyId || 0]
-          this.item.shortName = shortName
-          this.item.brandList = (brandList as any[] || []).map(it => ({
-            id: it.brandId,
-            name: it.brandName,
-          }))
-          this.item.addressDetail = addressDetail
-          this.item.coverCityIdList = coverCityIdList
-        }
-        this.customerTypeList = customerTypeList.slice(2)
-        if (types.length == 1) {
-
-          if (this.customerTypeList[0].typeCode == types[0].typeCode) {
-            this.item.types[0] = types[0]
-            this.item.typeCategoryCode0 = types[0].typeCategoryCode
-            this.item.typearr[0] = true
-          } else {
-            this.item.types[1] = types[0]
-            this.item.typeCategoryCode1 = types[0].typeCategoryCode
-            this.item.typearr[1] = true
-          }
-        } else {
-          this.item.types = types.sort((a: any, b: any) => {
-            return a.typeCode > b.typeCode ? 1 : -1
-          })
-          this.item.typeCategoryCode0 = this.item.types[0].typeCategoryCode
-          this.item.typeCategoryCode1 = this.item.types[1].typeCategoryCode
-          this.item.typearr = [true, true]
-        }
-        this.item.recommendMobile = recommendMobile
-        this.item.recommendUserName = recommendUserName
+        this.item.shortName = shortName
         this.item.aptitudeType = aptitudeType
         this.item.aptitudeNo = aptitudeNo
+        this.item.addressDetail = addressDetail
         this.item.qualificationCode = qualificationCode
+        this.item.contact = contact
+        this.item.contactTel = contactTel
+        this.item.email = email
         this.item.levelCode = levelCode
         this.qualificationTypeList = qualificationTypeList
         this.item.qualificationType = qualificationType
         this.item.images = images || []
         this.item.cinemasList = cinemaList || []
+
+        this.item.brandList = (brandList as any[] || []).map(it => ({
+          id: it.brandId,
+          name: it.brandName,
+        }))
         this.item.refusedReason = refusedReason
         this.item.businessDirector = businessDirector
         this.item.cinemas = cinemas || []
         this.imageList = imageList || []
         this.item.approveStatus = Number(approveStatus)
+        this.customerTypeList = customerTypeList
         this.item.validityPeriodDate = validityPeriodDate
           ? new Date(this.formatValid(validityPeriodDate))
           : ''
         this.levelList = levelList
+        this.area = [provinceId || 0, cityId || 0, countyId || 0]
         this.loadingShow = true
-        approveStatus == 1 ? (this.title = '审核广告主') : (this.title = '编辑广告主')
+        approveStatus == 1 ? (this.title = '审核公司') : (this.title = '编辑公司')
         ; (this.$Spin as any).hide()
       }
     } catch (ex) {
@@ -841,10 +570,6 @@ export default class Main extends ViewBase {
   edit(dataForms: string) {
     (this.$refs[dataForms] as any).validate(async (valid: any) => {
       if (valid) {
-        if (this.cinematype == 1 && this.cinemas.length > 1) {
-          this.showError('因资源方类型为影院，因此仅能关联一家影院')
-          return
-        }
         const route: any = this.$route.params.id || 0
         let times: any = ''
         const timesfomat = moment(this.item.validityPeriodDate)
@@ -854,74 +579,35 @@ export default class Main extends ViewBase {
         !this.item.validityPeriodDate ? (times = '') : times
         const oldQuery = {
           ...this.item,
+          companyType: 1,
           validityPeriodDate: times,
           provinceId: Number(this.item.provinceId),
           cityId: Number(this.item.cityId),
-          countyId: Number(this.item.countyId)
+          countyId: Number(this.item.countyId),
+          coverCityIdList: [],
+          businessParentCode: '',
+          businessChildCode: '',
+          cinemas: [],
         }
         const query = clean(oldQuery)
         const array = Object.keys(query).slice(2)
         const newqQuery = slice(query, array)
         const types: any = []
-        this.item.types.forEach((it: any) => {
-          it.typeCode &&
-            types.push({
-              ...it,
-              typeCategoryCode: it.typeCategoryCode ? it.typeCategoryCode : ''
-            })
-        })
-        const business = this.item.businessParentCode.length > 0 ? {
-          businessParentCode: this.item.businessParentCode[0],
-          businessChildCode: this.item.businessParentCode[1] == '0' ? '' : this.item.businessParentCode[1],
-        } : {}
-        let formData: any = {
+
+        const formData: any = {
           ...newqQuery,
-          ...business,
-          types: this.item.companyType == 2 ? this.singtype : (types as any[] || []).filter(it => it.typeCode != ''),
-          cinemas: this.item.typearr[1] ? this.cinemas : [],
-          brandIds: this.item.companyType == 2 ? this.singbrandIds : (this.item.typearr[0] ? this.brandIds : []),
-          email: this.item.companyType == 1 ? this.item.email : this.item.singemail,
-          contactTel: this.item.companyType == 1 ? this.item.contactTel : this.item.singcontactTel,
-          contact: this.item.companyType == 1 ? this.item.contact : this.item.singcontact,
+          cinemas:  this.cinemas || [],
         }
 
         // 删除某些多余的字段
-        if (this.item.companyType == 2) {
-          formData = {
-            ...formData,
-            coverCityIdList: [],
-            businessParentCode: '',
-            businessChildCode: '',
-            cinemas: [],
-            provinceId: 0,
-            cityId: 0,
-            countyId: 0,
-            addressDetail: '-',
-            name: '-',
-            shortName: '-',
-          }
-          // delete formData.coverCityIdList
-          // delete formData.businessParentCode
-          // delete formData.businessParentCode
-          // delete formData.cinemas
-          // delete formData.provinceId
-          // delete formData.cityId
-          // delete formData.countyId
-          // delete formData.typeCategoryCode0
-          // delete formData.addressDetail
-          // delete formData.name
-          // delete formData.shortName
-        }
         delete formData.brandList
-        delete formData.singcontactTel
-        delete formData.singcontact
-        delete formData.singemail
+
         try {
           const data: any = route == 0
             ? await addQuery(formData)
             : await setQuery(route, formData)
-          // toast(data.msg)
-          // this.$router.go(-1)
+          toast(data.msg)
+          this.$router.go(-1)
         } catch (ex) {
           this.handleError(ex)
         }
@@ -962,26 +648,6 @@ export default class Main extends ViewBase {
           e.resetField()
         }
       })
-    }
-    if (val.typeCategoryCode0) {
-      this.item.types[0].typeCategoryCode = val.typeCategoryCode0
-    } else {
-      this.item.types[0].typeCategoryCode = ''
-    }
-    if (val.typeCategoryCode1) {
-      this.item.types[1].typeCategoryCode = val.typeCategoryCode1
-    } else {
-      this.item.types[1].typeCategoryCode = ''
-    }
-    if (val.typearr[0]) {
-      this.item.types[0].typeCode = (this.customerTypeList[0] as any).typeCode
-    } else {
-      this.item.types[0].typeCode = ''
-    }
-    if (val.typearr[1]) {
-      this.item.types[1].typeCode = (this.customerTypeList[1] as any).typeCode
-    } else {
-      this.item.types[1].typeCode = ''
     }
   }
 }

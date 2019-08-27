@@ -7,6 +7,14 @@
       :columns="columns"
       ref="listPage">
 
+      <template slot="acts">
+        <Button
+          type="success"
+          icon="md-add-circle"
+          @click="editShow()"
+        >资源方管理</Button>
+      </template>
+
       <template slot="year" slot-scope="{row: {year, month}}">
         <span>{{year}}-{{month && String(month).length == 1 ? `0${month}` : month}}</span>
       </template>
@@ -30,7 +38,7 @@ import {Component} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { confirm, info, alert } from '@/ui/modal.ts'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import {list} from '@/api/financeBill'
+import { querylist } from '@/api/ggsiter'
 
 @Component({
   components: {
@@ -38,22 +46,30 @@ import {list} from '@/api/financeBill'
   }
 })
 export default class Main extends ViewBase {
-  fetch = list
+  fetch = querylist
 
   filters: Filter[] = [
     {
-      name: 'cinemaId',
+      name: 'companyId',
       defaultValue: 0,
       type: 'input',
       width: 108,
       placeholder: 'id'
     },
     {
-      name: 'code',
+      name: 'shortName',
       defaultValue: '',
       type: 'input',
       width: 100,
-      placeholder: '资源方名称'
+      placeholder: '广告主名称'
+    },
+
+    {
+      name: 'resourceId',
+      defaultValue: 0,
+      type: 'input',
+      width: 100,
+      placeholder: '广告主身份'
     },
 
     {
@@ -152,8 +168,9 @@ export default class Main extends ViewBase {
   ]
 
   columns = [
-    { title: 'ID', key: 'resourceBillNo', minWidth: 65 },
-    { title: '资源方名称', key: 'cinemaName', minWidth: 100 },
+    { title: 'ID', key: 'id', minWidth: 65 },
+    { title: '广告主名称', key: 'name', minWidth: 100 },
+    { title: '广告主身份', key: 'code', minWidth: 60 },
     { title: '客户等级', key: 'resourceName', minWidth: 60 },
     { title: '客户类型', key: 'contractNo', minWidth: 100 },
     { title: '关联销售', slot: 'year', minWidth: 60 },
@@ -165,6 +182,15 @@ export default class Main extends ViewBase {
     { title: '审核状态', key: 'invoiceStatus', minWidth: 60, editor: 'enum'},
     { title: '操作', slot: 'operate', minWidth: 90 },
   ]
+
+  editShow(id?: any) {
+    this.$router.push({
+      name: 'client-resource-edit',
+      params: {
+        id
+      }
+    })
+  }
 }
 </script>
 <style lang='less' scoped>

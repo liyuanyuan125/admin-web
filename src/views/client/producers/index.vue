@@ -7,6 +7,14 @@
       :columns="columns"
       ref="listPage">
 
+      <template slot="acts">
+        <Button
+          type="success"
+          icon="md-add-circle"
+          @click="editShow()"
+        >片商管理</Button>
+      </template>
+
       <template slot="year" slot-scope="{row: {year, month}}">
         <span>{{year}}-{{month && String(month).length == 1 ? `0${month}` : month}}</span>
       </template>
@@ -165,6 +173,16 @@ export default class Main extends ViewBase {
     { title: '审核状态', key: 'invoiceStatus', minWidth: 60, editor: 'enum'},
     { title: '操作', slot: 'operate', minWidth: 90 },
   ]
+
+  editShow(id?: any) {
+    this.$router.push({
+      name: 'client-producers-edit',
+      params: {
+        id
+      }
+    })
+  }
+
 }
 </script>
 <style lang='less' scoped>

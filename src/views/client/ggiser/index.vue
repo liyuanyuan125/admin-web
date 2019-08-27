@@ -50,14 +50,14 @@ export default class Main extends ViewBase {
 
   filters: Filter[] = [
     {
-      name: 'cinemaId',
+      name: 'companyId',
       defaultValue: 0,
       type: 'input',
       width: 108,
       placeholder: 'id'
     },
     {
-      name: 'code',
+      name: 'shortName',
       defaultValue: '',
       type: 'input',
       width: 100,

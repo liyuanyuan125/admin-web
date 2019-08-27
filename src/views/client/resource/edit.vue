@@ -17,18 +17,53 @@
     <div class="edit-box">
       <!-- header -->
       <Row class="cinema-header">
-        <FormItem label="广告主身份">
-          <Row>
-            <Col span="10">
-              <RadioGroup v-model="item.companyType" type="button" size="large">
-                <Radio :label="1">企业</Radio>
-                <Radio :label="2">个人</Radio>
-              </RadioGroup>
-            </Col>
-          </Row>
-        </FormItem>
         <!-- 公司 -->
-        <div v-if='item.companyType == 1'>
+        <Row class="client-type-row" >
+          <Col :style="index==0 ? 'margin-right: 33%; float: right' : ''"
+           v-for="(it, index) in customerTypeList" :key="index" span="8">
+            <FormItem
+              v-if="it.typeCode != 'agent' || it.typeCode != 'film'"
+              :label="index == 1 ? '客户类型' : ''"
+              :prop="'typearr['+ index + ']'"
+              :show-message="index == 0 ? show0 : true"
+            >
+              <span class="check-select-group">
+                <div>
+                  <Checkbox :disabled='index == 1 && item.typearr[index]' v-model="item.typearr[index]" :label="it.typeName">{{it.typeName}}</Checkbox>
+                </div>
+                <Select
+                  v-if="index == 0"
+                  v-model="item.typeCategoryCode0"
+                  :disabled="!item.typearr[index]"
+                  class="flex-1"
+                  clearable
+                >
+                  <Option
+                    v-if="sub.controlStatus == 1"
+                    v-for="sub in it.typeCategoryList"
+                    :key="sub.typeCode"
+                    :value="sub.typeCode"
+                  >{{sub.typeName}}</Option>
+                </Select>
+                <Select
+                  v-else
+                  v-model="item.typeCategoryCode1"
+                  :disabled="!item.typearr[index]"
+                  class="flex-1"
+                  clearable
+                >
+                  <Option
+                    v-if="sub.controlStatus == 1"
+                    v-for="sub in it.typeCategoryList"
+                    :key="sub.typeCode"
+                    :value="sub.typeCode"
+                  >{{sub.typeName}}</Option>
+                </Select>
+              </span>
+            </FormItem>
+          </Col>
+        </Row>
+        <div>
           <FormItem label="公司名称" prop="name">
             <Row>
               <Col span="8">
@@ -44,7 +79,7 @@
             </Row>
           </FormItem>
 
-          <FormItem label="所属行业" prop="businessParentCode">
+          <FormItem v-if='item.typearr[0]' label="所属行业" prop="businessParentCode">
             <Row>
               <Col span="8">
                 <Industry v-model='item.businessParentCode' :businessParentTypeList='businessParentTypeList' />
@@ -57,7 +92,7 @@
             :cityIds.sync="item.coverCityIdList"
             @ok="onCitySelectOk"
           />
-          <FormItem label="覆盖区域">
+          <FormItem v-if='item.typearr[0]' label="覆盖区域">
             <Row>
               <Col span="8">
                 <a @click="visible = true">设置覆盖区域</a>
@@ -99,44 +134,8 @@
           </Row>
         </div>
 
-        <!-- 个人 -->
-        <div v-if='item.companyType != 1'>
-          <Row>
-          <FormItem label="姓名" prop="singcontact">
-            <Row>
-              <Col span="8">
-                <Input v-model="item.singcontact" placeholder="" />
-              </Col>
-            </Row>
-          </FormItem>
-          <FormItem label="手机号" prop="singcontactTel">
-            <Row>
-              <Col span="8">
-                <Input v-model="item.singcontactTel" placeholder="" />
-              </Col>
-            </Row>
-          </FormItem>
-          <FormItem label="邮箱" prop="singemail">
-            <Row>
-              <Col span="8">
-                <Input v-model="item.singemail" placeholder="" />
-              </Col>
-            </Row>
-          </FormItem>
-          </Row>
-        </div>
         <Row>
-          <Col span="5">
-            <FormItem label="推荐人电话">
-              <Input v-model="item.recommendMobile" />
-            </FormItem>
-          </Col>
-          <Col span="6" offset="1">
-            <FormItem label="推荐人姓名" prop="recommendUserName">
-              <Input v-model="item.recommendUserName" />
-            </FormItem>
-          </Col>
-           <Col span="6" offset="1">
+           <Col span="5">
             <FormItem label="资质" prop="qualificationType">
               <Select v-model="item.qualificationType" clearable>
                 <Option
@@ -147,9 +146,7 @@
               </Select>
             </FormItem>
           </Col>
-        </Row>
-        <Row>
-          <Col span="5">
+          <Col span="5" offset='1'>
             <FormItem label="资质编号" prop="qualificationCode">
               <Input v-model="item.qualificationCode" placeholder="资质编号" />
             </FormItem>
@@ -257,73 +254,7 @@
           </Col>
         </Row>
 
-        <Row class="client-type-row" v-if='item.companyType == 1'>
-          <Col v-for="(it, index) in customerTypeList" :key="index" span="8">
-            <FormItem
-              v-if="it.typeCode != 'agent' || it.typeCode != 'film'"
-              :label="index == 0 ? '客户类型' : ''"
-              :prop="'typearr['+ index + ']'"
-              :show-message="index == 0 ? show0 : true"
-            >
-              <span class="check-select-group">
-                <div>
-                  <Checkbox v-model="item.typearr[index]" :label="it.typeName">{{it.typeName}}</Checkbox>
-                </div>
-                <Select
-                  v-if="index == 0"
-                  v-model="item.typeCategoryCode0"
-                  :disabled="!item.typearr[index]"
-                  class="flex-1"
-                  clearable
-                >
-                  <Option
-                    v-if="sub.controlStatus == 1"
-                    v-for="sub in it.typeCategoryList"
-                    :key="sub.typeCode"
-                    :value="sub.typeCode"
-                  >{{sub.typeName}}</Option>
-                </Select>
-                <Select
-                  v-else
-                  v-model="item.typeCategoryCode1"
-                  :disabled="!item.typearr[index]"
-                  class="flex-1"
-                  clearable
-                >
-                  <Option
-                    v-if="sub.controlStatus == 1"
-                    v-for="sub in it.typeCategoryList"
-                    :key="sub.typeCode"
-                    :value="sub.typeCode"
-                  >{{sub.typeName}}</Option>
-                </Select>
-              </span>
-            </FormItem>
-          </Col>
-        </Row>
-
-        <Row v-else>
-          <Col span='5'>
-            <FormItem
-              label="客户类型"
-            >
-            <Select
-                v-model="singtype[0].typeCategoryCode"
-                class="flex-1"
-                clearable
-              >
-                <Option
-                  v-if="sub.controlStatus == 1"
-                  v-for="sub in customerTypeList[0].typeCategoryList"
-                  :key="sub.typeCode"
-                  :value="sub.typeCode"
-                >{{sub.typeName}}</Option>
-              </Select>
-            </FormItem>
-          </Col>
-        </Row>
-
-        <Row v-if="item.typearr[0] && item.companyType == 1">
+        <Row v-if="item.typearr[0]">
           <FormItem label="关联品牌">
             <BrandPane
               v-model="brandIds"
@@ -332,22 +263,13 @@
           </FormItem>
         </Row>
 
-        <Row v-if="item.companyType == 2">
-          <FormItem label="关联品牌">
-            <BrandPane
-              v-model="singbrandIds"
-              :bindList="item.singbrandList"
-            />
-          </FormItem>
-        </Row>
-
-        <Row v-if="item.typearr[1] && item.companyType == 1">
+        <Row v-if="item.typearr[1]">
           <FormItem label="关联影院" prop="cinemasList" :show-message="!(item.cinemasList.length>0)">
             <PartBindCinema
               v-if="loadingShow"
               v-model="item.cinemasList"
               :unitList="profitUnitList"
-              :incinematype="cinematype"
+              :incinematype="item.types[1].typeCategoryCode == 'cinema' ? 1 : 0"
               class="part-bind-cinema"
             />
           </FormItem>
@@ -387,7 +309,6 @@ const defItem = {
   businessParentCode: [],
   coverCityIdList: [],
 
-  companyType: 1,
   typeCategoryCode0: '',
   typeCategoryCode1: '',
   aptitudeNo: '',
@@ -404,14 +325,6 @@ const defItem = {
   qualificationType: 'BL',
   qualificationCode: '',
   images: [],
-  // 动态表单
-  // qualificationArray: [
-  //   {
-  //     value: '',
-  //     index: 1,
-  //     status: 1
-  //   }
-  // ]
 
   types: [
     {
@@ -457,7 +370,7 @@ export default class Main extends ViewBase {
   cityIds: any = []
   b: any = {}
   levelList = []
-  singtype: any = [{typeCode: 'ads', typeCategoryCode: 'zhike'}]
+  singtype: any = [{typeCode: '', typeCategoryCode: ''}]
   customerTypeList: any = [] // 区代理
   bizUserList = []
   businessParentTypeList = [] // 一级行业
@@ -628,14 +541,6 @@ export default class Main extends ViewBase {
     }
   }
 
-  get cinematype() {
-    if (this.item.types[1].typeCategoryCode == 'cinema') {
-      return 1
-    } else {
-      return 0
-    }
-  }
-
   get cinemas() {
     if (this.item.cinemasList.length > 0) {
       const cinemas = this.item.cinemasList.map((val: any) => {
@@ -691,12 +596,12 @@ export default class Main extends ViewBase {
             loading: false
           }
         })
-        this.item.types[0] = {
-          typeCode: 'ads',
-          typeCategoryCode: 'zhike'
+        this.item.types[1] = {
+          typeCode: 'resource',
+          typeCategoryCode: 'cinema'
         }
-        this.item.typeCategoryCode0 = 'zhike'
-        this.item.typearr[0] = true
+        this.item.typeCategoryCode1 = 'cinema'
+        this.item.typearr[1] = true
         this.title = '新建广告主'
         ; (this.$Spin as any).hide()
       } else {
@@ -716,8 +621,6 @@ export default class Main extends ViewBase {
             contact,
             contactTel,
             email,
-            recommendMobile,
-            recommendUserName,
             qualificationType,
             qualificationCode,
             coverCityIdList,
@@ -736,7 +639,6 @@ export default class Main extends ViewBase {
             businessChildCode,
             cinemaList,
             brandList,
-            companyType
           }
         } = await queryId(query)
         this.item.name = name
@@ -752,29 +654,17 @@ export default class Main extends ViewBase {
           businessParentCode,
           (businessChildCode || '0')
         ]
-        this.item.companyType = companyType
-        if ( companyType == 2) {
-          this.item.singcontact = contact
-          this.item.singcontactTel = contactTel
-          this.item.singemail = email
-          this.item.singbrandList = (brandList as any[] || []).map(it => ({
-            id: it.brandId,
-            name: it.brandName,
-          }))
-          // this.item.types = types
-        } else {
-          this.item.contact = contact
-          this.item.contactTel = contactTel
-          this.item.email = email
-          this.area = [provinceId || 0, cityId || 0, countyId || 0]
-          this.item.shortName = shortName
-          this.item.brandList = (brandList as any[] || []).map(it => ({
-            id: it.brandId,
-            name: it.brandName,
-          }))
-          this.item.addressDetail = addressDetail
-          this.item.coverCityIdList = coverCityIdList
-        }
+        this.item.contact = contact
+        this.item.contactTel = contactTel
+        this.item.email = email
+        this.area = [provinceId || 0, cityId || 0, countyId || 0]
+        this.item.shortName = shortName
+        this.item.brandList = (brandList as any[] || []).map(it => ({
+          id: it.brandId,
+          name: it.brandName,
+        }))
+        this.item.addressDetail = addressDetail
+        this.item.coverCityIdList = coverCityIdList || []
         this.customerTypeList = customerTypeList.slice(2)
         if (types.length == 1) {
 
@@ -795,8 +685,6 @@ export default class Main extends ViewBase {
           this.item.typeCategoryCode1 = this.item.types[1].typeCategoryCode
           this.item.typearr = [true, true]
         }
-        this.item.recommendMobile = recommendMobile
-        this.item.recommendUserName = recommendUserName
         this.item.aptitudeType = aptitudeType
         this.item.aptitudeNo = aptitudeNo
         this.item.qualificationCode = qualificationCode
@@ -841,7 +729,7 @@ export default class Main extends ViewBase {
   edit(dataForms: string) {
     (this.$refs[dataForms] as any).validate(async (valid: any) => {
       if (valid) {
-        if (this.cinematype == 1 && this.cinemas.length > 1) {
+        if (this.item.types[1].typeCategoryCode == 'cinema' && this.cinemas.length > 1) {
           this.showError('因资源方类型为影院，因此仅能关联一家影院')
           return
         }
@@ -877,28 +765,22 @@ export default class Main extends ViewBase {
         let formData: any = {
           ...newqQuery,
           ...business,
-          types: this.item.companyType == 2 ? this.singtype : (types as any[] || []).filter(it => it.typeCode != ''),
-          cinemas: this.item.typearr[1] ? this.cinemas : [],
-          brandIds: this.item.companyType == 2 ? this.singbrandIds : (this.item.typearr[0] ? this.brandIds : []),
-          email: this.item.companyType == 1 ? this.item.email : this.item.singemail,
-          contactTel: this.item.companyType == 1 ? this.item.contactTel : this.item.singcontactTel,
-          contact: this.item.companyType == 1 ? this.item.contact : this.item.singcontact,
+          companyType: 1,
+          types: (types as any[] || []).filter(it => it.typeCode != ''),
+          cinemas: this.cinemas,
+          brandIds: (this.item.typearr[0] ? this.brandIds : []),
+          email: this.item.email,
+          contactTel: this.item.contactTel,
+          contact: this.item.contact,
         }
 
         // 删除某些多余的字段
-        if (this.item.companyType == 2) {
+        if (!this.item.typearr[0]) {
           formData = {
             ...formData,
             coverCityIdList: [],
             businessParentCode: '',
             businessChildCode: '',
-            cinemas: [],
-            provinceId: 0,
-            cityId: 0,
-            countyId: 0,
-            addressDetail: '-',
-            name: '-',
-            shortName: '-',
           }
           // delete formData.coverCityIdList
           // delete formData.businessParentCode
@@ -913,9 +795,6 @@ export default class Main extends ViewBase {
           // delete formData.shortName
         }
         delete formData.brandList
-        delete formData.singcontactTel
-        delete formData.singcontact
-        delete formData.singemail
         try {
           const data: any = route == 0
             ? await addQuery(formData)

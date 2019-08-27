@@ -203,6 +203,76 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+    // 客户管理 - 广告主管理 - 详情
+  {
+    path: '/client/ggiser/detail/:id?',
+    name: 'client-ggiser-detail',
+    component: () => import('./views/client/ggiser/detail.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
+  // 客户管理 - 资源方管理 - 列表
+  {
+    path: '/client/resource/',
+    name: 'client-resource',
+    component: () => import('./views/client/resource/index.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
+  // 客户管理 - 资源方管理 - 编辑
+  {
+    path: '/client/resource/edit/:id?',
+    name: 'client-resource-edit',
+    component: () => import('./views/client/resource/edit.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
+    // 客户管理 - 资源方管理 - 详情
+  {
+    path: '/client/resource/detail/:id?',
+    name: 'client-resource-detail',
+    component: () => import('./views/client/resource/detail.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
+  // 客户管理 - 片商管理 - 列表
+  {
+    path: '/client/producers/',
+    name: 'client-producers',
+    component: () => import('./views/client/producers/index.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
+  // 客户管理 - 片商管理 - 编辑
+  {
+    path: '/client/producers/edit/:id?',
+    name: 'client-producers-edit',
+    component: () => import('./views/client/producers/edit.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
+    // 客户管理 - 片商管理 - 详情
+  {
+    path: '/client/producers/detail/:id?',
+    name: 'client-producers-detail',
+    component: () => import('./views/client/producers/detail.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
   // 客户管理 - 公司管理 - 添加、编辑
   {
     path: '/client/corp/edit/:id?',
