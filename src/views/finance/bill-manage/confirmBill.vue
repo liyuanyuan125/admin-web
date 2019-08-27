@@ -9,11 +9,15 @@
         :columns="columns"
         ref="listPage">
 
-        <template slot="status" slot-scope="{row}">
+        <template slot="status" slot-scope="{row, index}">
           <Select v-model="row.status" size="small" @on-change="handleSelect(row)" style="width:90px">
             <Option :value="2" :key="2" >是</Option>
             <Option :value="1" :key="1" >否</Option>
           </Select>
+        </template>
+
+        <template slot="remark" slot-scope="{row}">
+          <Input v-model="row.remark" style="width: 90px" placeholder="请输入备注" @on-blur="handleSelect(row)" />
         </template>
 
       </ListPage>
@@ -33,7 +37,7 @@ import { resourceBillDetail, operateConfirm} from '@/api/financeBill'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import {intDate, toThousands} from '@/util/dealData'
 import { formatNumber } from '@/util/validateRules'
-import { uniqBy, reject, pick } from 'lodash'
+import { uniqBy, reject, pick, intersectionBy, map, cloneDeep, findIndex } from 'lodash'
 
 @Component({
   components: {
@@ -46,7 +50,10 @@ export default class Main extends ViewBase {
   @Prop({ type: Number}) id!: number
 
   statusList = []
+
+  // status and remark
   dataList: any[] = []
+  remarkList: any[] = []
 
   filters: Filter[] = [
     {
@@ -60,7 +67,7 @@ export default class Main extends ViewBase {
 
     {
       name: 'pageSize',
-      defaultValue: 2
+      defaultValue: 20
     }
   ]
 
@@ -82,23 +89,22 @@ export default class Main extends ViewBase {
     { title: '金额', key: 'amount', minWidth: 90 },
     { title: '监播文件', key: 'playMonitorStatus', minWidth: 90, editor: 'enum' },
     { title: '是否需要结算', slot: 'status', minWidth: 90, },
-    // { title: '是否需要结算', key: 'status', minWidth: 90,
-    //   editor: 'poptipSelect',
-    //   updateField: this.updateStatus,
-    //   auth: 'theater.cinemas:change-status'
-    // },
-    { title: '备注', key: 'remark', minWidth: 90 },
+    { title: '备注', slot: 'remark', minWidth: 90 },
   ]
 
   handleSelect(val: any) {
-    this.dataList = uniqBy(this.dataList, 'id')
-    this.dataList.push(val)
+    // 如果不存在追加，如果存在则替换
+    const ind = findIndex(this.dataList, (it: any) => it.id == val.id)
+    if (ind >= 0) {
+      this.dataList[ind] = val
+    } else {
+      this.dataList.push(val)
+    }
   }
 
   async handleBill() {
-    // 根据条件去除某个元素
-    const items = (this.dataList || []).filter((it: any) => it.status == 1)
-    const billDetails = items.map((it: any) => {
+    // const items = (this.dataList || []).filter((it: any) => it.status == 1)
+    const billDetails = this.dataList.map((it: any) => {
       return {
         id: it.id,
         status: it.status,
@@ -119,15 +125,26 @@ export default class Main extends ViewBase {
 
   async fetch(query: any) {
     const {data } = await resourceBillDetail(query)
-
     this.statusList = data.statusList
+
+    // 交集元素
+    const remarkList = intersectionBy(this.dataList, data.items, 'id')
+
+    // const items = (this.dataList || []).filter((it: any) => it.status == 1)
+    // const intersection = intersectionBy(items, data.items, 'id')
+    // const ids = map(intersection, 'id')
+
+    // 如果ids存在则表示修改
     const item = (data.items || []).map((it: any) => {
-      return {
+       const remInd = findIndex(remarkList, (rem: any) => it.id == rem.id)
+       return {
         ...it,
         beginDate: intDate(it.beginDate),
         endDate: intDate(it.endDate),
         personCount: toThousands(it.personCount),
-        amount: formatNumber(it.amount)
+        amount: formatNumber(it.amount),
+        status: remInd >= 0 ? remarkList[remInd].status : it.status,
+        remark: remInd >= 0 ? remarkList[remInd].remark : it.remark
       }
     })
 
@@ -141,7 +158,6 @@ export default class Main extends ViewBase {
 </script>
 <style lang='less' scoped>
 @import '~@/views/data/person/less/common.less';
-
 .footer {
   text-align: center;
   .btn {

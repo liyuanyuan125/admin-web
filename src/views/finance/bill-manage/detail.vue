@@ -14,18 +14,21 @@
      <div class="base-mess">
        <h2 class="title">资源方审核信息</h2>
        <Row>
-          <Col :span="8"><p><label>影城系统人次</label><em>{{items.personCount || '-'}}</em></p></Col>
+          <Col :span="8"><p><label>影城系统人次</label><em>{{items.resourcePersonCount || '-'}}</em></p></Col>
         </Row>
         <Row>
           <Col :span="8"><p><label>影城系统截图</label>
-            <em class="imgs-list" v-for="(img, index) in (items.picturesUrl || [])" :key="index">
-              <img src="" width="80px"/>
-            </em>
+          <ImagePreviewer
+            v-for="(item, i) in (items.picturesUrl || [])"
+            :key="i"
+            :url="item"
+            class="picture-url"
+          />
             </p>
           </Col>
         </Row>
         <Row>
-          <Col :span="8"><p><label>备注</label><em>{{items.remark || '-'}}</em></p></Col>
+          <Col :span="8"><p><label>备注</label><em>{{items.resourceRemark || '-'}}</em></p></Col>
         </Row>
      </div>
 
@@ -77,10 +80,12 @@ import {intDate, toThousands} from '@/util/dealData'
 import {formatNumber } from '@/util/validateRules'
 import moment from 'moment'
 const dateFormat = 'YYYY-MM-DD HH:mm:ss'
+import ImagePreviewer from '@/components/imagePreviewer'
 
 @Component({
   components: {
-    ListPage
+    ListPage,
+    ImagePreviewer
   }
 })
 
@@ -187,6 +192,10 @@ export default class Main extends ViewBase {
 </script>
 <style lang='less' scoped>
 @import '~@/views/data/person/less/common.less';
+.picture-url {
+  width: 150px;
+  margin-right: 25px;
+}
 .list-page {
   margin-bottom: 0;
   min-height: auto;
@@ -195,12 +204,6 @@ export default class Main extends ViewBase {
   }
   .form {
     display: none;
-  }
-}
-.imgs-list {
-  display: flex;
-  img {
-    margin: 10px 10px 0 0;
   }
 }
 .footer-btn {

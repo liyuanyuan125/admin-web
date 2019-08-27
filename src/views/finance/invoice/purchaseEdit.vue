@@ -92,7 +92,7 @@ export default class EditPage extends ViewBase {
             { title: '账单月份', key: 'billMonthText', width: 80, align: 'center' },
 
             { title: '账单生成时间', key: 'billCreateTimeText', width: 135, align: 'center' },
-            { title: '曝光人次/千人次', key: 'personCount', width: 110, align: 'center' },
+            { title: '曝光人次', key: 'personCount', width: 110, align: 'center' },
             { title: '账单金额', key: 'billFee', width: 100, align: 'center' },
             { title: '账单状态', key: 'billStatusText', width: 100, align: 'center' },
           ]
@@ -112,21 +112,10 @@ export default class EditPage extends ViewBase {
       },
 
       {
-        name: 'invoiceType',
-        defaultValue: '',
-        label: '发票类型',
-        span: 7,
-        required: true,
-        select: {
-          enumKey: 'invoiceTypeList'
-        },
-      },
-
-      {
         name: 'invoiceContent',
         defaultValue: '',
         label: '发票内容',
-        span: 4,
+        span: 7,
         required: true,
         select: {
           enumKey: 'invoiceContentList'
@@ -136,10 +125,21 @@ export default class EditPage extends ViewBase {
       {
         name: 'memo',
         defaultValue: '',
-        span: 3,
+        span: 7,
         input: true,
         placeholder: '内容备注',
         visible: item => item.invoiceContent == 'other'
+      },
+
+      {
+        name: 'invoiceType',
+        defaultValue: '',
+        label: '发票类型',
+        span: 7,
+        required: true,
+        select: {
+          enumKey: 'invoiceTypeList'
+        },
       },
 
       {
@@ -156,7 +156,6 @@ export default class EditPage extends ViewBase {
         defaultValue: 0,
         label: '含税金额',
         span: 7,
-        offsetRight: 8,
         number: true,
         required: true,
         watch: async (_, { item }) => {

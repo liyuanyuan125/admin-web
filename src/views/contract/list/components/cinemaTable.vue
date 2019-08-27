@@ -59,7 +59,8 @@ export interface CinemaItem {
   code: string
   cityId: number
   cityName: string
-  cityGradeCode: string
+  pricingLevelCode: string
+  pricingLevelName: string
   commonPrice: number
   trailerPrice: number
   accountBank: string
@@ -110,7 +111,7 @@ export default class CinemaTable extends ViewBase {
       { title: '影院名称', key: 'cinemaName', minWidth: 90 },
       { title: '专资编码', key: 'code', minWidth: 60 },
       { title: '所属城市', key: 'cityName', minWidth: 60 },
-      { title: '城市等级', key: 'cityGradeCodeText', minWidth: 60 },
+      { title: '城市等级', key: 'pricingLevelName', minWidth: 60 },
 
       { title: '单人次结算价格（元/人次）', slot: 'commonPrice', minWidth: 90 },
       { title: '预告片单人次结算价格（元/人次）', slot: 'trailerPrice', minWidth: 90 },
@@ -151,7 +152,8 @@ export default class CinemaTable extends ViewBase {
       code: it.code,
       cityId: it.cityId,
       cityName: it.cityName,
-      cityGradeCode: it.cityGradeCode,
+      pricingLevelCode: it.pricingLevelCode,
+      pricingLevelName: it.pricingLevelName,
     }))
     this.model = items.concat(this.value)
     this.listPage.update()

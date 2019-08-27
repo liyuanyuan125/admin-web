@@ -28,7 +28,7 @@ export const finishfetch: any =  [
   },
 
   {
-    name: 'hasSettlementPrice',
+    name: 'resourceBillNo',
     defaultValue: '',
     type: 'input',
     width: 128,
@@ -113,17 +113,28 @@ export const finishfetch: any =  [
   {
     name: 'pageSize',
     defaultValue: 20
-  }
+  },
+
+  {
+    name: 'applyStatus',
+    defaultValue: 2
+  },
+
+  {
+    name: 'billStatus',
+    defaultValue: 4
+  },
 ]
 
 export const finishnum: any = [
   'statusList',
   'invoiceTypeList',
   'invoiceContentList',
+  'invoiceStatusList'
 ]
 
 export const finshcoulm: any = [
-  { title: '账单编号', key: 'id', minWidth: 65 },
+  { title: '账单编号', key: 'resourceBillNo', minWidth: 65 },
   { title: '请款单编号', key: 'applyId', minWidth: 65 },
   { title: '影城名称', key: 'cinemaName', minWidth: 100 },
   { title: '影城专资码', key: 'code', minWidth: 60, editor: 'deprecated' },

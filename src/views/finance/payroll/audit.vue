@@ -7,6 +7,7 @@
       :enums="enums"
       :columns="columns"
       selectable
+      :disabledIds='disabledIds'
       :selectedIds.sync="selectedIds"
       ref="listPage"
     >
@@ -22,7 +23,7 @@
           type="primary"
           class="button-audit"
           :disabled="!(selectedIds.length > 0)"
-          @click="auditVisible = true"
+          @click="pay(selectedIds)"
         >批量审批</Button>
       </template>
 
@@ -71,12 +72,33 @@ const defaultType = typeList[0].value
 export default class IndexPage extends ViewBase {
   @Prop({ type: String, default: defaultType }) type!: string
 
+  disabledIds: any = []
+  items: any = null
+  typeCode = this.type
+
+  typeList = typeList
+
+  selectedIds = [] as number[]
+
+  auditVisible = false
+
+  crawlVisible = false
+
   get listPage() {
     return this.$refs.listPage as ListPage
   }
 
-  get fetch() {
-    return auditList
+  async fetch(query: any) {
+    const res = await auditList(query)
+    this.items = res.data.items || null
+    if ( this.items && this.items.length > 0 ) {
+      this.disabledIds = this.items.filter((it: any) => {
+        return it.approveStatus !== 1
+      }).map((item: any) => {
+        return item.id
+      })
+    }
+    return res
   }
 
   get filters() {
@@ -155,16 +177,6 @@ export default class IndexPage extends ViewBase {
       { title: '操作', slot: 'audit',  minWidth: 120 }
     ]
   }
-
-  typeCode = this.type
-
-  typeList = typeList
-
-  selectedIds = [] as number[]
-
-  auditVisible = false
-
-  crawlVisible = false
 
   pay(id: any) {
     this.$nextTick(() => {

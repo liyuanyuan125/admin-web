@@ -20,7 +20,7 @@ import { navList, queryPurchaseList } from './data'
 import { alert, toast } from '@/ui/modal'
 import { EditDialog, Field } from '@/components/editForm'
 import TabNav from '@/components/tabNav'
-import { startDayTimestamp, endDayTimestamp } from '@/util/dealData'
+import { formatValidDate, startDayTimestamp, endDayTimestamp } from '@/util/dealData'
 import { MapType } from '@/util/types'
 
 const typeMap: MapType = {
@@ -86,15 +86,16 @@ export default class IndexPage extends ViewBase {
         placeholder: '发票时间',
         dealParam(value: any) {
           const [start, end] = value.split('-')
+          const options = { format: 'YYYYMMDD', blank: null }
           return {
-            invoiceStartTime: startDayTimestamp(start),
-            invoiceEndTime: endDayTimestamp(end),
+            invoiceStartTime: formatValidDate(start, options),
+            invoiceEndTime: formatValidDate(end, options),
           }
         }
       },
 
       {
-        name: 'registrationStartTime',
+        name: 'registrationTime',
         defaultValue: '',
         dateRange: true,
         width: 178,

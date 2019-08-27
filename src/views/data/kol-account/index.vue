@@ -1,5 +1,5 @@
 <template>
-  <div class="index-page">
+  <div class="index-page" :key="channelCode">
     <Tabs v-model="channelCode" type="card" class="tabs">
       <TabPane
         v-for="it in channelList"
