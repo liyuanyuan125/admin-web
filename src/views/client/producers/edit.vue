@@ -164,7 +164,6 @@
 
         <Row>
           <FormItem label="关联影院" prop="relationMovieIdList" :show-message="!(item.relationMovieIdList.length>0)">
-            {{item.relationMovieIdList}}
             <PartBindCinema
               v-if="loadingShow"
               v-model="item.relationMovieIdList"
@@ -456,6 +455,7 @@ export default class Main extends ViewBase {
             validityPeriodDate,
             qualificationTypeList,
             status,
+            relationMovieList,
             imageList,
             cinemaList,
             brandList
@@ -474,7 +474,7 @@ export default class Main extends ViewBase {
         this.qualificationTypeList = qualificationTypeList
         this.item.qualificationType = qualificationType
         this.item.images = images || []
-        this.item.relationMovieIdList = cinemaList || []
+        this.item.relationMovieIdList = relationMovieList || []
 
         this.item.brandList = (brandList as any[] || []).map(it => ({
           id: it.brandId,
@@ -535,7 +535,9 @@ export default class Main extends ViewBase {
           coverCityIdList: [],
           businessParentCode: '',
           businessChildCode: '',
-          cinemas: [],
+          types: [{
+            typeCode: 'film'
+          }]
         }
         const query = clean(oldQuery)
         const array = Object.keys(query).slice(2)

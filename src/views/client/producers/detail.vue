@@ -8,20 +8,6 @@
     </header>
     <div class="detail-box">
       <div class="detail-header">
-          <Row>
-            <Col span="2"><div>客户类型</div></Col>
-            <div v-for="item in format.typeFormat" :key="item.oneText">
-              <Col span="4" style="margin-right: 20px">
-                <div class="typeBox">
-                  {{item.oneText}}
-                  <tooltip class="right" v-if="format.userType[item.two] == 2" content="已下架" placement="top">
-                    <div :class="format.userType[item.two] == 2 ? 'red' : ''">{{item.twoText}}</div>
-                  </tooltip>
-                  <div class="right" v-else>{{item.twoText}}</div>
-                </div>
-              </Col>
-            </div>
-          </Row>
           <div>
             <Row>
               <Col span="2"><div>公司名称</div></Col>
@@ -100,27 +86,11 @@
             <Col span="6"><span>{{detail.businessDirectorEmail}}<b v-if="detail.businessDirectorName" style="margin-left:5px">[{{detail.businessDirectorName}}]</b></span></Col>
         </Row>
         <Row class="cinema-button" v-if='detail.companyType == 1'>
-          <Col span="2"><div>关联影院</div></Col>
+          <Col span="2"><div>关联影片</div></Col>
           <Col span="12">
               <PartBindCinema type="1" :value="detail.cinemaList" />
           </Col>
         </Row>
-        <Row class="cinema-button">
-          <Col span="2"><div>品牌列表</div></Col>
-          <Col span="12">
-              <Table
-                :columns="columns"
-                :data="list"
-                size="small"
-                stripe
-                border
-              >
-              <div slot="status" slot-scope="{ row: { hasBind } }">
-                {{hasBind ? '已绑定' : '-'}}
-              </div>
-              </Table>
-          </Col>
-       </Row>
       </Row>
       <Row class="detail-number">
         <Row>
@@ -298,7 +268,7 @@ export default class Main extends ViewBase {
         }
       })
       this.list = res.data.brandList || []
-      this.detail.cinemaList = res.data.cinemaList || []
+      this.detail.cinemaList = res.data.relationMovieList || []
       this.approveStatusList = res.data.approveStatusList
       this.customerTypeList = res.data.customerTypeList.slice(2)
       this.levelList = res.data.levelList
