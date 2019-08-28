@@ -135,7 +135,7 @@ export const beforcoulm: any = [
 ]
 
 export const commoncolums: any = [
-  { title: '账单编号', align: 'center', key: 'id', minWidth: 65 },
+  { title: '账单编号', align: 'center', key: 'resourceBillNo', minWidth: 65 },
   { title: '影城名称', align: 'center', key: 'cinemaName', minWidth: 100 },
   { title: '影城专资码', align: 'center', key: 'code', minWidth: 100,  },
   { title: '资源方名称', align: 'center', key: 'resourceName', minWidth: 100 },
