@@ -74,7 +74,7 @@ export default class ComponentMain extends ViewBase {
         ...it,
         invoiceContentCode: cachedMap.invoiceContentList[it.invoiceContentCode],
         invoiceType: cachedMap.invoiceTypeList[it.invoiceType],
-        approvalTime: it.approvalTime ? moment(it.approvalTime).format('YYYY/MM/DD hh:mm:ss') : ''
+        approvalTime: it.approvalTime ? moment(it.approvalTime).format('YYYY/MM/DD HH:mm:ss') : ''
       }
     })
     return list
