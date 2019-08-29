@@ -280,6 +280,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
         total: this.total,
         filterEnumMap,
         listEnumMap,
+        table: this.$refs.table
       })
     } catch (ex) {
       this.handleError(ex)
@@ -322,6 +323,15 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
   public selectAll(enable = true) {
     const table = this.$refs.table as any
     table && table.selectAll(enable)
+  }
+
+  /**
+   * 暴露出 Table 的 exportCsv 方法，详见：
+   * https://www.iviewui.com/components/table#Table_methods
+   */
+  public exportCsv(params: any) {
+    const table = this.$refs.table as any
+    table && table.exportCsv(params)
   }
 
   @Watch('query', { deep: true })

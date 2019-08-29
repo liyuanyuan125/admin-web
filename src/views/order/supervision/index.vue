@@ -240,6 +240,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     })
   }
 
+
   @Watch('query', { deep: true })
   watchQuery() {
     if (this.query.pageIndex == this.oldQuery.pageIndex) {

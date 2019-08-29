@@ -47,4 +47,10 @@ export async function refuselist(query: any) {
 }
 
 
+//  商务负责人
+export async function directorList(query: any) {
+  const data = await get('/auth/users', query)
+  return data
+}
+
 

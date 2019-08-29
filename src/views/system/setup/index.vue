@@ -42,7 +42,7 @@
           </Col>
         </Row>
         <Row>
-          <Col :span='8'>    
+          <Col :span='8'>
             <FormItem label="银行账号" prop="accountNumber">
               <Input v-model="dataForm.accountNumber" style='width: 200px;' placeholder=""/>
             </FormItem>
@@ -114,7 +114,6 @@
           <Col span="14"><span>每{{detail.timeStep}}秒，收取{{detail.stepCost}}元 </span><span style='color:red;margin-left:15px;'>注：超出部分按照一整个阶梯收取费用</span></Col>
         </Row>
       </Row> -->
-
       <!-- 刊例价 -->
       <div class='titop' v-if='showprice'>默认刊例价
         <Button type='success' style='float: right;' @click="editprice('dataForm')">保存</Button>
@@ -202,7 +201,7 @@
     </div>
   </Form>
 </div>
-  
+
 </template>
 
 <script lang="tsx">

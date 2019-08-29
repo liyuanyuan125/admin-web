@@ -183,6 +183,26 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  // 客户管理 - 广告主管理 - 列表
+  {
+    path: '/client/ggiser/',
+    name: 'client-ggiser',
+    component: () => import('./views/client/ggiser/index.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
+  // 客户管理 - 广告主管理 - 审核
+  {
+    path: '/client/ggiser/edit/:id?',
+    name: 'client-ggiser-edit',
+    component: () => import('./views/client/ggiser/edit.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
   // 客户管理 - 公司管理 - 添加、编辑
   {
     path: '/client/corp/edit/:id?',
@@ -284,6 +304,17 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     component: () => import('./views/client/message/index.vue'),
     meta: {
       authKey: ''
+    }
+  },
+
+  // 客户管理 - 签约影院
+  {
+    path: '/client/signedCinema/',
+    name: 'client-signed-cinema',
+    component: () => import('./views/client/signed-cinema/index.vue'),
+    meta: {
+      authKey: '',
+      title: '签约影院管理'
     }
   },
 
@@ -749,6 +780,16 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  {
+    path: '/finance/examine/newindex/:pay?',
+    name: 'finance-examine-newindex',
+    component: () => import('./views/finance/examine/newindex.vue'),
+    meta: {
+      authKey: ''
+    },
+    props: true,
+  },
+
   // 财务管理 - 请款单管理
   {
     path: '/finance/payroll/:type?',
@@ -769,6 +810,16 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     },
     props: true
+  },
+
+  // 财务管理 - 账单余额管理
+  {
+    path: '/finance/balance',
+    name: 'finance-balance',
+    component: () => import('./views/finance/balance/index.vue'),
+    meta: {
+      authKey: ''
+    }
   },
 
   {
@@ -920,8 +971,6 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: idProps,
   },
 
-
-
   // 映前广告付款单管理 - 列表
   {
     path: '/finance/payment/:status?',
@@ -933,6 +982,31 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     },
     props: true
   },
+
+  // 财务管理 - 支付流水管理
+  {
+    path: '/finance/paymentflow',
+    name: 'finance-paymentflow',
+    component: () => import('./views/finance/payment-flow/index.vue'),
+    meta: {
+      authKey: '',
+      title: '支付流水'
+    },
+    props: true,
+  },
+
+  // 财务管理 - 退款单管理
+  {
+    path: '/finance/refundOrder',
+    name: 'finance-refund-order',
+    component: () => import('./views/finance/refund-order/index.vue'),
+    meta: {
+      authKey: '',
+      title: '退款单管理'
+    },
+    props: true
+  },
+
   {
     path: '/plan/ggtising',
     name: 'plan-ggtising',
@@ -1295,9 +1369,9 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   //   }
   // },
 
-  // 映前广告计划 - 详情
+  // 映前广告计划 - 详情 ifs 0 为详情查看页面 1为非详情查看页面
   {
-    path: '/order/beforeplan/detail/:id/:status',
+    path: '/order/beforeplan/detail/:id/:status/:ifs',
     name: 'order-beforeplan-detail',
     component: () => import('./views/order/beforeplan/detail.vue'),
     meta: {

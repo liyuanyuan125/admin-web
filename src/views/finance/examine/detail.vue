@@ -265,7 +265,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           ...this.dataForm
         }
         try {
-          const res =  await setList (this.$route.params.id , query)
+          // const res =  await setList (this.$route.params.id , query)
           this.$router.push({ name : 'finance-examine' })
         } catch (ex) {
           this.handleError(ex)
