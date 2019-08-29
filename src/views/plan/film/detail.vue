@@ -63,6 +63,18 @@
           <Col span="2"><div>广告下载地址</div></Col>
           <Col span="10"><span>{{detail.srcFileUrl}}</span></Col>
         </Row>
+        <Row>
+          <Col span="2"><div>活动ID</div></Col>
+          <Col span="5"><span>{{detail.translated == 1 ? '已转制' : '未转制'}}</span></Col>
+          <Col span="2"><div>活动名称</div></Col>
+          <Col span="5"><span>{{detail.transFee}}</span></Col>
+          <Col span="2"><div>活动类型</div></Col>
+          <Col span="5"><span style='cursor: pointer;' @click='onView(detail.srcFiledAddr)'>查看</span></Col>
+        </Row>
+        <Row>
+          <Col span="2"><div>活动价格</div></Col>
+          <Col span="5"><span>{{detail.translated == 1 ? '已转制' : '未转制'}}</span></Col>
+        </Row>
         <!-- <Row>
           <Col span="12">
             <video :src="detail.srcFileUrl" width='100%' height='50%' controls="controls">
