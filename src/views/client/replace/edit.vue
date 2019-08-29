@@ -136,7 +136,9 @@
               <Input v-model="item.recommendUserName" />
             </FormItem>
           </Col>
-           <Col span="6" offset="1">
+        </Row>
+        <Row>
+          <Col span="5">
             <FormItem label="资质" prop="qualificationType">
               <Select v-model="item.qualificationType" clearable>
                 <Option
@@ -147,31 +149,12 @@
               </Select>
             </FormItem>
           </Col>
-        </Row>
-        <Row>
-          <Col span="5">
+          <Col span="6" offset="1">
             <FormItem label="资质编号" prop="qualificationCode">
               <Input v-model="item.qualificationCode" placeholder="资质编号" />
             </FormItem>
           </Col>
         </Row>
-
-        <!-- <Row v-if='item.companyType == 1'>
-            <FormItem
-                style='width: 50%;'
-                v-for="(item, it) in item.qualificationArray"
-                v-if="item.status"
-                :key="it"
-                label="资质编号"
-                :prop="'qualificationArray.' + it + '.value'"
-                :rules="{required: true, message: '请填写资质编号', trigger: 'blur'}">
-                  <div style='display: flex'>
-                      <Input type="text" v-model="item.value" placeholder="请填写资质编号"></Input>
-                      <Button v-if='it == 0' @click="handleAdd">追加</Button>
-                      <Button v-if='it != 0' @click="handleRemove(it)">删除</Button>
-                  </div>
-            </FormItem>
-        </Row> -->
 
         <!-- 上传图片 -->
         <Row class="upload">
@@ -255,102 +238,6 @@
               </Select>
             </FormItem>
           </Col>
-        </Row>
-
-        <Row class="client-type-row" v-if='item.companyType == 1'>
-          <Col v-for="(it, index) in customerTypeList" :key="index" span="8">
-            <FormItem
-              v-if="it.typeCode != 'agent' || it.typeCode != 'film'"
-              :label="index == 0 ? '客户类型' : ''"
-              :prop="'typearr['+ index + ']'"
-              :show-message="index == 0 ? show0 : true"
-            >
-              <span class="check-select-group">
-                <div>
-                  <Checkbox v-model="item.typearr[index]" :label="it.typeName">{{it.typeName}}</Checkbox>
-                </div>
-                <Select
-                  v-if="index == 0"
-                  v-model="item.typeCategoryCode0"
-                  :disabled="!item.typearr[index]"
-                  class="flex-1"
-                  clearable
-                >
-                  <Option
-                    v-if="sub.controlStatus == 1"
-                    v-for="sub in it.typeCategoryList"
-                    :key="sub.typeCode"
-                    :value="sub.typeCode"
-                  >{{sub.typeName}}</Option>
-                </Select>
-                <Select
-                  v-else
-                  v-model="item.typeCategoryCode1"
-                  :disabled="!item.typearr[index]"
-                  class="flex-1"
-                  clearable
-                >
-                  <Option
-                    v-if="sub.controlStatus == 1"
-                    v-for="sub in it.typeCategoryList"
-                    :key="sub.typeCode"
-                    :value="sub.typeCode"
-                  >{{sub.typeName}}</Option>
-                </Select>
-              </span>
-            </FormItem>
-          </Col>
-        </Row>
-
-        <Row v-else>
-          <Col span='5'>
-            <FormItem
-              label="客户类型"
-            >
-            <Select
-                v-model="singtype[0].typeCategoryCode"
-                class="flex-1"
-                clearable
-              >
-                <Option
-                  v-if="sub.controlStatus == 1"
-                  v-for="sub in customerTypeList[0].typeCategoryList"
-                  :key="sub.typeCode"
-                  :value="sub.typeCode"
-                >{{sub.typeName}}</Option>
-              </Select>
-            </FormItem>
-          </Col>
-        </Row>
-
-        <Row v-if="item.typearr[0] && item.companyType == 1">
-          <FormItem label="关联品牌">
-            <BrandPane
-              v-model="brandIds"
-              :bindList="item.brandList"
-            />
-          </FormItem>
-        </Row>
-
-        <Row v-if="item.companyType == 2">
-          <FormItem label="关联品牌">
-            <BrandPane
-              v-model="singbrandIds"
-              :bindList="item.singbrandList"
-            />
-          </FormItem>
-        </Row>
-
-        <Row v-if="item.typearr[1] && item.companyType == 1">
-          <FormItem label="关联影院" prop="cinemasList" :show-message="!(item.cinemasList.length>0)">
-            <PartBindCinema
-              v-if="loadingShow"
-              v-model="item.cinemasList"
-              :unitList="profitUnitList"
-              :incinematype="cinematype"
-              class="part-bind-cinema"
-            />
-          </FormItem>
         </Row>
 
         <div class="edit-button">

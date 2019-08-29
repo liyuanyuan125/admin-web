@@ -8,6 +8,7 @@
      :load-data="loadData"
      :render-format="format"
      ></Cascader>
+     <!-- <span v-show='disabled' >{{ui}}11111111</span> -->
   </div>
 </template>
 

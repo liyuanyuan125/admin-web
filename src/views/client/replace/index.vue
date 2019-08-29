@@ -12,7 +12,7 @@
           type="success"
           icon="md-add-circle"
           @click="editShow()"
-        >资源方管理</Button>
+        >广告主管理</Button>
       </template>
 
       <template slot="year" slot-scope="{row: {year, month}}">
@@ -185,7 +185,7 @@ export default class Main extends ViewBase {
 
   editShow(id?: any) {
     this.$router.push({
-      name: 'client-resource-edit',
+      name: 'client-replace-edit',
       params: {
         id
       }
