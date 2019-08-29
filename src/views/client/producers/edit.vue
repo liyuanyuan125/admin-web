@@ -162,64 +162,11 @@
           </Col>
         </Row>
 
-        <!-- <Row class="client-type-row">
-          <Col v-for="(it, index) in customerTypeList" :key="index" span="8">
-            <FormItem
-              :label="index == 0 ? '客户类型' : ''"
-              :prop="'typearr['+ index + ']'"
-              :show-message="index == 0 ? show0 : true"
-            >
-              <span class="check-select-group">
-                <div>
-                  <Checkbox v-model="item.typearr[index]" :label="it.typeName">{{it.typeName}}</Checkbox>
-                </div>
-                <Select
-                  v-if="index == 0"
-                  v-model="item.typeCategoryCode0"
-                  :disabled="!item.typearr[index]"
-                  class="flex-1"
-                  clearable
-                >
-                  <Option
-                    v-if="sub.controlStatus == 1"
-                    v-for="sub in it.typeCategoryList"
-                    :key="sub.typeCode"
-                    :value="sub.typeCode"
-                  >{{sub.typeName}}</Option>
-                </Select>
-                <Select
-                  v-else
-                  v-model="item.typeCategoryCode1"
-                  :disabled="!item.typearr[index]"
-                  class="flex-1"
-                  clearable
-                >
-                  <Option
-                    v-if="sub.controlStatus == 1"
-                    v-for="sub in it.typeCategoryList"
-                    :key="sub.typeCode"
-                    :value="sub.typeCode"
-                  >{{sub.typeName}}</Option>
-                </Select>
-              </span>
-            </FormItem>
-          </Col>
-        </Row> -->
-
-        <!-- <Row v-if="item.typearr[0]">
-          <FormItem label="关联品牌">
-            <BrandPane
-              v-model="brandIds"
-              :bindList="item.brandList"
-            />
-          </FormItem>
-        </Row> -->
-
         <Row>
-          <FormItem label="关联影院" prop="cinemasList" :show-message="!(item.cinemasList.length>0)">
+          <FormItem label="关联影院" prop="relationMovieIdList" :show-message="!(item.relationMovieIdList.length>0)">
             <PartBindCinema
               v-if="loadingShow"
-              v-model="item.cinemasList"
+              v-model="item.relationMovieIdList"
               :unitList="profitUnitList"
               class="part-bind-cinema"
             />
@@ -252,7 +199,7 @@ const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 
 const defItem = {
   typearr: [false, false],
-  cinemasList: [],
+  relationMovieIdList: [],
   name: '',
   shortName: '',
   typeCategoryCode0: '',
@@ -389,7 +336,7 @@ export default class Main extends ViewBase {
       approveStatus: [
         { required: true, message: '请选择审核状态', trigger: 'blur', type: 'number' }
       ],
-      cinemasList: [{ validator: cinemaVali }],
+      relationMovieIdList: [{ validator: cinemaVali }],
       levelCode: [{ required: true, message: '请选择客户等级', trigger: 'change' }],
       validityPeriodDate: [
         {
@@ -437,8 +384,8 @@ export default class Main extends ViewBase {
   }
 
   get cinemas() {
-    if (this.item.cinemasList.length > 0) {
-      const cinemas = this.item.cinemasList.map((val: any) => {
+    if (this.item.relationMovieIdList.length > 0) {
+      const cinemas = this.item.relationMovieIdList.map((val: any) => {
         return val.id * 1
       })
       return cinemas
@@ -508,6 +455,7 @@ export default class Main extends ViewBase {
             validityPeriodDate,
             qualificationTypeList,
             status,
+            relationMovieList,
             imageList,
             cinemaList,
             brandList
@@ -526,7 +474,7 @@ export default class Main extends ViewBase {
         this.qualificationTypeList = qualificationTypeList
         this.item.qualificationType = qualificationType
         this.item.images = images || []
-        this.item.cinemasList = cinemaList || []
+        this.item.relationMovieIdList = relationMovieList || []
 
         this.item.brandList = (brandList as any[] || []).map(it => ({
           id: it.brandId,
@@ -587,7 +535,9 @@ export default class Main extends ViewBase {
           coverCityIdList: [],
           businessParentCode: '',
           businessChildCode: '',
-          cinemas: [],
+          types: [{
+            typeCode: 'film'
+          }]
         }
         const query = clean(oldQuery)
         const array = Object.keys(query).slice(2)
@@ -596,7 +546,7 @@ export default class Main extends ViewBase {
 
         const formData: any = {
           ...newqQuery,
-          cinemas:  this.cinemas || [],
+          relationMovieIdList:  this.cinemas || [],
         }
 
         // 删除某些多余的字段

@@ -125,19 +125,19 @@
           <template slot-scope="{ row, index }" slot="begin">
             <!-- <Input type="text" v-model="editbegin" v-if="editIndex === index" />
             <span v-else>{{ row.begin }}</span> -->
-            <Input type="text" v-model="row.begin" @on-change='chg(row , index , begin)' v-if="editIndex === 1" />
+            <Input type="text" v-model="row.begin" @on-change='chgbegin(row , index)' v-if="editIndex === 1" />
             <span v-else>{{ row.begin }}</span>
           </template>
           <template slot-scope="{ row, index }" slot="end">
             <!-- <Input type="text" v-model="editend" v-if="editIndex === index" />
             <span v-else>{{ row.end }}</span> -->
-             <Input type="text" v-model="row.end" @on-change='chg(row , index , end)' v-if="editIndex === 1" />
+             <Input type="text" v-model="row.end" @on-change='chgend(row , index)' v-if="editIndex === 1" />
             <span v-else>{{ row.end }}</span>
           </template>
           <template slot-scope="{ row, index }" slot="cost">
             <!-- <Input type="text" v-model="editcost" v-if="editIndex === index" />
             <span v-else>{{ row.cost }}</span> -->
-            <Input type="text" v-model="row.cost" @on-change='chg(row , index , cost)' v-if="editIndex === 1" />
+            <Input type="text" v-model="row.cost" @on-change='chgcost(row , index)' v-if="editIndex === 1" />
             <span v-else>{{ row.cost }}</span>
           </template>
           <template  slot="action" slot-scope="{row , index}" >
@@ -388,9 +388,9 @@ export default class Main extends ViewBase {
   chgcost(row: any , index: any) {
     this.formDynamic[index].cost =  row.cost
   }
-  chg(row: any , index: any , item: any) {
-    this.formDynamic[index].item =  row.item
-  }
+  // chg(row: any , index: any , item: any) {
+  //   this.formDynamic[index].item =  row.item
+  // }
 
   async doSearch() {
      (this.$Spin as any).show()

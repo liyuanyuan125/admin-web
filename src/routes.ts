@@ -273,6 +273,36 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+   // 客户管理 - 区代管理 - 列表
+   {
+    path: '/client/replace/',
+    name: 'client-replace',
+    component: () => import('./views/client/replace/index.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
+  // 客户管理 - 区代管理 - 编辑
+  {
+    path: '/client/replace/edit/:id?',
+    name: 'client-replace-edit',
+    component: () => import('./views/client/replace/edit.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
+    // 客户管理 - 区代管理 - 详情
+  {
+    path: '/client/replace/detail/:id?',
+    name: 'client-replace-detail',
+    component: () => import('./views/client/replace/detail.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
   // 客户管理 - 公司管理 - 添加、编辑
   {
     path: '/client/corp/edit/:id?',
@@ -1406,21 +1436,21 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     }
   },
-  // 映前广告计划 - 列表
-  {
-    path: '/order/beforeplan',
-    name: 'order-beforeplan',
-    component: () => import('./views/order/beforeplan/index.vue'),
-    meta: {
-      authKey: '',
-      title: '映前广告计划列表'
-    }
-  },
+  // // 映前广告计划 - 列表
+  // {
+  //   path: '/order/beforeplan',
+  //   name: 'order-beforeplan',
+  //   component: () => import('./views/order/beforeplan/index.vue'),
+  //   meta: {
+  //     authKey: '',
+  //     title: '映前广告计划列表'
+  //   }
+  // },
 
   // 映前广告计划 - 列表
   {
     path: '/order/beforeplan/newindex/:pay?',
-    name: 'order-beforeplan-newindex',
+    name: 'order-beforeplan',
     component: () => import('./views/order/beforeplan/newindex.vue'),
     meta: {
       authKey: '',
@@ -1471,18 +1501,18 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
   // 映前广告监播 - 列表
-  {
-    path: '/order/supervision',
-    name: 'order-supervision',
-    component: () => import('./views/order/supervision/index.vue'),
-    meta: {
-      authKey: '',
-      title: '映前广告监播列表'
-    }
-  },
+  // {
+  //   path: '/order/supervision',
+  //   name: 'order-supervision',
+  //   component: () => import('./views/order/supervision/index.vue'),
+  //   meta: {
+  //     authKey: '',
+  //     title: '映前广告监播列表'
+  //   }
+  // },
   {
     path: '/order/supervision/newindex/:pay?',
-    name: 'order-supervision-newindex',
+    name: 'order-supervision',
     component: () => import('./views/order/supervision/newindex.vue'),
     meta: {
       authKey: '',

@@ -45,15 +45,15 @@ export default class ComponentMain extends ViewBase {
   addShow =  false
   get columns() {
     const arr = [
-      {
-        title: '影片中文名称',
+      { title: '影院名称',
         align: 'center',
-        key: 'name'
-      },
-       {
-         title: '影片英文名称',
-         align: 'center',
-         key: 'englishName'
+        key: 'shortName',
+        render: (hh: any, { row: { cinemaName } }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          return <a>{cinemaName}</a>
+          /* tslint:enable */
+        }
       }
     ]
     const add: any = [
