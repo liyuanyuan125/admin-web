@@ -120,6 +120,7 @@ export default class ComponentMain extends ViewBase {
         }),
         remark: this.descript
       })
+      this.$emit('done')
       this.cancel()
     } catch (ex) {
       this.handleError(ex)
