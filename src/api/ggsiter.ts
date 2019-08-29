@@ -35,8 +35,8 @@ export async function companyAdd(query: any) {
  * 是否上下架
  * http://yapi.aiads-dev.com/project/34/interface/api/293
  */
-export async function stop(id: any) {
-  const res = await get(`/customer/companies/${id}/status`)
+export async function stop(id: any, query: any) {
+  const res = await put(`/customer/companies/${id}/status`, query)
   return res
 }
 
