@@ -331,15 +331,16 @@
             />
           </FormItem>
         </Row>
-
-        <Row v-if="item.companyType == 2">
-          <FormItem label="关联品牌">
-            <BrandPane
-              v-model="singbrandIds"
-              :bindList="item.singbrandList"
-            />
-          </FormItem>
-        </Row>
+        <div v-if="item.typearr[0] && item.companyType == 2">
+          <Row>
+            <FormItem label="关联品牌">
+              <BrandPane
+                v-model="singbrandIds"
+                :bindList="item.singbrandList"
+              />
+            </FormItem>
+          </Row>
+        </div>
 
         <Row v-if="item.typearr[1] && item.companyType == 1">
           <FormItem label="关联影院" prop="cinemasList" :show-message="!(item.cinemasList.length>0)">
@@ -739,7 +740,6 @@ export default class Main extends ViewBase {
             companyType
           }
         } = await queryId(query)
-        this.item.name = name
         this.businessParentTypeList = businessParentTypeList.map((it: any) => {
           return {
             value: it.key,
@@ -748,10 +748,6 @@ export default class Main extends ViewBase {
             loading: false
           }
         })
-        this.item.businessParentCode = [
-          businessParentCode,
-          (businessChildCode || '0')
-        ]
         this.item.companyType = companyType
         if ( companyType == 2) {
           this.item.singcontact = contact
@@ -763,6 +759,7 @@ export default class Main extends ViewBase {
           }))
           // this.item.types = types
         } else {
+          this.item.name = name
           this.item.contact = contact
           this.item.contactTel = contactTel
           this.item.email = email
@@ -772,8 +769,13 @@ export default class Main extends ViewBase {
             id: it.brandId,
             name: it.brandName,
           }))
+          this.item.businessParentCode = [
+            businessParentCode,
+            (businessChildCode || '0')
+          ]
           this.item.addressDetail = addressDetail
           this.item.coverCityIdList = coverCityIdList
+          this.item.cinemasList = cinemaList || []
         }
         this.customerTypeList = customerTypeList.slice(2)
         if (types.length == 1) {
@@ -804,7 +806,6 @@ export default class Main extends ViewBase {
         this.qualificationTypeList = qualificationTypeList
         this.item.qualificationType = qualificationType
         this.item.images = images || []
-        this.item.cinemasList = cinemaList || []
         this.item.refusedReason = refusedReason
         this.item.businessDirector = businessDirector
         this.item.cinemas = cinemas || []
@@ -907,7 +908,7 @@ export default class Main extends ViewBase {
           // delete formData.provinceId
           // delete formData.cityId
           // delete formData.countyId
-          // delete formData.typeCategoryCode0
+          delete formData.typeCategoryCode0
           // delete formData.addressDetail
           // delete formData.name
           // delete formData.shortName

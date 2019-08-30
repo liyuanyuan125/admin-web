@@ -659,6 +659,17 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: idProps
   },
 
+  // 商务管理
+  {
+    path: 'data/business',
+    name: 'data-business',
+    component: () => import('./views/data/business/index.vue'),
+    meta: {
+      authKey: '',
+      title: '商务管理'
+    }
+  },
+
   // 基础数据 - 影人管理
   {
     path: 'data/person',
@@ -869,6 +880,27 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       }
     ]
   },
+
+  // 财务管理 - 账号余额管理
+  {
+    path: '/finance/account/balance/',
+    name: 'finance-account-balance',
+    component: () => import('./views/finance/account/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 财务管理 - 账号余额管理
+  {
+    path: '/finance/balance/withdrawal/',
+    name: 'finance-balance-withdrawal',
+    component: () => import('./views/finance/withdrawal/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
 
   // 财务管理 - 充值审核
   {
@@ -1446,6 +1478,18 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       title: '映前广告计划列表new'
     },
     props: true,
+  },
+
+  // 映前广告计划 - 审批
+  {
+    path: '/order/beforeplan/audit/:status?',
+    name: 'order-beforeplanAudit',
+    component: () => import('./views/order/beforeplan-audit/index.vue'),
+    meta: {
+      authKey: '',
+      title: '广告计划审批管理列表'
+    },
+    props: true
   },
 
   // {
