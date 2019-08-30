@@ -76,7 +76,7 @@ export async function queryList(query: any = {}) {
             cinemaCount: -53538682,
             discount: 33276448.893954888,
             depositAmount: -99705053.47952199,
-            status: -79357911,
+            status: 3,
             planApplyTime: '2019-07-29T18:50:17.436',
             auditApplyTime: '2019-07-29T18:50:17.436'
         }

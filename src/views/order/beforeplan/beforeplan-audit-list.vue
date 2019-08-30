@@ -9,8 +9,8 @@
       <template slot="action" slot-scope="{ row: { id , status  } }">
         <div class="row-acts">
           <router-link
-            :to="{ name: 'order-beforeplan-detail', params: { id , status } }"
-          >详情</router-link>
+            :to="{ name: 'order-beforeplanAudit-detail', params: { id , status, ifs: '1' } }"
+          >审核</router-link>
         </div>
       </template>
     </ListPage>
@@ -24,6 +24,10 @@ import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import { queryList, queryKolAcounts } from './data'
 import { alert, toast } from '@/ui/modal'
 import jsxReactToVue from '@/util/jsxReactToVue'
+// 广告主公司名称列表
+import CompanyList from './files/adscompany.vue'
+// 广告片名称列表
+import videoList from './files/videoList.vue'
 
 const auditStatusListLocal = [
   { name: '待审核', value: '1' },
@@ -59,54 +63,84 @@ export default class IndexPage extends ViewBase {
       },
 
       {
+        name: 'id',
+        defaultValue: '',
+        type: 'input',
+        width: 140,
+        placeholder: '广告计划ID'
+      },
+
+      // {
+      //   name: 'companyName',
+      //   defaultValue: 0,
+      //   type: CompanyList,
+      //   width: 140,
+      //   placeholder: '广告主公司名称'
+      // },
+
+      {
+        name: 'name',
+        defaultValue: '',
+        type: 'input',
+        width: 140,
+        placeholder: '广告计划名称'
+      },
+
+      {
+        name: 'videoName',
+        defaultValue: '',
+        type: videoList,
+        width: 140,
+        placeholder: '广告片名称'
+      },
+
+      {
+        name: 'advertTypeCode',
+        defaultValue: null,
+        type: 'select',
+        width: 100,
+        placeholder: '广告类型',
+        enumKey: 'statusList'
+      },
+
+      {
+        name: 'channelCode',
+        defaultValue: null,
+        type: 'select',
+        width: 100,
+        placeholder: '渠道',
+        enumKey: 'channelList'
+      },
+
+      {
         name: 'dateRange',
         defaultValue: '',
         type: 'dateRange',
         width: 200,
         placeholder: '选择时间',
         dealParam(value: string) {
-          // const [startTime, endTime] = value ? value.split('-') : [null, null]
-          // return {
-          //   queryStartTime : startTime,
-          //   queryEndTime : endTime,
-          // }
-          const [startTime, endTime] = value ? value.split('-') : [null, null]
+          const [beginDate, endDate] = value ? value.split('-') : [null, null]
           return {
-            queryStartTime: startTime
-              ? Number(
-                  new Date(
-                    String(startTime).slice(0, 4) +
-                      '-' +
-                      String(startTime).slice(4, 6) +
-                      '-' +
-                      String(startTime).slice(6, 8)
-                  ).getTime() -
-                    8 * 60 * 60 * 1000
-                )
-              : null,
-            queryEndTime: endTime
-              ? Number(
-                  new Date(
-                    String(endTime).slice(0, 4) +
-                      '-' +
-                      String(endTime).slice(4, 6) +
-                      '-' +
-                      String(endTime).slice(6, 8)
-                  ).getTime() +
-                    (16 * 60 * 60 * 1000 - 1)
-                )
-              : null
+            beginDate,
+            endDate
           }
         }
       },
 
       {
-        name: 'invoiceStatus',
-        defaultValue: 0,
-        enumKey: 'invoiceStatusList',
-        type: 'select',
-        width: 128,
-        placeholder: '发票状态'
+        name: 'planApplyDate',
+        defaultValue: '',
+        type: 'date',
+        width: 140,
+        placeholder: '计划提交时间'
+      },
+
+      {
+        name: 'auditApplyDate',
+        defaultValue: '',
+        type: 'date',
+        width: 140,
+        placeholder: '提交审核时间'
       },
 
       {

@@ -1491,14 +1491,26 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: true,
   },
 
-  // 映前广告计划 - 审批
+  // 映前广告计划 - 审批 - 列表
   {
     path: '/order/beforeplan/audit/:status?',
     name: 'order-beforeplanAudit',
-    component: () => import('./views/order/beforeplan-audit/index.vue'),
+    component: () => import('./views/order/beforeplan/beforeplan-audit-list.vue'),
     meta: {
       authKey: '',
       title: '广告计划审批管理列表'
+    },
+    props: true
+  },
+
+  // 映前广告计划 - 审批 - 详情 ifs 0 为详情查看页面 1为非详情查看页面
+  {
+    path: '/order/beforeplan/audit/detail/:id/:status?/:ifs',
+    name: 'order-beforeplanAudit-detail',
+    component: () => import('./views/order/beforeplan/beforeplan-audit-detail.vue'),
+    meta: {
+      authKey: '',
+      title: '审批'
     },
     props: true
   },

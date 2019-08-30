@@ -391,7 +391,8 @@ export default class EditForm extends ViewBase {
   /deep/ .form-text {
     padding: 10px 12px 10px 0;
   }
-  /deep/ .form-radio {
+  /deep/ .form-radio,
+  /deep/ .form-check {
     padding: 9px 12px 9px 0;
   }
   /deep/ .form-switch {
