@@ -517,22 +517,45 @@ export default class Main extends ViewBase {
       skip: dataItem.skip, // 跳过的记录数
       maxSize: dataItem.maxSize, // 最大返回数据量
     }
+
+    const query: any = {
+      refuseReason: this.dataForm.refuseReason ,
+      agree: this.dataForm.agree,
+      fixedRefuseReasons: this.dataForm.fixedRefuseReasons
+    }
+
+
     // 如果没有videoIds存储值则代表没有请求过ids列表
     if (JSON.parse((sessionStorage.getItem('videoIds') as any)) == null ) {
       try {
         const res =  await getVideoIds (this.videoIdsList) // 请求500的存储总量
         const videoIds = res.data.items || []
-        sessionStorage.setItem('videoIds', JSON.stringify(videoIds.slice(1))) // 存储总量-1
-        this.$router.push({ name : 'gg-film-detail' , params: {id: videoIds[0] , status: '1'} })
+        if (videoIds.length > 1) {
+          sessionStorage.setItem('videoIds', JSON.stringify(videoIds.slice(1))) // 存储总量-1
+          const data =  await sapproval (this.$route.params.id, query)
+          this.$router.push({ name : 'gg-film-detail' , params: {id: videoIds[1] , status: '1'} })
+        } else {
+           const resdata =  await sapproval (this.$route.params.id, query)
+           setTimeout(() => {
+              this.backList()
+          }, 1000)
+        }
       } catch (ex) {
         this.handleError(ex)
       }
     } else { // 如果有则是详情-详情页面
       const dataItemIds: any = JSON.parse((sessionStorage.getItem('videoIds') as any))
-      if (dataItemIds.length > 0 && dataItemIds.length < 499) { // 判断剩余存储的数值是否超过存储总量
+      if (dataItemIds.length > 1 && dataItemIds.length < 980) { // 判断剩余存储的数值是否超过存储总量
         sessionStorage.removeItem('videoIds') // 先清空原存值，在存新值
         sessionStorage.setItem('videoIds', JSON.stringify(dataItemIds.slice(1))) // 存储新值
-        this.$router.push({ name : 'gg-film-detail' , params: {id: dataItemIds[0] , status: '1'} })
+         const res =  await sapproval (dataItemIds[0], query)
+        this.$router.push({ name : 'gg-film-detail' , params: {id: dataItemIds[1] , status: '1'} })
+      } else {
+        const res =  await sapproval (this.$route.params.id, query)
+        // toast('没有更多数据了')
+                setTimeout(() => {
+                        this.backList()
+                    }, 1000)
       }
     }
   }
@@ -607,6 +630,11 @@ export default class Main extends ViewBase {
   // 返回
   back() {
     this.$router.go(-1)
+  }
+
+  // 返回列表
+  backList() {
+      this.$router.push({ name: 'order-supervision' })
   }
 }
 </script>
