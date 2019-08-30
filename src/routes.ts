@@ -1448,6 +1448,18 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: true,
   },
 
+  // 映前广告计划 - 审批
+  {
+    path: '/order/beforeplan/audit/:status?',
+    name: 'order-beforeplanAudit',
+    component: () => import('./views/order/beforeplan-audit/index.vue'),
+    meta: {
+      authKey: '',
+      title: '广告计划审批管理列表'
+    },
+    props: true
+  },
+
   // {
   //   path: '/finance/kol-payment/:channel?',
   //   name: 'finance-kol-payment',
