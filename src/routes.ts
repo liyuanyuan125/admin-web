@@ -891,6 +891,17 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  // 财务管理 - 账号余额管理次数
+  {
+    path: '/finance/account/balance/detail/:time/:companyId/:transactionTypes',
+    name: 'finance-account-balance-detail',
+    component: () => import('./views/finance/account/detail.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+
   // 财务管理 - 账号余额管理
   {
     path: '/finance/balance/withdrawal/',
