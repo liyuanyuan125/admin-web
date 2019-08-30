@@ -15,7 +15,7 @@ const shell = async command => {
   })
 }
 
-const MAIN = 'master'
+const MAIN = 'TempMaster'
 
 const thisTag = async () => {
   await shell('git fetch --tags')
