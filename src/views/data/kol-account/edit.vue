@@ -146,7 +146,7 @@ export default class EditPage extends ViewBase {
       {
         name: 'type',
         defaultValue: 0,
-        required: true,
+        required: !readonly,
         radio: {
           enumKey: 'typeList'
         },
