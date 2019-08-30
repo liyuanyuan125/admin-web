@@ -177,7 +177,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       status: this.query.status, // 状态
       translated: this.query.translated, // 1：转制；2：未转制
       skip: this.jumpNum, // 跳过的记录数
-      maxSize: 500, // 最大返回数据量
+      maxSize: 1000, // 最大返回数据量
     }
     sessionStorage.setItem('info', JSON.stringify(info))
   }

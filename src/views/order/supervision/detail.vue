@@ -221,7 +221,7 @@ export default class Main extends ViewBase {
             }
         } else { // 如果有则是详情-详情页面
             const dataItemIds: any = JSON.parse((sessionStorage.getItem('videoIds') as any))
-            if (dataItemIds.length > 1 && dataItemIds.length < 498) { // 判断剩余存储的数值是否超过存储总量
+            if (dataItemIds.length > 1 && dataItemIds.length < 700) { // 判断剩余存储的数值是否超过存储总量
                 sessionStorage.removeItem('videoIds') // 先清空原存值，在存新值
                 sessionStorage.setItem('videoIds', JSON.stringify(dataItemIds.slice(1))) // 存储新值
                 const aaa = await approve(dataItemIds[0],
@@ -230,7 +230,7 @@ export default class Main extends ViewBase {
             } else { // 如果ids列表没有了数据则直接返回列表
                 const aaa = await approve(this.$route.params.id,
                     { orderIds: this.dataForm.orderIds, fixRefuses: this.dataForm.reasonOrderIds })
-                toast('没有更多数据了')
+                // toast('没有更多数据了')
                 setTimeout(() => {
                         this.backList()
                     }, 1000)
