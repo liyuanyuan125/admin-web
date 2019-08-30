@@ -19,7 +19,7 @@
           </Select> -->
                 <compangList v-model='dataForm.resourceId' @done="dlgEditDone" />
                 </Col>
-                <Col span='4' offset="1">
+                <Col v-if='$route.params.status != 3' span='4' offset="1">
                 <Select v-model="dataForm.resourceId" placeholder="接单状态" style='width: 200px;' filterable>
                     <Option v-for="it in []" :key="it.id" :value="it.id" :label="it.name">{{it.name}}</Option>
                 </Select>
@@ -159,6 +159,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     file: File | any = null
     inputhtml: any = ''
 
+    b: any = []
+
 
     get columns() {
         const data: any = [
@@ -170,8 +172,15 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
             { title: '所属资源方', slot: 'resourceId', align: 'center' },
             { title: '联系人', width: 120, key: 'contract', align: 'center' },
             { title: '联系电话', width: 120, key: 'contractTel', align: 'center' },
-            { title: '接单状态', width: 120, key: 'acceptStatus', align: 'center' },
         ]
+        if (this.$route.params.status == '3') {
+          this.b = []
+        } else {
+          this.b = [
+            { title: '接单状态', width: 120, key: 'acceptStatus', align: 'center' },
+          ]
+        }
+
         const check = [{
             type: 'selection',
             title: '全选',
@@ -187,7 +196,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         }]
         return this.$route.params.ifs == '1' && (this.$route.params.status == '2' || this.$route.params.status == '3' ||
                 this.$route.params.status == '4' || this.$route.params.status == '10') ?
-            [...check, ...data, ...opernation] : data
+            [...check, ...data, ...this.b, ...opernation] : [...data , ...this.b]
     }
 
     get columnsData() {
