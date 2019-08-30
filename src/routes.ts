@@ -659,6 +659,17 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: idProps
   },
 
+  // 商务管理
+  {
+    path: 'data/business',
+    name: 'data-business',
+    component: () => import('./views/data/business/index.vue'),
+    meta: {
+      authKey: '',
+      title: '商务管理'
+    }
+  },
+
   // 基础数据 - 影人管理
   {
     path: 'data/person',
@@ -1467,6 +1478,18 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       title: '映前广告计划列表new'
     },
     props: true,
+  },
+
+  // 映前广告计划 - 审批
+  {
+    path: '/order/beforeplan/audit/:status?',
+    name: 'order-beforeplanAudit',
+    component: () => import('./views/order/beforeplan-audit/index.vue'),
+    meta: {
+      authKey: '',
+      title: '广告计划审批管理列表'
+    },
+    props: true
   },
 
   // {
