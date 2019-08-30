@@ -92,7 +92,7 @@ export default class EditPage extends ViewBase {
             { title: '账单月份', key: 'billMonthText', width: 80, align: 'center' },
 
             { title: '账单生成时间', key: 'billCreateTimeText', width: 135, align: 'center' },
-            { title: '曝光人次/千人次', key: 'personCount', width: 110, align: 'center' },
+            { title: '曝光人次', key: 'personCount', width: 110, align: 'center' },
             { title: '账单金额', key: 'billFee', width: 100, align: 'center' },
             { title: '账单状态', key: 'billStatusText', width: 100, align: 'center' },
           ]

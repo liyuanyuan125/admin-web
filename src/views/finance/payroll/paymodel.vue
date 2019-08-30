@@ -48,6 +48,7 @@ export default class ComponentMain extends ViewBase {
   tablemoney: any = {}
   items: any = []
   invoiceContentList: any = []
+  invoiceStatusList: any = []
   invoiceTypeList: any = []
   descript = ''
   init(id: any) {
@@ -64,6 +65,7 @@ export default class ComponentMain extends ViewBase {
      return {
       invoiceContentList: makeMap(this.invoiceContentList),
       invoiceTypeList: makeMap(this.invoiceTypeList),
+      invoiceStatusList: makeMap(this.invoiceStatusList)
     }
   }
 
@@ -72,9 +74,10 @@ export default class ComponentMain extends ViewBase {
     const list = (this.items || []).map((it: any) => {
       return {
         ...it,
-        invoiceContentList: cachedMap.invoiceContentList[it.invoiceContentCode],
-        invoiceTypeList: cachedMap.invoiceTypeList[it.invoiceType],
-        approvalTime: it.approvalTime ? moment(it.approvalTime).format('YYYY/MM/DD') : ''
+        invoiceContentCode: cachedMap.invoiceContentList[it.invoiceContentCode],
+        invoiceType: cachedMap.invoiceTypeList[it.invoiceType],
+        approvalTime: it.approvalTime ? moment(it.approvalTime).format('YYYY/MM/DD HH:mm:ss') : '',
+        invoiceStatus: cachedMap.invoiceStatusList[it.invoiceStatus]
       }
     })
     return list
@@ -85,11 +88,16 @@ export default class ComponentMain extends ViewBase {
       const { data: {
         items,
         invoiceContentList,
-        invoiceTypeList
+        invoiceTypeList,
+        invoiceStatusList
       }} = await billslist(this.id.join(','))
       this.invoiceTypeList = invoiceTypeList
       this.invoiceContentList = invoiceContentList
+      this.invoiceStatusList = invoiceStatusList
       this.items = items || []
+      this.items.forEach((it: any) => {
+        this.$set(this.tablemoney, it.id, it.mayApplyAmount)
+      })
     } catch (ex) {
       this.handleError(ex)
     }
@@ -112,6 +120,7 @@ export default class ComponentMain extends ViewBase {
         }),
         remark: this.descript
       })
+      this.$emit('done')
       this.cancel()
     } catch (ex) {
       this.handleError(ex)

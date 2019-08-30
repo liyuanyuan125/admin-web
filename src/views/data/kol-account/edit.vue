@@ -177,7 +177,6 @@ export default class EditPage extends ViewBase {
         name: 'fansCount',
         defaultValue: 0,
         label: '粉丝数',
-        required: !readonly,
         placeholder: '粉丝数',
         span: 8,
         group: '粉丝画像',

@@ -1,7 +1,7 @@
 <template>
   <Form ref="form" :label-width="40">
     <div class="base-mess">
-      <h2 class="title">请款单详情</h2>
+      <!-- <h2 class="title">请款单详情</h2>
       <Row>
         <Col :span="24">
           <Table :columns="columns" :data="tableData"
@@ -11,7 +11,7 @@
             </template>
           </Table>
         </Col>
-      </Row>
+      </Row> -->
 
        <Row>
           <Col :span="12">
@@ -75,7 +75,7 @@ export default class Main extends ViewBase {
   }
 
   time(time: any) {
-    return time ? moment(time).format('YYYY-MM-DD hh:ss') : '-'
+    return time ? moment(time).format('YYYY-MM-DD hh:mm:ss') : '-'
   }
 
   async detail() {
