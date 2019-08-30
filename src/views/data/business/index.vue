@@ -165,15 +165,15 @@ export default class Main extends ViewBase {
       label: '可享折扣',
       required: true,
       placeholder: '数字在0-1之间，例如：0.1，代表可享折扣是1折',
-      number: true,
-      min: 0,
-      max: 1,
+      number: {
+        max: 1,
+      },
       span: 21,
     }
   ]
 
-  async fetch() {
-    const res = await queryList()
+  async fetch(query: any) {
+    const res = await queryList(query)
     this.roleList = res.roleList
     return res
   }
