@@ -26,7 +26,7 @@ import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { auditdetail } from '@/api/payroll'
-import { commoncolums } from './before'
+// import { commoncolums } from './before'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 

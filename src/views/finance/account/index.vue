@@ -15,15 +15,37 @@
         >片商管理</Button>
       </template>
 
-      <template slot="year" slot-scope="{row: {year, month}}">
-        <span>{{year}}-{{month && String(month).length == 1 ? `0${month}` : month}}</span>
+      <template slot="add" slot-scope="{row: {monthRechargeCount, totalRechargeCount}}">
+        <div>
+          <a>{{monthRechargeCount}}</a> / <a>{{totalRechargeCount}}</a>
+        </div>
       </template>
 
+      <template slot="consume" slot-scope="{row: {monthConsumptionCount, totalConsumptionCount}}">
+        <div>
+          <a>{{monthConsumptionCount}}</a> / <a>{{totalConsumptionCount}}</a>
+        </div>
+      </template>
+
+      <template slot="refund" slot-scope="{row: {monthRefundCount, totalRefundCount}}">
+        <div>
+          <a>{{monthRefundCount}}</a> / <a>{{totalRefundCount}}</a>
+        </div>
+      </template>
+
+      <template slot="deposit" slot-scope="{row: {monthWithdrawalCount, totalWithdrawalCount}}">
+        <div>
+          <a>{{monthWithdrawalCount}}</a> / <a>{{totalWithdrawalCount}}</a>
+        </div>
+      </template>
+
+
       <template slot="operate" slot-scope="{row}">
-         <a @click='open'>打开</a>
+         <a @click='open(row)'>申请提现</a>
+         <a @click='addmoeny(row)'>充值</a>
       </template>
     </ListPage>
-    <!-- <accountModel ref='account' @done='uplist' /> -->
+    <accountModel ref='account' @done='uplist' />
   </div>
 </template>
 
@@ -91,16 +113,15 @@ export default class Main extends ViewBase {
   ]
 
   columns = [
-    { title: '序号', key: 'id' },
-    { title: '公司ID', key: 'name' },
-    { title: '公司名称', key: 'levelCode', editor: 'enum' },
-    { title: '账户余额', key: 'businessDirectorName' },
-    { title: '可用金额', key: 'recommendMobile' },
-    { title: '冻结金额', key: 'createTime', editor: 'dateTime' },
-    { title: '充值次数（本月/累计）', key: 'modifyTime', editor: 'dateTime' },
-    { title: '消费次数（本月/累计）', key: 'amount' },
-    { title: '退款次数（本月/累计）', key: 'status', editor: 'enum'},
-    { title: '提现次数（本月/累计）', key: 'approveStatus', editor: 'enum'},
+    { title: '公司ID', key: 'companyId' },
+    { title: '公司名称', key: 'companyName' },
+    { title: '账户余额', key: 'balance' },
+    { title: '可用金额', key: 'availableAmount' },
+    { title: '冻结金额', key: 'freezeAmount' },
+    { title: '充值次数（本月/累计）', key: 'modifyTime', slot: 'add' },
+    { title: '消费次数（本月/累计）', key: 'amount', slot: 'consume' },
+    { title: '退款次数（本月/累计）', key: 'status', slot: 'refund'},
+    { title: '提现次数（本月/累计）', key: 'approveStatus', slot: 'deposit'},
     { title: '操作', slot: 'operate', minWidth: 90 },
   ]
 
@@ -108,7 +129,7 @@ export default class Main extends ViewBase {
     return this.$refs.listPage as ListPage
   }
 
-  open() {
+  open(val: any) {
 
   }
 
@@ -121,9 +142,15 @@ export default class Main extends ViewBase {
     })
   }
 
-  // uplist() {
-  //   this.listPage.refresh()
-  // }
+  addmoeny(row: any) {
+    this.$nextTick(() => {
+      (this.$refs.account as any).init(row)
+    })
+  }
+
+  uplist() {
+    // this.listPage.refresh()
+  }
 
   // async editStatus(id: number, status: number) {
   //   const statu = status == 1 ? '停用' : '启用'
