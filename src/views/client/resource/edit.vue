@@ -703,7 +703,7 @@ export default class Main extends ViewBase {
           : ''
         this.levelList = levelList
         this.loadingShow = true
-        approveStatus == 1 ? (this.title = '审核广告主') : (this.title = '编辑广告主')
+        approveStatus == 1 ? (this.title = '编辑资源方') : (this.title = '编辑资源方')
         ; (this.$Spin as any).hide()
       }
     } catch (ex) {
@@ -799,8 +799,8 @@ export default class Main extends ViewBase {
           const data: any = route == 0
             ? await addQuery(formData)
             : await setQuery(route, formData)
-          // toast(data.msg)
-          // this.$router.go(-1)
+          toast(data.msg)
+          this.$router.go(-1)
         } catch (ex) {
           this.handleError(ex)
         }

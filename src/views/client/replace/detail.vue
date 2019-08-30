@@ -75,7 +75,6 @@
           <Col span="4"><span>{{format.approveTime}}</span></Col>
         </Row>
       </Row>
-      <Area v-model='detail.agentCityIdList' />
       <Row class="detail-footer">
         <Row>
             <Col span="2"><div>客户等级</div></Col>
@@ -87,6 +86,10 @@
             </Col>
             <Col span="2"><div>负责商务</div></Col>
             <Col span="6"><span>{{detail.businessDirectorEmail}}<b v-if="detail.businessDirectorName" style="margin-left:5px">[{{detail.businessDirectorName}}]</b></span></Col>
+        </Row>
+         <Row>
+          <Col span="2"><div>代理区域</div></Col>
+          <Col span="10"><Area v-model='detail.agentCityIdList' /></Col>
         </Row>
       </Row>
       <Row class="detail-number">

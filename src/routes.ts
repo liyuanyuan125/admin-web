@@ -881,6 +881,27 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     ]
   },
 
+  // 财务管理 - 账号余额管理
+  {
+    path: '/finance/account/balance/',
+    name: 'finance-account-balance',
+    component: () => import('./views/finance/account/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 财务管理 - 账号余额管理
+  {
+    path: '/finance/balance/withdrawal/',
+    name: 'finance-balance-withdrawal',
+    component: () => import('./views/finance/withdrawal/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+
   // 财务管理 - 充值审核
   {
     path: '/finance/examine/',

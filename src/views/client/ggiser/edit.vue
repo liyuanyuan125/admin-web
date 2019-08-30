@@ -908,7 +908,7 @@ export default class Main extends ViewBase {
           // delete formData.provinceId
           // delete formData.cityId
           // delete formData.countyId
-          // delete formData.typeCategoryCode0
+          delete formData.typeCategoryCode0
           // delete formData.addressDetail
           // delete formData.name
           // delete formData.shortName

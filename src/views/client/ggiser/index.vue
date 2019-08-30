@@ -183,10 +183,10 @@ export default class Main extends ViewBase {
   }
 
   format(val: any) {
-    const code = (val || []).filter((it: any) => it.typeCode)[0].typeCategoryCode || []
+    const code = (val || []).filter((it: any) => it.typeCode)[0].typeCategoryCode
     const adsarray = ((this.listPage.enumType as any).customerTypeList || []).filter((it: any) => it.typeCode == 'ads')
     const invkey = makeMap(adsarray[0].typeCategoryList)
-    return code.length > 0 ? invkey[code] : '-'
+    return (code || []).length > 0 ? invkey[code] : '-'
   }
 
   editShow(id?: any) {

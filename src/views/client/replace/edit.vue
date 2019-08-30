@@ -509,7 +509,7 @@ export default class Main extends ViewBase {
             loading: false
           }
         })
-        this.title = '新建广告主'
+        this.title = '新建区代管理'
         ; (this.$Spin as any).hide()
       } else {
         const {
@@ -549,7 +549,6 @@ export default class Main extends ViewBase {
             companyType
           }
         } = await queryId(query)
-        this.item.name = name
         this.item.companyType = companyType
         if ( companyType == 2) {
           this.item.singcontact = contact
@@ -561,6 +560,7 @@ export default class Main extends ViewBase {
           }))
           // this.item.types = types
         } else {
+          this.item.name = name
           this.item.contact = contact
           this.item.contactTel = contactTel
           this.item.email = email
@@ -594,7 +594,7 @@ export default class Main extends ViewBase {
           : ''
         this.levelList = levelList
         this.loadingShow = true
-        approveStatus == 1 ? (this.title = '审核广告主') : (this.title = '编辑广告主')
+        approveStatus == 1 ? (this.title = '审核区代') : (this.title = '编辑区代')
         ; (this.$Spin as any).hide()
       }
     } catch (ex) {
@@ -685,8 +685,8 @@ export default class Main extends ViewBase {
           const data: any = route == 0
             ? await addQuery(formData)
             : await setQuery(route, formData)
-          // toast(data.msg)
-          // this.$router.go(-1)
+          toast(data.msg)
+          this.$router.go(-1)
         } catch (ex) {
           this.handleError(ex)
         }
