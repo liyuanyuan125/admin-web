@@ -44,28 +44,6 @@
             </Row>
           </FormItem>
 
-          <FormItem label="所属行业" prop="businessParentCode">
-            <Row>
-              <Col span="8">
-                <Industry v-model='item.businessParentCode' :businessParentTypeList='businessParentTypeList' />
-              </Col>
-            </Row>
-          </FormItem>
-
-          <CitySelectDialog
-            v-model="visible"
-            :cityIds.sync="item.coverCityIdList"
-            @ok="onCitySelectOk"
-          />
-          <FormItem label="覆盖区域">
-            <Row>
-              <Col span="8">
-                <a @click="visible = true">设置覆盖区域</a>
-                <span> 已选城市 {{item.coverCityIdList.length}}个</span>
-              </Col>
-            </Row>
-          </FormItem>
-
           <Row>
             <FormItem label="公司地址" prop="provinceId">
               <Row>
@@ -125,18 +103,6 @@
           </FormItem>
           </Row>
         </div>
-        <Row>
-          <Col span="5">
-            <FormItem label="推荐人电话">
-              <Input v-model="item.recommendMobile" />
-            </FormItem>
-          </Col>
-          <Col span="6" offset="1">
-            <FormItem label="推荐人姓名" prop="recommendUserName">
-              <Input v-model="item.recommendUserName" />
-            </FormItem>
-          </Col>
-        </Row>
         <Row>
           <Col span="5">
             <FormItem label="资质" prop="qualificationType">
@@ -239,7 +205,24 @@
             </FormItem>
           </Col>
         </Row>
-
+        <Row>
+          <Col>
+            <CitySelectDialog
+              v-model="visible"
+              :cityIds.sync="item.agentCityIdList"
+              @ok="onCitySelectOk"
+            />
+            <FormItem label="代理区域">
+              <Row>
+                <Col span="8">
+                  <a @click="visible = true">设置代理区域</a>
+                  <span> 已选城市 {{item.agentCityIdList.length}}个</span>
+                </Col>
+              </Row>
+            </FormItem>
+          </Col>
+        </Row>
+      
         <div class="edit-button">
           <Button type="info" size="large" @click="edit('dataForms')">确定</Button>
         </div>
@@ -271,8 +254,7 @@ const defItem = {
   cinemasList: [],
   name: '',
   shortName: '',
-  businessParentCode: [],
-  coverCityIdList: [],
+  agentCityIdList: [],
 
   companyType: 1,
   typeCategoryCode0: '',
@@ -300,16 +282,6 @@ const defItem = {
   //   }
   // ]
 
-  types: [
-    {
-      typeCode: '',
-      typeCategoryCode: ''
-    },
-    {
-      typeCode: '',
-      typeCategoryCode: ''
-    }
-  ],
   refusedReason: '',
   levelCode: '',
   businessDirector: '',
@@ -470,32 +442,8 @@ export default class Main extends ViewBase {
   }
 
   created() {
-    if (this.$route.params) {
-      this.item.typearr = [false, false]
-      this.item.types = this.item.types.map((val: any) => {
-        return {
-          typeCode: '',
-          typeCategoryCode: ''
-        }
-      })
-    }
     this.business()
   }
-
-  // // 删除资质编号
-  // handleRemove(index: number) {
-  //   this.item.qualificationArray[index].status = 0
-  // }
-
-  // // 添加资质编号
-  // handleAdd() {
-  //   this.index++
-  //   this.item.qualificationArray.push({
-  //       value: '',
-  //       index: this.index,
-  //       status: 1
-  //   })
-  // }
 
   async business() {
     try {
@@ -503,23 +451,6 @@ export default class Main extends ViewBase {
       this.businessDirector = res.data.items
     } catch (ex) {
       this.handleError(ex)
-    }
-  }
-
-  typeCode(val: any, index: any) {
-    if (!this.item.typearr[index]) {
-      this.item.types[index].typeCode = val
-    } else {
-      this.item.types[index].typeCode = ''
-      this.item.types[index].typeCategoryCode = ''
-    }
-  }
-
-  get cinematype() {
-    if (this.item.types[1].typeCategoryCode == 'cinema') {
-      return 1
-    } else {
-      return 0
     }
   }
 
@@ -578,12 +509,6 @@ export default class Main extends ViewBase {
             loading: false
           }
         })
-        this.item.types[0] = {
-          typeCode: 'ads',
-          typeCategoryCode: 'zhike'
-        }
-        this.item.typeCategoryCode0 = 'zhike'
-        this.item.typearr[0] = true
         this.title = '新建广告主'
         ; (this.$Spin as any).hide()
       } else {
@@ -607,7 +532,7 @@ export default class Main extends ViewBase {
             recommendUserName,
             qualificationType,
             qualificationCode,
-            coverCityIdList,
+            agentCityIdList,
             images,
             types,
             refusedReason,
@@ -619,26 +544,12 @@ export default class Main extends ViewBase {
             qualificationTypeList,
             status,
             imageList,
-            businessParentCode,
-            businessChildCode,
             cinemaList,
             brandList,
             companyType
           }
         } = await queryId(query)
         this.item.name = name
-        this.businessParentTypeList = businessParentTypeList.map((it: any) => {
-          return {
-            value: it.key,
-            label: it.text,
-            children: [],
-            loading: false
-          }
-        })
-        this.item.businessParentCode = [
-          businessParentCode,
-          (businessChildCode || '0')
-        ]
         this.item.companyType = companyType
         if ( companyType == 2) {
           this.item.singcontact = contact
@@ -660,28 +571,9 @@ export default class Main extends ViewBase {
             name: it.brandName,
           }))
           this.item.addressDetail = addressDetail
-          this.item.coverCityIdList = coverCityIdList
         }
+        this.item.agentCityIdList = agentCityIdList
         this.customerTypeList = customerTypeList.slice(2)
-        if (types.length == 1) {
-
-          if (this.customerTypeList[0].typeCode == types[0].typeCode) {
-            this.item.types[0] = types[0]
-            this.item.typeCategoryCode0 = types[0].typeCategoryCode
-            this.item.typearr[0] = true
-          } else {
-            this.item.types[1] = types[0]
-            this.item.typeCategoryCode1 = types[0].typeCategoryCode
-            this.item.typearr[1] = true
-          }
-        } else {
-          this.item.types = types.sort((a: any, b: any) => {
-            return a.typeCode > b.typeCode ? 1 : -1
-          })
-          this.item.typeCategoryCode0 = this.item.types[0].typeCategoryCode
-          this.item.typeCategoryCode1 = this.item.types[1].typeCategoryCode
-          this.item.typearr = [true, true]
-        }
         this.item.recommendMobile = recommendMobile
         this.item.recommendUserName = recommendUserName
         this.item.aptitudeType = aptitudeType
@@ -728,10 +620,10 @@ export default class Main extends ViewBase {
   edit(dataForms: string) {
     (this.$refs[dataForms] as any).validate(async (valid: any) => {
       if (valid) {
-        if (this.cinematype == 1 && this.cinemas.length > 1) {
-          this.showError('因资源方类型为影院，因此仅能关联一家影院')
-          return
-        }
+        // if (this.cinematype == 1 && this.cinemas.length > 1) {
+        //   this.showError('因资源方类型为影院，因此仅能关联一家影院')
+        //   return
+        // }
         const route: any = this.$route.params.id || 0
         let times: any = ''
         const timesfomat = moment(this.item.validityPeriodDate)
@@ -749,22 +641,11 @@ export default class Main extends ViewBase {
         const query = clean(oldQuery)
         const array = Object.keys(query).slice(2)
         const newqQuery = slice(query, array)
-        const types: any = []
-        this.item.types.forEach((it: any) => {
-          it.typeCode &&
-            types.push({
-              ...it,
-              typeCategoryCode: it.typeCategoryCode ? it.typeCategoryCode : ''
-            })
-        })
-        const business = this.item.businessParentCode.length > 0 ? {
-          businessParentCode: this.item.businessParentCode[0],
-          businessChildCode: this.item.businessParentCode[1] == '0' ? '' : this.item.businessParentCode[1],
-        } : {}
         let formData: any = {
           ...newqQuery,
-          ...business,
-          types: this.item.companyType == 2 ? this.singtype : (types as any[] || []).filter(it => it.typeCode != ''),
+          types: [
+            {typeCode: 'agent'}
+          ],
           cinemas: this.item.typearr[1] ? this.cinemas : [],
           brandIds: this.item.companyType == 2 ? this.singbrandIds : (this.item.typearr[0] ? this.brandIds : []),
           email: this.item.companyType == 1 ? this.item.email : this.item.singemail,
@@ -776,18 +657,15 @@ export default class Main extends ViewBase {
         if (this.item.companyType == 2) {
           formData = {
             ...formData,
-            coverCityIdList: [],
-            businessParentCode: '',
-            businessChildCode: '',
             cinemas: [],
             provinceId: 0,
             cityId: 0,
             countyId: 0,
-            addressDetail: '-',
-            name: '-',
-            shortName: '-',
+            // addressDetail: '-',
+            // name: '-',
+            // shortName: '-',
           }
-          // delete formData.coverCityIdList
+          // delete formData.agentCityIdList
           // delete formData.businessParentCode
           // delete formData.businessParentCode
           // delete formData.cinemas
@@ -849,26 +727,6 @@ export default class Main extends ViewBase {
           e.resetField()
         }
       })
-    }
-    if (val.typeCategoryCode0) {
-      this.item.types[0].typeCategoryCode = val.typeCategoryCode0
-    } else {
-      this.item.types[0].typeCategoryCode = ''
-    }
-    if (val.typeCategoryCode1) {
-      this.item.types[1].typeCategoryCode = val.typeCategoryCode1
-    } else {
-      this.item.types[1].typeCategoryCode = ''
-    }
-    if (val.typearr[0]) {
-      this.item.types[0].typeCode = (this.customerTypeList[0] as any).typeCode
-    } else {
-      this.item.types[0].typeCode = ''
-    }
-    if (val.typearr[1]) {
-      this.item.types[1].typeCode = (this.customerTypeList[1] as any).typeCode
-    } else {
-      this.item.types[1].typeCode = ''
     }
   }
 }

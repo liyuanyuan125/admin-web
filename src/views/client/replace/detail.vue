@@ -8,10 +8,6 @@
     </header>
     <div class="detail-box">
       <div class="detail-header">
-          <Row>
-            <Col span="2"><div>广告主身份</div></Col>
-            <Col span="16"><span>{{detail.companyTypeName}}</span></Col>
-          </Row>
           <div v-if='detail.companyType == 1'>
             <Row>
               <Col span="2"><div>公司名称</div></Col>
@@ -48,12 +44,6 @@
             <Col span="2"><div>邮箱</div></Col>
             <Col span="4"><span>{{detail.email}}</span></Col>
           </Row>
-          <Row>
-            <Col span="2"><div>推荐人</div></Col>
-            <Col span="4"><span>{{detail.recommendUserName}}</span></Col>
-            <Col span="2"><div>推荐人电话</div></Col>
-            <Col span="4"><span>{{detail.recommendMobile}}</span></Col>
-          </Row>
           <Row class="upload">
             <Col span="2"><div>资质</div></Col>
             <Col span="8">
@@ -85,6 +75,7 @@
           <Col span="4"><span>{{format.approveTime}}</span></Col>
         </Row>
       </Row>
+      <Area v-model='detail.agentCityIdList' />
       <Row class="detail-footer">
         <Row>
             <Col span="2"><div>客户等级</div></Col>
@@ -97,42 +88,6 @@
             <Col span="2"><div>负责商务</div></Col>
             <Col span="6"><span>{{detail.businessDirectorEmail}}<b v-if="detail.businessDirectorName" style="margin-left:5px">[{{detail.businessDirectorName}}]</b></span></Col>
         </Row>
-        <Row>
-          <Col span="2"><div>客户类型</div></Col>
-          <div v-for="item in format.typeFormat" :key="item.oneText">
-            <Col span="4" style="margin-right: 20px">
-              <div class="typeBox">
-                {{item.oneText}}
-                <tooltip class="right" v-if="format.userType[item.two] == 2" content="已下架" placement="top">
-                  <div :class="format.userType[item.two] == 2 ? 'red' : ''">{{item.twoText}}</div>
-                </tooltip>
-                <div class="right" v-else>{{item.twoText}}</div>
-              </div>
-            </Col>
-          </div>
-        </Row>
-        <Row class="cinema-button" v-if='detail.companyType == 1'>
-          <Col span="2"><div>关联影院</div></Col>
-          <Col span="12">
-              <PartBindCinema type="1" :value="detail.cinemaList" />
-          </Col>
-        </Row>
-        <Row class="cinema-button">
-          <Col span="2"><div>品牌列表</div></Col>
-          <Col span="12">
-              <Table
-                :columns="columns"
-                :data="list"
-                size="small"
-                stripe
-                border
-              >
-              <div slot="status" slot-scope="{ row: { hasBind } }">
-                {{hasBind ? '已绑定' : '-'}}
-              </div>
-              </Table>
-          </Col>
-       </Row>
       </Row>
       <Row class="detail-number">
         <Row>
@@ -175,11 +130,11 @@ import Upload from '@/components/Upload.vue'
 import { toMap } from '@/fn/array'
 import { flattenDeep } from 'lodash'
 import Industry from './industry.vue'
+import Area from './areatable.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 const typeMap = (list: any[]) => toMap(list, 'typeCode', 'controlStatus')
 const conMap = (list: any[]) => toMap(list, 'key', 'controlStatus')
-
 const timeFormatDate = 'YYYY/MM/DD HH:mm:ss'
 const timeFormat = 'YYYY/MM/DD'
 
@@ -189,7 +144,8 @@ const timeFormat = 'YYYY/MM/DD'
     PartBindCinema,
     Upload,
     DlgEdit,
-    Industry
+    Industry,
+    Area
   }
 })
 export default class Main extends ViewBase {
