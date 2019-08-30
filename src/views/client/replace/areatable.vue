@@ -38,13 +38,13 @@ export default class ComponentMain extends ViewBase {
       { title: '地区',
         align: 'center',
         key: 'areaName',
-        width: 100,
+        width: 80,
       },
       {
         title: '省',
         align: 'center',
         key: 'nameCn',
-        width: 120,
+        width: 80,
       },
       {
         title: '市',
@@ -79,7 +79,7 @@ export default class ComponentMain extends ViewBase {
     }
   }
 
-  @Watch('value')
+  @Watch('value', { immediate: true })
   watchValue(val: any) {
     if (val) {
       this.init()

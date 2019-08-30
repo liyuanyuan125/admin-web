@@ -41,6 +41,12 @@
                 <Industry :disabled='true' v-model='detail.businessParentCode' :businessParentTypeList='businessParentTypeList' />
               </Col>
             </Row>
+            <Row v-if='detail.types.length == 2'>
+              <Col span="2"><div>覆盖区域</div></Col>
+              <Col span="8">
+                <Area v-model='detail.coverCityIdList' />
+              </Col>
+            </Row>
           </div>
           <Row>
             <Col span="2"><div>联系人</div></Col>
@@ -163,6 +169,7 @@ import Upload from '@/components/Upload.vue'
 import { toMap } from '@/fn/array'
 import { flattenDeep } from 'lodash'
 import Industry from './industry.vue'
+import Area from '../replace/areatable.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 const typeMap = (list: any[]) => toMap(list, 'typeCode', 'controlStatus')
@@ -177,7 +184,8 @@ const timeFormat = 'YYYY/MM/DD'
     PartBindCinema,
     Upload,
     DlgEdit,
-    Industry
+    Industry,
+    Area
   }
 })
 export default class Main extends ViewBase {
