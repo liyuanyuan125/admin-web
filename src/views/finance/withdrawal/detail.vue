@@ -94,6 +94,7 @@ export default class Main extends ViewBase {
     //   }
     //   return it
     // })
+    return []
   }
 
   back() {
