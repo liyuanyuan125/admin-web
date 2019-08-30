@@ -21,12 +21,13 @@
         </div>
       </template>
     </ListPage>
+
     <EditDialog
-      v-model="crawlVisible"
-      title="新建"
+      v-model="editVisible"
+      :title="editId > 0 ? '编辑' : '新建'"
       :width="500"
-      :fields="crawlFields"
-      :fetch="() => ({  })"
+      :fields="editFields"
+      :fetch="editFetch"
       hideSubmit
       hideReturn
     />
@@ -37,14 +38,16 @@
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-// Sky
-import {confirm , warning , success, toast } from '@/ui/modal'
+import { confirm , warning , success, toast } from '@/ui/modal'
 import {
   queryList,
+  getItem,
   updateStatus,
   userList
 } from '@/api/business'
 import { EditDialog, Field } from '@/components/editForm'
+import { devLog } from '@/util/dev'
+
 @Component({
   components: {
     ListPage,
@@ -53,13 +56,14 @@ import { EditDialog, Field } from '@/components/editForm'
 })
 export default class Main extends ViewBase {
   stats: any = ''
-  fetch = queryList
-  userListNow: any = []
+
+  roleList: any = []
+
   filters: Filter[] = [
     {
       name: 'name',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 120,
       placeholder: '姓名'
     },
@@ -67,7 +71,7 @@ export default class Main extends ViewBase {
     {
       name: 'mobile',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 120,
       placeholder: '手机号'
     },
@@ -75,7 +79,7 @@ export default class Main extends ViewBase {
     {
       name: 'email',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 120,
       placeholder: '邮箱'
     },
@@ -83,7 +87,7 @@ export default class Main extends ViewBase {
     {
       name: 'status',
       defaultValue: '',
-      type: 'select',
+      select: true,
       width: 120,
       placeholder: '状态'
     },
@@ -91,7 +95,7 @@ export default class Main extends ViewBase {
     {
       name: 'role',
       defaultValue: '',
-      type: 'select',
+      select: true,
       width: 120,
       placeholder: '角色'
     },
@@ -112,7 +116,9 @@ export default class Main extends ViewBase {
     'roleList'
   ]
 
-  crawlVisible = false
+  editId = 0
+
+  editVisible = false
 
   get columns() {
     return [
@@ -121,43 +127,79 @@ export default class Main extends ViewBase {
       { title: '姓名', key: 'name', minWidth: 100 },
       { title: '手机号', key: 'mobile', width: 100, },
       { title: '邮箱', key: 'email', minWidth: 150 },
-      { title: '角色', key: 'role', editor: 'enum', minWidth: 80 },
+      { title: '角色', key: 'role', enum: true, minWidth: 80 },
       { title: '可享折扣', key: 'discount', width: 80 },
-      { title: '创建时间', key: 'createTime', editor: 'dateTime', width: 150 },
+      { title: '创建时间', key: 'createTime', dateTime: true, width: 150 },
       { title: '创建人', key: 'createUserName', width: 80 },
-      { title: '状态', key: 'status', editor: 'enum', width: 60, },
+      { title: '状态', key: 'status', enum: true, width: 60, },
       { title: '操作', slot: 'action', width: 100 }
     ] as ColumnExtra[]
   }
 
-  crawlFields: Field[] = [
+  editFields: Field[] = [
     {
       name: 'id',
-      defaultValue: '',
+      defaultValue: 0,
       label: '姓名',
       required: true,
       select: {
-        // enumList: [{key,text}]
+        enumKey: 'userList'
+      },
+      span: 21,
+    },
+
+    {
+      name: 'role',
+      defaultValue: 0,
+      label: '角色',
+      required: true,
+      radio: {
+        enumKey: 'roleList'
       },
       span: 21,
     },
 
     {
       name: 'discount',
-      defaultValue: '',
+      defaultValue: 0,
       label: '可享折扣',
       required: true,
       placeholder: '数字在0-1之间，例如：0.1，代表可享折扣是1折',
-      input: true,
+      number: true,
+      min: 0,
+      max: 1,
       span: 21,
     }
   ]
 
-
-  editShow(id = 0) {
-    this.crawlVisible = true
-
+  async fetch() {
+    const res = await queryList()
+    this.roleList = res.roleList
+    return res
   }
+
+  async editFetch() {
+    const list = await userList()
+    const item = this.editId > 0
+      ? await getItem(this.editId)
+      : { userId: 0, role: 0, discount: 1 }
+    const result = {
+      item: {
+        id: item.userId,
+        role: item.role,
+        discount: item.discount
+      },
+      userList: list,
+      roleList: this.roleList
+    }
+    return result
+  }
+
+  async editShow(id = 0) {
+    this.editId = id
+    this.editVisible = true
+  }
+
   async handleStatus(data: any) {
     try {
       this.stats = data.status == 1 ? '禁用' : '启用'

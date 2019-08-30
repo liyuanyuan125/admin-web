@@ -6,6 +6,7 @@ import FormInput from './components/formInput.vue'
 import FormInputNumber from './components/formInputNumber.vue'
 import FormSelect from './components/formSelect.vue'
 import FormRadio from './components/formRadio.vue'
+import FormCheck from './components/formCheck.vue'
 import FormDate from './components/formDate.vue'
 import FormDateRange from './components/formDateRange.vue'
 import FormImage from './components/formImage.vue'
@@ -108,6 +109,10 @@ const componentMap: MapType<ComponentItem> = {
 
   radio: {
     component: FormRadio,
+  },
+
+  check: {
+    component: FormCheck,
   },
 
   switch: {
@@ -358,6 +363,15 @@ export interface Field extends Param {
    * 使用组件 Radio
    */
   radio?: {
+    enumKey?: string
+    enumList?: KeyText[]
+    [key: string]: any
+  }
+
+  /**
+   * 使用组件 Check
+   */
+  check?: {
     enumKey?: string
     enumList?: KeyText[]
     [key: string]: any
