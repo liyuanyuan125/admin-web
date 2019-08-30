@@ -88,12 +88,12 @@ export default class Main extends ViewBase {
   }
 
   get columns() {
-    return commoncolums.map((it: any) => {
-      if (it.title == '操作') {
-        return { title: '申请付款金额', align: 'center', slot: 'audit',  minWidth: 120 }
-      }
-      return it
-    })
+    // return commoncolums.map((it: any) => {
+    //   if (it.title == '操作') {
+    //     return { title: '申请付款金额', align: 'center', slot: 'audit',  minWidth: 120 }
+    //   }
+    //   return it
+    // })
   }
 
   back() {
