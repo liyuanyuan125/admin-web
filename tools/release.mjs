@@ -16,6 +16,7 @@ const shell = async command => {
 }
 
 const MAIN = 'master'
+const allowedBranches = ['develop', 'master']
 
 const thisTag = async () => {
   await shell('git fetch --tags')
@@ -40,11 +41,16 @@ const main = async () => {
   }
 
   if (vtag && !/^v?\d+\.\d+$/.test(vtag)) {
-    return log(`${vtag} 不符合格式，正确的格式有：v2.3 或 3.8`)
+    return log(`!! ${vtag} 不符合格式，正确的格式有：v2.3 或 3.8`)
   }
 
   const branch = await shell('git rev-parse --abbrev-ref HEAD')
   log(`=> 当前分支 ${branch}`)
+
+  if (!allowedBranches.includes(branch)) {
+    log(`!! 只允许在分支 ${allowedBranches.join(', ')} 上发布`)
+    return
+  }
 
   const commitMsg = await lastCommitMsg()
 
