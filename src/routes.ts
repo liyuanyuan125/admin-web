@@ -1494,7 +1494,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   // 映前广告计划 - 审批 - 列表
   {
     path: '/order/beforeplan/audit/:status?',
-    name: 'order-beforeplanAudit',
+    name: 'order-beforeplanaudit',
     component: () => import('./views/order/beforeplan/beforeplan-audit-list.vue'),
     meta: {
       authKey: '',
