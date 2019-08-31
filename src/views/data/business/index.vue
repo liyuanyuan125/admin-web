@@ -41,7 +41,7 @@ import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import { confirm , warning , success, toast } from '@/ui/modal'
 import {
   queryList,
-  getItem,
+  getUserInfo,
   updateStatus,
   userList
 } from '@/api/business'
@@ -181,7 +181,7 @@ export default class Main extends ViewBase {
   async editFetch() {
     const list = await userList()
     const item = this.editId > 0
-      ? await getItem(this.editId)
+      ? await getUserInfo(this.editId)
       : { userId: 0, role: 0, discount: 1 }
     const result = {
       item: {
