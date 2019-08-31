@@ -2,12 +2,21 @@ import { get, post, put } from '@/fn/ajax'
 import { mockGet, tid, title20, typeInt, dateRange } from './mock'
 
 /**
- *
+ * @name 退款单列表(含分页)
  * @description https://yapi.aiads-dev.com/project/76/interface/api/5995
  */
 export async function queryList(query: any) {
-  // const res = await get('/finance/refundOrders', query)
-  // return res
+  const res = await get('/finance/refundOrders', query)
+  res.data.refundPayTypeList = res.data.refundPayTypeList ? res.data.refundPayTypeList.filter((it: any) => {
+    return it.text !== '未知'
+  }) : []
+  res.data.refundBusTypeList = res.data.refundBusTypeList ? res.data.refundBusTypeList.filter((it: any) => {
+    return it.text !== '未知'
+  }) : []
+  res.data.refundStatusList = res.data.refundStatusList ? res.data.refundStatusList.filter((it: any) => {
+    return it.text !== '未知'
+  }) : []
+  return res
   return await mockGet(query, {
     totalCount: 1,
     items: [
