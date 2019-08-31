@@ -15,6 +15,10 @@ export async function queryList(query: any) {
 }
 
 //  查看详情
+/**
+ *
+ * @description https://yapi.aiads-dev.com/project/140/interface/api/2550
+ */
 export async function itemlist(id: any) {
   const data = await get(`/xadvert/plans/${id}`)
   return data

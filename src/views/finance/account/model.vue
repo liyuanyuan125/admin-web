@@ -2,48 +2,54 @@
   <Modal 
     v-model='showDlg'
     :transfer='true'
-    :width='420'
+    :width='520'
     title="申请提现"
     @on-cancel="cancel('dataForm')" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
-      <FormItem label="公司ID" prop="mobile">
-        {{row.companyId}}
-      </FormItem>
-      <FormItem label="公司名称" prop="name">
-        {{row.companyName}}
-      </FormItem>
+      <Row>
+        <Col span='12'>
+          <FormItem label="公司ID" prop="mobile">
+            {{row.companyId}}
+          </FormItem>
+        </Col>
+        <Col span='12'>
+          <FormItem label="公司名称">
+            {{row.companyName}}
+          </FormItem>
+        </Col>
+      </Row>
        <FormItem label="账户余额：" prop="email">
         {{row.balance}}
       </FormItem>
-      <FormItem label="提现金额" prop="password" >
-        <Input style="width:240px" v-model="dataForm.password"></Input>
+      <FormItem label="提现金额" prop="amount" >
+        <Input style="width:240px" v-model="dataForm.amount"></Input>
       </FormItem>
-      <FormItem label="提现方式" prop="passwords" >
-        <Select style="width:240px" v-model="dataForm.companyId">
+      <FormItem label="提现方式" prop="withdrawalType" >
+        <Select style="width:240px" v-model="dataForm.withdrawalType">
           <Option v-for="it in remittanceTypeList" :key="it.key" :value="it.key">{{it.text}}</Option>
         </Select>
       </FormItem>
-      <div v-if="dataForm.companyId == 'zfb'">
-        <FormItem label="支付宝账户名称" prop="password" >
-          <Input style="width:240px" v-model="dataForm.password"></Input>
+      <div v-if="dataForm.withdrawalType == 'zfb'">
+        <FormItem label="支付宝账户名称" prop="alipayName" >
+          <Input style="width:240px" v-model="dataForm.alipayName"></Input>
         </FormItem>
-        <FormItem label="支付宝账户" prop="passwords" >
-          <Input style="width:240px"  v-model="dataForm.passwords" ></Input>
+        <FormItem label="支付宝账户" prop="alipayNumber" >
+          <Input style="width:240px"  v-model="dataForm.alipayNumber" ></Input>
         </FormItem>
       </div>
       <div v-else>
-        <FormItem label="银行卡账户名" prop="password" >
-          <Input style="width:240px" v-model="dataForm.password"></Input>
+        <FormItem label="银行卡账户名" prop="accountName" >
+          <Input style="width:240px" v-model="dataForm.accountName"></Input>
         </FormItem>
-        <FormItem label="银行卡开户行" prop="passwords" >
-          <Input style="width:240px"  v-model="dataForm.passwords" ></Input>
+        <FormItem label="银行卡开户行" prop="accountBank" >
+          <Input style="width:240px"  v-model="dataForm.accountBank" ></Input>
         </FormItem>
-        <FormItem label="银行卡账号：" prop="companyId">
-          <Input style="width:240px"  v-model="dataForm.passwords" ></Input>
+        <FormItem label="银行卡账号：" prop="accountNumber">
+          <Input style="width:240px"  v-model="dataForm.accountNumber" ></Input>
         </FormItem>
       </div>
-      <FormItem label="备注" prop="status">
-        <Input style="width:240px"  v-model="dataForm.passwords" ></Input>
+      <FormItem label="备注" prop="remark">
+        <Input style="width:240px"  v-model="dataForm.remark" ></Input>
       </FormItem>
     </Form>
     <div slot="footer" class="dialog-footer">
@@ -66,12 +72,13 @@ const defQuery = {
 }
 const dataForm = {
   amount: '',
-  accountNumber: '',
+  withdrawalType: '',
+  accountBank: '',
   accountName: '',
-  remittanceType: '',
-  mobile: '',
-  companyId: null,
-  status: 1
+  accountNumber: '',
+  alipayName: '',
+  alipayNumber: '',
+  remark: ''
 }
 
 @Component
@@ -87,24 +94,30 @@ export default class ComponentMain extends ViewBase {
 
   get ruleValidate() {
     const rules = {
-      email: [
-        {
-          pattern: /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/,
-          message: '请输入正确的邮箱格式',
-          trigger: 'blur'
-        }
+      amount: [
+        { required: true, message: '请输入提现金额', trigger: 'blur' }
       ],
-      name: [
-          { required: true, message: '请输入姓名', trigger: 'blur' }
+      withdrawalType: [
+        { required: true, message: '请选择提现方式', trigger: 'blur' }
       ],
-      password: [
-          { required: true, message: '请输入密码', trigger: 'blur' },
-          {
-            pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$/,
-            message: '请输入同时包含数字、字母且长度要在8-16位之间的密码',
-            trigger: 'blur'
-          }
+      accountBank: [
+        { required: true, message: '请输入开户银行', trigger: 'blur' }
       ],
+      accountName: [
+        { required: true, message: '请输入开户名', trigger: 'blur' }
+      ],
+      accountNumber: [
+        { required: true, message: '请输入开户账号', trigger: 'blur' }
+      ],
+      alipayName: [
+        { required: true, message: '请输入支付宝账户名', trigger: 'blur' }
+      ],
+      alipayNumber: [
+        { required: true, message: '请输入支付宝账户名', trigger: 'blur' }
+      ],
+      remark: [
+        { required: true, message: '请输入备注', trigger: 'blur' }
+      ]
     }
     return rules
   }
@@ -150,4 +163,7 @@ export default class ComponentMain extends ViewBase {
 </script>
 
 <style lang="less" scoped>
+/deep/ .ivu-modal {
+  top: 10px;
+}
 </style>
