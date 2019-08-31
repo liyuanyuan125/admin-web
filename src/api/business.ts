@@ -15,13 +15,19 @@ export async function queryList(query: any = {}) {
   }
   return res
 }
-
-export async function getItem(id: number) {
-  // TODO: 查询真实数据
+/**
+ * 编辑查看详情
+ * @param id 要操作的ID
+ */
+export async function getUserInfo(id: number) {
+  const { data } = await get(`/xadvert/business-managements/${id}`)
+  const { item } = data
+  const { role, discount } = item
+  const userId = item.id
   return {
-    userId: 1,
-    role: 2,
-    discount: 0.6
+    userId,
+    role,
+    discount
   }
 }
 
@@ -37,6 +43,7 @@ export async function updateStatus(id: string, status: number) {
 
 /**
  * 拉取用户列表
+ * @param query 查询条件，参见接口文档
  */
 export async function userList(query: any = {}) {
   const { data } = await get('/auth/users', query)
