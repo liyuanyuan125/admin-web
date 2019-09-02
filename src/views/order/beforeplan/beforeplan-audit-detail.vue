@@ -215,7 +215,7 @@ import addfilm from './addfilm.vue'
 import { confirm } from '@/ui/modal'
 import Number from '@/components/number.vue'
 import { formatNumber } from '@/util/validateRules'
-import { queryItem, auditItem, queryKolAcounts } from './data'
+import { queryItem, auditItem } from './data'
 
 
 import {
@@ -376,7 +376,7 @@ export default class Main extends ViewBase {
         } finally {}
     }
 
-    async planAuditHandler(agree) {
+    async planAuditHandler(agree: boolean = false) {
         try {
             const res = await auditItem({
                 id: this.$route.params.id,

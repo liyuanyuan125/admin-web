@@ -21,7 +21,7 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { queryList, queryKolAcounts } from './data'
+import { queryList } from './data'
 import { alert, toast } from '@/ui/modal'
 import jsxReactToVue from '@/util/jsxReactToVue'
 // 广告主公司名称列表
