@@ -903,18 +903,18 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
 
   // 财务管理 - 充值审核
-  {
-    path: '/finance/examine/',
-    name: 'finance-examine',
-    component: () => import('./views/finance/examine/index.vue'),
-    meta: {
-      authKey: ''
-    }
-  },
+  // {
+  //   path: '/finance/examine/',
+  //   name: 'finance-examine',
+  //   component: () => import('./views/finance/examine/index.vue'),
+  //   meta: {
+  //     authKey: ''
+  //   }
+  // },
 
   {
     path: '/finance/examine/newindex/:pay?',
-    name: 'finance-examine-newindex',
+    name: 'finance-examine',
     component: () => import('./views/finance/examine/newindex.vue'),
     meta: {
       authKey: ''

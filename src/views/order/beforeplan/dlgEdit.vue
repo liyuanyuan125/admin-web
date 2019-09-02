@@ -57,10 +57,12 @@ export default class ComponentMain extends ViewBase {
 
   dataForm = { ...dataForm }
 
-  init(id: number , discount: any) {
+  init(id: number , discount: any , depositAmount: any) {
     this.showDlg = true
     this.id = id || 0
     this.discount = discount
+    this.dataForm.discount = discount,
+    this.dataForm.depositAmount = depositAmount
     ; (this.$refs.dataForm as any).resetFields()
   }
 
@@ -81,11 +83,10 @@ export default class ComponentMain extends ViewBase {
         try {
            const res =  await business (this.id, query)
            toast('操作成功')
-           this.showDlg = false
            this.$emit('done')
+           this.showDlg = false
         } catch (ex) {
            this.handleError(ex)
-           this.showDlg = false
         }
       }
     })

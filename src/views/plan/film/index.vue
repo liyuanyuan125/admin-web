@@ -31,6 +31,9 @@
       <template slot="specification" slot-scope="{ row: { specification } }">
         {{specification}}s
       </template>
+      <template slot="translated" slot-scope="{ row: { translated } }">
+        {{translated == 1 ? '已转制' : '未转制'}}
+      </template>
 
       <template slot="transFee" slot-scope="{ row: { transFee } }">
         {{transFee}}.00
@@ -127,12 +130,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       { title: '广告主公司名称', key: 'companyName' },
       { title: '客户', key: 'customerName' },
       { title: '规格', slot: 'specification', width: 60 },
-      { title: '广告片下载地址', key: 'srcFileId'},
-      { title: '是否已转制', slot: 'specification', width: 60 },
+      { title: '广告片下载地址', key: 'srcFileUrl'},
+      { title: '是否已转制', slot: 'translated', width: 60 },
       { title: '转制费(元)', slot: 'transFee', width: 110 },
-      { title: '活动名称', slot: 'transFee', width: 110 },
-      { title: '活动类型', slot: 'transFee', width: 110 },
-      { title: '活动价格', slot: 'transFee', width: 110 },
+      { title: '活动名称', key: 'promotionName', width: 110 },
+      { title: '活动类型', key: 'promotionType', width: 110 },
+      { title: '活动价格', key: 'promotionPrice', width: 110 },
       { title: '创建时间', slot: 'applyTime', width: 135 },
       status in { 2: 1, 5: 1 } && { title: '审核人', slot: 'approvalUser', width: 110 },
       status in { 2: 1, 5: 1 } && { title: '审核时间', slot: 'approvalTime', width: 135 },

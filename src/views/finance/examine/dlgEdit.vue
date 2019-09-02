@@ -6,9 +6,9 @@
     :title="'确认汇款'"
     @on-cancel="cancel('dataForm')" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
-      <FormItem label="启用状态" prop="status">
-        <RadioGroup v-model="dataForm.status" >
-          <Radio v-for="it in statuslist" v-if="it.key!=3" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
+      <FormItem label="启用状态" prop="agree">
+        <RadioGroup v-model="dataForm.agree" >
+          <Radio v-for="it in statuslist" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
         </RadioGroup>
       </FormItem>
       <FormItem label="备注" prop="rejectReason">
@@ -41,12 +41,12 @@ export default class ComponentMain extends ViewBase {
 
   get ruleValidate() {
     const rules = {
-      name: [
-          { required: true, message: '请输入备注', trigger: 'blur' }
-      ],
-      status: [
-          { required: true }
-      ]
+      // rejectReason: [
+      //     { required: true, message: '请输入备注', trigger: 'blur' }
+      // ],
+      // status: [
+      //     { required: true }
+      // ]
     }
     return rules
   }

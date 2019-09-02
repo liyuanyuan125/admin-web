@@ -6,7 +6,7 @@
         <ListPage :fetch="fetch" :filters="filters" :enums="enums" :columns="columns" ref="listPage">
             <template slot="depositAmount" slot-scope="{ row: { depositAmount   } }">
                 <div class="row-acts">
-                    {{depositAmount == null ? '-' : formatNumber(depossitAmount)}}
+                    {{depositAmount == null ? '-' : formatNumber(depositAmount)}}
                 </div>
             </template>
             <template slot="targetCount" slot-scope="{row}">
@@ -17,7 +17,7 @@
                     {{needPayAmount == null ? '-' : formatNumber(needPayAmount)}}
                 </div>
             </template>
-            <template slot="action" slot-scope="{ row: { id , status  } }">
+            <template slot="action" slot-scope="{ row: { id , status , discount , depositAmount } }">
                 <div class="row-acts">
                     <router-link :to="{ name: 'order-beforeplan-detail', params: { id , status, ifs: '0' } }">详情</router-link>
                     <!-- 核对操作 -->
@@ -27,7 +27,7 @@
                     <router-link v-if='status == 7' :to="{ name: 'order-beforeplan-detail', params: { id , status, ifs: '1' } }">补单</router-link>
                     <!-- 待支付操作 -->
                     <router-link v-if='status == 3' :to="{ name: 'order-beforeplan-detail', params: { id , status, ifs: '1' } }">修改</router-link>
-                    <a v-if='status == 3' href="javascript:;" @click='view(id , discount)'>设置定金</a>
+                    <a v-if='status == 3' href="javascript:;" @click='view(id , discount , depositAmount)'>设置定金</a>
                 </div>
             </template>
         </ListPage>
@@ -146,7 +146,7 @@ export default class IndexPage extends ViewBase {
                 type: 'select',
                 width: 100,
                 placeholder: '广告类型',
-                enumKey: 'statusList'
+                enumKey: 'advertTypeList'
             },
 
             {
@@ -155,7 +155,7 @@ export default class IndexPage extends ViewBase {
                 type: 'select',
                 width: 100,
                 placeholder: '渠道',
-                enumKey: 'statusList'
+                enumKey: 'channelList'
             },
 
             {
@@ -193,7 +193,10 @@ export default class IndexPage extends ViewBase {
     enums = [
         'statusList',
         'advertTypeList',
-        'channelList'
+        'channelList',
+        'payTypeList',
+        'deliveryPositionList',
+        'auditStatusList',
     ]
 
     get formatNumber() {
@@ -206,7 +209,7 @@ export default class IndexPage extends ViewBase {
             { title: '计划名称', key: 'name' },
             { title: '广告主公司名称', key: 'companyName' },
             { title: '广告片', key: 'videoName' },
-            { title: '广告类型', key: 'status', editor: 'enum', width: 60 },
+            { title: '广告类型', key: 'advertTypeCode', editor: 'enum', width: 60 },
             { title: '渠道', key: 'channelCode', editor: 'enum', width: 60 },
             {
                 title: '投放周期',
@@ -248,11 +251,11 @@ export default class IndexPage extends ViewBase {
     }
 
     // 设置定金
-    view(id: any, discount: any) {
+    view(id: any, discount: any , depositAmount: any) {
         this.addOrUpdateVisible = true
         this.$nextTick(() => {
             const myThis: any = this
-            myThis.$refs.addOrUpdate.init(id, discount)
+            myThis.$refs.addOrUpdate.init(id, discount , depositAmount)
         })
     }
 

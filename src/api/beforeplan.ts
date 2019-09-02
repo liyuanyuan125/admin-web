@@ -125,7 +125,7 @@ export async function needamount(id: any, query: any) {
 //   return data
 // }
 
-// 设置定金跟应结金额
+// 设置折扣/定金
 // http://yapi.aiads-dev.com/project/140/interface/api/5876
 export async function business(id: any, query: any) {
   const data = await post(`/xadvert/plans/${id}/set-discount-deposit`, query )
@@ -147,7 +147,15 @@ export async function importCinema(id: any) {
   return data
 }
 
-
+//  设置广告片投放位置
+/**
+ *
+ * @description http://yapi.aiads-dev.com/project/140/interface/api/6230
+ */
+export async function deliveryposition(id: any , query: any) {
+  const data = await post(`/xadvert/plans/${id}/set-delivery-position` , query)
+  return data
+}
 
 
 
