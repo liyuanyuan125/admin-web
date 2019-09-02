@@ -134,7 +134,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       { title: '是否已转制', slot: 'translated', width: 60 },
       { title: '转制费(元)', slot: 'transFee', width: 110 },
       { title: '活动名称', key: 'promotionName', width: 110 },
-      // { title: '活动类型', key: 'promotionType', width: 110 },
+      { title: '活动类型', key: 'promotionType', width: 110 },
       { title: '活动价格', key: 'promotionPrice', width: 110 },
       { title: '创建时间', slot: 'applyTime', width: 135 },
       status in { 2: 1, 5: 1 } && { title: '审核人', slot: 'approvalUser', width: 110 },

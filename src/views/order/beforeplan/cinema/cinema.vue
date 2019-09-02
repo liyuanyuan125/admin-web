@@ -33,7 +33,7 @@
                 <template slot="resourceId" slot-scope="{row}">
                     <div v-for='(it, index) in reslist'>
                         <span v-if='row.resourceId == it.id'>{{it.name}}&nbsp;&nbsp;&nbsp;
-                            <a v-if='($route.params.ifs == 1 && ($route.params.status == 3)) || $route.params.ifs == 1 && row.ifchgRes == true' @click="change( row.cinemaId , row.cinemaName ,  it.name , it.id)">变更{{row.ifchgRes}}</a>
+                            <a v-if='($route.params.ifs == 1 && ($route.params.status == 3)) || $route.params.ifs == 1 && row.ifchgRes == true' @click="change( row.cinemaId , row.cinemaName ,  it.name , it.id)">变更</a>
                         </span>
                     </div>
                     <div v-if='reasd.indexOf(row.resourceId) == -1'>暂无资源方公司</div>
@@ -271,10 +271,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         this.file = input.files && input.files[0]
         this.inputhtml = this.file.name
 
-        const a = await uploader.upload(this.file)
-
-        this.search()
-
+        if (this.$route.params.status == '6' || this.$route.params.status == '7' ) {
+            const a = await uploader.upload(this.file)
+            this.searchchg()
+        } else {
+            this.search()
+        }
         this.viewcinema = true
         this.$emit('getcine', this.viewcinema)
     }
@@ -292,12 +294,14 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
                     acceptStatusList: acceptStatusList
                 }
             } = await cinemaList(this.$route.params.id, query)
-            this.list = (list || []).map(( it: any ) => {
+            const aaa: any = list.slice(this.defaultCinemaLength) // 增加的
+            const bbb: any = (aaa || []).map(( it: any ) => {
               return {
                 ...it,
                 ifchgRes: true
               }
             })
+            this.list = [...list , ...bbb]
             this.total = total
             this.acceptStatusList = acceptStatusList
 
@@ -379,6 +383,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
             } = await cinemaList(this.$route.params.id, query)
             this.list = list
             this.total = total
+            this.defaultCinemaLength = total
             this.acceptStatusList = acceptStatusList
 
             const { data } = await queryList(clean({
