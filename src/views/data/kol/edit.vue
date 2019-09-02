@@ -317,6 +317,7 @@ export default class Main extends ViewBase {
         })
         this.logList = logList || []
         this.jyIndex = item.jyIndex
+        this.form.customTags = item.customTags ? item.customTags.join(';') : ''
         this.form.photo = item.photo ? [
           {
             url: item.photoUrl,
@@ -380,14 +381,13 @@ export default class Main extends ViewBase {
         customIndexPercent: Number(this.form.customIndexPercent),
         customJyIndex: Number(this.form.customJyIndex),
         photo: this.form.photo.map((it: any) => it.fileId).join(''),
-        tags: this.form.customTags ? this.form.customTags.split(';') : [],
+        customTags: this.form.customTags ? this.form.customTags.split(';') : [],
         exts: this.form.exts.map((it: any) => {
           return {
             channelCode: it.channelCode,
             channelDataId: it.channelDataId
           }
-        }),
-        customTags: ''
+        })
       })
       if (this.$route.params.id) {
         await editkol(this.$route.params.id, {
