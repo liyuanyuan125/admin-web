@@ -51,7 +51,7 @@ export default class Main extends ViewBase {
   filters: Filter[] = [
     {
       name: 'companyId',
-      defaultValue: 0,
+      defaultValue: '',
       type: 'input',
       width: 108,
       placeholder: 'id'
@@ -67,9 +67,10 @@ export default class Main extends ViewBase {
     {
       name: 'resourceId',
       defaultValue: 0,
-      type: 'input',
+      type: 'select',
       width: 100,
-      placeholder: '广告主身份'
+      placeholder: '广告主身份',
+      enumKey: 'companyTypeList'
     },
 
     {
@@ -97,12 +98,11 @@ export default class Main extends ViewBase {
     },
 
     {
-      name: 'invoiceContent',
+      name: 'recommendTel',
       defaultValue: '',
-      type: 'select',
+      type: 'input',
       width: 100,
       placeholder: '推荐人电话',
-      enumKey: 'invoiceContentCodeList'
     },
     {
       name: 'yearMonth',
@@ -111,38 +111,6 @@ export default class Main extends ViewBase {
       width: 108,
       placeholder: '创建时间'
     },
-    // {
-    //   name: 'payStatus',
-    //   defaultValue: '',
-    //   type: 'select',
-    //   width: 100,
-    //   placeholder: '更新时间',
-    // },
-
-    // {
-    //   name: 'payStatus',
-    //   defaultValue: '',
-    //   type: 'select',
-    //   width: 100,
-    //   placeholder: '更新人',
-    // },
-
-    // {
-    //   name: 'payStatus',
-    //   defaultValue: '',
-    //   type: 'select',
-    //   width: 100,
-    //   placeholder: '状态',
-    // },
-
-    // {
-    //   name: 'payStatus',
-    //   defaultValue: '',
-    //   type: 'select',
-    //   width: 100,
-    //   placeholder: '审核状态',
-    // },
-
     {
       name: 'pageIndex',
       defaultValue: 1
@@ -183,10 +151,10 @@ export default class Main extends ViewBase {
   }
 
   format(val: any) {
-    const code = (val || []).filter((it: any) => it.typeCode)[0].typeCategoryCode
+    const code = (val || []).filter((it: any) => it.typeCode)
     const adsarray = ((this.listPage.enumType as any).customerTypeList || []).filter((it: any) => it.typeCode == 'ads')
     const invkey = makeMap(adsarray[0].typeCategoryList)
-    return (code || []).length > 0 ? invkey[code] : '-'
+    return (code[0].typeCategoryCode || []).length > 0 ? invkey[code] : '-'
   }
 
   editShow(id?: any) {
