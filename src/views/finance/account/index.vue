@@ -20,11 +20,11 @@
           <a @click="push({
             companyId: companyId,
             time: 'month',
-            transactionTypes: 3
+            transactionTypes: 1
           })">{{monthRechargeCount}}</a> / <a @click="push({
             companyId: companyId,
             time: 'all',
-            transactionTypes: 3
+            transactionTypes: 1
           })">{{totalRechargeCount}}</a>
         </div>
       </template>
@@ -34,11 +34,11 @@
           <a @click="push({
             companyId: companyId,
             time: 'month',
-            transactionTypes: 1
+            transactionTypes: 2
           })">{{monthConsumptionCount}}</a> / <a @click="push({
             companyId: companyId,
             time: 'all',
-            transactionTypes: 1
+            transactionTypes: 2
           })">{{totalConsumptionCount}}</a>
         </div>
       </template>
@@ -48,11 +48,11 @@
           <a  @click="push({
             companyId: companyId,
             time: 'month',
-            transactionTypes: 2
+            transactionTypes: 3
           })">{{monthRefundCount}}</a> / <a  @click="push({
             companyId: companyId,
             time: 'all',
-            transactionTypes: 2
+            transactionTypes: 3
           })">{{totalRefundCount}}</a>
         </div>
       </template>
@@ -62,7 +62,7 @@
           <a @click="push({
             companyId: companyId,
             time: 'month',
-            transactionTypes: 3
+            transactionTypes: 4
           })">{{monthWithdrawalCount}}</a> / <a @click="push({
             companyId: companyId,
             time: 'month',
@@ -74,7 +74,7 @@
 
       <template slot="operate" slot-scope="{row}">
          <a @click='open(row)'>申请提现</a>
-         <a @click='addmoeny(row)'>充值</a>
+         <a style='margin-left: 10px' @click='addmoeny(row.companyId)'>充值</a>
       </template>
     </ListPage>
     <accountModel ref='account' @done='uplist' />
@@ -161,11 +161,11 @@ export default class Main extends ViewBase {
     return this.$refs.listPage as ListPage
   }
 
-  addmoeny(id?: any) {
+  addmoeny(companyId?: any) {
     this.$router.push({
-      name: 'client-producers-edit',
+      name: 'finance-account-balance-edit',
       params: {
-        id
+        companyId
       }
     })
   }
@@ -186,7 +186,7 @@ export default class Main extends ViewBase {
   }
 
   uplist() {
-    // this.listPage.refresh()
+    this.listPage.update()
   }
 
   // async editStatus(id: number, status: number) {

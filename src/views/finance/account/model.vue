@@ -22,14 +22,14 @@
         {{row.balance}}
       </FormItem>
       <FormItem label="提现金额" prop="amount" >
-        <Input style="width:240px" v-model="dataForm.amount"></Input>
+        <InputNumber style="width: 240px" :max='row.balance'  :min="1" type='Number' v-model="dataForm.amount"/>
       </FormItem>
       <FormItem label="提现方式" prop="withdrawalType" >
         <Select style="width:240px" v-model="dataForm.withdrawalType">
           <Option v-for="it in remittanceTypeList" :key="it.key" :value="it.key">{{it.text}}</Option>
         </Select>
       </FormItem>
-      <div v-if="dataForm.withdrawalType == 'zfb'">
+      <div v-if="dataForm.withdrawalType == 2">
         <FormItem label="支付宝账户名称" prop="alipayName" >
           <Input style="width:240px" v-model="dataForm.alipayName"></Input>
         </FormItem>
@@ -38,15 +38,17 @@
         </FormItem>
       </div>
       <div v-else>
-        <FormItem label="银行卡账户名" prop="accountName" >
-          <Input style="width:240px" v-model="dataForm.accountName"></Input>
-        </FormItem>
-        <FormItem label="银行卡开户行" prop="accountBank" >
-          <Input style="width:240px"  v-model="dataForm.accountBank" ></Input>
-        </FormItem>
-        <FormItem label="银行卡账号：" prop="accountNumber">
-          <Input style="width:240px"  v-model="dataForm.accountNumber" ></Input>
-        </FormItem>
+        <Row>
+          <FormItem label="银行卡账户名" prop="accountName" >
+            <Input style="width:240px" v-model="dataForm.accountName"></Input>
+          </FormItem>
+          <FormItem label="银行卡开户行" prop="accountBank" >
+            <Input style="width:240px"  v-model="dataForm.accountBank" ></Input>
+          </FormItem>
+          <FormItem label="银行卡账号：" prop="accountNumber">
+            <Input style="width:240px"  v-model="dataForm.accountNumber" ></Input>
+          </FormItem>
+        </Row>
       </div>
       <FormItem label="备注" prop="remark">
         <Input style="width:240px"  v-model="dataForm.remark" ></Input>
@@ -62,7 +64,7 @@
 <script lang="ts">
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop } from 'vue-property-decorator'
-import { before } from '@/api/balance'
+import { before, save } from '@/api/balance'
 import { slice, clean } from '@/fn/object'
 import { warning , success, toast } from '@/ui/modal'
 import ViewBase from '@/util/ViewBase'
@@ -71,8 +73,8 @@ const defQuery = {
   categoryId: 0,
 }
 const dataForm = {
-  amount: '',
-  withdrawalType: '',
+  amount: null,
+  withdrawalType: 1,
   accountBank: '',
   accountName: '',
   accountNumber: '',
@@ -95,10 +97,10 @@ export default class ComponentMain extends ViewBase {
   get ruleValidate() {
     const rules = {
       amount: [
-        { required: true, message: '请输入提现金额', trigger: 'blur' }
+        { required: true, message: '请输入提现金额' }
       ],
       withdrawalType: [
-        { required: true, message: '请选择提现方式', trigger: 'blur' }
+        { required: true, message: '请选择提现方式' }
       ],
       accountBank: [
         { required: true, message: '请输入开户银行', trigger: 'blur' }
@@ -145,7 +147,7 @@ export default class ComponentMain extends ViewBase {
           remittanceTypeList
         }
       } = await before()
-      this.remittanceTypeList = remittanceTypeList || []
+      this.remittanceTypeList = (remittanceTypeList || []).filter((it: any) => it.key != 0)
     } catch (ex) {
       this.handleError(ex)
     }
@@ -155,6 +157,12 @@ export default class ComponentMain extends ViewBase {
   dataFormSubmit(dataForms: any) {
    (this.$refs[dataForms] as any).validate(async ( valid: any ) => {
       if (valid) {
+        await save({
+          ...this.dataForm,
+          companyId: this.row.companyId
+        })
+        this.cancel()
+        this.$emit('done')
       }
     })
   }

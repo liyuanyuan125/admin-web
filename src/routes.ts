@@ -901,12 +901,32 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+   // 财务管理 - 账号余额充值
+   {
+    path: '/finance/account/balance/edit/:companyId',
+    name: 'finance-account-balance-edit',
+    component: () => import('./views/finance/account/edit.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
 
   // 财务管理 - 账号余额管理
   {
     path: '/finance/balance/withdrawal/',
     name: 'finance-balance-withdrawal',
     component: () => import('./views/finance/withdrawal/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 财务管理 - 账号余额审核汇款详情
+  {
+    path: '/finance/balance/withdrawal/:id/:status?',
+    name: 'finance-balance-withdrawal-status',
+    component: () => import('./views/finance/withdrawal/detail.vue'),
     meta: {
       authKey: ''
     }

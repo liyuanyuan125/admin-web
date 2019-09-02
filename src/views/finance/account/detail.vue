@@ -48,9 +48,8 @@ import {Component} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { confirm, info, alert } from '@/ui/modal.ts'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { queryList } from '@/api/balance'
-
-import { one, two, three, four, filterone } from './detail'
+import { getcompany } from '@/api/balance'
+import { one, two, three, four, filterone, filtertwo, filterthree, filterfour } from '@/views/finance/account/index.ts'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 
@@ -61,8 +60,6 @@ const makeMap = (list: any[]) => toMap(list, 'typeCode', 'typeName')
   }
 })
 export default class Main extends ViewBase {
-  fetch = queryList
-  filterone = filterone
 
   get filters() {
     let str = ''
@@ -71,24 +68,55 @@ export default class Main extends ViewBase {
       const endDate = moment().endOf('month').format('YYYYMMDD')
       str = `${beginDate}-${endDate}`
     }
-    return filterone(str)
+    const transactionTypes: any = this.$route.params.transactionTypes
+    // return filterone(str)
+    if (transactionTypes == '1') {
+       return filterone(str)
+    } else if ( transactionTypes == '2') {
+      return filtertwo(str)
+    } else if ( transactionTypes == '3') {
+      return filterthree(str)
+    } else {
+      return filterfour(str)
+    }
   }
 
-  enums = [
-    'applyTypeList',
-    'invoiceContentCodeList',
-    'invoiceStatusList',
-    'invoiceTypeCodeList',
-    'payStatusList',
-    'billStatusList'
-  ]
-
   get columns() {
-    return one
+    const transactionTypes = this.$route.params.transactionTypes
+    if (transactionTypes == '1') {
+      return one
+    } else if ( transactionTypes == '2') {
+      return two
+    } else if ( transactionTypes == '3' ) {
+      return three
+    } else {
+      return four
+    }
   }
 
   get listPage() {
     return this.$refs.listPage as ListPage
+  }
+  statusList: any = []
+
+  enums = [
+    'statusList',
+  ]
+  fetch = async (query: any) => {
+    const {
+      data
+    } = await getcompany(query)
+    const status: any = []
+    const filterstataus = [3, 5, 7]
+    filterstataus.forEach((its: any) => {
+      status.push(data.statusList.filter((it: any) => {
+        return it.key == its
+      })[0])
+    })
+    data.statusList = status
+    return {
+      ...data
+    }
   }
 
   addmoeny(id?: any) {
