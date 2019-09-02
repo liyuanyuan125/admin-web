@@ -4,7 +4,7 @@
       <header class="header flex-box">
         <Button icon="md-return-left" @click="back" class="btn-back">返回上一页</Button>
         <div class="flex-1">
-          <em>充值详情</em>
+          <em>{{title}}</em>
         </div>
       </header>
       <div class="detail-header">
@@ -58,14 +58,14 @@
       </div>
       <Row class="detail-content">
         <div class="n-list">汇款信息：</div>
-        <Form ref="formInline" :model="query" :rules="ruleInline">
+        <Form v-if='detail.status != 1' ref="formInline" :model="query" :rules="ruleInline">
         <Row>
           <Col span="3"><div>汇款时间：</div></Col>
           <Col span="16">
             <FormItem v-if='detail.status == 3' prop="remittanceTime">
                <DatePicker type="date" v-model='query.remittanceTime' placeholder="汇款时间" style="width: 200px"></DatePicker>
             </FormItem>
-            <span v-else>{{detail.typeName}}</span>
+            <span v-else>{{detail.createTime}}</span>
           </Col>
         </Row>
         <Row>
@@ -86,15 +86,37 @@
           <Col span="3"><div>备注</div></Col>
           <Col span="8">
             <FormItem v-if='detail.status == 3' prop="remittanceRemark">
-               <Input v-model="query.remittanceRemark" placeholder="请输入备注" style="width: 200px" />
+               <Input type="textarea" :rows="4" v-model="query.remittanceRemark" placeholder="请输入备注" style="width: 200px" />
             </FormItem>
             <span v-else>{{detail.remark}}</span>
           </Col>
         </Row>
         </Form>
+        <Form v-else ref="formInline" :model="query" :rules="ruleInline">
+          <Row>
+            <Col span="3"><div>审核意见：</div></Col>
+            <Col span="16">
+              <FormItem>
+                <RadioGroup v-model="query.agree">
+                  <Radio  :label="1">审核通过</Radio>
+                  <Radio  :label="2">审核拒绝</Radio>
+                </RadioGroup>
+              </FormItem>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="3"><div>备注：</div></Col>
+            <Col span="16">
+              <FormItem>
+                <Input type="textarea" :rows="4" v-model="query.refuseReason" placeholder="请输入备注" style="width: 200px" />
+              </FormItem>
+            </Col>
+          </Row>
+        </Form>
       </Row>
-      <Row class="detail-check" v-if="detail.logs && detail.logs.length > 0">
-        <div class="n-list">汇款信息：</div>
+      <Row class="detail-check" 
+        v-if="detail.status != 1 && detail.status != '3'">
+        <div class="n-list">操作日志</div>
         <Row  class="detail-log" v-for="(item, i) in logList" :key="i">
           <Col span="3"><div>操作时间</div></Col>
           <Col span="21"><span>{{item.createTime}}</span></Col>
@@ -116,7 +138,7 @@
 import { Component, Watch } from 'vue-property-decorator'
 import moment from 'moment'
 import ViewBase from '@/util/ViewBase'
-import { withdrwaldetail } from '@/api/withdrawal'
+import { withdrwaldetail, remittance, approval } from '@/api/withdrawal'
 import { toMap } from '@/fn/array'
 import { formatCurrency } from '@/fn/string'
 import imgModel from '../../data/film/imgModel.vue'
@@ -137,7 +159,7 @@ const timeFormat = 'YYYY/MM/DD'
 })
 export default class Main extends ViewBase {
   httplist = ''
-
+  title = '充值信息'
   link = '2222'
   copyBtn = null
   detail: any = {}
@@ -149,13 +171,15 @@ export default class Main extends ViewBase {
   query: any = {
     remittanceTime: '',
     remittanceRemark: '',
-    receipt: []
+    receipt: [],
+    agree: 1,
+    refuseReason: ''
   }
 
   get ruleInline() {
     return {
       remittanceTime: [
-        { required: true, message: '请设置汇款时间', trigger: 'change' }
+        { required: true, type: 'date', message: '请设置汇款时间', trigger: 'change' }
       ],
       receipt: [
         { required: true, type: 'array', len: 1, message: '请上传图片', trigger: 'change'}
@@ -174,6 +198,11 @@ export default class Main extends ViewBase {
   }
 
   mounted() {
+    if (this.$route.params.status == '1') {
+      this.title = '充值审核'
+    } else if (this.$route.params.status == '3') {
+      this.title = '充值汇款'
+    }
     this.load()
   }
 
@@ -182,7 +211,8 @@ export default class Main extends ViewBase {
     try {
       const res = await withdrwaldetail(this.$route.params.id)
       this.detail = res.data.item
-      const logList = res.data.logs ? res.data.logs.map((item: any) => {
+      this.detail.createTime = moment(res.data.item.createTime).format(timeFormat)
+      const logList = res.data.logList ? res.data.logList.map((item: any) => {
         return {
           ...item,
           createTime: moment(item.createTime).format(timeFormatDate)
@@ -213,9 +243,24 @@ export default class Main extends ViewBase {
 
   async edit(dataForms: any) {
     try {
-      const flag = await (this.$refs[dataForms] as any).validate()
-      if (flag) {
-
+      if (this.detail.status != 1) {
+        const flag = await (this.$refs[dataForms] as any).validate()
+        if (flag) {
+          await remittance({
+            remittanceRemark: this.query.remittanceRemark,
+            id: this.detail.id,
+            remittanceTime: moment(this.query.remittanceTime).format('YYYYMMDD'),
+            receipt: this.query.receipt.map((it: any) => it.fileId).join(',')
+          })
+          this.back()
+        }
+      } else {
+        await approval({
+          id: this.detail.id,
+          agree: this.query.agree == 1 ? true : false,
+          refuseReason: this.query.refuseReason
+        })
+        this.back()
       }
     } catch (ex) {
       this.handleError(ex)
