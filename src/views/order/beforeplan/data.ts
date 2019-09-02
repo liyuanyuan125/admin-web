@@ -55,13 +55,12 @@ const dealPayRestItem = (item: any) => {
  * http://yapi.aiads-dev.com/project/140/interface/api/5883
  */
 export async function queryList(query: any = {}) {
-  // const { data } = await get('/kol/playment-bills', query)
+  const { data } = await get('/xadvert/plan-audits', query)
 
-  // const result = {
-  //   ...data
-  // }
-  // return result
-
+  const result = {
+    ...data
+  }
+  return result
   return await mockGet(query, {
     'items|6': [
         {

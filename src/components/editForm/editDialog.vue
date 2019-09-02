@@ -10,6 +10,8 @@
       <slot>
         <EditForm
           :key="formKey"
+          hideSubmit
+          hideReturn
           v-bind="$attrs"
           v-on="$listeners"
           @validateFail="resetSubmitLoading()"

@@ -891,11 +891,42 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  // 财务管理 - 账号余额管理次数
+  {
+    path: '/finance/account/balance/detail/:time/:companyId/:transactionTypes',
+    name: 'finance-account-balance-detail',
+    component: () => import('./views/finance/account/detail.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+   // 财务管理 - 账号余额充值
+   {
+    path: '/finance/account/balance/edit/:companyId',
+    name: 'finance-account-balance-edit',
+    component: () => import('./views/finance/account/edit.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+
   // 财务管理 - 账号余额管理
   {
     path: '/finance/balance/withdrawal/',
     name: 'finance-balance-withdrawal',
     component: () => import('./views/finance/withdrawal/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 财务管理 - 账号余额审核汇款详情
+  {
+    path: '/finance/balance/withdrawal/:id/:status?',
+    name: 'finance-balance-withdrawal-status',
+    component: () => import('./views/finance/withdrawal/detail.vue'),
     meta: {
       authKey: ''
     }
@@ -1483,7 +1514,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   // 映前广告计划 - 审批 - 列表
   {
     path: '/order/beforeplan/audit/:status?',
-    name: 'order-beforeplanAudit',
+    name: 'order-beforeplanaudit',
     component: () => import('./views/order/beforeplan/beforeplan-audit-list.vue'),
     meta: {
       authKey: '',

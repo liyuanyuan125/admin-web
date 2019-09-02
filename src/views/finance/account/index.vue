@@ -15,34 +15,66 @@
         >片商管理</Button>
       </template>
 
-      <template slot="add" slot-scope="{row: {monthRechargeCount, totalRechargeCount}}">
+      <template slot="add" slot-scope="{row: {monthRechargeCount, totalRechargeCount, companyId}}">
         <div>
-          <a>{{monthRechargeCount}}</a> / <a>{{totalRechargeCount}}</a>
+          <a @click="push({
+            companyId: companyId,
+            time: 'month',
+            transactionTypes: 1
+          })">{{monthRechargeCount}}</a> / <a @click="push({
+            companyId: companyId,
+            time: 'all',
+            transactionTypes: 1
+          })">{{totalRechargeCount}}</a>
         </div>
       </template>
 
-      <template slot="consume" slot-scope="{row: {monthConsumptionCount, totalConsumptionCount}}">
+      <template slot="consume" slot-scope="{row: {monthConsumptionCount, totalConsumptionCount, companyId}}">
         <div>
-          <a>{{monthConsumptionCount}}</a> / <a>{{totalConsumptionCount}}</a>
+          <a @click="push({
+            companyId: companyId,
+            time: 'month',
+            transactionTypes: 2
+          })">{{monthConsumptionCount}}</a> / <a @click="push({
+            companyId: companyId,
+            time: 'all',
+            transactionTypes: 2
+          })">{{totalConsumptionCount}}</a>
         </div>
       </template>
 
-      <template slot="refund" slot-scope="{row: {monthRefundCount, totalRefundCount}}">
+      <template slot="refund" slot-scope="{row: {monthRefundCount, totalRefundCount, companyId}}">
         <div>
-          <a>{{monthRefundCount}}</a> / <a>{{totalRefundCount}}</a>
+          <a  @click="push({
+            companyId: companyId,
+            time: 'month',
+            transactionTypes: 3
+          })">{{monthRefundCount}}</a> / <a  @click="push({
+            companyId: companyId,
+            time: 'all',
+            transactionTypes: 3
+          })">{{totalRefundCount}}</a>
         </div>
       </template>
 
-      <template slot="deposit" slot-scope="{row: {monthWithdrawalCount, totalWithdrawalCount}}">
+      <template slot="deposit" slot-scope="{row: {monthWithdrawalCount, totalWithdrawalCount, companyId}}">
         <div>
-          <a>{{monthWithdrawalCount}}</a> / <a>{{totalWithdrawalCount}}</a>
+          <a @click="push({
+            companyId: companyId,
+            time: 'month',
+            transactionTypes: 4
+          })">{{monthWithdrawalCount}}</a> / <a @click="push({
+            companyId: companyId,
+            time: 'month',
+            transactionTypes: 4
+          })">{{totalWithdrawalCount}}</a>
         </div>
       </template>
 
 
       <template slot="operate" slot-scope="{row}">
          <a @click='open(row)'>申请提现</a>
-         <a @click='addmoeny(row)'>充值</a>
+         <a style='margin-left: 10px' @click='addmoeny(row.companyId)'>充值</a>
       </template>
     </ListPage>
     <accountModel ref='account' @done='uplist' />
@@ -129,27 +161,32 @@ export default class Main extends ViewBase {
     return this.$refs.listPage as ListPage
   }
 
-  open(val: any) {
-
-  }
-
-  editShow(id?: any) {
+  addmoeny(companyId?: any) {
     this.$router.push({
-      name: 'client-producers-edit',
+      name: 'finance-account-balance-edit',
       params: {
-        id
+        companyId
       }
     })
   }
 
-  addmoeny(row: any) {
+  push(row: any) {
+    this.$router.push({
+      name: 'finance-account-balance-detail',
+      params: {
+        ...row
+      }
+    })
+  }
+
+  open(row: any) {
     this.$nextTick(() => {
       (this.$refs.account as any).init(row)
     })
   }
 
   uplist() {
-    // this.listPage.refresh()
+    this.listPage.update()
   }
 
   // async editStatus(id: number, status: number) {

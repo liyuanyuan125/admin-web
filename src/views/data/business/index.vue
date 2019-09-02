@@ -28,8 +28,7 @@
       :width="500"
       :fields="editFields"
       :fetch="editFetch"
-      hideSubmit
-      hideReturn
+      :submit="editSubmit"
     />
   </div>
 </template>
@@ -41,7 +40,8 @@ import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import { confirm , warning , success, toast } from '@/ui/modal'
 import {
   queryList,
-  getItem,
+  getBusiness,
+  editBusiness,
   updateStatus,
   userList
 } from '@/api/business'
@@ -54,7 +54,11 @@ import { devLog } from '@/util/dev'
     EditDialog
   }
 })
-export default class Main extends ViewBase {
+export default class BusinessPage extends ViewBase {
+  get listPage() {
+    return this.$refs.listPage as ListPage
+  }
+
   stats: any = ''
 
   roleList: any = []
@@ -137,8 +141,14 @@ export default class Main extends ViewBase {
   }
 
   editFields: Field[] = [
+    // 数据库记录ID
     {
       name: 'id',
+      defaultValue: 0,
+    },
+
+    {
+      name: 'userId',
       defaultValue: 0,
       label: '姓名',
       required: true,
@@ -167,6 +177,7 @@ export default class Main extends ViewBase {
       placeholder: '数字在0-1之间，例如：0.1，代表可享折扣是1折',
       number: {
         max: 1,
+        step: .1
       },
       span: 21,
     }
@@ -179,16 +190,12 @@ export default class Main extends ViewBase {
   }
 
   async editFetch() {
-    const list = await userList()
+    const list = await userList({ pageSize: 888 })
     const item = this.editId > 0
-      ? await getItem(this.editId)
-      : { userId: 0, role: 0, discount: 1 }
+      ? await getBusiness(this.editId)
+      : { id: 0, userId: 0, role: 0, discount: 1 }
     const result = {
-      item: {
-        id: item.userId,
-        role: item.role,
-        discount: item.discount
-      },
+      item,
       userList: list,
       roleList: this.roleList
     }
@@ -204,19 +211,26 @@ export default class Main extends ViewBase {
     try {
       this.stats = data.status == 1 ? '禁用' : '启用'
       await confirm('您确定' + this.stats + '当前状态信息吗？')
-      await updateStatus (
+      await updateStatus(
         data.id,
         data.status == 1 ? 2 : 1
       )
-      this.$Message.success({
-        content: `更改成功`,
-      });
-      (this.$refs.listPage as any).update()
-    } catch (error) {
+      toast('更改成功')
+      this.listPage.update()
+    } catch (ex) {
+      this.handleError(ex)
     }
   }
 
-  editSubmit(data: any) {// 创建和提交
+  async editSubmit(data: any) {
+    try {
+      await editBusiness(data)
+      toast('操作成功')
+      this.listPage.update()
+      this.editVisible = false
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
 
   mounted() {}

@@ -33,7 +33,7 @@ export default class Main extends ViewBase {
       name: 'planId',
       defaultValue: '',
       input: true,
-      width: 85,
+      width: 178,
       placeholder: '广告计划单编号'
     },
 
@@ -42,7 +42,7 @@ export default class Main extends ViewBase {
       defaultValue: '',
       dateRange: true,
       width: 178,
-      placeholder: '支付创建日期区间',
+      placeholder: '退款创建日期区间',
       dealParam(value: any) {
         const [start, end] = value.split('-')
         return {
