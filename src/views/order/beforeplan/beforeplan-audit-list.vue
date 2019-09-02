@@ -86,13 +86,13 @@ export default class IndexPage extends ViewBase {
         placeholder: '广告计划名称'
       },
 
-      // {
-      //   name: 'videoName',
-      //   defaultValue: '',
-      //   type: videoList,
-      //   width: 140,
-      //   placeholder: '广告片名称'
-      // },
+      {
+        name: 'videoName',
+        defaultValue: '',
+        type: videoList,
+        width: 140,
+        placeholder: '广告片名称'
+      },
 
       {
         name: 'advertTypeCode',

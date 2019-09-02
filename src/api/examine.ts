@@ -3,8 +3,8 @@
 import { get , post , put } from '@/fn/ajax'
 
 export async function queryList(query: any) {
-  const data = await get('/finance/recharges', query)
-  // const data = await get('/finance/lineUnderRemittances', query)
+  // const data = await get('/finance/recharges', query)
+  const data = await get('/finance/lineUnderRemittances', query)
   return data
 }
 
