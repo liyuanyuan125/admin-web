@@ -86,13 +86,13 @@ export default class IndexPage extends ViewBase {
         placeholder: '广告计划名称'
       },
 
-      {
-        name: 'videoName',
-        defaultValue: '',
-        type: videoList,
-        width: 140,
-        placeholder: '广告片名称'
-      },
+      // {
+      //   name: 'videoName',
+      //   defaultValue: '',
+      //   type: videoList,
+      //   width: 140,
+      //   placeholder: '广告片名称'
+      // },
 
       {
         name: 'advertTypeCode',
@@ -155,7 +155,11 @@ export default class IndexPage extends ViewBase {
     ]
   }
 
-  enums = []
+  enums = [
+    'auditStatusList',
+    'channelList',
+    'advertTypeList'
+  ]
 
   get columns() {
     return [
@@ -163,14 +167,14 @@ export default class IndexPage extends ViewBase {
       { title: '计划名称', key: 'name' },
       { title: '广告主公司名称', key: 'companyName'},
       { title: '广告片', key: 'videoName', maxWidth: 100 },
-      { title: '广告类型', key: 'advertTypeCode', maxWidth: 100 },
-      { title: '渠道', key: 'channelCode', maxWidth: 100 },
+      { title: '广告类型', key: 'advertTypeCode', maxWidth: 100,  enum: true },
+      { title: '渠道', key: 'channelCode', maxWidth: 100,  enum: true },
       { title: '派单影院数量', key: 'cinemaCount', maxWidth: 100 },
       { title: '折扣', key: 'discount', maxWidth: 100 },
       { title: '定金', key: 'depositAmount', width: 100},
       { title: '计划提交时间', key: 'planApplyTime', width: 135, dateTime: true },
       { title: '提交审核时间', key: 'auditApplyTime', width: 135, dateTime: true },
-      { title: '审批状态', key: 'auditStatus', width: 100 , editor: 'enum' },
+      { title: '审批状态', key: 'auditStatus', width: 100 , enum: true },
       { title: '操作', slot: 'action', width: 70 }
     ] as ColumnExtra[]
   }
