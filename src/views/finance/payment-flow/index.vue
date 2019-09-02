@@ -33,7 +33,7 @@ export default class Main extends ViewBase {
       name: 'planId',
       defaultValue: '',
       input: true,
-      width: 85,
+      width: 178,
       placeholder: '广告计划单编号'
     },
 
@@ -107,6 +107,7 @@ export default class Main extends ViewBase {
       { title: '广告计划单编号', key: 'planId', width: 120 },
       { title: '订单号', key: 'orderNo', minWidth: 120 },
       { title: '支付流水', key: 'payNumber', width: 120 },
+      { title: '支付方式', key: 'payType', minWidth: 120, enum: true },
       { title: '支付金额', key: 'payAmount', minWidth: 120 },
       { title: '渠道', key: 'payChannel', minWidth: 120, enum: true },
       { title: '业务类型', key: 'busType', minWidth: 120, enum: true },

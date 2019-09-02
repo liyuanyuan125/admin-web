@@ -70,13 +70,13 @@ export default class IndexPage extends ViewBase {
         placeholder: '广告计划ID'
       },
 
-      // {
-      //   name: 'companyName',
-      //   defaultValue: 0,
-      //   type: CompanyList,
-      //   width: 140,
-      //   placeholder: '广告主公司名称'
-      // },
+      {
+        name: 'companyName',
+        defaultValue: 0,
+        type: CompanyList,
+        width: 140,
+        placeholder: '广告主公司名称'
+      },
 
       {
         name: 'name',
@@ -86,13 +86,13 @@ export default class IndexPage extends ViewBase {
         placeholder: '广告计划名称'
       },
 
-      {
-        name: 'videoName',
-        defaultValue: '',
-        type: videoList,
-        width: 140,
-        placeholder: '广告片名称'
-      },
+      // {
+      //   name: 'videoName',
+      //   defaultValue: '',
+      //   type: videoList,
+      //   width: 140,
+      //   placeholder: '广告片名称'
+      // },
 
       {
         name: 'advertTypeCode',
@@ -170,7 +170,7 @@ export default class IndexPage extends ViewBase {
       { title: '定金', key: 'depositAmount', width: 100},
       { title: '计划提交时间', key: 'planApplyTime', width: 135, dateTime: true },
       { title: '提交审核时间', key: 'auditApplyTime', width: 135, dateTime: true },
-      { title: '审批状态', key: 'status', width: 100 , editor: 'enum' },
+      { title: '审批状态', key: 'auditStatus', width: 100 , editor: 'enum' },
       { title: '操作', slot: 'action', width: 70 }
     ] as ColumnExtra[]
   }
@@ -182,7 +182,7 @@ export default class IndexPage extends ViewBase {
   @Watch('auditStatusCode')
   watchChannelCode(val: string) {
     this.$router.push({
-      name: 'order-beforeplanAudit',
+      name: 'order-beforeplanaudit',
       params: val == defaultAuditStatusCode ? {} : { val }
     })
   }
