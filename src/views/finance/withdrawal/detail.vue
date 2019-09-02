@@ -10,49 +10,71 @@
       <div class="detail-header">
         <div class="n-list">提现单基本信息</div>
         <Row>
+          <Col span="3"><div>公司id</div></Col>
+          <Col span="4"><span>{{detail.companyId}}</span>
+          </Col>
           <Col span="3"><div>公司名称</div></Col>
-          <Col span="16"><span>{{detail.companyName}}</span>
+          <Col span="4"><span>{{detail.companyName}}</span>
           </Col>
         </Row>
         <Row>
-          <Col span="3"><div>开户行</div></Col>
+          <Col span="3"><div>提现申请单编号</div></Col>
           <Col span="8">
-            <span id="success_form_input" style="margin-right: 8px">{{detail.accountBank}}</span>
-            <a ref="copy" v-show="detail.accountBank" data-clipboard-action="copy" data-clipboard-target="#success_form_input" @click="copyLink">复制</a>
+            <span id="success_form_input" style="margin-right: 8px">{{detail.billNo}}</span>
           </Col>
         </Row>
         <Row>
-          <Col span="3"><div>开户名</div></Col>
-          <Col span="4"><span id="success_form_input2" style="margin-right: 8px">{{detail.accountName}}</span>
-            <a ref="copy3" v-show="detail.accountName" data-clipboard-action="copy" data-clipboard-target="#success_form_input2" @click="copyLink">复制</a>
+          <Col span="3"><div>提现金额：</div></Col>
+          <Col span="4"><span id="success_form_input2" style="margin-right: 8px">{{detail.amount}}</span>
           </Col>
-          <Col span="3"><div>账户号</div></Col>
-          <Col span="4"><span id="success_form_input3" style="margin-right: 8px">{{detail.accountNumber}}</span>
-            <a ref="copy2" v-show="detail.accountName" data-clipboard-action="copy" data-clipboard-target="#success_form_input3" @click="copyLink">复制</a>
+          <Col span="3"><div>提现方式：</div></Col>
+          <Col span="4"><span id="success_form_input3" style="margin-right: 8px">{{detail.alipayName}}</span>
+          </Col>
+        </Row>
+        <Row v-if="detail.withdrawalType != '2'">
+          <Col span="3"><div>银行卡账户名：</div></Col>
+          <Col span="4"><span id="success_form_input2" style="margin-right: 8px">{{detail.accountName}}</span>
+          </Col>
+          <Col span="3"><div>银行卡开户行：</div></Col>
+          <Col span="4"><span id="success_form_input3" style="margin-right: 8px">{{detail.accountBank}}</span>
+          </Col>
+        </Row>
+        <Row v-else>
+          <Col span="3"><div>支付宝名称	</div></Col>
+          <Col span="4"><span id="success_form_input2" style="margin-right: 8px">{{detail.alipayName}}</span>
+          </Col>
+          <Col span="3"><div>支付宝账户	</div></Col>
+          <Col span="4"><span id="success_form_input3" style="margin-right: 8px">{{detail.alipayNumber}}</span>
+          </Col>
+        </Row>
+        <Row>
+          <Col v-if="detail.withdrawalType != '2'" span="3"><div>银行卡账号：</div></Col>
+          <Col v-if="detail.withdrawalType != '2'" span="4"><span style="margin-right: 8px">{{detail.accountNumber}}</span>
+          </Col>
+          <Col span="3"><div>备注：</div></Col>
+          <Col span="4"><span style="margin-right: 8px">{{detail.remark}}</span>
           </Col>
         </Row>
       </div>
       <Row class="detail-content">
+        <div class="n-list">汇款信息：</div>
+        <Form ref="formInline" :model="query" :rules="ruleInline">
         <Row>
-          <Col span="3"><div>项目</div></Col>
-          <Col span="16"><span>{{detail.typeName}}</span></Col>
+          <Col span="3"><div>汇款时间：</div></Col>
+          <Col span="16">
+            <FormItem v-if='detail.status == 3' prop="remittanceTime">
+               <DatePicker type="date" v-model='query.remittanceTime' placeholder="汇款时间" style="width: 200px"></DatePicker>
+            </FormItem>
+            <span v-else>{{detail.typeName}}</span>
+          </Col>
         </Row>
         <Row>
-          <Col span="3"><div>提现前可用余额</div></Col>
-          <Col span="16"><span>{{format.beforeWithdrawalAmount}}</span></Col>
-        </Row>
-        <Row>
-          <Col span="3"><div>本次提现金额</div></Col>
-          <Col span="16"><span>{{format.amount}}</span></Col>
-        </Row>
-        <Row>
-          <Col span="3"><div>提现后可用余额</div></Col>
-          <Col span="16"><span>{{format.afterWithdrawalAmount}}</span></Col>
-        </Row>
-        <Row class="upload">
-          <Col span="3"><div>凭证</div></Col>
+          <Col span="3"><div>上传凭证</div></Col>
           <Col span="8">
-            <div class="upload-wrap">
+            <FormItem v-if='detail.status == 3' prop="receipt">
+              <Upload v-model="query.receipt" multiple :maxCount="3" accept="image/*" />
+            </FormItem>
+            <div v-else class="upload-wrap">
               <div v-if="showimg" class="show-img">
                 <img src="~@/assets/imgerror.png"/>
               </div>
@@ -62,16 +84,28 @@
         </Row>
         <Row>
           <Col span="3"><div>备注</div></Col>
-          <Col span="8"><span>{{detail.remark}}</span></Col>
+          <Col span="8">
+            <FormItem v-if='detail.status == 3' prop="remittanceRemark">
+               <Input v-model="query.remittanceRemark" placeholder="请输入备注" style="width: 200px" />
+            </FormItem>
+            <span v-else>{{detail.remark}}</span>
+          </Col>
         </Row>
+        </Form>
       </Row>
       <Row class="detail-check" v-if="detail.logs && detail.logs.length > 0">
+        <div class="n-list">汇款信息：</div>
         <Row  class="detail-log" v-for="(item, i) in logList" :key="i">
           <Col span="3"><div>操作时间</div></Col>
           <Col span="21"><span>{{item.createTime}}</span></Col>
           <Col span="3"><div>操作员</div></Col>
           <Col span="21"> <span>{{item.email}}<b style="margin: 0 5px">[{{item.userName}}]</b></span></Col>
         </Row>
+      </Row>
+      <Row>
+        <Col style='text-align: center'>
+          <Button type="info" size="large" @click="edit('formInline')">确定</Button>
+        </Col>
       </Row>
     </div>
   </div>
@@ -82,11 +116,11 @@
 import { Component, Watch } from 'vue-property-decorator'
 import moment from 'moment'
 import ViewBase from '@/util/ViewBase'
-import { resIdDetail } from '@/api/advertiser'
+import { withdrwaldetail } from '@/api/withdrawal'
 import { toMap } from '@/fn/array'
 import { formatCurrency } from '@/fn/string'
 import imgModel from '../../data/film/imgModel.vue'
-import clipboard from 'clipboard'
+import Upload from '@/components/Upload.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 const typeMap = (list: any[]) => toMap(list, 'typeCode', 'controlStatus')
@@ -97,7 +131,8 @@ const timeFormat = 'YYYY/MM/DD'
 
 @Component({
   components: {
-    imgModel
+    imgModel,
+    Upload
   }
 })
 export default class Main extends ViewBase {
@@ -111,6 +146,22 @@ export default class Main extends ViewBase {
   img: any = []
   logList: any = []
   id: any = ''
+  query: any = {
+    remittanceTime: '',
+    remittanceRemark: '',
+    receipt: []
+  }
+
+  get ruleInline() {
+    return {
+      remittanceTime: [
+        { required: true, message: '请设置汇款时间', trigger: 'change' }
+      ],
+      receipt: [
+        { required: true, type: 'array', len: 1, message: '请上传图片', trigger: 'change'}
+      ]
+    }
+  }
 
   get format() {
     const afterWithdrawalAmount = this.detail.afterWithdrawalAmount || 0
@@ -122,25 +173,15 @@ export default class Main extends ViewBase {
     }
   }
 
-  init() {
-    this.copyBtn = new clipboard(this.$refs.copy)
-    this.copyBtn = new clipboard(this.$refs.copy2)
-    this.copyBtn = new clipboard(this.$refs.copy3)
-  }
-
   mounted() {
-    this.init()
-  }
-
-  activated() {
-    this.init()
+    this.load()
   }
 
   async load() {
     (this.$Spin as any).show()
     try {
-      const res = await resIdDetail({id: this.id})
-      this.detail = res.data
+      const res = await withdrwaldetail(this.$route.params.id)
+      this.detail = res.data.item
       const logList = res.data.logs ? res.data.logs.map((item: any) => {
         return {
           ...item,
@@ -170,16 +211,19 @@ export default class Main extends ViewBase {
   copyLink() {
   }
 
-  back() {
-    this.$router.go(-1)
+  async edit(dataForms: any) {
+    try {
+      const flag = await (this.$refs[dataForms] as any).validate()
+      if (flag) {
+
+      }
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
 
-  @Watch('id', {immediate: true})
-  watchid(val: any, oldVal: any) {
-    this.id = Number(this.$route.params.id)
-    if (val && this.$route.name == 'finance-capital-withdrawDetail') {
-      this.load()
-    }
+  back() {
+    this.$router.go(-1)
   }
 }
 </script>

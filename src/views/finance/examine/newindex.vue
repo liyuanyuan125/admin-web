@@ -141,12 +141,8 @@ export default class IndexPage extends ViewBase {
         dealParam(value: string) {
           const [beginDate, endDate] = value ? value.split('-') : [null, null]
             return {
-              beginDate : beginDate ? Number(new Date(String(beginDate).slice(0, 4) + '-'
-              + String(beginDate).slice(4, 6) + '-' +
-              String(beginDate).slice(6, 8)).getTime() - (8 * 60 * 60 * 1000)) : null,
-              endDate : endDate ? Number(new Date(String(endDate).slice(0, 4) + '-'
-              + String(endDate).slice(4, 6) + '-' +
-              String(endDate).slice(6, 8)).getTime() + (16 * 60 * 60 * 1000 - 1)) : null,
+              beginDate,
+              endDate,
             }
           }
       },
@@ -199,7 +195,18 @@ export default class IndexPage extends ViewBase {
         }
        }
       },
-      { title: '汇款日期', key: 'remittanceDate', width: 75, editor: 'dateTime' },
+      { title: '汇款日期', key: 'remittanceDate', width: 75,
+        render: (hh: any, { row: { remittanceDate } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        const aaa = String(remittanceDate).slice(0, 4) + '-' + String(remittanceDate).slice(4, 6) + '-' + String(remittanceDate).slice(6, 8)
+        if (remittanceDate == null) {
+          return <span class='datetime' v-html='-'></span>
+        } else {
+            return <span class='datetime' v-html={aaa}></span>
+        }
+       }
+      },
       // { title: '汇款底单', key: 'receipt', },
       {
         title: '汇款底单',
@@ -208,14 +215,19 @@ export default class IndexPage extends ViewBase {
         render: (hh: any, { row: { receipt } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          return (
-            <a
-              href="javascript:;"
-              on-click={this.onView.bind(this , receipt)}
-              class="operation">
-              查看
-            </a>
-          )
+          if (receipt != null) {
+            return (
+              <a
+                href="javascript:;"
+                on-click={this.onView.bind(this , receipt)}
+                class="operation">
+                查看
+              </a>
+            )
+          } else {
+            return <span class='datetime' v-html={'-'}></span>
+          }
+          
           /* tslint:enable */
         }
       },
@@ -260,7 +272,7 @@ export default class IndexPage extends ViewBase {
   @Watch('status')
   watchstatus(pay: any) {
     this.$router.push({
-      name: 'finance-examine-newindex',
+      name: 'finance-examine',
       params: pay == defaultPay ? {} : { pay }
     })
   }

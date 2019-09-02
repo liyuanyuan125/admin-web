@@ -20,20 +20,20 @@
                 <compangList v-model='dataForm.resourceId' @done="dlgEditDone" />
                 </Col>
                 <Col v-if='$route.params.status != 3' span='4' offset="1">
-                <Select v-model="dataForm.resourceId" placeholder="接单状态" style='width: 200px;' filterable>
-                    <Option v-for="it in []" :key="it.id" :value="it.id" :label="it.name">{{it.name}}</Option>
+                <Select v-model="dataForm.acceptStatus" placeholder="接单状态" style='width: 200px;' filterable>
+                    <Option v-for="it in acceptStatusList" :key="it.key" :value="it.key" :label="it.text">{{it.text}}</Option>
                 </Select>
                 </Col>
                 <Col span="3" offset="1">
                 <Button type="primary" @click="searchrrr">搜索</Button>
                 </Col>
             </Row>
-            <Button type="primary" @click="changeAll" v-if='$route.params.ifs == 1 && ($route.params.status == 2 || $route.params.status == 3 || $route.params.status == 10)'>批量删除</Button>
+            <Button type="primary" @click="changeAll" v-if='$route.params.ifs == 1 && ($route.params.status == 3 || $route.params.status == 10)'>批量删除</Button>
             <Table ref="table" :columns="columns" @on-selection-change="onselect" :data="list" :loading="loading" border stripe disabled-hover size="small" class="table">
                 <template slot="resourceId" slot-scope="{row}">
                     <div v-for='(it, index) in reslist'>
                         <span v-if='row.resourceId == it.id'>{{it.name}}&nbsp;&nbsp;&nbsp;
-                            <a v-if='$route.params.ifs == 1 && ($route.params.status == 2 || $route.params.status == 3 || $route.params.status == 10)' @click="change( row.cinemaId , row.cinemaName ,  it.name , it.id)">变更</a>
+                            <a v-if='($route.params.ifs == 1 && ($route.params.status == 3)) || $route.params.ifs == 1 && row.ifchgRes == true' @click="change( row.cinemaId , row.cinemaName ,  it.name , it.id)">变更{{row.ifchgRes}}</a>
                         </span>
                     </div>
                     <div v-if='reasd.indexOf(row.resourceId) == -1'>暂无资源方公司</div>
@@ -46,8 +46,8 @@
             <div class="page-wrap" v-if="total > 0">
                 <Page class="page" :total="total" :current="dataForm.pageIndex" :page-size="dataForm.pageSize" show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]" @on-change="sizeChangeHandle" @on-page-size-change="currentChangeHandle" />
             </div>
-            <div class="act-bar">
-                <a style='float: left; margin-right: 15px;' @click="onAdd" v-if="!type && $route.params.status == 2 || $route.params.status == 3 || $route.params.status == 10 || $route.params.status == 6 || $route.params.status == 7" @done="dlgEditDone">添加影院</a>&nbsp;&nbsp;&nbsp;
+            <div class="act-bar" style='margin-top: 15px;'>
+                <a style='float: left; margin-right: 15px;' @click="onAdd" v-if="!type && $route.params.status == 3 || $route.params.status == 10 || $route.params.status == 6 || $route.params.status == 7" @done="dlgEditDone">添加影院</a>&nbsp;&nbsp;&nbsp;
                 <Form v-if='$route.params.ifs == 1 && ($route.params.status == 3 || $route.params.status == 6 || $route.params.status == 7)' class="create-form form-item" enctype="multipart/form-data" ref="form" :label-width="120">批量导入
                     <input type="file" class='adds' @change="onChange" />
                 </Form>
@@ -134,6 +134,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         provinceId: 0,
         cityId: 0,
         countyId: 0,
+        acceptStatus: null,
     }
     cinemaArray: any = []
     showDlg = false
@@ -153,6 +154,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     aaa = false
     viewcinema = false
     dataList: any = []
+    // 接单转态
+    acceptStatusList: any = []
 
 
     // 批量导入影院
@@ -160,6 +163,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     inputhtml: any = ''
 
     b: any = []
+
+    defaultCinemaLength: any = 0
 
 
     get columns() {
@@ -177,7 +182,21 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           this.b = []
         } else {
           this.b = [
-            { title: '接单状态', width: 120, key: 'acceptStatus', align: 'center' },
+            { title: '接单状态', width: 120, key: 'acceptStatus', align: 'center',
+              render: (hh: any, { row: { acceptStatus } }: any) => {
+                /* tslint:disable */
+                const h = jsxReactToVue(hh)
+                if (acceptStatus == 0) {
+                  return <span class='datetime' v-html={'未知'}></span>
+                } else if (acceptStatus == 1) {
+                  return <span class='datetime' v-html={'已接单'}></span>
+                } else if (acceptStatus == 2) {
+                  return <span class='datetime' v-html={'未接单'}></span>
+                }
+                
+                /* tslint:enable */
+              }
+            },
           ]
         }
 
@@ -243,6 +262,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
     // 批量导入影院
     async onChange(ev: Event) {
+      this.defaultCinemaLength = this.list.length
         const uploader: any = new Uploader({
             filePostUrl: `/xadvert/plans/` + this.$route.params.id + `/import-cinema`,
             fileFieldName: 'file',
@@ -252,6 +272,49 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         this.inputhtml = this.file.name
 
         const a = await uploader.upload(this.file)
+
+        this.search()
+
+        this.viewcinema = true
+        this.$emit('getcine', this.viewcinema)
+    }
+
+    async searchchg() {
+        const query = clean({ ...this.dataForm, ids: this.cinemaArray.join(',') })
+        try {
+            // 订单列表
+            const {
+                data: {
+                    items: list,
+                    totalCount: total,
+                    statusList: statusList,
+                    planTypeList: planTypeList,
+                    acceptStatusList: acceptStatusList
+                }
+            } = await cinemaList(this.$route.params.id, query)
+            this.list = (list || []).map(( it: any ) => {
+              return {
+                ...it,
+                ifchgRes: true
+              }
+            })
+            this.total = total
+            this.acceptStatusList = acceptStatusList
+
+            const { data } = await queryList(clean({
+                pageSize: 888888,
+                status: 1,
+                typeCode: 'resource'
+            }))
+            this.reslist = data.items
+            this.reasd = (this.reslist || []).map((it: any) => {
+                return it.id
+            })
+
+        } catch (ex) {
+        } finally {
+            this.loading = false
+        }
     }
 
     // 删除影院
@@ -310,11 +373,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
                     items: list,
                     totalCount: total,
                     statusList: statusList,
-                    planTypeList: planTypeList
+                    planTypeList: planTypeList,
+                    acceptStatusList: acceptStatusList
                 }
             } = await cinemaList(this.$route.params.id, query)
             this.list = list
             this.total = total
+            this.acceptStatusList = acceptStatusList
 
             const { data } = await queryList(clean({
                 pageSize: 888888,

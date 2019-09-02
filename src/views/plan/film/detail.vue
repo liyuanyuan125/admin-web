@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <header class="header flex-box">
-      <Button icon="md-return-left" @click="back" class="btn-back">返回上一页</Button>
+      <Button icon="md-return-left" @click="backList" class="btn-back">返回列表</Button>
       <div class="flex-1">
         <em></em>
       </div>
@@ -91,7 +91,7 @@
         <Table :columns="columnsReason" :data="fixedRefuseReasonsList"
         border disabled-hover size="small" class="table">
            <template  slot="stypeSelected" slot-scope="{row}">
-             <input v-if='$route.params.status == "1"' type="checkbox"  :checked='row.stypeSelected' />
+             <input v-if='$route.params.status == "1"' type="checkbox"  :checked='row.stypeSelected' @change='addReason( $event , row.ptypeCode , row.stypeCode , row.stypeName)'/>
              <input v-if='$route.params.status == "5"' type="checkbox"  :checked='row.stypeSelected' disabled />
            </template>
         </Table>
@@ -118,7 +118,7 @@
       </Row>
       <div v-if='showedit' class='titop'>转制</div>
       <Row v-if='showedit' >
-        <Table :columns="columns" :data="tableData"
+        <Table :columns="columns" :data="detail.attachments"
         border disabled-hover size="small" class="table">
           <template slot="spaction" slot-scope="{row}">
 
@@ -254,81 +254,11 @@ export default class Main extends ViewBase {
       key: '2'
     }
   ]
+  // 不通过原因列表
+  reasonName: any = []
+  objreasonName: any = []
 
-  fixedRefuseReasonsList: any = [
-    {
-      controlStatus: 1,
-      stypeName: ' 广告主红章涉嫌PS',
-      stypeSelected: true,
-      ptypeCode: 'VIDEO_INDUSTRY_QUALIFICATION',
-      stypeCode: '1',
-      ptypeName: '行业资质'
-    },
-    {
-      controlStatus: 1,
-      stypeName: '与官网查询结果不一致',
-      stypeSelected: false,
-      ptypeCode: 'VIDEO_INDUSTRY_QUALIFICATION',
-      stypeCode: '2',
-      ptypeName: '行业资质'
-    },
-    {
-      controlStatus: 1,
-      stypeName: '营业执照经营范围无法备案该行业',
-      stypeSelected: false,
-      ptypeCode: 'VIDEO_INDUSTRY_QUALIFICATION',
-      stypeCode: '3',
-      ptypeName: '行业资质'
-    },
-    {
-      controlStatus: 1,
-      stypeName: '资质截图不完整',
-      stypeSelected: false,
-      ptypeCode: 'VIDEO_INDUSTRY_QUALIFICATION',
-      stypeCode: '4',
-      ptypeName: '行业资质'
-    },
-    {
-      controlStatus: 1,
-      stypeName: '资质未注明所需文字及加盖广告主红章',
-      stypeSelected: false,
-      ptypeCode: 'VIDEO_INDUSTRY_QUALIFICATION',
-      stypeCode: '5',
-      ptypeName: '行业资质'
-    },
-    {
-      controlStatus: 1,
-      stypeName: '资质不清晰需上传原件照片对比',
-      stypeSelected: false,
-      ptypeCode: 'VIDEO_INDUSTRY_QUALIFICATION',
-      stypeCode: '6',
-      ptypeName: '行业资质'
-    },
-    {
-      controlStatus: 1,
-      stypeName: '资质截图不可出现水印',
-      stypeSelected: false,
-      ptypeCode: 'VIDEO_INDUSTRY_QUALIFICATION',
-      stypeCode: '7',
-      ptypeName: '行业资质'
-    },
-    {
-      controlStatus: 1,
-      stypeName: '资质未年检',
-      stypeSelected: false,
-      ptypeCode: 'VIDEO_INDUSTRY_QUALIFICATION',
-      stypeCode: '8',
-      ptypeName: '行业资质'
-    },
-    {
-      controlStatus: 1,
-      stypeName: '发证机关公章涉嫌PS',
-      stypeSelected: false,
-      ptypeCode: 'VIDEO_INDUSTRY_QUALIFICATION',
-      stypeCode: '9',
-      ptypeName: '行业资质'
-    },
-  ]
+  fixedRefuseReasonsList: any = []
 
   columnsReason: any = []
 
@@ -341,6 +271,8 @@ export default class Main extends ViewBase {
   dataForm: any = { ...dataForm }
 
   mounted() {
+    this.reasonName = []
+    this.dataForm.fixedRefuseReasons = []
     // 审核原因列表
     this.columnsReason = [
       { title: '审核内容', key: 'ptypeName',  align: 'center' },
@@ -378,14 +310,14 @@ export default class Main extends ViewBase {
       }
   }
 
-  get tableData() {
-    const typeList = (this.typeList || []).map((it: any) => {
-      return {
-        ...it,
-      }
-    })
-    return typeList
-  }
+  // get tableData() {
+  //   const typeList = (this.typeList || []).map((it: any) => {
+  //     return {
+  //       ...it,
+  //     }
+  //   })
+  //   return typeList
+  // }
 
   // 转制附件列表展示
   columns = [
@@ -461,24 +393,25 @@ export default class Main extends ViewBase {
       const res = await queryItem(this.$route.params.id)
       this.detail = res.data.item
       this.applyTime = moment(this.detail.applyTime).format(timeFormatDate)
+      this.fixedRefuseReasonsList = res.data.fixedRefuseReasonsList
        // 附件
-      this.typeList = res.data.typeList.map((it: any) => {
-        const key = it.key
-        const typecode = this.detail.attachments.map((item: any) => {
-          return item.typeCode
-        })
-        const index = typecode.indexOf(key)
-        if (index != -1) {
-          return {
-            ...it,
-            desc: this.detail.attachments[index]
-          }
-        } else {
-          return {
-            ...it
-          }
-        }
-      })
+      // this.typeList = res.data.typeList.map((it: any) => {
+      //   const key = it.key
+      //   const typecode = this.detail.attachments.map((item: any) => {
+      //     return item.typeCode
+      //   })
+      //   const index = typecode.indexOf(key)
+      //   if (index != -1) {
+      //     return {
+      //       ...it,
+      //       desc: this.detail.attachments[index]
+      //     }
+      //   } else {
+      //     return {
+      //       ...it
+      //     }
+      //   }
+      // })
 
 
       this.logList = res.data.logList.map((item: any) => {
@@ -506,6 +439,24 @@ export default class Main extends ViewBase {
     })
   }
 
+  // 添加原因列表
+  addReason(e: any , ptypeCode: any , stypeCode: any , stypeName: any) {
+    if (e.target.checked == true) {
+      this.dataForm.fixedRefuseReasons.push({
+        pCode: ptypeCode,
+        sCode: stypeCode,
+        stypeName,
+      })
+    } else {
+      for (let i = 0; i < this.dataForm.fixedRefuseReasons.length; i++) {
+        if (this.dataForm.fixedRefuseReasons[i].stypeName == stypeName) {
+          this.dataForm.fixedRefuseReasons.splice(i, 1)
+          break
+        }
+      }
+    }
+  }
+
   // 提交并继续审核
   async nextSubmit() {
     const dataItem: any = JSON.parse((sessionStorage.getItem('info') as any))
@@ -520,16 +471,21 @@ export default class Main extends ViewBase {
 
     const query: any = {
       refuseReason: this.dataForm.refuseReason ,
-      agree: this.dataForm.agree,
-      fixedRefuseReasons: this.dataForm.fixedRefuseReasons
+      agree: this.dataForm.fixedRefuseReasons.length == 0 ? true : false ,
+      fixedRefuseReasons: (this.dataForm.fixedRefuseReasons || []).map((it: any) => {
+        return {
+          pCode: it.pCode,
+          sCode: it.sCode,
+        }
+      })
     }
 
 
     // 如果没有videoIds存储值则代表没有请求过ids列表
     if (JSON.parse((sessionStorage.getItem('videoIds') as any)) == null ) {
       try {
-        const res =  await getVideoIds (this.videoIdsList) // 请求500的存储总量
-        const videoIds = res.data.items || []
+        const res =  await getVideoIds (this.videoIdsList) // 请求1000的存储总量
+        const videoIds = res.data.item || []
         if (videoIds.length > 1) {
           sessionStorage.setItem('videoIds', JSON.stringify(videoIds.slice(1))) // 存储总量-1
           const data =  await sapproval (this.$route.params.id, query)
@@ -563,8 +519,13 @@ export default class Main extends ViewBase {
   async dataFormSubmit() {
     const query: any = {
       refuseReason: this.dataForm.refuseReason ,
-      agree: this.dataForm.agree,
-      fixedRefuseReasons: this.dataForm.fixedRefuseReasons
+      agree: this.dataForm.fixedRefuseReasons.length == 0 ? true : false,
+      fixedRefuseReasons: (this.dataForm.fixedRefuseReasons || []).map((it: any) => {
+        return {
+          pCode: it.pCode,
+          sCode: it.sCode,
+        }
+      })
     }
     try {
       const res =  await sapproval (this.$route.params.id, query)
@@ -634,8 +595,14 @@ export default class Main extends ViewBase {
 
   // 返回列表
   backList() {
-      this.$router.push({ name: 'order-supervision' })
+      this.$router.push({ name: 'gg-film' })
   }
+
+  @Watch('$route.parmas', { deep: true })
+
+    watchParmas(val: any) {
+        this.doSearch()
+    }
 }
 </script>
 
