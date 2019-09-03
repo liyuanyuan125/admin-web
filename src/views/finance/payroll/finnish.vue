@@ -207,7 +207,7 @@ export default class IndexPage extends ViewBase {
       { title: '收款银行', key: 'receiveBank', minWidth: 120 },
       { title: '收款账号', key: 'receiveNo',  minWidth: 120 },
       { title: '对账完成时间', key: 'finishTime', minWidth: 100, editor: 'dateTime' },
-      { title: '申请付款时间', key: 'payTime', minWidth: 100, editor: 'dateTime' },
+      { title: '申请付款时间', key: 'applyTime', minWidth: 100, editor: 'dateTime' },
     ]
   }
 
