@@ -2,7 +2,7 @@
     <div class='page'>
         <header>
             <Button icon="md-return-left" @click="back" class="btn-back">返回上一页</Button>
-            <Button v-if='$route.params.ifs == 1 && $route.params.status != 12 && $route.params.status != 9' class="bth" style='float: right' @click="close($route.params.id)">关闭订单</Button><br>
+            <!-- <Button v-if='$route.params.ifs == 1 && $route.params.status != 12 && $route.params.status != 9' class="bth" style='float: right' @click="close($route.params.id)">关闭订单</Button><br> -->
         </header>
         <div class='title'>广告信息</div>
         <div class='bos'>
@@ -105,7 +105,7 @@
             </Row>
         </div>
         <div class='title'>应收款项</div>
-        <Row class='bos'>
+        <!-- <Row class='bos'>
             <Row>
                 <Col :span='2'>设置折扣</Col>
                 <Col :span='4'>
@@ -144,6 +144,20 @@
                 </Col>
                 <Col :span='10' v-if='listitem.totalCost && listitem.totalCost != null'>实际投放花费 ￥ ({{formatNumber(listitem.totalCost)}})</Col>
             </Row>
+        </Row> -->
+        <Row class='bos'>
+            <Row>
+                <Col :span='2'>折扣</Col>
+                <Col :span='4'>
+                    <Input style="width:100px" v-model="auditForm.discount"></Input> 请输入0-1的小数
+                </Col>
+            </Row>
+            <Row>
+                <Col :span='2'>定金</Col>
+                <Col :span='4'>
+                    <Input style="width:100px" v-model="auditForm.depositAmount"></Input> 元
+                </Col>
+            </Row>
         </Row>
         <div style='padding: 20px 0 30px 0'>
             <Form ref="dataplan" :model="dataplan" :rules="ruleValidate" label-position="left" :label-width="100">
@@ -152,7 +166,7 @@
                 预估曝光场次【{{formatNumber(listitem.estimateShowCount , 2)}}】
                 预估花费【{{formatNumber(listitem.estimateCostAmount)}}】
                 <span>, 折扣后总价【{{formatNumber(listitem.estimateShowCount , 2)}}】</span>
-                <Button v-if='this.$route.params.ifs == 1' type="primary" :loading="loading2" @click="shuaxin()">刷新</Button>
+                <!-- <Button v-if='this.$route.params.ifs == 1' type="primary" :loading="loading2" @click="shuaxin()">刷新</Button> -->
                 </Col>
                 <!-- <Col :span='4'>
           <FormItem label="应收金额" prop="money">
@@ -161,11 +175,11 @@
         </Col> -->
             </Form>
             <!-- 详情操作 -->
-            <Col :span='6' v-if='this.$route.params.ifs == 0'>
+            <!-- <Col :span='6' v-if='this.$route.params.ifs == 0'>
             <Button type="primary" @click="back()">返回</Button>
-            </Col>
+            </Col> -->
             <!-- 补单操作 -->
-            <Col :span='6' v-if='this.$route.params.ifs == 1 && (this.$route.params.status == 6 || this.$route.params.status == 7)'>
+            <!-- <Col :span='6' v-if='this.$route.params.ifs == 1 && (this.$route.params.status == 6 || this.$route.params.status == 7)'>
             <Button type="primary" @click='addlist'>确认补单</Button>
             <Button style='margin-left: 30px;' @click="back">取消</Button>
             </Col>
@@ -173,8 +187,11 @@
             <Button v-if='(viewfilm == true || viewcinema == true) || (listitem.status != 9 && listitem.status != 10) ' type="primary" disabled>
                 保存并发送方案至广告主</Button>
             <Button v-if='(viewfilm == false && viewcinema == false) && (listitem.status == 9 || listitem.status == 10) ' type="primary" @click="save('dataplan')">
-                保存并发送至广告主</Button>
+                保存并发送至广告主</Button> -->
+            <Button style='margin-left: 30px;' type="primary" @click="planAuditHandler(true)">通过</Button>
+            <Button style='margin-left: 30px;' type="primary" @click="planAuditHandler(false)">驳回</Button>
             <Button style='margin-left: 30px;' @click="back">取消</Button>
+
             </Col>
         </div>
         <close ref="over" v-if="overVisible" @done="dlgEditDone" />
@@ -198,6 +215,7 @@ import addfilm from './addfilm.vue'
 import { confirm } from '@/ui/modal'
 import Number from '@/components/number.vue'
 import { formatNumber } from '@/util/validateRules'
+import { queryItem, auditItem } from './data'
 
 
 import {
@@ -219,6 +237,10 @@ const timeFormat = 'YYYY-MM-DD HH:mm:ss'
     }
 })
 export default class Main extends ViewBase {
+    auditForm: any = {
+        discount: 0,
+        depositAmount: 0
+    }
     overVisible = false
     addOrUpdateVisible = false
     addVisible = false
@@ -341,6 +363,33 @@ export default class Main extends ViewBase {
 
     mounted() {
         this.search()
+        this.getPlanDetailHandler()
+    }
+
+    async getPlanDetailHandler() {
+        try {
+            const res = await queryItem({ id: this.$route.params.id })
+            this.auditForm.discount = res.item.discount || 0
+            this.auditForm.depositAmount = res.item.depositAmount || 0
+        } catch (ex) {
+            this.handleError(ex)
+        } finally {}
+    }
+
+    async planAuditHandler(agree: boolean = false) {
+        try {
+            const res = await auditItem({
+                id: this.$route.params.id,
+                ...this.auditForm,
+                agree
+            })
+            this.$Message.success({
+                content: `审批完成`,
+            })
+            this.$router.go(-1)
+        } catch (ex) {
+            this.handleError(ex)
+        } finally {}
     }
 
     async getcinemas(asd: any) {
@@ -547,6 +596,33 @@ export default class Main extends ViewBase {
 
     async addlist() {
         const addlist = await addList(this.$route.params.id)
+        this.$router.go(-1)
+    }
+
+    // 保存方案
+    async auditSuccessHandler(dataplan: any) {
+        // 保存定金
+        if (this.listitem.status == 2) {
+            if (this.dataplan.depositAmount == '') {
+                info('请输入定金金额')
+                return
+            }
+            const res = await save(this.$route.params.id, { depositAmount: this.dataplan.depositAmount })
+        } else if (this.listitem.status == 9) { // 核对应结金额
+            if (this.dataplan.needPayAmount == '') {
+                info('请输入应结金额')
+                return
+            }
+            const rescheck = await needamount(this.$route.params.id,
+              { needPayAmount: this.dataplan.needPayAmount, confirm: true })
+        } else if (this.listitem.status == 10) { // 修改应结金额
+            if (this.dataplan.needPayAmount == '') {
+                info('请输入应结金额')
+                return
+            }
+            const resneed = await needamount(this.$route.params.id,
+              { needPayAmount: this.dataplan.needPayAmount, confirm: false })
+        }
         this.$router.go(-1)
     }
 
