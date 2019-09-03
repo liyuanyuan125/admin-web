@@ -384,7 +384,7 @@ export default class Main extends ViewBase {
   }
 
   get cinemas() {
-    if (this.item.relationMovieIdList.length > 0) {
+    if (this.item.relationMovieIdList && this.item.relationMovieIdList.length > 0) {
       const cinemas = this.item.relationMovieIdList.map((val: any) => {
         return val.id * 1
       })
@@ -426,7 +426,7 @@ export default class Main extends ViewBase {
         this.levelList = levelList
         this.qualificationTypeList = qualificationTypeList
         this.customerTypeList = customerTypeList
-        this.title = '新建公司'
+        this.title = '新建片商'
         ; (this.$Spin as any).hide()
       } else {
         const {
@@ -492,7 +492,7 @@ export default class Main extends ViewBase {
         this.levelList = levelList
         this.area = [provinceId || 0, cityId || 0, countyId || 0]
         this.loadingShow = true
-        approveStatus == 1 ? (this.title = '审核公司') : (this.title = '编辑公司')
+        approveStatus == 1 ? (this.title = '审核公司') : (this.title = '编辑片商')
         ; (this.$Spin as any).hide()
       }
     } catch (ex) {

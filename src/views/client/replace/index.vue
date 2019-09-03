@@ -39,6 +39,7 @@ import { confirm, info, alert } from '@/ui/modal.ts'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import { querylist, stop } from '@/api/ggsiter'
 import { toMap } from '@/fn/array'
+import { directorList } from '@/api/corpReal'
 
 const makeMap = (list: any[]) => toMap(list, 'typeCode', 'typeName')
 @Component({
@@ -47,12 +48,11 @@ const makeMap = (list: any[]) => toMap(list, 'typeCode', 'typeName')
   }
 })
 export default class Main extends ViewBase {
-  fetch = querylist
 
   filters: Filter[] = [
     {
       name: 'companyId',
-      defaultValue: 0,
+      defaultValue: '',
       type: 'input',
       width: 108,
       placeholder: 'id'
@@ -62,95 +62,53 @@ export default class Main extends ViewBase {
       defaultValue: '',
       type: 'input',
       width: 100,
-      placeholder: '广告主名称'
+      placeholder: '区代名称'
     },
 
     {
-      name: 'resourceId',
+      name: 'companyType',
       defaultValue: 0,
-      type: 'input',
-      width: 100,
-      placeholder: '广告主身份'
-    },
-
-    {
-      name: 'resourceBillNo',
-      defaultValue: '',
-      type: 'input',
-      width: 100,
-      placeholder: '客户等级',
-    },
-    {
-      name: 'billStatus',
-      defaultValue: '',
       type: 'select',
       width: 100,
-      placeholder: '客户类型',
+      placeholder: '区代身份',
+      enumKey: 'companyTypeList'
     },
 
     {
-      name: 'invoiceType',
+      name: 'businessDirector',
       defaultValue: 0,
       type: 'select',
       width: 100,
       placeholder: '关联销售',
-      enumKey: 'invoiceTypeCodeList'
+      enumKey: 'businesList'
     },
 
     {
-      name: 'invoiceContent',
-      defaultValue: '',
-      type: 'select',
-      width: 100,
-      placeholder: '推荐人电话',
-      enumKey: 'invoiceContentCodeList'
-    },
-    {
-      name: 'yearMonth',
-      defaultValue: null,
-      type: 'input',
-      width: 108,
-      placeholder: '创建时间'
-    },
-    {
-      name: 'payStatus',
-      defaultValue: '',
-      type: 'select',
-      width: 100,
-      placeholder: '更新时间',
-      enumKey: 'payStatusList'
-    },
-
-    {
-      name: 'payStatus',
-      defaultValue: '',
-      type: 'select',
-      width: 100,
-      placeholder: '更新人',
-      enumKey: 'payStatusList'
-    },
-
-    {
-      name: 'payStatus',
-      defaultValue: '',
-      type: 'select',
-      width: 100,
-      placeholder: '状态',
-      enumKey: 'payStatusList'
-    },
-
-    {
-      name: 'payStatus',
-      defaultValue: '',
+      name: 'approveStatus',
+      defaultValue: 0,
       type: 'select',
       width: 100,
       placeholder: '审核状态',
-      enumKey: 'payStatusList'
+      enumKey: 'approveStatusList'
+    },
+
+    {
+      name: 'status',
+      defaultValue: 0,
+      type: 'select',
+      width: 100,
+      placeholder: '状态',
+      enumKey: 'statusList'
     },
 
     {
       name: 'pageIndex',
       defaultValue: 1
+    },
+
+    {
+      name: 'typeCode',
+      defaultValue: 'agent'
     },
 
     {
@@ -164,7 +122,8 @@ export default class Main extends ViewBase {
     'statusList',
     'companyTypeList',
     'customerTypeList',
-    'levelList'
+    'levelList',
+    'businesList',
   ]
 
   columns = [
@@ -172,16 +131,37 @@ export default class Main extends ViewBase {
     { title: '区代名称', key: 'name', minWidth: 100 },
     { title: '区代身份', key: 'companyType', minWidth: 60, editor: 'enum' },
     { title: '客户等级', key: 'levelCode', minWidth: 60, editor: 'enum' },
-    { title: '客户类型', key: 'contractNo', minWidth: 100, slot: 'client' },
     { title: '关联销售', key: 'businessDirectorName', minWidth: 60 },
-    { title: '推荐人电话', key: 'recommendMobile', minWidth: 100 },
     { title: '创建时间', key: 'createTime', minWidth: 60, editor: 'dateTime' },
     { title: '更新时间', key: 'modifyTime', minWidth: 60, editor: 'dateTime' },
-    { title: '更新人', key: 'amount', minWidth: 100 },
+    { title: '更新人', key: 'modifyUserName', minWidth: 100 },
     { title: '状态', key: 'status', minWidth: 60, editor: 'enum'},
     { title: '审核状态', key: 'approveStatus', minWidth: 60, editor: 'enum'},
     { title: '操作', slot: 'operate', minWidth: 90 },
   ]
+
+  fetch = async (req: any) => {
+    const res = await querylist(req)
+    const {
+      data: {
+        items
+      }
+    } = await directorList()
+    const businesList = (items || []).map((it: any) => {
+      return {
+        key: it.id,
+        text: it.userName
+      }
+    })
+    res.data.approveStatusList = res.data.approveStatusList.filter((it: any) => {
+      return it.key != 0
+    })
+    res.data.statusList = res.data.statusList.filter((it: any) => {
+      return it.key != 0
+    })
+    res.data.businesList = businesList
+    return res
+  }
 
   get listPage() {
     return this.$refs.listPage as ListPage
