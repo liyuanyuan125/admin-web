@@ -921,8 +921,8 @@ export default class Main extends ViewBase {
           const data: any = route == 0
             ? await addQuery(formData)
             : await setQuery(route, formData)
-          // toast(data.msg)
-          // this.$router.go(-1)
+          toast(data.msg)
+          this.$router.go(-1)
         } catch (ex) {
           this.handleError(ex)
         }

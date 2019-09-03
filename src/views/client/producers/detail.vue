@@ -3,10 +3,10 @@
     <header class="header flex-box">
       <Button icon="md-return-left" @click="back" class="btn-back">返回上一页</Button>
       <div class="flex-1">
-        <em>广告主详情</em>
+        <em>片商详情</em>
       </div>
     </header>
-    <div class="detail-box">
+    <div class="detail-box" v-if="detail">
       <div class="detail-header">
           <div>
             <Row>
@@ -21,7 +21,7 @@
               <Col span="2"><div>公司地址</div></Col>
               <Col span="8"><span>{{detail.finishAddress}}</span></Col>
             </Row>
-            <Row v-if='detail.types.length == 2'>
+            <Row v-if='detail.types && detail.types.length == 2'>
               <Col span="2"><div>所属行业</div></Col>
               <Col span="8" v-if='detail.businessParentCode'>
                 <Industry :disabled='true' v-model='detail.businessParentCode' :businessParentTypeList='businessParentTypeList' />
@@ -88,7 +88,7 @@
         <Row class="cinema-button" v-if='detail.companyType == 1'>
           <Col span="2"><div>关联影片</div></Col>
           <Col span="12">
-              <PartBindCinema type="1" :value="detail.cinemaList" />
+              <PartBindCinema type="1" v-model="detail.cinemaList" />
           </Col>
         </Row>
       </Row>

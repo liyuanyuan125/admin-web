@@ -4,7 +4,7 @@
     <div class="act-bar">
       <a @click="onAdd" v-if="!type">添加关联影院</a>
     </div>
-    <AddCinemaModel v-if="type != 'detail'" ref="addCinemaModel" :cinemaend = "incinematype" :addData="inValue" @done="columndata" />
+    <AddCinemaModel v-if="!type" ref="addCinemaModel" @done="columndata" />
   </div>
 </template>
 
@@ -53,7 +53,7 @@ export default class ComponentMain extends ViewBase {
        {
          title: '影片英文名称',
          align: 'center',
-         key: 'englishName'
+         key: 'nameEn'
       }
     ]
     const add: any = [

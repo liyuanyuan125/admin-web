@@ -7,14 +7,6 @@
       :columns="columns"
       ref="listPage">
 
-      <template slot="acts">
-        <Button
-          type="success"
-          icon="md-add-circle"
-          @click="editShow()"
-        >片商管理</Button>
-      </template>
-
       <template slot="add" slot-scope="{row: {monthRechargeCount, totalRechargeCount, companyId}}">
         <div>
           <a @click="push({
