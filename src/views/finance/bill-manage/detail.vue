@@ -41,7 +41,7 @@
           <Col :span="8"><p><label>影城系统人次</label><em>{{items.resourcePersonCount}}</em></p></Col>
         </Row>
         <Row>
-          <Col :span="8"><p><label>差异比例</label><em>{{items.proportion}}</em></p></Col>
+          <Col :span="8"><p><label>差异比例</label><em>{{items.proportion}} %</em></p></Col>
         </Row>
         <Form ref="form" :model="form" :label-width="100" label-position="left">
           <FormItem label="是否审核">
