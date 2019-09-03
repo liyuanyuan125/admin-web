@@ -23,8 +23,11 @@
         <Row class='row-list'>
             <Col span='3' class='hui'>广告主</Col>
             <Col span='9'>【{{item.advertiserId}}】{{item.advertiserName}}</Col>
-            <!-- <Col span='3' class='hui'>广告类型</Col>
-            <Col span='9'><span v-for='it in planTypeList' :key='it.key' v-if='it.key == item.planType'>{{it.text}}单</span></Col> -->
+            <Col span='3' class='hui'>广告类型</Col>
+            <Col span='9'>
+              <span v-if='item.advertType == null'>暂无类型</span>
+              <span v-else v-for='it in advertTypeCodeList' :key='it.key' v-if='it.key == item.advertType'>{{it.text}}</span>
+            </Col>
         </Row>
         <Row class='row-list'>
             <Col span='3' class='hui'>广告计划</Col>
@@ -116,7 +119,7 @@ export default class Main extends ViewBase {
   item: any = []
   logList: any = []
   statusList: any = []
-  planTypeList: any = []
+  advertTypeCodeList: any = []
   planDirectionList: any = []
 
   begin: any = ''
@@ -189,7 +192,7 @@ export default class Main extends ViewBase {
       const { data: {
           item: item,
           statusList,
-          planTypeList,
+          advertTypeCodeList,
           planDirectionList
 
       } } = await queryItem(this.$route.params.id)
@@ -211,7 +214,7 @@ export default class Main extends ViewBase {
       })
       this.cinemasList = item.cinemas || []
       this.statusList = statusList
-      this.planTypeList = planTypeList
+      this.advertTypeCodeList = advertTypeCodeList
       this.planDirectionList = planDirectionList
     } catch (ex) {
       this.handleError(ex)

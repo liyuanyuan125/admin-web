@@ -36,11 +36,11 @@ export async function number(id: any , query: any) {
   return res
 }
 
-// // 影院列表
-// export async function cinemaList(id: any , query: any) {
-//   const res = await get(`/xadvert/execute-orders/${id}/cinemas`, query)
-//   return res
-// }
+// 列表查询影院
+export async function movielist(query: any) {
+  const res = await get(`/theater/cinemas`, query)
+  return res
+}
 
 // // 取消执行
 // export async function cinemaCancel(id: any , query: any) {

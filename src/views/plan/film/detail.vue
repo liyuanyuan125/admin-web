@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <header class="header flex-box">
-      <Button icon="md-return-left" @click="back" class="btn-back">返回上一页</Button>
+      <Button icon="md-return-left" @click="backList" class="btn-back">返回列表</Button>
       <div class="flex-1">
         <em></em>
       </div>
@@ -10,48 +10,115 @@
       <div class='titop'>基础信息</div>
       <div class="detail-header">
         <Row>
-          <Col span="2"><div>公司名称</div></Col>
-          <Col span="8"><span>{{detail.companyName}}</span></Col>
+          <Col span="2"><div>广告主公司名称</div></Col>
+          <Col span="5"><span>{{detail.companyName}}</span></Col>
+          <Col span="2"><div>客户类型</div></Col>
+          <Col span="5"><span>{{detail.companyName}}</span></Col>
+          <Col span="2"><div>所属行业</div></Col>
+          <Col span="5"><span>{{detail.companyName}}</span></Col>
         </Row>
         <Row>
+          <Col span="2"><div>营业执照</div></Col>
+          <Col span="5"><span class='ingbo' @click='onView(detail.licenseFileUrl)'><img :src="detail.licenseFileUrl" alt=""></span></Col>
           <Col span="2"><div>客户ID</div></Col>
-          <Col span="8"><span>{{detail.customerId}}</span></Col>
+          <Col span="5"><span>{{detail.customerId}}</span></Col>
           <Col span="2"><div>客户名称</div></Col>
-          <Col span="8"><span>{{detail.customerName}}</span></Col>
+          <Col span="5"><span>{{detail.customerName}}</span></Col>
         </Row>
         <Row>
           <Col span="2"><div>上传人</div></Col>
-          <Col span="8"><span>{{detail.applyUser}}</span></Col>
+          <Col span="5"><span>{{detail.applyUser}}</span></Col>
           <Col span="2"><div>上传时间</div></Col>
-          <Col span="8"><span>{{applyTime}}</span></Col>
+          <Col span="5"><span>{{applyTime}}</span></Col>
         </Row>
       </div>
-      <div class='titop'>广告片</div>
+      <div class='titop'>行业资质</div>
+      <div class="detail-header" style='padding-top: 10px; padding-bottom: 5px;'>
+        <Row>
+          <Col span="2"><div>主体资质</div></Col>
+          <Col span="5"><span class='ingbo' @click='onView()'> </span></Col>
+          <Col span="2"><div>可选资质</div></Col>
+          <Col span="12"><span class='ingbo' v-for='(itd,index) in detail.grantFileIds'><img @click='onView(itd.fileUrl)' :src="itd.fileUrl" alt=""></span></Col>
+        </Row>
+      </div>
+      <div class='titop'>广告片素材</div>
       <Row class="detail-content">
         <Row>
-          <Col span="2"><div>ID</div></Col>
-          <Col span="8"><span>{{detail.id}}</span></Col>
-          <Col span="2"><div>名称</div></Col>
-          <Col span="8"><span>{{detail.name}}</span></Col>
+          <Col span="2"><div>广告片ID</div></Col>
+          <Col span="5"><span>{{detail.id}}</span></Col>
+          <Col span="2"><div>广告片名称</div></Col>
+          <Col span="5"><span>{{detail.name}}</span></Col>
+          <Col span="2"><div>规格</div></Col>
+          <Col span="5"><span>{{detail.specification}}s</span></Col>
         </Row>
         <Row>
-          <Col span="2"><div>规格/时长</div></Col>
-          <Col span="8"><span>{{detail.specification}}s/{{detail.length}}s</span></Col>
+          <Col span="2"><div>是否已转制</div></Col>
+          <Col span="5"><span>{{detail.translated == 1 ? '已转制' : '未转制'}}</span></Col>
           <Col span="2"><div>转制费</div></Col>
-          <Col span="8"><span>{{detail.transFee}}</span></Col>
+          <Col span="5"><span>{{detail.transFee}}</span></Col>
+          <Col span="2"><div>广告片(小样)</div></Col>
+          <Col span="5"><span style='cursor: pointer;' @click='onView(detail.srcFiledAddr)'>查看</span></Col>
         </Row>
         <Row>
+          <Col span="2"><div>广告下载地址</div></Col>
+          <Col span="10"><span>{{detail.srcFileUrl}}</span></Col>
+        </Row>
+        <Row>
+          <Col span="2"><div>活动ID</div></Col>
+          <Col span="5"><span>{{detail.translated == 1 ? '已转制' : '未转制'}}</span></Col>
+          <Col span="2"><div>活动名称</div></Col>
+          <Col span="5"><span>{{detail.transFee}}</span></Col>
+          <Col span="2"><div>活动类型</div></Col>
+          <Col span="5"><span style='cursor: pointer;' @click='onView(detail.srcFiledAddr)'>查看</span></Col>
+        </Row>
+        <Row>
+          <Col span="2"><div>活动价格</div></Col>
+          <Col span="5"><span>{{detail.translated == 1 ? '已转制' : '未转制'}}</span></Col>
+        </Row>
+        <!-- <Row>
           <Col span="12">
             <video :src="detail.srcFileUrl" width='100%' height='50%' controls="controls">
             </video>
              <a class="operation" v-if='showedit' href="" :download=detail.srcFileUrl>下载源文件</a>
           </Col>
+        </Row> -->
+      </Row>
+      <div  class='titop' v-if='showStatus'>整体审核</div>
+      <Row  class='detail-content' v-if='showStatus'>
+        <Row style='margin-top: 15px;'>审核说明：</Row>
+        <Row>请参考下列表中的审核拒绝原因，核对在监播中已出现的行业资质及广告内容。如广告内容符合审核未通过的原因，请对应选择审核未通过的原因。</Row>
+        <Row style='color: red;padding-bottom: 15px;'>如未勾选，则表示该广告审核成功</Row>
+        <Table :columns="columnsReason" :data="fixedRefuseReasonsList"
+        border disabled-hover size="small" class="table">
+           <template  slot="stypeSelected" slot-scope="{row}">
+             <input v-if='$route.params.status == "1"' type="checkbox"  :checked='row.stypeSelected' @change='addReason( $event , row.ptypeCode , row.stypeCode , row.stypeName)'/>
+             <input v-if='$route.params.status == "5"' type="checkbox"  :checked='row.stypeSelected' disabled />
+           </template>
+        </Table>
+        <Row style='padding: 15px 0;'>审核未通过原因（勾选其他时）：</Row>
+        <Row>
+          <Input style="width:240px" type='textarea' :disabled='$route.params.status == "5"' :maxlength="120" v-model="dataForm.refuseReason"></Input>
+        </Row>
+        <Row> {{dataForm.refuseReason.length}} / {{120 - dataForm.refuseReason.length}}</Row>
+        <Row style='padding: 15px 0;'>
+          <Button  type="primary" @click="dataFormSubmit">提交</Button>
+          <Button style='margin-left: 15px;' type="primary" @click="nextSubmit">提交并继续审核</Button>
+        </Row>
+        
+      </Row>
+      <div class='titop' v-if='showStatus'>批注</div>
+      <Row  class='detail-content' v-if='showStatus'>
+        <Row style='padding: 15px 0;'>仅公司内容运营人员使用:</Row>
+        <Row>
+          <Input style="width:240px" type='textarea' v-model="dataForm.annotationInfo"></Input>
+        </Row>
+        <Row style='padding: 15px 0;'>
+          <Button  type="primary" @click="beizhuSubmit">提交</Button>
         </Row>
       </Row>
       <div v-if='showedit' class='titop'>转制</div>
       <Row v-if='showedit' >
-        <!-- <UploadButton style='margin-bottom:17px;' multiple @success="onUploadSuccess">上传</UploadButton> -->
-        <Table :columns="columns" :data="tableData"
+        <Table :columns="columns" :data="detail.attachments"
         border disabled-hover size="small" class="table">
           <template slot="spaction" slot-scope="{row}">
 
@@ -66,7 +133,7 @@
         </template> 
         </Table>
       </Row>
-      <div class='titop' v-if='showStatus'>审核</div>
+      <!-- <div class='titop' v-if='showStatus'>审核</div>
       <Row class="detail-content" v-if='showStatus'>
         <div>
           <Form ref="dataForm" :model="dataForm"  label-position="left" :label-width="100">
@@ -82,7 +149,7 @@
           <Button style='margin-left:20px; margin-bottom: 20px;' type="primary"  @click="change('dataForm')">确定</Button>
           <Button style='margin-left:20px; margin-bottom: 20px;' @click="goback()">取消</Button>
         </div>
-      </Row>
+      </Row> -->
       <div class='titop' v-if='!showStatus'>操作记录</div>
       <Row class='detail-content' v-if='!showStatus'>
         <div class="logs-item" v-for="(it,index) in logList">
@@ -93,6 +160,10 @@
       </row>
     </div>
     <DlgEdit  ref="addOrUpdate" :cinemaOnes="editOne"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" @done="dlgeditdone"/>
+    <!-- 查看图片 -->
+    <Modal v-model="viewerShow" title="查看" width="500" height="500">
+      <img style="width: 100%;" :src="viewerImage" alt sizes srcset>
+    </Modal>
   </div>
 </template>
 
@@ -101,14 +172,14 @@
 import { Component, Watch , Mixins  } from 'vue-property-decorator'
 import moment from 'moment'
 import ViewBase from '@/util/ViewBase'
-import { queryList , queryItem , sapproval , dataFrom , dels , addvideo } from '@/api/planfilm'
+import { queryList , queryItem , sapproval , dataFrom , dels , addvideo , getVideoIds } from '@/api/planfilm'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import { slice , clean } from '@/fn/object'
 import { warning , success, toast } from '@/ui/modal'
 import UploadButton, { SuccessEvent } from '@/components/UploadButton.vue'
 import DlgEdit from './dlgEdit.vue'
-
+import { findIndex } from 'lodash'
 
 
 
@@ -121,8 +192,18 @@ const defQuery = {
 }
 
 const dataForm = {
-  refuseReason: '',
-  agree: true
+  refuseReason: '', // 审核拒绝原因
+  agree: true, // 审核结果
+  annotationInfo: '', // 批注
+  fixedRefuseReasons: [] // 审核原因数组
+}
+
+const getName = (ptypeCode: any, list: any[]) => {
+  const i: number = findIndex(list, (it: any) => {
+    return ptypeCode === it.ptypeCode
+  })
+  const res: string = (!list[i].value || list[i].value == '') ? '-' : list[i].value
+  return res
 }
 
 @Component({
@@ -154,20 +235,51 @@ export default class Main extends ViewBase {
 
   editOne: any = null
 
+  // 查看图片
+  viewerShow = false
+  viewerImage = ''
+
 
   addOrUpdateVisible = false
+
+  // 存储数据需要调用接口的参数列
+  videoIdsList: any = {}
+  dataList: any = [
+    {
+      value: '行业资质',
+      key: 'VIDEO_INDUSTRY_QUALIFICATION'
+    },
+    {
+      value: '广告片素材',
+      key: '2'
+    }
+  ]
+  // 不通过原因列表
+  reasonName: any = []
+  objreasonName: any = []
+
+  fixedRefuseReasonsList: any = []
+
+  columnsReason: any = []
 
 
   id = 0
 
   applyTime = ''
 
-//   // 审核
+  // 审核
   dataForm: any = { ...dataForm }
 
   mounted() {
-    // console.log(this.$route.params)
-    if ( this.$route.params.status == '1' ) {
+    this.reasonName = []
+    this.dataForm.fixedRefuseReasons = []
+    // 审核原因列表
+    this.columnsReason = [
+      { title: '审核内容', key: 'ptypeName',  align: 'center' },
+      { title: '审核拒绝的原因', key: 'stypeName',   align: 'center' },
+      { title: '是否符合审核拒绝的原因', slot: 'stypeSelected', align: 'center' },
+    ]
+    if ( this.$route.params.status == '1' || this.$route.params.status == '5' ) {
       this.showStatus = true
     }
     if ( this.$route.params.status == '3' || this.$route.params.status == '4' ) {
@@ -179,7 +291,6 @@ export default class Main extends ViewBase {
 
   // 上传文件
   async onUploadSuccess({ files }: SuccessEvent, key: number) {
-    // console.log(this, key, files)
     const typetext = key
     // const typecode = this.typeList.map((item: any) => {
     //       return item.sort
@@ -190,35 +301,28 @@ export default class Main extends ViewBase {
         await addvideo (this.$route.params.id , {
                                                 name: files[0].clientName,
                                                 fileId: files[0].fileId,
-                                                typeCode: key
+                                                typeCode: -1
                                               })
         toast('操作成功')
         this.doSearch()
       } catch (ex) {
         this.handleError(ex)
       }
-    // } else {
-    //   alert('请确认上传文件格式')
-    // }
-  }
-  get cachedMap() {
-    return {
-    }
   }
 
-  get tableData() {
-    const cachedMap = this.cachedMap
-    const typeList = (this.typeList || []).map((it: any) => {
-      return {
-        ...it,
-      }
-    })
-    return typeList
-  }
+  // get tableData() {
+  //   const typeList = (this.typeList || []).map((it: any) => {
+  //     return {
+  //       ...it,
+  //     }
+  //   })
+  //   return typeList
+  // }
 
+  // 转制附件列表展示
   columns = [
-    { title: '序号', key: 'sort', width: 80 , align: 'center' },
-    { title: '格式', key: 'text', width: 130 , align: 'center' },
+    // { title: '序号', key: 'sort', width: 80 , align: 'center' },
+    // { title: '格式', key: 'text', width: 130 , align: 'center' },
     { title: '附件', key: 'name',  align: 'center',
       render: (hh: any, { row: { desc , text } }: any) => {
         /* tslint:disable */
@@ -230,7 +334,7 @@ export default class Main extends ViewBase {
             return <span class='datetime' style='color:#4b9cf2' v-html={desc.name}></span>
           }
         } else {
-          <span class='datetime' v-html={'-'}></span>
+          return <span class='datetime' v-html={'-'}></span>
         }
         
         /* tslint:enable */
@@ -248,7 +352,7 @@ export default class Main extends ViewBase {
           const html = moment(desc.uploadTime).format(timeFormatDate)
           return desc.uploadTime == null ? <span class='datetime' v-html={'-'}></span> : <span class='datetime' v-html={html}></span>
         } else {
-          <span class='datetime' v-html={'-'}></span>
+          return <span class='datetime' v-html={'-'}></span>
         }
         /* tslint:enable */
       }
@@ -265,7 +369,7 @@ export default class Main extends ViewBase {
             return <span class='datetime' v-html={html}></span>
           }
         } else {
-          <span class='datetime' v-html={'-'}></span>
+          return <span class='datetime' v-html={'-'}></span>
         }
         
         /* tslint:enable */
@@ -280,34 +384,34 @@ export default class Main extends ViewBase {
     }
   ]
 
+
   async doSearch() {
-     (this.$Spin as any).show()
-     this.oldQuery = { ...this.query }
-
-
+    (this.$Spin as any).show()
+    this.oldQuery = { ...this.query }
     const query = clean({ ...this.query })
     try {
       const res = await queryItem(this.$route.params.id)
       this.detail = res.data.item
       this.applyTime = moment(this.detail.applyTime).format(timeFormatDate)
+      this.fixedRefuseReasonsList = res.data.fixedRefuseReasonsList
        // 附件
-      this.typeList = res.data.typeList.map((it: any) => {
-        const key = it.key
-        const typecode = this.detail.attachments.map((item: any) => {
-          return item.typeCode
-        })
-        const index = typecode.indexOf(key)
-        if (index != -1) {
-          return {
-            ...it,
-            desc: this.detail.attachments[index]
-          }
-        } else {
-          return {
-            ...it
-          }
-        }
-      })
+      // this.typeList = res.data.typeList.map((it: any) => {
+      //   const key = it.key
+      //   const typecode = this.detail.attachments.map((item: any) => {
+      //     return item.typeCode
+      //   })
+      //   const index = typecode.indexOf(key)
+      //   if (index != -1) {
+      //     return {
+      //       ...it,
+      //       desc: this.detail.attachments[index]
+      //     }
+      //   } else {
+      //     return {
+      //       ...it
+      //     }
+      //   }
+      // })
 
 
       this.logList = res.data.logList.map((item: any) => {
@@ -325,7 +429,7 @@ export default class Main extends ViewBase {
     } finally {
     }
   }
-  // 新增 / 修改
+  // 新增 / 修改 (录入下载链接/)
   edit(id: number , key: any , row: any ) {
     this.addOrUpdateVisible = true
     !!id ? this.editOne = row : this.editOne
@@ -335,8 +439,120 @@ export default class Main extends ViewBase {
     })
   }
 
+  // 添加原因列表
+  addReason(e: any , ptypeCode: any , stypeCode: any , stypeName: any) {
+    if (e.target.checked == true) {
+      this.dataForm.fixedRefuseReasons.push({
+        pCode: ptypeCode,
+        sCode: stypeCode,
+        stypeName,
+      })
+    } else {
+      for (let i = 0; i < this.dataForm.fixedRefuseReasons.length; i++) {
+        if (this.dataForm.fixedRefuseReasons[i].stypeName == stypeName) {
+          this.dataForm.fixedRefuseReasons.splice(i, 1)
+          break
+        }
+      }
+    }
+  }
+
+  // 提交并继续审核
+  async nextSubmit() {
+    const dataItem: any = JSON.parse((sessionStorage.getItem('info') as any))
+    this.videoIdsList = {
+      query: dataItem.query, // 广告片id或者名称
+      companyId: dataItem.companyId, // 公司Id
+      status: dataItem.status, // 状态
+      translated: dataItem.translated, // 1：转制；2：未转制
+      skip: dataItem.skip, // 跳过的记录数
+      maxSize: dataItem.maxSize, // 最大返回数据量
+    }
+
+    const query: any = {
+      refuseReason: this.dataForm.refuseReason ,
+      agree: this.dataForm.fixedRefuseReasons.length == 0 ? true : false ,
+      fixedRefuseReasons: (this.dataForm.fixedRefuseReasons || []).map((it: any) => {
+        return {
+          pCode: it.pCode,
+          sCode: it.sCode,
+        }
+      })
+    }
+
+
+    // 如果没有videoIds存储值则代表没有请求过ids列表
+    if (JSON.parse((sessionStorage.getItem('videoIds') as any)) == null ) {
+      try {
+        const res =  await getVideoIds (this.videoIdsList) // 请求1000的存储总量
+        const videoIds = res.data.item || []
+        if (videoIds.length > 1) {
+          sessionStorage.setItem('videoIds', JSON.stringify(videoIds.slice(1))) // 存储总量-1
+          const data =  await sapproval (this.$route.params.id, query)
+          this.$router.push({ name : 'gg-film-detail' , params: {id: videoIds[1] , status: '1'} })
+        } else {
+           const resdata =  await sapproval (this.$route.params.id, query)
+           setTimeout(() => {
+              this.backList()
+          }, 1000)
+        }
+      } catch (ex) {
+        this.handleError(ex)
+      }
+    } else { // 如果有则是详情-详情页面
+      const dataItemIds: any = JSON.parse((sessionStorage.getItem('videoIds') as any))
+      if (dataItemIds.length > 1 && dataItemIds.length < 980) { // 判断剩余存储的数值是否超过存储总量
+        sessionStorage.removeItem('videoIds') // 先清空原存值，在存新值
+        sessionStorage.setItem('videoIds', JSON.stringify(dataItemIds.slice(1))) // 存储新值
+         const res =  await sapproval (dataItemIds[0], query)
+        this.$router.push({ name : 'gg-film-detail' , params: {id: dataItemIds[1] , status: '1'} })
+      } else {
+        const res =  await sapproval (this.$route.params.id, query)
+        // toast('没有更多数据了')
+                setTimeout(() => {
+                        this.backList()
+                    }, 1000)
+      }
+    }
+  }
+  // 提交审核拒绝原因
+  async dataFormSubmit() {
+    const query: any = {
+      refuseReason: this.dataForm.refuseReason ,
+      agree: this.dataForm.fixedRefuseReasons.length == 0 ? true : false,
+      fixedRefuseReasons: (this.dataForm.fixedRefuseReasons || []).map((it: any) => {
+        return {
+          pCode: it.pCode,
+          sCode: it.sCode,
+        }
+      })
+    }
+    try {
+      const res =  await sapproval (this.$route.params.id, query)
+      this.$router.push({ name : 'gg-film' })
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
+  // 提交批注
+  async beizhuSubmit() {
+    try {
+      const res =  await sapproval (this.$route.params.id , {annotationInfo : this.dataForm.annotationInfo})
+      this.$router.push({ name : 'gg-film' })
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
   dlgeditdone() {
     this.doSearch()
+  }
+
+  // 查看图片
+  onView(url: string) {
+    this.viewerImage = url
+    this.viewerShow = true
   }
 
   reloadSearch() {
@@ -376,6 +592,17 @@ export default class Main extends ViewBase {
   back() {
     this.$router.go(-1)
   }
+
+  // 返回列表
+  backList() {
+      this.$router.push({ name: 'gg-film' })
+  }
+
+  @Watch('$route.parmas', { deep: true })
+
+    watchParmas(val: any) {
+        this.doSearch()
+    }
 }
 </script>
 
@@ -529,15 +756,37 @@ export default class Main extends ViewBase {
 .logs-item {
   height: 35px;
 }
-/deep/ .ivu-btn:hover {
-  color: #000;
-  background-color: #fff;
-  border-color: #fff;
+.ingbo {
+  width: 80px;
+  height: 80px;
+  margin-right: 10px;
+  img {
+    width: 100%;
+    height: 100%;
+  }
 }
 /deep/ .ivu-btn {
   border-color: #fff;
 }
 /deep/ .ivu-btn:focus {
   box-shadow: 0;
+}
+/deep/ textarea {
+  min-width: 500px;
+  min-height: 75px;
+  max-height: 75px;
+  max-width: 500px;
+}
+/deep/ .ivu-table-wrapper {
+  width: 80%;
+}
+/deep/ .ivu-table {
+  width: 100% !important;
+}
+/deep/ [type=checkbox] {
+  box-sizing: border-box;
+  padding: 0;
+  width: 20px;
+  height: 15px;
 }
 </style>

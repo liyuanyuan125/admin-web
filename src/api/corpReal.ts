@@ -76,3 +76,9 @@ export async function companyList(query: any) {
     return res
 }
 
+// 公司查询
+export async function arealist(ids: any) {
+  const res = await get(`/basis/districts/${ids}`)
+  return res
+}
+

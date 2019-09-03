@@ -47,4 +47,28 @@ export async function refuselist(query: any) {
 }
 
 
+//  商务负责人
+export async function directorList(query: any) {
+  const data = await get('/auth/users', query)
+  return data
+}
+
+//  获取监播ids列表
+export async function monitorsIds(query: any) {
+  const data = await get(`/xadvert/play-monitors/ids`, query)
+  return data
+}
+
+//  监播审核new
+export async function approve(id: any , query: any) {
+  const data = await put(`/xadvert/play-monitors/${id}/approve`, query)
+  return data
+}
+
+// 监播恢复
+export async function reset(id: any) {
+  const data = await put(`/xadvert/play-monitors/${id}/reset`)
+  return data
+}
+
 
