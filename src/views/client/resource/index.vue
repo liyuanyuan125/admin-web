@@ -38,6 +38,7 @@ import { confirm, info, alert } from '@/ui/modal.ts'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import { querylist, stop } from '@/api/ggsiter'
 import { toMap } from '@/fn/array'
+import { directorList } from '@/api/corpReal'
 
 const makeMap = (list: any[]) => toMap(list, 'typeCode', 'typeName')
 @Component({
@@ -46,12 +47,11 @@ const makeMap = (list: any[]) => toMap(list, 'typeCode', 'typeName')
   }
 })
 export default class Main extends ViewBase {
-  fetch = querylist
 
   filters: Filter[] = [
     {
       name: 'companyId',
-      defaultValue: 0,
+      defaultValue: '',
       type: 'input',
       width: 108,
       placeholder: 'id'
@@ -61,96 +61,54 @@ export default class Main extends ViewBase {
       defaultValue: '',
       type: 'input',
       width: 100,
-      placeholder: '广告主名称'
+      placeholder: '资源方名称'
     },
 
     {
-      name: 'resourceId',
-      defaultValue: 0,
-      type: 'input',
-      width: 100,
-      placeholder: '广告主身份'
-    },
-
-    {
-      name: 'resourceBillNo',
-      defaultValue: '',
-      type: 'input',
-      width: 100,
-      placeholder: '客户等级',
-    },
-    {
-      name: 'billStatus',
-      defaultValue: '',
-      type: 'select',
-      width: 100,
-      placeholder: '客户类型',
-    },
-
-    {
-      name: 'invoiceType',
-      defaultValue: 0,
-      type: 'select',
-      width: 100,
-      placeholder: '关联销售',
-      enumKey: 'invoiceTypeCodeList'
-    },
-
-    {
-      name: 'invoiceContent',
-      defaultValue: '',
-      type: 'select',
-      width: 100,
-      placeholder: '推荐人电话',
-      enumKey: 'invoiceContentCodeList'
-    },
-    {
-      name: 'yearMonth',
-      defaultValue: null,
-      type: 'input',
-      width: 108,
-      placeholder: '创建时间'
-    },
-    {
-      name: 'payStatus',
-      defaultValue: '',
-      type: 'select',
-      width: 100,
-      placeholder: '更新时间',
-      enumKey: 'payStatusList'
-    },
-
-    {
-      name: 'payStatus',
-      defaultValue: '',
-      type: 'select',
-      width: 100,
-      placeholder: '更新人',
-      enumKey: 'payStatusList'
-    },
-
-    {
-      name: 'payStatus',
+      name: 'status',
       defaultValue: '',
       type: 'select',
       width: 100,
       placeholder: '状态',
-      enumKey: 'payStatusList'
+      enumKey: 'statusList'
     },
-
     {
-      name: 'payStatus',
+      name: 'childType',
       defaultValue: '',
       type: 'select',
       width: 100,
+      placeholder: '客户类型',
+      enumKey: 'typeList'
+    },
+
+    {
+      name: 'businessDirector',
+      defaultValue: 0,
+      type: 'select',
+      width: 100,
+      placeholder: '关联销售',
+      enumKey: 'businesList'
+    },
+
+    {
+      name: 'approveStatus',
+      defaultValue: 0,
+      type: 'select',
+      width: 100,
       placeholder: '审核状态',
-      enumKey: 'payStatusList'
+      enumKey: 'approveStatusList'
     },
 
     {
       name: 'pageIndex',
       defaultValue: 1
     },
+
+    {
+      name: 'typeCode',
+      defaultValue: 'resource'
+    },
+
 
     {
       name: 'pageSize',
@@ -163,7 +121,9 @@ export default class Main extends ViewBase {
     'statusList',
     'companyTypeList',
     'customerTypeList',
-    'levelList'
+    'levelList',
+    'businesList',
+    'typeList'
   ]
 
   columns = [
@@ -172,25 +132,56 @@ export default class Main extends ViewBase {
     { title: '客户等级', key: 'levelCode', minWidth: 60, editor: 'enum' },
     { title: '客户类型', key: 'contractNo', minWidth: 100, slot: 'client' },
     { title: '关联销售', key: 'businessDirectorName', minWidth: 60 },
-    { title: '推荐人电话', key: 'recommendMobile', minWidth: 100 },
     { title: '创建时间', key: 'createTime', minWidth: 60, editor: 'dateTime' },
     { title: '更新时间', key: 'modifyTime', minWidth: 60, editor: 'dateTime' },
-    { title: '更新人', key: 'amount', minWidth: 100 },
+    { title: '更新人', key: 'modifyUserName', minWidth: 100 },
     { title: '状态', key: 'status', minWidth: 60, editor: 'enum'},
     { title: '审核状态', key: 'approveStatus', minWidth: 60, editor: 'enum'},
     { title: '操作', slot: 'operate', minWidth: 90 },
   ]
+
+  fetch = async (req: any) => {
+    const res = await querylist(req)
+    const {
+      data: {
+        items
+      }
+    } = await directorList()
+    const businesList = (items || []).map((it: any) => {
+      return {
+        key: it.id,
+        text: it.userName
+      }
+    })
+    const typeList = res.data.customerTypeList.filter((it: any) => {
+      return it.typeCode == 'resource'
+    })[0].typeCategoryList
+    res.data.statusList = res.data.statusList.filter((it: any) => {
+      return it.key != 0
+    })
+    res.data.approveStatusList = res.data.approveStatusList.filter((it: any) => {
+      return it.key != 0
+    })
+    res.data.typeList = typeList.map((it: any) => {
+      return {
+        key: it.typeCode,
+        text: it.typeName
+      }
+    })
+    res.data.businesList = businesList
+    return res
+  }
 
   get listPage() {
     return this.$refs.listPage as ListPage
   }
 
   format(val: any) {
-    const code = (val || []).filter((it: any) => it.typeCode)
+    const code = (val || []).filter((it: any) => it.typeCode == 'resource')
     const adsarray = ((this.listPage.enumType as any).customerTypeList || [])
     .filter((it: any) => it.typeCode == 'resource')
     const invkey = makeMap(adsarray[0].typeCategoryList)
-    return (code || []).length > 0 ? invkey[code[0].typeCategoryCode] : '-'
+    return (code[0].typeCategoryCode) ? invkey[code[0].typeCategoryCode] : '-'
   }
 
   editShow(id?: any) {

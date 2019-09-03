@@ -35,6 +35,7 @@ import {Component} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { confirm, info, alert } from '@/ui/modal.ts'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
+import { directorList } from '@/api/corpReal'
 import { querylist, stop } from '@/api/ggsiter'
 
 import { toMap } from '@/fn/array'
@@ -46,7 +47,6 @@ const makeMap = (list: any[]) => toMap(list, 'typeCode', 'typeName')
   }
 })
 export default class Main extends ViewBase {
-  fetch = querylist
 
   filters: Filter[] = [
     {
@@ -65,7 +65,15 @@ export default class Main extends ViewBase {
     },
 
     {
-      name: 'resourceId',
+      name: 'recommendTel',
+      defaultValue: '',
+      type: 'input',
+      width: 100,
+      placeholder: '推荐人电话',
+    },
+
+    {
+      name: 'companyType',
       defaultValue: 0,
       type: 'select',
       width: 100,
@@ -74,47 +82,51 @@ export default class Main extends ViewBase {
     },
 
     {
-      name: 'resourceBillNo',
-      defaultValue: '',
-      type: 'input',
-      width: 100,
-      placeholder: '客户等级',
-    },
-    {
-      name: 'billStatus',
+      name: 'childType',
       defaultValue: '',
       type: 'select',
       width: 100,
       placeholder: '客户类型',
+      enumKey: 'typeList'
     },
 
     {
-      name: 'invoiceType',
+      name: 'businessDirector',
       defaultValue: 0,
       type: 'select',
       width: 100,
       placeholder: '关联销售',
-      enumKey: 'invoiceTypeCodeList'
+      enumKey: 'businesList'
     },
 
     {
-      name: 'recommendTel',
-      defaultValue: '',
-      type: 'input',
+      name: 'status',
+      defaultValue: 0,
+      type: 'select',
       width: 100,
-      placeholder: '推荐人电话',
+      placeholder: '状态',
+      enumKey: 'statusList'
     },
+
     {
-      name: 'yearMonth',
-      defaultValue: null,
-      type: 'input',
-      width: 108,
-      placeholder: '创建时间'
+      name: 'approveStatus',
+      defaultValue: 0,
+      type: 'select',
+      width: 100,
+      placeholder: '审核状态',
+      enumKey: 'approveStatusList'
     },
+
     {
       name: 'pageIndex',
       defaultValue: 1
     },
+
+    {
+      name: 'typeCode',
+      defaultValue: 'ads'
+    },
+
 
     {
       name: 'pageSize',
@@ -127,7 +139,9 @@ export default class Main extends ViewBase {
     'statusList',
     'companyTypeList',
     'customerTypeList',
-    'levelList'
+    'levelList',
+    'businesList',
+    'typeList'
   ]
 
   columns = [
@@ -140,21 +154,53 @@ export default class Main extends ViewBase {
     { title: '推荐人电话', key: 'recommendMobile', minWidth: 100 },
     { title: '创建时间', key: 'createTime', minWidth: 60, editor: 'dateTime' },
     { title: '更新时间', key: 'modifyTime', minWidth: 60, editor: 'dateTime' },
-    { title: '更新人', key: 'amount', minWidth: 100 },
+    { title: '更新人', key: 'modifyUserName', minWidth: 100 },
     { title: '状态', key: 'status', minWidth: 60, editor: 'enum'},
     { title: '审核状态', key: 'approveStatus', minWidth: 60, editor: 'enum'},
     { title: '操作', slot: 'operate', minWidth: 90 },
   ]
+
+  fetch = async (req: any) => {
+    const res = await querylist(req)
+    const {
+      data: {
+        items
+      }
+    } = await directorList()
+    const businesList = (items || []).map((it: any) => {
+      return {
+        key: it.id,
+        text: it.userName
+      }
+    })
+    const typeList = res.data.customerTypeList.filter((it: any) => {
+      return it.typeCode == 'ads'
+    })[0].typeCategoryList
+    res.data.approveStatusList = res.data.approveStatusList.filter((it: any) => {
+      return it.key != 0
+    })
+    res.data.statusList = res.data.statusList.filter((it: any) => {
+      return it.key != 0
+    })
+    res.data.typeList = typeList.map((it: any) => {
+      return {
+        key: it.typeCode,
+        text: it.typeName
+      }
+    })
+    res.data.businesList = businesList
+    return res
+  }
 
   get listPage() {
     return this.$refs.listPage as ListPage
   }
 
   format(val: any) {
-    const code = (val || []).filter((it: any) => it.typeCode)
+    const code = (val || []).filter((it: any) => it.typeCode == 'ads')
     const adsarray = ((this.listPage.enumType as any).customerTypeList || []).filter((it: any) => it.typeCode == 'ads')
     const invkey = makeMap(adsarray[0].typeCategoryList)
-    return (code[0].typeCategoryCode || []).length > 0 ? invkey[code] : '-'
+    return (code[0].typeCategoryCode) ? invkey[code[0].typeCategoryCode] : '-'
   }
 
   editShow(id?: any) {
