@@ -42,7 +42,7 @@
                 :is="it.component"
                 :disabled="!!it.disabled"
                 v-bind="{
-                  enumList: enumMap[it.name],
+                  enumList: newEnumMap[it.enumKey] || enumMap[it.name],
                   ...it.props
                 }"
                 v-on="it.handlers"
@@ -82,7 +82,13 @@
 <script lang="ts">
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import { MapType, AjaxResult, isAjaxResult, KeyTextControlStatus } from '@/util/types'
+import {
+  MapType,
+  AjaxResult,
+  isAjaxResult,
+  KeyTextControlStatus,
+  isKeyTextEnum
+} from '@/util/types'
 import TinyLoading from '@/components/TinyLoading.vue'
 import {
   Field,
@@ -156,7 +162,11 @@ export default class EditForm extends ViewBase {
 
   defItem: any = {}
 
+  // 旧版枚举类型，慢慢优化掉
   enumMap: MapType<KeyTextControlStatus[]> = {}
+
+  // 新版的筛选枚举，旧版会被慢慢重构掉
+  newEnumMap: MapType<KeyTextControlStatus[]> = {}
 
   errorMap: MapType = {}
 
@@ -212,7 +222,7 @@ export default class EditForm extends ViewBase {
 
       this.initFields()
 
-      // TODO: 老式 enumMap ？改为自动枚举判断？
+      // TODO: 老式 enumMap，基于 enumKey 属性，将慢慢优化掉
       const enumMap = this.normalFields
         .filter(it => !!it.enumKey)
         .reduce(
@@ -223,6 +233,18 @@ export default class EditForm extends ViewBase {
           {} as MapType<KeyTextControlStatus[]>
         )
       this.enumMap = enumMap
+
+      // 新版 enumMap，自动判断，不再依赖配置中的 enumKey
+      // TODO: 可以清理对 enumKey 的提升代码
+      const enumList = Object.entries(data).filter(([key, list]) => isKeyTextEnum(list))
+      const newEnumMap = enumList.reduce(
+        (map, [name, list]) => {
+          map[name] = list
+          return map
+        },
+        {} as MapType<KeyTextControlStatus[]>
+      )
+      this.newEnumMap = newEnumMap
 
       const defItem = this.defItem
 
