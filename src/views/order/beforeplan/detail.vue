@@ -104,7 +104,9 @@
             </div>
         </div>
         <!-- 投放影院 -->
+        <div class='title' v-if='$route.params.status != "3" '>接单影院 / 派单影院 : {{listitem.acceptCinemaCount}} / {{listitem.cinemaCount}}</div>
         <Cinema @getcine="getcinemas" />
+
         <div class='title'>备注</div>
         <div class='bos'>
             <Row v-if='(listitem.remarks == null)'>暂无备注</Row>
@@ -674,6 +676,7 @@ span:only-child:empty {
 }
 
 .bos {
+  width: 99%;
   border: 1px solid #ccc;
   padding: 15px;
 }
