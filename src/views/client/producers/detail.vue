@@ -6,7 +6,7 @@
         <em>片商详情</em>
       </div>
     </header>
-    <div class="detail-box" v-if='detail'>
+    <div class="detail-box" v-if="detail">
       <div class="detail-header">
           <div>
             <Row>
