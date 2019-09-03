@@ -13,7 +13,7 @@ const mockData = (mockOpts: any) => {
 }
 
 export async function mockGet(data: any, mockOpts: any) {
-  await get('/mock/76/demo/femock', data, ajaxOpts)
+  // await get('/mock/76/demo/femock', data, ajaxOpts)
   return mockData(mockOpts)
 }
 

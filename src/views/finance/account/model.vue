@@ -135,7 +135,7 @@ export default class ComponentMain extends ViewBase {
   }
 
 
-  cancel(dataForms: string) {
+  cancel() {
     this.showDlg = false
     ; (this.$refs.dataForm as any).resetFields()
   }
