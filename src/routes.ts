@@ -1350,6 +1350,38 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   //   }
   // },
 
+  // 促销活动 - 列表
+  {
+    path: '/promotion/cpm',
+    name: 'promotion-cpm',
+    component: () => import('./views/promotion/cpm/list.vue'),
+    meta: {
+      authKey: '',
+      title: '广告片营销活动'
+    }
+  },
+
+  // 基础数据 - 品牌管理 - 产品 - 编辑 - 详情
+  {
+    path: '/promotion/cpm/detail/:id?/:action',
+    name: 'promotion-cpm-detail',
+    component: () => import('./views/promotion/cpm/detail.vue'),
+    meta: {
+      authKey: '',
+      title({ params: { action } }) {
+        switch (action) {
+          case 'view':
+            return '查看'
+          case 'edit':
+            return '编辑'
+          default:
+            return '添加新产品'
+        }
+      }
+    },
+    props: paramTypes({ id: Number, brandId: Number, action: String })
+  },
+
   {
     path: '/system/setup',
     name: 'system-setup',
