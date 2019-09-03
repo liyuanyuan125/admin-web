@@ -51,5 +51,9 @@ export async function editvideo(videoId: any , attachmentId: any, query: any) {
   return res
 }
 
-
+// 获取存储ids
+export async function getVideoIds(query: any) {
+  const data = await get('/xadvert/videos/ids' , query)
+  return data
+}
 

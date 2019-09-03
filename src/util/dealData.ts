@@ -130,6 +130,10 @@ export function filterItemInList(
   Object.entries(listMap).forEach(([key, list]) => {
     if (key in newItem) {
       const val = newItem[key]
+      // 跳过复杂的对象（包括 array）
+      if (typeof val === 'object') {
+        return
+      }
       const found = list.find(t => val == t.key)
       const defVal = defValMap[key]
       // 若 val 在 list 中能找到，则 val 是合法的值，否则使用 defVal

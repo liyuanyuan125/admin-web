@@ -183,6 +183,126 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  // 客户管理 - 广告主管理 - 列表
+  {
+    path: '/client/ggiser/',
+    name: 'client-ggiser',
+    component: () => import('./views/client/ggiser/index.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
+  // 客户管理 - 广告主管理 - 审核
+  {
+    path: '/client/ggiser/edit/:id?',
+    name: 'client-ggiser-edit',
+    component: () => import('./views/client/ggiser/edit.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
+    // 客户管理 - 广告主管理 - 详情
+  {
+    path: '/client/ggiser/detail/:id?',
+    name: 'client-ggiser-detail',
+    component: () => import('./views/client/ggiser/detail.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
+  // 客户管理 - 资源方管理 - 列表
+  {
+    path: '/client/resource/',
+    name: 'client-resource',
+    component: () => import('./views/client/resource/index.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
+  // 客户管理 - 资源方管理 - 编辑
+  {
+    path: '/client/resource/edit/:id?',
+    name: 'client-resource-edit',
+    component: () => import('./views/client/resource/edit.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
+    // 客户管理 - 资源方管理 - 详情
+  {
+    path: '/client/resource/detail/:id?',
+    name: 'client-resource-detail',
+    component: () => import('./views/client/resource/detail.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
+  // 客户管理 - 片商管理 - 列表
+  {
+    path: '/client/producers/',
+    name: 'client-producers',
+    component: () => import('./views/client/producers/index.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
+  // 客户管理 - 片商管理 - 编辑
+  {
+    path: '/client/producers/edit/:id?',
+    name: 'client-producers-edit',
+    component: () => import('./views/client/producers/edit.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
+    // 客户管理 - 片商管理 - 详情
+  {
+    path: '/client/producers/detail/:id?',
+    name: 'client-producers-detail',
+    component: () => import('./views/client/producers/detail.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
+   // 客户管理 - 区代管理 - 列表
+   {
+    path: '/client/replace/',
+    name: 'client-replace',
+    component: () => import('./views/client/replace/index.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
+  // 客户管理 - 区代管理 - 编辑
+  {
+    path: '/client/replace/edit/:id?',
+    name: 'client-replace-edit',
+    component: () => import('./views/client/replace/edit.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
+    // 客户管理 - 区代管理 - 详情
+  {
+    path: '/client/replace/detail/:id?',
+    name: 'client-replace-detail',
+    component: () => import('./views/client/replace/detail.vue'),
+    meta: {
+      authKey: 'customer.companies:list'
+    }
+  },
+
   // 客户管理 - 公司管理 - 添加、编辑
   {
     path: '/client/corp/edit/:id?',
@@ -284,6 +404,17 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     component: () => import('./views/client/message/index.vue'),
     meta: {
       authKey: ''
+    }
+  },
+
+  // 客户管理 - 签约影院
+  {
+    path: '/client/signedCinema/',
+    name: 'client-signed-cinema',
+    component: () => import('./views/client/signed-cinema/index.vue'),
+    meta: {
+      authKey: '',
+      title: '签约影院管理'
     }
   },
 
@@ -528,6 +659,17 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: idProps
   },
 
+  // 商务管理
+  {
+    path: 'data/business',
+    name: 'data-business',
+    component: () => import('./views/data/business/index.vue'),
+    meta: {
+      authKey: '',
+      title: '商务管理'
+    }
+  },
+
   // 基础数据 - 影人管理
   {
     path: 'data/person',
@@ -739,14 +881,76 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     ]
   },
 
-  // 财务管理 - 充值审核
+  // 财务管理 - 账号余额管理
   {
-    path: '/finance/examine/',
-    name: 'finance-examine',
-    component: () => import('./views/finance/examine/index.vue'),
+    path: '/finance/account/balance/',
+    name: 'finance-account-balance',
+    component: () => import('./views/finance/account/index.vue'),
     meta: {
       authKey: ''
     }
+  },
+
+  // 财务管理 - 账号余额管理次数
+  {
+    path: '/finance/account/balance/detail/:time/:companyId/:transactionTypes',
+    name: 'finance-account-balance-detail',
+    component: () => import('./views/finance/account/detail.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+   // 财务管理 - 账号余额充值
+   {
+    path: '/finance/account/balance/edit/:companyId',
+    name: 'finance-account-balance-edit',
+    component: () => import('./views/finance/account/edit.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+
+  // 财务管理 - 账号余额管理
+  {
+    path: '/finance/balance/withdrawal/',
+    name: 'finance-balance-withdrawal',
+    component: () => import('./views/finance/withdrawal/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 财务管理 - 账号余额审核汇款详情
+  {
+    path: '/finance/balance/withdrawal/:id/:status?',
+    name: 'finance-balance-withdrawal-status',
+    component: () => import('./views/finance/withdrawal/detail.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+
+  // 财务管理 - 充值审核
+  // {
+  //   path: '/finance/examine/',
+  //   name: 'finance-examine',
+  //   component: () => import('./views/finance/examine/index.vue'),
+  //   meta: {
+  //     authKey: ''
+  //   }
+  // },
+
+  {
+    path: '/finance/examine/newindex/:pay?',
+    name: 'finance-examine',
+    component: () => import('./views/finance/examine/newindex.vue'),
+    meta: {
+      authKey: ''
+    },
+    props: true,
   },
 
   // 财务管理 - 请款单管理
@@ -769,6 +973,16 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     },
     props: true
+  },
+
+  // 财务管理 - 账单余额管理
+  {
+    path: '/finance/balance',
+    name: 'finance-balance',
+    component: () => import('./views/finance/balance/index.vue'),
+    meta: {
+      authKey: ''
+    }
   },
 
   {
@@ -920,8 +1134,6 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: idProps,
   },
 
-
-
   // 映前广告付款单管理 - 列表
   {
     path: '/finance/payment/:status?',
@@ -933,6 +1145,31 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     },
     props: true
   },
+
+  // 财务管理 - 支付流水管理
+  {
+    path: '/finance/paymentflow',
+    name: 'finance-paymentflow',
+    component: () => import('./views/finance/payment-flow/index.vue'),
+    meta: {
+      authKey: '',
+      title: '支付流水'
+    },
+    props: true,
+  },
+
+  // 财务管理 - 退款单管理
+  {
+    path: '/finance/refundOrder',
+    name: 'finance-refund-order',
+    component: () => import('./views/finance/refund-order/index.vue'),
+    meta: {
+      authKey: '',
+      title: '退款单管理'
+    },
+    props: true
+  },
+
   {
     path: '/plan/ggtising',
     name: 'plan-ggtising',
@@ -1251,27 +1488,51 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       authKey: ''
     }
   },
-  // 映前广告计划 - 列表
-  {
-    path: '/order/beforeplan',
-    name: 'order-beforeplan',
-    component: () => import('./views/order/beforeplan/index.vue'),
-    meta: {
-      authKey: '',
-      title: '映前广告计划列表'
-    }
-  },
+  // // 映前广告计划 - 列表
+  // {
+  //   path: '/order/beforeplan',
+  //   name: 'order-beforeplan',
+  //   component: () => import('./views/order/beforeplan/index.vue'),
+  //   meta: {
+  //     authKey: '',
+  //     title: '映前广告计划列表'
+  //   }
+  // },
 
   // 映前广告计划 - 列表
   {
     path: '/order/beforeplan/newindex/:pay?',
-    name: 'order-beforeplan-newindex',
+    name: 'order-beforeplan',
     component: () => import('./views/order/beforeplan/newindex.vue'),
     meta: {
       authKey: '',
       title: '映前广告计划列表new'
     },
     props: true,
+  },
+
+  // 映前广告计划 - 审批 - 列表
+  {
+    path: '/order/beforeplan/audit/:status?',
+    name: 'order-beforeplanaudit',
+    component: () => import('./views/order/beforeplan/beforeplan-audit-list.vue'),
+    meta: {
+      authKey: '',
+      title: '广告计划审批管理列表'
+    },
+    props: true
+  },
+
+  // 映前广告计划 - 审批 - 详情 ifs 0 为详情查看页面 1为非详情查看页面
+  {
+    path: '/order/beforeplan/audit/detail/:id/:status?/:ifs',
+    name: 'order-beforeplanAudit-detail',
+    component: () => import('./views/order/beforeplan/beforeplan-audit-detail.vue'),
+    meta: {
+      authKey: '',
+      title: '审批'
+    },
+    props: true
   },
 
   // {
@@ -1295,9 +1556,9 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   //   }
   // },
 
-  // 映前广告计划 - 详情
+  // 映前广告计划 - 详情 ifs 0 为详情查看页面 1为非详情查看页面
   {
-    path: '/order/beforeplan/detail/:id/:status',
+    path: '/order/beforeplan/detail/:id/:status/:ifs',
     name: 'order-beforeplan-detail',
     component: () => import('./views/order/beforeplan/detail.vue'),
     meta: {
@@ -1316,18 +1577,18 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
   // 映前广告监播 - 列表
-  {
-    path: '/order/supervision',
-    name: 'order-supervision',
-    component: () => import('./views/order/supervision/index.vue'),
-    meta: {
-      authKey: '',
-      title: '映前广告监播列表'
-    }
-  },
+  // {
+  //   path: '/order/supervision',
+  //   name: 'order-supervision',
+  //   component: () => import('./views/order/supervision/index.vue'),
+  //   meta: {
+  //     authKey: '',
+  //     title: '映前广告监播列表'
+  //   }
+  // },
   {
     path: '/order/supervision/newindex/:pay?',
-    name: 'order-supervision-newindex',
+    name: 'order-supervision',
     component: () => import('./views/order/supervision/newindex.vue'),
     meta: {
       authKey: '',

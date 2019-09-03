@@ -114,7 +114,44 @@
           <Col span="14"><span>每{{detail.timeStep}}秒，收取{{detail.stepCost}}元 </span><span style='color:red;margin-left:15px;'>注：超出部分按照一整个阶梯收取费用</span></Col>
         </Row>
       </Row> -->
-
+      <div v-auth="'finance.settings:set-transaction-info'" class='titop'>交易信息
+        <Button type='success' style='float: right;' v-if="editIndex === 1" @click="edittransaction('dataForm')">保存</Button>
+        <Button type='success' style='float: right;' @click='chgindex' v-if="editIndex === -1"  >修改</Button>
+      </div>
+      <Row v-auth="'finance.settings:set-transaction-info'" style='padding-bottom: 30px;' class="jiaoyi cinema-header">
+        <Button type="success" @click="handleAdd" icon="md-add" v-if="editIndex === 1">新增</Button>
+        <Table :columns="columns" :data="formDynamic" 
+        border stripe disabled-hover size="small" class="table">
+          <template slot-scope="{ row, index }" slot="begin">
+            <!-- <Input type="text" v-model="editbegin" v-if="editIndex === index" />
+            <span v-else>{{ row.begin }}</span> -->
+            <Input type="text" v-model="row.begin" @on-change='chgbegin(row , index)' v-if="editIndex === 1" />
+            <span v-else>{{ row.begin }}</span>
+          </template>
+          <template slot-scope="{ row, index }" slot="end">
+            <!-- <Input type="text" v-model="editend" v-if="editIndex === index" />
+            <span v-else>{{ row.end }}</span> -->
+             <Input type="text" v-model="row.end" @on-change='chgend(row , index)' v-if="editIndex === 1" />
+            <span v-else>{{ row.end }}</span>
+          </template>
+          <template slot-scope="{ row, index }" slot="cost">
+            <!-- <Input type="text" v-model="editcost" v-if="editIndex === index" />
+            <span v-else>{{ row.cost }}</span> -->
+            <Input type="text" v-model="row.cost" @on-change='chgcost(row , index)' v-if="editIndex === 1" />
+            <span v-else>{{ row.cost }}</span>
+          </template>
+          <template  slot="action" slot-scope="{row , index}" >
+            <!-- <div v-if="editIndex === index">
+              <Button @click="handleok(index)">保存</Button>
+              <Button style='margin-left: 10px;' @click="editIndex = -1">取消</Button>
+            </div>
+            <div v-else>
+              <Button @click="handleEdit(row, index)">修改</Button> -->
+              <Button style='margin-left: 10px;' @click="handleRemove(row, index)">删除</Button>
+            <!-- </div> -->
+          </template>
+        </Table>
+      </Row>
       <!-- 刊例价 -->
       <div class='titop' v-if='showprice'>默认刊例价
         <Button type='success' style='float: right;' @click="editprice('dataForm')">保存</Button>

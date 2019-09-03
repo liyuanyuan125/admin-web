@@ -3,7 +3,8 @@
 import { get , post , put } from '@/fn/ajax'
 
 export async function queryList(query: any) {
-  const data = await get('/finance/recharges', query)
+  // const data = await get('/finance/recharges', query)
+  const data = await get('/finance/lineUnderRemittances', query)
   return data
 }
 
@@ -25,8 +26,9 @@ export async function dataFrom(query: any) {
 }
 
 // 审核状态
-export async function setList(id: any , query: any) {
-  const res = await put(`/finance/recharges/${id}/approval`, query)
+export async function setList(query: any) {
+  // const res = await put(`/finance/recharges/${id}/approval`, query)
+  const res = await put(`/finance/lineUnderRemittances/approval`, query)
   return res
 }
 
