@@ -181,6 +181,7 @@ export default class Upload extends ViewBase {
       const uploader = new Uploader()
       uploader.on(this.uploadHandlers(uqid)).upload(file)
     })
+    ; (ev.target as HTMLInputElement).value = ''
   }
 
   uploadHandlers(uqid: string) {
