@@ -137,7 +137,7 @@ export async function queryList(query: any = {}) {
   //   })
   // }
   // return data
-  const data = await get(`/promotion/convert-costs`, query)
+  const data = await get(`/promotion/cpm/list`, query)
   return data
   return await mockGet(query, {
     'items|6': [
@@ -218,7 +218,16 @@ export async function queryList(query: any = {}) {
       }
     ]
   })
+}
 
+/**
+ * 下线
+ * http://yapi.aiads-dev.com/project/154/interface/api/3750
+ * @param id
+ */
+export async function disabledItem(id: number) {
+  const { data } = await put(`brand/products/${id}/disabled`)
+  return data
 }
 
 /**
@@ -323,16 +332,6 @@ export async function auditItem(postData: any) {
  */
  export async function enabledItem(id: number) {
   const { data } = await put(`brand/products/${id}/enabled`)
-  return data
-}
-
-/**
- * 禁用
- * http://yapi.aiads-dev.com/project/154/interface/api/3750
- * @param id
- */
- export async function disabledItem(id: number) {
-  const { data } = await put(`brand/products/${id}/disabled`)
   return data
 }
 
