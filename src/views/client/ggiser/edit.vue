@@ -20,10 +20,12 @@
         <FormItem label="广告主身份">
           <Row>
             <Col span="10">
-              <RadioGroup v-model="item.companyType" type="button" size="large">
-                <Radio :label="1">企业</Radio>
-                <Radio :label="2">个人</Radio>
+              <RadioGroup v-if="!$route.params.id" v-model="item.companyType" type="button" size="large">
+                <Radio v-for="item in companyTypeList" :label="item.key" :key="item.key">{{item.text}}</Radio>
               </RadioGroup>
+              <span v-else>
+                {{format.companyName[item.companyType]}}
+              </span>
             </Col>
           </Row>
         </FormItem>
@@ -471,6 +473,7 @@ export default class Main extends ViewBase {
   area: number[] = []
   businessDirector = []
   imageList = []
+  companyTypeList: any = []
 
   index = 1 // 资质编号长度
 
@@ -481,6 +484,12 @@ export default class Main extends ViewBase {
   }
 
   brandIds: number[] = []
+
+  get format() {
+    return {
+      companyName: makeMap(this.companyTypeList)
+    }
+  }
 
   get rules() {
     const validateType1 = (rule1: any, value: any, callback: any) => {
@@ -679,8 +688,9 @@ export default class Main extends ViewBase {
     try {
       if (!query.id) {
         const {
-          data: { levelList, customerTypeList, qualificationTypeList, businessParentTypeList }
+          data: { levelList, customerTypeList, qualificationTypeList, businessParentTypeList, companyTypeList }
         } = await addSeach()
+        this.companyTypeList = companyTypeList
         this.loadingShow = true
         this.levelList = levelList
         this.qualificationTypeList = qualificationTypeList
@@ -738,9 +748,11 @@ export default class Main extends ViewBase {
             businessChildCode,
             cinemaList,
             brandList,
-            companyType
+            companyType,
+            companyTypeList
           }
         } = await queryId(query)
+        this.companyTypeList = companyTypeList
         this.businessParentTypeList = businessParentTypeList.map((it: any) => {
           return {
             value: it.key,
