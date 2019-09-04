@@ -535,7 +535,11 @@ export default class Main extends ViewBase {
       sing: [{ required: true, message: '请填写公司名称', trigger: 'blur' }],
       singcontact: [{ required: true, message: '请填写姓名', trigger: 'blur' }],
       singcontactTel: [{ required: true, message: '请填写手机号', trigger: 'blur' }],
-      singemail: [{ required: true, message: '请填写邮箱', trigger: 'blur' }],
+      singemail: [{
+        pattern: /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/,
+        message: '邮箱格式错误',
+        trigger: 'blur'
+      }],
       provinceId: [
         {
           required: true,
