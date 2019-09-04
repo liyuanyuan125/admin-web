@@ -356,6 +356,7 @@
 
         <div class="edit-button">
           <Button type="info" size="large" @click="edit('dataForms')">确定</Button>
+          <Button type="info" size="large" @click="back">取消</Button>
         </div>
       </Row>
     </div>
@@ -921,8 +922,8 @@ export default class Main extends ViewBase {
           const data: any = route == 0
             ? await addQuery(formData)
             : await setQuery(route, formData)
-          // toast(data.msg)
-          // this.$router.go(-1)
+          toast(data.msg)
+          this.$router.go(-1)
         } catch (ex) {
           this.handleError(ex)
         }

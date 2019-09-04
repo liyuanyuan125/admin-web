@@ -8,7 +8,7 @@
     >
     <Row class="shouDlg-header">
       <Col span="7">
-        <Input v-model="value" placeholder="影片中文名" />
+        <Input v-model="query.name" placeholder="影片中文名" />
       </Col>
       <Col span="5" offset="1">
          <DatePicker type="daterange" @on-change='timechange' placeholder="请选择上映时间"></DatePicker>
@@ -46,8 +46,6 @@ import { isEqual } from 'lodash'
   }
 })
 export default class Main extends ViewBase {
-
-  @Prop({ type: Array, default: () => [] }) addData!: any[]
   total = 0
   dataForm: any = {
     pageIndex: 1,

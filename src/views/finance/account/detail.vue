@@ -9,10 +9,8 @@
 
       <template slot="acts">
         <Button
-          type="success"
-          icon="md-add-circle"
           @click="editShow()"
-        >片商管理</Button>
+        >返回上一页</Button>
       </template>
 
       <template slot="add" slot-scope="{row: {monthRechargeCount, totalRechargeCount}}">
@@ -132,6 +130,10 @@ export default class Main extends ViewBase {
     this.$nextTick(() => {
       (this.$refs.account as any).init(row)
     })
+  }
+
+  editShow() {
+    this.$router.go(-1)
   }
 
   uplist() {

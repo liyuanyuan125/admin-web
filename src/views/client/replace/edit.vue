@@ -225,6 +225,7 @@
       
         <div class="edit-button">
           <Button type="info" size="large" @click="edit('dataForms')">确定</Button>
+          <Button type="info" size="large" @click="back">取消</Button>
         </div>
       </Row>
     </div>
