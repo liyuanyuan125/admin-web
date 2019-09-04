@@ -1,8 +1,8 @@
 <template>
-    <div class="pages">
+    <div class="pages" style='position: relative;'>
         <div class='title'>
-            <!-- 投放影院({{total}}家) --> 接单影院 / 派单影院 : 3 / 5
-            <span style='float: right;cursor: pointer;' @click="exportData">导出影院列表</span>
+            <span v-if='$route.params.status == "3" '>投放影院({{total}}家)</span>
+            <span style='cursor: pointer;position: absolute; right: 15px; top: -50px;' @click="exportData">导出影院列表</span>
         </div>
         <div class='bos'>
             <Row class="shouDlg-header">
@@ -275,6 +275,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
             const a = await uploader.upload(this.file)
             this.searchchg()
         } else {
+            const a = await uploader.upload(this.file)
             this.search()
         }
         this.viewcinema = true
@@ -397,7 +398,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
             })
 
         } catch (ex) {
-            // this.handleError(ex)
+            this.handleError(ex)
         } finally {
             this.loading = false
         }
@@ -599,6 +600,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 }
 
 .bos {
+  width: 99%;
   border: 1px solid #ccc;
   padding: 15px;
 }

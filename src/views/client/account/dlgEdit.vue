@@ -45,6 +45,7 @@
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop } from 'vue-property-decorator'
 import { queryItem , queryList , dataFrom , addList , companysList } from '@/api/account'
+import { validatePassword } from '@/util/validateRules'
 import { slice, clean } from '@/fn/object'
 import { warning , success, toast } from '@/ui/modal'
 import ViewBase from '@/util/ViewBase'
@@ -96,12 +97,24 @@ export default class ComponentMain extends ViewBase {
           { required: true, message: '请输入姓名', trigger: 'blur' }
       ],
       password: [
-          { required: true, message: '请输入密码', trigger: 'blur' },
           {
-            pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$/,
-            message: '请输入同时包含数字、字母且长度要在8-16位之间的密码',
+            required: true,
+            message: '请输入你的密码',
             trigger: 'blur'
+          },
+          {
+            trigger: 'blur',
+            validator(rule: any, value: string, callback: any) {
+              const msg = validatePassword(value)
+              msg ? callback(new Error(msg)) : callback()
+            }
           }
+          // { required: true, message: '请输入密码', trigger: 'blur' },
+          // {
+          //   pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$/,
+          //   message: '请输入同时包含数字、字母且长度要在8-16位之间的密码',
+          //   trigger: 'blur'
+          // }
       ],
       passwords: [
           { required: true, message: '请重新输入密码', trigger: 'blur' },

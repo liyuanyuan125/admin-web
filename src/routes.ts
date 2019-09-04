@@ -1361,7 +1361,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
-  // 基础数据 - 品牌管理 - 产品 - 编辑 - 详情
+  // 促销活动 - 详情 - 编辑 - 新建
   {
     path: '/promotion/cpm/detail/:id?/:action',
     name: 'promotion-cpm-detail',
