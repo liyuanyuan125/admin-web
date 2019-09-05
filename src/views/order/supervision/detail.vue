@@ -26,7 +26,13 @@
         <Row class='bos' v-if='listitem.approvalStatus == 2 || listitem.approvalStatus == 4'>
             <Col :span='15'>
             <span v-if='listitem.fileUrl == null'>暂无监播文件</span>
-            <video v-if='listitem.fileUrl != null' :src='listitem.fileUrl' width='93%' height='60%' controls="controls"></video>
+            <video ref='videoplay' v-if='listitem.fileUrl != null' :src='listitem.fileUrl' width='93%' height='60%' autobuffer controls="controls" type="video/mp4" ></video>
+                <p v-if='listitem.fileUrl != null'>选择播放速率：
+                    <Select v-model="videoplay.speed" placeholder="设置播放状态">
+                        <Option v-for="it in videoplayList" :key="it.key" :value="it.key"
+                          :label="it.text">{{it.text}}</Option>
+                      </Select>
+               </p>
             </Col>
             <Col :span='9'>
             <Row style='margin-top: -14px;font-size: 12px;'>通过监播视频选择未通过审核的广告片，并选择审核未通过的原因</Row>
@@ -130,6 +136,33 @@ export default class Main extends ViewBase {
 
     statusform = {
         status: 1,
+    }
+
+    videoplayList: any = [
+      {
+        key: 0.5,
+        text: '0.5'
+      },
+      {
+        key: 1,
+        text: '1'
+      },
+      {
+        key: 1.25,
+        text: '1.25'
+      },
+      {
+        key: 1.5,
+        text: '1.5'
+      },
+      {
+        key: 2,
+        text: '2'
+      }
+    ]
+
+    videoplay = {
+      speed: 1,
     }
 
 
@@ -312,6 +345,13 @@ export default class Main extends ViewBase {
     watchParmas(val: any) {
         this.search()
     }
+
+    @Watch('videoplay', { deep: true })
+
+    watchVideoplay(val: any) {
+      // alert(val.speed)
+      (this.$refs.videoplay as any).playbackRate = val.speed
+    }
 }
 </script>
 <style lang="less" scoped>
@@ -348,6 +388,9 @@ export default class Main extends ViewBase {
 .bos {
   border: 1px solid #ccc;
   padding: 15px;
+  /deep/ .ivu-select {
+    width: 20%;
+  }
 }
 
 .row-li {

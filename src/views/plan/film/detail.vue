@@ -181,7 +181,14 @@
 import { Component, Watch , Mixins  } from 'vue-property-decorator'
 import moment from 'moment'
 import ViewBase from '@/util/ViewBase'
-import { queryList , queryItem , sapproval , dataFrom , dels , addvideo , getVideoIds } from '@/api/planfilm'
+import { queryList ,
+         queryItem ,
+         sapproval ,
+         dataFrom ,
+         dels ,
+         addvideo ,
+         getVideoIds ,
+         annotation } from '@/api/planfilm'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import { slice , clean } from '@/fn/object'
@@ -551,7 +558,7 @@ export default class Main extends ViewBase {
   // 提交批注
   async beizhuSubmit() {
     try {
-      const res =  await sapproval (this.$route.params.id , {annotationInfo : this.dataForm.annotationInfo})
+      const res =  await annotation (this.$route.params.id , {annotationInfo : this.dataForm.annotationInfo})
       this.$router.push({ name : 'gg-film' })
     } catch (ex) {
       this.handleError(ex)
