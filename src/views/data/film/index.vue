@@ -34,10 +34,10 @@
         <div class="operate-btn">
           <span v-if="row.controlStatus == 2" @click="handleUpShelf(1, row.id)">上架</span>
           <span v-if="row.controlStatus == 1" @click="handleUpShelf(2, row.id)">下架</span>
-          <span  @click="$router.push({name: 'data-film-edit', params: {id: row.id}})">编辑</span>
-          <span v-if="[1].includes(row.controlStatus)" @click="uploadCurrent">刷新</span>
+          <span @click="$router.push({name: 'data-film-edit', params: {id: row.id}})">编辑</span>
           <span @click="$router.push({name: 'data-film-detail', params: {id: row.id}})">查看</span>
-          <span v-if="row.controlStatus == 1">浏览前台</span>
+          <span  v-if="[1].includes(row.controlStatus)" @click="uploadCurrent(row.id)">刷新</span>
+          <!-- <span v-if="row.controlStatus == 1">浏览前台</span> -->
         </div>
       </template>
     </ListPage>
@@ -64,6 +64,7 @@ import {formatConversion} from '@/util/validateRules'
 export default class Main extends ViewBase {
   formatConversion = formatConversion
   fetch = queryList
+
   filters: Filter[] = [
     {
       name: 'ids',
@@ -160,6 +161,7 @@ export default class Main extends ViewBase {
     this.idsList = ids.map( item => item.id)
     this.statusIds = ids.map( item => item.status)
   }
+
   // 上架 和 下架
   async handleUpShelf(status: number, id?: number) {
     const text = status == 1 ? '上架' : '下架'
@@ -188,9 +190,14 @@ export default class Main extends ViewBase {
   }
 
   // 刷新
-  async uploadCurrent() {
-    // 刷新数据接口成功
-    await info('影片信息已经刷新，10分钟后查看刷新后的信息。', {title: '刷新'})
+  async uploadCurrent(id: any) {
+    try {
+      const { data } = await fetchMovie(id)
+      await info('影片信息已经刷新，10分钟后查看刷新后的信息。', {title: '刷新'});
+      (this.$refs.listPage as any).update()
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
   async handleGetFilm() {
     this.visFilmid.visible = true
@@ -198,14 +205,14 @@ export default class Main extends ViewBase {
   async filmonOK(val: any) {
     this.visFilmid.visible = false
     try {
-      const { data } = await fetchMovie(val.filmid);
-      (this.$refs.listPage as any).update()
+      const { data } = await fetchMovie(val.filmid)
+      await info('影片信息已经刷新，10分钟后查看刷新后的信息。', {title: '刷新'})
+      ; (this.$refs.listPage as any).update()
     } catch (ex) {
       this.handleError(ex)
     }
   }
 }
-
 </script>
 <style lang='less' scoped>
 .table-btn {
