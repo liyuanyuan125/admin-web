@@ -3,7 +3,7 @@
     <header class="header flex-box">
       <Button icon="md-return-left" @click="back" class="btn-back">返回上一页</Button>
       <div class="flex-1">
-        <em>广告主详情</em>
+        <em>区代详情</em>
       </div>
     </header>
     <div class="detail-box">

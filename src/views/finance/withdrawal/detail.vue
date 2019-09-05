@@ -125,7 +125,7 @@
         </Row>
       </Row>
       <Row>
-        <Col style='text-align: center'>
+        <Col v-if='$route.params.status' style='text-align: center'>
           <Button type="info" size="large" @click="edit('formInline')">确定</Button>
         </Col>
       </Row>
@@ -218,11 +218,9 @@ export default class Main extends ViewBase {
           createTime: moment(item.createTime).format(timeFormatDate)
         }
       }) : []
-      if (res.data.imgs && res.data.imgs.length > 0) {
+      if (res.data.item.receiptUrl) {
         this.showimg = false
-        this.img = res.data.imgs.map((item: any) => {
-          return item.url
-        })
+        this.img = [res.data.item.receiptUrl]
       } else {
         this.showimg = true
       }

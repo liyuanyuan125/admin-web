@@ -1,7 +1,8 @@
 <template>
   <div class="page">
     <header class="header flex-box">
-      <Button icon="md-return-left" @click="backList" class="btn-back">返回列表</Button>
+      <Button icon="md-return-left" v-if='$route.params.status == 1' @click="backList" class="btn-back">返回列表</Button>
+      <Button icon="md-return-left" v-if='$route.params.status != 1' @click="back" class="btn-back">返回上一页</Button>
       <div class="flex-1">
         <em></em>
       </div>
@@ -13,13 +14,16 @@
           <Col span="2"><div>广告主公司名称</div></Col>
           <Col span="5"><span>{{detail.companyName}}</span></Col>
           <Col span="2"><div>客户类型</div></Col>
-          <Col span="5"><span>{{detail.companyName}}</span></Col>
+          <Col span="5"><span>{{detail.customerCategory}}</span></Col>
           <Col span="2"><div>所属行业</div></Col>
-          <Col span="5"><span>{{detail.companyName}}</span></Col>
+          <Col span="5"><span>{{detail.businessType}}</span></Col>
         </Row>
         <Row>
           <Col span="2"><div>营业执照</div></Col>
-          <Col span="5"><span class='ingbo' @click='onView(detail.licenseFileUrl)'><img :src="detail.licenseFileUrl" alt=""></span></Col>
+          <Col span="5">
+            <span v-if='detail.companylicenseFileUrls == null'>暂无</span>
+            <span class='ingbo' v-else v-for='(itd,index) in detail.companylicenseFileUrls'><img @click='onView(itd.fileUrl)' :src="itd.fileUrl" alt=""></span>
+          </Col>
           <Col span="2"><div>客户ID</div></Col>
           <Col span="5"><span>{{detail.customerId}}</span></Col>
           <Col span="2"><div>客户名称</div></Col>
@@ -32,13 +36,19 @@
           <Col span="5"><span>{{applyTime}}</span></Col>
         </Row>
       </div>
-      <div class='titop'>行业资质</div>
-      <div class="detail-header" style='padding-top: 10px; padding-bottom: 5px;'>
+      <div v-if='detail.customerCategory != "直客" ' class='titop'>行业资质</div>
+      <div v-if='detail.customerCategory != "直客" ' class="detail-header" style='padding-top: 10px; padding-bottom: 5px;'>
         <Row>
           <Col span="2"><div>主体资质</div></Col>
-          <Col span="5"><span class='ingbo' @click='onView()'> </span></Col>
+          <Col span="5">
+            <span v-if='detail.licenseFileUrl == null'>暂无</span>
+            <span class='ingbo' v-else @click='onView(detail.licenseFileUrl)'><img :src="detail.licenseFileUrl" alt=""></span>
+          </Col>
           <Col span="2"><div>可选资质</div></Col>
-          <Col span="12"><span class='ingbo' v-for='(itd,index) in detail.grantFileIds'><img @click='onView(itd.fileUrl)' :src="itd.fileUrl" alt=""></span></Col>
+          <Col span="12">
+            <span  v-if='detail.grantFileIds == null'>暂无</span>
+            <span class='ingbo' v-else v-for='(itd,index) in detail.grantFileIds'><img @click='onView(itd.fileUrl)' :src="itd.fileUrl" alt=""></span>
+          </Col>
         </Row>
       </div>
       <div class='titop'>广告片素材</div>
@@ -65,15 +75,15 @@
         </Row>
         <Row>
           <Col span="2"><div>活动ID</div></Col>
-          <Col span="5"><span>{{detail.translated == 1 ? '已转制' : '未转制'}}</span></Col>
+          <Col span="5"><span>{{detail.productId}}</span></Col>
           <Col span="2"><div>活动名称</div></Col>
-          <Col span="5"><span>{{detail.transFee}}</span></Col>
+          <Col span="5"><span>{{detail.promotionName}}</span></Col>
           <Col span="2"><div>活动类型</div></Col>
-          <Col span="5"><span style='cursor: pointer;' @click='onView(detail.srcFiledAddr)'>查看</span></Col>
+          <Col span="5"><span>{{detail.promotionType == 1 ? '按市场减免' : '按格式收费'}}</span></Col>
         </Row>
         <Row>
           <Col span="2"><div>活动价格</div></Col>
-          <Col span="5"><span>{{detail.translated == 1 ? '已转制' : '未转制'}}</span></Col>
+          <Col span="5"><span>{{detail.tpromotionPrice}}</span></Col>
         </Row>
         <!-- <Row>
           <Col span="12">
@@ -118,18 +128,17 @@
       </Row>
       <div v-if='showedit' class='titop'>转制</div>
       <Row v-if='showedit' >
-        <Table :columns="columns" :data="detail.attachments"
+        <Table :columns="columns" :data="attachments"
         border disabled-hover size="small" class="table">
           <template slot="spaction" slot-scope="{row}">
+       <!--      <UploadButton v-auth="'advert.videos:upload-attachment'" style='margin-top:17px;' v-if='row.desc == null'  @success="onUploadSuccess($event, row.key)">上传</UploadButton> -->
+            <a v-if='row.ifedit' @click="edit(0 , row.key)">录入下载链接</a>
 
-            <UploadButton v-auth="'advert.videos:upload-attachment'" style='margin-top:17px;' v-if='row.desc == undefined'  @success="onUploadSuccess($event, row.key)">上传</UploadButton>
-            <a v-if='row.desc == undefined' @click="edit(0 , row.key)">录入下载链接</a>
-
-            <a v-auth="'advert.videos:modify-attachment'" style='margin-top:17px;' v-if="row.desc != undefined && row.desc.fileId == null"  @click="edit(row.desc.id, row.key , row )">编辑</a>&nbsp;&nbsp;&nbsp;
-            <a v-auth="'advert.videos:delete-attachment'" style='margin-top:17px;' v-if="row.desc != undefined && row.desc.fileId == null" @click="del( row.desc.id)">删除</a>
+            <a v-if='!row.ifedit' v-auth="'advert.videos:modify-attachment'" style='margin-top:17px;'  @click="edit(row.id, row )">编辑</a>&nbsp;&nbsp;&nbsp;
+            <a v-if='!row.ifedit' v-auth="'advert.videos:delete-attachment'" style='margin-top:17px;' @click="del( row.id)">删除</a>
  
-            <a v-if="row.desc != undefined && row.desc.fileId != null" style='margin-top:17px;' class="operation" :href="row.desc.fileUrl" :download="row.desc.fileUrl">下载</a>&nbsp;&nbsp;&nbsp;
-            <a v-auth="'advert.videos:delete-attachment'" style='margin-top:17px;' v-if="row.desc != undefined && row.desc.fileId != null"  @click="del( row.desc.id)">删除</a>
+<!--             <a v-if="row.fileId != null" style='margin-top:17px;' class="operation" :href="row.fileUrl" :download="row.fileUrl">下载</a>&nbsp;&nbsp;&nbsp;
+            <a v-auth="'advert.videos:delete-attachment'" style='margin-top:17px;' v-if="row.fileId != null"  @click="del( row.id)">删除</a> -->
         </template> 
         </Table>
       </Row>
@@ -159,7 +168,7 @@
         </div>
       </row>
     </div>
-    <DlgEdit  ref="addOrUpdate" :cinemaOnes="editOne"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" @done="dlgeditdone"/>
+    <DlgEdit  ref="addOrUpdate"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" @done="dlgeditdone"/>
     <!-- 查看图片 -->
     <Modal v-model="viewerShow" title="查看" width="500" height="500">
       <img style="width: 100%;" :src="viewerImage" alt sizes srcset>
@@ -176,10 +185,10 @@ import { queryList , queryItem , sapproval , dataFrom , dels , addvideo , getVid
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import { slice , clean } from '@/fn/object'
-import { warning , success, toast } from '@/ui/modal'
 import UploadButton, { SuccessEvent } from '@/components/UploadButton.vue'
 import DlgEdit from './dlgEdit.vue'
 import { findIndex } from 'lodash'
+import {confirm , warning , success, toast } from '@/ui/modal'
 
 
 
@@ -263,6 +272,7 @@ export default class Main extends ViewBase {
   columnsReason: any = []
 
 
+
   id = 0
 
   applyTime = ''
@@ -324,18 +334,11 @@ export default class Main extends ViewBase {
     // { title: '序号', key: 'sort', width: 80 , align: 'center' },
     // { title: '格式', key: 'text', width: 130 , align: 'center' },
     { title: '附件', key: 'name',  align: 'center',
-      render: (hh: any, { row: { desc , text } }: any) => {
+      render: (hh: any, { row: { fileId , fileUrl , name } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        if (desc!=undefined) {
-          if (desc.fileId == '' || desc.fileId == null) {
-            return <span class='datetime' v-html={desc.fileUrl}></span>
-          } else {
-            return <span class='datetime' style='color:#4b9cf2' v-html={desc.name}></span>
-          }
-        } else {
-          return <span class='datetime' v-html={'-'}></span>
-        }
+        const html = fileUrl == null ? '-' : fileUrl
+        return <span class='datetime' v-html={html}></span>
         
         /* tslint:enable */
       }
@@ -345,12 +348,12 @@ export default class Main extends ViewBase {
       key: 'uploadTime',
       width: 150 ,
       align: 'center',
-      render: (hh: any, { row: { desc } }: any) => {
+      render: (hh: any, { row }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        if (desc!=undefined ) {
-          const html = moment(desc.uploadTime).format(timeFormatDate)
-          return desc.uploadTime == null ? <span class='datetime' v-html={'-'}></span> : <span class='datetime' v-html={html}></span>
+        if (row.uploadTime != null ) {
+          const html = moment(row.uploadTime).format(timeFormatDate)
+          return row.uploadTime == null ? <span class='datetime' v-html={'-'}></span> : <span class='datetime' v-html={html}></span>
         } else {
           return <span class='datetime' v-html={'-'}></span>
         }
@@ -358,20 +361,19 @@ export default class Main extends ViewBase {
       }
     },
     { title: '上传人', key: 'uploadName', align: 'center', width: 150,
-      render: (hh: any, { row: { desc } }: any) => {
+      render: (hh: any, { row: { uploadName , uploadEmail } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        if (desc!=undefined ) {
-          const html = '【' + desc.uploadEmail + '】' + desc.uploadName
-          if (desc.uploadEmail == null) {
-            return <span class='datetime' v-html={desc.uploadName}></span>
-          } else {
-            return <span class='datetime' v-html={html}></span>
-          }
-        } else {
+        const html = uploadEmail + '【' + uploadName + '】'
+        if (uploadEmail != null && uploadName != null) {
+          return <span class='datetime' v-html={html}></span>
+        } else if(uploadEmail == null) {
+          return <span class='datetime' v-html={uploadName}></span>
+        } else if(uploadName == null) {
+          return <span class='datetime' v-html={uploadEmail}></span>
+        } else if (uploadEmail == null && uploadName == null) {
           return <span class='datetime' v-html={'-'}></span>
         }
-        
         /* tslint:enable */
       }
     },
@@ -394,6 +396,17 @@ export default class Main extends ViewBase {
       this.detail = res.data.item
       this.applyTime = moment(this.detail.applyTime).format(timeFormatDate)
       this.fixedRefuseReasonsList = res.data.fixedRefuseReasonsList
+      if (res.data.item.attachments.length == 0) {
+        this.attachments = [
+          {
+            ifedit: true,
+            uploadEmail: null,
+            uploadName: null,
+          }
+        ]
+      } else {
+        this.attachments = res.data.item.attachments
+      }
        // 附件
       // this.typeList = res.data.typeList.map((it: any) => {
       //   const key = it.key
@@ -430,12 +443,12 @@ export default class Main extends ViewBase {
     }
   }
   // 新增 / 修改 (录入下载链接/)
-  edit(id: number , key: any , row: any ) {
+  edit(id: number , row: any ) {
     this.addOrUpdateVisible = true
-    !!id ? this.editOne = row : this.editOne
+    // !!id ? this.editOne = row : this.editOne
     this.$nextTick(() => {
       const myThis: any = this
-      myThis.$refs.addOrUpdate.init(id , key)
+      myThis.$refs.addOrUpdate.init(id , row)
     })
   }
 
