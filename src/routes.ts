@@ -1374,8 +1374,10 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
             return '查看'
           case 'edit':
             return '编辑'
+          case 'audit':
+            return '审批'
           default:
-            return '添加新产品'
+            return '添加新活动'
         }
       }
     },
