@@ -161,6 +161,7 @@ export default class Main extends ViewBase {
     this.idsList = ids.map( item => item.id)
     this.statusIds = ids.map( item => item.status)
   }
+
   // 上架 和 下架
   async handleUpShelf(status: number, id?: number) {
     const text = status == 1 ? '上架' : '下架'
