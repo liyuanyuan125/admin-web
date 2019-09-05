@@ -57,3 +57,10 @@ export async function getVideoIds(query: any) {
   return data
 }
 
+
+// 批注
+export async function annotation(id: any , query: any) {
+  const res = await put(`/xadvert/videos/${id}/add-annotation`, query)
+  return res
+}
+

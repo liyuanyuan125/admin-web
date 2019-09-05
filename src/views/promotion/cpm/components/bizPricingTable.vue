@@ -1,25 +1,30 @@
 <template>
-  <table class="age-table">
-    <thead>
-      <th>年龄区间</th>
-      <th v-for="it in model" :key="it.key">{{it.text}}</th>
-    </thead>
-    <tbody>
-      <th>粉丝数占比</th>
-      <td v-for="it in model" :key="it.key">
-        <FormInputNumber
-          v-model="it.value"
-          size="small"
-          :min="0"
-          :max="100"
-          :disabled="disabled"
-          placeholder="百分比"
-          class="inner-input"
-          append="%"
-        />
-      </td>
-    </tbody>
-  </table>
+  <div>
+    <h3 style="padding: 8px 0">{{title}}</h3>
+    <table class="age-table">
+      <thead>
+        <th>定价等级</th>
+        <th>折扣比例（%）</th>
+      </thead>
+      <tbody>
+        <tr v-for="it in model" :key="it.bizGrade">
+          <th>{{it.bizGrade}}</th>
+          <td>
+            <FormInputNumber
+              v-model="it.discount"
+              size="small"
+              :min="0"
+              :max="100"
+              :disabled="disabled"
+              placeholder="百分比"
+              class="inner-input"
+              append="%"
+            />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script lang="ts">
@@ -39,10 +44,12 @@ export interface KeyTextValue {
     FormInputNumber
   }
 })
-export default class AgeTable extends ViewBase {
+export default class BizPricingTable extends ViewBase {
   @Prop({ type: Array, default: () => [] }) value!: KeyTextValue[]
 
   @Prop({ type: Boolean, default: false }) disabled!: boolean
+
+  @Prop({ type: String, default: '' }) title!: string
 
   model: KeyTextValue[] = []
 
