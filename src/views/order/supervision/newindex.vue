@@ -76,6 +76,7 @@ import { findIndex } from 'lodash'
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
+const defaulttimeFormat = 'YYYYMMDD'
 
 // 广告片位置
 const deliveryPositionList: any = [
@@ -107,6 +108,14 @@ export default class IndexPage extends ViewBase {
     get listPage() {
         return this.$refs.listPage as ListPage
     }
+
+    startTime: any = Number(new Date(this.getTime(0))) + (24 * 60 * 60 * 1000 * 3) - 8 * 60 * 60 * 1000
+    endTime: any = Number(new Date(this.getTime(-6))) + (24 * 60 * 60 * 1000 * 3) + 16 * 60 * 60 * 1000 - 1
+    weekDate = [new Date(this.startTime), new Date(this.endTime)]
+
+    sd = moment(this.weekDate[0].getTime()).format(defaulttimeFormat)
+    ed = moment(this.weekDate[1].getTime()).format(defaulttimeFormat)
+
     videoVisible = false
 
     status = this.pay
@@ -121,12 +130,75 @@ export default class IndexPage extends ViewBase {
 
     selectedIds = [] as number[]
 
+    auditVisible = false
+
+    defaultDate = '20190808-20190814'
+
 
     // 跳转数量
     jumpNum: any = 0
 
     get astatus() {
         return this.query && this.query.status
+    }
+
+    enums = [
+        'approvalStatusList',
+    ]
+
+    getTime(n: any) {
+        const now = new Date()
+        let year = now.getFullYear()
+        // 因为月份是从0开始的,所以获取这个月的月份数要加1才行
+        let month = now.getMonth() + 1
+        let date = now.getDate()
+        const day = now.getDay()
+
+        if (day !== 0 ) {
+            n = n + ( day - 1 )
+        } else {
+            n = n + day
+        }
+        if ( day ) {
+            // 这个判断是为了解决跨年的问题
+            if (month > 1) {
+                month = month
+            } else {  // 这个判断是为了解决跨年的问题,月份是从0开始的
+                year = year - 1
+                month = 12
+            }
+        }
+
+        now.setDate( now.getDate() - n )
+        year = now.getFullYear()
+        month = now.getMonth() + 1
+        date = now.getDate()
+        const s = year + '-' + ( month < 10 ? ('0' + month ) : month ) + '-' + (date < 10 ? ('0' + date ) : date )
+        return s
+    }
+
+    get deDate() {
+        if (new Date().getDay() == 5 || new Date().getDay() == 6) {
+          this.weekDate = [
+          new Date(this.startTime + (24 * 60 * 60 * 1000 * 7)) ,
+          new Date(this.endTime + (24 * 60 * 60 * 1000 * 7))]
+          const a = moment(this.weekDate[0].getTime()).format(defaulttimeFormat)
+          const b  = moment(this.weekDate[1].getTime()).format(defaulttimeFormat)
+          return a + '-' + b
+        } else if (new Date().getDay() == 1 || new Date().getDay() == 2 || new Date().getDay() == 3 ) {
+            return this.sd + '-' + this.ed
+        }
+        if (new Date().getDay() == 4) {
+            return this.sd + '-' + this.ed
+        }
+        if (new Date().getDay() == 0) {
+          this.weekDate = [
+          new Date(this.startTime + (24 * 60 * 60 * 1000 * 1)) ,
+          new Date(this.endTime + (24 * 60 * 60 * 1000 * 1))]
+          const a = moment(this.weekDate[0].getTime()).format(defaulttimeFormat)
+          const b  = moment(this.weekDate[1].getTime()).format(defaulttimeFormat)
+          return a + '-' + b
+        }
     }
 
     get filters(): Filter[] {
@@ -169,7 +241,7 @@ export default class IndexPage extends ViewBase {
 
             {
                 name: 'dateRange',
-                defaultValue: '',
+                defaultValue: this.deDate,
                 type: 'dateRange',
                 width: 200,
                 placeholder: '投放周期',
@@ -226,10 +298,6 @@ export default class IndexPage extends ViewBase {
 
         return this.status == '3' || this.status == '4' ? [...aaa, ...bbb, ...ccc] : [...aaa, ...ccc]
     }
-
-    enums = [
-        'approvalStatusList',
-    ]
 
     get columns() {
         const aaa: any = [
@@ -291,7 +359,6 @@ export default class IndexPage extends ViewBase {
         return this.status == '3' || this.status == '4' ? [...aaa, ...ccc, ...ddd] : [...aaa, ...ddd] as ColumnExtra[]
     }
 
-    auditVisible = false
     changeAll() {
         this.videoVisible = true
         this.$nextTick(() => {
@@ -328,6 +395,7 @@ export default class IndexPage extends ViewBase {
     }
 
     async mounted() {
+        // this.$router.push({ name: '', pa })
         // this.listPage.query.status = 2
     }
 
