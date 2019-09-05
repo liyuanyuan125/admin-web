@@ -64,6 +64,7 @@ import {formatConversion} from '@/util/validateRules'
 export default class Main extends ViewBase {
   formatConversion = formatConversion
   fetch = queryList
+
   filters: Filter[] = [
     {
       name: 'ids',
