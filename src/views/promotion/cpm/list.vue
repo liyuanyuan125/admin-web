@@ -21,6 +21,13 @@
                 action: 'edit'
               }
             }">编辑</router-link>
+          <router-link v-if="status === 1" :to="{
+              name: 'promotion-cpm-detail',
+              params: {
+                id,
+                action: 'audit'
+              }
+            }">审批</router-link>
           <router-link :to="{
               name: 'promotion-cpm-detail',
               params: {
@@ -28,7 +35,7 @@
                 action: 'view'
               }
             }">查看</router-link>
-          <a @click="enabledItemHandler(id, name, enName, 'disabled')" v-if="status === 1">下线</a>
+          <a @click="enabledItemHandler(id, name, enName, 'disabled')" v-if="status === 2">下线</a>
         </div>
       </template>
     </ListPage>
@@ -44,27 +51,19 @@ import jsxReactToVue from '@/util/jsxReactToVue'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import {
   queryList,
-  queryItem,
-  newItem,
-  auditItem,
-  enabledItem,
   disabledItem
 } from './data'
 import { alert, toast } from '@/ui/modal'
 import { EditDialog, Field } from '@/components/editForm'
-import AreaSelect, { areaParam } from '@/components/areaSelect'
 
 @Component({
   components: {
     ListPage,
-    EditDialog,
-    AreaSelect
+    EditDialog
   }
 })
 export default class Main extends ViewBase {
   fetch = queryList
-
-  brandId: number | null = 0
 
   enabledTitleName: string = ''
   enabledSubmitFetch: any = null
@@ -89,7 +88,7 @@ export default class Main extends ViewBase {
       label: '活动名称',
       text: true,
       span: 21
-    },
+    }
   ]
 
   get listPage() {
@@ -98,7 +97,6 @@ export default class Main extends ViewBase {
 
   get filters() {
     return [
-
       {
         name: 'name',
         defaultValue: '',
@@ -179,8 +177,8 @@ export default class Main extends ViewBase {
       { title: '活动ID', key: 'id' },
       { title: '活动名称', key: 'name' },
       { title: '客户范围', key: 'customerType', enum: true },
-      { title: '适用渠道', key: 'channels', minWidth: 200 },
-      { title: '广告类型', key: 'adTypes'},
+      { title: '适用渠道', key: 'channels', minWidth: 200, enum: 'channelList' },
+      { title: '广告类型', key: 'adTypes', enum: 'adTypeList'},
       { title: '促销活动类型', key: 'type', enum: true },
       { title: '活动开始时间', key: 'beginTime' },
       { title: '活动结束时间', key: 'endTime' },
@@ -190,12 +188,7 @@ export default class Main extends ViewBase {
     ] as ColumnExtra[]
   }
 
-  enums = [
-    'statusList',
-    'channelList',
-    'adTypeList',
-    'customerTypeList'
-  ]
+  enums = []
 
   // 下线弹层
   enabledItemHandler(id: number, name: string, enName: string, status: string) {
@@ -221,9 +214,7 @@ export default class Main extends ViewBase {
     this.listPage.update()
   }
 
-  created() {
-    this.brandId = parseFloat(this.$route.params.brandId) || null
-  }
+  created() {}
 }
 </script>
 

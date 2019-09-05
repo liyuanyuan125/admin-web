@@ -30,7 +30,6 @@ export default class LogTable extends ViewBase {
 
   get columns() {
     return [
-      { title: '操作类型', key: 'eventName', width: 120, align: 'center' },
       { title: '操作时间', key: 'date', width: 150, align: 'center' },
       { title: '操作人', key: 'createUserName', width: 120, align: 'center' },
       { title: '描述', key: 'description' },
