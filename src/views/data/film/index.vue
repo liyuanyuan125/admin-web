@@ -36,7 +36,7 @@
           <span v-if="row.controlStatus == 1" @click="handleUpShelf(2, row.id)">下架</span>
           <span @click="$router.push({name: 'data-film-edit', params: {id: row.id}})">编辑</span>
           <span @click="$router.push({name: 'data-film-detail', params: {id: row.id}})">查看</span>
-          <span  v-if="[1].includes(row.controlStatus)" @click="uploadCurrent(row.id)">刷新</Button>
+          <span  v-if="[1].includes(row.controlStatus)" @click="uploadCurrent(row.id)">刷新</span>
           <!-- <span v-if="row.controlStatus == 1">浏览前台</span> -->
         </div>
       </template>
