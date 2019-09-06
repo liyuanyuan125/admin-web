@@ -10,7 +10,7 @@ export interface Business {
   /** 关联用户 id */
   userId: number
   /** 角色 */
-  role: number
+  roles: number[]
   /** 折扣，0~1 之间的数字 */
   discount: number
 }
@@ -24,8 +24,8 @@ export async function queryList(query: any = {}) {
   const { data } = await get('/xadvert/business-managements', query)
   const res = {
     ...data,
-    items: (data.items as any[] || []).map((ele, index) => ({
-      ...ele,
+    items: (data.items as any[] || []).map((it, index) => ({
+      ...it,
       index: index + 1
     }))
   }
@@ -40,11 +40,11 @@ export async function queryList(query: any = {}) {
 export async function getBusiness(id: number) {
   const { data } = await get(`/xadvert/business-managements/${id}`)
   const { item } = data
-  const { userId, role, discount } = item
+  const { userId, roles, discount } = item
   return {
     id,
     userId,
-    role,
+    roles: roles || [],
     discount
   } as Business
 }
@@ -58,8 +58,8 @@ export async function getBusiness(id: number) {
 export async function editBusiness(item: Business) {
   // 若 id 大于 0，则说明是编辑，否则是创建
   item.id > 0
-    ? await put('/xadvert/business-managements', slice(item, 'id,role,discount'))
-    : await post('/xadvert/business-managements', slice(item, 'userId,role,discount'))
+    ? await put('/xadvert/business-managements', slice(item, 'id,roles,discount'))
+    : await post('/xadvert/business-managements', slice(item, 'userId,roles,discount'))
 }
 
 /**

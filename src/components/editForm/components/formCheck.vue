@@ -35,9 +35,9 @@ export default class FormCheck extends ViewBase {
 
   model = this.value
 
-  @Watch('value', { deep: true })
+  @Watch('value', { deep: true, immediate: true })
   watchValue(value: Array<number | string>) {
-    this.model = value
+    this.model = Array.isArray(value) ? value : [value]
   }
 
   @Watch('model', { deep: true })
