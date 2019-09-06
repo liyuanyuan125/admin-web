@@ -152,7 +152,6 @@
           </template>
         </Table>
       </Row>
-
       <!-- 刊例价 -->
       <div class='titop' v-if='showprice'>默认刊例价
         <Button type='success' style='float: right;' @click="editprice('dataForm')">保存</Button>
