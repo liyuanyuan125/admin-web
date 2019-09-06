@@ -12,11 +12,10 @@ build:
   stage: build
   only:
     - tags
+    - master
     - develop
-    - testing
-    - release
   script:
-    - yarn && yarn lint && yarn build
+    - yarn config get registry && yarn && yarn lint && yarn build
   artifacts:
     paths:
       - dist
@@ -32,9 +31,8 @@ package:
     GIT_STRATEGY: none
   only:
     - tags
+    - master
     - develop
-    - testing
-    - release
   script:
     - package
   tags:
@@ -48,10 +46,9 @@ deploy-dev:
   dependencies: []
   only:
     - develop
-    - testing
-    - release
   except:
     - tags
+    - master
   script:
     - deploy -service $SERVICE_NAME
   environment: aiads-dev
@@ -66,8 +63,7 @@ deploy-prd:
   dependencies: []
   only:
     - tags
-  except:
-    - branches
+    - master
   script:
     - deploy -service $SERVICE_NAME -template web -vars port=8005
   environment: aiads-prd

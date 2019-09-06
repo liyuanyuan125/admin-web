@@ -3,7 +3,6 @@
     <ListPage
       :fetch="fetch"
       :filters="filters"
-      :enums="enums"
       :columns="columns"
       ref="listPage"
     >
@@ -14,10 +13,11 @@
           @click="editShow()"
         >创建</Button>
       </template>
+
       <template slot="action" slot-scope="{ row }">
         <div class="row-acts">
-          <a @click="handleStatus(row)" v-text="row.status == 1 ? '禁用':'启用'"></a>
-          <a @click="editShow(row.id)" >编辑</a>
+          <a @click="handleStatus(row)">{{row.status == 1 ? '禁用' : '启用'}}</a>
+          <a @click="editShow(row.id)">编辑</a>
         </div>
       </template>
     </ListPage>
@@ -59,8 +59,6 @@ export default class BusinessPage extends ViewBase {
     return this.$refs.listPage as ListPage
   }
 
-  stats: any = ''
-
   roleList: any = []
 
   filters: Filter[] = [
@@ -84,7 +82,7 @@ export default class BusinessPage extends ViewBase {
       name: 'email',
       defaultValue: '',
       input: true,
-      width: 120,
+      width: 160,
       placeholder: '邮箱'
     },
 
@@ -101,7 +99,7 @@ export default class BusinessPage extends ViewBase {
       defaultValue: '',
       select: true,
       width: 120,
-      placeholder: '角色'
+      placeholder: '角色',
     },
 
     {
@@ -115,11 +113,6 @@ export default class BusinessPage extends ViewBase {
     }
   ]
 
-  enums = [
-    'statusList',
-    'roleList'
-  ]
-
   editId = 0
 
   editVisible = false
@@ -131,7 +124,7 @@ export default class BusinessPage extends ViewBase {
       { title: '姓名', key: 'name', minWidth: 100 },
       { title: '手机号', key: 'mobile', width: 100, },
       { title: '邮箱', key: 'email', minWidth: 150 },
-      { title: '角色', key: 'role', enum: true, minWidth: 80 },
+      { title: '角色', key: 'roles', enum: 'roleList', minWidth: 80 },
       { title: '可享折扣', key: 'discount', width: 80 },
       { title: '创建时间', key: 'createTime', dateTime: true, width: 150 },
       { title: '创建人', key: 'createUserName', width: 80 },
@@ -159,11 +152,11 @@ export default class BusinessPage extends ViewBase {
     },
 
     {
-      name: 'role',
-      defaultValue: 0,
+      name: 'roles',
+      defaultValue: [],
       label: '角色',
       required: true,
-      radio: {
+      check: {
         enumKey: 'roleList'
       },
       span: 21,
@@ -193,7 +186,7 @@ export default class BusinessPage extends ViewBase {
     const list = await userList({ pageSize: 888 })
     const item = this.editId > 0
       ? await getBusiness(this.editId)
-      : { id: 0, userId: 0, role: 0, discount: 1 }
+      : { id: 0, userId: 0, roles: [], discount: 1 }
     const result = {
       item,
       userList: list,
@@ -209,12 +202,9 @@ export default class BusinessPage extends ViewBase {
 
   async handleStatus(data: any) {
     try {
-      this.stats = data.status == 1 ? '禁用' : '启用'
-      await confirm('您确定' + this.stats + '当前状态信息吗？')
-      await updateStatus(
-        data.id,
-        data.status == 1 ? 2 : 1
-      )
+      const { id, status } = data
+      await confirm(`您确定${status == 1 ? '禁用' : '启用'}当前状态信息吗？`)
+      await updateStatus(id, status == 1 ? 2 : 1)
       toast('更改成功')
       this.listPage.update()
     } catch (ex) {
@@ -232,13 +222,11 @@ export default class BusinessPage extends ViewBase {
       this.handleError(ex)
     }
   }
-
-  mounted() {}
 }
 </script>
 
 <style lang="less" scoped>
 .companies:only-child:empty::before {
-  content: "-";
+  content: '-';
 }
 </style>
