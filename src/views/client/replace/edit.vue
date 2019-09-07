@@ -17,7 +17,7 @@
     <div class="edit-box">
       <!-- header -->
       <Row class="cinema-header">
-        <FormItem label="广告主身份">
+        <FormItem label="区代身份">
           <Row>
             <Col span="10">
               <RadioGroup v-model="item.companyType" type="button" size="large">
@@ -103,8 +103,8 @@
           </FormItem>
           </Row>
         </div>
-        <Row>
-          <Col span="5">
+        <Row v-if='item.companyType == 1'>
+          <Col span="6">
             <FormItem label="资质" prop="qualificationType">
               <Select v-model="item.qualificationType" clearable>
                 <Option
@@ -120,14 +120,42 @@
               <Input v-model="item.qualificationCode" placeholder="资质编号" />
             </FormItem>
           </Col>
-        </Row>
-
-        <!-- 上传图片 -->
-        <Row class="upload">
-          <Col span="12" style="margin-left: 88px">
-            <Upload v-model="imageList" multiple :maxCount="3" accept="image/*" v-if="loadingShow" />
+          <Col span='24'>
+            <Row class="upload">
+              <Col span="12" style="margin-left: 88px">
+                <Upload v-model="imageList" multiple :maxCount="3" accept="image/*" v-if="loadingShow" />
+              </Col>
+            </Row>
           </Col>
         </Row>
+
+        <div v-else>
+          <Row>
+            <Col span="6">
+              <FormItem label="资质" prop="singqualificationType">
+                <Select v-model="item.singqualificationType" clearable>
+                  <Option
+                    v-for="it in personQualificationTypeList"
+                    :key="it.key"
+                    :value="it.key"
+                  >{{it.text}}</Option>
+                </Select>
+              </FormItem>
+            </Col>
+            <Col span="6" offset="1">
+              <FormItem label="资质编号" prop="singqualificationCode">
+                <Input v-model="item.singqualificationCode" placeholder="资质编号" />
+              </FormItem>
+            </Col>
+            <Col span='24'>
+              <Row class="upload">
+                <Col span="12" style="margin-left: 88px">
+                  <Upload v-model="singimageList" multiple :maxCount="3" accept="image/*" v-if="loadingShow" />
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        </div>
       </Row>
 
       <!-- content -->
@@ -292,7 +320,10 @@ const defItem = {
 
   singcontact: '',
   singcontactTel: '',
-  singemail: ''
+  singemail: '',
+  singimages: [],
+  singqualificationType: 'ID_CARD',
+  singqualificationCode: ''
 }
 
 @Component({
@@ -326,10 +357,11 @@ export default class Main extends ViewBase {
   typeListSubMap = {}
   profitUnitList = []
   profitTypeList = []
+  personQualificationTypeList: any = []
   area: number[] = []
   businessDirector = []
   imageList = []
-
+  singimageList = []
   index = 1 // 资质编号长度
 
   options1 = {
@@ -407,6 +439,10 @@ export default class Main extends ViewBase {
       ],
       approveStatus: [
         { required: true, message: '请选择审核状态', trigger: 'blur', type: 'number' }
+      ],
+      singqualificationType: [{ required: true, message: '请选择资质', trigger: 'change' }],
+      singqualificationCode: [
+        { required: true, message: '请输入资质编号', trigger: 'blur' }
       ],
       cinemasList: [{ validator: cinemaVali }],
       levelCode: [{ required: true, message: '请选择客户等级', trigger: 'change' }],
@@ -496,12 +532,14 @@ export default class Main extends ViewBase {
     try {
       if (!query.id) {
         const {
-          data: { levelList, customerTypeList, qualificationTypeList, businessParentTypeList }
+          data: { levelList,
+                  personQualificationTypeList, customerTypeList, qualificationTypeList, businessParentTypeList }
         } = await addSeach()
         this.loadingShow = true
         this.levelList = levelList
         this.qualificationTypeList = qualificationTypeList
         this.customerTypeList = customerTypeList.slice(2)
+        this.personQualificationTypeList = personQualificationTypeList
         this.businessParentTypeList = businessParentTypeList.map((it: any) => {
           return {
             value: it.key,
@@ -526,6 +564,7 @@ export default class Main extends ViewBase {
             businessParentTypeList,
             countyId,
             addressDetail,
+            personQualificationTypeList,
             contact,
             contactTel,
             email,
@@ -551,6 +590,7 @@ export default class Main extends ViewBase {
           }
         } = await queryId(query)
         this.item.companyType = companyType
+        this.personQualificationTypeList = personQualificationTypeList
         if ( companyType == 2) {
           this.item.singcontact = contact
           this.item.singcontactTel = contactTel
@@ -559,11 +599,17 @@ export default class Main extends ViewBase {
             id: it.brandId,
             name: it.brandName,
           }))
+          this.item.singimages = images || []
+          this.singimageList = imageList || []
+          this.item.singqualificationCode = qualificationCode
           // this.item.types = types
         } else {
+          this.item.qualificationCode = qualificationCode
           this.item.name = name
           this.item.contact = contact
           this.item.contactTel = contactTel
+          this.item.images = images || []
+          this.imageList = imageList || []
           this.item.email = email
           this.area = [provinceId || 0, cityId || 0, countyId || 0]
           this.item.shortName = shortName
@@ -579,16 +625,13 @@ export default class Main extends ViewBase {
         this.item.recommendUserName = recommendUserName
         this.item.aptitudeType = aptitudeType
         this.item.aptitudeNo = aptitudeNo
-        this.item.qualificationCode = qualificationCode
         this.item.levelCode = levelCode
         this.qualificationTypeList = qualificationTypeList
         this.item.qualificationType = qualificationType
-        this.item.images = images || []
         this.item.cinemasList = cinemaList || []
         this.item.refusedReason = refusedReason
         this.item.businessDirector = businessDirector
         this.item.cinemas = cinemas || []
-        this.imageList = imageList || []
         this.item.approveStatus = Number(approveStatus)
         this.item.validityPeriodDate = validityPeriodDate
           ? new Date(this.formatValid(validityPeriodDate))
@@ -647,6 +690,9 @@ export default class Main extends ViewBase {
           types: [
             {typeCode: 'agent'}
           ],
+          images: this.item.companyType == 1 ? this.item.images : this.item.singimages,
+          qualificationCode: this.item.companyType == 1 ? this.item.qualificationCode : this.item.singqualificationCode,
+          qualificationType: this.item.companyType == 1 ? this.item.qualificationType : this.item.singqualificationType,
           cinemas: this.item.typearr[1] ? this.cinemas : [],
           brandIds: this.item.companyType == 2 ? this.singbrandIds : (this.item.typearr[0] ? this.brandIds : []),
           email: this.item.companyType == 1 ? this.item.email : this.item.singemail,
@@ -682,6 +728,9 @@ export default class Main extends ViewBase {
         delete formData.singcontactTel
         delete formData.singcontact
         delete formData.singemail
+        delete formData.singimages
+        delete formData.singqualificationType
+        delete formData.singqualificationCode
         try {
           const data: any = route == 0
             ? await addQuery(formData)
@@ -705,6 +754,11 @@ export default class Main extends ViewBase {
   @Watch('imageList', { deep: true })
   watchImageList(val: any[]) {
     this.item.images = val.map(it => it.fileId)
+  }
+
+  @Watch('singimageList', { deep: true })
+  watchSingimageList(val: any[]) {
+    this.item.singimages = val.map(it => it.fileId)
   }
 
   @Watch('typeList', { deep: true })
