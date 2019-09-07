@@ -1350,7 +1350,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   //   }
   // },
 
-  // 促销活动 - 列表
+  // 促销活动 - 广告计划营销活动 - 列表
   {
     path: '/promotion/cpm',
     name: 'promotion-cpm',
@@ -1361,7 +1361,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
-  // 促销活动 - 详情 - 编辑 - 新建
+  // 促销活动 - 广告计划营销活动 - 详情 - 编辑 - 新建
   {
     path: '/promotion/cpm/detail/:id?/:action',
     name: 'promotion-cpm-detail',
@@ -1381,7 +1381,41 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
         }
       }
     },
-    props: paramTypes({ id: Number, brandId: Number, action: String })
+    props: paramTypes({ id: Number, action: String })
+  },
+
+  // 促销活动 - 广告片营销活动 - 列表
+  {
+    path: '/promotion/xadvert',
+    name: 'promotion-xadvert',
+    component: () => import('./views/promotion/xadvert/list.vue'),
+    meta: {
+      authKey: '',
+      title: '广告片营销活动'
+    }
+  },
+
+  // 促销活动 - 广告片营销活动 - 详情 - 编辑 - 新建
+  {
+    path: '/promotion/xadvert/detail/:id?/:action',
+    name: 'promotion-xadvert-detail',
+    component: () => import('./views/promotion/xadvert/detail.vue'),
+    meta: {
+      authKey: '',
+      title({ params: { action } }) {
+        switch (action) {
+          case 'view':
+            return '查看'
+          case 'edit':
+            return '编辑'
+          case 'audit':
+            return '审批'
+          default:
+            return '添加新活动'
+        }
+      }
+    },
+    props: paramTypes({ id: Number, action: String })
   },
 
   {

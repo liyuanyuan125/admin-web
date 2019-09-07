@@ -3,7 +3,7 @@
     <ListPage :fetch="fetch" :filters="filters" :enums="enums" :columns="columns" ref="listPage">
       <template slot="acts-2">
         <router-link :to="{
-            name: 'promotion-cpm-detail',
+            name: 'promotion-xadvert-detail',
             params: {
               action: 'create'
             }
@@ -15,21 +15,21 @@
       <template slot="action" slot-scope="{ row: { status, id, name, enName } }">
         <div class="row-acts">
           <router-link :to="{
-              name: 'promotion-cpm-detail',
+              name: 'promotion-xadvert-detail',
               params: {
                 id,
                 action: 'edit'
               }
             }">编辑</router-link>
           <router-link v-if="status === 1" :to="{
-              name: 'promotion-cpm-detail',
+              name: 'promotion-xadvert-detail',
               params: {
                 id,
                 action: 'audit'
               }
             }">审批</router-link>
           <router-link :to="{
-              name: 'promotion-cpm-detail',
+              name: 'promotion-xadvert-detail',
               params: {
                 id,
                 action: 'view'
@@ -125,15 +125,15 @@ export default class Main extends ViewBase {
         placeholder: '适用渠道'
       },
 
-      {
-        name: 'adType',
-        defaultValue: 0,
-        select: {
-          enumKey: 'adTypeList',
-        },
-        width: 128,
-        placeholder: '广告类型'
-      },
+      // {
+      //   name: 'adType',
+      //   defaultValue: 0,
+      //   select: {
+      //     enumKey: 'adTypeList',
+      //   },
+      //   width: 128,
+      //   placeholder: '广告类型'
+      // },
 
       {
         name: 'type',
@@ -187,13 +187,12 @@ export default class Main extends ViewBase {
       { title: '活动ID', key: 'id' },
       { title: '活动名称', key: 'name' },
       { title: '客户范围', key: 'customerType', enum: true },
-      { title: '适用渠道', key: 'channels', minWidth: 200, enum: 'channelList' },
-      { title: '广告类型', key: 'adTypes', enum: 'adTypeList'},
+      { title: '适用渠道', key: 'channelCodes', minWidth: 200, enum: 'channelList' },
       { title: '促销活动类型', key: 'type', enum: true },
-      { title: '活动开始时间', key: 'beginTime' },
-      { title: '活动结束时间', key: 'endTime' },
+      { title: '活动开始时间', key: 'beginDate' },
+      { title: '活动结束时间', key: 'endDate' },
       { title: '活动状态', key: 'status', enum: true },
-      { title: '审批人', key: 'auditor', },
+      { title: '审批人', key: 'approvalName', },
       { title: '操作', key: 'keyWords', slot: 'action' }
     ] as ColumnExtra[]
   }
