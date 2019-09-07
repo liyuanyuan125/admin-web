@@ -2,7 +2,7 @@
   <Modal 
     v-model='showDlg'
     :width='720'
-    title="添加关联影院"
+    title="添加关联影片"
     style="top: 20px"
     @on-cancel="cancel()"
     >

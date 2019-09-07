@@ -216,7 +216,6 @@ const defItem = {
   contactTel: '',
 
   email: '',
-
   qualificationType: 'BL',
   qualificationCode: '',
   images: [],
