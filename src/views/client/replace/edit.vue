@@ -757,7 +757,7 @@ export default class Main extends ViewBase {
   }
 
   @Watch('singimageList', { deep: true })
-  watchImageList(val: any[]) {
+  watchSingimageList(val: any[]) {
     this.item.singimages = val.map(it => it.fileId)
   }
 

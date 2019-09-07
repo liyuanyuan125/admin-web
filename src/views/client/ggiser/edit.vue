@@ -993,7 +993,6 @@ export default class Main extends ViewBase {
         delete formData.singimages
         delete formData.singqualificationType
         delete formData.singqualificationCode
-
         try {
           const data: any = route == 0
             ? await addQuery(formData)
@@ -1020,7 +1019,7 @@ export default class Main extends ViewBase {
   }
 
   @Watch('singimageList', { deep: true })
-  watchImageList(val: any[]) {
+  watchSingimageList(val: any[]) {
     this.item.singimages = val.map(it => it.fileId)
   }
 

@@ -152,6 +152,7 @@ const timeFormat = 'YYYY/MM/DD'
   }
 })
 export default class Main extends ViewBase {
+  personQualificationTypeList: any = []
   get cachedMap() {
     return {
       approveList: makeMap(this.approveStatusList),
@@ -205,7 +206,6 @@ export default class Main extends ViewBase {
   statusList: any = []
   showimg = true
   list: any = []
-  personQualificationTypeList: any = []
   created() {
     this.load()
   }
