@@ -111,7 +111,7 @@ export default class Main extends ViewBase {
       { title: '支付金额', key: 'payAmount', minWidth: 120 },
       { title: '渠道', key: 'payChannel', width: 70, enum: true },
       { title: '业务类型', key: 'busType', width: 70, enum: true },
-      { title: '线下支付类型', key: 'lineType', width: 70, enum: true },
+      { title: '线下支付类型', key: 'lineType', width: 90, enum: true },
       { title: '支付状态', key: 'payStatus', width: 70, enum: true },
       { title: '支付创建时间', key: 'createTime', minWidth: 120, dateTime: true },
       { title: '支付完成时间', key: 'finishTime', minWidth: 120, dateTime: true }
