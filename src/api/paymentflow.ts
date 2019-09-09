@@ -19,6 +19,12 @@ export async function queryList(query: any) {
   res.data.payTypeList = res.data.payTypeList ? res.data.payTypeList.filter((it: any) => {
     return it.text !== '未知'
   }) : []
+  res.data.items = res.data.items.map((it: any) => {
+    return {
+      ...it,
+      planId: (it.planId === 0) ? null : it.planId
+    }
+  })
   return res
   return await mockGet(query, {
     totalCount: 1,
