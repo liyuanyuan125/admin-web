@@ -147,7 +147,7 @@ export default class Main extends ViewBase {
 
   get columns() {
     return [
-      { title: '退款单编号', slot: 'refundNo', width: 100 },
+      { title: '退款单编号', slot: 'refundNo', width: 125 },
       { title: '订单编号', slot: 'orderNo', width: 100 },
       { title: '项目名称', key: 'projectName'  },
       { title: '公司ID', key: 'companyId', width: 80 },

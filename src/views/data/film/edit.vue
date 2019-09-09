@@ -13,9 +13,7 @@
         </FormItem>
         <FormItem label="影片分类">
             <RadioGroup v-model="form.categoryCode">
-                <Radio label="commonly">一般影片</Radio>
-                <Radio label="super">超级大片</Radio>
-                <Radio label="popular">热门大片</Radio>
+              <Radio v-for="item in categoryList" :label="item.key"> {{item.text}}</Radio>
             </RadioGroup>
         </FormItem>
         
@@ -67,15 +65,21 @@ export default class Main extends ViewBase {
   form: any = {}
   rule = {}
   items: any = {}
+
+  categoryList = [] // 影片分类
+
   mounted() {
     if (this.id) {
       this.queryList()
     }
   }
+
   async queryList() {
     try {
       const { data } = await movieDetail(this.id)
       this.items = data || {}
+      this.categoryList = data.categoryList || []
+
       this.form = {
         summary: data.summary,
         categoryCode: data.categoryCode,

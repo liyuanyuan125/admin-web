@@ -95,7 +95,7 @@ export default class VideoList extends ViewBase {
 
 <style lang="less" scoped>
 .component {
-  min-width: 188px;
+  min-width: 120px;
 }
 .offline {
   color: #bbb;
