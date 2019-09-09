@@ -116,7 +116,7 @@ export default class Main extends ViewBase {
       },
 
       {
-        name: 'channel',
+        name: 'channelCode',
         defaultValue: 0,
         select: {
           enumKey: 'channelList',
