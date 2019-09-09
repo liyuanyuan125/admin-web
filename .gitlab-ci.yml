@@ -15,6 +15,8 @@ build:
     - develop
     - testing
     - release
+    - TempRelease
+    - TempMaster
   script:
     - yarn && yarn lint && yarn build
   artifacts:
@@ -35,6 +37,8 @@ package:
     - develop
     - testing
     - release
+    - TempRelease
+    - TempMaster
   script:
     - package
   tags:
@@ -66,8 +70,8 @@ deploy-prd:
   dependencies: []
   only:
     - tags
-  except:
-    - branches
+    - TempRelease
+    - TempMaster
   script:
     - deploy -service $SERVICE_NAME -template web -vars port=8005
   environment: aiads-prd
