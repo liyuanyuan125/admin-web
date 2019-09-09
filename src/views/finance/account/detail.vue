@@ -69,13 +69,13 @@ export default class Main extends ViewBase {
     const transactionTypes: any = this.$route.params.transactionTypes
     // return filterone(str)
     if (transactionTypes == '1') {
-       return filterone(str)
+       return filterone(str, this.$route.params.companyId)
     } else if ( transactionTypes == '2') {
-      return filtertwo(str)
+      return filtertwo(str, this.$route.params.companyId)
     } else if ( transactionTypes == '3') {
-      return filterthree(str)
+      return filterthree(str, this.$route.params.companyId)
     } else {
-      return filterfour(str)
+      return filterfour(str, this.$route.params.companyId)
     }
   }
 
