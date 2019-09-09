@@ -4,33 +4,25 @@
       <div class="act-bar flex-box">
         <form class="form flex-1" @submit.prevent="search">
           <LazyInput v-model="query.id" placeholder="订单编号" class="input"/>
-          <Select v-model="query.xadvertiserId" placeholder="广告主公司名称" style='width: 200px;'  filterable>
+          <Select v-model="query.xadvertiserId" placeholder="广告主公司名称" style='width: 150px;'  filterable>
             <Option v-for="it in adscompany" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
 dlgEditDone          </Select>
-          <Select v-model="query.planId" placeholder="广告计划名称" style='width: 200px;'  filterable>
+          <Select v-model="query.planId" placeholder="广告计划名称" style='width: 150px;'  filterable>
             <Option v-for="it in planlist" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
           </Select>
-          <Select v-model="query.resourceId" placeholder="资源方公司名称" style='width: 200px;'  filterable>
+          <Select v-model="query.resourceId" placeholder="资源方公司名称" style='width: 150px;'  filterable>
             <Option v-for="it in resourcescompany" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
-          </Select>
-          <Select v-model="query.status" placeholder="订单状态" style='width: 200px;' clearable>
-            <Option v-for="it in statusList" v-if='it.key != 0' :key="it.key" :value="it.key"
-              :label="it.text">{{it.text}}</Option>
-          </Select>
-          <Select v-model="query.xadvertType" placeholder="广告类型" style='width: 200px;' clearable>
-            <Option v-for="it in advertTypeCodeList" v-if='it.key != 0' :key="it.key" :value="it.key"
-              :label="it.text">{{it.text}}</Option>
           </Select>
            <Select
              class='sels'
              v-model='query.cinemaId'
              clearable
              filterable
-             placeholder="请输入影院名称/专资编码查询"
-             style='width: 200px;'
+             placeholder="影院名称/专资编码查询"
+             style='width: 150px;'
              remote
              :remote-method="remoteMethod"
              @on-clear="movieList = []"
@@ -40,6 +32,14 @@ dlgEditDone          </Select>
                 :key="index"
                 :value="item.id"
               >【{{item.code}}】{{item.shortName}}</Option>
+            </Select>
+            <Select v-model="query.status" placeholder="订单状态" style='width: 120px;' clearable>
+              <Option v-for="it in statusList" v-if='it.key != 0' :key="it.key" :value="it.key"
+                :label="it.text">{{it.text}}</Option>
+            </Select>
+            <Select v-model="query.xadvertType" placeholder="广告类型" style='width: 120px;' clearable>
+              <Option v-for="it in advertTypeCodeList" v-if='it.key != 0' :key="it.key" :value="it.key"
+                :label="it.text">{{it.text}}</Option>
             </Select>
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </form>

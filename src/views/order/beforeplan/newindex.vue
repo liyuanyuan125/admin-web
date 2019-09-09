@@ -97,47 +97,32 @@ export default class IndexPage extends ViewBase {
                 name: 'id',
                 defaultValue: '',
                 type: 'input',
-                width: 140,
+                width: 120,
                 placeholder: '计划ID'
-            },
-
-            {
-                name: 'companyName',
-                defaultValue: 0,
-                type: CompanyList,
-                width: 140,
-                placeholder: '广告主公司名称'
             },
 
             {
                 name: 'name',
                 defaultValue: '',
                 type: 'input',
-                width: 140,
+                width: 120,
                 placeholder: '广告计划名称'
+            },
+
+            {
+                name: 'companyName',
+                defaultValue: 0,
+                type: CompanyList,
+                width: 120,
+                placeholder: '广告主公司名称'
             },
 
             {
                 name: 'videoName',
                 defaultValue: '',
                 type: videoList,
-                width: 140,
+                width: 120,
                 placeholder: '广告片名称'
-            },
-
-            {
-                name: 'dateRange',
-                defaultValue: '',
-                type: 'dateRange',
-                width: 200,
-                placeholder: '选择时间',
-                dealParam(value: string) {
-                    const [beginDate, endDate] = value ? value.split('-') : [null, null]
-                    return {
-                        beginDate,
-                        endDate
-                    }
-                }
             },
 
             {
@@ -159,10 +144,25 @@ export default class IndexPage extends ViewBase {
             },
 
             {
+                name: 'dateRange',
+                defaultValue: '',
+                type: 'dateRange',
+                width: 140,
+                placeholder: '选择时间',
+                dealParam(value: string) {
+                    const [beginDate, endDate] = value ? value.split('-') : [null, null]
+                    return {
+                        beginDate,
+                        endDate
+                    }
+                }
+            },
+
+            {
                 name: 'applyDate',
                 defaultValue: '',
                 type: 'date',
-                width: 140,
+                width: 120,
                 placeholder: '提交时间'
             },
 
@@ -205,7 +205,7 @@ export default class IndexPage extends ViewBase {
 
     get columns() {
         const firstN: any = [
-            { title: '计划id', key: 'id', width: 60 },
+            { title: '计划id', key: 'id', width: 55 },
             { title: '计划名称', key: 'name' },
             { title: '广告主公司名称', key: 'companyName' },
             { title: '广告片', key: 'videoName' },
@@ -215,6 +215,7 @@ export default class IndexPage extends ViewBase {
                 title: '投放周期',
                 key: 'beginDate',
                 align: 'center',
+                width: 90,
                 render: (hh: any, { row: { beginDate, endDate } }: any) => {
                     /* tslint:disable */
                     const h = jsxReactToVue(hh)
@@ -228,7 +229,7 @@ export default class IndexPage extends ViewBase {
             { title: '折扣', key: 'discount', width: 60 },
             { title: '定金', slot: 'depositAmount', width: 60 },
             { title: '应结金额', slot: 'needPayAmount' },
-            { title: '提交时间', key: 'applyTime', editor: 'dateTime' },
+            { title: '提交时间', key: 'applyTime', editor: 'dateTime' , width: 135 },
             { title: '订单状态', key: 'status', editor: 'enum', width: 60 },
         ]
         const aaa = [
@@ -236,7 +237,7 @@ export default class IndexPage extends ViewBase {
         ]
 
         const bbb = [
-            { title: '操作', slot: 'action' },
+            { title: '操作', slot: 'action' , width: 80},
         ]
 
         return this.status == '4' ? [...firstN, ...aaa, ...bbb] : [...firstN, ...bbb] as ColumnExtra[]

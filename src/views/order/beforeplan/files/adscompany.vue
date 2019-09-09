@@ -57,7 +57,7 @@ export default class CompanyList extends ViewBase {
 </script>
 <style lang="less" scoped>
 .component {
-  min-width: 188px;
+  min-width: 120px;
 }
 
 .offline {
