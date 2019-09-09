@@ -1540,7 +1540,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     component: () => import('./views/order/beforeplan/newindex.vue'),
     meta: {
       authKey: '',
-      title: '映前广告计划列表new'
+      title: '映前广告计划列表'
     },
     props: true,
   },

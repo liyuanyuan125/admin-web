@@ -382,7 +382,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
 .ui-filter,
 .btn-search,
 .btn-reset {
-  margin-left: 8px;
+  margin-right: 8px;
 }
 .ui-filter:first-child {
   margin-left: 0;
