@@ -1357,7 +1357,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     component: () => import('./views/promotion/cpm/list.vue'),
     meta: {
       authKey: '',
-      title: '广告片营销活动'
+      title: '广告计划营销活动'
     }
   },
 
@@ -1395,7 +1395,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
-  // 促销活动 - 广告片营销活动 - 详情 - 编辑 - 新建
+  // 促销活动 - 广告片营销活动 - 详情 - 新建 - 编辑 - 审批
   {
     path: '/promotion/xadvert/detail/:id?/:action',
     name: 'promotion-xadvert-detail',

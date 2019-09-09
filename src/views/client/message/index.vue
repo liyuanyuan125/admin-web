@@ -331,10 +331,9 @@ export default class Main extends ViewBase {
       { title: '公司所在省份', key: 'provinceName', width: 90 },
       { title: '公司所在城市', key: 'cityName', width: 90 },
       { title: '备注', key: 'remark', minWidth: 120 },
-      { title: '留言时间', slot: 'createTime', width: 120 },
-      { title: '最后处理时间', slot: 'updateTime', width: 120 },
+      { title: '留言时间', slot: 'createTime', minWidth: 90 },
+      { title: '最后处理时间', slot: 'updateTime', minWidth: 90 },
       { title: '最后处理人', key: 'updateName', width: 90 },
-      // { title: '申请时间', slot: 'createTime', width: 140 },
       { title: '状态', key: 'status', editor: 'enum', width: 80 },
       { title: '操作', slot: 'action', width: 100 }
     ] as ColumnExtra[]
