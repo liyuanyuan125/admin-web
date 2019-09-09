@@ -2,7 +2,7 @@
   <div class="component">
     <Table :columns="columns" :data="inValue" border disabled-hover size="small"/>
     <div class="act-bar">
-      <a @click="onAdd" v-if="!type">添加关联影院</a>
+      <a @click="onAdd" v-if="!type">添加关联影片</a>
     </div>
     <AddCinemaModel v-if="!type" ref="addCinemaModel" @done="columndata" />
   </div>
