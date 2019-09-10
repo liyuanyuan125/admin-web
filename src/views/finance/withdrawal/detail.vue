@@ -28,7 +28,7 @@
           <Col span="4"><span id="success_form_input2" style="margin-right: 8px">{{detail.amount}}</span>
           </Col>
           <Col span="3"><div>提现方式：</div></Col>
-          <Col span="4"><span id="success_form_input3" style="margin-right: 8px">{{detail.alipayName}}</span>
+          <Col span="4"><span id="success_form_input3" style="margin-right: 8px">{{detail.type}}</span>
           </Col>
         </Row>
         <Row v-if="detail.withdrawalType != '2'">
@@ -114,8 +114,7 @@
           </Row>
         </Form>
       </Row>
-      <Row class="detail-check" 
-        v-if="detail.status != 1 && detail.status != '3'">
+      <Row class="detail-check">
         <div class="n-list">操作日志</div>
         <Row  class="detail-log" v-for="(item, i) in logList" :key="i">
           <Col span="3"><div>操作时间</div></Col>
@@ -127,6 +126,7 @@
       <Row>
         <Col v-if='$route.params.status' style='text-align: center'>
           <Button type="info" size="large" @click="edit('formInline')">确定</Button>
+          <Button style="margin-left: 10px" type="info" size="large" @click="back">取消</Button>
         </Col>
       </Row>
     </div>
@@ -159,7 +159,7 @@ const timeFormat = 'YYYY/MM/DD'
 })
 export default class Main extends ViewBase {
   httplist = ''
-  title = '充值信息'
+  title = '提现信息'
   link = '2222'
   copyBtn = null
   detail: any = {}
@@ -210,7 +210,9 @@ export default class Main extends ViewBase {
     (this.$Spin as any).show()
     try {
       const res = await withdrwaldetail(this.$route.params.id)
+      const typelist = makeMap(res.data.withdrawalTypeList)
       this.detail = res.data.item
+      this.detail.type = typelist[this.detail.withdrawalType]
       this.detail.createTime = moment(res.data.item.createTime).format(timeFormat)
       const logList = res.data.logList ? res.data.logList.map((item: any) => {
         return {

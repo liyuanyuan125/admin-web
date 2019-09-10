@@ -63,6 +63,10 @@ export function filterone(str: string, companyId: any) {
       defaultValue: companyId
     },
     {
+      name: 'transactionType',
+      defaultValue: 1
+    },
+    {
       name: 'pageSize',
       defaultValue: 20
     }
@@ -163,6 +167,10 @@ export function filterthree(str: string, companyId: any) {
       defaultValue: 20
     },
     {
+      name: 'transactionType',
+      defaultValue: 4
+    },
+    {
       name: 'companyId',
       defaultValue: companyId
     }
@@ -204,6 +212,10 @@ export function filterfour(str: string, companyId: any) {
     {
       name: 'pageSize',
       defaultValue: 20
+    },
+    {
+      name: 'transactionType',
+      defaultValue: 8
     },
     {
       name: 'companyId',
