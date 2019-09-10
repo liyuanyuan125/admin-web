@@ -134,7 +134,7 @@ export default class Main extends ViewBase {
         { key: 'nationality', title: '国籍', align: 'center'},
         { slot: 'professions', title: '主要职业', align: 'center'},
         { key: 'status', title: '状态', align: 'center', editor: 'enum'},
-        { slot: 'action', title: '操作', align: 'center'},
+        { slot: 'action', title: '操作', align: 'center', minWidth: 140},
      ] as ColumnExtra[]
   }
 
