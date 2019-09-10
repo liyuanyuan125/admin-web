@@ -24,7 +24,7 @@ export default class CinemaSelect extends ViewBase {
   async fetch(keyword: string) {
     const query = {
       ...this.query,
-      query: keyword,
+      shortName: keyword,
       pageIndex: 1,
       pageSize: 88,
     }

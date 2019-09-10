@@ -7,10 +7,10 @@ import { filterByControlStatus } from '@/util/dealData'
  * @param query 查询条件，参见接口文档
  */
 export async function companylist(query: any) {
-  const { data } = await get('/movie/cooperation/', query)
+  const { data } = await get('/customer/companies', query)
   const list = filterByControlStatus(data.items).map(it => ({
-    id: it.companyId as number,
-    name: it.companyName as string
+    id: it.id as number,
+    name: it.name as string
   }))
   return list
 }
@@ -30,10 +30,10 @@ export async function companylist(query: any) {
 // }
 
 export async function queryList(query: any) {
-  const { data } = await get('/movie/cooperation/', query)
+  const { data } = await get('/movie/', query)
   const list = filterByControlStatus(data.items).map(it => ({
-    id: it.movieId as number,
-    name: it.movieName as string
+    id: it.id as number,
+    name: it.name as string
   }))
   return list
 }

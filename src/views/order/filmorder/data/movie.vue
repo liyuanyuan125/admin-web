@@ -24,9 +24,9 @@ export default class CinemaSelect extends ViewBase {
   async fetch(keyword: string) {
     const query = {
       ...this.query,
-      query: keyword,
+      name: keyword,
       pageIndex: 1,
-      pageSize: 88,
+      pageSize: 20,
     }
     const list = await queryList(query)
     // 若现有列表中，没有找到已选择的影院，则清空
