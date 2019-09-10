@@ -9,8 +9,7 @@
     "lint:css": "stylelint \"**/*.vue\" --syntax less",
     "test:unit": "vue-cli-service test:unit",
     "testing": "sh tools/testing.sh",
-    "up": "node --experimental-modules --no-warnings tools/up.mjs",
-    "release": "node --experimental-modules tools/release.mjs"
+    "up": "node --experimental-modules --no-warnings tools/up.mjs"
   },
   "dependencies": {
     "axios": "^0.18.0",

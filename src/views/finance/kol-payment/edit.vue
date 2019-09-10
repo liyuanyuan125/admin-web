@@ -24,7 +24,7 @@ const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
 const ratioValidator: Validator = (rule, value: Array<{ value: number }>, callback) => {
   const total = value.reduce((sum, it) => (sum += it.value), 0)
-  const error = isNaN(total) ? '请输入数字' : total > 100 ? '占比之和不能大于 100' : ''
+  const error = isNaN(total) ? '请输入数字' : total > 100.00000001 ? '占比之和不能大于 100' : ''
   error ? callback(new Error(error)) : callback()
 }
 

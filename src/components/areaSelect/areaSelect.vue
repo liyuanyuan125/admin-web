@@ -120,7 +120,7 @@ export default class AreaSelect extends ViewBase {
     return zeroList.map((it, i) => (i in list ? list[i] : it))
   }
 
-  @Watch('value')
+  @Watch('value', { immediate: true })
   async watchValue(val: number[]) {
     // 检查传入的 value 值，是否合法，不合法直接清空
     const isValid = await this.checkValid(val)

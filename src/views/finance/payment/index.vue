@@ -380,7 +380,6 @@ export default class IndexPage extends ViewBase {
       myThis.$refs.addOrUpdate.init(id, applyAmount)
     })
   }
-
 }
 </script>
 
