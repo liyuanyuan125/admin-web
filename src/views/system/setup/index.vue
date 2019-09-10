@@ -42,7 +42,7 @@
           </Col>
         </Row>
         <Row>
-          <Col :span='8'>    
+          <Col :span='8'>
             <FormItem label="银行账号" prop="accountNumber">
               <Input v-model="dataForm.accountNumber" style='width: 200px;' placeholder=""/>
             </FormItem>
@@ -120,7 +120,7 @@
       </div>
       <Row v-auth="'finance.settings:set-transaction-info'" style='padding-bottom: 30px;' class="jiaoyi cinema-header">
         <Button type="success" @click="handleAdd" icon="md-add" v-if="editIndex === 1">新增</Button>
-        <Table :columns="columns" :data="formDynamic" 
+        <Table :columns="columns" :data="formDynamic"
         border stripe disabled-hover size="small" class="table">
           <template slot-scope="{ row, index }" slot="begin">
             <!-- <Input type="text" v-model="editbegin" v-if="editIndex === index" />
@@ -239,7 +239,7 @@
     </div>
   </Form>
 </div>
-  
+
 </template>
 
 <script lang="tsx">
