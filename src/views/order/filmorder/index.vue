@@ -56,11 +56,14 @@ import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import jsxReactToVue from '@/util/jsxReactToVue'
 // import { planlist , company } from '@/api/orderSys'
 import { queryList , film  } from '@/api/filmorder'
-import Film from './movie.vue'
+import Film from './data/movie.vue'
+import company from './data/company.vue'
 
 @Component({
   components: {
-    ListPage
+    ListPage,
+    company,
+    Film
   }
 })
 export default class Main extends ViewBase {
@@ -77,8 +80,8 @@ export default class Main extends ViewBase {
     {
       name: 'companyId',
       defaultValue: 0,
-      type: Film,
-      width: 85,
+      type: company,
+      width: 125,
       placeholder: '公司名称'
     },
 
@@ -86,7 +89,7 @@ export default class Main extends ViewBase {
       name: 'movieId',
       defaultValue: 0,
       type: Film,
-      width: 85,
+      width: 125,
       placeholder: '影片名称'
     },
 

@@ -81,7 +81,12 @@ export default class ComponentMain extends ViewBase {
   }
 
   columndata(val: any) {
-    this.inValue = val
+    this.inValue = val.map((it: any) => {
+      return {
+        ...it,
+        nameEn: it.englishName
+      }
+    })
   }
 
   onSet(id: number) {

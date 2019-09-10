@@ -57,7 +57,7 @@
             transactionTypes: 4
           })">{{monthWithdrawalCount}}</a> / <a @click="push({
             companyId: companyId,
-            time: 'month',
+            time: 'all',
             transactionTypes: 4
           })">{{totalWithdrawalCount}}</a>
         </div>

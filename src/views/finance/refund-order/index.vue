@@ -43,11 +43,11 @@ export default class Main extends ViewBase {
       dateRange: true,
       width: 178,
       placeholder: '退款创建日期区间',
-      dealParam(value: any) {
-        const [start, end] = value.split('-')
+      dealParam(value: string) {
+        const [beginTime, endTime] = value ? value.split('-') : [null, null]
         return {
-          applyStartTime: startDayTimestamp(start),
-          applyEndTime: endDayTimestamp(end),
+          beginTime,
+          endTime
         }
       }
     },

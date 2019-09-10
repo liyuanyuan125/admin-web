@@ -43,11 +43,11 @@ export default class Main extends ViewBase {
       dateRange: true,
       width: 178,
       placeholder: '支付创建日期区间',
-      dealParam(value: any) {
-        const [start, end] = value.split('-')
+      dealParam(value: string) {
+        const [queryStartTime, queryEndTime] = value ? value.split('-') : [null, null]
         return {
-          applyStartTime: startDayTimestamp(start),
-          applyEndTime: endDayTimestamp(end),
+          queryStartTime,
+          queryEndTime
         }
       }
     },
@@ -63,10 +63,10 @@ export default class Main extends ViewBase {
     },
 
     {
-      name: 'payTypeList',
+      name: 'payType',
       defaultValue: 0,
       select: {
-        enumKey: 'payStatusList',
+        enumKey: 'payTypeList',
       },
       width: 128,
       placeholder: '支付方式'
@@ -111,6 +111,7 @@ export default class Main extends ViewBase {
       { title: '支付金额', key: 'payAmount', minWidth: 120 },
       { title: '渠道', key: 'payChannel', width: 70, enum: true },
       { title: '业务类型', key: 'busType', width: 70, enum: true },
+      { title: '线下支付类型', key: 'lineType', width: 90, enum: true },
       { title: '支付状态', key: 'payStatus', width: 70, enum: true },
       { title: '支付创建时间', key: 'createTime', minWidth: 120, dateTime: true },
       { title: '支付完成时间', key: 'finishTime', minWidth: 120, dateTime: true }

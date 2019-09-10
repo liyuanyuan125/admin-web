@@ -12,7 +12,7 @@
         <FormItem label="公司名称" prop="companyId">
           <Row>
             <Col span="10">
-              
+              {{data.name}}
             </Col>
           </Row>
         </FormItem>
@@ -92,7 +92,7 @@ const dataForm = {
 export default class Main extends ViewBase {
   query = { ...defQuery }
   remittanceTypeList: any = []
-
+  data: any = {}
   get ruleValidate() {
     const rules = {
       amount: [
@@ -160,11 +160,8 @@ export default class Main extends ViewBase {
         remittanceTypeList
       } } = await before()
       this.remittanceTypeList = remittanceTypeList.filter((it: any) => it.key != 0)
-      const { data: {
-        // statusList: list,
-        items: companys,
-        customerTypeList: customerTypeList
-      } } = await companylist( this.$route.params.companyId )
+      const { data } = await companylist( this.$route.params.companyId )
+      this.data = data || {}
     } catch (ex) {
       // this.handleError(ex)
     }

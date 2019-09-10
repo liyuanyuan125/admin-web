@@ -617,7 +617,7 @@ export default class Main extends ViewBase {
         }
         this.item.typeCategoryCode1 = 'cinema'
         this.item.typearr[1] = true
-        this.title = '新建广告主'
+        this.title = '新建资源方'
         ; (this.$Spin as any).hide()
       } else {
         const {
