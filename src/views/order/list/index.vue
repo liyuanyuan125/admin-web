@@ -4,18 +4,69 @@
       <div class="act-bar flex-box">
         <form class="form flex-1" @submit.prevent="search">
           <LazyInput v-model="query.id" placeholder="订单编号" class="input"/>
-          <Select v-model="query.xadvertiserId" placeholder="广告主公司名称" style='width: 150px;'  filterable>
+          <!-- <Select v-model="query.xadvertiserId" placeholder="广告主公司名称" style='width: 150px;'  filterable>
             <Option v-for="it in adscompany" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
-dlgEditDone          </Select>
-          <Select v-model="query.planId" placeholder="广告计划名称" style='width: 150px;'  filterable>
+          </Select> -->
+          <Select
+             class='sels'
+             v-model='query.xadvertiserId'
+             clearable
+             filterable
+             placeholder="广告主公司名称"
+             style='width: 150px;'
+             remote
+             :remote-method="adsremoteMethod"
+             @on-clear="adscompany = []"
+              >
+              <Option
+                v-for="(item, index) in adscompany"
+                :key="index"
+                :value="item.id"
+              >{{item.name}}</Option>
+            </Select>
+            <Select
+             class='sels'
+             v-model='query.resourceId'
+             clearable
+             filterable
+             placeholder="资源方公司名称"
+             style='width: 150px;'
+             remote
+             :remote-method="resourceremoteMethod"
+             @on-clear="resourcescompany = []"
+              >
+              <Option
+                v-for="(item, index) in resourcescompany"
+                :key="index"
+                :value="item.id"
+              >{{item.name}}</Option>
+            </Select>
+            <Select
+             class='sels'
+             v-model='query.planId'
+             clearable
+             filterable
+             placeholder="广告计划名称"
+             style='width: 150px;'
+             remote
+             :remote-method="planremoteMethod"
+             @on-clear="planlist = []"
+              >
+              <Option
+                v-for="(item, index) in planlist"
+                :key="index"
+                :value="item.id"
+              >{{item.name}}</Option>
+            </Select>
+          <!-- <Select v-model="query.planId" placeholder="广告计划名称" style='width: 150px;'  filterable>
             <Option v-for="it in planlist" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
-          </Select>
-          <Select v-model="query.resourceId" placeholder="资源方公司名称" style='width: 150px;'  filterable>
+          </Select> -->
+<!--           <Select v-model="query.resourceId" placeholder="资源方公司名称" style='width: 150px;'  filterable>
             <Option v-for="it in resourcescompany" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
-          </Select>
+          </Select> -->
            <Select
              class='sels'
              v-model='query.cinemaId'
@@ -227,7 +278,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     return list
   }
 
-
+  // 影院搜索
   async remoteMethod(querys: any) {
     try {
       if (querys) {
@@ -245,6 +296,66 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       this.loading = false
     }
   }
+
+  // 广告主公司搜索
+  async adsremoteMethod(querys: any) {
+    try {
+      if (querys) {
+        this.loadings = true
+        const {
+          data: { items }
+        } = await company({
+          shortName: querys,
+          typeCode: 'ads'
+        })
+        this.adscompany = items || []
+      }
+      this.loading = false
+    } catch (ex) {
+      this.handleError(ex)
+      this.loading = false
+    }
+  }
+
+ // 资源方公司搜索
+  async resourceremoteMethod(querys: any) {
+    try {
+      if (querys) {
+        this.loadings = true
+        const {
+          data: { items }
+        } = await company({
+          shortName: querys,
+          typeCode: 'resource'
+        })
+        this.resourcescompany = items || []
+      }
+      this.loading = false
+    } catch (ex) {
+      this.handleError(ex)
+      this.loading = false
+    }
+  }
+
+  // 广告计划搜索
+  async planremoteMethod(querys: any) {
+    try {
+      if (querys) {
+        this.loadings = true
+        const {
+          data: { items }
+        } = await planlist({
+          name: querys,
+        })
+        this.planlist = items || []
+      }
+      this.loading = false
+    } catch (ex) {
+      this.handleError(ex)
+      this.loading = false
+    }
+  }
+
 
   mounted() {
     this.updateQueryByParam()
@@ -292,13 +403,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       this.statusList = statusList
       this.advertTypeCodeList = advertTypeCodeList
     // 广告计划列表
-    const plandata = await planlist({pageSize: 100000})
-    this.planlist = plandata.data.items
-    // 公司列表
-    const adscmy = await company({typeCode: 'ads' , pageSize: 100000})
-    const rescmy = await company({typeCode: 'resource' , pageSize: 100000})
-    this.adscompany = adscmy.data.items
-    this.resourcescompany = rescmy.data.items
+    // const plandata = await planlist({pageSize: 100000})
+    // this.planlist = plandata.data.items
+    // // 公司列表
+    // const adscmy = await company({typeCode: 'ads' , pageSize: 100000})
+    // const rescmy = await company({typeCode: 'resource' , pageSize: 100000})
+    // this.adscompany = adscmy.data.items
+    // this.resourcescompany = rescmy.data.items
     } catch (ex) {
       this.handleError(ex)
     } finally {
