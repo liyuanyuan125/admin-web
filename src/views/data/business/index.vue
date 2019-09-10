@@ -120,7 +120,7 @@ export default class BusinessPage extends ViewBase {
   get columns() {
     return [
       { title: '序号', key: 'index', width: 65 },
-      { title: '专资ID', key: 'id', width: 80 },
+      { title: 'ID', key: 'id', width: 80 },
       { title: '姓名', key: 'name', minWidth: 100 },
       { title: '手机号', key: 'mobile', width: 100, },
       { title: '邮箱', key: 'email', minWidth: 150 },
