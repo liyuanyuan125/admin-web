@@ -100,7 +100,7 @@ export default class Main extends ViewBase {
       {
         name: 'name',
         defaultValue: '',
-        type: 'input',
+        input: true,
         width: 85,
         placeholder: '活动名称'
       },
@@ -148,7 +148,7 @@ export default class Main extends ViewBase {
       {
         name: 'dateRange',
         defaultValue: '',
-        type: 'dateRange',
+        dateRange: true,
         width: 200,
         placeholder: '活动时间',
         dealParam(value: string) {

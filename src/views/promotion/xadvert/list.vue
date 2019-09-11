@@ -100,7 +100,7 @@ export default class Main extends ViewBase {
       {
         name: 'name',
         defaultValue: '',
-        type: 'input',
+        input: true,
         width: 85,
         placeholder: '活动名称'
       },
@@ -125,16 +125,6 @@ export default class Main extends ViewBase {
         placeholder: '适用渠道'
       },
 
-      // {
-      //   name: 'adType',
-      //   defaultValue: 0,
-      //   select: {
-      //     enumKey: 'adTypeList',
-      //   },
-      //   width: 128,
-      //   placeholder: '广告类型'
-      // },
-
       {
         name: 'type',
         defaultValue: 0,
@@ -148,7 +138,7 @@ export default class Main extends ViewBase {
       {
         name: 'dateRange',
         defaultValue: '',
-        type: 'dateRange',
+        dateRange: true,
         width: 200,
         placeholder: '活动时间',
         dealParam(value: string) {
