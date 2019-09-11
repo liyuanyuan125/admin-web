@@ -708,9 +708,9 @@ export default class Main extends ViewBase {
             provinceId: 0,
             cityId: 0,
             countyId: 0,
-            // addressDetail: '-',
-            // name: '-',
-            // shortName: '-',
+            delete formData.addressDetail
+            delete formData.name
+            delete formData.shortName
           }
           // delete formData.agentCityIdList
           // delete formData.businessParentCode
