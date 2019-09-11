@@ -55,6 +55,7 @@
     </div>
     <div style="text-align: center">
       <Button type="primary" @click="dataFormSubmit('dataForm')">确定</Button>
+      <Button style='margin-left: 20px' type="primary" @click="back">取消</Button>
     </div>
   </Form>
 </template>
