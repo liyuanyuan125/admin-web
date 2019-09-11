@@ -240,7 +240,7 @@ export default class IndexPage extends ViewBase {
             { title: '操作', slot: 'action' , width: 80},
         ]
 
-        return this.status == '4' ? [...firstN, ...aaa, ...bbb] : [...firstN, ...bbb] as ColumnExtra[]
+        return this.status == '3' ? [...firstN, ...aaa, ...bbb] : [...firstN, ...bbb] as ColumnExtra[]
     }
 
     done() {
