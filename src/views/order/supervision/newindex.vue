@@ -35,6 +35,10 @@
                     <em v-for='(its,index) in deliveryPositionList' :key='index' v-if='item.deliveryPosition != null && item.deliveryPosition == its.key'>【{{its.text}}】</em>
                 {{item.videoName}} ({{item.videoLength}})s</a>
             </template>
+            <template slot="movieName" slot-scope="{row}">
+                <span v-if='row.movieId == -1'>所有影片</span>
+                <span v-else >{{row.movieName}}</span>
+            </template>
             <template slot="approvalStatus" slot-scope="{row}">
                 <span v-for='(it,index) in statusList ' :key='index' v-if='row.approvalStatus == it.value'>{{it.name}}</span>
             </template>
@@ -55,10 +59,10 @@ import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 // import { queryList, auditItem, newItem } from './data'
 import moment from 'moment'
 import { queryList, okpass, refuse , reset } from '@/api/supervision'
-import { alert, toast } from '@/ui/modal'
 import { EditDialog, Field } from '@/components/editForm'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
+import { warning, success, info , confirm , alert} from '@/ui/modal'
 // 公司名称
 import compangList from './companyList.vue'
 // 广告片
@@ -303,7 +307,7 @@ export default class IndexPage extends ViewBase {
         const aaa: any = [
             { title: '资源方公司名称', key: 'resourceName', align: 'center' },
             { title: '影院名称', key: 'cinemaName', align: 'center' },
-            { title: '影片名称', key: 'movieName', align: 'center' },
+            { title: '影片名称', slot: 'movieName', align: 'center' },
             { title: '广告片', slot: 'video', align: 'center' },
             {
                 title: '投放周期',
@@ -476,5 +480,17 @@ export default class IndexPage extends ViewBase {
     height: 24px;
     background-color: #fff !important;
   }
+}
+/deep/ .ivu-input {
+  margin-bottom: 15px;
+}
+/deep/ .ivu-select {
+  margin-bottom: 15px;
+}
+/deep/ .ivu-btn {
+  margin-bottom: 15px;
+}
+/deep/ .ivu-page .ivu-select {
+  margin-bottom: 0;
 }
 </style>
