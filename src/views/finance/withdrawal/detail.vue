@@ -56,7 +56,7 @@
           </Col>
         </Row>
       </div>
-      <Row v-if='$route.params.status == 3 || detail.createTime' class="detail-content">
+      <Row v-if='$route.params.status' class="detail-content">
         <div class="n-list">汇款信息：</div>
         <Form v-if='detail.status != 1' ref="formInline" :model="query" :rules="ruleInline">
         <Row>
@@ -93,7 +93,7 @@
         </Row>
         </Form>
         <Form v-else ref="formInline" :model="query" :rules="ruleInline">
-          <Row>
+          <Row v-if='$route.params.status == 1'>
             <Col span="3"><div>审核意见：</div></Col>
             <Col span="16">
               <FormItem>
@@ -104,7 +104,7 @@
               </FormItem>
             </Col>
           </Row>
-          <Row>
+          <Row v-if='$route.params.status == 1'>
             <Col span="3"><div>备注：</div></Col>
             <Col span="16">
               <FormItem>
@@ -113,6 +113,32 @@
             </Col>
           </Row>
         </Form>
+      </Row>
+      <Row v-if='!$route.params.status && detail.createTime' class="detail-content">
+        <div class="n-list">汇款信息：</div>
+        <Row>
+          <Col span="3"><div>汇款时间：</div></Col>
+          <Col span="16">
+            <span>{{detail.createTime}}</span>
+          </Col>
+        </Row>
+        <Row>
+          <Col span="3"><div>上传凭证</div></Col>
+          <Col span="8">
+            <div class="upload-wrap">
+              <div v-if="showimg" class="show-img">
+                <img src="~@/assets/imgerror.png"/>
+              </div>
+              <imgModel v-else :uploadList="img" :type = 2 />
+            </div>
+          </Col>
+        </Row>
+        <Row>
+          <Col span="3"><div>备注</div></Col>
+          <Col span="8">
+            <span>{{detail.remark}}</span>
+          </Col>
+        </Row>
       </Row>
       <Row class="detail-check">
         <div class="n-list">操作日志</div>
