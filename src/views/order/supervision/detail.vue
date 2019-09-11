@@ -59,7 +59,7 @@
                     </FormItem>
                 </Form>
             </Row>
-            <div class="dialog-footer">
+            <div v-if='listitem.approvalStatus == 2' class="dialog-footer">
                 <Button type="primary" @click="dataFormSubmit">提交</Button>
                 <Button type="primary" style='margin-left: 20px;' @click="nextSubmit">提交并继续审核</Button>
             </div>
