@@ -27,6 +27,7 @@ import { confirm, info, alert } from '@/ui/modal.ts'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import { queryList } from '@/api/withdrawal'
 import { toMap } from '@/fn/array'
+import moment from 'moment'
 
 const makeMap = (list: any[]) => toMap(list, 'typeCode', 'typeName')
 @Component({
@@ -62,8 +63,8 @@ export default class Main extends ViewBase {
       dealParam(value: string) {
         const [beginDate, endDate] = value ? value.split('-') : [null, null]
         return {
-          beginDate,
-          endDate
+          beginDate: beginDate ? moment(beginDate).valueOf() : '',
+          endDate: endDate ? moment(endDate).valueOf() : ''
         }
       }
     },

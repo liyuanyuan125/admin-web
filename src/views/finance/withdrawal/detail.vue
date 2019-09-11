@@ -56,13 +56,13 @@
           </Col>
         </Row>
       </div>
-      <Row class="detail-content">
+      <Row v-if='$route.params.status == 3 || detail.createTime' class="detail-content">
         <div class="n-list">汇款信息：</div>
         <Form v-if='detail.status != 1' ref="formInline" :model="query" :rules="ruleInline">
         <Row>
           <Col span="3"><div>汇款时间：</div></Col>
           <Col span="16">
-            <FormItem v-if='detail.status == 3' prop="remittanceTime">
+            <FormItem v-if='$route.params.status == 3' prop="remittanceTime">
                <DatePicker type="date" v-model='query.remittanceTime' placeholder="汇款时间" style="width: 200px"></DatePicker>
             </FormItem>
             <span v-else>{{detail.createTime}}</span>
@@ -71,7 +71,7 @@
         <Row>
           <Col span="3"><div>上传凭证</div></Col>
           <Col span="8">
-            <FormItem v-if='detail.status == 3' prop="receipt">
+            <FormItem v-if='$route.params.status == 3' prop="receipt">
               <Upload v-model="query.receipt" multiple :maxCount="3" accept="image/*" />
             </FormItem>
             <div v-else class="upload-wrap">
@@ -85,7 +85,7 @@
         <Row>
           <Col span="3"><div>备注</div></Col>
           <Col span="8">
-            <FormItem v-if='detail.status == 3' prop="remittanceRemark">
+            <FormItem v-if='$route.params.status == 3' prop="remittanceRemark">
                <Input type="textarea" :rows="4" v-model="query.remittanceRemark" placeholder="请输入备注" style="width: 200px" />
             </FormItem>
             <span v-else>{{detail.remark}}</span>
