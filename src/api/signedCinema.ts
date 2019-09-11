@@ -3,7 +3,16 @@ import { mockGet, tid, title20, typeInt, dateRange } from './mock'
 import { filterByControlStatus } from '@/util/dealData'
 
 /**
- *
+ * 获取绑定有效影院的数目
+ * @description http://yapi.aiads-dev.com/project/34/interface/api/6290
+ */
+export async function queryCinemaCount() {
+  const res = await get('/customer/cinema-companies/count')
+  return res
+}
+
+/**
+ * 列表
  * @description http://yapi.aiads-dev.com/project/34/interface/api/6065
  */
 export async function queryList(query: any) {
