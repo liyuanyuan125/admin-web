@@ -23,11 +23,16 @@ import {
   auditItem
 } from './data'
 
-// const ratioValidator: Validator = (rule, value: Array<{ value: number }>, callback) => {
-//   const total = value.reduce((sum, it) => (sum += it.value), 0)
-//   const error = isNaN(total) ? '请输入数字' : total > 100 ? '占比之和不能大于 100' : ''
-//   error ? callback(new Error(error)) : callback()
-// }
+const ratioValidator: Validator = (rule, value: Array<{ value: number }>, callback) => {
+  const isInteger = value.every((it: any) => {
+    return it.discount && it.discount % 1 === 0
+  })
+  const isNumber = value.every((it: any) => {
+    return typeof it.discount === 'number'
+  })
+  const error = !isNumber ? '请输入数字' : !isInteger ? '请输入整数' : ''
+  error ? callback(new Error(error)) : callback()
+}
 
 const actionMap: MapType<any> = {
   view: null,
@@ -156,6 +161,11 @@ export default class CPMDetail extends ViewBase {
         props: {
           title: '商业广告折扣列表'
         },
+        rules: [
+          {
+            validator: ratioValidator
+          }
+        ],
         visible: (item: any) => ((item.adTypes.findIndex((it: any) => it == 1) !== -1) && item.type === 1)
         ? true
         : false
@@ -170,6 +180,11 @@ export default class CPMDetail extends ViewBase {
         props: {
           title: '预告片广告折扣列表'
         },
+        rules: [
+          {
+            validator: ratioValidator
+          }
+        ],
         visible: (item: any) => ((item.adTypes.findIndex((it: any) => it == 2) !== -1) && item.type === 1)
         ? true
         : false
