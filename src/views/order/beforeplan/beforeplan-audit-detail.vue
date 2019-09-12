@@ -11,7 +11,7 @@
                 <Col :span='12'>广告片&nbsp;：&nbsp;{{listitem.videoName == null ? '-' : listitem.videoName}}({{listitem.specification == null ? '-' : listitem.specification}}s)【{{listitem.customerName == null ? '-' : listitem.customerName}}】</Col>
             </Row>
             <Row>
-                <Col :span='12'>广告主公司名称&nbsp;：&nbsp;{{listitem.name == null ? '暂无' : listitem.name}}</Col>
+                <Col :span='12'>广告主公司名称&nbsp;：&nbsp;{{listitem.companyName == null ? '暂无' : listitem.companyName}}</Col>
                 <Col :span='12'>广告类型&nbsp;：&nbsp;
                 <span v-if='listitem.advertTypeCode == null'>暂无广告类型</span>
                 <span v-else v-for='(item , index) in advertTypeList' :key='index' v-if='item.key == listitem.advertTypeCode'>

@@ -1586,7 +1586,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     component: () => import('./views/order/beforeplan/beforeplan-audit-list.vue'),
     meta: {
       authKey: '',
-      title: '广告计划审批管理列表'
+      title: '广告计划审批管理'
     },
     props: true
   },

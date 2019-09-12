@@ -187,7 +187,7 @@ export default class Main extends ViewBase {
       { title: '活动ID', key: 'id' },
       { title: '活动名称', key: 'name' },
       { title: '客户范围', key: 'customerType', enum: true },
-      { title: '适用渠道', key: 'channels', minWidth: 200, enum: 'channelList' },
+      { title: '适用渠道', key: 'channels', enum: 'channelList' },
       { title: '广告类型', key: 'adTypes', enum: 'adTypeList'},
       { title: '促销活动类型', key: 'type', enum: true },
       { title: '活动开始时间', key: 'beginTime' },
