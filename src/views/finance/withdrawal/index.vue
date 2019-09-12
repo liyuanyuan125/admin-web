@@ -42,7 +42,7 @@ export default class Main extends ViewBase {
   filters: Filter[] = [
     {
       name: 'companyId',
-      defaultValue: '',
+      defaultValue: 0,
       type: company,
       width: 108,
       placeholder: '公司名称'
@@ -64,8 +64,8 @@ export default class Main extends ViewBase {
       dealParam(value: string) {
         const [beginDate, endDate] = value ? value.split('-') : [null, null]
         return {
-          beginDate: beginDate ? moment(beginDate).valueOf() : '',
-          endDate: endDate ? moment(endDate).valueOf() : ''
+          beginDate: beginDate ? moment(beginDate).startOf('day').valueOf() : '',
+          endDate: endDate ? moment(endDate).endOf('day').valueOf() : ''
         }
       }
     },
