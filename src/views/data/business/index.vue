@@ -144,7 +144,8 @@ export default class BusinessPage extends ViewBase {
       name: 'userId',
       defaultValue: 0,
       label: '姓名',
-      rules: [ { required: true, message: '请选择姓名', trigger: 'blur' } ],
+      required: true,
+      requiredMessage: '请选择姓名',
       select: {
         enumKey: 'userList'
       },
@@ -155,7 +156,8 @@ export default class BusinessPage extends ViewBase {
       name: 'roles',
       defaultValue: [],
       label: '角色',
-      rules: [ { required: true, message: '请选择角色', trigger: 'blur' } ],
+      required: true,
+      requiredMessage: '请选择角色',
       check: {
         enumKey: 'roleList'
       },
@@ -166,7 +168,8 @@ export default class BusinessPage extends ViewBase {
       name: 'discount',
       defaultValue: 0,
       label: '可享折扣',
-      rules: [ { required: true, message: '请填写可享折扣', trigger: 'blur' } ],
+      required: true,
+      requiredMessage: '请填写可享折扣',
       placeholder: '数字在0-1之间，例如：0.1，代表可享折扣是1折',
       number: {
         max: 1,
