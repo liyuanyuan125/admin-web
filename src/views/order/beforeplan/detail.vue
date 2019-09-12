@@ -91,7 +91,8 @@
             </Row>
         </div>
         <div class='title'>投放影片(系统推荐 / 用户自选)</div>
-        <div class='bos'>
+        <div class='bos' v-if='listitem.movieCustom == 0'>通投全部影片</div>
+        <div class='bos' v-if='listitem.movieCustom == 1'>
             <Table :columns="itemcolumns" :data='films' border stripe disabled-hover size="small" class="table">
                 <template v-if='$route.params.status == 3 || $route.params.status == 10' slot="action" slot-scope="{row}">
                     <a @click="deletefilm(row.movieId)">删除</a>
