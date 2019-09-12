@@ -6,9 +6,10 @@
 
     <ListPage :fetch="fetch" :filters="filters" :enums="enums" :columns="columns" ref="listPage">
 
-      <template slot="action" slot-scope="{ row: { id , status  } }">
+      <template slot="action" slot-scope="{ row: { id , status, auditStatus  } }">
         <div class="row-acts">
           <router-link
+          v-if="auditStatus === 1"
             :to="{ name: 'order-beforeplanAudit-detail', params: { id , status, ifs: '1' } }"
           >审核</router-link>
         </div>
@@ -100,7 +101,7 @@ export default class IndexPage extends ViewBase {
         type: 'select',
         width: 100,
         placeholder: '广告类型',
-        enumKey: 'statusList'
+        enumKey: 'advertTypeList'
       },
 
       {
