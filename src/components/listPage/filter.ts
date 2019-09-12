@@ -74,6 +74,9 @@ export interface Filter extends OldFilter {
    */
   enumKey?: string
 
+  /** 组件，一般用于自定义组件 */
+  component?: Component
+
   /**
    * 传递给组件的 props
    */
@@ -132,9 +135,6 @@ export interface Filter extends OldFilter {
  * 规范化后的查询项
  */
 export interface NormalFilter extends Filter {
-  /** 确定要使用的 component */
-  component: Component
-
   /** class 或 class 列表 */
   class: string | string[]
 
@@ -176,7 +176,7 @@ const resolveComponent = (item: Filter) => {
 
   const newItem = {
     ...item,
-    component: part && part.component,
+    component: part && part.component || item.component,
     props: {
       ...item.props,
       ...(part && part.props),

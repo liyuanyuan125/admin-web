@@ -426,7 +426,7 @@ export default class EditForm extends ViewBase {
 }
 
 .form-group {
-  padding: 10px 12px;
+  padding: 10px 48px 10px 12px;
   border: 1px solid #e8e8e8;
   background-color: #fff;
   border-radius: 4px;

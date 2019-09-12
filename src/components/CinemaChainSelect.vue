@@ -2,8 +2,9 @@
   <Select
     v-model="inner"
     :placeholder="placeholder"
+    :clearable="clearable"
+    :disabled="disabled"
     filterable
-    clearable
     class="cinema-chain-select"
     ref="ui"
   >
@@ -43,6 +44,8 @@ export default class CinemaChainSelect extends ViewBase {
   @Prop({ type: String, default: '院线，输入文字进行筛选' }) placeholder!: string
 
   @Prop({ type: Boolean, default: true }) clearable!: boolean
+
+  @Prop({ type: Boolean, default: false }) disabled!: boolean
 
   inner: number = this.value
 

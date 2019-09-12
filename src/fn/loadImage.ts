@@ -58,7 +58,7 @@ export default function(url: string, options = {} as LoadImageOptions) {
       img.onerror = ev => {
         clearHandlers()
         delete promiseMap[url]
-        reject()
+        reject(new Error(`failed to load ${url}`))
       }
       // anonymous 用于 canvas 下载图片到本地等情形
       opts.anonymous && img.setAttribute('crossOrigin', 'Anonymous')
