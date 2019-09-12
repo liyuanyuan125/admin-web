@@ -59,7 +59,7 @@ const makeRequiredRule = (field: Field, rule?: Rule) => {
   const defaultValue = field.defaultValue
   const result: Rule = {
     required: true,
-    message: '不能为空',
+    message: field.requiredMessage || '不能为空',
     trigger: 'change',
     transform(value: any) {
       // null 始终被认为是空
@@ -276,9 +276,14 @@ export interface Field extends Param {
   /**
    * 是否为必填的
    * 若为必填，且 rules 为空，则 rules 默认为
-   * [ { required: true, message: '不能为空', trigger: 'blur' } ]
+   * [ { required: true, message: requiredMessage, trigger: 'blur' } ]
    */
   required?: boolean
+
+  /**
+   * 必填验证失败消息，默认为：不能为空
+   */
+  requiredMessage?: string
 
   /**
    * 验证规则
