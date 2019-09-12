@@ -32,7 +32,7 @@
       </template> -->
             <template slot="video" slot-scope="{row}">
                 <a style='margin-left: 5px;' v-for='(item,index) in row.videoDetails' :key='index'>
-                    <em v-for='(its,index) in deliveryPositionList' :key='index' v-if='item.deliveryPosition != null && item.deliveryPosition == its.key'>【{{its.text}}】</em>
+                    <em style='font-style: normal;'  v-for='(its,index) in deliveryPositionList' :key='index' v-if='item.deliveryPosition != null && item.deliveryPosition == its.key'>【{{its.text}}】</em>
                 {{item.videoName}} ({{item.videoLength}})s</a>
             </template>
             <template slot="movieName" slot-scope="{row}">
