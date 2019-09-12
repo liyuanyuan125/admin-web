@@ -127,19 +127,20 @@
           </FormItem>
           </Row>
         </div>
-        <Row>
-          <Col span="5">
-            <FormItem label="推荐人电话">
-              <Input v-model="item.recommendMobile" />
-            </FormItem>
-          </Col>
-          <Col span="6" offset="1">
-            <FormItem label="推荐人姓名" prop="recommendUserName">
-              <Input v-model="item.recommendUserName" />
-            </FormItem>
-          </Col>
-        </Row>
-        
+        <div>
+          <Row>
+            <Col span="5">
+              <FormItem label="推荐人电话">
+                <Input v-model="item.recommendMobile" />
+              </FormItem>
+            </Col>
+            <Col span="6" offset="1">
+              <FormItem label="推荐人姓名" prop="recommendUserName">
+                <Input v-model="item.recommendUserName" />
+              </FormItem>
+            </Col>
+          </Row>
+        </div>
         <Row v-if='item.companyType == 1'>
           <Col span="6">
             <FormItem label="资质" prop="qualificationType">

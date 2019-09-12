@@ -114,7 +114,7 @@
           </Row>
         </Form>
       </Row>
-      <Row v-if='!$route.params.status && detail.createTime' class="detail-content">
+      <Row v-if='!$route.params.status && detail.receiptUrl' class="detail-content">
         <div class="n-list">汇款信息：</div>
         <Row>
           <Col span="3"><div>汇款时间：</div></Col>

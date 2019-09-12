@@ -28,6 +28,7 @@ import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import { queryList } from '@/api/withdrawal'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
+import company from '../payroll/data/company.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'typeCode', 'typeName')
 @Component({
@@ -42,7 +43,7 @@ export default class Main extends ViewBase {
     {
       name: 'companyId',
       defaultValue: '',
-      type: 'input',
+      type: company,
       width: 108,
       placeholder: '公司名称'
     },
@@ -50,7 +51,7 @@ export default class Main extends ViewBase {
       name: 'billNo',
       defaultValue: '',
       type: 'input',
-      width: 100,
+      width: 200,
       placeholder: '提现申请单'
     },
 
