@@ -38,36 +38,57 @@
                 <Col :span='12' v-if='view'>受众年龄&nbsp;：&nbsp;<span v-if='listitem.deliveryGroups != null' v-for='(item , index) in tags[1].values' :key='index'><em v-for='(it,index) in listitem.deliveryGroups' :key='index' v-if='item.key == it.text'>{{item.text +' '}}</em></span><span v-if='ifage'>暂无</span></Col>
             </Row>
             <Row>
-                <Col :span='12' v-if='$route.params.status == 3 && $route.params.ifs == 1'>投放位置:
-                <Select v-model="placement.position" placeholder="状态" style='width: 200px;' filterable>
-                    <Option v-for="it in []" :key="it.key" :value="it.key" :label="it.text">{{it.text}}</Option>
+                <Col :span='12' v-if='$route.params.status == 3 && $route.params.ifs == 1'>投放位置&nbsp;：&nbsp;
+                <Select v-model="placement.position" placeholder="状态" style='width: 200px;' filterable @on-change='chgposition'>
+                    <Option v-for="it in deliveryPositionList" :key="it.key" :value="it.key" :label="it.text">{{it.text}}</Option>
                 </Select>
                 </Col>
-                <Col :span='12' v-else>投放位置: 随便</Col>
+                <Col :span='12' v-else>投放位置&nbsp;：&nbsp;
+                        <span v-if='listitem.deliveryPositionCode == null'>暂无投放位置</span>
+                        <span v-else v-for='(item , index) in deliveryPositionList' :key='index' v-if='item.key == listitem.deliveryPositionCode'>
+                            {{item.text}}
+                        </span>
+                    
+                </Col>
             </Row>
         </div>
         <div class='title'>基础信息</div>
         <div class='bos'>
             <Row>
                 <Col :span='12'>计划ID&nbsp;：&nbsp;{{listitem.id == null ? '暂无' : listitem.id}}</Col>
-                <Col :span='12'>渠道&nbsp;：&nbsp;{{listitem.videoName == null ? '-' : listitem.videoName}}({{listitem.specification == null ? '-' : listitem.specification}}s)【{{listitem.customerName == null ? '-' : listitem.customerName}}】</Col>
-            </Row>
+                <span v-if='listitem.channelCode == null'>暂无渠道</span>
+                    <span v-else v-for='(item , index) in channelList' :key='index' v-if='item.key == listitem.channelCode'>
+                        {{item.text}}
+                    </span>
+                </Col>
+	    </Row>
             <Row>
                 <Col :span='12'>计划状态&nbsp;：&nbsp;
                 <span v-for='(item , index) in statusList' :key='index' v-if='item.key == listitem.status'>
                     {{item.text}}
                 </span>
                 </Col>
-                <Col :span='12'>支付成功时间&nbsp;：&nbsp;{{listitem.videoName == null ? '-' : listitem.videoName}}({{listitem.specification == null ? '-' : listitem.specification}}s)【{{listitem.customerName == null ? '-' : listitem.customerName}}】</Col>
+                
+                <Col :span='12'>支付成功时间&nbsp;：&nbsp;{{payTime}}</Col>
             </Row>
             <Row>
                 <Col :span='12'>创建时间&nbsp;：&nbsp;{{listitem.applyTime == null ? '暂无' : applyTime}}</Col>
-                <Col :span='12'>支付方式&nbsp;：&nbsp;{{formatNumber(listitem.budgetAmount)}}元</Col>
+                <Col :span='12'>支付方式&nbsp;：&nbsp;
+                    <span v-if='listitem.payTypeCode == null'>暂无支付方式</span>
+                    <span v-else v-for='(item , index) in payTypeList' :key='index' v-if='item.key == listitem.payTypeCode'>
+                        {{item.text}}
+                    </span>
+                </Col>
             </Row>
             <Row>
                 <Col :span='12'>创建人&nbsp;：&nbsp;{{listitem.applyName == null ? '暂无创建人' : listitem.applyName}}</Col>
-                <Col :span='12'>审批状态&nbsp;：&nbsp;{{listitem.applyName == null ? '暂无创建人' : listitem.applyName}}</Col>
-            </Row>
+                <Col :span='12'>审批状态&nbsp;：&nbsp;
+                    <span v-if='listitem.auditStatus == null'>暂无审批状态</span>
+                    <span v-else v-for='(item , index) in auditStatusList' :key='index' v-if='item.key == listitem.auditStatus'>
+                        {{item.text}}
+                    </span>
+                </Col>
+	    </Row>
         </div>
         <div class='title'>投放影片(系统推荐 / 用户自选)</div>
         <div class='bos'>
@@ -80,7 +101,8 @@
                 添加影片
             </div>
         </div>
-        <!-- 投放影院 -->
+	<!-- 投放影院 -->
+        <div class='title' v-if='$route.params.status != "3" '>接单影院 / 派单影院 : {{listitem.acceptCinemaCount}} / {{listitem.cinemaCount}}</div>
         <Cinema @getcine="getcinemas" />
         <div class='title'>备注</div>
         <div class='bos'>
@@ -105,46 +127,7 @@
             </Row>
         </div>
         <div class='title'>应收款项</div>
-        <!-- <Row class='bos'>
-            <Row>
-                <Col :span='2'>设置折扣</Col>
-                <Col :span='4'>
-                <Input style="width:100px" disabled v-model="dataplan.discount">
-                </Input>
-                </Col>
-            </Row>
-            <Row>
-                <Col :span='2'>定金</Col>
-                <Col :span='4'>
-                <Input style="width:100px" disabled v-model="dataplan.depositAmount">
-                </Input>
-                </Col>
-            </Row>
-            <Row v-if='$route.params.ifs == 0'>
-                <Col :span='2'>应结金额</Col>
-                <Col :span='3'>
-                <Input style="width:100px" :disabled='this.$route.params.ifs != 1 || (listitem.status != 9 && listitem.status != 10)' v-model="dataplan.needPayAmount">
-                </Input>
-                </Col>
-                <Col :span='10' v-if='listitem.totalCost && listitem.totalCost != null'>实际投放花费 ￥ ({{formatNumber(listitem.totalCost)}})</Col>
-            </Row>
-            <Row v-else-if='$route.params.status != 6 && $route.params.status != 7 && $route.params.status != 3'>
-                <Col :span='2'>应结金额</Col>
-                <Col :span='3'>
-                <Input style="width:100px" :disabled='this.$route.params.ifs != 1 || (listitem.status != 9 && listitem.status != 10)' v-model="dataplan.needPayAmount">
-                </Input>
-                </Col>
-                <Col :span='10' v-if='listitem.totalCost && listitem.totalCost != null'>实际投放花费 ￥ ({{formatNumber(listitem.totalCost)}})</Col>
-            </Row>
-            <Row v-if='$route.params.ifs == 1 && $route.params.status != 6 && $route.params.status != 7 && $route.params.status != 3'>
-                <Col :span='2'>确认应结金额</Col>
-                <Col :span='3'>
-                <Input style="width:100px" :disabled='this.$route.params.ifs != 1 || (listitem.status != 9 && listitem.status != 10)' v-model="dataplan.needPayAmount">
-                </Input>
-                </Col>
-                <Col :span='10' v-if='listitem.totalCost && listitem.totalCost != null'>实际投放花费 ￥ ({{formatNumber(listitem.totalCost)}})</Col>
-            </Row>
-        </Row> -->
+        
         <Row class='bos'>
             <Row>
                 <Col :span='2'>折扣</Col>
@@ -263,14 +246,14 @@ export default class Main extends ViewBase {
     dataplan: any = {
         discount: '',
         depositAmount: '',
-        needPayAmount: ''
+        needPayAmount: '',
+        qneedPayAmount: ''
     }
     loading = false
     area: any = []
     list = []
     total = 0
     cinemaArray: any = []
-
 
     listitem: any = {}
     start: any = ''
@@ -288,6 +271,14 @@ export default class Main extends ViewBase {
     advertTypeList: any = []
     // 状态编码列表
     statusList: any = []
+    // 广告片投放位置
+    deliveryPositionList: any = []
+    // 渠道类型
+    channelList: any = []
+    // 支付方式
+    payTypeList: any = []
+    // 审批状态
+    auditStatusList: any = []
 
     deliveryGroups: any = []
     ifmovie = false
@@ -299,8 +290,10 @@ export default class Main extends ViewBase {
     loading2 = false
     viewcinema = false
 
-    // 申请人
+    // 申请时间
     applyTime: any = ''
+    // 支付成功时间
+    payTime: any = ''
     // 备注
     remarks: any = []
 
@@ -480,8 +473,13 @@ export default class Main extends ViewBase {
             const b = String(data.item.endDate)
             this.start = a.slice(0, 4) + '-' + a.slice(4, 6) + '-' + a.slice(6, 8)
             this.end = b.slice(0, 4) + '-' + b.slice(4, 6) + '-' + b.slice(6, 8)
-            this.applyTime = data.item.applyTime.split('T')[0] +
+
+            // 创建时间
+            this.applyTime = data.item.applyTime == null ? '暂无' : data.item.applyTime.split('T')[0] +
                 ' ' + data.item.applyTime.split('T')[1].split('.')[0]
+            // 支付成功时间
+            this.payTime = data.item.payTime == null ? '暂无' : data.item.payTime.split('T')[0] +
+                ' ' + data.item.payTime.split('T')[1].split('.')[0]
             // 备注
             this.remarks = (this.listitem.remarks || []).map((it: any) => {
                 return {
@@ -505,7 +503,12 @@ export default class Main extends ViewBase {
             this.tags = data.tags
             this.view = true
             this.deliveryGroups = data.item.deliveryGroups
+            this.deliveryPositionList = data.deliveryPositionList
+            this.placement.position = data.item.deliveryPositionCode
             this.advertTypeList = data.advertTypeList
+            this.channelList = data.channelList
+            this.payTypeList = data.payTypeList
+            this.auditStatusList = data.auditStatusList
             this.statusList = data.statusList
             // 判断电影标签的展示
             if (this.deliveryGroups == null) {
