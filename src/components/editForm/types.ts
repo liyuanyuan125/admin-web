@@ -5,6 +5,11 @@ import FormText from './components/formText.vue'
 import FormInput from './components/formInput.vue'
 import FormInputNumber from './components/formInputNumber.vue'
 import FormSelect from './components/formSelect.vue'
+import RemoteSelect, {
+  Fetch as RemoteFetch,
+  Backfill as RemoteBackfill,
+  IdName
+} from '@/components/remoteSelect'
 import FormRadio from './components/formRadio.vue'
 import FormCheck from './components/formCheck.vue'
 import FormDate from './components/formDate.vue'
@@ -100,6 +105,13 @@ const componentMap: MapType<ComponentItem> = {
     component: FormSelect,
     props: {
       placeholder: '请选择'
+    }
+  },
+
+  remote: {
+    component: RemoteSelect,
+    props: {
+      placeholder: '请输入关键字进行搜索'
     }
   },
 
@@ -346,8 +358,20 @@ export interface Field extends Param {
   select?: {
     enumKey?: string
     enumList?: KeyText[]
+    multiple?: boolean
     [key: string]: any
-  }
+  },
+
+  /**
+   * 使用组件 RemoteSelect
+   */
+  remote?: {
+    fetch?: RemoteFetch
+    backfill?: RemoteBackfill
+    multiple?: boolean
+    initList?: IdName[]
+    [key: string]: any
+  },
 
   /**
    * 组件 AreaSelect 的选项
@@ -469,6 +493,7 @@ const resolveProps = (field: any, name: string) => {
 
 // 新的方式：解析组件
 const resolveComponent = (field: Field) => {
+  let configRequiredRule
   const name = Object.keys(componentMap).find(key => key in field)
   if (name) {
     const {
@@ -479,23 +504,25 @@ const resolveComponent = (field: Field) => {
 
     const props = resolveProps(field, name)
 
-    // 处理验证规则
-    const rules = (field.rules || []).length == 0 && field.required
-      ? [ makeRequiredRule(field, requiredRule) ]
-      : (field.rules || [])
+    configRequiredRule = requiredRule
 
-    const result = {
+    field = {
       ...field,
       component,
       props: {
         ...defaultProps,
         ...props
-      },
-      rules
+      }
     } as any
-
-    return result
   }
+
+  // 处理验证规则
+  const rules = (field.rules || []).length == 0 && field.required
+    ? [ makeRequiredRule(field, configRequiredRule) ]
+    : (field.rules || [])
+
+  field.rules = rules
+
   return field as any
 }
 
