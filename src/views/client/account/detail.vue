@@ -36,7 +36,7 @@
           <p>所属公司：</p>
           <div class="res-num-item">
             <span class='chcol item1'>{{list.companyName}}</span>
-            <router-link v-auth="'customer.companies:info'" :to="{path:'/client/corp/detail/'+ list.companyId}" tag="span" class="blu1">查看公司详情</router-link>
+            <!-- <router-link v-auth="'customer.companies:info'" :to="{path:'/client/corp/detail/'+ list.companyId}" tag="span" class="blu1">查看公司详情</router-link> -->
           </div>
         </div>
       </div>
