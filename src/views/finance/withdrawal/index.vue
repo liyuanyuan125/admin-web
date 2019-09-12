@@ -27,6 +27,8 @@ import { confirm, info, alert } from '@/ui/modal.ts'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import { queryList } from '@/api/withdrawal'
 import { toMap } from '@/fn/array'
+import moment from 'moment'
+import company from '../payroll/data/company.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'typeCode', 'typeName')
 @Component({
@@ -40,16 +42,16 @@ export default class Main extends ViewBase {
   filters: Filter[] = [
     {
       name: 'companyId',
-      defaultValue: '',
-      type: 'input',
+      defaultValue: 0,
+      type: company,
       width: 108,
       placeholder: '公司名称'
     },
     {
-      name: 'code',
+      name: 'billNo',
       defaultValue: '',
       type: 'input',
-      width: 100,
+      width: 200,
       placeholder: '提现申请单'
     },
 
@@ -62,8 +64,8 @@ export default class Main extends ViewBase {
       dealParam(value: string) {
         const [beginDate, endDate] = value ? value.split('-') : [null, null]
         return {
-          beginDate,
-          endDate
+          beginDate: beginDate ? moment(beginDate).startOf('day').valueOf() : '',
+          endDate: endDate ? moment(endDate).endOf('day').valueOf() : ''
         }
       }
     },
@@ -86,12 +88,12 @@ export default class Main extends ViewBase {
 
   columns = [
     { title: '序号', key: 'id', minWidth: 65 },
-    { title: '公司ID', key: 'companyId', minWidth: 100 },
+    { title: '公司ID', key: 'companyId', minWidth: 60 },
     { title: '公司名称', key: 'companyName', minWidth: 60 },
     { title: '提现申请单编号', key: 'billNo', minWidth: 60 },
     { title: '提现金额', key: 'amount', minWidth: 100 },
     { title: '提现方式', key: 'withdrawalType', minWidth: 60, editor: 'enum' },
-    { title: '提现申请时间', key: 'createTime', minWidth: 60, editor: 'dateTime' },
+    { title: '提现申请时间', key: 'createTime', minWidth: 100, editor: 'dateTime' },
     { title: '提现单状态', key: 'status', minWidth: 100, editor: 'enum' },
     { title: '操作', slot: 'operate', minWidth: 90 },
   ]

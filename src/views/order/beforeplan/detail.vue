@@ -11,7 +11,7 @@
                 <Col :span='12'>广告片&nbsp;：&nbsp;{{listitem.videoName == null ? '-' : listitem.videoName}}({{listitem.specification == null ? '-' : listitem.specification}}s)【{{listitem.customerName == null ? '-' : listitem.customerName}}】</Col>
             </Row>
             <Row>
-                <Col :span='12'>广告主公司名称&nbsp;：&nbsp;{{listitem.deliveryPositionList == null ? '暂无' : listitem.deliveryPositionList}}</Col>
+                <Col :span='12'>广告主公司名称&nbsp;：&nbsp;{{listitem.companyName == null ? '暂无' : listitem.companyName}}</Col>
                 <Col :span='12'>广告类型&nbsp;：&nbsp;
                 <span v-if='listitem.advertTypeCode == null'>暂无广告类型</span>
                 <span v-else v-for='(item , index) in advertTypeList' :key='index' v-if='item.key == listitem.advertTypeCode'>
@@ -44,12 +44,10 @@
                 </Select>
                 </Col>
                 <Col :span='12' v-else>投放位置&nbsp;：&nbsp;
-                    <Col>
                         <span v-if='listitem.deliveryPositionCode == null'>暂无投放位置</span>
                         <span v-else v-for='(item , index) in deliveryPositionList' :key='index' v-if='item.key == listitem.deliveryPositionCode'>
                             {{item.text}}
                         </span>
-                    </Col>
                     
                 </Col>
             </Row>
@@ -93,7 +91,8 @@
             </Row>
         </div>
         <div class='title'>投放影片(系统推荐 / 用户自选)</div>
-        <div class='bos'>
+        <div class='bos' v-if='listitem.movieCustom == 0'>通投全部影片</div>
+        <div class='bos' v-if='listitem.movieCustom == 1'>
             <Table :columns="itemcolumns" :data='films' border stripe disabled-hover size="small" class="table">
                 <template v-if='$route.params.status == 3 || $route.params.status == 10' slot="action" slot-scope="{row}">
                     <a @click="deletefilm(row.movieId)">删除</a>
@@ -176,7 +175,7 @@
                 预估曝光人次【{{formatNumber(listitem.estimatePersonCount , 2)}}】
                 预估曝光场次【{{formatNumber(listitem.estimateShowCount , 2)}}】
                 预估花费【{{formatNumber(listitem.estimateCostAmount)}}】
-                <span>, 折扣后总价【{{formatNumber(listitem.estimateShowCount , 2)}}】</span>
+                <span>, 折扣后总价【{{formatNumber(listitem.estimateCostAmount , 2)}}】</span>
                 <Button v-if='this.$route.params.ifs == 1' type="primary" :loading="loading2" @click="shuaxin()">刷新</Button>
                 </Col>
                 <!-- <Col :span='4'>
@@ -504,6 +503,7 @@ export default class Main extends ViewBase {
             this.view = true
             this.deliveryGroups = data.item.deliveryGroups
             this.deliveryPositionList = data.deliveryPositionList
+            this.placement.position = data.item.deliveryPositionCode
             this.advertTypeList = data.advertTypeList
             this.channelList = data.channelList
             this.payTypeList = data.payTypeList

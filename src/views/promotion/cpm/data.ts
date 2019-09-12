@@ -152,13 +152,3 @@ export async function auditItem(postData: any) {
   const { data } = await put(`/promotion/cpm/${id}/audit`, { pass, refuseReason})
   return data
 }
-
-/**
- * 启用
- * http://yapi.aiads-dev.com/project/154/interface/api/3742
- * @param id
- */
- export async function enabledItem(id: number) {
-  const { data } = await put(`brand/products/${id}/enabled`)
-  return data
-}

@@ -163,7 +163,7 @@
         </Row>
 
         <Row>
-          <FormItem label="关联影院" prop="relationMovieIdList" :show-message="!(item.relationMovieIdList.length>0)">
+          <FormItem label="关联影片" prop="relationMovieIdList" :show-message="!(item.relationMovieIdList.length>0)">
             <PartBindCinema
               v-if="loadingShow"
               v-model="item.relationMovieIdList"
@@ -216,7 +216,6 @@ const defItem = {
   contactTel: '',
 
   email: '',
-
   qualificationType: 'BL',
   qualificationCode: '',
   images: [],

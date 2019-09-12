@@ -1,5 +1,6 @@
 <template>
-  <div class="brand-page">
+  <div class="signed-cinema-page">
+    <h3 v-if="cinemaCount && cinemaCount > 0">签约影院数总计{{cinemaCount}}家</h3>
     <ListPage :fetch="fetch" :filters="filters" :enums="enums" :columns="columns" ref="listPage" v-if="isAlive">
     </ListPage>
   </div>
@@ -10,7 +11,7 @@ import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import jsxReactToVue from '@/util/jsxReactToVue'
-import { queryList } from '@/api/signedCinema'
+import { queryCinemaCount, queryList } from '@/api/signedCinema'
 import { formatConversion } from '@/util/validateRules'
 import { cloneDeep } from 'lodash'
 import { confirm, info } from '@/ui/modal.ts'
@@ -25,10 +26,15 @@ import remoteSelectCinemaCompany from './remoteSelectCinemaCompany.vue'
 })
 export default class Main extends ViewBase {
   moment = moment
+
   isAlive = true
+
   loading = false
 
+  cinemaCount = 0
+
   fetch = queryList
+
   filters: Filter[] = [
 
     {
@@ -74,9 +80,7 @@ export default class Main extends ViewBase {
     }
   ]
 
-  enums = [
-    'brandRelationType'
-  ]
+  enums = []
 
   get columns() {
     return [
@@ -87,6 +91,17 @@ export default class Main extends ViewBase {
       { title: '所属影管', key: 'cinemaCompanyName', minWidth: 120 },
       { title: '关联资源方', key: 'companyName', minWidth: 120 }
     ] as ColumnExtra[]
+  }
+
+  created() {
+    this.queryCinemaCountHandler()
+  }
+
+  async queryCinemaCountHandler() {
+    const res = await queryCinemaCount()
+    if (res.data && res.data > 0) {
+      this.cinemaCount = res.data
+    }
   }
 }
 </script>
@@ -108,5 +123,12 @@ export default class Main extends ViewBase {
 .tips-box {
   padding: 15px;
   color: red;
+}
+
+.signed-cinema-page {
+  h3 {
+    color: red;
+    padding: 8px 5px;
+  }
 }
 </style>

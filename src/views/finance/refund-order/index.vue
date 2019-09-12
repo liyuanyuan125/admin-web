@@ -43,11 +43,11 @@ export default class Main extends ViewBase {
       dateRange: true,
       width: 178,
       placeholder: '退款创建日期区间',
-      dealParam(value: any) {
-        const [start, end] = value.split('-')
+      dealParam(value: string) {
+        const [beginTime, endTime] = value ? value.split('-') : [null, null]
         return {
-          applyStartTime: startDayTimestamp(start),
-          applyEndTime: endDayTimestamp(end),
+          beginTime,
+          endTime
         }
       }
     },
@@ -114,17 +114,17 @@ export default class Main extends ViewBase {
   get columns() {
     return [
       { title: '序号', key: 'id', width: 65 },
-      { title: '广告计划单编号', key: 'planId', width: 120 },
+      { title: '广告计划单编号', key: 'planId', minWidth: 120 },
       { title: '支付流水', key: 'refundNumber', minWidth: 120 },
       { title: '退款单', key: 'refundNo', width: 120 },
-      { title: '支付方式', key: 'refundPayType', minWidth: 120, enum: true },
-      { title: '退款方式', key: 'refundType', minWidth: 120, enum: true },
+      { title: '支付方式', key: 'refundPayType', width: 60, enum: true },
+      { title: '退款方式', key: 'refundType', width: 70, enum: true },
       { title: '退款金额', key: 'refundAmount', minWidth: 120 },
-      { title: '业务类型', key: 'refundBusType', minWidth: 120, enum: true },
+      { title: '业务类型', key: 'refundBusType', width: 80, enum: true },
       { title: '退款原因', key: 'refundReason', minWidth: 120, enumKey: 'refundTypeList' },
-      { title: '退款状态', key: 'refundStatus', minWidth: 120, enum: true },
-      { title: '退款创建时间', key: 'createTime', minWidth: 120, dateTime: true },
-      { title: '退款完成时间', key: 'finishTime', minWidth: 120, dateTime: true }
+      { title: '退款状态', key: 'refundStatus', width: 80, enum: true },
+      { title: '退款创建时间', key: 'createTime', minWidth: 130, dateTime: true },
+      { title: '退款完成时间', key: 'finishTime', minWidth: 130, dateTime: true }
     ] as ColumnExtra[]
   }
 }

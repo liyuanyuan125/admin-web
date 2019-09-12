@@ -171,6 +171,12 @@
             </FormItem>
           </Col>
           <Col span='1' class='tex-al'>&nbsp;%</Col>
+          <Col span="3">
+            <FormItem label="预告片折扣" prop="cpmTrailerDiscount">
+              <Input v-model="dataForm.cpmTrailerDiscount" placeholder="" />
+            </FormItem>
+          </Col>
+          <Col span='1' class='tex-al'>&nbsp;%</Col>
         </Row>
         <Row>
           <Col span="3" class='tex-al'><div>按场次</div></Col>
@@ -183,6 +189,12 @@
           <Col span="3">
             <FormItem label="15秒折扣" prop="showDiscount">
               <Input v-model="dataForm.showDiscount" placeholder=""/>
+            </FormItem>
+          </Col>
+          <Col span='1' class='tex-al'>&nbsp;%</Col>
+          <Col span="3">
+            <FormItem label="预告片折扣" prop="showTrailerDiscount">
+              <Input v-model="dataForm.showTrailerDiscount" placeholder="" />
             </FormItem>
           </Col>
           <Col span='1' class='tex-al'>&nbsp;%</Col>
@@ -201,12 +213,18 @@
             </FormItem>
           </Col>
           <Col span='1' class='tex-al'>&nbsp;%</Col>
-          <Col span="3">
+          <!-- <Col span="3">
             <FormItem label="每厅场次数" prop="timeShowCount">
               <Input v-model="dataForm.timeShowCount" placeholder=""/>
             </FormItem>
           </Col>
-          <Col span='1' class='tex-al'>&nbsp;场/天</Col>
+          <Col span='1' class='tex-al'>&nbsp;场/天</Col> -->
+          <Col span="3">
+            <FormItem label="预告片折扣" prop="timeTrailerDiscount">
+              <Input v-model="dataForm.timeTrailerDiscount" placeholder="" />
+            </FormItem>
+          </Col>
+          <Col span='1' class='tex-al'>&nbsp;%</Col>
         </Row>
       </Row>
       <div  class='titop' v-if='!showprice'>默认刊例价
@@ -219,6 +237,8 @@
           <Col span="4"><span>{{detail.cpm}}</span> 元/千人次</Col>
           <Col span="2"><div>15秒折扣</div></Col>
           <Col span="3"><span>{{detail.discount}}%</span></Col>
+          <Col span="2"><div>预告片折扣</div></Col>
+          <Col span="3"><span>{{detail.cpmTrailerDiscount}}%</span></Col>
         </Row>
         <Row>
           <Col span="3"><div>按场次</div></Col>
@@ -226,6 +246,8 @@
           <Col span="4"><span>{{detail.showPrice}}</span> 元/场</Col>
           <Col span="2"><div>15秒折扣</div></Col>
           <Col span="3"><span>{{detail.showDiscount}}%</span></Col>
+          <Col span="2"><div>预告片折扣</div></Col>
+          <Col span="3"><span>{{detail.showTrailerDiscount}}%</span></Col>
         </Row>
          <Row>
           <Col span="3"><div>按时段(通投包厅)</div></Col>
@@ -233,7 +255,9 @@
           <Col span="4"><span>{{detail.timePrice}}</span> 元/周/厅</Col>
           <Col span="2"><div>15秒折扣</div></Col>
           <Col span="3"><span>{{detail.timeDiscount}}%</span></Col>
-          <Col span="6"><div>每厅场次数{{detail.timeShowCount}}场/天</div></Col>
+          <Col span="2"><div>预告片折扣</div></Col>
+          <Col span="3"><span>{{detail.timeTrailerDiscount}}%</span></Col>
+          <!-- <Col span="6"><div>每厅场次数{{detail.timeShowCount}}场/天</div></Col> -->
         </Row>
       </div>
     </div>
@@ -281,6 +305,9 @@ const dataForm = {
   timePrice: null,
   timeDiscount: null,
   timeShowCount: null,
+  cpmTrailerDiscount: null, // cpm预告片折扣
+  showTrailerDiscount: null, // 场次预告片折扣
+  timeTrailerDiscount: null, // 时段预告片折扣
 }
 
 
@@ -449,6 +476,9 @@ export default class Main extends ViewBase {
     this.dataForm.timePrice = this.detail.timePrice
     this.dataForm.timeDiscount = this.detail.timeDiscount
     this.dataForm.timeShowCount = this.detail.timeShowCount
+    this.dataForm.cpmTrailerDiscount = this.detail.cpmTrailerDiscount
+    this.dataForm.showTrailerDiscount = this.detail.showTrailerDiscount
+    this.dataForm.timeTrailerDiscount = this.detail.timeTrailerDiscount
   }
 
 
@@ -521,6 +551,9 @@ export default class Main extends ViewBase {
           timePrice: this.dataForm.timePrice,
           timeDiscount: this.dataForm.timeDiscount,
           timeShowCount: this.dataForm.timeShowCount,
+          cpmTrailerDiscount: this.dataForm.cpmTrailerDiscount,
+          showTrailerDiscount: this.dataForm.showTrailerDiscount,
+          timeTrailerDiscount: this.dataForm.timeTrailerDiscount,
         }
         try {
           const res =  await price (query)

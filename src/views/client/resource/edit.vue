@@ -134,6 +134,19 @@
           </Row>
         </div>
 
+        <Row v-if='item.typearr[0]'>
+          <Col span="5">
+            <FormItem label="推荐人电话">
+              <Input v-model="item.recommendMobile" />
+            </FormItem>
+          </Col>
+          <Col span="6" offset="1">
+            <FormItem label="推荐人姓名" prop="recommendUserName">
+              <Input v-model="item.recommendUserName" />
+            </FormItem>
+          </Col>
+        </Row>
+
         <Row>
            <Col span="5">
             <FormItem label="资质" prop="qualificationType">
@@ -313,7 +326,8 @@ const defItem = {
   typeCategoryCode0: '',
   typeCategoryCode1: '',
   aptitudeNo: '',
-
+  recommendMobile: '',
+  recommendUserName: '',
   provinceId: 0,
   cityId: 0,
   countyId: 0,
@@ -603,7 +617,7 @@ export default class Main extends ViewBase {
         }
         this.item.typeCategoryCode1 = 'cinema'
         this.item.typearr[1] = true
-        this.title = '新建广告主'
+        this.title = '新建资源方'
         ; (this.$Spin as any).hide()
       } else {
         const {

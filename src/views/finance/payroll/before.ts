@@ -114,8 +114,8 @@ export const beforenum: any = [
 export const beforcoulm: any = [
   { title: '账单编号', key: 'resourceBillNo', minWidth: 65 },
   { title: '影城名称', key: 'cinemaName', minWidth: 100 },
-  { title: '影城专资码', key: 'code', minWidth: 60, editor: 'deprecated' },
-  { title: '资源方名称', key: 'resourceName', minWidth: 60 },
+  { title: '影城专资码', key: 'code', minWidth: 70, editor: 'deprecated' },
+  { title: '资源方名称', key: 'resourceName', minWidth: 70 },
   {
     title: '账单月份',
     key: 'kolId',

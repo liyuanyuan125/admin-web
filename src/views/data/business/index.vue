@@ -119,8 +119,8 @@ export default class BusinessPage extends ViewBase {
 
   get columns() {
     return [
-      { title: '序号', key: 'index', width: 65 },
-      { title: '专资ID', key: 'id', width: 80 },
+      { title: '序号', key: 'id', width: 65 },
+      { title: 'ID', key: 'userId', width: 80 },
       { title: '姓名', key: 'name', minWidth: 100 },
       { title: '手机号', key: 'mobile', width: 100, },
       { title: '邮箱', key: 'email', minWidth: 150 },
@@ -144,7 +144,7 @@ export default class BusinessPage extends ViewBase {
       name: 'userId',
       defaultValue: 0,
       label: '姓名',
-      required: true,
+      rules: [ { required: true, message: '请选择姓名', trigger: 'blur' } ],
       select: {
         enumKey: 'userList'
       },
@@ -155,7 +155,7 @@ export default class BusinessPage extends ViewBase {
       name: 'roles',
       defaultValue: [],
       label: '角色',
-      required: true,
+      rules: [ { required: true, message: '请选择角色', trigger: 'blur' } ],
       check: {
         enumKey: 'roleList'
       },
@@ -166,7 +166,7 @@ export default class BusinessPage extends ViewBase {
       name: 'discount',
       defaultValue: 0,
       label: '可享折扣',
-      required: true,
+      rules: [ { required: true, message: '请填写可享折扣', trigger: 'blur' } ],
       placeholder: '数字在0-1之间，例如：0.1，代表可享折扣是1折',
       number: {
         max: 1,

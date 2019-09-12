@@ -109,11 +109,11 @@ export default class Main extends ViewBase {
     return [
       { title: '序号', key: 'id', width: 65 },
       { title: '申请人邮箱', key: 'applyEmail', width: 160 },
-      { title: '申请人公司名称', key: 'companyName', minWidth: 180 },
-      { title: '影片名称', key: 'movieName', minWidth: 180 },
+      { title: '申请人公司名称', key: 'companyName', minWidth: 150 },
+      { title: '影片名称', key: 'movieName', minWidth: 130 },
       { title: '申请人时间', key: 'applyTime', editor: 'dateTime', width: 135 },
       { title: '状态', key: 'status', width: 60, editor: 'enum'},
-      { title: '操作人', key: 'operationEmail', width: 100 },
+      { title: '操作人', key: 'operationEmail', minWidth: 130 },
       { title: '操作时间', key: 'operationTime', editor: 'dateTime', width: 135 },
       { title: '操作', slot: 'action', width: 55 }
     ] as ColumnExtra[]

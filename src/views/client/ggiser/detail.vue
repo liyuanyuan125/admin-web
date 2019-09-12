@@ -201,20 +201,6 @@ const timeFormat = 'YYYY/MM/DD'
   }
 })
 export default class Main extends ViewBase {
-  detail: any = {}
-  loading = false
-  addOrUpdateVisible = false
-  businessParentTypeList: any = []
-  approveStatusList: any = []
-  customerTypeList: any = []
-  logList: any = []
-  levelList: any = []
-  statusList: any = []
-  showimg = true
-  list: any = []
-  created() {
-    this.load()
-  }
   get cachedMap() {
     return {
       approveList: makeMap(this.approveStatusList),
@@ -248,6 +234,30 @@ export default class Main extends ViewBase {
       userType: this.formatCinema((this.detail.customerTypeList || []).slice(2))
     }
   }
+  get qualifica() {
+    if (this.detail.qualificationTypeList) {
+       if (this.detail.companyType == 1) {
+          return (this.detail.qualificationTypeList[0] as any).text
+       } else {
+        return (this.detail.personQualificationTypeList[0] as any).text
+      }
+    }
+  }
+  detail: any = {}
+  loading = false
+  addOrUpdateVisible = false
+  businessParentTypeList: any = []
+  approveStatusList: any = []
+  customerTypeList: any = []
+  logList: any = []
+  levelList: any = []
+  statusList: any = []
+  showimg = true
+  list: any = []
+  personQualificationTypeList: any = []
+  created() {
+    this.load()
+  }
 
   formatValid(data: any) {
     const datas = (data + '').split(',')
@@ -256,17 +266,11 @@ export default class Main extends ViewBase {
     const c = datas[0].slice(6)
     return `${a}/${b}/${c}`
   }
-
   formatCinema(data: any) {
     const cinemChildren = data && flattenDeep(data.map((item: any) => {
       return item.typeCategoryList
     }))
     return typeMap(cinemChildren)
-  }
-  get qualifica() {
-    if (this.detail.qualificationTypeList) {
-       return (this.detail.qualificationTypeList[0] as any).text
-    }
   }
   dlgEditDone(email: any, id: any) {
     this.detail.mainAccountName = email
@@ -329,6 +333,7 @@ export default class Main extends ViewBase {
           createTime: moment(item.createTime).format(timeFormatDate)
         }
       })
+      this.personQualificationTypeList = res.data.personQualificationTypeList
       this.logList = logList.slice(0, 20)
       this.approveStatusList = res.data.approveStatusList.slice(1)
       this.detail.imageList = res.data.imageList || []

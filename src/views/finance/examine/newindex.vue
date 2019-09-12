@@ -175,8 +175,7 @@ export default class IndexPage extends ViewBase {
       { title: '订单号', key: 'id' , maxWidth: 65},
       { title: '公司名称', key: 'companyName'},
       { title: '业务类型', key: 'businessType', maxWidth: 65, editor: 'enum' },
-      { title: '汇款人姓名', key: 'accountName', maxWidth: 60 },
-      { title: '汇款账户名称', key: 'accountNumber' },
+      { title: '汇款账户名称', key: 'accountName' },
       { title: '汇款方式', key: 'remittanceType', width: 65, editor: 'enum' },
       { title: '汇款交易流水', key: 'remittanceNo', },
       { title: '汇款金额', key: 'amount', maxWidth: 100,
@@ -231,7 +230,7 @@ export default class IndexPage extends ViewBase {
           /* tslint:enable */
         }
       },
-      { title: '状态', key: 'status', width: 65, editor: 'enum' }
+      // { title: '状态', key: 'status', width: 65, editor: 'enum' }
     ]
     const threeID = [
       { title: '操作时间', key: 'approvalTime', width: 75, editor: 'dateTime' },

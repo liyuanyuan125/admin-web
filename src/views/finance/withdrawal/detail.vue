@@ -28,7 +28,7 @@
           <Col span="4"><span id="success_form_input2" style="margin-right: 8px">{{detail.amount}}</span>
           </Col>
           <Col span="3"><div>提现方式：</div></Col>
-          <Col span="4"><span id="success_form_input3" style="margin-right: 8px">{{detail.alipayName}}</span>
+          <Col span="4"><span id="success_form_input3" style="margin-right: 8px">{{detail.type}}</span>
           </Col>
         </Row>
         <Row v-if="detail.withdrawalType != '2'">
@@ -56,13 +56,13 @@
           </Col>
         </Row>
       </div>
-      <Row class="detail-content">
+      <Row v-if='$route.params.status' class="detail-content">
         <div class="n-list">汇款信息：</div>
         <Form v-if='detail.status != 1' ref="formInline" :model="query" :rules="ruleInline">
         <Row>
           <Col span="3"><div>汇款时间：</div></Col>
           <Col span="16">
-            <FormItem v-if='detail.status == 3' prop="remittanceTime">
+            <FormItem v-if='$route.params.status == 3' prop="remittanceTime">
                <DatePicker type="date" v-model='query.remittanceTime' placeholder="汇款时间" style="width: 200px"></DatePicker>
             </FormItem>
             <span v-else>{{detail.createTime}}</span>
@@ -71,7 +71,7 @@
         <Row>
           <Col span="3"><div>上传凭证</div></Col>
           <Col span="8">
-            <FormItem v-if='detail.status == 3' prop="receipt">
+            <FormItem v-if='$route.params.status == 3' prop="receipt">
               <Upload v-model="query.receipt" multiple :maxCount="3" accept="image/*" />
             </FormItem>
             <div v-else class="upload-wrap">
@@ -85,7 +85,7 @@
         <Row>
           <Col span="3"><div>备注</div></Col>
           <Col span="8">
-            <FormItem v-if='detail.status == 3' prop="remittanceRemark">
+            <FormItem v-if='$route.params.status == 3' prop="remittanceRemark">
                <Input type="textarea" :rows="4" v-model="query.remittanceRemark" placeholder="请输入备注" style="width: 200px" />
             </FormItem>
             <span v-else>{{detail.remark}}</span>
@@ -93,7 +93,7 @@
         </Row>
         </Form>
         <Form v-else ref="formInline" :model="query" :rules="ruleInline">
-          <Row>
+          <Row v-if='$route.params.status == 1'>
             <Col span="3"><div>审核意见：</div></Col>
             <Col span="16">
               <FormItem>
@@ -104,7 +104,7 @@
               </FormItem>
             </Col>
           </Row>
-          <Row>
+          <Row v-if='$route.params.status == 1'>
             <Col span="3"><div>备注：</div></Col>
             <Col span="16">
               <FormItem>
@@ -114,8 +114,33 @@
           </Row>
         </Form>
       </Row>
-      <Row class="detail-check" 
-        v-if="detail.status != 1 && detail.status != '3'">
+      <Row v-if='!$route.params.status && detail.receiptUrl' class="detail-content">
+        <div class="n-list">汇款信息：</div>
+        <Row>
+          <Col span="3"><div>汇款时间：</div></Col>
+          <Col span="16">
+            <span>{{detail.createTime}}</span>
+          </Col>
+        </Row>
+        <Row>
+          <Col span="3"><div>上传凭证</div></Col>
+          <Col span="8">
+            <div class="upload-wrap">
+              <div v-if="showimg" class="show-img">
+                <img src="~@/assets/imgerror.png"/>
+              </div>
+              <imgModel v-else :uploadList="img" :type = 2 />
+            </div>
+          </Col>
+        </Row>
+        <Row>
+          <Col span="3"><div>备注</div></Col>
+          <Col span="8">
+            <span>{{detail.remark}}</span>
+          </Col>
+        </Row>
+      </Row>
+      <Row class="detail-check">
         <div class="n-list">操作日志</div>
         <Row  class="detail-log" v-for="(item, i) in logList" :key="i">
           <Col span="3"><div>操作时间</div></Col>
@@ -127,6 +152,7 @@
       <Row>
         <Col v-if='$route.params.status' style='text-align: center'>
           <Button type="info" size="large" @click="edit('formInline')">确定</Button>
+          <Button style="margin-left: 10px" type="info" size="large" @click="back">取消</Button>
         </Col>
       </Row>
     </div>
@@ -159,7 +185,7 @@ const timeFormat = 'YYYY/MM/DD'
 })
 export default class Main extends ViewBase {
   httplist = ''
-  title = '充值信息'
+  title = '提现信息'
   link = '2222'
   copyBtn = null
   detail: any = {}
@@ -210,7 +236,9 @@ export default class Main extends ViewBase {
     (this.$Spin as any).show()
     try {
       const res = await withdrwaldetail(this.$route.params.id)
+      const typelist = makeMap(res.data.withdrawalTypeList)
       this.detail = res.data.item
+      this.detail.type = typelist[this.detail.withdrawalType]
       this.detail.createTime = moment(res.data.item.createTime).format(timeFormat)
       const logList = res.data.logList ? res.data.logList.map((item: any) => {
         return {

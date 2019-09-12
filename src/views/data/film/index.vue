@@ -148,7 +148,7 @@ export default class Main extends ViewBase {
       {title: '分类', key: 'categoryCode', minWidth: 85, editor: 'enum'},
       {title: '上映状态', key: 'releaseStatus', minWidth: 85, editor: 'enum'},
       {title: '状态', key: 'controlStatus', minWidth: 85, editor: 'enum'},
-      {title: '操作', slot: 'operate', minWidth: 140},
+      {title: '操作', slot: 'operate', minWidth: 160},
     ] as ColumnExtra[]
   }
 

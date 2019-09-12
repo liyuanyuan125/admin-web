@@ -3,7 +3,7 @@ import moment from 'moment'
 export const one = [
   { title: '充值订单号  ', key: 'streamNo' },
   { title: '充值金额  ', key: 'transactionAmount' },
-  { title: '充值时间  ', key: 'remittanceDate', editor: 'dateTime' },
+  { title: '充值时间  ', key: 'transactionTime', editor: 'dateTime' },
 ]
 
 export const two = [
@@ -26,7 +26,7 @@ export const four = [
   { title: '最后更新时间', key: 'transactionTime', editor: 'dateTime' },
 ]
 
-export function filterone(str: string) {
+export function filterone(str: string, companyId: any) {
   if (str == 'month') {
     const beginDate = moment().startOf('month').format('YYYYMMDD')
     const endDate = moment().endOf('month').format('YYYYMMDD')
@@ -59,13 +59,21 @@ export function filterone(str: string) {
       defaultValue: 1
     },
     {
+      name: 'companyId',
+      defaultValue: companyId
+    },
+    {
+      name: 'transactionType',
+      defaultValue: 1
+    },
+    {
       name: 'pageSize',
       defaultValue: 20
     }
   ]
 }
 
-export function filtertwo(str: string) {
+export function filtertwo(str: string, companyId: any) {
   if (str == 'month') {
     const beginDate = moment().startOf('month').format('YYYYMMDD')
     const endDate = moment().endOf('month').format('YYYYMMDD')
@@ -114,11 +122,15 @@ export function filtertwo(str: string) {
     {
       name: 'pageSize',
       defaultValue: 20
-    }
+    },
+    {
+      name: 'companyId',
+      defaultValue: companyId
+    },
   ]
 }
 
-export function filterthree(str: string) {
+export function filterthree(str: string, companyId: any) {
   if (str == 'month') {
     const beginDate = moment().startOf('month').format('YYYYMMDD')
     const endDate = moment().endOf('month').format('YYYYMMDD')
@@ -130,7 +142,7 @@ export function filterthree(str: string) {
       defaultValue: str,
       type: 'dateRange',
       width: 200,
-      placeholder: '充值日期区间',
+      placeholder: '退款日期区间',
       dealParam(value: string) {
         const [beginDate, endDate] = value ? value.split('-') : [null, null]
         return {
@@ -153,11 +165,19 @@ export function filterthree(str: string) {
     {
       name: 'pageSize',
       defaultValue: 20
+    },
+    {
+      name: 'transactionType',
+      defaultValue: 4
+    },
+    {
+      name: 'companyId',
+      defaultValue: companyId
     }
   ]
 }
 
-export function filterfour(str: string) {
+export function filterfour(str: string, companyId: any) {
   if (str == 'month') {
     const beginDate = moment().startOf('month').format('YYYYMMDD')
     const endDate = moment().endOf('month').format('YYYYMMDD')
@@ -169,7 +189,7 @@ export function filterfour(str: string) {
       defaultValue: str,
       type: 'dateRange',
       width: 200,
-      placeholder: '充值日期区间',
+      placeholder: '提现日期区间',
       dealParam(value: string) {
         const [beginDate, endDate] = value ? value.split('-') : [null, null]
         return {
@@ -192,6 +212,14 @@ export function filterfour(str: string) {
     {
       name: 'pageSize',
       defaultValue: 20
+    },
+    {
+      name: 'transactionType',
+      defaultValue: 8
+    },
+    {
+      name: 'companyId',
+      defaultValue: companyId
     }
   ]
 }

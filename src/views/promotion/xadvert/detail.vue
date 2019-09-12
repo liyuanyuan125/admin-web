@@ -20,7 +20,8 @@ import {
   queryItem,
   newItem,
   editItem,
-  auditItem
+  auditItem,
+  beforeEdit
 } from './data'
 
 const ratioValidator: Validator = (rule, value: Array<{ value: number }>, callback) => {
@@ -33,6 +34,7 @@ const ratioValidator: Validator = (rule, value: Array<{ value: number }>, callba
   const error = !isNumber ? '请输入数字' : !isInteger ? '请输入整数' : ''
   error ? callback(new Error(error)) : callback()
 }
+
 
 const actionMap: MapType<any> = {
   view: null,
@@ -100,16 +102,16 @@ export default class CPMDetail extends ViewBase {
         label: '活动时间',
         placeholder: '活动时间',
         dealParam(value: any) {
-          const [beginTime, endTime] = value
+          const [beginDate, endDate] = value
           return {
-            beginTime,
-            endTime,
+            beginDate,
+            endDate,
           }
         }
       },
 
       {
-        name: 'channels',
+        name: 'channelCodes',
         defaultValue: [],
         check: {
           enumKey: 'channelList',
@@ -131,17 +133,6 @@ export default class CPMDetail extends ViewBase {
       },
 
       {
-        name: 'adTypes',
-        defaultValue: [],
-        required: true,
-        check: {
-          enumKey: 'adTypeList'
-        },
-        label: '广告类型',
-        span: 24,
-      },
-
-      {
         name: 'type',
         defaultValue: 0,
         radio: {
@@ -153,42 +144,34 @@ export default class CPMDetail extends ViewBase {
       },
 
       {
-        name: 'bizPricingList',
+        name: 'convertCosts',
         defaultValue: [],
-        label: '品牌广告',
+        label: '按时长减免',
         component: BizPricingTable,
         span: 24,
-        props: {
-          title: '商业广告折扣列表'
-        },
         rules: [
           {
             validator: ratioValidator
           }
-        ],
-        visible: (item: any) => ((item.adTypes.findIndex((it: any) => it == 1) !== -1) && item.type === 1)
-        ? true
-        : false
+        ]
+        // visible: (item: any) => ((item.adTypes.findIndex((it: any) => it == 1) !== -1) && item.type === 1)
+        // ? true
+        // : false
       },
 
-      {
-        name: 'prevuePricingList',
-        defaultValue: [],
-        label: '品牌广告',
-        component: BizPricingTable,
-        span: 24,
-        props: {
-          title: '预告片广告折扣列表'
-        },
-        rules: [
-          {
-            validator: ratioValidator
-          }
-        ],
-        visible: (item: any) => ((item.adTypes.findIndex((it: any) => it == 2) !== -1) && item.type === 1)
-        ? true
-        : false
-      }
+      // {
+      //   name: 'prevuePricingList',
+      //   defaultValue: [],
+      //   label: '品牌广告',
+      //   component: BizPricingTable,
+      //   span: 24,
+      //   props: {
+      //     title: '预告片广告折扣列表'
+      //   },
+      //   // visible: (item: any) => ((item.adTypes.findIndex((it: any) => it == 2) !== -1) && item.type === 1)
+      //   // ? true
+      //   // : false
+      // }
 
     ]
 
@@ -248,8 +231,11 @@ export default class CPMDetail extends ViewBase {
 
   async fetch() {
     let data = null
-    const beforeEditData = null
-    if (this.action === 'edit' || this.action === 'view' || this.action === 'audit') {
+    if ( this.action === 'edit' || this.action === 'audit') {
+      data = await beforeEdit({
+        id: this.id
+      })
+    } else if ( this.action === 'view') {
       data = await queryItem({
         id: this.id
       })

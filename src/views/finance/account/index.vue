@@ -57,7 +57,7 @@
             transactionTypes: 4
           })">{{monthWithdrawalCount}}</a> / <a @click="push({
             companyId: companyId,
-            time: 'month',
+            time: 'all',
             transactionTypes: 4
           })">{{totalWithdrawalCount}}</a>
         </div>
@@ -98,11 +98,11 @@ export default class Main extends ViewBase {
     const endDate = moment().endOf('month').format('YYYYMMDD')
     return [
       {
-        name: '公司名称',
+        name: 'companyName',
         defaultValue: '',
         type: 'input',
         width: 108,
-        placeholder: 'id'
+        placeholder: '公司名称'
       },
 
 
