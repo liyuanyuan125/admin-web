@@ -157,8 +157,6 @@ export default class IndexPage extends ViewBase {
   }
 
   enums = [
-    'auditStatusList',
-    'channelList',
     'advertTypeList'
   ]
 
@@ -168,8 +166,8 @@ export default class IndexPage extends ViewBase {
       { title: '计划名称', key: 'name' },
       { title: '广告主公司名称', key: 'companyName'},
       { title: '广告片', key: 'videoName', maxWidth: 100 },
-      { title: '广告类型', key: 'advertTypeCode', maxWidth: 100,  enum: true },
-      { title: '渠道', key: 'channelCode', maxWidth: 100,  enum: true },
+      { title: '广告类型', key: 'advertTypeCode', maxWidth: 100, editor: 'deprecated' },
+      { title: '渠道', key: 'channelCode', maxWidth: 100,  editor: 'deprecated' },
       { title: '派单影院数量', key: 'cinemaCount', maxWidth: 100 },
       { title: '折扣', key: 'discount', maxWidth: 100 },
       { title: '定金', key: 'depositAmount', width: 100},
