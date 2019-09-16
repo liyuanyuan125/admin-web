@@ -98,9 +98,13 @@ export async function beforeCreate() {
 export async function queryItem(query: any = {}) {
   const { id } = query
   const { data } = await get(`/promotion/cpm/detail/${id}`)
-  data.item.marketDate = []
-  data.item.marketDate.push(data.item.beginTime)
-  data.item.marketDate.push(data.item.endTime)
+  const {
+    item: {
+      beginTime,
+      endTime
+    }
+  } = data
+  data.item.marketDate = [beginTime, endTime]
   if ( !data.item.prevuePricingList ) {
     data.item.prevuePricingList = data.prevuePricingList
   }

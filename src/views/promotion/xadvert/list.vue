@@ -14,7 +14,7 @@
 
       <template slot="action" slot-scope="{ row: { status, id, name, enName } }">
         <div class="row-acts">
-          <router-link :to="{
+          <router-link v-if="status === 1" :to="{
               name: 'promotion-xadvert-detail',
               params: {
                 id,
@@ -125,15 +125,15 @@ export default class Main extends ViewBase {
         placeholder: '适用渠道'
       },
 
-      {
-        name: 'type',
-        defaultValue: 0,
-        select: {
-          enumKey: 'typeList',
-        },
-        width: 128,
-        placeholder: '促销活动类型'
-      },
+      // {
+      //   name: 'type',
+      //   defaultValue: 0,
+      //   select: {
+      //     enumKey: 'typeList',
+      //   },
+      //   width: 128,
+      //   placeholder: '促销活动类型'
+      // },
 
       {
         name: 'dateRange',

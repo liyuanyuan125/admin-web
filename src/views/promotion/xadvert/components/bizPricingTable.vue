@@ -2,8 +2,8 @@
   <div>
     <table class="price-table">
       <thead>
-        <th>时长起止区间s</th>
-        <th>时长截止区间s</th>
+        <th>时长起止区间(s)</th>
+        <th>时长截止区间(s)</th>
         <th style="width: 90px">折扣比例%</th>
         <th>折后转制费（元）</th>
       </thead>
