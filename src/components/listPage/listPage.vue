@@ -375,6 +375,10 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
   margin-bottom: 88px;
 }
 
+.form {
+  margin-bottom: -8px;
+}
+
 .act-bar ~ .act-bar:not(:empty) {
   margin-top: 15px;
 }
@@ -382,10 +386,8 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
 .ui-filter,
 .btn-search,
 .btn-reset {
-  margin-right: 8px;
-}
-.ui-filter:first-child {
-  margin-left: 0;
+  margin: 0 8px 8px 0;
+  vertical-align: top;
 }
 
 .table {

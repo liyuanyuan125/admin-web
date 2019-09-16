@@ -617,6 +617,32 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  {
+    path: '/data/cinema/:action(new|edit|view)/:id?',
+    name: 'data-cinema-edit',
+    component: () => import('./views/data/cinema/edit.vue'),
+    meta: {
+      authKey({ params: { action } }) {
+        const authMap: MapType = {
+          new: 'theater.cinemas:add',
+          edit: 'theater.cinemas:modify',
+          view: '',
+        }
+        return authMap[action]
+      },
+      title({ params: { action } }) {
+        const titleMap: MapType = {
+          new: '新建',
+          edit: '编辑',
+          view: '查看',
+        }
+        return titleMap[action]
+      },
+      fixed: true,
+    },
+    props: paramTypes({ id: Number, action: String })
+  },
+
   // 基础数据 - 影院管理 - 影厅列表
   {
     path: '/data/cinema-hall/:id',

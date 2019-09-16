@@ -189,7 +189,7 @@ export function filterfour(str: string, companyId: any) {
       defaultValue: str,
       type: 'dateRange',
       width: 200,
-      placeholder: '充值日期区间',
+      placeholder: '提现日期区间',
       dealParam(value: string) {
         const [beginDate, endDate] = value ? value.split('-') : [null, null]
         return {

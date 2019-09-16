@@ -5,7 +5,7 @@
         <Poptip
           v-model="show"
           @on-popper-show="onShow"
-          @on-popper-hide="onHide"
+          transfer
           v-if="!loading"
         >
           <span class="edit">
@@ -15,7 +15,7 @@
           <div slot="content">
             <div class="flex-box">
               <div class="flex-1">
-                <Select v-model="model" size="small">
+                <Select v-model="selectModel" size="small">
                   <Option v-for="it in validList" :key="it.key"
                     :value="it.key">{{it.text}}</Option>
                 </Select>
@@ -67,6 +67,8 @@ export default class ListEnum extends ViewBase {
 
   model = this.value
 
+  selectModel = this.value
+
   show = false
 
   loading = false
@@ -108,22 +110,19 @@ export default class ListEnum extends ViewBase {
   }
 
   onShow() {
-    debugger
-  }
-
-  onHide() {
-    debugger
+    this.selectModel = this.model
   }
 
   async onOk() {
     this.show = false
-    const value = this.model
+    const value = this.selectModel
     const oldValue = this.value
     const updateField = this.updateField
     if (value != oldValue && updateField != null) {
       try {
         this.loading = true
         await updateField(value)
+        this.model = value
         this.$emit('afterUpdateField', { value })
       } catch (ex) {
         this.handleError(ex)
@@ -142,6 +141,7 @@ export default class ListEnum extends ViewBase {
   @Watch('value', { deep: true })
   watchValue(value: number | string | Array<number | string>) {
     this.model = value
+    this.selectModel = value
     this.checkValue()
   }
 
