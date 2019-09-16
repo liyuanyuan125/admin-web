@@ -1,5 +1,6 @@
 import { get, post, put } from '@/fn/ajax'
 import { slice } from '@/fn/object'
+import { appId } from '@/store'
 
 /**
  * 商务数据
@@ -76,9 +77,14 @@ export async function updateStatus(id: string, status: number) {
 /**
  * 拉取用户列表
  * @param query 查询条件，参见接口文档
+ * https://yapi.aiads-dev.com/project/58/interface/api/569
  */
-export async function userList(query: any = {}) {
-  const { data } = await get('/auth/users', query)
-  const enumList = data.items.map((ele: any) => ({ key: ele.id, text: ele.userName }))
-  return enumList
+export async function userList() {
+  const { data } = await get(`/auth/apps/${appId}/users`)
+  const list = data.items.map(({ id, userName, roles }: any) => ({
+    key: id,
+    text: userName,
+    roles: roles || [],
+  }))
+  return list
 }
