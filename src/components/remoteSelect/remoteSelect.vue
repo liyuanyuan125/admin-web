@@ -45,7 +45,7 @@ export default class RemoteSelect extends ViewBase {
 
   @Prop({ type: Boolean, default: false }) multiple!: boolean
 
-  @Prop({ type: Array, default: [] }) initList!: IdName[]
+  @Prop({ type: Array, default: () => [] }) initList!: IdName[]
 
   get select() {
     const select = this.$refs.select as Vue
