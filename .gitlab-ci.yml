@@ -64,7 +64,7 @@ deploy-qas:
   only:
     - TempRelease
   script:
-    - deploy -service $SERVICE_NAME -template web
+    - deploy -service $SERVICE_NAME
   environment: jydata-qas
   tags:
     - docker
