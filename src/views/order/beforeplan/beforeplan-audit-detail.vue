@@ -56,12 +56,13 @@
         <div class='bos'>
             <Row>
                 <Col :span='12'>计划ID&nbsp;：&nbsp;{{listitem.id == null ? '暂无' : listitem.id}}</Col>
-                <span v-if='listitem.channelCode == null'>暂无渠道</span>
+                <Col :span='12'>渠道&nbsp;：&nbsp;
+                    <span v-if='listitem.channelCode == null'>暂无渠道</span>
                     <span v-else v-for='(item , index) in channelList' :key='index' v-if='item.key == listitem.channelCode'>
                         {{item.text}}
                     </span>
                 </Col>
-	    </Row>
+	        </Row>
             <Row>
                 <Col :span='12'>计划状态&nbsp;：&nbsp;
                 <span v-for='(item , index) in statusList' :key='index' v-if='item.key == listitem.status'>
@@ -131,13 +132,13 @@
         <Row class='bos'>
             <Row>
                 <Col :span='2'>折扣</Col>
-                <Col :span='4'>
+                <Col :span='22'>
                     <Input style="width:100px" v-model="auditForm.discount"></Input> 请输入0-1的小数
                 </Col>
             </Row>
             <Row>
                 <Col :span='2'>定金</Col>
-                <Col :span='4'>
+                <Col :span='22'>
                     <Input style="width:100px" v-model="auditForm.depositAmount"></Input> 元
                 </Col>
             </Row>
@@ -148,7 +149,7 @@
                 预估曝光人次【{{formatNumber(listitem.estimatePersonCount , 2)}}】
                 预估曝光场次【{{formatNumber(listitem.estimateShowCount , 2)}}】
                 预估花费【{{formatNumber(listitem.estimateCostAmount)}}】
-                <span>, 折扣后总价【{{formatNumber(listitem.estimateShowCount , 2)}}】</span>
+                <span>, 折扣后总价【{{formatNumber(listitem.estimateCostAmount , 2)}}】</span>
                 <!-- <Button v-if='this.$route.params.ifs == 1' type="primary" :loading="loading2" @click="shuaxin()">刷新</Button> -->
                 </Col>
                 <!-- <Col :span='4'>
