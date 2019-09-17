@@ -55,6 +55,7 @@ import {
 } from './data'
 import { alert, toast } from '@/ui/modal'
 import { EditDialog, Field } from '@/components/editForm'
+import moment from 'moment'
 
 @Component({
   components: {
@@ -64,6 +65,8 @@ import { EditDialog, Field } from '@/components/editForm'
 })
 export default class Main extends ViewBase {
   fetch = queryList
+
+  moment = moment
 
   enabledTitleName: string = ''
   enabledSubmitFetch: any = null
@@ -142,10 +145,10 @@ export default class Main extends ViewBase {
         width: 200,
         placeholder: '活动时间',
         dealParam(value: string) {
-          const [beginTime, endTime] = value ? value.split('-') : [null, null]
+          const [beginDate, endDate] = value ? value.split('-') : [null, null]
           return {
-            beginTime,
-            endTime
+            beginDate,
+            endDate
           }
         }
       },
@@ -179,8 +182,8 @@ export default class Main extends ViewBase {
       { title: '客户范围', key: 'customerType', enum: true },
       { title: '适用渠道', key: 'channelCodes', enum: 'channelList' },
       { title: '促销活动类型', key: 'type', enum: true },
-      { title: '活动开始时间', key: 'beginDate' },
-      { title: '活动结束时间', key: 'endDate' },
+      { title: '活动开始时间', key: 'beginDate', date: true},
+      { title: '活动结束时间', key: 'endDate', date: true },
       { title: '活动状态', key: 'status', enum: true },
       { title: '审批人', key: 'approvalName', },
       { title: '操作', key: 'keyWords', slot: 'action' }
