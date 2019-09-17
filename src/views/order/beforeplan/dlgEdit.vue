@@ -13,7 +13,7 @@
       <FormItem label="定金" prop="rejectReason">
         <InputNumber style="width:240px" :min='0' v-model="dataForm.depositAmount"></InputNumber><br>
         如您设置的折扣值小于可享折扣值，需要下一级主管审批<br>
-        设置折扣和定金后，不可在修改方案信息 (影片 / 影院)
+        设置折扣和定金后，不可再修改方案信息 (影片 / 影院)
       </FormItem>
     </Form>
     <div slot="footer" class="dialog-footer">
