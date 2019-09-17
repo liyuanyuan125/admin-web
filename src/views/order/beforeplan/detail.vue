@@ -50,6 +50,11 @@
                         </span>
                     
                 </Col>
+                <Col :span='12'>促销活动名称&nbsp;：&nbsp;{{(listitem.promotion == null || listitem.promotion.name == null) ? '暂无促销活动名称' : listitem.promotion.name}}</Col>
+            </Row>
+            <Row>
+                <Col :span='12'>活动类型&nbsp;：&nbsp;{{(listitem.promotion == null || listitem.promotion.typeName == null) ? '暂无活动类型' : listitem.promotion.typeName}}</Col>
+                <Col :span='12'>活动ID&nbsp;：&nbsp;{{(listitem.promotion == null || listitem.promotion.id == null) ? '暂无活动ID' : listitem.promotion.id}}</Col>
             </Row>
         </div>
         <div class='title'>基础信息</div>
@@ -194,9 +199,9 @@
             <Button style='margin-left: 30px;' @click="back">取消</Button>
             </Col>
             <Col :span='6' v-if='this.$route.params.ifs == 1 && (this.$route.params.status != 6 && this.$route.params.status != 7)'>
-            <Button v-if='(viewfilm == true || viewcinema == true) || (listitem.status != 9 && listitem.status != 10) ' type="primary" disabled>
+            <Button v-if='(viewfilm == true || viewcinema == true) || (listitem.status != 3 && listitem.status != 9 && listitem.status != 10) ' type="primary" disabled>
                 保存并发送方案至广告主</Button>
-            <Button v-if='(viewfilm == false && viewcinema == false) && (listitem.status == 9 || listitem.status == 10) ' type="primary" @click="save('dataplan')">
+            <Button v-if='(viewfilm == false && viewcinema == false) && (listitem.status == 3 || listitem.status == 9 || listitem.status == 10) ' type="primary" @click="save('dataplan')">
                 保存并发送至广告主</Button>
             <Button style='margin-left: 30px;' @click="back">取消</Button>
             </Col>
@@ -464,7 +469,7 @@ export default class Main extends ViewBase {
 
 
     async search() {
-        this.listitem = []
+        // this.listitem = []
         try {
             // 订单列表
             const { data } = await itemlist(this.$route.params.id)
@@ -572,13 +577,15 @@ export default class Main extends ViewBase {
     // 保存方案
     async save(dataplan: any) {
         // 保存定金
-        // if (this.listitem.status == 2) {
-        //     if (this.dataplan.depositAmount == '') {
-        //         info('请输入定金金额')
-        //         return
-        //     }
-        //     const res = await save(this.$route.params.id, { depositAmount: this.dataplan.depositAmount })
-        // } else
+        if (this.listitem.status == 3) {
+            const res = await save(this.$route.params.id,
+                { discount: this.dataplan.discount == null ? 1 : this.dataplan.discount,
+                  depositAmount: this.dataplan.depositAmount == null ?
+                    this.listitem.estimateCostAmount : this.dataplan.depositAmount })
+            this.$router.go(-1)
+            return
+        }
+        //  else
         if (this.dataplan.qneedPayAmount != this.dataplan.needPayAmount) {
             info('请再次确认应结金额')
             return

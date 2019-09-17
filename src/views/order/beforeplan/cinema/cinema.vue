@@ -2,8 +2,9 @@
     <div class="pages" style='position: relative;'>
         <div class='title'>
             <span v-if='$route.params.status == "3" '>投放影院({{total}}家)</span>
-            <span style='cursor: pointer;position: absolute; right: 15px; top: -50px;' @click="exportData">导出影院列表</span>
         </div>
+        <span v-if='$route.params.status == "3" ' class='pos' style='top: 0px;' @click="exportData">导出影院列表</span>
+        <span v-if='$route.params.status != "3" ' class='pos' style='top: -50px;' @click="exportData">导出影院列表</span>
         <div class='bos'>
             <Row class="shouDlg-header">
                 <Col span="5">
@@ -524,6 +525,15 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 .page-f {
   margin-top: 10px;
   font-size: 15px;
+}
+
+.pos {
+  cursor: pointer;
+  position: absolute;
+  right: 15px;
+  font-size: 16px;
+  color: #2d8cf0;
+  line-height: 50px;
 }
 
 .bge {

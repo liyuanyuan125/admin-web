@@ -100,6 +100,9 @@
         <template slot="targetCount" slot-scope="{row}">
           <span>{{row.receiveCount}} / {{row.targetCount}}</span>
         </template>
+        <template slot="advertType" slot-scope="{row}">
+          <span v-for='(its,index) in advertTypeCodeList' v-if='row.advertType == its.key'>{{its.text}}</span>
+        </template>
           <template slot="spaction" slot-scope="{row}">
           <!-- <a v-show='row.status == 3' v-auth="'advert.executeOrder:settlement'" @click="change(row.id, row)">结算</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
           <router-link v-show='row.status == 3' v-auth="'advert.executeOrder:info'" :to="{ name: 'order-list-detail', params: { id: row.id , status: row.status } }">详情</router-link>
@@ -196,20 +199,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     { title: '广告主公司名称', key: 'advertiserName', align: 'center' },
     { title: '广告计划',  key: 'planName', align: 'center' },
     { title: '资源方公司名称', key: 'resourceName', align: 'center' },
-    { title: '广告类型', key: 'advertType', align: 'center', width: 90,
-      render: (hh: any, { row: { advertType } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        if (advertType == 1) {
-          return <span>品牌</span>
-        } else if (advertType == 2) {
-          return <span>预告片</span>
-        } else {
-          return <span>-</span>
-        }
-        /* tslint:enable */
-      }
-    },
+    { title: '广告类型', slot: 'advertType', align: 'center', width: 90 },
     { title: '接单影院/派单影院', slot: 'targetCount', align: 'center', width: 90},
     {
       title: '接单时间',
