@@ -33,7 +33,7 @@
       	<Col :span='4'>活动ID</Col>
       	<Col :span='8'>-</Col>
       </Row>
-      <Table v-if='this.itemlist.promotion != null' style='margin-top: 5px;' :columns="columns" :data="activeList" :loading="loading"
+      <Table v-if='this.itemlist.promotion != null' style='margin-top: 5px;' :columns="columns" :data="activeList"
         border stripe disabled-hover size="small" class="table">
           <template slot="activeNum" slot-scope="{ row: { activeNum , name  } }">
                 <div v-if="name == '预估花费'" class="row-acts">
