@@ -42,6 +42,23 @@
             <Col span='9'>{{item.specification}}s</Col>
         </Row>
         <Row class='row-list'>
+            <Col :span='3' class='hui'>投放位置</Col>
+            <Col :span='9'>
+                <span v-if='item.deliveryPositionCode == null'>暂无投放位置</span>
+                <span v-else v-for='(its , index) in deliveryPositionList' :key='index' v-if='its.key == item.deliveryPositionCode'>
+                    {{its.text}}
+                </span>
+            </Col>
+            <!-- <Col :span='3' class='hui'>促销活动名称</Col> -->
+            <!-- <Col :span='9'>首单品牌广告刊例价折扣优惠</Col> -->
+        </Row>
+        <!-- <Row class='row-list'>
+            <Col :span='3' class='hui'>活动类型</Col>
+            <Col :span='9'>首单品牌广告刊例价折扣优惠</Col>
+            <Col :span='3' class='hui'>活动ID</Col>
+            <Col :span='9'>首单品牌广告刊例价折扣优惠</Col>
+        </Row> -->
+        <Row class='row-list'>
             <Col span='3' class='hui'>影片列表</Col>
             <Col span='20'><span v-for='(it,index) in item.targetMovies'>《{{it.movieName}}》</span><span v-if='this.movieList.length == 0'>暂无</span></Col>
         </Row>
@@ -129,6 +146,9 @@ export default class Main extends ViewBase {
   settlementAmount: any = ''
   movieList: any = []
 
+  // 广告片投放位置
+  deliveryPositionList: any = []
+
   count = 0
   newend: any = ''
 
@@ -193,8 +213,8 @@ export default class Main extends ViewBase {
           item: item,
           statusList,
           advertTypeCodeList,
-          planDirectionList
-
+          planDirectionList,
+          deliveryPositionList
       } } = await queryItem(this.$route.params.id)
       this.item = item
       const a = String(this.item.beginDate)
@@ -205,6 +225,7 @@ export default class Main extends ViewBase {
       moment(this.item.receiveTime).format(timeFormat)
       this.settlementTime = moment(this.item.settlementTime).format(timeFormat)
       this.settlementAmount = this.addNumber(String(this.item.settlementAmount))
+      this.deliveryPositionList = deliveryPositionList
       this.movieList = this.item.targetMovies
       this.logList = (item.logList || []).map((it: any) => {
           return {

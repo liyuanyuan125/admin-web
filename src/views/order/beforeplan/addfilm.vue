@@ -19,8 +19,8 @@
       </FormItem>
       <Table ref="selection" :columns="columns" @on-selection-change="onselect" :data="list" v-if="showDlg"  
         border stripe disabled-hover size="small" class="table">
-        <template  slot="personCount" slot-scope="{row}" >
-          {{formatNumber(row.personCount , 2)}}
+        <template  slot="totalWantToSeeCount" slot-scope="{row}" >
+          {{formatNumber(row.totalWantToSeeCount , 2)}}
         </template>
         </Table>
       <div class="page-wrap" v-if="total > 0">
@@ -184,7 +184,7 @@ export default class ComponentMain extends Mixins(ViewBase, UrlManager) {
         /* tslint:enable */
       }
     },
-    { title: '想看人数', slot: 'personCount', align: 'center'},
+    { title: '想看人数', slot: 'totalWantToSeeCount', align: 'center'},
   ]
 
   ruleValidate = {
