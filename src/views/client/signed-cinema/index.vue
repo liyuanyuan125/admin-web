@@ -84,7 +84,7 @@ export default class Main extends ViewBase {
 
   get columns() {
     return [
-      { title: '序号', key: 'id', width: 65 },
+      { title: '序号', key: 'rank', width: 65 },
       { title: '影院ID', key: 'cinemaId', width: 80 },
       { title: '影院名称', key: 'cinemaName', minWidth: 120 },
       { title: '专资编码', key: 'cinemaCode', width: 80 },
