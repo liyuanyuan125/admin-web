@@ -52,7 +52,7 @@ export default class RemoteSelect extends ViewBase {
     return select
   }
 
-  model = this.value
+  model: number | string | Array<number | string> = ''
 
   loading = false
 

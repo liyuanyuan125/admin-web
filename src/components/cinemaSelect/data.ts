@@ -8,7 +8,7 @@ import { filterByControlStatus } from '@/util/dealData'
  */
 export async function queryList(query: any) {
   const { data } = await get('/theater/cinemas', query)
-  const list = filterByControlStatus(data.items).map(it => ({
+  const list = (data.items as any[] || []).map(it => ({
     id: it.id as number,
     name: it.shortName as string
   }))

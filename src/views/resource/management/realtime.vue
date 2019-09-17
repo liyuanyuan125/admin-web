@@ -175,6 +175,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   get cinemaQuery() {
     const { chainId = 0, area: [ provinceId, cityId, countyId ] = [0, 0, 0] } = this.query
     const query = clean({ chainId, provinceId, cityId, countyId }, [null, undefined, '', 0])
+    // 去掉组件中，对 controlStatus == 1 的默认查询，以便可以查询所有 controlStatus 状态
+    query.controlStatus = null
     return query
   }
 
@@ -261,9 +263,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     this.hallLoading = true
     this.hallList = []
     try {
-      const query = { pageSize: 88888888 }
+      const query = { pageSize: 8888 }
       const { data: { items } } = await queryHallList(cinemaId, query)
-      this.hallList = filterByControlStatus(items)
+      this.hallList = items
 
       // 若现有列表中，没有找到已选择的影院，则清空
       const foundItem = this.hallList.find((it: any) => it.id == this.query.hallId)
