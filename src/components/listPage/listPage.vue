@@ -257,8 +257,8 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
       // 筛选条件使用有效的枚举（去掉废弃的值）
       const filterEnumMap = enumList.reduce(
         (map, [name, list]) => {
-          // 过滤后端传过来的 key 为 0 的枚举（若枚举中没有 key，则不做任何过滤）
-          map[name] = filterByControlStatus(list).filter(it => !('key' in it) || it.key > 0)
+          // 过滤后端传过来的 key 为 0 或 '0' 的枚举（若枚举中没有 key，则不做任何过滤）
+          map[name] = filterByControlStatus(list).filter(it => !('key' in it) || it.key != 0)
           return map
         },
         {} as MapType<KeyTextControlStatus[]>
