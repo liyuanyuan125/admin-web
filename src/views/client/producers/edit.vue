@@ -24,7 +24,7 @@
             </Col>
           </Row>
         </FormItem>
-        <FormItem label="简称" prop="shortName">
+        <FormItem label="简称">
           <Row>
             <Col span="8">
               <Input v-model="item.shortName" />
@@ -163,7 +163,7 @@
         </Row>
 
         <Row>
-          <FormItem label="关联影片" prop="relationMovieIdList" :show-message="!(item.relationMovieIdList.length>0)">
+          <FormItem label="关联影片" :show-message="!(item.relationMovieIdList.length>0)">
             <PartBindCinema
               v-if="loadingShow"
               v-model="item.relationMovieIdList"
