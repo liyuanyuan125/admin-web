@@ -482,7 +482,7 @@ export default class Main extends ViewBase {
   async nextSubmit() {
     if ((this.dataForm.fixedRefuseReasons || []).map((it: any) => {
               return it.stypeName
-            }).indexOf('其他') != -1 && this.dataForm.refuseReason == '') {
+            }).indexOf('其他') != -1 && (this.dataForm.refuseReason == '' || this.dataForm.refuseReason == null)) {
       info('请输入审核拒绝原因')
       return
     }
@@ -547,7 +547,7 @@ export default class Main extends ViewBase {
 
     if ((this.dataForm.fixedRefuseReasons || []).map((it: any) => {
               return it.stypeName
-            }).indexOf('其他') != -1 && this.dataForm.refuseReason == '') {
+            }).indexOf('其他') != -1 && (this.dataForm.refuseReason == '' || this.dataForm.refuseReason == null)) {
       info('请输入审核拒绝原因')
       return
     }
