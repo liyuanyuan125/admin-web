@@ -58,7 +58,7 @@ const statusList: any = [
     { name: '待支付', value: '3' },
     { name: '草稿', value: '1' },
     { name: '核对中', value: '9' },
-    { name: '其他', value: '50' },
+    { name: '全部', value: '50' },
 ]
 const defaultPay: any = statusList[0].value
 

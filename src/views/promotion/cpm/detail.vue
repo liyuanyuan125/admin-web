@@ -97,6 +97,7 @@ export default class CPMDetail extends ViewBase {
         dateRange: true,
         width: 350,
         span: 24,
+        required: true,
         label: '活动时间',
         placeholder: '活动时间',
         dealParam(value: any) {
@@ -155,7 +156,7 @@ export default class CPMDetail extends ViewBase {
       {
         name: 'bizPricingList',
         defaultValue: [],
-        label: '品牌广告',
+        label: ' ',
         component: BizPricingTable,
         span: 24,
         props: {
@@ -174,7 +175,7 @@ export default class CPMDetail extends ViewBase {
       {
         name: 'prevuePricingList',
         defaultValue: [],
-        label: '品牌广告',
+        label: ' ',
         component: BizPricingTable,
         span: 24,
         props: {

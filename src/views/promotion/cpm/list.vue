@@ -190,8 +190,8 @@ export default class Main extends ViewBase {
       { title: '适用渠道', key: 'channels', enum: 'channelList' },
       { title: '广告类型', key: 'adTypes', enum: 'adTypeList'},
       { title: '促销活动类型', key: 'type', enum: true },
-      { title: '活动开始时间', key: 'beginTime' },
-      { title: '活动结束时间', key: 'endTime' },
+      { title: '活动开始时间', key: 'beginTime', date: true },
+      { title: '活动结束时间', key: 'endTime', date: true },
       { title: '活动状态', key: 'status', enum: true },
       { title: '审批人', key: 'auditor', },
       { title: '操作', key: 'keyWords', slot: 'action' }

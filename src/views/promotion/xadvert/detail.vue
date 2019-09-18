@@ -99,6 +99,7 @@ export default class CPMDetail extends ViewBase {
         dateRange: true,
         width: 350,
         span: 24,
+        required: true,
         label: '活动时间',
         placeholder: '活动时间',
         dealParam(value: any) {
@@ -158,20 +159,6 @@ export default class CPMDetail extends ViewBase {
         // ? true
         // : false
       },
-
-      // {
-      //   name: 'prevuePricingList',
-      //   defaultValue: [],
-      //   label: '品牌广告',
-      //   component: BizPricingTable,
-      //   span: 24,
-      //   props: {
-      //     title: '预告片广告折扣列表'
-      //   },
-      //   // visible: (item: any) => ((item.adTypes.findIndex((it: any) => it == 2) !== -1) && item.type === 1)
-      //   // ? true
-      //   // : false
-      // }
 
     ]
 
