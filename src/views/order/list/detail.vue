@@ -49,15 +49,15 @@
                     {{its.text}}
                 </span>
             </Col>
-            <!-- <Col :span='3' class='hui'>促销活动名称</Col> -->
-            <!-- <Col :span='9'>首单品牌广告刊例价折扣优惠</Col> -->
+            <Col :span='3' class='hui'>促销活动名称</Col>
+            <Col :span='9'>{{ (item.promotion == null || item.promotion.name == null) ? '暂无' : item.promotion.name}}</Col>
         </Row>
-        <!-- <Row class='row-list'>
+        <Row class='row-list'>
             <Col :span='3' class='hui'>活动类型</Col>
-            <Col :span='9'>首单品牌广告刊例价折扣优惠</Col>
+            <Col :span='9' v-if=''>{{ (item.promotion == null || item.promotion.type == null) ? '暂无' : item.promotion.typeName}}</Col>
             <Col :span='3' class='hui'>活动ID</Col>
-            <Col :span='9'>首单品牌广告刊例价折扣优惠</Col>
-        </Row> -->
+            <Col :span='9'>{{ (item.promotion == null || item.promotion.id == null) ? '暂无' : item.promotion.id}}</Col>
+        </Row>
         <Row class='row-list'>
             <Col span='3' class='hui'>影片列表</Col>
             <Col span='20'><span v-for='(it,index) in item.targetMovies'>《{{it.movieName}}》</span><span v-if='this.movieList.length == 0'>暂无</span></Col>

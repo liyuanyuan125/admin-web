@@ -17,7 +17,7 @@
                     {{needPayAmount == null ? '-' : formatNumber(needPayAmount)}}
                 </div>
             </template>
-            <template slot="action" slot-scope="{ row: { id , status , discount , depositAmount } }">
+            <template slot="action" slot-scope="{ row: { id , status , discount , depositAmount , auditStatus } }">
                 <div class="row-acts">
                     <router-link :to="{ name: 'order-beforeplan-detail', params: { id , status, ifs: '0' } }">详情</router-link>
                     <!-- 核对操作 -->
@@ -26,7 +26,7 @@
                     <router-link v-if='status == 6' :to="{ name: 'order-beforeplan-detail', params: { id , status, ifs: '1' } }">补单</router-link>
                     <router-link v-if='status == 7' :to="{ name: 'order-beforeplan-detail', params: { id , status, ifs: '1' } }">补单</router-link>
                     <!-- 待支付操作 -->
-                    <router-link v-if='status == 3 && depositAmount == null' :to="{ name: 'order-beforeplan-detail', params: { id , status, ifs: '1' } }">修改</router-link>
+                    <router-link v-if='status == 3 && depositAmount == null && auditStatus == null ' :to="{ name: 'order-beforeplan-detail', params: { id , status, ifs: '1' } }">修改</router-link>
                     <a v-if='status == 3' href="javascript:;" @click='view(id , discount , depositAmount)'>设置定金</a>
                 </div>
             </template>
