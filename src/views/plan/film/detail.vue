@@ -65,10 +65,10 @@
           <Col span="2"><div>是否已转制</div></Col>
           <Col span="5"><span>{{detail.translated == 1 ? '已转制' : '未转制'}}</span></Col>
           <Col span="2"><div>转制费</div></Col>
-          <Col span="5"><span>{{detail.transFee}}</span></Col>
+          <Col span="5"><span>{{formatNumber(detail.transFee)}}</span></Col>
           <Col span="2"><div>广告片(小样)</div></Col>
           <Col span="5">
-            <span v-if='detail.srcFiledAddr != null' style='cursor: pointer;' @click='onView(detail.srcFiledAddr)'>查看</span>
+            <span v-if='detail.srcFiledAddr != null' style='cursor: pointer;' @click='onViewVideo(detail.srcFiledAddr)'>查看</span>
             <span v-if='detail.srcFiledAddr == null' style='cursor: pointer;'>暂无</span>
 
           </Col>
@@ -87,7 +87,7 @@
         </Row>
         <Row>
           <Col span="2"><div>活动价格</div></Col>
-          <Col span="5"><span>{{detail.promotionPrice}}</span></Col>
+          <Col span="5"><span>{{formatNumber(detail.promotionPrice)}}</span></Col>
         </Row>
         <!-- <Row>
           <Col span="12">
@@ -173,6 +173,7 @@
       </row>
     </div>
     <DlgEdit  ref="addOrUpdate"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" @done="dlgeditdone"/>
+    <VideodlgEdit  ref="addOrUpdateVideo"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisibleVideo" @done="dlgeditdone"/>
     <!-- 查看图片 -->
     <Modal v-model="viewerShow" title="查看" width="500" height="500">
       <img style="width: 100%;" :src="viewerImage" alt sizes srcset>
@@ -198,6 +199,10 @@ import { toMap } from '@/fn/array'
 import { slice , clean } from '@/fn/object'
 import UploadButton, { SuccessEvent } from '@/components/UploadButton.vue'
 import DlgEdit from './dlgEdit.vue'
+import VideodlgEdit from './videodlgEdit.vue'
+import { formatNumber } from '@/util/validateRules'
+
+
 import { findIndex } from 'lodash'
 import {confirm , warning , success, toast , info } from '@/ui/modal'
 
@@ -229,7 +234,8 @@ const getName = (ptypeCode: any, list: any[]) => {
 @Component({
   components: {
     UploadButton,
-    DlgEdit
+    DlgEdit,
+    VideodlgEdit
   }
 })
 export default class Main extends ViewBase {
@@ -263,6 +269,7 @@ export default class Main extends ViewBase {
 
 
   addOrUpdateVisible = false
+  addOrUpdateVisibleVideo = false
 
   // 存储数据需要调用接口的参数列
   videoIdsList: any = {}
@@ -310,6 +317,10 @@ export default class Main extends ViewBase {
     }
     this.doSearch()
   }
+
+  get formatNumber() {
+        return formatNumber
+    }
 
 
   // 上传文件
@@ -464,6 +475,14 @@ export default class Main extends ViewBase {
     this.$nextTick(() => {
       const myThis: any = this
       myThis.$refs.addOrUpdate.init(id , row)
+    })
+  }
+
+  onViewVideo(src: any) {
+    this.addOrUpdateVisibleVideo = true
+    this.$nextTick(() => {
+      const myThis: any = this
+      myThis.$refs.addOrUpdateVideo.init(src)
     })
   }
 
