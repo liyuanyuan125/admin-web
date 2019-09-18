@@ -375,8 +375,8 @@ export default class Main extends ViewBase {
         this.ageCodeList = item.ages ? (this.ageCodeList || []).map((it: any, index: number) => {
           return {
             ...it,
-            v: item.ages[index].v,
-            k: item.ages[index].v
+            v: item.ages[index].v ? item.ages[index].v / 100 : '',
+            k: item.ages[index].v ? item.ages[index].v / 100 : ''
           }
         }) : []
         this.fans.provinces = item.provinces || []
@@ -527,8 +527,8 @@ export default class Main extends ViewBase {
       const agetable = this.ageCodeList.map((it: any) => {
         return {
           k: it.key,
-          v: it.v,
-          r: it.v
+          v: it.v ? it.v * 100 : '',
+          r: it.v ? it.v * 100 : ''
         }
       })
       const kols = this.kollist.map((it: any) => {
