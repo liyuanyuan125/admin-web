@@ -109,7 +109,7 @@
         <Row>
           <Input style="width:240px" type='textarea' :disabled='$route.params.status == "5"' :maxlength="120" v-model="dataForm.refuseReason"></Input>
         </Row>
-        <Row> {{dataForm.refuseReason.length}} / {{120 - dataForm.refuseReason.length}}</Row>
+        <Row> {{dataForm.refuseReason != null ? dataForm.refuseReason.length : 0}} / {{120 - (dataForm.refuseReason != null ? dataForm.refuseReason.length : 0)}}</Row>
         <Row style='padding: 15px 0;'>
           <Button  type="primary" @click="dataFormSubmit">提交</Button>
           <Button style='margin-left: 15px;' type="primary" @click="nextSubmit">提交并继续审核</Button>
