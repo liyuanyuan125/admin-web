@@ -31,7 +31,7 @@
         </Row>
         <Row>
           <Col span="2"><div>上传人</div></Col>
-          <Col span="5"><span>{{detail.applyUser}}</span></Col>
+          <Col span="5"><span>{{detail.applyUserName == null ? '暂无' : detail.applyUserName}}</span></Col>
           <Col span="2"><div>上传时间</div></Col>
           <Col span="5"><span>{{applyTime}}</span></Col>
         </Row>
@@ -79,11 +79,11 @@
           <Col span="2"><div>活动名称</div></Col>
           <Col span="5"><span>{{detail.promotionName}}</span></Col>
           <Col span="2"><div>活动类型</div></Col>
-          <Col span="5"><span>{{detail.promotionType == 1 ? '按市场减免' : '按格式收费'}}</span></Col>
+          <Col span="5"><span>{{detail.promotionType == 1 ? '按时长减免' : '按格式收费'}}</span></Col>
         </Row>
         <Row>
           <Col span="2"><div>活动价格</div></Col>
-          <Col span="5"><span>{{detail.tpromotionPrice}}</span></Col>
+          <Col span="5"><span>{{detail.promotionPrice}}</span></Col>
         </Row>
         <!-- <Row>
           <Col span="12">
