@@ -36,6 +36,10 @@ export async function queryList(query: any) {
  */
  export async function remoteSelectCinemaQuery(query: any) {
   const { data } = await get('/theater/cinemas', query)
+  return data.items.map((it: any) => ({
+    id: it.id as number,
+    name: it.shortName as string
+  }))
   const list = filterByControlStatus(data.items).map(it => ({
     id: it.id as number,
     name: it.shortName as string

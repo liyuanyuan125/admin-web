@@ -53,13 +53,14 @@
         <Row>
           <Col span="10">
             <FormItem label="影片名称" prop="movieId">
-              <Select  v-if="!$route.params.id" v-model="query.movieId" filterable
+              <Movie v-if="!$route.params.id"  v-model="query.movieId" />
+              <!-- <Select  v-if="!$route.params.id" v-model="query.movieId" filterable
                 clearable class="component" ref="ui">
                 <Option v-for="it in fileList" :key="it.id" :value="it.id"
                   :label="it.name" class="flex-box">
                   <span>{{it.name}}</span>
                 </Option>
-              </Select>
+              </Select> -->
               <span v-else>{{movieName}}</span>
             </FormItem>
           </Col>
@@ -124,6 +125,8 @@ import ImgModel from '@/views/data/film/imgModel.vue'
 import { getUser } from '@/store'
 import { queryList, getIdDetal } from '@/api/film'
 import { addfilm, filmId, relevanceNot, relevance } from '@/api/clientFilm'
+import Movie from './api/index.vue'
+import {formatConversion} from '@/util/validateRules'
 
 const timeFormat = 'YYYY/MM/DD'
 
@@ -131,6 +134,7 @@ const timeFormat = 'YYYY/MM/DD'
   components: {
     Upload,
     CompanyList,
+    Movie,
     ImgModel,
   }
 })
@@ -139,7 +143,7 @@ export default class Main extends ViewBase {
   title = ''
   contact: string = ''
   fileList: any = null
-  openTime = ''
+  openTime: any = ''
   fileType = ''
   mainPicUrl = ''
   show = false
@@ -209,7 +213,7 @@ export default class Main extends ViewBase {
 
   async fileLists() {
     try {
-      const { data: { items } } = await queryList({pageIndex: 1, pageSize: 999999, controlStatus: 1})
+      const { data: { items } } = await queryList({pageIndex: 1, pageSize: 300, controlStatus: 1})
       this.fileList = items.filter((item: any) => item.releaseStatus != 4)
     } catch (ex) {
       this.handleError(ex)
@@ -233,9 +237,9 @@ export default class Main extends ViewBase {
     try {
 
       const res = await getIdDetal({id: value})
-      this.openTime = res.data.openTime ? moment(res.data.openTime).format(timeFormat) : ''
-      this.fileType = (res.data.type || []).join('/')
-      this.mainPicUrl = res.data.mainPicUrl || ''
+      this.openTime = res.data.releaseDate ? formatConversion(res.data.releaseDate) : ''
+      this.fileType = (res.data.types || []).join('/')
+      this.mainPicUrl = res.data.mainPic || ''
       if (this.mainPicUrl) {
         this.show = true
       } else {

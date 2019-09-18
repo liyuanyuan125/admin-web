@@ -17,7 +17,7 @@
                     {{needPayAmount == null ? '-' : formatNumber(needPayAmount)}}
                 </div>
             </template>
-            <template slot="action" slot-scope="{ row: { id , status , discount , depositAmount } }">
+            <template slot="action" slot-scope="{ row: { id , status , discount , depositAmount , auditStatus } }">
                 <div class="row-acts">
                     <router-link :to="{ name: 'order-beforeplan-detail', params: { id , status, ifs: '0' } }">详情</router-link>
                     <!-- 核对操作 -->
@@ -26,7 +26,7 @@
                     <router-link v-if='status == 6' :to="{ name: 'order-beforeplan-detail', params: { id , status, ifs: '1' } }">补单</router-link>
                     <router-link v-if='status == 7' :to="{ name: 'order-beforeplan-detail', params: { id , status, ifs: '1' } }">补单</router-link>
                     <!-- 待支付操作 -->
-                    <router-link v-if='status == 3' :to="{ name: 'order-beforeplan-detail', params: { id , status, ifs: '1' } }">修改</router-link>
+                    <router-link v-if='status == 3 && depositAmount == null && auditStatus == null ' :to="{ name: 'order-beforeplan-detail', params: { id , status, ifs: '1' } }">修改</router-link>
                     <a v-if='status == 3' href="javascript:;" @click='view(id , discount , depositAmount)'>设置定金</a>
                 </div>
             </template>
@@ -227,7 +227,7 @@ export default class IndexPage extends ViewBase {
             },
             { title: '接单影院/派单影院', slot: 'targetCount' },
             { title: '折扣', key: 'discount', width: 60 },
-            { title: '定金', slot: 'depositAmount', width: 60 },
+            { title: '定金', slot: 'depositAmount'},
             { title: '应结金额', slot: 'needPayAmount' },
             { title: '提交时间', key: 'applyTime', editor: 'dateTime' , width: 135 },
             { title: '订单状态', key: 'status', editor: 'enum', width: 60 },
@@ -237,7 +237,7 @@ export default class IndexPage extends ViewBase {
         ]
 
         const bbb = [
-            { title: '操作', slot: 'action' , width: 80},
+            { title: '操作', slot: 'action' , width: 130},
         ]
 
         return this.status == '3' ? [...firstN, ...aaa, ...bbb] : [...firstN, ...bbb] as ColumnExtra[]

@@ -86,9 +86,10 @@ export async function addfilm(id: any , query: any) {
   return data
 }
 
-// 保存方案
+// 待支付保存方案
+// http://yapi.aiads-dev.com/project/140/interface/api/2614
 export async function save(id: any, query: any) {
-  const data = await post(`/xadvert/plans/${id}/business-approve`, query )
+  const data = await post(`/xadvert/plans/${id}/set-discount-deposit`, query )
   return data
 }
 
