@@ -67,7 +67,11 @@
           <Col span="2"><div>转制费</div></Col>
           <Col span="5"><span>{{detail.transFee}}</span></Col>
           <Col span="2"><div>广告片(小样)</div></Col>
-          <Col span="5"><span style='cursor: pointer;' @click='onView(detail.srcFiledAddr)'>查看</span></Col>
+          <Col span="5">
+            <span v-if='detail.srcFiledAddr != null' style='cursor: pointer;' @click='onView(detail.srcFiledAddr)'>查看</span>
+            <span v-if='detail.srcFiledAddr == null' style='cursor: pointer;'>暂无</span>
+
+          </Col>
         </Row>
         <Row>
           <Col span="2"><div>广告下载地址</div></Col>
@@ -79,7 +83,7 @@
           <Col span="2"><div>活动名称</div></Col>
           <Col span="5"><span>{{detail.promotionName}}</span></Col>
           <Col span="2"><div>活动类型</div></Col>
-          <Col span="5"><span>{{detail.promotionType == 1 ? '按时长减免' : '按格式收费'}}</span></Col>
+          <Col span="5"><span v-for='(its, index) in promotionTypeList' v-if='detail.promotionType == its.key'>{{its.text}}</span></Col>
         </Row>
         <Row>
           <Col span="2"><div>活动价格</div></Col>
@@ -248,6 +252,8 @@ export default class Main extends ViewBase {
   showStatus: any = false
   showedit: any = false
   typeList: any = []
+  promotionTypeList: any = []
+
 
   editOne: any = null
 
@@ -404,6 +410,7 @@ export default class Main extends ViewBase {
       this.applyTime = moment(this.detail.applyTime).format(timeFormatDate)
       this.fixedRefuseReasonsList = res.data.fixedRefuseReasonsList
       this.dataForm.refuseReason = res.data.item.refuseReason
+      this.promotionTypeList = res.data.promotionTypeList
       if (res.data.item.attachments.length == 0) {
         this.attachments = [
           {

@@ -54,7 +54,7 @@
         </Row>
         <Row class='row-list'>
             <Col :span='3' class='hui'>活动类型</Col>
-            <Col :span='9'>{{ (item.promotion == null || item.promotion.typeName == null) ? '暂无' : item.promotion.typeName}}</Col>
+            <Col :span='9' v-if=''>{{ (item.promotion == null || item.promotion.type == null) ? '暂无' : item.promotion.typeName}}</Col>
             <Col :span='3' class='hui'>活动ID</Col>
             <Col :span='9'>{{ (item.promotion == null || item.promotion.id == null) ? '暂无' : item.promotion.id}}</Col>
         </Row>
