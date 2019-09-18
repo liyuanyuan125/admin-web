@@ -79,7 +79,7 @@
         </Row>
         <Row>
           <Col span="2"><div>活动ID</div></Col>
-          <Col span="5"><span>{{detail.productId}}</span></Col>
+          <Col span="5"><span>{{detail.promotionId}}</span></Col>
           <Col span="2"><div>活动名称</div></Col>
           <Col span="5"><span>{{detail.promotionName}}</span></Col>
           <Col span="2"><div>活动类型</div></Col>
