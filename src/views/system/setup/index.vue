@@ -347,6 +347,8 @@ export default class Main extends ViewBase {
   convertCosts: any = []
 
   isoks: any = false
+  isbig: any = false
+  isnull: any = false
 
   get columns() {
     const a: any = [
@@ -407,6 +409,7 @@ export default class Main extends ViewBase {
   // }
   // 修改开始时间
   chgbegin(row: any , index: any) {
+
     this.formDynamic[index].begin =  row.begin
   }
   // 修改结束时间
@@ -528,6 +531,8 @@ export default class Main extends ViewBase {
     //   }
     // })
     this.isoks = false
+    this.isbig = false
+    this.isnull = false
     this.convertCosts = this.formDynamic
     const aaa: any = []
     const bbb: any = []
@@ -535,6 +540,42 @@ export default class Main extends ViewBase {
       aaa.push(it.begin)
       bbb.push(it.end)
     })
+
+    this.formDynamic.forEach((it: any , index: any) => {
+      if (it.begin == '') {
+        this.isnull = true
+        return
+      }
+      if (it.end == '') {
+        this.isnull = true
+        return
+      }
+      if (it.cost == '') {
+        this.isnull = true
+        return
+      }
+    })
+
+    if (this.isnull == true) {
+      info('请确认输入是否正确')
+      return
+    }
+
+    this.formDynamic.forEach((it: any , index: any) => {
+      if ((index + 1) == this.formDynamic.length) {
+      } else {
+        if (aaa[index] > bbb[index]) {
+          this.isbig = true
+          return
+        } else {
+        }
+      }
+    })
+
+    if (this.isbig == true) {
+      info('请确认时间区间输入是否正确')
+      return
+    }
 
     this.formDynamic.forEach((it: any , index: any) => {
       if ((index + 1) == this.formDynamic.length) {
