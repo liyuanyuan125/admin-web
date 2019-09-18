@@ -276,7 +276,7 @@ import jsxReactToVue from '@/util/jsxReactToVue'
 
 import { toMap } from '@/fn/array'
 import { slice, clean } from '@/fn/object'
-import { warning , success, toast } from '@/ui/modal'
+import { warning , success, toast , info } from '@/ui/modal'
 import moment from 'moment'
 
 const timeFormat = 'YYYY/MM/DD'
@@ -345,6 +345,8 @@ export default class Main extends ViewBase {
   editend: any =  ''
   editcost: any =  ''
   convertCosts: any = []
+
+  isoks: any = false
 
   get columns() {
     const a: any = [
@@ -525,7 +527,31 @@ export default class Main extends ViewBase {
     //     }
     //   }
     // })
+    this.isoks = false
     this.convertCosts = this.formDynamic
+    const aaa: any = []
+    const bbb: any = []
+    this.formDynamic.forEach((it: any , index: any) => {
+      aaa.push(it.begin)
+      bbb.push(it.end)
+    })
+
+    this.formDynamic.forEach((it: any , index: any) => {
+      if ((index + 1) == this.formDynamic.length) {
+      } else {
+        if (aaa[index + 1] - 1 != bbb[index]) {
+          this.isoks = true
+          return
+        } else {
+        }
+      }
+    })
+
+    if (this.isoks == true) {
+      info('非第一区间的起始时长必须为前一区间截止时长 + 1s,请确认输入是否正确')
+      return
+    }
+
     try {
           const res =  await cost ({convertCosts: this.formDynamic})
           toast('交易信息操作成功')
