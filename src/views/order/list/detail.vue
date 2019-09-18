@@ -214,7 +214,7 @@ export default class Main extends ViewBase {
           statusList,
           advertTypeCodeList,
           planDirectionList,
-          deliveryPositionList
+          deliveryPositionCodeList
       } } = await queryItem(this.$route.params.id)
       this.item = item
       const a = String(this.item.beginDate)
@@ -225,7 +225,7 @@ export default class Main extends ViewBase {
       moment(this.item.receiveTime).format(timeFormat)
       this.settlementTime = moment(this.item.settlementTime).format(timeFormat)
       this.settlementAmount = this.addNumber(String(this.item.settlementAmount))
-      this.deliveryPositionList = deliveryPositionList
+      this.deliveryPositionList = deliveryPositionCodeList
       this.movieList = this.item.targetMovies
       this.logList = (item.logList || []).map((it: any) => {
           return {

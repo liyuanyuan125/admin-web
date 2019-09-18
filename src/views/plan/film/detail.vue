@@ -195,7 +195,7 @@ import { slice , clean } from '@/fn/object'
 import UploadButton, { SuccessEvent } from '@/components/UploadButton.vue'
 import DlgEdit from './dlgEdit.vue'
 import { findIndex } from 'lodash'
-import {confirm , warning , success, toast } from '@/ui/modal'
+import {confirm , warning , success, toast , info } from '@/ui/modal'
 
 
 
@@ -403,6 +403,7 @@ export default class Main extends ViewBase {
       this.detail = res.data.item
       this.applyTime = moment(this.detail.applyTime).format(timeFormatDate)
       this.fixedRefuseReasonsList = res.data.fixedRefuseReasonsList
+      this.dataForm.refuseReason = res.data.item.refuseReason
       if (res.data.item.attachments.length == 0) {
         this.attachments = [
           {
@@ -479,6 +480,12 @@ export default class Main extends ViewBase {
 
   // 提交并继续审核
   async nextSubmit() {
+    if ((this.dataForm.fixedRefuseReasons || []).map((it: any) => {
+              return it.stypeName
+            }).indexOf('其他') != -1 && this.dataForm.refuseReason == '') {
+      info('请输入审核拒绝原因')
+      return
+    }
     const dataItem: any = JSON.parse((sessionStorage.getItem('info') as any))
     this.videoIdsList = {
       query: dataItem.query, // 广告片id或者名称
@@ -537,6 +544,13 @@ export default class Main extends ViewBase {
   }
   // 提交审核拒绝原因
   async dataFormSubmit() {
+
+    if ((this.dataForm.fixedRefuseReasons || []).map((it: any) => {
+              return it.stypeName
+            }).indexOf('其他') != -1 && this.dataForm.refuseReason == '') {
+      info('请输入审核拒绝原因')
+      return
+    }
     const query: any = {
       refuseReason: this.dataForm.refuseReason ,
       agree: this.dataForm.fixedRefuseReasons.length == 0 ? true : false,
