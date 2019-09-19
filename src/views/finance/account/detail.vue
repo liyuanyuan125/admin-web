@@ -31,6 +31,18 @@
         </div>
       </template>
 
+      <template slot="remittanceDate" slot-scope="{row: {remittanceDate}}">
+        <div>
+          <span>{{format(remittanceDate)}}</span>
+        </div>
+      </template>
+
+      <template slot="status" slot-scope="{row: {transactionType}}">
+        <div>
+          <span>{{formatstatus(transactionType)}}</span>
+        </div>
+      </template>
+
       <template slot="deposit" slot-scope="{row: {monthWithdrawalCount, totalWithdrawalCount}}">
         <div>
           <a>{{monthWithdrawalCount}}</a> / <a>{{totalWithdrawalCount}}</a>
@@ -58,6 +70,8 @@ const makeMap = (list: any[]) => toMap(list, 'typeCode', 'typeName')
   }
 })
 export default class Main extends ViewBase {
+
+  status: any = []
 
   get filters() {
     let str = ''
@@ -112,6 +126,7 @@ export default class Main extends ViewBase {
       })[0])
     })
     data.statusList = status
+    this.status = data.statusList
     return {
       ...data
     }
@@ -124,6 +139,21 @@ export default class Main extends ViewBase {
         id
       }
     })
+  }
+
+  format(val: any) {
+    const datas = (val + '')
+    const a = datas[0].slice(0, 4)
+    const b = datas[0].slice(4, 6)
+    const c = datas[0].slice(6)
+    return val && val.length == 6 ? `${a}/${b}/${c}` : '-'
+  }
+
+  formatstatus(val: any) {
+    if (val) {
+      return ((this.listPage.enumType as any).statusList || []).filter((it: any) => it.key == val)[0].text
+    }
+    return '-'
   }
 
   open(row: any) {

@@ -8,9 +8,9 @@ export const one = [
 
 export const two = [
   { title: '消费订单号', key: 'streamNo' },
-  { title: '消费金额', key: 'companyName' },
-  { title: '消费类型', key: 'transactionAmount' },
-  { title: '消费时间', key: 'remittanceDate', editor: 'dateTime' },
+  { title: '消费金额', key: 'transactionAmount' },
+  { title: '消费类型', key: 'transactionType', slot: 'status'  },
+  { title: '消费时间', key: 'transactionTime', editor: 'dateTime' },
 ]
 
 export const three = [
@@ -22,8 +22,8 @@ export const three = [
 export const four = [
   { title: '提现申请单编号', key: 'streamNo' },
   { title: '提现金额', key: 'transactionAmount' },
-  { title: '提现申请时间', key: 'remittanceDate', editor: 'dateTime' },
-  { title: '最后更新时间', key: 'transactionTime', editor: 'dateTime' },
+  { title: '提现申请时间', key: 'transactionTime', editor: 'dateTime' },
+  { title: '最后更新时间', key: 'remittanceDate', slot: 'remittanceDate' },
 ]
 
 export function filterone(str: string, companyId: any) {
