@@ -244,7 +244,8 @@ export default class IndexPage extends ViewBase {
             {
                 name: 'dateRange',
                 defaultValue: this.deDate,
-                type: 'dateRange',
+                week: true,
+                // type: 'dateRange',
                 width: 200,
                 placeholder: '投放周期',
                 dealParam(value: string) {

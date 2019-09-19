@@ -130,7 +130,7 @@
         <div class='bos'>
             <Row v-if='logList.length == 0'>暂无操作日志</Row>
             <Row v-if='logList.length > 0' v-for='(it,index) in logList' :key='index'>
-                <Row>{{it.createTime}} {{it.createUserEmail}}【{{it.createUserName}}】 {{it.eventName}}{{it.description}}</Row>
+                <Row>{{it.createTime}} {{it.createUserEmail}}【{{it.createUserName}}】 {{it.description}}</Row>
             </Row>
         </div>
         <div class='title'>应收款项</div>
@@ -180,7 +180,7 @@
                 预估曝光人次【{{formatNumber(listitem.estimatePersonCount , 2)}}】
                 预估曝光场次【{{formatNumber(listitem.estimateShowCount , 2)}}】
                 预估花费【{{formatNumber(listitem.estimateCostAmount)}}】
-                <span>, 折扣后总价【{{formatNumber(listitem.estimateCostAmount , 2)}}】</span>
+                <span v-if='this.$route.params.ifs == 0 && (listitem.discount != 1 && listitem.discount != "" && listitem.discount != null)'>, 折扣后总价【{{formatNumber(listitem.estimateCostAmount , 2)}}】</span>
                 <Button v-if='this.$route.params.ifs == 1' type="primary" :loading="loading2" @click="shuaxin()">刷新</Button>
                 </Col>
                 <!-- <Col :span='4'>
