@@ -125,19 +125,19 @@
           <template slot-scope="{ row, index }" slot="begin">
             <!-- <Input type="text" v-model="editbegin" v-if="editIndex === index" />
             <span v-else>{{ row.begin }}</span> -->
-            <Input type="text" v-model="row.begin" @on-change='chgbegin(row , index)' v-if="editIndex === 1" />
+            <InputNumber type="text" v-model="row.begin" :min = '0' @on-change='chgbegin(row , index)' v-if="editIndex === 1" />
             <span v-else>{{ row.begin }}</span>
           </template>
           <template slot-scope="{ row, index }" slot="end">
             <!-- <Input type="text" v-model="editend" v-if="editIndex === index" />
             <span v-else>{{ row.end }}</span> -->
-             <Input type="text" v-model="row.end" @on-change='chgend(row , index)' v-if="editIndex === 1" />
+             <InputNumber type="text" v-model="row.end" :min = '0' @on-change='chgend(row , index)' v-if="editIndex === 1" />
             <span v-else>{{ row.end }}</span>
           </template>
           <template slot-scope="{ row, index }" slot="cost">
             <!-- <Input type="text" v-model="editcost" v-if="editIndex === index" />
             <span v-else>{{ row.cost }}</span> -->
-            <Input type="text" v-model="row.cost" @on-change='chgcost(row , index)' v-if="editIndex === 1" />
+            <InputNumber type="text" v-model="row.cost" :min = '0' @on-change='chgcost(row , index)' v-if="editIndex === 1" />
             <span v-else>{{ row.cost }}</span>
           </template>
           <template  slot="action" slot-scope="{row , index}" >
@@ -341,9 +341,9 @@ export default class Main extends ViewBase {
   ]
 
   editIndex: any = -1
-  editbegin: any =  ''
-  editend: any =  ''
-  editcost: any =  ''
+  editbegin: any =  null
+  editend: any =  null
+  editcost: any =  null
   convertCosts: any = []
 
   isoks: any = false
@@ -380,9 +380,9 @@ export default class Main extends ViewBase {
     this.index = this.formDynamic.length - 1
     this.index++
     this.formDynamic.push({
-        begin: '',
-        end: '',
-        cost: '',
+        begin: null,
+        end: null,
+        cost: null,
     })
     this.editIndex = 1
   }
@@ -410,15 +410,15 @@ export default class Main extends ViewBase {
   // 修改开始时间
   chgbegin(row: any , index: any) {
 
-    this.formDynamic[index].begin =  row.begin
+    this.formDynamic[index].begin =  Number(row.begin)
   }
   // 修改结束时间
   chgend(row: any , index: any) {
-    this.formDynamic[index].end =  row.end
+    this.formDynamic[index].end =  Number(row.end)
   }
   // 修改转制费
   chgcost(row: any , index: any) {
-    this.formDynamic[index].cost =  row.cost
+    this.formDynamic[index].cost =  Number(row.cost)
   }
   // chg(row: any , index: any , item: any) {
   //   this.formDynamic[index].item =  row.item
