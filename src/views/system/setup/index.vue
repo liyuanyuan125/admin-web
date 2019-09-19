@@ -530,6 +530,14 @@ export default class Main extends ViewBase {
     //     }
     //   }
     // })
+    if (this.formDynamic[0].begin != 1) {
+      info('第一区间的开始时间为 必须为1')
+      return
+    }
+    if (this.formDynamic[this.formDynamic.length - 1].end < this.formDynamic[this.formDynamic.length - 1].begin) {
+      info('请确认时间区间输入是否正确')
+      return
+    }
     this.isoks = false
     this.isbig = false
     this.isnull = false
