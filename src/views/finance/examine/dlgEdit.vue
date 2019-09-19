@@ -41,9 +41,9 @@ export default class ComponentMain extends ViewBase {
 
   get ruleValidate() {
     const rules = {
-      // rejectReason: [
-      //     { required: true, message: '请输入备注', trigger: 'blur' }
-      // ],
+      rejectReason: [
+          { required: true, message: '请输入备注', trigger: 'blur' }
+      ],
       // status: [
       //     { required: true }
       // ]
