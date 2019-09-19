@@ -227,6 +227,15 @@ export default class Main extends ViewBase {
         this.videoIdsList = {
             query: dataItem.query, // 广告片id或者名称
             companyId: dataItem.companyId, // 公司Id
+            movieName: dataItem.movieName,
+            businessDirector: dataItem.businessDirector,
+            approvalUserName: dataItem.approvalUserName,
+            cinemaId: dataItem.cinemaId,
+            videoId: dataItem.videoId,
+            beginDate: dataItem.dateRange.split('-')[0],
+            endDate: dataItem.dateRange.split('-')[1],
+            approvalBeginTime: dataItem.approvalBeginTime,
+            approvalEndTime: dataItem.approvalEndTime,
             status: dataItem.status, // 状态
             translated: dataItem.translated, // 1：转制；2：未转制
             skip: dataItem.skip, // 跳过的记录数
@@ -239,6 +248,8 @@ export default class Main extends ViewBase {
                 const videoIds = res.data.item || []
                 if (videoIds.length > 1) {
                     sessionStorage.setItem('videoIds', JSON.stringify(videoIds.slice(1))) // 存储总量-1
+                    debugger
+                    return
                     const aaa = await approve(this.$route.params.id,
                         { orderIds: this.dataForm.orderIds, fixRefuses: this.dataForm.reasonOrderIds })
                     this.$router.push({ name: 'order-supervision-detail', params: { id: videoIds[1] } })

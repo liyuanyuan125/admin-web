@@ -210,7 +210,6 @@ export default class IndexPage extends ViewBase {
                 name: 'status',
                 defaultValue: this.pay,
             },
-
             {
                 name: 'companyId',
                 defaultValue: 0,
@@ -226,7 +225,6 @@ export default class IndexPage extends ViewBase {
                 width: 140,
                 placeholder: '广告片'
             },
-
             {
                 name: 'cinemaId',
                 defaultValue: 0,
@@ -444,8 +442,16 @@ export default class IndexPage extends ViewBase {
             pageidx: this.query.pageIndex,
             pagese: this.query.pageSize,
             companyId: (this.query.companyId) == 0 ? null : this.query.companyId,
+            movieName: (this.query.movieName),
+            businessDirector: (this.query.companyId) == 0 ? null : this.query.companyId,
+            approvalUserName: (this.query.approvalUserName),
             cinemaId: (this.query.cinemaId) == 0 ? null : this.query.cinemaId,
             videoId: (this.query.videoId) == 0 ? null : this.query.videoId,
+            dateRange: this.query.dateRange,
+            beginDate: this.query.beginDate,
+            endDate: this.query.endDate,
+            approvalBeginTime: this.query.approvalBeginTime,
+            approvalEndTime: this.query.approvalEndTime,
             status: this.query.status,
             skip: this.jumpNum, // 跳过的记录数
             maxSize: 800, // 最大返回数据量
