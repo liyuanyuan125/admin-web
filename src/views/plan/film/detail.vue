@@ -63,7 +63,10 @@
         </Row>
         <Row>
           <Col span="2"><div>是否已转制</div></Col>
-          <Col span="5"><span>{{detail.translated == 1 ? '已转制' : '未转制'}}</span></Col>
+          <Col span="5">
+            <span v-if='detail.translated == null'>暂无</span>
+            <span  v-else v-for='(it , index) in translatedList' v-if='it.key == detail.translated'>{{it.text}}</span>
+          </Col>
           <Col span="2"><div>转制费</div></Col>
           <Col span="5"><span>{{formatNumber(detail.transFee)}}</span></Col>
           <Col span="2"><div>广告片(小样)</div></Col>
@@ -291,6 +294,8 @@ export default class Main extends ViewBase {
 
   columnsReason: any = []
 
+  translatedList: any = []
+
 
 
   id = 0
@@ -422,6 +427,7 @@ export default class Main extends ViewBase {
       this.fixedRefuseReasonsList = res.data.fixedRefuseReasonsList
       this.dataForm.refuseReason = res.data.item.refuseReason
       this.promotionTypeList = res.data.promotionTypeList
+      this.translatedList = res.data.translatedList
       if (res.data.item.attachments.length == 0) {
         this.attachments = [
           {
