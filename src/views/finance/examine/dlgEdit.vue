@@ -26,7 +26,7 @@
 import { Component, Prop } from 'vue-property-decorator'
 import { setList } from '@/api/examine'
 import { slice, clean } from '@/fn/object'
-import { warning , success, toast } from '@/ui/modal'
+import { warning , success, toast , info } from '@/ui/modal'
 import ViewBase from '@/util/ViewBase'
 const dataForm = {
   rejectReason: '',
@@ -41,9 +41,9 @@ export default class ComponentMain extends ViewBase {
 
   get ruleValidate() {
     const rules = {
-      rejectReason: [
-          { required: true, message: '请输入备注', trigger: 'blur' }
-      ],
+      // rejectReason: [
+      //     { required: true, message: '请输入备注', trigger: 'blur' }
+      // ],
       // status: [
       //     { required: true }
       // ]
@@ -80,6 +80,10 @@ export default class ComponentMain extends ViewBase {
 
   // 表单提交
   dataFormSubmit(dataForms: any) {
+   if (this.dataForm.agree == 2 && this.dataForm.rejectReason == '') {
+     info('请输入备注信息')
+     return
+   }
    const myThis: any = this
    myThis.$refs[dataForms].validate(async ( valid: any ) => {
       if (valid) {
