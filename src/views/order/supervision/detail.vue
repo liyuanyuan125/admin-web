@@ -248,8 +248,6 @@ export default class Main extends ViewBase {
                 const videoIds = res.data.item || []
                 if (videoIds.length > 1) {
                     sessionStorage.setItem('videoIds', JSON.stringify(videoIds.slice(1))) // 存储总量-1
-                    debugger
-                    return
                     const aaa = await approve(this.$route.params.id,
                         { orderIds: this.dataForm.orderIds, fixRefuses: this.dataForm.reasonOrderIds })
                     this.$router.push({ name: 'order-supervision-detail', params: { id: videoIds[1] } })
