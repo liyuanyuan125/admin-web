@@ -142,11 +142,13 @@
       </Row>
       <Row class="detail-check">
         <div class="n-list">操作日志</div>
-        <Row  class="detail-log" v-for="(item, i) in logList" :key="i">
-          <Col span="3"><div>操作时间</div></Col>
-          <Col span="21"><span>{{item.createTime}}</span></Col>
-          <Col span="3"><div>操作员</div></Col>
-          <Col span="21"> <span>{{item.email}}<b style="margin: 0 5px">[{{item.userName}}]</b></span></Col>
+        <Row style="margin-left: 20px" class="detail-log" v-for="(item, i) in logList" :key="i">
+          <span>操作时间: </span>
+          <span>{{item.createTime}}</span>
+          <span>  操作员: </span>
+          <span>{{item.email}}<b style="margin: 0 5px">[{{item.userName}}]</b></span>
+          <span> 操作类型: </span>
+          <span>{{item.description}}</span>
         </Row>
       </Row>
       <Row>
