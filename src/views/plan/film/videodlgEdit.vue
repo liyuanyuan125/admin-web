@@ -51,11 +51,13 @@ export default class ComponentMain extends ViewBase {
   }
 
   cancel() {
+    (this.$refs.videoplay as any).pause()
     this.showDlg = false
   }
 
   // 表单提交
   async dataFormSubmit(dataForms: any) {
+    (this.$refs.videoplay as any).pause()
     this.showDlg = false
   }
 
