@@ -68,6 +68,7 @@ import { before, save } from '@/api/balance'
 import { slice, clean } from '@/fn/object'
 import { warning , success, toast } from '@/ui/modal'
 import ViewBase from '@/util/ViewBase'
+import { info } from '@/ui/modal'
 
 const defQuery = {
   categoryId: 0,
@@ -125,7 +126,7 @@ export default class ComponentMain extends ViewBase {
   }
 
 
-  dataForm = { ...dataForm }
+  dataForm: any = { ...dataForm }
 
   init(row: any) {
     this.showDlg = true
@@ -157,6 +158,10 @@ export default class ComponentMain extends ViewBase {
   dataFormSubmit(dataForms: any) {
    (this.$refs[dataForms] as any).validate(async ( valid: any ) => {
       if (valid) {
+        if (this.dataForm.amount > this.row.balance) {
+          info('提现金额大于账户余额')
+          return
+        }
         await save({
           ...this.dataForm,
           companyId: this.row.companyId

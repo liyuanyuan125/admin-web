@@ -43,14 +43,14 @@ export default class Main extends ViewBase {
     {
       name: 'companyId',
       defaultValue: 0,
-      type: company,
+      component: company,
       width: 108,
       placeholder: '公司名称'
     },
     {
       name: 'billNo',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 200,
       placeholder: '提现申请单'
     },
@@ -58,7 +58,7 @@ export default class Main extends ViewBase {
     {
       name: 'dateRange',
       defaultValue: '',
-      type: 'dateRange',
+      dateRange: true,
       width: 200,
       placeholder: '提现申请日期区间',
       dealParam(value: string) {
@@ -92,9 +92,9 @@ export default class Main extends ViewBase {
     { title: '公司名称', key: 'companyName', minWidth: 60 },
     { title: '提现申请单编号', key: 'billNo', minWidth: 60 },
     { title: '提现金额', key: 'amount', minWidth: 100 },
-    { title: '提现方式', key: 'withdrawalType', minWidth: 60, editor: 'enum' },
-    { title: '提现申请时间', key: 'createTime', minWidth: 100, editor: 'dateTime' },
-    { title: '提现单状态', key: 'status', minWidth: 100, editor: 'enum' },
+    { title: '提现方式', key: 'withdrawalType', minWidth: 60, enum: true },
+    { title: '提现申请时间', key: 'createTime', minWidth: 100, dateTime: true },
+    { title: '提现单状态', key: 'status', minWidth: 100, enum: true },
     { title: '操作', slot: 'operate', minWidth: 90 },
   ]
 
