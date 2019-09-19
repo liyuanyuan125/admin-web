@@ -2,7 +2,7 @@
   <div class="page">
     <div class="Inp-Group-res">
       <Button class="bth" icon="md-return-left" @click="goback">返回列表</Button>
-      <Button v-auth="'advert.executeOrder:closed'" v-if='$route.params.status != 8' class="bth" style='float: right' @click="edit($route.params.id)">关闭订单</Button><br>
+      <Button v-auth="'advert.executeOrder:closed'" v-if='$route.params.status == 1 || $route.params.status == 2 || $route.params.status == 3' class="bth" style='float: right' @click="edit($route.params.id)">关闭订单</Button><br>
       <!-- <div v-if='$route.params.status == 7' class="n-main">结算信息</div>
       <div v-if='$route.params.status == 7' class="Inps-res">
         <Row class='row-list'>
@@ -54,7 +54,7 @@
         </Row>
         <Row class='row-list'>
             <Col :span='3' class='hui'>活动类型</Col>
-            <Col :span='9' v-if=''>{{ (item.promotion == null || item.promotion.type == null) ? '暂无' : item.promotion.typeName}}</Col>
+            <Col :span='9' v-if=''>{{ (item.promotion == null || item.promotion.typeName == null) ? '暂无' : item.promotion.typeName}}</Col>
             <Col :span='3' class='hui'>活动ID</Col>
             <Col :span='9'>{{ (item.promotion == null || item.promotion.id == null) ? '暂无' : item.promotion.id}}</Col>
         </Row>
