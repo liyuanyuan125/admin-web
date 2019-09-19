@@ -69,7 +69,7 @@ export default class Main extends ViewBase {
         enumKey: 'refundPayTypeList',
       },
       width: 128,
-      placeholder: '支付方式'
+      placeholder: '退款支付方式'
     },
 
     {
@@ -117,7 +117,7 @@ export default class Main extends ViewBase {
       { title: '广告计划单编号', key: 'planId', minWidth: 120 },
       { title: '支付流水', key: 'refundNumber', minWidth: 120 },
       { title: '退款单', key: 'refundNo', width: 120 },
-      { title: '支付方式', key: 'refundPayType', width: 60, enum: true },
+      { title: '退款支付方式', key: 'refundPayType', width: 85, enum: true },
       { title: '退款方式', key: 'refundType', width: 70, enum: true },
       { title: '退款金额', key: 'refundAmount', minWidth: 120 },
       { title: '业务类型', key: 'refundBusType', width: 80, enum: true },
