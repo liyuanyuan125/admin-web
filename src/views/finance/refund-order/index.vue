@@ -44,10 +44,10 @@ export default class Main extends ViewBase {
       width: 178,
       placeholder: '退款创建日期区间',
       dealParam(value: string) {
-        const [beginTime, endTime] = value ? value.split('-') : [null, null]
+        const [queryStartTime, queryEndTime] = value ? value.split('-') : [null, null]
         return {
-          beginTime,
-          endTime
+          queryStartTime,
+          queryEndTime
         }
       }
     },

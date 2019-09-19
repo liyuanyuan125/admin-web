@@ -49,6 +49,11 @@
                         </span>
                     
                 </Col>
+                <Col :span='12'>促销活动名称&nbsp;：&nbsp;{{(listitem.promotion == null || listitem.promotion.name == null) ? '暂无促销活动名称' : listitem.promotion.name}}</Col>
+            </Row>
+            <Row>
+                <Col :span='12'>活动类型&nbsp;：&nbsp;{{(listitem.promotion == null || listitem.promotion.typeName == null) ? '暂无活动类型' : listitem.promotion.typeName}}</Col>
+                <Col :span='12'>活动ID&nbsp;：&nbsp;{{(listitem.promotion == null || listitem.promotion.id == null) ? '暂无活动ID' : listitem.promotion.id}}</Col>
             </Row>
         </div>
         <div class='title'>基础信息</div>
@@ -61,18 +66,17 @@
                         {{item.text}}
                     </span>
                 </Col>
-	        </Row>
+            </Row>
             <Row>
                 <Col :span='12'>计划状态&nbsp;：&nbsp;
                 <span v-for='(item , index) in statusList' :key='index' v-if='item.key == listitem.status'>
                     {{item.text}}
                 </span>
                 </Col>
-                
                 <Col :span='12'>支付成功时间&nbsp;：&nbsp;{{payTime}}</Col>
             </Row>
             <Row>
-                <Col :span='12'>创建时间&nbsp;：&nbsp;{{listitem.applyTime == null ? '暂无' : applyTime}}</Col>
+                <Col :span='12'>创建时间&nbsp;：&nbsp;{{applyTime}}</Col>
                 <Col :span='12'>支付方式&nbsp;：&nbsp;
                     <span v-if='listitem.payTypeCode == null'>暂无支付方式</span>
                     <span v-else v-for='(item , index) in payTypeList' :key='index' v-if='item.key == listitem.payTypeCode'>
@@ -88,22 +92,24 @@
                         {{item.text}}
                     </span>
                 </Col>
-	    </Row>
+            </Row>
         </div>
         <div class='title'>投放影片(系统推荐 / 用户自选)</div>
-        <div class='bos'>
+        <div class='bos' v-if='listitem.movieCustom == 0'>通投全部影片</div>
+        <div class='bos' v-if='listitem.movieCustom == 1'>
             <Table :columns="itemcolumns" :data='films' border stripe disabled-hover size="small" class="table">
-                <template v-if='$route.params.status == 2 || $route.params.status == 3 || $route.params.status == 10' slot="action" slot-scope="{row}">
+                <template v-if='$route.params.status == 3 || $route.params.status == 10' slot="action" slot-scope="{row}">
                     <a @click="deletefilm(row.movieId)">删除</a>
                 </template>
             </Table>
-            <div style='cursor: pointer;' v-if='$route.params.ifs == 1 && ($route.params.status == 2 || $route.params.status == 3 || $route.params.status == 10)' @click='addfilm(listitem.beginDate , listitem.endDate)'>
+            <div style='cursor: pointer;' v-if='$route.params.ifs == 1 && ($route.params.status == 3 || $route.params.status == 10)' @click='addfilm(listitem.beginDate , listitem.endDate)'>
                 添加影片
             </div>
         </div>
-	<!-- 投放影院 -->
+        <!-- 投放影院 -->
         <div class='title' v-if='$route.params.status != "3" '>接单影院 / 派单影院 : {{listitem.acceptCinemaCount}} / {{listitem.cinemaCount}}</div>
         <Cinema @getcine="getcinemas" />
+
         <div class='title'>备注</div>
         <div class='bos'>
             <Row v-if='(listitem.remarks == null)'>暂无备注</Row>

@@ -106,7 +106,7 @@ export function filtertwo(str: string, companyId: any) {
       defaultValue: 0,
       select: true,
       width: 100,
-      placeholder: '发票类型',
+      placeholder: '消费类型',
       enumKey: 'statusList',
       dealParam(value: string) {
         if (!value || value == '2') {

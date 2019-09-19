@@ -923,7 +923,11 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'finance-account-balance-detail',
     component: () => import('./views/finance/account/detail.vue'),
     meta: {
-      authKey: ''
+      authKey: '',
+      title({ params: { transactionTypes } }) {
+        const title = ['查看充值明细', '查看消费明细', '查看退款明细', '查看提现明细']
+        return title[(transactionTypes as any) - 1]
+      }
     }
   },
 
