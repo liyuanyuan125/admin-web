@@ -76,7 +76,7 @@ export default class CPMDetail extends ViewBase {
         defaultValue: this.id,
         label: '活动ID',
         text: true,
-        span: 24,
+        span: 20,
         group: '活动信息',
         visible: (item: any) => (this.action == 'create' ? false : true)
       },
@@ -86,8 +86,7 @@ export default class CPMDetail extends ViewBase {
         defaultValue: '',
         input: true,
         label: '活动名称',
-        span: 24,
-        minWidth: 350,
+        span: 12,
         required: true
       },
 
@@ -96,7 +95,7 @@ export default class CPMDetail extends ViewBase {
         defaultValue: [0, 0],
         dateRange: true,
         width: 350,
-        span: 24,
+        span: 10,
         required: true,
         label: '活动时间',
         placeholder: '活动时间',
@@ -116,7 +115,7 @@ export default class CPMDetail extends ViewBase {
           enumKey: 'channelList',
         },
         label: '适用渠道',
-        span: 24,
+        span: 20,
         required: true
       },
 
@@ -127,7 +126,7 @@ export default class CPMDetail extends ViewBase {
           enumKey: 'customerTypeList',
         },
         label: '客户范围',
-        span: 24,
+        span: 20,
         required: true
       },
 
@@ -139,7 +138,7 @@ export default class CPMDetail extends ViewBase {
           enumKey: 'adTypeList'
         },
         label: '广告类型',
-        span: 24,
+        span: 20,
       },
 
       {
@@ -149,7 +148,7 @@ export default class CPMDetail extends ViewBase {
           enumKey: 'typeList',
         },
         label: '促销活动类型',
-        span: 24,
+        span: 20,
         required: true
       },
 
@@ -158,7 +157,7 @@ export default class CPMDetail extends ViewBase {
         defaultValue: [],
         label: ' ',
         component: BizPricingTable,
-        span: 24,
+        span: 20,
         props: {
           title: '商业广告折扣列表'
         },
@@ -177,7 +176,7 @@ export default class CPMDetail extends ViewBase {
         defaultValue: [],
         label: ' ',
         component: BizPricingTable,
-        span: 24,
+        span: 20,
         props: {
           title: '预告片广告折扣列表'
         },

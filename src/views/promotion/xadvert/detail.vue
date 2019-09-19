@@ -78,7 +78,7 @@ export default class CPMDetail extends ViewBase {
         defaultValue: this.id,
         label: '活动ID',
         text: true,
-        span: 24,
+        span: 20,
         group: '活动信息',
         visible: (item: any) => (this.action == 'create' ? false : true)
       },
@@ -88,8 +88,7 @@ export default class CPMDetail extends ViewBase {
         defaultValue: '',
         input: true,
         label: '活动名称',
-        span: 24,
-        minWidth: 350,
+        span: 12,
         required: true
       },
 
@@ -98,7 +97,7 @@ export default class CPMDetail extends ViewBase {
         defaultValue: [0, 0],
         dateRange: true,
         width: 350,
-        span: 24,
+        span: 10,
         required: true,
         label: '活动时间',
         placeholder: '活动时间',

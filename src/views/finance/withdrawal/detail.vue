@@ -169,7 +169,7 @@ import { toMap } from '@/fn/array'
 import { formatCurrency } from '@/fn/string'
 import imgModel from '../../data/film/imgModel.vue'
 import Upload from '@/components/Upload.vue'
-
+import { info } from '@/ui/modal'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 const typeMap = (list: any[]) => toMap(list, 'typeCode', 'controlStatus')
 const conMap = (list: any[]) => toMap(list, 'key', 'controlStatus')
@@ -225,9 +225,9 @@ export default class Main extends ViewBase {
 
   mounted() {
     if (this.$route.params.status == '1') {
-      this.title = '充值审核'
+      this.title = '审核'
     } else if (this.$route.params.status == '3') {
-      this.title = '充值汇款'
+      this.title = '汇款'
     }
     this.load()
   }
@@ -281,6 +281,10 @@ export default class Main extends ViewBase {
           this.back()
         }
       } else {
+        if (this.query.agree != 1 && !this.query.refuseReason) {
+          info('请输入拒绝原因')
+          return
+        }
         await approval({
           id: this.detail.id,
           agree: this.query.agree == 1 ? true : false,
