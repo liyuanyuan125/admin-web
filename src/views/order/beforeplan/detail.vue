@@ -11,7 +11,7 @@
                 <Col :span='12'>广告片&nbsp;：&nbsp;{{listitem.videoName == null ? '-' : listitem.videoName}}({{listitem.specification == null ? '-' : listitem.specification}}s)【{{listitem.customerName == null ? '-' : listitem.customerName}}】</Col>
             </Row>
             <Row>
-                <Col :span='12'>广告主公司名称&nbsp;：&nbsp;{{listitem.deliveryPositionList == null ? '暂无' : listitem.deliveryPositionList}}</Col>
+                <Col :span='12'>广告主公司名称&nbsp;：&nbsp;{{listitem.companyName == null ? '暂无' : listitem.companyName}}</Col>
                 <Col :span='12'>广告类型&nbsp;：&nbsp;
                 <span v-if='listitem.advertTypeCode == null'>暂无广告类型</span>
                 <span v-else v-for='(item , index) in advertTypeList' :key='index' v-if='item.key == listitem.advertTypeCode'>
@@ -44,14 +44,17 @@
                 </Select>
                 </Col>
                 <Col :span='12' v-else>投放位置&nbsp;：&nbsp;
-                    <Col>
                         <span v-if='listitem.deliveryPositionCode == null'>暂无投放位置</span>
                         <span v-else v-for='(item , index) in deliveryPositionList' :key='index' v-if='item.key == listitem.deliveryPositionCode'>
                             {{item.text}}
                         </span>
-                    </Col>
                     
                 </Col>
+                <Col :span='12'>促销活动名称&nbsp;：&nbsp;{{(listitem.promotion == null || listitem.promotion.name == null) ? '暂无促销活动名称' : listitem.promotion.name}}</Col>
+            </Row>
+            <Row>
+                <Col :span='12'>活动类型&nbsp;：&nbsp;{{(listitem.promotion == null || listitem.promotion.typeName == null) ? '暂无活动类型' : listitem.promotion.typeName}}</Col>
+                <Col :span='12'>活动ID&nbsp;：&nbsp;{{(listitem.promotion == null || listitem.promotion.id == null) ? '暂无活动ID' : listitem.promotion.id}}</Col>
             </Row>
         </div>
         <div class='title'>基础信息</div>
@@ -93,7 +96,8 @@
             </Row>
         </div>
         <div class='title'>投放影片(系统推荐 / 用户自选)</div>
-        <div class='bos'>
+        <div class='bos' v-if='listitem.movieCustom == 0'>通投全部影片</div>
+        <div class='bos' v-if='listitem.movieCustom == 1'>
             <Table :columns="itemcolumns" :data='films' border stripe disabled-hover size="small" class="table">
                 <template v-if='$route.params.status == 3 || $route.params.status == 10' slot="action" slot-scope="{row}">
                     <a @click="deletefilm(row.movieId)">删除</a>
@@ -126,7 +130,7 @@
         <div class='bos'>
             <Row v-if='logList.length == 0'>暂无操作日志</Row>
             <Row v-if='logList.length > 0' v-for='(it,index) in logList' :key='index'>
-                <Row>{{it.createTime}} {{it.createUserEmail}}【{{it.createUserName}}】 {{it.eventName}}{{it.description}}</Row>
+                <Row>{{it.createTime}} {{it.createUserEmail}}【{{it.createUserName}}】 {{it.description}}</Row>
             </Row>
         </div>
         <div class='title'>应收款项</div>
@@ -176,7 +180,7 @@
                 预估曝光人次【{{formatNumber(listitem.estimatePersonCount , 2)}}】
                 预估曝光场次【{{formatNumber(listitem.estimateShowCount , 2)}}】
                 预估花费【{{formatNumber(listitem.estimateCostAmount)}}】
-                <span>, 折扣后总价【{{formatNumber(listitem.estimateShowCount , 2)}}】</span>
+                <span v-if='this.$route.params.ifs == 0 && (listitem.discount != 1 && listitem.discount != "" && listitem.discount != null)'>, 折扣后总价【{{formatNumber(listitem.estimateCostAmount , 2)}}】</span>
                 <Button v-if='this.$route.params.ifs == 1' type="primary" :loading="loading2" @click="shuaxin()">刷新</Button>
                 </Col>
                 <!-- <Col :span='4'>
@@ -195,9 +199,9 @@
             <Button style='margin-left: 30px;' @click="back">取消</Button>
             </Col>
             <Col :span='6' v-if='this.$route.params.ifs == 1 && (this.$route.params.status != 6 && this.$route.params.status != 7)'>
-            <Button v-if='(viewfilm == true || viewcinema == true) || (listitem.status != 9 && listitem.status != 10) ' type="primary" disabled>
+            <Button v-if='(viewfilm == true || viewcinema == true) || (listitem.status != 3 && listitem.status != 9 && listitem.status != 10) ' type="primary" disabled>
                 保存并发送方案至广告主</Button>
-            <Button v-if='(viewfilm == false && viewcinema == false) && (listitem.status == 9 || listitem.status == 10) ' type="primary" @click="save('dataplan')">
+            <Button v-if='(viewfilm == false && viewcinema == false) && (listitem.status == 3 || listitem.status == 9 || listitem.status == 10) ' type="primary" @click="save('dataplan')">
                 保存并发送至广告主</Button>
             <Button style='margin-left: 30px;' @click="back">取消</Button>
             </Col>
@@ -465,7 +469,7 @@ export default class Main extends ViewBase {
 
 
     async search() {
-        this.listitem = []
+        // this.listitem = []
         try {
             // 订单列表
             const { data } = await itemlist(this.$route.params.id)
@@ -504,6 +508,7 @@ export default class Main extends ViewBase {
             this.view = true
             this.deliveryGroups = data.item.deliveryGroups
             this.deliveryPositionList = data.deliveryPositionList
+            this.placement.position = data.item.deliveryPositionCode
             this.advertTypeList = data.advertTypeList
             this.channelList = data.channelList
             this.payTypeList = data.payTypeList
@@ -572,13 +577,15 @@ export default class Main extends ViewBase {
     // 保存方案
     async save(dataplan: any) {
         // 保存定金
-        // if (this.listitem.status == 2) {
-        //     if (this.dataplan.depositAmount == '') {
-        //         info('请输入定金金额')
-        //         return
-        //     }
-        //     const res = await save(this.$route.params.id, { depositAmount: this.dataplan.depositAmount })
-        // } else
+        if (this.listitem.status == 3) {
+            const res = await save(this.$route.params.id,
+                { discount: this.dataplan.discount == null ? 1 : this.dataplan.discount,
+                  depositAmount: this.dataplan.depositAmount == null ?
+                    this.listitem.estimateCostAmount : this.dataplan.depositAmount })
+            this.$router.go(-1)
+            return
+        }
+        //  else
         if (this.dataplan.qneedPayAmount != this.dataplan.needPayAmount) {
             info('请再次确认应结金额')
             return

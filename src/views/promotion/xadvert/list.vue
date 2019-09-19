@@ -14,7 +14,7 @@
 
       <template slot="action" slot-scope="{ row: { status, id, name, enName } }">
         <div class="row-acts">
-          <router-link :to="{
+          <router-link v-if="status === 1" :to="{
               name: 'promotion-xadvert-detail',
               params: {
                 id,
@@ -55,6 +55,7 @@ import {
 } from './data'
 import { alert, toast } from '@/ui/modal'
 import { EditDialog, Field } from '@/components/editForm'
+import moment from 'moment'
 
 @Component({
   components: {
@@ -64,6 +65,8 @@ import { EditDialog, Field } from '@/components/editForm'
 })
 export default class Main extends ViewBase {
   fetch = queryList
+
+  moment = moment
 
   enabledTitleName: string = ''
   enabledSubmitFetch: any = null
@@ -100,7 +103,7 @@ export default class Main extends ViewBase {
       {
         name: 'name',
         defaultValue: '',
-        type: 'input',
+        input: true,
         width: 85,
         placeholder: '活动名称'
       },
@@ -126,36 +129,26 @@ export default class Main extends ViewBase {
       },
 
       // {
-      //   name: 'adType',
+      //   name: 'type',
       //   defaultValue: 0,
       //   select: {
-      //     enumKey: 'adTypeList',
+      //     enumKey: 'typeList',
       //   },
       //   width: 128,
-      //   placeholder: '广告类型'
+      //   placeholder: '促销活动类型'
       // },
-
-      {
-        name: 'type',
-        defaultValue: 0,
-        select: {
-          enumKey: 'typeList',
-        },
-        width: 128,
-        placeholder: '促销活动类型'
-      },
 
       {
         name: 'dateRange',
         defaultValue: '',
-        type: 'dateRange',
+        dateRange: true,
         width: 200,
         placeholder: '活动时间',
         dealParam(value: string) {
-          const [beginTime, endTime] = value ? value.split('-') : [null, null]
+          const [beginDate, endDate] = value ? value.split('-') : [null, null]
           return {
-            beginTime,
-            endTime
+            beginDate,
+            endDate
           }
         }
       },
@@ -187,10 +180,10 @@ export default class Main extends ViewBase {
       { title: '活动ID', key: 'id' },
       { title: '活动名称', key: 'name' },
       { title: '客户范围', key: 'customerType', enum: true },
-      { title: '适用渠道', key: 'channelCodes', minWidth: 200, enum: 'channelList' },
+      { title: '适用渠道', key: 'channelCodes', enum: 'channelList' },
       { title: '促销活动类型', key: 'type', enum: true },
-      { title: '活动开始时间', key: 'beginDate' },
-      { title: '活动结束时间', key: 'endDate' },
+      { title: '活动开始时间', key: 'beginDate', date: true},
+      { title: '活动结束时间', key: 'endDate', date: true },
       { title: '活动状态', key: 'status', enum: true },
       { title: '审批人', key: 'approvalName', },
       { title: '操作', key: 'keyWords', slot: 'action' }

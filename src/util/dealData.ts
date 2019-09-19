@@ -290,7 +290,7 @@ export function realThousands(number: number | string) {
  * @param date 整数
  * @param format 格式
  */
-export function intDate(date: number, format = 'YYYY-MM-DD') {
+export function intDate(date: number | string, format = 'YYYY-MM-DD') {
   const strDate = String(date).trim()
   if (/^\d{4}\d{2}\d{2}$/.test(strDate)) {
     return moment(strDate).format(format)
@@ -305,18 +305,24 @@ export function intDate(date: number, format = 'YYYY-MM-DD') {
  * 将形如 20190622 形式的整数，或者其他一些符合要求的字符串，转换成 Moment 对象
  * @param date 数字日期或其他形式的日期字符串
  */
-export function toMoment(date: number | string | null) {
+export function toMoment(date: number | string | Date | null) {
   return date == null || date == 0 || date == ''
     ? moment.invalid()
-    // 如果是很大的数字，则说明这是一个时间戳
-    : moment(date > 28880000 ? +date : String(date))
+    : moment(
+      date instanceof Date
+      ? date
+      // 如果是很大的数字，则说明这是一个时间戳
+      : date > 28880000
+        ? +date
+        : String(date)
+    )
 }
 
 /**
  * 将形如 20190622 形式的整数，或者其他一些符合要求的字符串，转换成日期
  * @param date 数字日期或其他形式的日期字符串
  */
-export function validDate(date: number | string | null) {
+export function validDate(date: number | string | Date | null) {
   const m = toMoment(date)
   return m.isValid() ? m.toDate() : null
 }
@@ -327,7 +333,7 @@ export function validDate(date: number | string | null) {
  * @param options 选项
  */
 export function formatValidDate(
-  date: number | string | null,
+  date: number | string | Date | null,
   {
     format = 'YYYY-MM-DD',
     blank = '-',
@@ -342,7 +348,7 @@ export function formatValidDate(
  * formatValidDate 的快捷版本，带上时间
  * @param date 数字日期或其他形式的日期字符串
  */
-export function formatValidDateTime(date: number | string | null) {
+export function formatValidDateTime(date: number | string | Date | null) {
   return formatValidDate(date, {
     format: 'YYYY-MM-DD HH:mm:ss',
   })
@@ -355,8 +361,8 @@ export function formatValidDateTime(date: number | string | null) {
  * @param options 选项
  */
 export function formatIntDateRange(
-  dateStart: number | null,
-  dateEnd: number | null,
+  dateStart: number | string | Date | null,
+  dateEnd: number | string | Date | null,
   {
     separator = '~',
     format = 'YYYY-MM-DD',
@@ -370,6 +376,28 @@ export function formatIntDateRange(
   }
   const pairs = [start, end].map(m => m.isValid() ? m.format(format) : blank)
   const result = pairs.join(separator)
+  return result
+}
+
+/**
+ * 将形如 'yyyy-mm-dd ~ yyyy-mm-dd' 形式的字符串，解析成日期数组，
+ * 可以看成是 formatIntDateRange 的逆解析
+ * @param dateRange 日期范围字符串
+ * @param options 选项
+ */
+export function parseIntDateRange(
+  dateRange: string,
+  {
+    separator = '~',
+    defaultValue,
+  }: any = {}
+) {
+  const [begin, end = ''] = dateRange.split(separator)
+  const bm = toMoment((begin || '').trim())
+  const em = toMoment((end || '').trim())
+  const result = bm.isValid() && em.isValid()
+    ? [ bm.toDate(), em.toDate() ]
+    : [ defaultValue, defaultValue ]
   return result
 }
 

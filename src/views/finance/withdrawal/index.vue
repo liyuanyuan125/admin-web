@@ -27,6 +27,8 @@ import { confirm, info, alert } from '@/ui/modal.ts'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import { queryList } from '@/api/withdrawal'
 import { toMap } from '@/fn/array'
+import moment from 'moment'
+import company from '../payroll/data/company.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'typeCode', 'typeName')
 @Component({
@@ -40,30 +42,30 @@ export default class Main extends ViewBase {
   filters: Filter[] = [
     {
       name: 'companyId',
-      defaultValue: '',
-      type: 'input',
+      defaultValue: 0,
+      component: company,
       width: 108,
       placeholder: '公司名称'
     },
     {
       name: 'billNo',
       defaultValue: '',
-      type: 'input',
-      width: 100,
+      input: true,
+      width: 200,
       placeholder: '提现申请单'
     },
 
     {
       name: 'dateRange',
       defaultValue: '',
-      type: 'dateRange',
+      dateRange: true,
       width: 200,
       placeholder: '提现申请日期区间',
       dealParam(value: string) {
         const [beginDate, endDate] = value ? value.split('-') : [null, null]
         return {
-          beginDate,
-          endDate
+          beginDate: beginDate ? moment(beginDate).startOf('day').valueOf() : '',
+          endDate: endDate ? moment(endDate).endOf('day').valueOf() : ''
         }
       }
     },
@@ -90,9 +92,9 @@ export default class Main extends ViewBase {
     { title: '公司名称', key: 'companyName', minWidth: 60 },
     { title: '提现申请单编号', key: 'billNo', minWidth: 60 },
     { title: '提现金额', key: 'amount', minWidth: 100 },
-    { title: '提现方式', key: 'withdrawalType', minWidth: 60, editor: 'enum' },
-    { title: '提现申请时间', key: 'createTime', minWidth: 100, editor: 'dateTime' },
-    { title: '提现单状态', key: 'status', minWidth: 100, editor: 'enum' },
+    { title: '提现方式', key: 'withdrawalType', minWidth: 60, enum: true },
+    { title: '提现申请时间', key: 'createTime', minWidth: 100, dateTime: true },
+    { title: '提现单状态', key: 'status', minWidth: 100, enum: true },
     { title: '操作', slot: 'operate', minWidth: 90 },
   ]
 

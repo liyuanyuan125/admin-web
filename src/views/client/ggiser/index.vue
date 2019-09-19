@@ -52,14 +52,14 @@ export default class Main extends ViewBase {
     {
       name: 'companyId',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 108,
       placeholder: 'id'
     },
     {
       name: 'shortName',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 100,
       placeholder: '广告主名称'
     },
@@ -67,7 +67,7 @@ export default class Main extends ViewBase {
     {
       name: 'recommendTel',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 100,
       placeholder: '推荐人电话',
     },
@@ -75,7 +75,7 @@ export default class Main extends ViewBase {
     {
       name: 'companyType',
       defaultValue: 0,
-      type: 'select',
+      select: true,
       width: 100,
       placeholder: '广告主身份',
       enumKey: 'companyTypeList'
@@ -84,7 +84,7 @@ export default class Main extends ViewBase {
     {
       name: 'childType',
       defaultValue: '',
-      type: 'select',
+      select: true,
       width: 100,
       placeholder: '客户类型',
       enumKey: 'typeList'
@@ -93,7 +93,7 @@ export default class Main extends ViewBase {
     {
       name: 'businessDirector',
       defaultValue: 0,
-      type: 'select',
+      select: true,
       width: 100,
       placeholder: '关联销售',
       enumKey: 'businesList'
@@ -102,7 +102,7 @@ export default class Main extends ViewBase {
     {
       name: 'status',
       defaultValue: 0,
-      type: 'select',
+      select: true,
       width: 100,
       placeholder: '状态',
       enumKey: 'statusList'
@@ -111,7 +111,7 @@ export default class Main extends ViewBase {
     {
       name: 'approveStatus',
       defaultValue: 0,
-      type: 'select',
+      select: true,
       width: 100,
       placeholder: '审核状态',
       enumKey: 'approveStatusList'
@@ -147,16 +147,16 @@ export default class Main extends ViewBase {
   columns = [
     { title: 'ID', key: 'id', minWidth: 65 },
     { title: '广告主名称', key: 'name', minWidth: 100 },
-    { title: '广告主身份', key: 'companyType', minWidth: 60, editor: 'enum' },
-    { title: '客户等级', key: 'levelCode', minWidth: 60, editor: 'enum' },
+    { title: '广告主身份', key: 'companyType', minWidth: 60, enum: true },
+    { title: '客户等级', key: 'levelCode', minWidth: 60, enum: true },
     { title: '客户类型', key: 'contractNo', minWidth: 100, slot: 'client' },
     { title: '关联销售', key: 'businessDirectorName', minWidth: 60 },
     { title: '推荐人电话', key: 'recommendMobile', minWidth: 100 },
-    { title: '创建时间', key: 'createTime', minWidth: 60, editor: 'dateTime' },
-    { title: '更新时间', key: 'modifyTime', minWidth: 60, editor: 'dateTime' },
+    { title: '创建时间', key: 'createTime', minWidth: 60, dateTime: true },
+    { title: '更新时间', key: 'modifyTime', minWidth: 60, dateTime: true },
     { title: '更新人', key: 'modifyUserName', minWidth: 100 },
-    { title: '状态', key: 'status', minWidth: 60, editor: 'enum'},
-    { title: '审核状态', key: 'approveStatus', minWidth: 60, editor: 'enum'},
+    { title: '状态', key: 'status', minWidth: 60, enum: true},
+    { title: '审核状态', key: 'approveStatus', minWidth: 60, enum: true},
     { title: '操作', slot: 'operate', minWidth: 90 },
   ]
 

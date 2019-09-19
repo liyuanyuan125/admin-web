@@ -15,7 +15,7 @@ export async function queryItem(query: any = {}) {
  * 获取影院的影厅列表
  * @param cinemaId 影院ID
  * @param query 查询参数
- * https://yapi.aiads.com/project/22/interface/api/1433
+ * https://yapi.aiads-dev.com/project/22/interface/api/1433
  */
 export async function queryList(cinemaId: number, query: any = {}) {
   const url = `/theater/cinemas/${cinemaId}/halls`

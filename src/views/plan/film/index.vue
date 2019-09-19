@@ -32,7 +32,8 @@
         {{specification}}s
       </template>
       <template slot="translated" slot-scope="{ row: { translated } }">
-        {{translated == 1 ? '已转制' : '未转制'}}
+        <span v-if='translated == null'>-</span>
+        <span v-else v-for='(it , index) in translatedList' v-if='it.key == translated'>{{it.text}}</span>
       </template>
 
       <template slot="promotionType" slot-scope="{ row: { promotionType } }">

@@ -10,12 +10,13 @@
                 <Col :span='12'><span class='spons'>资源方影院名称&nbsp;：&nbsp;</span>【{{listitem.cinemaCode == null ? '暂无影院专资编码' : listitem.cinemaCode}}】 {{listitem.cinemaName == null ? '暂无影院名称' : listitem.cinemaName}}</Col>
             </Row>
             <Row>
-                <Col :span='12'><span class='spons'>影片名称&nbsp;：&nbsp;</span>{{listitem.resourceName == null ? '暂无资源方公司' : listitem.resourceName}}</Col>
+                <Col :span='12'><span class='spons'>影片名称&nbsp;：&nbsp;</span>{{(listitem.movieName == null || listitem.movieName == '') ? '暂无影片名称' : listitem.movieName}}</Col>
                 <Col :span='12'><span class='spons'>包含广告片&nbsp;：&nbsp;</span>共计{{listitem.totalLength}}s
-                <a style='margin-left: 5px;' v-for='(item,index) in listitem.videoDetails' :key='index'>
-                    <em v-for='(its,index) in deliveryPositionList' :key='index' v-if='item.deliveryPosition != null && item.deliveryPosition == its.key'>【{{its.text}}】</em>
-                    {{item.videoName}} ({{item.videoLength}})s
-                </a> </Col>
+                        <a style='margin-left: 5px;' v-for='(item,index) in listitem.videoDetails' :key='index'>
+                            <em style='font-style: normal;font-right: -5px;' v-for='(its,index) in deliveryPositionList' :key='index' v-if='item.deliveryPosition != null && item.deliveryPosition == its.key'>【{{its.text}}】</em>
+                            {{item.videoName}} ({{item.videoLength}})s
+                        </a> 
+                </Col>
             </Row>
             <Row>
                 <Col :span='12'><span class='spons'>投放周期&nbsp;：&nbsp;</span>{{start}} ~ {{end}} &nbsp; 【{{day + 1}}天】</Col>
@@ -44,7 +45,7 @@
                     <FormItem label="" prop="closeReason">
                         <CheckboxGroup v-model="dataForm.orderIds">
                             <Checkbox v-for="(it,index) in listitem.videoDetails" :key="it.index" :value="it.orderId" :label="it.orderId" :disabled='listitem.approvalStatus == 4'>
-                                <em v-for='(its,index) in deliveryPositionList' :key='index' v-if='it.deliveryPosition != null && item.deliveryPosition == its.key'>【{{its.text}}】</em>
+                                <em style='font-style: normal;font-right: -5px;' v-for='(its,index) in deliveryPositionList' :key='index' v-if='it.deliveryPosition != null && it.deliveryPosition == its.key'>【{{its.text}}】</em>
                               {{it.videoName}} ({{it.videoLength}})s
                             </Checkbox></br>
                         </CheckboxGroup>
@@ -59,7 +60,7 @@
                     </FormItem>
                 </Form>
             </Row>
-            <div class="dialog-footer">
+            <div v-if='listitem.approvalStatus == 2' class="dialog-footer">
                 <Button type="primary" @click="dataFormSubmit">提交</Button>
                 <Button type="primary" style='margin-left: 20px;' @click="nextSubmit">提交并继续审核</Button>
             </div>
@@ -226,6 +227,15 @@ export default class Main extends ViewBase {
         this.videoIdsList = {
             query: dataItem.query, // 广告片id或者名称
             companyId: dataItem.companyId, // 公司Id
+            movieName: dataItem.movieName,
+            businessDirector: dataItem.businessDirector,
+            approvalUserName: dataItem.approvalUserName,
+            cinemaId: dataItem.cinemaId,
+            videoId: dataItem.videoId,
+            beginDate: dataItem.dateRange.split('-')[0],
+            endDate: dataItem.dateRange.split('-')[1],
+            approvalBeginTime: dataItem.approvalBeginTime,
+            approvalEndTime: dataItem.approvalEndTime,
             status: dataItem.status, // 状态
             translated: dataItem.translated, // 1：转制；2：未转制
             skip: dataItem.skip, // 跳过的记录数
@@ -370,7 +380,7 @@ export default class Main extends ViewBase {
   em,
   i {
     font-style: normal;
-    margin-right: 6px;
+    margin-right: 3px;
   }
 
   em {

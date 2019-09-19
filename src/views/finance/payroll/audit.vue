@@ -106,7 +106,7 @@ export default class IndexPage extends ViewBase {
       {
         name: 'applyNumber',
         defaultValue: '',
-        type: 'input',
+        input: true,
         width: 108,
         placeholder: '订单编号'
       },
@@ -114,7 +114,7 @@ export default class IndexPage extends ViewBase {
       {
         name: 'approveStatus',
         defaultValue: '',
-        type: 'select',
+        input: true,
         width: 108,
         placeholder: '审批状态',
         enumKey: 'approveStatusList'
@@ -123,7 +123,7 @@ export default class IndexPage extends ViewBase {
       {
         name: 'createName',
         defaultValue: '',
-        type: 'input',
+        input: true,
         width: 108,
         placeholder: '请款人'
       },
@@ -131,7 +131,7 @@ export default class IndexPage extends ViewBase {
       {
         name: 'dateRange',
         defaultValue: '',
-        type: 'dateRange',
+        dateRange: true,
         width: 200,
         placeholder: '请款日期',
         dealParam(value: string) {
@@ -165,15 +165,15 @@ export default class IndexPage extends ViewBase {
     return [
       { title: '请款单编号', key: 'applyNumber', minWidth: 65 },
       { title: '可申请的付款金额', key: 'mayApplyAmount', minWidth: 100 },
-      { title: '申请付款金额', key: 'applyAmount', minWidth: 60, editor: 'deprecated' },
+      { title: '申请付款金额', key: 'applyAmount', minWidth: 60, deprecated: true },
       { title: '请款人', key: 'createName', minWidth: 60 },
       {
         title: '请款时间',
         key: 'createTime',
-        editor: 'dateTime',
+        dateTime: true,
         minWidth: 90,
       },
-      { title: '审批状态', key: 'approveStatus', minWidth: 100, editor: 'enum' },
+      { title: '审批状态', key: 'approveStatus', minWidth: 100, enum: true },
       { title: '操作', slot: 'audit',  minWidth: 120 }
     ]
   }

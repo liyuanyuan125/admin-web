@@ -48,6 +48,9 @@ import {
 import { EditDialog, Field } from '@/components/editForm'
 import { devLog } from '@/util/dev'
 
+// role == 1 为商务
+const businessRoleId = 1
+
 @Component({
   components: {
     ListPage,
@@ -133,71 +136,60 @@ export default class BusinessPage extends ViewBase {
     ] as ColumnExtra[]
   }
 
-  editFields: Field[] = [
-    // 数据库记录ID
-    {
-      name: 'id',
-      defaultValue: 0,
-    },
-
-    {
-      name: 'userId',
-      defaultValue: 0,
-      label: '姓名',
-      rules: [ { required: true, message: '请选择姓名', trigger: 'blur' } ],
-      select: {
-        enumKey: 'userList'
+  get editFields(): Field[] {
+    const isEdit = this.editId > 0
+    return [
+      // 数据库记录ID
+      {
+        name: 'id',
+        defaultValue: 0,
       },
-      span: 21,
-    },
 
-    {
-      name: 'roles',
-      defaultValue: [],
-      label: '角色',
-      rules: [ { required: true, message: '请选择角色', trigger: 'blur' } ],
-      check: {
-        enumKey: 'roleList'
+      {
+        name: 'userId',
+        defaultValue: 0,
+        label: '姓名',
+        required: true,
+        requiredMessage: '请选择姓名',
+        select: {
+          enumKey: 'userList'
+        },
+        span: 21,
+        disabled: isEdit
       },
-      span: 21,
-    },
 
-    {
-      name: 'discount',
-      defaultValue: 0,
-      label: '可享折扣',
-      rules: [ { required: true, message: '请填写可享折扣', trigger: 'blur' } ],
-      placeholder: '数字在0-1之间，例如：0.1，代表可享折扣是1折',
-      number: {
-        max: 1,
-        step: .1
+      {
+        name: 'roles',
+        defaultValue: [],
+        label: '角色',
+        required: true,
+        requiredMessage: '请选择角色',
+        check: {
+          enumKey: 'roleList'
+        },
+        span: 21,
       },
-      span: 21,
-    }
-  ]
+
+      {
+        name: 'discount',
+        defaultValue: 0,
+        label: '可享折扣',
+        required: true,
+        requiredMessage: '请填写可享折扣',
+        placeholder: '数字在0-1之间，例如：0.1，代表可享折扣是1折',
+        number: {
+          max: 1,
+          step: .1
+        },
+        span: 21,
+      }
+    ]
+  }
 
   async fetch(query: any) {
     const res = await queryList(query)
     this.roleList = res.roleList
     return res
-  }
-
-  async editFetch() {
-    const list = await userList({ pageSize: 888 })
-    const item = this.editId > 0
-      ? await getBusiness(this.editId)
-      : { id: 0, userId: 0, roles: [], discount: 1 }
-    const result = {
-      item,
-      userList: list,
-      roleList: this.roleList
-    }
-    return result
-  }
-
-  async editShow(id = 0) {
-    this.editId = id
-    this.editVisible = true
   }
 
   async handleStatus(data: any) {
@@ -210,6 +202,24 @@ export default class BusinessPage extends ViewBase {
     } catch (ex) {
       this.handleError(ex)
     }
+  }
+
+  async editFetch() {
+    const list = await userList()
+    const item = this.editId > 0
+      ? await getBusiness(this.editId)
+      : { id: 0, userId: 0, roles: [], discount: 1 }
+    const result = {
+      item,
+      userList: list.filter(({ roles }: any) => roles.includes(businessRoleId)),
+      roleList: this.roleList
+    }
+    return result
+  }
+
+  async editShow(id = 0) {
+    this.editId = id
+    this.editVisible = true
   }
 
   async editSubmit(data: any) {

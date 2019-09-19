@@ -51,7 +51,7 @@ export default class Main extends ViewBase {
       {
         name: 'channelCode',
         defaultValue: '',
-        type: 'select',
+        select: true,
         width: 85,
         placeholder: '账号平台',
         enumKey: 'channelCodeList'
@@ -60,7 +60,7 @@ export default class Main extends ViewBase {
       {
         name: 'channelDataId',
         defaultValue: '',
-        type: 'input',
+        input: true,
         width: 85,
         placeholder: '账号ID'
       },
@@ -68,7 +68,7 @@ export default class Main extends ViewBase {
       {
         name: 'name',
         defaultValue: '',
-        type: 'input',
+        input: true,
         width: 85,
         placeholder: '账号名称'
       },
@@ -97,11 +97,11 @@ export default class Main extends ViewBase {
   get columns() {
     return [
       { title: '序号', key: 'id' },
-      { title: '账号平台', key: 'channelCode' , editor: 'enum', enumKey: 'channelCodeCode'},
+      { title: '账号平台', key: 'channelCode' , enum: 'channelCodeCode'},
       { title: '账号ID', key: 'channelDataId'},
       { title: '账号名称', key: 'name' },
-      { title: '账号头像', key: 'logo', editor: 'deprecated' },
-      { title: '跳转URL链接', key: 'url', editor: 'enum', enumKey: 'tradeCodeCode' },
+      { title: '账号头像', key: 'logo', deprecated: true },
+      { title: '跳转URL链接', key: 'url', enum: 'tradeCodeCode' },
       { title: '操作', key: 'keyWords', slot: 'action' }
     ] as ColumnExtra[]
   }

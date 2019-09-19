@@ -7,6 +7,7 @@ import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import RemoteSelect from '@/components/remoteSelect'
 import { queryList } from './data'
+import { clean } from '@/fn/object'
 
 @Component({
   components: {
@@ -16,18 +17,22 @@ import { queryList } from './data'
 export default class CinemaSelect extends ViewBase {
   @Prop({ type: Number }) value!: number
 
-  // 附加查询条件
+  /**
+   * 附加查询条件，若要去掉某个条件，设置其为 null 即可，例如
+   * 设置 { controlStatus: null }，即能去掉条件 controlStatus
+   */
   @Prop({ type: Object, default: () => ({}) }) query!: object
 
-  model: number = 0
+  model = 0
 
   async fetch(keyword: string) {
-    const query = {
-      ...this.query,
+    const query = clean({
       query: keyword,
+      controlStatus: 1,
       pageIndex: 1,
       pageSize: 88,
-    }
+      ...this.query,
+    })
     const list = await queryList(query)
     // 若现有列表中，没有找到已选择的影院，则清空
     const foundItem = list.find(it => it.id == this.model)

@@ -56,13 +56,13 @@
           </Col>
         </Row>
       </div>
-      <Row class="detail-content">
+      <Row v-if='$route.params.status' class="detail-content">
         <div class="n-list">汇款信息：</div>
         <Form v-if='detail.status != 1' ref="formInline" :model="query" :rules="ruleInline">
         <Row>
           <Col span="3"><div>汇款时间：</div></Col>
           <Col span="16">
-            <FormItem v-if='detail.status == 3' prop="remittanceTime">
+            <FormItem v-if='$route.params.status == 3' prop="remittanceTime">
                <DatePicker type="date" v-model='query.remittanceTime' placeholder="汇款时间" style="width: 200px"></DatePicker>
             </FormItem>
             <span v-else>{{detail.createTime}}</span>
@@ -71,7 +71,7 @@
         <Row>
           <Col span="3"><div>上传凭证</div></Col>
           <Col span="8">
-            <FormItem v-if='detail.status == 3' prop="receipt">
+            <FormItem v-if='$route.params.status == 3' prop="receipt">
               <Upload v-model="query.receipt" multiple :maxCount="3" accept="image/*" />
             </FormItem>
             <div v-else class="upload-wrap">
@@ -85,7 +85,7 @@
         <Row>
           <Col span="3"><div>备注</div></Col>
           <Col span="8">
-            <FormItem v-if='detail.status == 3' prop="remittanceRemark">
+            <FormItem v-if='$route.params.status == 3' prop="remittanceRemark">
                <Input type="textarea" :rows="4" v-model="query.remittanceRemark" placeholder="请输入备注" style="width: 200px" />
             </FormItem>
             <span v-else>{{detail.remark}}</span>
@@ -93,7 +93,7 @@
         </Row>
         </Form>
         <Form v-else ref="formInline" :model="query" :rules="ruleInline">
-          <Row>
+          <Row v-if='$route.params.status == 1'>
             <Col span="3"><div>审核意见：</div></Col>
             <Col span="16">
               <FormItem>
@@ -104,7 +104,7 @@
               </FormItem>
             </Col>
           </Row>
-          <Row>
+          <Row v-if='$route.params.status == 1'>
             <Col span="3"><div>备注：</div></Col>
             <Col span="16">
               <FormItem>
@@ -114,13 +114,41 @@
           </Row>
         </Form>
       </Row>
+      <Row v-if='!$route.params.status && detail.receiptUrl' class="detail-content">
+        <div class="n-list">汇款信息：</div>
+        <Row>
+          <Col span="3"><div>汇款时间：</div></Col>
+          <Col span="16">
+            <span>{{detail.createTime}}</span>
+          </Col>
+        </Row>
+        <Row>
+          <Col span="3"><div>上传凭证</div></Col>
+          <Col span="8">
+            <div class="upload-wrap">
+              <div v-if="showimg" class="show-img">
+                <img src="~@/assets/imgerror.png"/>
+              </div>
+              <imgModel v-else :uploadList="img" :type = 2 />
+            </div>
+          </Col>
+        </Row>
+        <Row>
+          <Col span="3"><div>备注</div></Col>
+          <Col span="8">
+            <span>{{detail.remark}}</span>
+          </Col>
+        </Row>
+      </Row>
       <Row class="detail-check">
         <div class="n-list">操作日志</div>
-        <Row  class="detail-log" v-for="(item, i) in logList" :key="i">
-          <Col span="3"><div>操作时间</div></Col>
-          <Col span="21"><span>{{item.createTime}}</span></Col>
-          <Col span="3"><div>操作员</div></Col>
-          <Col span="21"> <span>{{item.email}}<b style="margin: 0 5px">[{{item.userName}}]</b></span></Col>
+        <Row style="margin-left: 20px" class="detail-log" v-for="(item, i) in logList" :key="i">
+          <span>操作时间: </span>
+          <span>{{item.createTime}}</span>
+          <span>  操作员: </span>
+          <span>{{item.email}}<b style="margin: 0 5px">[{{item.userName}}]</b></span>
+          <span> 操作类型: </span>
+          <span>{{item.description}}</span>
         </Row>
       </Row>
       <Row>
@@ -143,7 +171,7 @@ import { toMap } from '@/fn/array'
 import { formatCurrency } from '@/fn/string'
 import imgModel from '../../data/film/imgModel.vue'
 import Upload from '@/components/Upload.vue'
-
+import { info } from '@/ui/modal'
 const makeMap = (list: any[]) => toMap(list, 'key', 'text')
 const typeMap = (list: any[]) => toMap(list, 'typeCode', 'controlStatus')
 const conMap = (list: any[]) => toMap(list, 'key', 'controlStatus')
@@ -199,9 +227,9 @@ export default class Main extends ViewBase {
 
   mounted() {
     if (this.$route.params.status == '1') {
-      this.title = '充值审核'
+      this.title = '审核'
     } else if (this.$route.params.status == '3') {
-      this.title = '充值汇款'
+      this.title = '汇款'
     }
     this.load()
   }
@@ -255,6 +283,10 @@ export default class Main extends ViewBase {
           this.back()
         }
       } else {
+        if (this.query.agree != 1 && !this.query.refuseReason) {
+          info('请输入拒绝原因')
+          return
+        }
         await approval({
           id: this.detail.id,
           agree: this.query.agree == 1 ? true : false,

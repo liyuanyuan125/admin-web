@@ -100,7 +100,7 @@ export default class Main extends ViewBase {
       {
         name: 'companyName',
         defaultValue: '',
-        type: 'input',
+        input: true,
         width: 108,
         placeholder: '公司名称'
       },

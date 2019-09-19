@@ -14,7 +14,7 @@
 
       <template slot="action" slot-scope="{ row: { status, id, name, enName } }">
         <div class="row-acts">
-          <router-link :to="{
+          <router-link v-if="status === 1" :to="{
               name: 'promotion-cpm-detail',
               params: {
                 id,
@@ -100,7 +100,7 @@ export default class Main extends ViewBase {
       {
         name: 'name',
         defaultValue: '',
-        type: 'input',
+        input: true,
         width: 85,
         placeholder: '活动名称'
       },
@@ -135,20 +135,20 @@ export default class Main extends ViewBase {
         placeholder: '广告类型'
       },
 
-      {
-        name: 'type',
-        defaultValue: 0,
-        select: {
-          enumKey: 'typeList',
-        },
-        width: 128,
-        placeholder: '促销活动类型'
-      },
+      // {
+      //   name: 'type',
+      //   defaultValue: 0,
+      //   select: {
+      //     enumKey: 'typeList',
+      //   },
+      //   width: 128,
+      //   placeholder: '促销活动类型'
+      // },
 
       {
         name: 'dateRange',
         defaultValue: '',
-        type: 'dateRange',
+        dateRange: true,
         width: 200,
         placeholder: '活动时间',
         dealParam(value: string) {
@@ -187,11 +187,11 @@ export default class Main extends ViewBase {
       { title: '活动ID', key: 'id' },
       { title: '活动名称', key: 'name' },
       { title: '客户范围', key: 'customerType', enum: true },
-      { title: '适用渠道', key: 'channels', minWidth: 200, enum: 'channelList' },
+      { title: '适用渠道', key: 'channels', enum: 'channelList' },
       { title: '广告类型', key: 'adTypes', enum: 'adTypeList'},
       { title: '促销活动类型', key: 'type', enum: true },
-      { title: '活动开始时间', key: 'beginTime' },
-      { title: '活动结束时间', key: 'endTime' },
+      { title: '活动开始时间', key: 'beginTime', date: true },
+      { title: '活动结束时间', key: 'endTime', date: true },
       { title: '活动状态', key: 'status', enum: true },
       { title: '审批人', key: 'auditor', },
       { title: '操作', key: 'keyWords', slot: 'action' }

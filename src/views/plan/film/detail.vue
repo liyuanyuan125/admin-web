@@ -31,7 +31,7 @@
         </Row>
         <Row>
           <Col span="2"><div>上传人</div></Col>
-          <Col span="5"><span>{{detail.applyUser}}</span></Col>
+          <Col span="5"><span>{{detail.applyUserName == null ? '暂无' : detail.applyUserName}}</span></Col>
           <Col span="2"><div>上传时间</div></Col>
           <Col span="5"><span>{{applyTime}}</span></Col>
         </Row>
@@ -63,11 +63,18 @@
         </Row>
         <Row>
           <Col span="2"><div>是否已转制</div></Col>
-          <Col span="5"><span>{{detail.translated == 1 ? '已转制' : '未转制'}}</span></Col>
+          <Col span="5">
+            <span v-if='detail.translated == null'>暂无</span>
+            <span  v-else v-for='(it , index) in translatedList' v-if='it.key == detail.translated'>{{it.text}}</span>
+          </Col>
           <Col span="2"><div>转制费</div></Col>
-          <Col span="5"><span>{{detail.transFee}}</span></Col>
+          <Col span="5"><span>{{formatNumber(detail.transFee)}}</span></Col>
           <Col span="2"><div>广告片(小样)</div></Col>
-          <Col span="5"><span style='cursor: pointer;' @click='onView(detail.srcFiledAddr)'>查看</span></Col>
+          <Col span="5">
+            <span v-if='detail.srcFiledAddr != null' style='cursor: pointer;' @click='onViewVideo(detail.srcFiledAddr)'>查看</span>
+            <span v-if='detail.srcFiledAddr == null' style='cursor: pointer;'>暂无</span>
+
+          </Col>
         </Row>
         <Row>
           <Col span="2"><div>广告下载地址</div></Col>
@@ -75,15 +82,15 @@
         </Row>
         <Row>
           <Col span="2"><div>活动ID</div></Col>
-          <Col span="5"><span>{{detail.productId}}</span></Col>
+          <Col span="5"><span>{{detail.promotionId}}</span></Col>
           <Col span="2"><div>活动名称</div></Col>
           <Col span="5"><span>{{detail.promotionName}}</span></Col>
           <Col span="2"><div>活动类型</div></Col>
-          <Col span="5"><span>{{detail.promotionType == 1 ? '按市场减免' : '按格式收费'}}</span></Col>
+          <Col span="5"><span v-for='(its, index) in promotionTypeList' v-if='detail.promotionType == its.key'>{{its.text}}</span></Col>
         </Row>
         <Row>
           <Col span="2"><div>活动价格</div></Col>
-          <Col span="5"><span>{{detail.tpromotionPrice}}</span></Col>
+          <Col span="5"><span>{{formatNumber(detail.promotionPrice)}}</span></Col>
         </Row>
         <!-- <Row>
           <Col span="12">
@@ -109,7 +116,7 @@
         <Row>
           <Input style="width:240px" type='textarea' :disabled='$route.params.status == "5"' :maxlength="120" v-model="dataForm.refuseReason"></Input>
         </Row>
-        <Row> {{dataForm.refuseReason.length}} / {{120 - dataForm.refuseReason.length}}</Row>
+        <Row> {{dataForm.refuseReason != null ? dataForm.refuseReason.length : 0}} / {{120 - (dataForm.refuseReason != null ? dataForm.refuseReason.length : 0)}}</Row>
         <Row style='padding: 15px 0;'>
           <Button  type="primary" @click="dataFormSubmit">提交</Button>
           <Button style='margin-left: 15px;' type="primary" @click="nextSubmit">提交并继续审核</Button>
@@ -169,6 +176,7 @@
       </row>
     </div>
     <DlgEdit  ref="addOrUpdate"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" @done="dlgeditdone"/>
+    <VideodlgEdit  ref="addOrUpdateVideo"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisibleVideo" @done="dlgeditdone"/>
     <!-- 查看图片 -->
     <Modal v-model="viewerShow" title="查看" width="500" height="500">
       <img style="width: 100%;" :src="viewerImage" alt sizes srcset>
@@ -194,8 +202,12 @@ import { toMap } from '@/fn/array'
 import { slice , clean } from '@/fn/object'
 import UploadButton, { SuccessEvent } from '@/components/UploadButton.vue'
 import DlgEdit from './dlgEdit.vue'
+import VideodlgEdit from './videodlgEdit.vue'
+import { formatNumber } from '@/util/validateRules'
+
+
 import { findIndex } from 'lodash'
-import {confirm , warning , success, toast } from '@/ui/modal'
+import {confirm , warning , success, toast , info } from '@/ui/modal'
 
 
 
@@ -225,7 +237,8 @@ const getName = (ptypeCode: any, list: any[]) => {
 @Component({
   components: {
     UploadButton,
-    DlgEdit
+    DlgEdit,
+    VideodlgEdit
   }
 })
 export default class Main extends ViewBase {
@@ -248,6 +261,8 @@ export default class Main extends ViewBase {
   showStatus: any = false
   showedit: any = false
   typeList: any = []
+  promotionTypeList: any = []
+
 
   editOne: any = null
 
@@ -257,6 +272,7 @@ export default class Main extends ViewBase {
 
 
   addOrUpdateVisible = false
+  addOrUpdateVisibleVideo = false
 
   // 存储数据需要调用接口的参数列
   videoIdsList: any = {}
@@ -277,6 +293,8 @@ export default class Main extends ViewBase {
   fixedRefuseReasonsList: any = []
 
   columnsReason: any = []
+
+  translatedList: any = []
 
 
 
@@ -304,6 +322,10 @@ export default class Main extends ViewBase {
     }
     this.doSearch()
   }
+
+  get formatNumber() {
+        return formatNumber
+    }
 
 
   // 上传文件
@@ -403,6 +425,9 @@ export default class Main extends ViewBase {
       this.detail = res.data.item
       this.applyTime = moment(this.detail.applyTime).format(timeFormatDate)
       this.fixedRefuseReasonsList = res.data.fixedRefuseReasonsList
+      this.dataForm.refuseReason = res.data.item.refuseReason
+      this.promotionTypeList = res.data.promotionTypeList
+      this.translatedList = res.data.translatedList
       if (res.data.item.attachments.length == 0) {
         this.attachments = [
           {
@@ -459,6 +484,14 @@ export default class Main extends ViewBase {
     })
   }
 
+  onViewVideo(src: any) {
+    this.addOrUpdateVisibleVideo = true
+    this.$nextTick(() => {
+      const myThis: any = this
+      myThis.$refs.addOrUpdateVideo.init(src)
+    })
+  }
+
   // 添加原因列表
   addReason(e: any , ptypeCode: any , stypeCode: any , stypeName: any) {
     if (e.target.checked == true) {
@@ -479,6 +512,12 @@ export default class Main extends ViewBase {
 
   // 提交并继续审核
   async nextSubmit() {
+    if ((this.dataForm.fixedRefuseReasons || []).map((it: any) => {
+              return it.stypeName
+            }).indexOf('其他') != -1 && (this.dataForm.refuseReason == '' || this.dataForm.refuseReason == null)) {
+      info('请输入审核拒绝原因')
+      return
+    }
     const dataItem: any = JSON.parse((sessionStorage.getItem('info') as any))
     this.videoIdsList = {
       query: dataItem.query, // 广告片id或者名称
@@ -537,6 +576,13 @@ export default class Main extends ViewBase {
   }
   // 提交审核拒绝原因
   async dataFormSubmit() {
+
+    if ((this.dataForm.fixedRefuseReasons || []).map((it: any) => {
+              return it.stypeName
+            }).indexOf('其他') != -1 && (this.dataForm.refuseReason == '' || this.dataForm.refuseReason == null)) {
+      info('请输入审核拒绝原因')
+      return
+    }
     const query: any = {
       refuseReason: this.dataForm.refuseReason ,
       agree: this.dataForm.fixedRefuseReasons.length == 0 ? true : false,

@@ -62,7 +62,7 @@ export default class IndexPage extends ViewBase {
       {
         name: 'cinemaId',
         defaultValue: 0,
-        type: remoteselect,
+        component: remoteselect,
         width: 108,
         placeholder: '影城名称'
       },
@@ -70,7 +70,7 @@ export default class IndexPage extends ViewBase {
       {
         name: 'code',
         defaultValue: '',
-        type: 'input',
+        input: true,
         width: 88,
         placeholder: '影城专资码'
       },
@@ -78,7 +78,7 @@ export default class IndexPage extends ViewBase {
       {
         name: 'resourceId',
         defaultValue: 0,
-        type: company,
+        component: company,
         width: 168,
         placeholder: '资源方公司名称'
       },
@@ -86,7 +86,7 @@ export default class IndexPage extends ViewBase {
       {
         name: 'hasSettlementPrice',
         defaultValue: '',
-        type: 'input',
+        input: true,
         width: 128,
         placeholder: '账单编号',
       },
@@ -94,7 +94,7 @@ export default class IndexPage extends ViewBase {
       {
         name: 'invoiceType',
         defaultValue: 0,
-        type: 'select',
+        select: true,
         width: 100,
         placeholder: '发票类型',
         enumKey: 'invoiceTypeList'
@@ -103,7 +103,7 @@ export default class IndexPage extends ViewBase {
       {
         name: 'invoiceContent',
         defaultValue: '',
-        type: 'select',
+        select: true,
         width: 100,
         placeholder: '发票内容',
         enumKey: 'invoiceContentList'
@@ -112,7 +112,7 @@ export default class IndexPage extends ViewBase {
       {
         name: 'status',
         defaultValue: '',
-        type: 'select',
+        select: true,
         width: 100,
         placeholder: '请款状态',
         enumKey: 'statusList'
@@ -121,7 +121,7 @@ export default class IndexPage extends ViewBase {
       {
         name: 'time',
         defaultValue: '',
-        type: moouth,
+        component: moouth,
         width: 200,
         placeholder: '账单月份',
         dealParam(value: string) {
@@ -134,7 +134,7 @@ export default class IndexPage extends ViewBase {
       {
         name: 'dateRange',
         defaultValue: '',
-        type: 'dateRange',
+        dateRange: true,
         width: 200,
         placeholder: '对账时间',
         dealParam(value: string) {
@@ -149,7 +149,7 @@ export default class IndexPage extends ViewBase {
       {
         name: 'dateRanges',
         defaultValue: '',
-        type: 'dateRange',
+        dateRange: true,
         width: 200,
         placeholder: '请款日期',
         dealParam(value: string) {
@@ -198,16 +198,16 @@ export default class IndexPage extends ViewBase {
       { title: '账单金额', key: 'billAmount', minWidth: 90 },
       { title: '可申请付款金额单金额', key: 'availableApplyAmount', minWidth: 130 },
       { title: '申请付款金额', key: 'applyAmount', minWidth: 90 },
-      { title: '请款状态', key: 'status', minWidth: 100,  editor: 'enum', enumKey: 'status' },
-      { title: '发票状态', key: 'invoiceStatus', minWidth: 60, editor: 'enum', enumKey: 'invoiceStatus' },
-      { title: '发票类型', key: 'invoiceType', minWidth: 100,  editor: 'enum', enumKey: 'invoiceType' },
-      { title: '发票内容', key: 'invoiceContent', minWidth: 65, editor: 'enum', enumKey: 'invoiceContent'},
+      { title: '请款状态', key: 'status', minWidth: 100, enum: 'status' },
+      { title: '发票状态', key: 'invoiceStatus', minWidth: 60, enum: 'invoiceStatus' },
+      { title: '发票类型', key: 'invoiceType', minWidth: 100, enum: 'invoiceType' },
+      { title: '发票内容', key: 'invoiceContent', minWidth: 65, enum: 'invoiceContent'},
       { title: '发票号', key: 'invoiceNo', minWidth: 100 },
       { title: '收款账户名', key: 'receiveAccountName', minWidth: 90 },
       { title: '收款银行', key: 'receiveBank', minWidth: 120 },
       { title: '收款账号', key: 'receiveNo',  minWidth: 120 },
-      { title: '对账完成时间', key: 'finishTime', minWidth: 100, editor: 'dateTime' },
-      { title: '申请付款时间', key: 'applyTime', minWidth: 100, editor: 'dateTime' },
+      { title: '对账完成时间', key: 'finishTime', minWidth: 100, dateTime: true },
+      { title: '申请付款时间', key: 'applyTime', minWidth: 100, dateTime: true },
     ]
   }
 

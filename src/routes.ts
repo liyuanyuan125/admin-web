@@ -617,6 +617,32 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  {
+    path: '/data/cinema/:action(new|edit|view)/:id?',
+    name: 'data-cinema-edit',
+    component: () => import('./views/data/cinema/edit.vue'),
+    meta: {
+      authKey({ params: { action } }) {
+        const authMap: MapType = {
+          new: 'theater.cinemas:add',
+          edit: 'theater.cinemas:modify',
+          view: '',
+        }
+        return authMap[action]
+      },
+      title({ params: { action } }) {
+        const titleMap: MapType = {
+          new: '新建',
+          edit: '编辑',
+          view: '查看',
+        }
+        return titleMap[action]
+      },
+      fixed: true,
+    },
+    props: paramTypes({ id: Number, action: String })
+  },
+
   // 基础数据 - 影院管理 - 影厅列表
   {
     path: '/data/cinema-hall/:id',
@@ -897,7 +923,11 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'finance-account-balance-detail',
     component: () => import('./views/finance/account/detail.vue'),
     meta: {
-      authKey: ''
+      authKey: '',
+      title({ params: { transactionTypes } }) {
+        const title = ['查看充值明细', '查看消费明细', '查看退款明细', '查看提现明细']
+        return title[(transactionTypes as any) - 1]
+      }
     }
   },
 
@@ -1586,7 +1616,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     component: () => import('./views/order/beforeplan/beforeplan-audit-list.vue'),
     meta: {
       authKey: '',
-      title: '广告计划审批管理列表'
+      title: '广告计划审批管理'
     },
     props: true
   },

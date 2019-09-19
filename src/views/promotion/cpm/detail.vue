@@ -23,11 +23,16 @@ import {
   auditItem
 } from './data'
 
-// const ratioValidator: Validator = (rule, value: Array<{ value: number }>, callback) => {
-//   const total = value.reduce((sum, it) => (sum += it.value), 0)
-//   const error = isNaN(total) ? '请输入数字' : total > 100 ? '占比之和不能大于 100' : ''
-//   error ? callback(new Error(error)) : callback()
-// }
+const ratioValidator: Validator = (rule, value: Array<{ value: number }>, callback) => {
+  const isInteger = value.every((it: any) => {
+    return it.discount && it.discount % 1 === 0
+  })
+  const isNumber = value.every((it: any) => {
+    return typeof it.discount === 'number'
+  })
+  const error = !isNumber ? '请输入数字' : !isInteger ? '请输入整数' : ''
+  error ? callback(new Error(error)) : callback()
+}
 
 const actionMap: MapType<any> = {
   view: null,
@@ -71,7 +76,7 @@ export default class CPMDetail extends ViewBase {
         defaultValue: this.id,
         label: '活动ID',
         text: true,
-        span: 24,
+        span: 20,
         group: '活动信息',
         visible: (item: any) => (this.action == 'create' ? false : true)
       },
@@ -81,8 +86,7 @@ export default class CPMDetail extends ViewBase {
         defaultValue: '',
         input: true,
         label: '活动名称',
-        span: 24,
-        minWidth: 350,
+        span: 12,
         required: true
       },
 
@@ -91,7 +95,8 @@ export default class CPMDetail extends ViewBase {
         defaultValue: [0, 0],
         dateRange: true,
         width: 350,
-        span: 24,
+        span: 10,
+        required: true,
         label: '活动时间',
         placeholder: '活动时间',
         dealParam(value: any) {
@@ -110,7 +115,7 @@ export default class CPMDetail extends ViewBase {
           enumKey: 'channelList',
         },
         label: '适用渠道',
-        span: 24,
+        span: 20,
         required: true
       },
 
@@ -121,7 +126,7 @@ export default class CPMDetail extends ViewBase {
           enumKey: 'customerTypeList',
         },
         label: '客户范围',
-        span: 24,
+        span: 20,
         required: true
       },
 
@@ -133,7 +138,7 @@ export default class CPMDetail extends ViewBase {
           enumKey: 'adTypeList'
         },
         label: '广告类型',
-        span: 24,
+        span: 20,
       },
 
       {
@@ -143,19 +148,24 @@ export default class CPMDetail extends ViewBase {
           enumKey: 'typeList',
         },
         label: '促销活动类型',
-        span: 24,
+        span: 20,
         required: true
       },
 
       {
         name: 'bizPricingList',
         defaultValue: [],
-        label: '品牌广告',
+        label: ' ',
         component: BizPricingTable,
-        span: 24,
+        span: 20,
         props: {
           title: '商业广告折扣列表'
         },
+        rules: [
+          {
+            validator: ratioValidator
+          }
+        ],
         visible: (item: any) => ((item.adTypes.findIndex((it: any) => it == 1) !== -1) && item.type === 1)
         ? true
         : false
@@ -164,12 +174,17 @@ export default class CPMDetail extends ViewBase {
       {
         name: 'prevuePricingList',
         defaultValue: [],
-        label: '品牌广告',
+        label: ' ',
         component: BizPricingTable,
-        span: 24,
+        span: 20,
         props: {
           title: '预告片广告折扣列表'
         },
+        rules: [
+          {
+            validator: ratioValidator
+          }
+        ],
         visible: (item: any) => ((item.adTypes.findIndex((it: any) => it == 2) !== -1) && item.type === 1)
         ? true
         : false

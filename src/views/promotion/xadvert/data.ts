@@ -125,6 +125,13 @@ export async function disabledItem(id: number) {
 export async function queryItem(query: any = {}) {
   const { id } = query
   const { data } = await get(`/promotion/convert-costs/${id}`)
+  const {
+    item: {
+      beginDate,
+      endDate
+    }
+  } = data
+  data.item.marketDate = [beginDate, endDate]
   data.item.logList = data.logList
   data.typeList = data.typeList.filter((it: any) => it.key !== 2) || []
   return data
