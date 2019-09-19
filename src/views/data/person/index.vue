@@ -221,12 +221,6 @@ export default class Main extends ViewBase {
 }
 </script>
 <style lang='less' scoped>
-// .operate-btn {
-//   span {
-//     padding: 5px 6px;
-//     cursor: pointer;
-//   }
-// }
 .table-btn {
   padding: 10px 0;
   .ivu-btn {
