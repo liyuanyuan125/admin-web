@@ -92,7 +92,7 @@ export default class Main extends ViewBase {
     {
       name: 'id',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 85,
       placeholder: '品牌ID'
     },
@@ -100,14 +100,14 @@ export default class Main extends ViewBase {
     {
       name: 'name',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 85,
       placeholder: '品牌中文名称'
     },
     {
       name: 'enName',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 85,
       placeholder: '品牌外文名称'
     },
@@ -115,7 +115,7 @@ export default class Main extends ViewBase {
     {
       name: 'tradeCode',
       defaultValue: 0,
-      type: 'select',
+      select: true,
       width: 85,
       placeholder: '品牌所属行业',
       enumKey: 'tradeCodeList'
@@ -143,8 +143,8 @@ export default class Main extends ViewBase {
       { title: '品牌ID', key: 'id', slot: 'id', width: 80 },
       { title: '品牌中文名称', key: 'name', minWidth: 90 },
       { title: '品牌外文名称', key: 'enName', width: 100 },
-      { title: '品牌logo', key: 'logo', minWidth: 90, editor: 'deprecated' },
-      { title: '所属行业', key: 'tradeCode', width: 80, editor: 'enum', enumKey: 'tradeCodeCode' },
+      { title: '品牌logo', key: 'logo', minWidth: 90, deprecated: true },
+      { title: '所属行业', key: 'tradeCode', width: 80, enum: 'tradeCodeCode' },
       { title: '搜索关键字', key: 'keyWords', width: 80, slot: 'keyWords' },
       { title: '社交平台', key: 'countyName', width: 110, slot: 'platform' },
       { title: '门店', key: 'gradeCode', width: 80, slot: 'shop' },

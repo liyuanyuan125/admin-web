@@ -3,26 +3,26 @@ import moment from 'moment'
 export const one = [
   { title: '充值订单号  ', key: 'streamNo' },
   { title: '充值金额  ', key: 'transactionAmount' },
-  { title: '充值时间  ', key: 'transactionTime', editor: 'dateTime' },
+  { title: '充值时间  ', key: 'transactionTime', dateTime: true },
 ]
 
 export const two = [
   { title: '消费订单号', key: 'streamNo' },
   { title: '消费金额', key: 'transactionAmount' },
   { title: '消费类型', key: 'transactionType', slot: 'status'  },
-  { title: '消费时间', key: 'transactionTime', editor: 'dateTime' },
+  { title: '消费时间', key: 'transactionTime', dateTime: true },
 ]
 
 export const three = [
   { title: '消费订单号', key: 'streamNo' },
   { title: '退款金额', key: 'transactionAmount' },
-  { title: '退款时间', key: 'transactionTime', editor: 'dateTime' },
+  { title: '退款时间', key: 'transactionTime', dateTime: true },
 ]
 
 export const four = [
   { title: '提现申请单编号', key: 'streamNo' },
   { title: '提现金额', key: 'transactionAmount' },
-  { title: '提现申请时间', key: 'transactionTime', editor: 'dateTime' },
+  { title: '提现申请时间', key: 'transactionTime', dateTime: true },
   { title: '最后更新时间', key: 'remittanceDate', slot: 'remittanceDate' },
 ]
 
@@ -36,14 +36,14 @@ export function filterone(str: string, companyId: any) {
     {
       name: 'streamNo',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 108,
       placeholder: '充值订单号'
     },
     {
       name: 'dateRange',
       defaultValue: str,
-      type: 'dateRange',
+      dateRange: true,
       width: 200,
       placeholder: '充值日期区间',
       dealParam(value: string) {
@@ -83,14 +83,14 @@ export function filtertwo(str: string, companyId: any) {
     {
       name: 'streamNo',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 108,
       placeholder: '消费订单号'
     },
     {
       name: 'dateRange',
       defaultValue: str,
-      type: 'dateRange',
+      dateRange: true,
       width: 200,
       placeholder: '消费日期区间',
       dealParam(value: string) {
@@ -104,7 +104,7 @@ export function filtertwo(str: string, companyId: any) {
     {
       name: 'transactionTypes',
       defaultValue: 0,
-      type: 'select',
+      select: true,
       width: 100,
       placeholder: '发票类型',
       enumKey: 'statusList',
@@ -140,7 +140,7 @@ export function filterthree(str: string, companyId: any) {
     {
       name: 'dateRange',
       defaultValue: str,
-      type: 'dateRange',
+      dateRange: true,
       width: 200,
       placeholder: '退款日期区间',
       dealParam(value: string) {
@@ -154,7 +154,7 @@ export function filterthree(str: string, companyId: any) {
     {
       name: 'streamNo',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 108,
       placeholder: '退款单号'
     },
@@ -187,7 +187,7 @@ export function filterfour(str: string, companyId: any) {
     {
       name: 'dateRange',
       defaultValue: str,
-      type: 'dateRange',
+      dateRange: true,
       width: 200,
       placeholder: '提现日期区间',
       dealParam(value: string) {
@@ -201,7 +201,7 @@ export function filterfour(str: string, companyId: any) {
     {
       name: 'streamNo',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 108,
       placeholder: '提现申请单'
     },
