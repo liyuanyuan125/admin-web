@@ -30,6 +30,12 @@ declare module 'document-offset' {
   export default function(el: Element): { left: number, top: number }
 }
 
+declare module 'js-calendar' {
+  export class Generator {
+    public constructor(options: { onlyDays: boolean, weekStart: number })
+  }
+}
+
 interface VarType {
   env: 'dev' | 'qas' | 'stg' | 'prd'
   baseUrl: string

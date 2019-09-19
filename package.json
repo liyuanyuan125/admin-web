@@ -19,6 +19,7 @@
     "document-offset": "^1.0.4",
     "exif-js": "^2.3.0",
     "iview": "^3.5.1",
+    "js-calendar": "^1.2.3",
     "js-cookie": "^2.2.0",
     "lodash": "^4.17.11",
     "mockjs": "^1.0.1-beta3",

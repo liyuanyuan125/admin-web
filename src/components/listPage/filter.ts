@@ -5,6 +5,7 @@ import NumberInput from '@/components/numberInput'
 import { kebabCase, isPlainObject, cloneDeep } from 'lodash'
 import DatePicker from './components/datePicker.vue'
 import DateRangePicker from './components/dateRangePicker.vue'
+import WeekPicker from './components/weekPicker.vue'
 import { FormSelect } from '@/components/editForm'
 import RemoteSelect, {
   Fetch as RemoteSelectFetch,
@@ -41,6 +42,10 @@ const componentMap: MapType<ComponentItem> = {
 
   dateRange: {
     component: DateRangePicker
+  },
+
+  week: {
+    component: WeekPicker
   },
 
   remoteSelect: {
@@ -106,6 +111,9 @@ export interface Filter extends OldFilter {
 
   /** 组件 DateRangePicker 的选项 */
   dateRange?: true,
+
+  /** 组件 WeekDatePicker 的选项 */
+  week?: true,
 
   /**
    * 组件 remoteSelect 的选项，若设置了该项，
