@@ -143,10 +143,10 @@ export default class Main extends ViewBase {
 
   format(val: any) {
     const datas = (val + '')
-    const a = datas[0].slice(0, 4)
-    const b = datas[0].slice(4, 6)
-    const c = datas[0].slice(6)
-    return val && val.length == 8 ? `${a}/${b}/${c}` : '-'
+    const a = datas.slice(0, 4)
+    const b = datas.slice(4, 6)
+    const c = datas.slice(6)
+    return datas && datas.length == 8 ? `${a}-${b}-${c}` : '-'
   }
 
   formatstatus(val: any) {

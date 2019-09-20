@@ -158,16 +158,16 @@ export default class ComponentMain extends ViewBase {
   dataFormSubmit(dataForms: any) {
    (this.$refs[dataForms] as any).validate(async ( valid: any ) => {
       if (valid) {
-        if (this.dataForm.amount > this.row.balance) {
-          info('提现金额大于账户余额')
-          return
+        try {
+          await save({
+            ...this.dataForm,
+            companyId: this.row.companyId
+          })
+          this.cancel()
+          this.$emit('done')
+        } catch (ex) {
+          this.handleError(ex)
         }
-        await save({
-          ...this.dataForm,
-          companyId: this.row.companyId
-        })
-        this.cancel()
-        this.$emit('done')
       }
     })
   }
