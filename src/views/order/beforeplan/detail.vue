@@ -180,7 +180,7 @@
                 预估曝光人次【{{formatNumber(listitem.estimatePersonCount , 2)}}】
                 预估曝光场次【{{formatNumber(listitem.estimateShowCount , 2)}}】
                 预估花费【{{formatNumber(listitem.estimateCostAmount)}}】
-                <span v-if='this.$route.params.ifs == 0 && (listitem.discount != 1 && listitem.discount != "" && listitem.discount != null)'>, 折扣后总价【{{formatNumber(listitem.estimateCostAmount , 2)}}】</span>
+                <span v-if='this.$route.params.ifs == 0 && (listitem.discount != 1 && listitem.discount != "" && listitem.discount != null && listitem.totalAmount != null)'>, 折扣后总价【{{formatNumber(listitem.totalAmount , 2)}}】</span>
                 <Button v-if='this.$route.params.ifs == 1' type="primary" :loading="loading2" @click="shuaxin()">刷新</Button>
                 </Col>
                 <!-- <Col :span='4'>

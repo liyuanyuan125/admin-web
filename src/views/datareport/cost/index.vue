@@ -9,8 +9,8 @@
             <Option v-for="it in putInType" :key="it.key" :value="it.key"
               :label="it.text">{{it.text}}</Option>
           </Select>
-          <LazyInput v-if='' v-model="query.mobile" placeholder="天" class="input"/>
-          <LazyInput v-if='' v-model="query.mobile" placeholder="人" class="input"/>
+          <LazyInput v-if='query.status == 1' v-model="query.mobile" placeholder="天" class="input"/>
+          <LazyInput v-if='query.status == 2' v-model="query.mobile" placeholder="人" class="input"/>
           <LazyInput v-model="query.companyName" placeholder="密钥周期" class="input"/>
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </form>
@@ -62,14 +62,14 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     id: '',
     email: '',
     companyName: '',
-    status: null,
+    status: 1,
     pageIndex: 1,
     pageSize: 20,
   }
   query: any = {}
 
   loading = false
-  list = []
+  list: any = []
   total = 0
   oldQuery: any = {}
 
@@ -135,6 +135,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         statusList: statusList,
       } } = await queryList(this.query)
       this.list = list
+      this.list.push({
+        id: '总计',
+        email: 456
+      })
       this.total = total
       this.statusList = statusList
     } catch (ex) {
