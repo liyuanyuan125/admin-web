@@ -217,8 +217,12 @@ export default class CPMDetail extends ViewBase {
 
   async fetch() {
     let data = null
-    if ( this.action === 'edit' || this.action === 'audit') {
+    if ( this.action === 'edit') {
       data = await beforeEdit({
+        id: this.id
+      })
+    } else if (this.action === 'audit') {
+      data = await queryItem({
         id: this.id
       })
     } else if ( this.action === 'view') {
