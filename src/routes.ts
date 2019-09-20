@@ -1704,6 +1704,16 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       title: '映前广告监播详情'
     }
   },
+  // 广告管理 - 成本核算 - 列表
+  {
+    path: '/datareport/cost',
+    name: 'datareport-cost',
+    component: () => import('./views/datareport/cost/index.vue'),
+    meta: {
+      authKey: '',
+      title: '成本核算报表'
+    }
+  },
 ] // end of mainLayoutRoutes
 
 const errorRoutes: RouteConfigEnhance[] = [
