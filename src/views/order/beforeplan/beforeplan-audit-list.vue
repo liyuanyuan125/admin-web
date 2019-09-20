@@ -14,7 +14,7 @@
           >审核</router-link>
           <router-link
           v-if="auditStatus !== 1"
-            :to="{ name: 'order-beforeplanAudit-detail', params: { id , status, ifs: '1' } }"
+            :to="{ name: 'order-beforeplanAudit-detail', params: { id , status, ifs: '0' } }"
           >查看</router-link>
         </div>
       </template>

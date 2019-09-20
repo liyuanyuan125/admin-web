@@ -1,7 +1,13 @@
 <template>
   <Modal v-model="value.showDlg" title="刊例价报价详情" :width="700" cancel-text="">
-    <Table :columns="columns" :data="list" size="small" :show-header="false"
-      stripe :border="false" disabled-hover/>
+    <Table
+      :columns="columns"
+      :data="list"
+      size="small"
+      stripe
+      :border="false"
+      disabled-hover
+    />
   </Modal>
 </template>
 
@@ -16,6 +22,7 @@ import { centToYuan } from '@/util/filters'
 interface Item {
   cpm: number
   discount: number
+  trailerDiscount: number
   company: {
     companyName: string
     companyTypeCode: string
@@ -25,6 +32,7 @@ interface Item {
 interface FlatItem {
   cpm: string
   discount: string
+  trailerDiscount: string
   companyName: string
   companyTypeName: string
 }
@@ -59,8 +67,9 @@ export default class ComponentMain extends ViewBase {
       const { companyName, companyTypeCode } = it.company
       const companyTypeName = this.companyTypeMap[companyTypeCode] || ''
       return {
-        cpm: centToYuan(it.cpm),
+        cpm: String(it.cpm),
         discount: `${it.discount}%`,
+        trailerDiscount: `${it.trailerDiscount}%`,
         companyName,
         companyTypeName,
       }
@@ -69,10 +78,11 @@ export default class ComponentMain extends ViewBase {
   }
 
   columns = [
-    { key: 'companyName' },
-    { key: 'companyTypeName', align: 'center', width: 100 },
-    { key: 'cpm', align: 'center', width: 100 },
-    { key: 'discount', width: 100 },
+    { title: '公司名', key: 'companyName' },
+    { title: '公司类型', key: 'companyTypeName', align: 'center', width: 100 },
+    { title: 'CPM', key: 'cpm', align: 'center', width: 100 },
+    { title: '折扣', key: 'discount', width: 100 },
+    { title: '预告片折扣', key: 'trailerDiscount', width: 100 },
   ]
 
   @Watch('value', { deep: true })
