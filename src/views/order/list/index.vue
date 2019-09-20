@@ -103,6 +103,9 @@
         <template slot="advertType" slot-scope="{row}">
           <span v-for='(its,index) in advertTypeCodeList' v-if='row.advertType == its.key'>{{its.text}}</span>
         </template>
+        <template slot="status" slot-scope="{row}">
+          <span v-for='(its,index) in statusList' v-if='row.status == its.key'>{{its.text}}</span>
+        </template>
           <template slot="spaction" slot-scope="{row}">
           <!-- <a v-show='row.status == 3' v-auth="'advert.executeOrder:settlement'" @click="change(row.id, row)">结算</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
           <router-link v-show='row.status == 3' v-auth="'advert.executeOrder:info'" :to="{ name: 'order-list-detail', params: { id: row.id , status: row.status } }">详情</router-link>
@@ -216,33 +219,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     },
     {
       title: '状态',
-      key: 'status',
+      slot: 'status',
       align: 'center',
       width: 90,
-      render: (hh: any, { row: { status } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        if (status == 1) {
-          return <span class={`status-1`}>待接单</span>
-        } else if (status == 2) {
-          return <span class={`status-2`}>待执行</span>
-        }
-         else if (status == 3) {
-          return <span class={`status-3`}>执行中</span>
-        }
-         else if (status == 4) {
-          return <span class={`status-4`}>已拒绝</span>
-        }else if (status == 5) {
-          return <span class={`status-5`}>已失效</span>
-        }else if (status == 6) {
-          return <span class={`status-6`}>待结算</span>
-        }else if (status == 7) {
-          return <span class={`status-7`}>已完成</span>
-        }else if (status == 8) {
-          return <span class={`status-8`}>已关闭</span>
-        }
-        /* tslint:enable */
-      }
     },
     {
       title: '操作',

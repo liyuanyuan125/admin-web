@@ -192,7 +192,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
                 } else if (acceptStatus == 1) {
                   return <span class='datetime' v-html={'已接单'}></span>
                 } else if (acceptStatus == 2) {
-                  return <span class='datetime' v-html={'未接单'}></span>
+                  return <span class='datetime' v-html={'已拒单'}></span>
                 }
                 
                 /* tslint:enable */
