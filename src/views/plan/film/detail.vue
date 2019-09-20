@@ -86,7 +86,10 @@
           <Col span="2"><div>活动名称</div></Col>
           <Col span="5"><span>{{detail.promotionName}}</span></Col>
           <Col span="2"><div>活动类型</div></Col>
-          <Col span="5"><span v-for='(its, index) in promotionTypeList' v-if='detail.promotionType == its.key'>{{its.text}}</span></Col>
+          <Col span="5">
+            <span v-if='detail.promotionType == null'>暂无</span>
+            <span v-else v-for='(its, index) in promotionTypeList' v-if='detail.promotionType == its.key'>{{its.text}}</span>
+          </Col>
         </Row>
         <Row>
           <Col span="2"><div>活动价格</div></Col>
