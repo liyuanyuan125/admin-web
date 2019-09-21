@@ -129,7 +129,7 @@ export default class Main extends ViewBase {
   columns = [
     { title: 'ID', key: 'id', minWidth: 65 },
     { title: '资源方名称', key: 'name', minWidth: 100 },
-    { title: '客户等级', key: 'levelCode', minWidth: 50, enum: true },
+    { title: '客户等级', key: 'levelCode', minWidth: 50, enum: 'levelList' },
     { title: '客户类型', key: 'contractNo', minWidth: 60, slot: 'client' },
     { title: '关联销售', key: 'businessDirectorName', minWidth: 60 },
     { title: '创建时间', key: 'createTime', minWidth: 100, dateTime: true },

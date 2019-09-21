@@ -154,7 +154,8 @@
                 预估曝光人次【{{formatNumber(listitem.estimatePersonCount , 2)}}】
                 预估曝光场次【{{formatNumber(listitem.estimateShowCount , 2)}}】
                 预估花费【{{formatNumber(listitem.estimateCostAmount)}}】
-                <span v-if="ifs === '0'">, 折扣后总价【{{formatNumber(listitem.totalAmount , 2)}}】</span>
+                <span v-if="ifs === '0' && listitem.totalAmount && auditForm.discount > 0">, 折扣后总价【{{formatNumber(listitem.totalAmount , 2)}}】</span>
+                <span v-if="ifs === '1' && auditForm.discount > 0">, 折扣后总价 {{(listitem.estimateCostAmount * auditForm.discount).toFixed(2)}}</span>
                 </Col>
             </Form>
             <Button v-if="ifs == '1'" style='margin-left: 30px;' type="primary" @click="planAuditHandler(true)">通过</Button>
