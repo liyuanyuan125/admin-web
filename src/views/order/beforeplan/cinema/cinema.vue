@@ -129,7 +129,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
     dataForm: any = {
         pageIndex: 1,
-        pageSize: 20,
+        pageSize: 8888,
         cinemaName: '',
         resourceId: null,
         provinceId: 0,
