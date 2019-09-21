@@ -30,7 +30,7 @@ import { queryList } from './data'
 import { alert, toast } from '@/ui/modal'
 import jsxReactToVue from '@/util/jsxReactToVue'
 // 广告主公司名称列表
-import CompanyList from './files/adscompany.vue'
+import CompanyList from './files/adscompany-audit-list.vue'
 // 广告片名称列表
 import videoList from './files/videoList.vue'
 
@@ -76,7 +76,7 @@ export default class IndexPage extends ViewBase {
       },
 
       {
-        name: 'companyName',
+        name: 'companyId',
         defaultValue: 0,
         type: CompanyList,
         width: 140,
@@ -91,14 +91,6 @@ export default class IndexPage extends ViewBase {
         placeholder: '广告计划名称'
       },
 
-      // {
-      //   name: 'videoName',
-      //   defaultValue: '',
-      //   type: videoList,
-      //   width: 140,
-      //   placeholder: '广告片名称'
-      // },
-
       {
         name: 'advertTypeCode',
         defaultValue: null,
@@ -110,11 +102,12 @@ export default class IndexPage extends ViewBase {
 
       {
         name: 'channelCode',
-        defaultValue: null,
-        type: 'select',
+        defaultValue: 0,
         width: 100,
         placeholder: '渠道',
-        enumKey: 'channelList'
+        select: {
+          enumKey: 'channelList',
+        },
       },
 
       {
@@ -160,9 +153,7 @@ export default class IndexPage extends ViewBase {
     ]
   }
 
-  enums = [
-    'advertTypeList'
-  ]
+  enums = []
 
   get columns() {
     return [
