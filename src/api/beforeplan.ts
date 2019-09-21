@@ -148,6 +148,13 @@ export async function importCinema(id: any) {
   return data
 }
 
+// 下载影院新数据
+// https://yapi.aiads-dev.com/project/140/interface/api/6296
+export async function getCinema(id: any) {
+  const data = await get(`/xadvert/plans/${id}/export-cinema` )
+  return data
+}
+
 //  设置广告片投放位置
 /**
  *
