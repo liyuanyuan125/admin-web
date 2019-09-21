@@ -65,7 +65,7 @@ import { Component, Watch, Mixins, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { cinemaList, delcin, aresids, importCinema } from '@/api/beforeplan'
+import { cinemaList, delcin, aresids, importCinema , getCinema } from '@/api/beforeplan'
 import { queryList } from '@/api/corpReal'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
@@ -129,7 +129,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
     dataForm: any = {
         pageIndex: 1,
-        pageSize: 8888,
+        pageSize: 20,
         cinemaName: '',
         resourceId: null,
         provinceId: 0,
@@ -157,6 +157,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     dataList: any = []
     // 接单转态
     acceptStatusList: any = []
+
+    getCinema: any = false
 
 
     // 批量导入影院
@@ -193,6 +195,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
                   return <span class='datetime' v-html={'已接单'}></span>
                 } else if (acceptStatus == 2) {
                   return <span class='datetime' v-html={'已拒单'}></span>
+                } else {
+                  return <span class='datetime' v-html={'-'}></span>
                 }
                 
                 /* tslint:enable */
@@ -246,8 +250,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
 
     // 下载
-    exportData() {
-        const res: any = (this.list || []).map((it: any) => {
+    async exportData() {
+        try {
+            const a = await getCinema(this.$route.params.id)
+            const b = a.data
+            const res: any = (b || []).map((it: any) => {
                 return {
                     ...it,
                     resourceName: getName(it.resourceId, this.reslist)
@@ -259,11 +266,14 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
                 columns: this.columnsData,
                 data: res
             })
+        } catch (ex) {
+            this.handleError(ex)
+        }
     }
 
     // 批量导入影院
     async onChange(ev: Event) {
-      this.defaultCinemaLength = this.list.length
+        this.defaultCinemaLength = this.list.length
         const uploader: any = new Uploader({
             filePostUrl: `/xadvert/plans/` + this.$route.params.id + `/import-cinema`,
             fileFieldName: 'file',
@@ -273,11 +283,20 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         this.inputhtml = this.file.name
 
         if (this.$route.params.status == '6' || this.$route.params.status == '7' ) {
-            const a = await uploader.upload(this.file)
-            this.searchchg()
+            try {
+              const a = await uploader.upload(this.file)
+              this.searchchg()
+            } catch (ex) {
+              this.handleError(ex)
+            } finally {
+            }
         } else {
-            const a = await uploader.upload(this.file)
-            this.search()
+            try {
+              const a = await uploader.upload(this.file)
+              this.search()
+            } catch (ex) {
+              this.handleError(ex)
+            }
         }
         this.viewcinema = true
         this.$emit('getcine', this.viewcinema)
@@ -303,7 +322,15 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
                 ifchgRes: true
               }
             })
-            this.list = [...list , ...bbb]
+            const ccc = (this.list || []).map((it: any) => {
+                return it.id
+            })
+            bbb.map((it: any) => {
+              if (ccc.indexOf(it.code) == -1) {
+                this.list.push(it)
+              }
+            })
+            // this.list = [...list , ...bbb]
             this.total = total
             this.acceptStatusList = acceptStatusList
 

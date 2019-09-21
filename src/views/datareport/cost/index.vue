@@ -41,7 +41,7 @@ import moment from 'moment'
 import { slice, clean } from '@/fn/object'
 import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 
-import {confirm , warning , success, toast } from '@/ui/modal'
+import {confirm , warning , success, toast , info } from '@/ui/modal'
 
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
@@ -106,7 +106,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   ]
 
   mounted() {
-    this.updateQueryByParam()
+    info('请输入影片名称，预测票房进行查询')
+    // this.updateQueryByParam()
   }
 
   search() {
@@ -122,6 +123,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
 
   async doSearch() {
+    if (this.query.id != '' && this.query.email != '') {
+      info('哈哈')
+      return
+    }
     if (this.loading) {
       return
     }
