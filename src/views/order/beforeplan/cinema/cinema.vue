@@ -50,7 +50,7 @@
             <div class="act-bar" style='margin-top: 15px;'>
                 <a style='float: left; margin-right: 15px;' @click="onAdd" v-if="!type && $route.params.status == 3 || $route.params.status == 10 || $route.params.status == 6 || $route.params.status == 7" @done="dlgEditDone">添加影院</a>&nbsp;&nbsp;&nbsp;
                 <Form v-if='$route.params.ifs == 1 && ($route.params.status == 3 || $route.params.status == 6 || $route.params.status == 7)' class="create-form form-item" enctype="multipart/form-data" ref="form" :label-width="120">批量导入
-                    <input type="file" class='adds' @change="onChange" />
+                    <input ref='input' type="file" class='adds' @change="onChange" />
                 </Form>
                 <span class='viewhtml'>{{inputhtml}}</span>
             </div>
@@ -298,6 +298,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
               this.handleError(ex)
             }
         }
+        (this.$refs.input as any).value = null
         this.viewcinema = true
         this.$emit('getcine', this.viewcinema)
     }
