@@ -3,8 +3,10 @@
     <div>
       <div class="act-bar flex-box">
         <form class="form flex-1" @submit.prevent="search">
-          <span style='color: red;'>*</span><LazyInput v-model="query.id" placeholder="影片名称" class="input"/>
-          <span style='color: red;margin-left: 5px;'>*</span><LazyInput v-model="query.email" placeholder="预测票房" class="input"/>
+          <!-- <span style='color: red;'>*</span> -->
+          <LazyInput v-model="query.id" placeholder="影片名称" class="input"/>
+          <!-- <span style='color: red;margin-left: 5px;'>*</span> -->
+          <LazyInput v-model="query.email" placeholder="预测票房" class="input"/>
           <Select v-model="query.status" placeholder="启用状态" clearable>
             <Option v-for="it in putInType" :key="it.key" :value="it.key"
               :label="it.text">{{it.text}}</Option>
@@ -12,6 +14,7 @@
           <LazyInput v-if='query.status == 1' v-model="query.mobile" placeholder="天" class="input"/>
           <LazyInput v-if='query.status == 2' v-model="query.mobile" placeholder="人" class="input"/>
           <LazyInput v-model="query.companyName" placeholder="密钥周期" class="input"/>
+          <Button type="success" @click="search" class="btn-reset">确认</Button>
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </form>
       </div>
@@ -106,7 +109,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   ]
 
   mounted() {
-    info('请输入影片名称，预测票房进行查询')
+    // info('请输入影片名称，预测票房进行查询')
     // this.updateQueryByParam()
   }
 
@@ -123,8 +126,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
 
   async doSearch() {
-    if (this.query.id != '' && this.query.email != '') {
-      info('哈哈')
+    if (this.query.id == '' && this.query.email == '') {
+      info('请输入影片名称，预测票房进行查询')
       return
     }
     if (this.loading) {

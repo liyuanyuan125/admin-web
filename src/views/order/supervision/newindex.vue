@@ -120,6 +120,9 @@ export default class IndexPage extends ViewBase {
     sd = moment(this.weekDate[0].getTime()).format(defaulttimeFormat)
     ed = moment(this.weekDate[1].getTime()).format(defaulttimeFormat)
 
+    ad = moment(this.weekDate[0].getTime() - (24 * 60 * 60 * 1000 * 7)).format(defaulttimeFormat)
+    bd = moment(this.weekDate[1].getTime() - (24 * 60 * 60 * 1000 * 7)).format(defaulttimeFormat)
+
     videoVisible = false
 
     status = this.pay
@@ -190,7 +193,7 @@ export default class IndexPage extends ViewBase {
           const b  = moment(this.weekDate[1].getTime()).format(defaulttimeFormat)
           return a + '-' + b
         } else if (new Date().getDay() == 1 || new Date().getDay() == 2 || new Date().getDay() == 3 ) {
-            return this.sd + '-' + this.ed
+            return this.ad + '-' + this.bd
         }
         if (new Date().getDay() == 4) {
             return this.sd + '-' + this.ed
