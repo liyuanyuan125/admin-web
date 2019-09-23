@@ -9,7 +9,7 @@
         :loading="loading"
         @on-clear="data = []"
         class="select-wid" >
-        <Option v-for="(item, index) in data" :key="index" :value="item.id" >{{item.chainName}}</Option>        
+        <Option v-for="(item, index) in data" :key="index" :value="item.code" >{{item.chainName}}</Option>        
     </Select>
 </template>
 
