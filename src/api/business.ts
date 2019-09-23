@@ -38,8 +38,8 @@ export async function queryList(query: any = {}) {
  * @param id 要操作的ID
  * https://yapi.aiads-dev.com/project/140/interface/api/5778
  */
-export async function getBusiness(id: number) {
-  const { data } = await get(`/xadvert/business-managements/${id}`)
+export async function getBusiness(id: number, query: any = {}) {
+  const { data } = await get(`/xadvert/business-managements/${id}`, query)
   const { item } = data
   const { userId, roles, discount } = item
   return {
