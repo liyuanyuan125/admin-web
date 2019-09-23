@@ -71,7 +71,7 @@ import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
-import { confirm, warning, success, toast, info } from '@/ui/modal'
+import { confirm, warning, success, toast, info , alert , error } from '@/ui/modal'
 import AreaSelect from '@/components/areaSelect'
 import changeDlg from '../changeDlg.vue'
 import AddCinemaModel from './addCinemaModel.vue'
@@ -145,6 +145,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     totalPage = 0
     loading = false
     list: any = []
+    list1: any = []
     total = 0
     typeList = []
     showTime: any = []
@@ -274,29 +275,33 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     // 批量导入影院
     async onChange(ev: Event) {
         this.defaultCinemaLength = this.list.length
-        const uploader: any = new Uploader({
+        const uploader = new Uploader({
             filePostUrl: `/xadvert/plans/` + this.$route.params.id + `/import-cinema`,
             fileFieldName: 'file',
+        })
+        uploader.on('fail', (ex: any) => {
+          error(ex.msg)
+          return
         })
         const input = ev.target as HTMLInputElement
         this.file = input.files && input.files[0]
         this.inputhtml = this.file.name
 
         if (this.$route.params.status == '6' || this.$route.params.status == '7' ) {
-            try {
+            // try {
               const a = await uploader.upload(this.file)
               this.searchchg()
-            } catch (ex) {
-              this.handleError(ex)
-            } finally {
-            }
+            // } catch (ex) {
+              // this.handleError(ex)
+            // } finally {
+            // }
         } else {
-            try {
+            // try {
               const a = await uploader.upload(this.file)
               this.search()
-            } catch (ex) {
-              this.handleError(ex)
-            }
+            // } catch (ex) {
+              // this.handleError(ex)
+            // }
         }
         (this.$refs.input as any).value = null
         this.viewcinema = true
@@ -316,21 +321,34 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
                     acceptStatusList: acceptStatusList
                 }
             } = await cinemaList(this.$route.params.id, query)
-            const aaa: any = list.slice(this.defaultCinemaLength) // 增加的
-            const bbb: any = (aaa || []).map(( it: any ) => {
-              return {
-                ...it,
-                ifchgRes: true
-              }
+            const aaalist: any = this.list1.map((it: any) => {
+                return it.code
             })
-            const ccc = (this.list || []).map((it: any) => {
-                return it.id
+            const bbblist: any = (list || []).map((it: any) => {
+                if (aaalist.indexOf(it.code) == -1) {
+
+                }
+                return {
+                    ...it,
+                    ifchgRes: aaalist.indexOf(it.code) == -1 ? true : false
+                }
             })
-            bbb.map((it: any) => {
-              if (ccc.indexOf(it.code) == -1) {
-                this.list.push(it)
-              }
-            })
+            this.list = bbblist
+            // const aaa: any = list.slice(this.defaultCinemaLength) // 增加的
+            // const bbb: any = (aaa || []).map(( it: any ) => {
+            //   return {
+            //     ...it,
+            //     ifchgRes: true
+            //   }
+            // })
+            // const ccc = (this.list || []).map((it: any) => {
+            //     return it.id
+            // })
+            // bbb.map((it: any) => {
+            //   if (ccc.indexOf(it.code) == -1) {
+            //     this.list.push(it)
+            //   }
+            // })
             // this.list = [...list , ...bbb]
             this.total = total
             this.acceptStatusList = acceptStatusList
@@ -412,6 +430,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
                 }
             } = await cinemaList(this.$route.params.id, query)
             this.list = list
+            this.list1 = list
             this.total = total
             this.defaultCinemaLength = total
             this.acceptStatusList = acceptStatusList
