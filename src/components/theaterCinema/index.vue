@@ -9,14 +9,14 @@
         :loading="loading"
         @on-clear="data = []"
         class="select-wid" >
-        <Option v-for="(item, index) in data" :key="index" :value="item.code" >{{item.chainName}}</Option>        
+        <Option v-for="(item, index) in data" :key="index" :value="item.id" >{{item.name}}</Option>        
     </Select>
 </template>
 
 <script lang='ts'>
 import {Component, Prop, Watch} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import { queryList } from '@/api/cinema'
+import { chainsList } from '@/api/cinema'
 @Component
 export default class SelectPlan extends ViewBase {
   // 双向绑定 v-model
@@ -36,7 +36,7 @@ export default class SelectPlan extends ViewBase {
         this.loading = true
         const {
           data: { items }
-        } = await queryList({
+        } = await chainsList({
           pageSize: 99,
           pageIndex: 1,
           name: query
