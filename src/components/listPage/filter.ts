@@ -5,6 +5,7 @@ import NumberInput from '@/components/numberInput'
 import { kebabCase, isPlainObject, cloneDeep } from 'lodash'
 import DatePicker from './components/datePicker.vue'
 import DateRangePicker from './components/dateRangePicker.vue'
+import WeekPicker from './components/weekPicker.vue'
 import { FormSelect } from '@/components/editForm'
 import RemoteSelect, {
   Fetch as RemoteSelectFetch,
@@ -43,6 +44,10 @@ const componentMap: MapType<ComponentItem> = {
     component: DateRangePicker
   },
 
+  week: {
+    component: WeekPicker
+  },
+
   remoteSelect: {
     component: RemoteSelect
   },
@@ -74,6 +79,9 @@ export interface Filter extends OldFilter {
    */
   enumKey?: string
 
+  /** 组件，一般用于自定义组件 */
+  component?: Component
+
   /**
    * 传递给组件的 props
    */
@@ -104,6 +112,9 @@ export interface Filter extends OldFilter {
   /** 组件 DateRangePicker 的选项 */
   dateRange?: true,
 
+  /** 组件 WeekDatePicker 的选项 */
+  week?: true,
+
   /**
    * 组件 remoteSelect 的选项，若设置了该项，
    * 则说明会用 RemoteSelect 组件渲染该项
@@ -132,9 +143,6 @@ export interface Filter extends OldFilter {
  * 规范化后的查询项
  */
 export interface NormalFilter extends Filter {
-  /** 确定要使用的 component */
-  component: Component
-
   /** class 或 class 列表 */
   class: string | string[]
 
@@ -176,7 +184,7 @@ const resolveComponent = (item: Filter) => {
 
   const newItem = {
     ...item,
-    component: part && part.component,
+    component: part && part.component || item.component,
     props: {
       ...item.props,
       ...(part && part.props),

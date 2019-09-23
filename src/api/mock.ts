@@ -13,22 +13,22 @@ const mockData = (mockOpts: any) => {
 }
 
 export async function mockGet(data: any, mockOpts: any) {
-  await get('/mock/40/demo/femock', data, ajaxOpts)
+  // await get('/mock/76/demo/femock', data, ajaxOpts)
   return mockData(mockOpts)
 }
 
 export async function mockPost(data: any, mockOpts: any) {
-  await post('/mock/40/demo/femock', data, ajaxOpts)
+  await post('/mock/76/demo/femock', data, ajaxOpts)
   return mockData(mockOpts)
 }
 
 export async function mockPut(data: any, mockOpts: any) {
-  await put('/mock/40/demo/femock', data, ajaxOpts)
+  await put('/mock/76/demo/femock', data, ajaxOpts)
   return mockData(mockOpts)
 }
 
 export async function mockDel(data: any, mockOpts: any) {
-  await del('/mock/40/demo/femock', data, ajaxOpts)
+  await del('/mock/76/demo/femock', data, ajaxOpts)
   return mockData(mockOpts)
 }
 

@@ -1,5 +1,5 @@
 <template>
-   <Select v-model="shadowId" placeholder="影投名称" :multiple="multiple" clearable>
+  <Select v-model="shadowId" placeholder="影投名称" :multiple="multiple" clearable>
     <Option v-for="item in queryList" :value="item.id" :key="item.id">{{ item.name }}</Option>
   </Select>
 </template>

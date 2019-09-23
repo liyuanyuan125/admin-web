@@ -114,6 +114,44 @@
           <Col span="14"><span>每{{detail.timeStep}}秒，收取{{detail.stepCost}}元 </span><span style='color:red;margin-left:15px;'>注：超出部分按照一整个阶梯收取费用</span></Col>
         </Row>
       </Row> -->
+      <div v-auth="'finance.settings:set-transaction-info'" class='titop'>交易信息
+        <Button type='success' style='float: right;' v-if="editIndex === 1" @click="edittransaction('dataForm')">保存</Button>
+        <Button type='success' style='float: right;' @click='chgindex' v-if="editIndex === -1"  >修改</Button>
+      </div>
+      <Row v-auth="'finance.settings:set-transaction-info'" style='padding-bottom: 30px;' class="jiaoyi cinema-header">
+        <Button type="success" @click="handleAdd" icon="md-add" v-if="editIndex === 1">新增</Button>
+        <Table :columns="columns" :data="formDynamic"
+        border stripe disabled-hover size="small" class="table">
+          <template slot-scope="{ row, index }" slot="begin">
+            <!-- <Input type="text" v-model="editbegin" v-if="editIndex === index" />
+            <span v-else>{{ row.begin }}</span> -->
+            <InputNumber type="text" v-model="row.begin" :min = '0' @on-change='chgbegin(row , index)' v-if="editIndex === 1" />
+            <span v-else>{{ row.begin }}</span>
+          </template>
+          <template slot-scope="{ row, index }" slot="end">
+            <!-- <Input type="text" v-model="editend" v-if="editIndex === index" />
+            <span v-else>{{ row.end }}</span> -->
+             <InputNumber type="text" v-model="row.end" :min = '0' @on-change='chgend(row , index)' v-if="editIndex === 1" />
+            <span v-else>{{ row.end }}</span>
+          </template>
+          <template slot-scope="{ row, index }" slot="cost">
+            <!-- <Input type="text" v-model="editcost" v-if="editIndex === index" />
+            <span v-else>{{ row.cost }}</span> -->
+            <InputNumber type="text" v-model="row.cost" :min = '0' @on-change='chgcost(row , index)' v-if="editIndex === 1" />
+            <span v-else>{{ row.cost }}</span>
+          </template>
+          <template  slot="action" slot-scope="{row , index}" >
+            <!-- <div v-if="editIndex === index">
+              <Button @click="handleok(index)">保存</Button>
+              <Button style='margin-left: 10px;' @click="editIndex = -1">取消</Button>
+            </div>
+            <div v-else>
+              <Button @click="handleEdit(row, index)">修改</Button> -->
+              <Button style='margin-left: 10px;' @click="handleRemove(row, index)">删除</Button>
+            <!-- </div> -->
+          </template>
+        </Table>
+      </Row>
       <!-- 刊例价 -->
       <div class='titop' v-if='showprice'>默认刊例价
         <Button type='success' style='float: right;' @click="editprice('dataForm')">保存</Button>
@@ -133,6 +171,12 @@
             </FormItem>
           </Col>
           <Col span='1' class='tex-al'>&nbsp;%</Col>
+          <Col span="3">
+            <FormItem label="预告片折扣" prop="cpmTrailerDiscount">
+              <Input v-model="dataForm.cpmTrailerDiscount" placeholder="" />
+            </FormItem>
+          </Col>
+          <Col span='1' class='tex-al'>&nbsp;%</Col>
         </Row>
         <Row>
           <Col span="3" class='tex-al'><div>按场次</div></Col>
@@ -145,6 +189,12 @@
           <Col span="3">
             <FormItem label="15秒折扣" prop="showDiscount">
               <Input v-model="dataForm.showDiscount" placeholder=""/>
+            </FormItem>
+          </Col>
+          <Col span='1' class='tex-al'>&nbsp;%</Col>
+          <Col span="3">
+            <FormItem label="预告片折扣" prop="showTrailerDiscount">
+              <Input v-model="dataForm.showTrailerDiscount" placeholder="" />
             </FormItem>
           </Col>
           <Col span='1' class='tex-al'>&nbsp;%</Col>
@@ -163,12 +213,18 @@
             </FormItem>
           </Col>
           <Col span='1' class='tex-al'>&nbsp;%</Col>
-          <Col span="3">
+          <!-- <Col span="3">
             <FormItem label="每厅场次数" prop="timeShowCount">
               <Input v-model="dataForm.timeShowCount" placeholder=""/>
             </FormItem>
           </Col>
-          <Col span='1' class='tex-al'>&nbsp;场/天</Col>
+          <Col span='1' class='tex-al'>&nbsp;场/天</Col> -->
+          <Col span="3">
+            <FormItem label="预告片折扣" prop="timeTrailerDiscount">
+              <Input v-model="dataForm.timeTrailerDiscount" placeholder="" />
+            </FormItem>
+          </Col>
+          <Col span='1' class='tex-al'>&nbsp;%</Col>
         </Row>
       </Row>
       <div  class='titop' v-if='!showprice'>默认刊例价
@@ -181,6 +237,8 @@
           <Col span="4"><span>{{detail.cpm}}</span> 元/千人次</Col>
           <Col span="2"><div>15秒折扣</div></Col>
           <Col span="3"><span>{{detail.discount}}%</span></Col>
+          <Col span="2"><div>预告片折扣</div></Col>
+          <Col span="3"><span>{{detail.cpmTrailerDiscount}}%</span></Col>
         </Row>
         <Row>
           <Col span="3"><div>按场次</div></Col>
@@ -188,6 +246,8 @@
           <Col span="4"><span>{{detail.showPrice}}</span> 元/场</Col>
           <Col span="2"><div>15秒折扣</div></Col>
           <Col span="3"><span>{{detail.showDiscount}}%</span></Col>
+          <Col span="2"><div>预告片折扣</div></Col>
+          <Col span="3"><span>{{detail.showTrailerDiscount}}%</span></Col>
         </Row>
          <Row>
           <Col span="3"><div>按时段(通投包厅)</div></Col>
@@ -195,7 +255,9 @@
           <Col span="4"><span>{{detail.timePrice}}</span> 元/周/厅</Col>
           <Col span="2"><div>15秒折扣</div></Col>
           <Col span="3"><span>{{detail.timeDiscount}}%</span></Col>
-          <Col span="6"><div>每厅场次数{{detail.timeShowCount}}场/天</div></Col>
+          <Col span="2"><div>预告片折扣</div></Col>
+          <Col span="3"><span>{{detail.timeTrailerDiscount}}%</span></Col>
+          <!-- <Col span="6"><div>每厅场次数{{detail.timeShowCount}}场/天</div></Col> -->
         </Row>
       </div>
     </div>
@@ -214,7 +276,7 @@ import jsxReactToVue from '@/util/jsxReactToVue'
 
 import { toMap } from '@/fn/array'
 import { slice, clean } from '@/fn/object'
-import { warning , success, toast } from '@/ui/modal'
+import { warning , success, toast , info } from '@/ui/modal'
 import moment from 'moment'
 
 const timeFormat = 'YYYY/MM/DD'
@@ -243,6 +305,9 @@ const dataForm = {
   timePrice: null,
   timeDiscount: null,
   timeShowCount: null,
+  cpmTrailerDiscount: null, // cpm预告片折扣
+  showTrailerDiscount: null, // 场次预告片折扣
+  timeTrailerDiscount: null, // 时段预告片折扣
 }
 
 
@@ -276,10 +341,14 @@ export default class Main extends ViewBase {
   ]
 
   editIndex: any = -1
-  editbegin: any =  ''
-  editend: any =  ''
-  editcost: any =  ''
+  editbegin: any =  null
+  editend: any =  null
+  editcost: any =  null
   convertCosts: any = []
+
+  isoks: any = false
+  isbig: any = false
+  isnull: any = false
 
   get columns() {
     const a: any = [
@@ -311,9 +380,9 @@ export default class Main extends ViewBase {
     this.index = this.formDynamic.length - 1
     this.index++
     this.formDynamic.push({
-        begin: '',
-        end: '',
-        cost: '',
+        begin: null,
+        end: null,
+        cost: null,
     })
     this.editIndex = 1
   }
@@ -340,15 +409,16 @@ export default class Main extends ViewBase {
   // }
   // 修改开始时间
   chgbegin(row: any , index: any) {
-    this.formDynamic[index].begin =  row.begin
+
+    this.formDynamic[index].begin =  Number(row.begin)
   }
   // 修改结束时间
   chgend(row: any , index: any) {
-    this.formDynamic[index].end =  row.end
+    this.formDynamic[index].end =  Number(row.end)
   }
   // 修改转制费
   chgcost(row: any , index: any) {
-    this.formDynamic[index].cost =  row.cost
+    this.formDynamic[index].cost =  Number(row.cost)
   }
   // chg(row: any , index: any , item: any) {
   //   this.formDynamic[index].item =  row.item
@@ -411,6 +481,9 @@ export default class Main extends ViewBase {
     this.dataForm.timePrice = this.detail.timePrice
     this.dataForm.timeDiscount = this.detail.timeDiscount
     this.dataForm.timeShowCount = this.detail.timeShowCount
+    this.dataForm.cpmTrailerDiscount = this.detail.cpmTrailerDiscount
+    this.dataForm.showTrailerDiscount = this.detail.showTrailerDiscount
+    this.dataForm.timeTrailerDiscount = this.detail.timeTrailerDiscount
   }
 
 
@@ -457,7 +530,77 @@ export default class Main extends ViewBase {
     //     }
     //   }
     // })
+    if (this.formDynamic[0].begin != 1) {
+      info('第一区间的开始时间为 必须为1')
+      return
+    }
+    if (this.formDynamic[this.formDynamic.length - 1].end < this.formDynamic[this.formDynamic.length - 1].begin) {
+      info('请确认时间区间输入是否正确')
+      return
+    }
+    this.isoks = false
+    this.isbig = false
+    this.isnull = false
     this.convertCosts = this.formDynamic
+    const aaa: any = []
+    const bbb: any = []
+    this.formDynamic.forEach((it: any , index: any) => {
+      aaa.push(it.begin)
+      bbb.push(it.end)
+    })
+
+    this.formDynamic.forEach((it: any , index: any) => {
+      if (it.begin == '') {
+        this.isnull = true
+        return
+      }
+      if (it.end == '') {
+        this.isnull = true
+        return
+      }
+      if (it.cost == '') {
+        this.isnull = true
+        return
+      }
+    })
+
+    if (this.isnull == true) {
+      info('请确认输入是否正确')
+      return
+    }
+
+    this.formDynamic.forEach((it: any , index: any) => {
+      if ((index + 1) == this.formDynamic.length) {
+      } else {
+        if (aaa[index] > bbb[index]) {
+          this.isbig = true
+          return
+        } else {
+        }
+      }
+    })
+
+    if (this.isbig == true) {
+      info('请确认时间区间输入是否正确')
+      return
+    }
+
+    this.formDynamic.forEach((it: any , index: any) => {
+      if ((index + 1) == this.formDynamic.length) {
+      } else {
+        if (aaa[index + 1] - 1 != bbb[index]) {
+          this.isoks = true
+          return
+        } else {
+        }
+      }
+    })
+
+    if (this.isoks == true) {
+      info('非第一区间的起始时长必须为前一区间截止时长 + 1s,请确认输入是否正确')
+      return
+    }
+
     try {
           const res =  await cost ({convertCosts: this.formDynamic})
           toast('交易信息操作成功')
@@ -483,6 +626,9 @@ export default class Main extends ViewBase {
           timePrice: this.dataForm.timePrice,
           timeDiscount: this.dataForm.timeDiscount,
           timeShowCount: this.dataForm.timeShowCount,
+          cpmTrailerDiscount: this.dataForm.cpmTrailerDiscount,
+          showTrailerDiscount: this.dataForm.showTrailerDiscount,
+          timeTrailerDiscount: this.dataForm.timeTrailerDiscount,
         }
         try {
           const res =  await price (query)

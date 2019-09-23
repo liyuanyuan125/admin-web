@@ -8,6 +8,7 @@
     :remote-method="search"
     :loading="loading"
     :label="backfillLabel"
+    :multiple="multiple"
     class="remote-select"
     v-bind="$attrs"
     ref="select"
@@ -28,7 +29,7 @@ import { MapType } from '@/util/types'
 import { IdName, Fetch, Backfill } from './types'
 import { devLog } from '@/util/dev'
 import Vue from 'vue'
-import { debounce } from 'lodash'
+import { debounce, keyBy, get } from 'lodash'
 
 @Component({
   components: {
@@ -36,24 +37,28 @@ import { debounce } from 'lodash'
   }
 })
 export default class RemoteSelect extends ViewBase {
-  @Prop({ type: [ Number, String ] }) value!: number | string
+  @Prop({ type: [ Number, String, Array ] }) value!: number | string | Array<number | string>
 
   @Prop({ type: Function, required: true }) fetch!: Fetch
 
   @Prop({ type: Function }) backfill!: Backfill
+
+  @Prop({ type: Boolean, default: false }) multiple!: boolean
+
+  @Prop({ type: Array, default: () => [] }) initList!: IdName[]
 
   get select() {
     const select = this.$refs.select as Vue
     return select
   }
 
-  model: number | string = 0
+  model: number | string | Array<number | string> = ''
 
   loading = false
 
-  list: IdName[] = []
+  list: IdName[] = this.initList
 
-  backfillLabel = ''
+  backfillLabel: string | string[] = ''
 
   inBackfill = false
 
@@ -139,19 +144,29 @@ export default class RemoteSelect extends ViewBase {
   }
 
   @Watch('value', { immediate: true })
-  watchValue(value: number | string) {
+  watchValue(value: number | string | Array<number | string>) {
     this.model = value
 
-    // 处理回填
-    if (value) {
+    // 处理回填，不对 multiple 进行回填
+    if (value && !Array.isArray(value)) {
       const item = (this.list || []).find(it => it.id == value)
       item == null && this.backfill && this.dealBackfill(value)
     }
   }
 
   @Watch('model')
-  watchMode(value: number | string) {
+  watchMode(value: number | string | Array<number | string>) {
     this.$emit('input', value)
+  }
+
+  @Watch('initList', { immediate: true, deep: true })
+  watchInitList(value: IdName[]) {
+    if (value && value.length > 0) {
+      // 手动触发 model 更新，以便回填
+      const model = this.model
+      this.model = Array.isArray(this.model) ? [] : ''
+      this.$nextTick(() => this.model = model)
+    }
   }
 }
 </script>

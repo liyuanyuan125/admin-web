@@ -141,12 +141,8 @@ export default class IndexPage extends ViewBase {
         dealParam(value: string) {
           const [beginDate, endDate] = value ? value.split('-') : [null, null]
             return {
-              beginDate : beginDate ? Number(new Date(String(beginDate).slice(0, 4) + '-'
-              + String(beginDate).slice(4, 6) + '-' +
-              String(beginDate).slice(6, 8)).getTime() - (8 * 60 * 60 * 1000)) : null,
-              endDate : endDate ? Number(new Date(String(endDate).slice(0, 4) + '-'
-              + String(endDate).slice(4, 6) + '-' +
-              String(endDate).slice(6, 8)).getTime() + (16 * 60 * 60 * 1000 - 1)) : null,
+              beginDate,
+              endDate,
             }
           }
       },
@@ -179,8 +175,7 @@ export default class IndexPage extends ViewBase {
       { title: '订单号', key: 'id' , maxWidth: 65},
       { title: '公司名称', key: 'companyName'},
       { title: '业务类型', key: 'businessType', maxWidth: 65, editor: 'enum' },
-      { title: '汇款人姓名', key: 'accountName', maxWidth: 60 },
-      { title: '汇款账户名称', key: 'accountNumber' },
+      { title: '汇款账户名称', key: 'accountName' },
       { title: '汇款方式', key: 'remittanceType', width: 65, editor: 'enum' },
       { title: '汇款交易流水', key: 'remittanceNo', },
       { title: '汇款金额', key: 'amount', maxWidth: 100,
@@ -199,7 +194,18 @@ export default class IndexPage extends ViewBase {
         }
        }
       },
-      { title: '汇款日期', key: 'remittanceDate', width: 75, editor: 'dateTime' },
+      { title: '汇款日期', key: 'remittanceDate', width: 75,
+        render: (hh: any, { row: { remittanceDate } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        const aaa = String(remittanceDate).slice(0, 4) + '-' + String(remittanceDate).slice(4, 6) + '-' + String(remittanceDate).slice(6, 8)
+        if (remittanceDate == null) {
+          return <span class='datetime' v-html='-'></span>
+        } else {
+            return <span class='datetime' v-html={aaa}></span>
+        }
+       }
+      },
       // { title: '汇款底单', key: 'receipt', },
       {
         title: '汇款底单',
@@ -208,18 +214,23 @@ export default class IndexPage extends ViewBase {
         render: (hh: any, { row: { receipt } }: any) => {
           /* tslint:disable */
           const h = jsxReactToVue(hh)
-          return (
-            <a
-              href="javascript:;"
-              on-click={this.onView.bind(this , receipt)}
-              class="operation">
-              查看
-            </a>
-          )
+          if (receipt != null) {
+            return (
+              <a
+                href="javascript:;"
+                on-click={this.onView.bind(this , receipt)}
+                class="operation">
+                查看
+              </a>
+            )
+          } else {
+            return <span class='datetime' v-html={'-'}></span>
+          }
+          
           /* tslint:enable */
         }
       },
-      { title: '状态', key: 'status', width: 65, editor: 'enum' }
+      // { title: '状态', key: 'status', width: 65, editor: 'enum' }
     ]
     const threeID = [
       { title: '操作时间', key: 'approvalTime', width: 75, editor: 'dateTime' },
@@ -260,7 +271,7 @@ export default class IndexPage extends ViewBase {
   @Watch('status')
   watchstatus(pay: any) {
     this.$router.push({
-      name: 'finance-examine-newindex',
+      name: 'finance-examine',
       params: pay == defaultPay ? {} : { pay }
     })
   }

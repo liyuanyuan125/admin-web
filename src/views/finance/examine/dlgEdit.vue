@@ -6,9 +6,9 @@
     :title="'确认汇款'"
     @on-cancel="cancel('dataForm')" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
-      <FormItem label="启用状态" prop="status">
-        <RadioGroup v-model="dataForm.status" >
-          <Radio v-for="it in statuslist" v-if="it.key!=3" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
+      <FormItem label="启用状态" prop="agree">
+        <RadioGroup v-model="dataForm.agree" >
+          <Radio v-for="it in statuslist" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
         </RadioGroup>
       </FormItem>
       <FormItem label="备注" prop="rejectReason">
@@ -26,7 +26,7 @@
 import { Component, Prop } from 'vue-property-decorator'
 import { setList } from '@/api/examine'
 import { slice, clean } from '@/fn/object'
-import { warning , success, toast } from '@/ui/modal'
+import { warning , success, toast , info } from '@/ui/modal'
 import ViewBase from '@/util/ViewBase'
 const dataForm = {
   rejectReason: '',
@@ -41,12 +41,12 @@ export default class ComponentMain extends ViewBase {
 
   get ruleValidate() {
     const rules = {
-      name: [
-          { required: true, message: '请输入备注', trigger: 'blur' }
-      ],
-      status: [
-          { required: true }
-      ]
+      // rejectReason: [
+      //     { required: true, message: '请输入备注', trigger: 'blur' }
+      // ],
+      // status: [
+      //     { required: true }
+      // ]
     }
     return rules
   }
@@ -80,6 +80,10 @@ export default class ComponentMain extends ViewBase {
 
   // 表单提交
   dataFormSubmit(dataForms: any) {
+   if (this.dataForm.agree == 2 && this.dataForm.rejectReason == '') {
+     info('请输入备注信息')
+     return
+   }
    const myThis: any = this
    myThis.$refs[dataForms].validate(async ( valid: any ) => {
       if (valid) {

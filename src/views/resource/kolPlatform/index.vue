@@ -204,7 +204,7 @@ export default class KolPlatformIndex extends ViewBase {
       // { title: '审核状态', slot: 'status', minWidth: 140 },
       { title: '上架状态', key: 'controlStatus', width: 100, editor: 'enum'},
       { title: '定价状态', key: 'priceStatus', width: 100, editor: 'enum'},
-      { title: '操作', slot: 'action', width: 100 }
+      { title: '操作', slot: 'action', width: 140 }
     ] as ColumnExtra[]
   }
 

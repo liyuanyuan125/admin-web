@@ -15,6 +15,10 @@ export async function queryList(query: any) {
 }
 
 //  查看详情
+/**
+ *
+ * @description https://yapi.aiads-dev.com/project/140/interface/api/2550
+ */
 export async function itemlist(id: any) {
   const data = await get(`/xadvert/plans/${id}`)
   return data
@@ -82,9 +86,10 @@ export async function addfilm(id: any , query: any) {
   return data
 }
 
-// 保存方案
+// 待支付保存方案
+// http://yapi.aiads-dev.com/project/140/interface/api/2614
 export async function save(id: any, query: any) {
-  const data = await post(`/xadvert/plans/${id}/business-approve`, query )
+  const data = await post(`/xadvert/plans/${id}/set-discount-deposit`, query )
   return data
 }
 
@@ -121,7 +126,7 @@ export async function needamount(id: any, query: any) {
 //   return data
 // }
 
-// 设置定金跟应结金额
+// 设置折扣/定金
 // http://yapi.aiads-dev.com/project/140/interface/api/5876
 export async function business(id: any, query: any) {
   const data = await post(`/xadvert/plans/${id}/set-discount-deposit`, query )
@@ -143,7 +148,22 @@ export async function importCinema(id: any) {
   return data
 }
 
+// 下载影院新数据
+// https://yapi.aiads-dev.com/project/140/interface/api/6296
+export async function getCinema(id: any) {
+  const data = await get(`/xadvert/plans/${id}/export-cinema` )
+  return data
+}
 
+//  设置广告片投放位置
+/**
+ *
+ * @description http://yapi.aiads-dev.com/project/140/interface/api/6230
+ */
+export async function deliveryposition(id: any , query: any) {
+  const data = await post(`/xadvert/plans/${id}/set-delivery-position` , query)
+  return data
+}
 
 
 

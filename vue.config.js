@@ -20,13 +20,13 @@ module.exports = {
       },
       {
         env: 'qas',
-        baseUrl: '//admin.qas.aiads.com',
-        ajaxBaseUrl: '//mapi.qas.aiads.com'
+        baseUrl: '//admin.jydata-qas.com',
+        ajaxBaseUrl: '//mapi.jydata-qas.com'
       },
       {
         env: 'stg',
-        baseUrl: '//admin.stg.aiads.com',
-        ajaxBaseUrl: '//mapi.stg.aiads.com'
+        baseUrl: '//admin.jydata-stg.com',
+        ajaxBaseUrl: '//mapi.jydata-stg.com'
       },
       {
         env: 'prd',

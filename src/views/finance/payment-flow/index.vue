@@ -33,7 +33,7 @@ export default class Main extends ViewBase {
       name: 'planId',
       defaultValue: '',
       input: true,
-      width: 85,
+      width: 178,
       placeholder: '广告计划单编号'
     },
 
@@ -43,11 +43,11 @@ export default class Main extends ViewBase {
       dateRange: true,
       width: 178,
       placeholder: '支付创建日期区间',
-      dealParam(value: any) {
-        const [start, end] = value.split('-')
+      dealParam(value: string) {
+        const [queryStartTime, queryEndTime] = value ? value.split('-') : [null, null]
         return {
-          applyStartTime: startDayTimestamp(start),
-          applyEndTime: endDayTimestamp(end),
+          queryStartTime,
+          queryEndTime
         }
       }
     },
@@ -63,10 +63,10 @@ export default class Main extends ViewBase {
     },
 
     {
-      name: 'payTypeList',
+      name: 'payType',
       defaultValue: 0,
       select: {
-        enumKey: 'payStatusList',
+        enumKey: 'payTypeList',
       },
       width: 128,
       placeholder: '支付方式'
@@ -105,12 +105,14 @@ export default class Main extends ViewBase {
     return [
       { title: '序号', key: 'id', width: 65 },
       { title: '广告计划单编号', key: 'planId', width: 120 },
-      { title: '订单号', key: 'orderNo', minWidth: 120 },
+      { title: '订单号', key: 'orderNo', width: 100},
       { title: '支付流水', key: 'payNumber', width: 120 },
+      { title: '支付方式', key: 'payType', width: 70, enum: true },
       { title: '支付金额', key: 'payAmount', minWidth: 120 },
-      { title: '渠道', key: 'payChannel', minWidth: 120, enum: true },
-      { title: '业务类型', key: 'busType', minWidth: 120, enum: true },
-      { title: '支付状态', key: 'payStatus', minWidth: 120, enum: true },
+      { title: '渠道', key: 'payChannel', width: 70, enum: true },
+      { title: '业务类型', key: 'busType', width: 70, enum: true },
+      { title: '线下支付类型', key: 'lineType', width: 90, enum: true },
+      { title: '支付状态', key: 'payStatus', width: 70, enum: true },
       { title: '支付创建时间', key: 'createTime', minWidth: 120, dateTime: true },
       { title: '支付完成时间', key: 'finishTime', minWidth: 120, dateTime: true }
     ] as ColumnExtra[]

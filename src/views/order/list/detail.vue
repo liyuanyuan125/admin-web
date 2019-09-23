@@ -2,7 +2,7 @@
   <div class="page">
     <div class="Inp-Group-res">
       <Button class="bth" icon="md-return-left" @click="goback">返回列表</Button>
-      <Button v-auth="'advert.executeOrder:closed'" v-if='$route.params.status != 8' class="bth" style='float: right' @click="edit($route.params.id)">关闭订单</Button><br>
+      <Button v-auth="'advert.executeOrder:closed'" v-if='$route.params.status == 1 || $route.params.status == 2 || $route.params.status == 3' class="bth" style='float: right' @click="edit($route.params.id)">关闭订单</Button><br>
       <!-- <div v-if='$route.params.status == 7' class="n-main">结算信息</div>
       <div v-if='$route.params.status == 7' class="Inps-res">
         <Row class='row-list'>
@@ -40,6 +40,23 @@
             <Col span='9'>{{begin}} ~ {{end}} 【{{item.cycle}}天】</Col>
             <Col span='3' class='hui'>广告片规格</Col>
             <Col span='9'>{{item.specification}}s</Col>
+        </Row>
+        <Row class='row-list'>
+            <Col :span='3' class='hui'>投放位置</Col>
+            <Col :span='9'>
+                <span v-if='item.deliveryPositionCode == null'>暂无投放位置</span>
+                <span v-else v-for='(its , index) in deliveryPositionList' :key='index' v-if='its.key == item.deliveryPositionCode'>
+                    {{its.text}}
+                </span>
+            </Col>
+            <Col :span='3' class='hui'>促销活动名称</Col>
+            <Col :span='9'>{{ (item.promotion == null || item.promotion.name == null) ? '暂无' : item.promotion.name}}</Col>
+        </Row>
+        <Row class='row-list'>
+            <Col :span='3' class='hui'>活动类型</Col>
+            <Col :span='9' v-if=''>{{ (item.promotion == null || item.promotion.typeName == null) ? '暂无' : item.promotion.typeName}}</Col>
+            <Col :span='3' class='hui'>活动ID</Col>
+            <Col :span='9'>{{ (item.promotion == null || item.promotion.id == null) ? '暂无' : item.promotion.id}}</Col>
         </Row>
         <Row class='row-list'>
             <Col span='3' class='hui'>影片列表</Col>
@@ -129,6 +146,9 @@ export default class Main extends ViewBase {
   settlementAmount: any = ''
   movieList: any = []
 
+  // 广告片投放位置
+  deliveryPositionList: any = []
+
   count = 0
   newend: any = ''
 
@@ -193,8 +213,8 @@ export default class Main extends ViewBase {
           item: item,
           statusList,
           advertTypeCodeList,
-          planDirectionList
-
+          planDirectionList,
+          deliveryPositionCodeList
       } } = await queryItem(this.$route.params.id)
       this.item = item
       const a = String(this.item.beginDate)
@@ -205,6 +225,7 @@ export default class Main extends ViewBase {
       moment(this.item.receiveTime).format(timeFormat)
       this.settlementTime = moment(this.item.settlementTime).format(timeFormat)
       this.settlementAmount = this.addNumber(String(this.item.settlementAmount))
+      this.deliveryPositionList = deliveryPositionCodeList
       this.movieList = this.item.targetMovies
       this.logList = (item.logList || []).map((it: any) => {
           return {

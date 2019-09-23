@@ -16,7 +16,7 @@
           <Option v-for="it in companys" :key="it.id" :value="it.id">{{it.name}}</Option>
         </Select>
         <Select v-model="query.translated" style='width: 100px;' placeholder="是否转制" filterable clearable class="select-company">
-          <Option v-for="it in translatedList" :key="it.id" :value="it.id">{{it.name}}</Option>
+          <Option v-for="it in translatedList" :key="it.key" :value="it.key">{{it.text}}</Option>
         </Select>
         <Button type="default" class="btn-reset" @click="reset">清空</Button>
       </form>
@@ -30,6 +30,14 @@
 
       <template slot="specification" slot-scope="{ row: { specification } }">
         {{specification}}s
+      </template>
+      <template slot="translated" slot-scope="{ row: { translated } }">
+        <span v-if='translated == null'>-</span>
+        <span v-else v-for='(it , index) in translatedList' v-if='it.key == translated'>{{it.text}}</span>
+      </template>
+
+      <template slot="promotionType" slot-scope="{ row: { promotionType } }">
+        <span v-for='(it,index) in promotionTypeList' v-if='it.key == promotionType'>{{it.text}}</span>
       </template>
 
       <template slot="transFee" slot-scope="{ row: { transFee } }">
@@ -115,27 +123,33 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   // 公司列表
   companys = []
+  // 是否转制
   translatedList: any = []
+  // 活动类型
+  promotionTypeList: any = []
   // 跳转数量
   jumpNum: any = 0
 
   get columns() {
     const status = this.query.status
     return [
-      { title: '广告片ID', key: 'id', width: 70 },
+      { title: '广告片ID', key: 'id', width: 60 },
       { title: '广告片名称', key: 'name' },
       { title: '广告主公司名称', key: 'companyName' },
       { title: '客户', key: 'customerName' },
-      { title: '规格', slot: 'specification', width: 60 },
-      { title: '广告片下载地址', key: 'srcFileId'},
-      { title: '是否已转制', slot: 'specification', width: 60 },
-      { title: '转制费(元)', slot: 'transFee', width: 110 },
-      { title: '创建时间', slot: 'applyTime', width: 135 },
+      { title: '规格', slot: 'specification', width: 50 },
+      { title: '广告片下载地址', key: 'srcFileUrl'},
+      { title: '是否已转制', slot: 'translated', width: 60 },
+      { title: '转制费(元)', slot: 'transFee', width: 100 },
+      { title: '活动名称', key: 'promotionName', width: 110 },
+      { title: '活动类型', slot: 'promotionType', width: 70 },
+      { title: '活动价格', key: 'promotionPrice', width: 100 },
+      { title: '创建时间', slot: 'applyTime', width: 125 },
       status in { 2: 1, 5: 1 } && { title: '审核人', slot: 'approvalUser', width: 110 },
-      status in { 2: 1, 5: 1 } && { title: '审核时间', slot: 'approvalTime', width: 135 },
-      status == 3 && { title: '支付时间', slot: 'payTime', width: 135 },
-      status == 4 && { title: '转码时间', slot: 'transTime', width: 135 },
-      status == 6 && { title: '取消时间', slot: 'cancelTime', width: 135 },
+      status in { 2: 1, 5: 1 } && { title: '审核时间', slot: 'approvalTime', width: 125 },
+      status == 3 && { title: '支付时间', slot: 'payTime', width: 125 },
+      status == 4 && { title: '转码时间', slot: 'transTime', width: 125 },
+      status == 6 && { title: '取消时间', slot: 'cancelTime', width: 125 },
       { title: '操作', slot: 'action', width: 60 },
     ]
     .filter(it => !!it)
@@ -174,7 +188,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       status: this.query.status, // 状态
       translated: this.query.translated, // 1：转制；2：未转制
       skip: this.jumpNum, // 跳过的记录数
-      maxSize: 500, // 最大返回数据量
+      maxSize: 1000, // 最大返回数据量
     }
     sessionStorage.setItem('info', JSON.stringify(info))
   }
@@ -192,10 +206,14 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     try {
       this.list = [] // 确保在切换 tab 时，不显示前一个 tab 的数据
 
-      const { data: { items: list, totalCount: total , translatedList: translatedList } } = await queryList(query)
+      const { data: { items: list,
+                      totalCount: total ,
+                      translatedList: translatedList ,
+                      promotionTypeList: promotionTypeList } } = await queryList(query)
       this.list = list
       this.total = total
       this.translatedList = translatedList
+      this.promotionTypeList = promotionTypeList
     } catch (ex) {
       this.handleError(ex)
     } finally {

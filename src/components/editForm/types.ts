@@ -5,7 +5,13 @@ import FormText from './components/formText.vue'
 import FormInput from './components/formInput.vue'
 import FormInputNumber from './components/formInputNumber.vue'
 import FormSelect from './components/formSelect.vue'
+import RemoteSelect, {
+  Fetch as RemoteFetch,
+  Backfill as RemoteBackfill,
+  IdName
+} from '@/components/remoteSelect'
 import FormRadio from './components/formRadio.vue'
+import FormCheck from './components/formCheck.vue'
 import FormDate from './components/formDate.vue'
 import FormDateRange from './components/formDateRange.vue'
 import FormImage from './components/formImage.vue'
@@ -53,7 +59,7 @@ const makeRequiredRule = (field: Field, rule?: Rule) => {
   const defaultValue = field.defaultValue
   const result: Rule = {
     required: true,
-    message: '不能为空',
+    message: field.requiredMessage || '不能为空',
     trigger: 'change',
     transform(value: any) {
       // null 始终被认为是空
@@ -102,12 +108,23 @@ const componentMap: MapType<ComponentItem> = {
     }
   },
 
+  remote: {
+    component: RemoteSelect,
+    props: {
+      placeholder: '请输入关键字进行搜索'
+    }
+  },
+
   area: {
     component: AreaSelect,
   },
 
   radio: {
     component: FormRadio,
+  },
+
+  check: {
+    component: FormCheck,
   },
 
   switch: {
@@ -259,9 +276,14 @@ export interface Field extends Param {
   /**
    * 是否为必填的
    * 若为必填，且 rules 为空，则 rules 默认为
-   * [ { required: true, message: '不能为空', trigger: 'blur' } ]
+   * [ { required: true, message: requiredMessage, trigger: 'blur' } ]
    */
   required?: boolean
+
+  /**
+   * 必填验证失败消息，默认为：不能为空
+   */
+  requiredMessage?: string
 
   /**
    * 验证规则
@@ -341,8 +363,20 @@ export interface Field extends Param {
   select?: {
     enumKey?: string
     enumList?: KeyText[]
+    multiple?: boolean
     [key: string]: any
-  }
+  },
+
+  /**
+   * 使用组件 RemoteSelect
+   */
+  remote?: {
+    fetch?: RemoteFetch
+    backfill?: RemoteBackfill
+    multiple?: boolean
+    initList?: IdName[]
+    [key: string]: any
+  },
 
   /**
    * 组件 AreaSelect 的选项
@@ -358,6 +392,15 @@ export interface Field extends Param {
    * 使用组件 Radio
    */
   radio?: {
+    enumKey?: string
+    enumList?: KeyText[]
+    [key: string]: any
+  }
+
+  /**
+   * 使用组件 Check
+   */
+  check?: {
     enumKey?: string
     enumList?: KeyText[]
     [key: string]: any
@@ -455,6 +498,7 @@ const resolveProps = (field: any, name: string) => {
 
 // 新的方式：解析组件
 const resolveComponent = (field: Field) => {
+  let configRequiredRule
   const name = Object.keys(componentMap).find(key => key in field)
   if (name) {
     const {
@@ -465,23 +509,25 @@ const resolveComponent = (field: Field) => {
 
     const props = resolveProps(field, name)
 
-    // 处理验证规则
-    const rules = (field.rules || []).length == 0 && field.required
-      ? [ makeRequiredRule(field, requiredRule) ]
-      : (field.rules || [])
+    configRequiredRule = requiredRule
 
-    const result = {
+    field = {
       ...field,
       component,
       props: {
         ...defaultProps,
         ...props
-      },
-      rules
+      }
     } as any
-
-    return result
   }
+
+  // 处理验证规则
+  const rules = (field.rules || []).length == 0 && field.required
+    ? [ makeRequiredRule(field, configRequiredRule) ]
+    : (field.rules || [])
+
+  field.rules = rules
+
   return field as any
 }
 

@@ -7,19 +7,24 @@
       :columns="columns"
       ref="listPage">
 
+      <template slot="acts">
+        <Button
+          type="success"
+          icon="md-add-circle"
+          @click="editShow()"
+        >片商管理</Button>
+      </template>
+
       <template slot="year" slot-scope="{row: {year, month}}">
         <span>{{year}}-{{month && String(month).length == 1 ? `0${month}` : month}}</span>
       </template>
 
-      <template slot="operate" slot-scope="{row: {billStatus, id}}">
-        <div class="operate-btn">
-          <span @click="$router.push({name: 'finance-billmanage-detail', params: {id}})">详情</span><br />
-          <span v-if="billStatus == 1"
-           @click="$router.push({name: 'finance-billmanage-confirmbill', params: {id}})">确定运营账单</span>
-
-           <span v-if="billStatus == 3"
-           @click="$router.push({name: 'finance-billmanage-confirmbill', params: {id}})">确定审核账单</span>
-        </div>
+      <template slot="operate" slot-scope="{row}">
+         <a v-auth="'customer.companies:change-status'" style="margin-right: 8px" v-if="row.status == 1" class="operation" @click="editStatus(row.id, row.status)">停用</a>
+          <a v-auth="'customer.companies:change-status'" style="margin-right: 8px" v-else class="operation" @click="editStatus(row.id, row.status)">启用</a>
+          <!-- <router-link v-auth="'customer.companies:modify'" style="margin-right: 8px" v-if="row.approveStatus == 1" class="operation" :to="{ name: 'client-producers-edit', params: { id:row.id } }">审核</router-link> -->
+          <router-link v-auth="'customer.companies:modify'" style="margin-right: 8px" class="operation" :to="{ name: 'client-producers-edit', params: { id:row.id } }">编辑</router-link>
+          <router-link v-auth="'customer.companies:info'" style="margin-right: 8px" class="operation" :to="{ name: 'client-producers-detail', params: { id:row.id }}">详情</router-link>
       </template>
     </ListPage>
   </div>
@@ -30,110 +35,78 @@ import {Component} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { confirm, info, alert } from '@/ui/modal.ts'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import {list} from '@/api/financeBill'
+import { querylist, stop } from '@/api/ggsiter'
+import { toMap } from '@/fn/array'
+import { directorList } from '@/api/corpReal'
 
+const makeMap = (list: any[]) => toMap(list, 'typeCode', 'typeName')
 @Component({
   components: {
     ListPage
   }
 })
 export default class Main extends ViewBase {
-  fetch = list
 
   filters: Filter[] = [
     {
-      name: 'cinemaId',
-      defaultValue: 0,
-      type: 'input',
+      name: 'companyId',
+      defaultValue: '',
+      input: true,
       width: 108,
       placeholder: 'id'
     },
     {
-      name: 'code',
+      name: 'shortName',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 100,
       placeholder: '片商名称'
     },
 
     {
-      name: 'resourceBillNo',
+      name: 'levelCode',
       defaultValue: '',
-      type: 'input',
+      select: true,
       width: 100,
       placeholder: '客户等级',
-    },
-    {
-      name: 'billStatus',
-      defaultValue: '',
-      type: 'select',
-      width: 100,
-      placeholder: '客户类型',
+      enumKey: 'levelList'
     },
 
     {
-      name: 'invoiceType',
+      name: 'businessDirector',
       defaultValue: 0,
-      type: 'select',
+      select: true,
       width: 100,
       placeholder: '关联销售',
-      enumKey: 'invoiceTypeCodeList'
+      enumKey: 'businesList'
     },
 
     {
-      name: 'invoiceContent',
-      defaultValue: '',
-      type: 'select',
-      width: 100,
-      placeholder: '推荐人电话',
-      enumKey: 'invoiceContentCodeList'
-    },
-    {
-      name: 'yearMonth',
-      defaultValue: null,
-      type: 'input',
-      width: 108,
-      placeholder: '创建时间'
-    },
-    {
-      name: 'payStatus',
-      defaultValue: '',
-      type: 'select',
-      width: 100,
-      placeholder: '更新时间',
-      enumKey: 'payStatusList'
-    },
-
-    {
-      name: 'payStatus',
-      defaultValue: '',
-      type: 'select',
-      width: 100,
-      placeholder: '更新人',
-      enumKey: 'payStatusList'
-    },
-
-    {
-      name: 'payStatus',
-      defaultValue: '',
-      type: 'select',
+      name: 'status',
+      defaultValue: 0,
+      select: true,
       width: 100,
       placeholder: '状态',
-      enumKey: 'payStatusList'
+      enumKey: 'statusList'
     },
 
     {
-      name: 'payStatus',
-      defaultValue: '',
-      type: 'select',
+      name: 'approveStatus',
+      defaultValue: 0,
+      select: true,
       width: 100,
       placeholder: '审核状态',
-      enumKey: 'payStatusList'
+      enumKey: 'approveStatusList'
     },
 
     {
       name: 'pageIndex',
       defaultValue: 1
+    },
+
+    {
+      name: 'typeCode',
+      defaultValue: 'film'
     },
 
     {
@@ -143,28 +116,77 @@ export default class Main extends ViewBase {
   ]
 
   enums = [
-    'applyTypeList',
-    'invoiceContentCodeList',
-    'invoiceStatusList',
-    'invoiceTypeCodeList',
-    'payStatusList',
-    'billStatusList'
+    'approveStatusList',
+    'statusList',
+    'companyTypeList',
+    'customerTypeList',
+    'levelList',
+    'businesList',
   ]
 
   columns = [
-    { title: 'ID', key: 'resourceBillNo', minWidth: 65 },
-    { title: '片商名称', key: 'cinemaName', minWidth: 100 },
-    { title: '客户等级', key: 'resourceName', minWidth: 60 },
-    { title: '客户类型', key: 'contractNo', minWidth: 100 },
-    { title: '关联销售', slot: 'year', minWidth: 60 },
-    { title: '推荐人电话', key: 'createTime', minWidth: 100, editor: 'dateTime'},
-    { title: '创建时间', key: 'showCount', minWidth: 60 },
-    { title: '更新时间', key: 'personCount', minWidth: 60 },
-    { title: '更新人', key: 'amount', minWidth: 100 },
-    { title: '状态', key: 'billStatus', minWidth: 60, editor: 'enum'},
-    { title: '审核状态', key: 'invoiceStatus', minWidth: 60, editor: 'enum'},
+    { title: 'ID', key: 'id', minWidth: 65 },
+    { title: '片商名称', key: 'name', minWidth: 100 },
+    { title: '客户等级', key: 'levelCode', minWidth: 60, enum: 'levelList' },
+    { title: '关联销售', key: 'businessDirectorName', minWidth: 60 },
+    { title: '创建时间', key: 'createTime', minWidth: 100, dateTime: true },
+    { title: '更新时间', key: 'modifyTime', minWidth: 100, dateTime: true },
+    { title: '更新人', key: 'modifyUserName', minWidth: 100 },
+    { title: '状态', key: 'status', minWidth: 60, enum: true},
+    { title: '审核状态', key: 'approveStatus', minWidth: 60, enum: true},
     { title: '操作', slot: 'operate', minWidth: 90 },
   ]
+
+  fetch = async (req: any) => {
+    const res = await querylist(req)
+    const {
+      data: {
+        items
+      }
+    } = await directorList()
+    const businesList = (items || []).map((it: any) => {
+      return {
+        key: it.id,
+        text: it.userName
+      }
+    })
+    res.data.approveStatusList = res.data.approveStatusList.filter((it: any) => {
+      return it.key != 0
+    })
+    res.data.statusList = res.data.statusList.filter((it: any) => {
+      return it.key != 0
+    })
+    res.data.businesList = businesList
+    return res
+  }
+
+  get listPage() {
+    return this.$refs.listPage as ListPage
+  }
+
+  editShow(id?: any) {
+    this.$router.push({
+      name: 'client-producers-edit',
+      params: {
+        id
+      }
+    })
+  }
+
+  async editStatus(id: number, status: number) {
+    const statu = status == 1 ? '停用' : '启用'
+    const statusType = status == 1 ? 2 : 1
+    await confirm(`确定要${statu}该项吗？`)
+    try {
+      await stop(id, { status: statusType})
+      this.listPage.update()
+    } catch (ex) {
+      setTimeout(() => {
+        this.handleError(ex)
+      }, 1000)
+    }
+
+  }
 }
 </script>
 <style lang='less' scoped>
