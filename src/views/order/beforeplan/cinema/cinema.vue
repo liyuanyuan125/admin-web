@@ -90,7 +90,13 @@ const getName = (id: number, list: any[]) => {
     return res
 }
 
-
+const getstatus = (key: number, list: any[]) => {
+    const i: number = findIndex(list, (it: any) => {
+        return key === it.key
+    })
+    const res: string = (!list[i].text || list[i].text == '') ? '-' : list[i].text
+    return res
+}
 
 
 const dataForm = {
@@ -235,7 +241,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
             { title: '联系人', width: 120, key: 'contract', align: 'center' },
             { title: '联系电话', width: 120, key: 'contractTel', align: 'center' },
         ]
-        return data
+        const b: any =  [
+            { title: '接单状态', width: 120, key: 'acceptStatusName', align: 'center' },
+        ]
+        return this.$route.params.status == '3' ? [...data] : [...data , ...b]
     }
 
     dlgEditDone(id: any) {
