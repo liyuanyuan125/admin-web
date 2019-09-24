@@ -146,6 +146,19 @@ export function success(msg: string, config = {} as ModalConfig) {
 }
 
 /**
+ * 显示错误信息对话框
+ * @param msg 要显示的消息
+ * @param config 选项
+ */
+export function error(msg: string, config = {} as ModalConfig) {
+  return newConfirm(msg, {
+    icon: 'error',
+    title: '出错了',
+    ...config
+  })
+}
+
+/**
  * 显示警告信息对话框
  * @param msg 要显示的消息
  * @param config 选项

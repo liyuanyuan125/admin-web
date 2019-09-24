@@ -2,6 +2,7 @@ stages:
   - build
   - package
   - deploy-dev
+  - deploy-qas
   - deploy-prd
 
 variables:
@@ -11,9 +12,10 @@ build:
   image: $REGISTRY_ADDRESS/devops/nodejs/build
   stage: build
   only:
-    - tags
-    - master
     - develop
+    - release
+    - master
+    - tags
   script:
     - yarn config get registry && yarn && yarn lint && yarn build
   artifacts:
@@ -30,9 +32,10 @@ package:
   variables:
     GIT_STRATEGY: none
   only:
-    - tags
-    - master
     - develop
+    - release
+    - master
+    - tags
   script:
     - package
   tags:
@@ -46,12 +49,23 @@ deploy-dev:
   dependencies: []
   only:
     - develop
-  except:
-    - tags
-    - master
   script:
     - deploy -service $SERVICE_NAME
   environment: aiads-dev
+  tags:
+    - docker
+
+deploy-qas:
+  image: $REGISTRY_ADDRESS/devops/docker/deploy
+  stage: deploy-qas
+  variables:
+    GIT_STRATEGY: none
+  dependencies: []
+  only:
+    - release
+  script:
+    - deploy -service $SERVICE_NAME
+  environment: jydata-qas
   tags:
     - docker
 
@@ -62,8 +76,8 @@ deploy-prd:
     GIT_STRATEGY: none
   dependencies: []
   only:
-    - tags
     - master
+    - tags
   script:
     - deploy -service $SERVICE_NAME -template web -vars port=8005
   environment: aiads-prd
