@@ -6,7 +6,7 @@
     :title="id == 0 ? '录入下载链接' : '编辑下载链接'"
     @on-cancel="cancel" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
-      <FormItem label="名称" prop="url">
+      <FormItem label="下载链接" prop="url">
         <Input v-model="dataForm.url"></Input>
       </FormItem>
     </Form>
