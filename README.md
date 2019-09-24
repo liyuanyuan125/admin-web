@@ -27,11 +27,6 @@ yarn test
 yarn lint
 ```
 
-### 执行 end-to-end 测试
-```
-yarn test:e2e
-```
-
 ### 执行单元测试
 ```
 yarn test:unit
