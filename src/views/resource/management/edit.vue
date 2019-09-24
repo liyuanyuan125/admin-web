@@ -316,6 +316,7 @@ export default class Main extends ViewBase {
       } = await rateCardDetail(id)
       dataForm.cpm = data.cpm
       dataForm.discount = data.discount
+      dataForm.trailerDiscount = data.trailerDiscount || 0
       const beginDate = this.autoTime(data.beginDate + '')
       const endDate = this.autoTime(data.endDate + '')
       if (data.calendarId != null) {
