@@ -11,7 +11,7 @@
                 <AreaSelect v-model="area" />
                 </Col>
                 <Col span="4" offset="1">
-                <Input v-model="dataForm.cinemaName" placeholder="【专资编码】或 影院名称" />
+                <Input v-model="dataForm.query" placeholder="【专资编码】或 影院名称" />
                 </Col>
                 <Col span='4' offset="1">
                 <!-- <Select v-model="dataForm.resourceId" placeholder="资源方公司名称" style='width: 200px;'  filterable>
@@ -57,6 +57,20 @@
             <changeDlg ref="change" v-if='changeVisible' @done="dlgEditDone" />
             <AddCinemaModel v-if="type != 'detail'" ref="addCinemaModel" :cinemaend="incinematype" :addData="inValue" @done="dlgEditDone" />
         </div>
+        <Modal 
+            v-model='showCodeList'
+            :transfer='true'
+            :width='600'
+            :title="'导入影院'"
+            @on-cancel="cancel('dataForm')" >
+                <p>导入成功{{successCodes.length}}家，失败{{failCodes.length}}家</p>
+                <div v-bind:class="{ modelactive: failCodes.length > 330 }" v-if='failCodes.length != 0'>
+                  失败影院：<span style='display: inline-block;' v-for='it in failCodes' :key='it'>{{it}}</span>&nbsp;&nbsp;
+                </div>
+            <div slot="footer" class="dialog-footer">
+              <Button type="primary" @click="cancel()">确定</Button>
+            </div>
+          </Modal>
     </div>
     </div>
 </template>
@@ -136,7 +150,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     dataForm: any = {
         pageIndex: 1,
         pageSize: 20,
-        cinemaName: '',
+        query: '',
         resourceId: null,
         provinceId: 0,
         cityId: 0,
@@ -166,6 +180,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     acceptStatusList: any = []
 
     getCinema: any = false
+
+    showCodeList: any = false
+    failCodes: any = []
+    successCodes: any = []
 
 
     // 批量导入影院
@@ -259,6 +277,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         })
     }
 
+    cancel(dataForms: string) {
+    this.showCodeList = false
+  }
+
     // 下载
     async exportData() {
         try {
@@ -283,6 +305,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
     // 批量导入影院
     async onChange(ev: Event) {
+        this.showCodeList = false
         this.defaultCinemaLength = this.list.length
         const uploader = new Uploader({
             filePostUrl: `/xadvert/plans/` + this.$route.params.id + `/import-cinema`,
@@ -297,20 +320,26 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         this.inputhtml = this.file.name
 
         if (this.$route.params.status == '6' || this.$route.params.status == '7' ) {
-            // try {
-              const a = await uploader.upload(this.file)
-              this.searchchg()
-            // } catch (ex) {
-              // this.handleError(ex)
-            // } finally {
-            // }
+            const a = await uploader.upload(this.file)
+            if (a.failCodes.length > 0) {
+                this.showCodeList = true
+                this.failCodes = a.failCodes
+                this.successCodes = a.successCodes
+            } else {
+                toast('上传成功')
+            }
+
+            this.searchchg()
         } else {
-            // try {
-              const a = await uploader.upload(this.file)
-              this.search()
-            // } catch (ex) {
-              // this.handleError(ex)
-            // }
+            const a = await uploader.upload(this.file)
+            if (a.failCodes.length > 0) {
+                this.showCodeList = true
+                this.failCodes = a.failCodes
+                this.successCodes = a.successCodes
+            } else {
+                toast('上传成功')
+            }
+            this.search()
         }
         (this.$refs.input as any).value = null
         this.viewcinema = true
@@ -694,5 +723,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   left: 0;
   top: 0;
   opacity: 0;
+}
+.modelactive {
+  height: 450px;
+  overflow-y: scroll;
 }
 </style>
