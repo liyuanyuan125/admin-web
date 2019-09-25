@@ -7,7 +7,7 @@
     @on-cancel="cancel" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
       <FormItem label="下载链接" prop="url">
-        <Input v-model="dataForm.url"></Input>
+        <Input v-model="dataForm.url"/>
       </FormItem>
     </Form>
     <div slot="footer" class="dialog-footer">
