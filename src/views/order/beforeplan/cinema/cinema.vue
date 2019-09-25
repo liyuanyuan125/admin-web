@@ -65,9 +65,12 @@
             @on-cancel="cancel('dataForm')" >
                 <p>导入成功{{successCodes.length}}家，失败{{failCodes.length}}家</p>
                 <div v-bind:class="{ modelactive: failCodes.length > 330 }" v-if='failCodes.length != 0'>
-                  失败影院：<span style='display: inline-block;' v-for='it in failCodes' :key='it'>{{it}}</span>&nbsp;&nbsp;
+                  失败影院：<span style='display: inline-block;' v-for='it in failCodes' :key='it'>{{it}},&nbsp;&nbsp;</span>
                 </div>
-            <div slot="footer" class="dialog-footer">
+               <!--  <div v-if='failCodes.length != 0'>
+                  失败影院：<span class='codeTypes' style='display: inline-block;' v-for='it in failCodes' :key='it'>{{it}},&nbsp;&nbsp;</span>
+                </div> -->
+            <div slot="footer" class="dialog-footer">,
               <Button type="primary" @click="cancel()">确定</Button>
             </div>
           </Modal>
@@ -728,4 +731,5 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   height: 450px;
   overflow-y: scroll;
 }
+
 </style>
