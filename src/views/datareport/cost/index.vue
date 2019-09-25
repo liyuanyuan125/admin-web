@@ -2,7 +2,7 @@
   <div class="page">
     <div>
       <div class="act-bar flex-box">
-        <form class="form flex-1" @submit.prevent="search">
+        <form class="form flex-1" @submit.prevent="doSearch">
           <!-- <span style='color: red;'>*</span> -->
           <LazyInput v-model="query.id" placeholder="影片名称" class="input"/>
           <!-- <span style='color: red;margin-left: 5px;'>*</span> -->
@@ -14,7 +14,7 @@
           <LazyInput v-if='query.status == 1' v-model="query.mobile" placeholder="天" class="input"/>
           <LazyInput v-if='query.status == 2' v-model="query.mobile" placeholder="人" class="input"/>
           <LazyInput v-model="query.companyName" placeholder="密钥周期" class="input"/>
-          <Button type="success" @click="search" class="btn-reset">确认</Button>
+          <Button type="success" @click="doSearch" class="btn-reset">确认</Button>
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </form>
       </div>
@@ -113,9 +113,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     // this.updateQueryByParam()
   }
 
-  search() {
-    this.query.pageIndex = 1
-  }
+  // search() {
+  //   this.query.pageIndex = 1
+  // }
 
   reloadSearch() {
     this.doSearch()
@@ -126,7 +126,11 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
 
   async doSearch() {
-    if (this.query.id == '' && this.query.email == '') {
+    // console.log(this.query)
+    // console.log(this.query.id)
+    // console.log(this.query.email)
+    if ((this.query.id == '' || this.query.id == undefined) ||
+      (this.query.email == '' || this.query.email == undefined)) {
       info('请输入影片名称，预测票房进行查询')
       return
     }
@@ -143,10 +147,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         statusList: statusList,
       } } = await queryList(this.query)
       this.list = list
-      this.list.push({
-        id: '总计',
-        email: 456
-      })
+      if (this.list.length > 0) {
+        this.list.push({
+          id: '总计',
+          email: 456
+        })
+      }
       this.total = total
       this.statusList = statusList
     } catch (ex) {
