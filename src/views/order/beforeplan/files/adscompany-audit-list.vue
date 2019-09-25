@@ -26,7 +26,6 @@ export default class CompanyList extends ViewBase {
             shortName: keyword,
             pageIndex: 1,
             pageSize: 88,
-            typeCode: 'ads'
         }
         const res = await company(query)
         const list = res.data.items || null
