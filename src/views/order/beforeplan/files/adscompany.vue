@@ -52,6 +52,7 @@ export default class CompanyList extends ViewBase {
               data: { items }
             } = await company({
               shortName: querys,
+              typeCodes: 'ads,agent,film'
             })
             this.list = items || []
           }
