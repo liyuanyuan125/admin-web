@@ -11,7 +11,7 @@
                 <AreaSelect v-model="area" />
                 </Col>
                 <Col span="4" offset="1">
-                <Input v-model="dataForm.cinemaName" placeholder="【专资编码】或 影院名称" />
+                <Input v-model="dataForm.query" placeholder="【专资编码】或 影院名称" />
                 </Col>
                 <Col span='4' offset="1">
                 <!-- <Select v-model="dataForm.resourceId" placeholder="资源方公司名称" style='width: 200px;'  filterable>
@@ -50,13 +50,30 @@
             <div class="act-bar" style='margin-top: 15px;'>
                 <a style='float: left; margin-right: 15px;' @click="onAdd" v-if="!type && $route.params.status == 3 || $route.params.status == 10 || $route.params.status == 6 || $route.params.status == 7" @done="dlgEditDone">添加影院</a>&nbsp;&nbsp;&nbsp;
                 <Form v-if='$route.params.ifs == 1 && ($route.params.status == 3 || $route.params.status == 6 || $route.params.status == 7)' class="create-form form-item" enctype="multipart/form-data" ref="form" :label-width="120">批量导入
-                    <input type="file" class='adds' @change="onChange" />
+                    <input ref='input' type="file" class='adds' @change="onChange" />
                 </Form>
                 <span class='viewhtml'>{{inputhtml}}</span>
             </div>
             <changeDlg ref="change" v-if='changeVisible' @done="dlgEditDone" />
             <AddCinemaModel v-if="type != 'detail'" ref="addCinemaModel" :cinemaend="incinematype" :addData="inValue" @done="dlgEditDone" />
         </div>
+        <Modal 
+            v-model='showCodeList'
+            :transfer='true'
+            :width='600'
+            :title="'导入影院'"
+            @on-cancel="cancel('dataForm')" >
+                <p>导入成功{{successCodes.length}}家，失败{{failCodes.length}}家</p>
+                <div v-bind:class="{ modelactive: failCodes.length > 330 }" v-if='failCodes.length != 0'>
+                  失败影院：<span style='display: inline-block;' v-for='it in failCodes' :key='it'>{{it}},&nbsp;&nbsp;</span>
+                </div>
+               <!--  <div v-if='failCodes.length != 0'>
+                  失败影院：<span class='codeTypes' style='display: inline-block;' v-for='it in failCodes' :key='it'>{{it}},&nbsp;&nbsp;</span>
+                </div> -->
+            <div slot="footer" class="dialog-footer">,
+              <Button type="primary" @click="cancel()">确定</Button>
+            </div>
+          </Modal>
     </div>
     </div>
 </template>
@@ -65,13 +82,13 @@ import { Component, Watch, Mixins, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { cinemaList, delcin, aresids, importCinema } from '@/api/beforeplan'
+import { cinemaList, delcin, aresids, importCinema , getCinema } from '@/api/beforeplan'
 import { queryList } from '@/api/corpReal'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
-import { confirm, warning, success, toast, info } from '@/ui/modal'
+import { confirm, warning, success, toast, info , alert , error } from '@/ui/modal'
 import AreaSelect from '@/components/areaSelect'
 import changeDlg from '../changeDlg.vue'
 import AddCinemaModel from './addCinemaModel.vue'
@@ -90,7 +107,13 @@ const getName = (id: number, list: any[]) => {
     return res
 }
 
-
+const getstatus = (key: number, list: any[]) => {
+    const i: number = findIndex(list, (it: any) => {
+        return key === it.key
+    })
+    const res: string = (!list[i].text || list[i].text == '') ? '-' : list[i].text
+    return res
+}
 
 
 const dataForm = {
@@ -130,7 +153,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     dataForm: any = {
         pageIndex: 1,
         pageSize: 20,
-        cinemaName: '',
+        query: '',
         resourceId: null,
         provinceId: 0,
         cityId: 0,
@@ -145,6 +168,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     totalPage = 0
     loading = false
     list: any = []
+    list1: any = []
     total = 0
     typeList = []
     showTime: any = []
@@ -157,6 +181,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     dataList: any = []
     // 接单转态
     acceptStatusList: any = []
+
+    getCinema: any = false
+
+    showCodeList: any = false
+    failCodes: any = []
+    successCodes: any = []
 
 
     // 批量导入影院
@@ -192,7 +222,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
                 } else if (acceptStatus == 1) {
                   return <span class='datetime' v-html={'已接单'}></span>
                 } else if (acceptStatus == 2) {
-                  return <span class='datetime' v-html={'未接单'}></span>
+                  return <span class='datetime' v-html={'已拒单'}></span>
+                } else {
+                  return <span class='datetime' v-html={'-'}></span>
                 }
                 
                 /* tslint:enable */
@@ -230,7 +262,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
             { title: '联系人', width: 120, key: 'contract', align: 'center' },
             { title: '联系电话', width: 120, key: 'contractTel', align: 'center' },
         ]
-        return data
+        const b: any =  [
+            { title: '接单状态', width: 120, key: 'acceptStatusName', align: 'center' },
+        ]
+        return this.$route.params.status == '3' ? [...data] : [...data , ...b]
     }
 
     dlgEditDone(id: any) {
@@ -245,9 +280,16 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         })
     }
 
+    cancel(dataForms: string) {
+    this.showCodeList = false
+  }
+
     // 下载
-    exportData() {
-        const res: any = (this.list || []).map((it: any) => {
+    async exportData() {
+        try {
+            const a = await getCinema(this.$route.params.id)
+            const b = a.data
+            const res: any = (b || []).map((it: any) => {
                 return {
                     ...it,
                     resourceName: getName(it.resourceId, this.reslist)
@@ -259,14 +301,22 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
                 columns: this.columnsData,
                 data: res
             })
+        } catch (ex) {
+            this.handleError(ex)
+        }
     }
 
     // 批量导入影院
     async onChange(ev: Event) {
-      this.defaultCinemaLength = this.list.length
-        const uploader: any = new Uploader({
+        this.showCodeList = false
+        this.defaultCinemaLength = this.list.length
+        const uploader = new Uploader({
             filePostUrl: `/xadvert/plans/` + this.$route.params.id + `/import-cinema`,
             fileFieldName: 'file',
+        })
+        uploader.on('fail', (ex: any) => {
+          error(ex.msg)
+          return
         })
         const input = ev.target as HTMLInputElement
         this.file = input.files && input.files[0]
@@ -274,11 +324,27 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
         if (this.$route.params.status == '6' || this.$route.params.status == '7' ) {
             const a = await uploader.upload(this.file)
+            if (a.failCodes.length > 0) {
+                this.showCodeList = true
+                this.failCodes = a.failCodes
+                this.successCodes = a.successCodes
+            } else {
+                toast('上传成功')
+            }
+
             this.searchchg()
         } else {
             const a = await uploader.upload(this.file)
+            if (a.failCodes.length > 0) {
+                this.showCodeList = true
+                this.failCodes = a.failCodes
+                this.successCodes = a.successCodes
+            } else {
+                toast('上传成功')
+            }
             this.search()
         }
+        (this.$refs.input as any).value = null
         this.viewcinema = true
         this.$emit('getcine', this.viewcinema)
     }
@@ -296,14 +362,35 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
                     acceptStatusList: acceptStatusList
                 }
             } = await cinemaList(this.$route.params.id, query)
-            const aaa: any = list.slice(this.defaultCinemaLength) // 增加的
-            const bbb: any = (aaa || []).map(( it: any ) => {
-              return {
-                ...it,
-                ifchgRes: true
-              }
+            const aaalist: any = this.list1.map((it: any) => {
+                return it.code
             })
-            this.list = [...list , ...bbb]
+            const bbblist: any = (list || []).map((it: any) => {
+                if (aaalist.indexOf(it.code) == -1) {
+
+                }
+                return {
+                    ...it,
+                    ifchgRes: aaalist.indexOf(it.code) == -1 ? true : false
+                }
+            })
+            this.list = bbblist
+            // const aaa: any = list.slice(this.defaultCinemaLength) // 增加的
+            // const bbb: any = (aaa || []).map(( it: any ) => {
+            //   return {
+            //     ...it,
+            //     ifchgRes: true
+            //   }
+            // })
+            // const ccc = (this.list || []).map((it: any) => {
+            //     return it.id
+            // })
+            // bbb.map((it: any) => {
+            //   if (ccc.indexOf(it.code) == -1) {
+            //     this.list.push(it)
+            //   }
+            // })
+            // this.list = [...list , ...bbb]
             this.total = total
             this.acceptStatusList = acceptStatusList
 
@@ -384,6 +471,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
                 }
             } = await cinemaList(this.$route.params.id, query)
             this.list = list
+            this.list1 = list
             this.total = total
             this.defaultCinemaLength = total
             this.acceptStatusList = acceptStatusList
@@ -639,4 +727,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   top: 0;
   opacity: 0;
 }
+.modelactive {
+  height: 450px;
+  overflow-y: scroll;
+}
+
 </style>

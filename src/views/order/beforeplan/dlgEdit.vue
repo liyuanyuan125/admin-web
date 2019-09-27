@@ -69,7 +69,7 @@
 import { Component, Prop } from 'vue-property-decorator'
 import { business } from '@/api/beforeplan'
 import { slice, clean } from '@/fn/object'
-import { warning , success, toast } from '@/ui/modal'
+import { warning , success, toast , info } from '@/ui/modal'
 import { formatNumber } from '@/util/validateRules'
 import ViewBase from '@/util/ViewBase'
 import { itemlist } from '@/api/beforeplan'
@@ -171,6 +171,10 @@ export default class ComponentMain extends ViewBase {
 
   // 表单提交
   dataFormSubmit(dataForms: any) {
+   if (String(this.dataForm.discount).indexOf('.') == 1 && String(this.dataForm.discount).split('.')[1].length > 2) {
+     info('请输入最多两位小数的折扣')
+     return
+   }
    const myThis: any = this
    myThis.$refs[dataForms].validate(async ( valid: any ) => {
       if (valid) {

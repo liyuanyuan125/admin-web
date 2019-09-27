@@ -148,7 +148,7 @@ export default class Main extends ViewBase {
     { title: 'ID', key: 'id', minWidth: 65 },
     { title: '广告主名称', key: 'name', minWidth: 100 },
     { title: '广告主身份', key: 'companyType', minWidth: 60, enum: true },
-    { title: '客户等级', key: 'levelCode', minWidth: 60, enum: true },
+    { title: '客户等级', key: 'levelCode', minWidth: 60, enum: 'levelList' },
     { title: '客户类型', key: 'contractNo', minWidth: 100, slot: 'client' },
     { title: '关联销售', key: 'businessDirectorName', minWidth: 60 },
     { title: '推荐人电话', key: 'recommendMobile', minWidth: 100 },

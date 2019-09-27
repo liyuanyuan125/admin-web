@@ -10,6 +10,11 @@ export async function queryList(query: any = {}) {
   return res
 }
 
+export async function chainsList(query: any) {
+  const res = await get('/theater/chains', query)
+  return res
+}
+
 /**
  * 根据条件，查询单个项的详细信息
  * @param query 查询条件，参见接口文档

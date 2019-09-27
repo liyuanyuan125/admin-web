@@ -47,6 +47,7 @@
                   @click="showReport(it)">
                   <p class="date-cpm">{{it.data.cpm}}</p>
                   <p class="date-discount">{{it.data.discount}}%</p>
+                  <p class="date-discount">{{it.data.trailerDiscount}}%</p>
                 </div>
                 <div v-if="it.data && it.data.calendarId > 0"
                   class="date-dangqi">{{it.data.calendarName}}</div>

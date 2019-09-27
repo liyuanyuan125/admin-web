@@ -138,7 +138,7 @@ export default class Main extends ViewBase {
   async seach(id?: any) {
     this.dataLoading = true
     const query: any = {
-      chainId: this.chainId,
+      code: this.chainId,
       query: this.value,
       ...this.query,
       pageSize: this.pageSize,

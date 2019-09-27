@@ -114,7 +114,7 @@ export default class Main extends ViewBase {
   }
 
   created() {
-    this.seach()
+    this.seach(1)
   }
 
   done() {
@@ -136,8 +136,11 @@ export default class Main extends ViewBase {
     this.checkObj = this.checkObj.filter((it: any) => !filterId.includes(it.id))
   }
 
-  async seach() {
+  async seach(index: any) {
     this.loading = true
+    if (index == 1) {
+      this.dataForm.pageIndex = 1
+    }
     try {
       const {
         data: {
@@ -161,13 +164,13 @@ export default class Main extends ViewBase {
    // 每页数
   sizeChangeHandle(val: any) {
     this.dataForm.pageIndex = val
-    this.seach()
+    this.seach(0)
   }
 
   // 当前页
   currentChangeHandle(val: any) {
     this.dataForm.pageSize = val
-    this.seach()
+    this.seach(0)
   }
 
   cancel() {

@@ -37,11 +37,11 @@
           >补单</router-link>
           <!-- 待支付操作 -->
           <router-link
-            v-if="status == 3 && depositAmount == null && auditStatus == null "
+            v-if="status == 3 && depositAmount == null && auditStatus == null && auditStatus != 1 "
             :to="{ name: 'order-beforeplan-detail', params: { id , status, ifs: '1' } }"
           >修改</router-link>
           <a
-            v-if="status == 3"
+            v-if="status == 3 && auditStatus != 1"
             href="javascript:;"
             @click="view(id , discount , depositAmount)"
           >设置定金</a>
@@ -125,10 +125,10 @@ export default class IndexPage extends ViewBase {
 
       {
         name: 'companyName',
-        defaultValue: 0,
+        defaultValue: null,
         component: CompanyList,
         width: 120,
-        placeholder: '广告主公司名称'
+        placeholder: '公司名称'
       },
 
       {

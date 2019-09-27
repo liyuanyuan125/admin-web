@@ -147,7 +147,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 客户管理 - 账号管理 - 列表
   {
-    path: '/client/account/',
+    path: '/client/account',
     name: 'client-account',
     component: () => import('./views/client/account/index.vue'),
     meta: {
@@ -175,7 +175,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 客户管理 - 公司管理 - 列表
   {
-    path: '/client/corp/',
+    path: '/client/corp',
     name: 'client-corp',
     component: () => import('./views/client/corp/index.vue'),
     meta: {
@@ -185,11 +185,11 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 客户管理 - 广告主管理 - 列表
   {
-    path: '/client/ggiser/',
+    path: '/client/ggiser',
     name: 'client-ggiser',
     component: () => import('./views/client/ggiser/index.vue'),
     meta: {
-      authKey: 'customer.companies:list'
+      authKey: ''
     }
   },
 
@@ -199,7 +199,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'client-ggiser-edit',
     component: () => import('./views/client/ggiser/edit.vue'),
     meta: {
-      authKey: 'customer.companies:list'
+      authKey: ''
     }
   },
 
@@ -209,17 +209,17 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'client-ggiser-detail',
     component: () => import('./views/client/ggiser/detail.vue'),
     meta: {
-      authKey: 'customer.companies:list'
+      authKey: ''
     }
   },
 
   // 客户管理 - 资源方管理 - 列表
   {
-    path: '/client/resource/',
+    path: '/client/resource',
     name: 'client-resource',
     component: () => import('./views/client/resource/index.vue'),
     meta: {
-      authKey: 'customer.companies:list'
+      authKey: ''
     }
   },
 
@@ -229,7 +229,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'client-resource-edit',
     component: () => import('./views/client/resource/edit.vue'),
     meta: {
-      authKey: 'customer.companies:list'
+      authKey: ''
     }
   },
 
@@ -239,17 +239,17 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'client-resource-detail',
     component: () => import('./views/client/resource/detail.vue'),
     meta: {
-      authKey: 'customer.companies:list'
+      authKey: ''
     }
   },
 
   // 客户管理 - 片商管理 - 列表
   {
-    path: '/client/producers/',
+    path: '/client/producers',
     name: 'client-producers',
     component: () => import('./views/client/producers/index.vue'),
     meta: {
-      authKey: 'customer.companies:list'
+      authKey: ''
     }
   },
 
@@ -259,7 +259,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'client-producers-edit',
     component: () => import('./views/client/producers/edit.vue'),
     meta: {
-      authKey: 'customer.companies:list'
+      authKey: ''
     }
   },
 
@@ -269,17 +269,17 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'client-producers-detail',
     component: () => import('./views/client/producers/detail.vue'),
     meta: {
-      authKey: 'customer.companies:list'
+      authKey: ''
     }
   },
 
    // 客户管理 - 区代管理 - 列表
    {
-    path: '/client/replace/',
+    path: '/client/replace',
     name: 'client-replace',
     component: () => import('./views/client/replace/index.vue'),
     meta: {
-      authKey: 'customer.companies:list'
+      authKey: ''
     }
   },
 
@@ -289,7 +289,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'client-replace-edit',
     component: () => import('./views/client/replace/edit.vue'),
     meta: {
-      authKey: 'customer.companies:list'
+      authKey: ''
     }
   },
 
@@ -299,7 +299,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     name: 'client-replace-detail',
     component: () => import('./views/client/replace/detail.vue'),
     meta: {
-      authKey: 'customer.companies:list'
+      authKey: ''
     }
   },
 
@@ -328,7 +328,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 客户管理 - 变更工单 - 列表
   {
-    path: '/client/order/',
+    path: '/client/order',
     name: 'client-order',
     component: () => import('./views/client/order/index.vue'),
     meta: {
@@ -348,7 +348,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 客户管理 - 影片关联 - 列表
   {
-    path: '/client/film/',
+    path: '/client/film',
     name: 'client-film',
     component: () => import('./views/client/film/index.vue'),
     meta: {
@@ -378,7 +378,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 客户管理 - 品牌关联
   {
-    path: '/client/brand/',
+    path: '/client/brand',
     name: 'client-brand',
     component: () => import('./views/client/brand/index.vue'),
     meta: {
@@ -399,7 +399,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 客户管理 - 留言本
   {
-    path: '/client/message/',
+    path: '/client/message',
     name: 'client-message',
     component: () => import('./views/client/message/index.vue'),
     meta: {
@@ -409,7 +409,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 客户管理 - 签约影院
   {
-    path: '/client/signedCinema/',
+    path: '/client/signedCinema',
     name: 'client-signed-cinema',
     component: () => import('./views/client/signed-cinema/index.vue'),
     meta: {
@@ -420,7 +420,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 基础数据 - 系统字典 - 分类列表
   {
-    path: '/data/dict/',
+    path: '/data/dict',
     name: 'data-dict',
     component: () => import('./views/data/dict/index.vue'),
     meta: {
@@ -580,7 +580,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   },
 
   {
-    path: '/data/area/',
+    path: '/data/area',
     name: 'data-area',
     component: () => import('./views/data/area/index.vue'),
     meta: {
@@ -589,7 +589,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   },
 
   {
-    path: '/data/calendar/',
+    path: '/data/calendar',
     name: 'data-calendar',
     component: () => import('./views/data/calendar/index.vue'),
     meta: {
@@ -598,7 +598,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   },
 
   {
-    path: '/data/cinema-chain/',
+    path: '/data/cinema-chain',
     name: 'data-cinema-chain',
     component: () => import('./views/data/cinema-chain/index.vue'),
     meta: {
@@ -607,7 +607,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   },
 
   {
-    path: '/data/cinema/',
+    path: '/data/cinema',
     name: 'data-cinema',
     component: () => import('./views/data/cinema/index.vue'),
     meta: {
@@ -656,7 +656,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   },
   // 基础数据 - 影片管理（修改原有功能）
   {
-    path: '/data/film/',
+    path: '/data/film',
     name: 'data-film',
     component: () => import('./views/data/film/index.vue'),
     meta: {
@@ -791,7 +791,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   },
 
   {
-    path: '/contract/old/',
+    path: '/contract/old',
     name: 'contract-list-old',
     component: () => import('./views/contract/list/old.vue'),
     meta: {
@@ -825,7 +825,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
   },
 
   {
-    path: '/finance/capital/',
+    path: '/finance/capital',
     name: 'finance-capital',
     redirect: { name: 'finance-capital-ggtiser' },
     component: () => import('./components/tabLayout'),
@@ -909,7 +909,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 财务管理 - 账号余额管理
   {
-    path: '/finance/account/balance/',
+    path: '/finance/account/balance',
     name: 'finance-account-balance',
     component: () => import('./views/finance/account/index.vue'),
     meta: {
@@ -944,7 +944,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 财务管理 - 账号余额管理
   {
-    path: '/finance/balance/withdrawal/',
+    path: '/finance/balance/withdrawal',
     name: 'finance-balance-withdrawal',
     component: () => import('./views/finance/withdrawal/index.vue'),
     meta: {
@@ -965,7 +965,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
 
   // 财务管理 - 充值审核
   // {
-  //   path: '/finance/examine/',
+  //   path: '/finance/examine',
   //   name: 'finance-examine',
   //   component: () => import('./views/finance/examine/index.vue'),
   //   meta: {
@@ -1702,6 +1702,36 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     meta: {
       authKey: '',
       title: '映前广告监播详情'
+    }
+  },
+  // 广告管理 - 成本核算 - 列表
+  {
+    path: '/datareport/cost',
+    name: 'datareport-cost',
+    component: () => import('./views/datareport/cost/index.vue'),
+    meta: {
+      authKey: '',
+      title: '成本核算报表'
+    }
+  },
+  // 广告管理 - 下刊 - 列表
+  {
+    path: '/datareport/nextissue',
+    name: 'datareport-nextissue',
+    component: () => import('./views/datareport/nextissue/index.vue'),
+    meta: {
+      authKey: '',
+      title: '报表详情'
+    }
+  },
+  // 广告管理 - 下刊 - 列表 - 详情
+  {
+    path: '/datareport/nextissue/detail/:id',
+    name: 'datareport-nextissue-detail',
+    component: () => import('./views/datareport/nextissue/detail.vue'),
+    meta: {
+      authKey: '',
+      title: '下刊监控列表'
     }
   },
 ] // end of mainLayoutRoutes
