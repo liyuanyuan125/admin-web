@@ -2,31 +2,32 @@
   <div class="page">
     <div>
       <div class="act-bar flex-box">
-        <form class="form flex-1" @submit.prevent="doSearch">
+        <form class="form flex-1">
           <!-- <span style='color: red;'>*</span> -->
-          <LazyInput v-model="query.id" placeholder="影片名称" class="input"/>
+          <LazyInput v-model="query.movieId" placeholder="影片名称" class="input"/>
           <!-- <span style='color: red;margin-left: 5px;'>*</span> -->
-          <LazyInput v-model="query.email" placeholder="预测票房" class="input"/>
-          <Select v-model="query.status" placeholder="启用状态" clearable>
+          <InputNumber  v-model="query.box" :min='0' placeholder="预测票房" class="input"/>
+          <Select v-model="query.type" placeholder="投放类型选择">
             <Option v-for="it in putInType" :key="it.key" :value="it.key"
               :label="it.text">{{it.text}}</Option>
           </Select>
-          <LazyInput v-if='query.status == 1' v-model="query.mobile" placeholder="天" class="input"/>
-          <LazyInput v-if='query.status == 2' v-model="query.mobile" placeholder="人" class="input"/>
-          <LazyInput v-model="query.companyName" placeholder="密钥周期" class="input"/>
-          <Button type="success" @click="doSearch" class="btn-reset">确认</Button>
+          <InputNumber :min='0' v-if='query.type == 1' v-model="query.typeCount" placeholder="天" class="input"/>
+          <InputNumber :min='0' v-if='query.type == 2' v-model="query.typeCount" placeholder="人" class="input"/>
+          <InputNumber :min='0' v-model="query.week" placeholder="密钥周期" class="input"/>
+          <Button type="primary" @click="doSearch" class="btn-reset">确认</Button>
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
+          <Button v-if='list.length > 0' type="default" @click="exportData" class="btn-reset">导出</Button>
         </form>
       </div>
-      <Table :columns="columns" :data="list" :loading="loading"
+      <Table ref='table' :columns="columns" :data="list" :loading="loading"
         border stripe disabled-hover size="small" class="table">
         </Table>
 
       <div class="page-wrap" v-if="total > 0">
         <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
           show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-          @on-change="page => query.pageIndex = page"
-          @on-page-size-change="pageSize => query.pageSize = pageSize"/>
+          @on-change="handlepageChange"
+      @on-page-size-change="handlePageSize"/>
       </div>
     </div>
   </div>
@@ -50,10 +51,6 @@ import {confirm , warning , success, toast , info } from '@/ui/modal'
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
-const dataForm = {
-  status: 1
-}
-
 
 @Component({
   components: {
@@ -61,20 +58,19 @@ const dataForm = {
 })
 // export default class Main extends ViewBase {
 export default class Main extends Mixins(ViewBase, UrlManager) {
-  defQuery = {
-    id: '',
-    email: '',
-    companyName: '',
-    status: 1,
+  query: any = {
+    movieId: '',
+    box: null,
+    typeCount: null,
+    type: 1,
+    week: null,
     pageIndex: 1,
     pageSize: 20,
   }
-  query: any = {}
 
   loading = false
   list: any = []
   total = 0
-  oldQuery: any = {}
 
   // 投放类型
   putInType: any = [
@@ -90,9 +86,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   statusList = []
 
-
-
-
+  bbb: any = []
 
   columns = [
     { title: '省份', key: 'id', align: 'center', width: 100 },
@@ -108,32 +102,81 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     { title: '日均人次', key: 'id', align: 'center' },
   ]
 
+  exportcolumns = [
+    { title: '导出时间', key: 'exportDate', align: 'center', width: 100 },
+    { title: '筛选条件', key: 'query', align: 'center', width: 100 },
+    { title: '省份', key: 'id', align: 'center', width: 100 },
+    { title: '城市', key: 'email', align: 'center' },
+    { title: '城市等级', key: 'mobile', align: 'center' },
+    { title: '影城名称', width: 300, key: 'companyName', align: 'center' },
+    { title: '影城编码', key: 'companyName', align: 'center' },
+    { title: '影厅数', key: 'id', align: 'center' },
+    { title: '座位数', key: 'id', align: 'center' },
+    { title: '总场次(场)', key: 'id', align: 'center' },
+    { title: '总人次(人)', key: 'id', align: 'center' },
+    { title: '日均场次', key: 'id', align: 'center' },
+    { title: '日均人次', key: 'id', align: 'center' },
+  ]
+
   mounted() {
-    // info('请输入影片名称，预测票房进行查询')
+    this.query.type = 1
+    this.query.week = 45
     // this.updateQueryByParam()
   }
 
-  // search() {
-  //   this.query.pageIndex = 1
-  // }
-
-  reloadSearch() {
-    this.doSearch()
+  // 下载
+  exportData() {
+    (this.$refs.table as any).exportCsv({
+        filename: '成本核算报表',
+        columns: this.exportcolumns,
+        data: ([...this.bbb, ...this.list.slice(1)]).map((it: any) => {
+          return {
+            ...it,
+            updateTime: (it.updateTime == null || it.updateTime == 'updateTime') ? ''
+            : moment(it.updateTime).format(timeFormat)
+          }
+        })
+    })
   }
 
   reset() {
-    this.resetQuery()
+    this.query = {
+      movieId: '',
+      box: null,
+      typeCount: null,
+      type: 1,
+      week: 45,
+      pageIndex: 1,
+      pageSize: 20,
+    }
+    this.doSearch()
   }
 
   async doSearch() {
-    // console.log(this.query)
-    // console.log(this.query.id)
-    // console.log(this.query.email)
-    if ((this.query.id == '' || this.query.id == undefined) ||
-      (this.query.email == '' || this.query.email == undefined)) {
+    if ((this.query.movieId == '' || this.query.movieId == undefined) ||
+      (this.query.box == null || this.query.box == undefined)) {
       info('请输入影片名称，预测票房进行查询')
       return
     }
+    if (this.query.type == 1) {
+      if (this.query.typeCount == null) {
+        info('请输入投放天数')
+        return
+      }
+      if (this.query.typeCount > this.query.week) {
+        info('投放天数不可大于密钥周期')
+        return
+      }
+    }
+    if (String(this.query.typeCount).indexOf('.') == 1) {
+      info('投放天数跟人次为整数')
+      return
+    }
+    if (this.query.type == 2 && this.query.week == null) {
+      this.query.week = 45
+    }
+
+
     if (this.loading) {
       return
     }
@@ -153,6 +196,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           email: 456
         })
       }
+      this.bbb = [
+        {
+          exportDate: moment((new Date().getTime())).format(timeFormat),
+          query: 1 + ' ' + 2 + ' ' + 3,
+          ...this.list[0]
+        }
+      ]
       this.total = total
       this.statusList = statusList
     } catch (ex) {
@@ -162,13 +212,22 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 
-  @Watch('query', { deep: true })
-  watchQuery() {
-    if (this.query.pageIndex == this.oldQuery.pageIndex) {
-      this.query.pageIndex = 1
-    }
+  handlepageChange(size: any) {
+    this.query.pageIndex = size
     this.doSearch()
   }
+  handlePageSize(size: any) {
+    this.query.pageIndex = size
+    this.doSearch()
+  }
+
+  // @Watch('query', { deep: true })
+  // watchQuery() {
+  //   if (this.query.pageIndex == this.oldQuery.pageIndex) {
+  //     this.query.pageIndex = 1
+  //   }
+  //   this.doSearch()
+  // }
 }
 </script>
 

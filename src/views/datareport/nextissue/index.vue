@@ -7,7 +7,7 @@
           <LazyInput v-model="query.planName" placeholder="广告计划名称" class="input"/>
           <DatePicker type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="查询日期" class="input" style="width: 200px"></DatePicker>
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
-          <Button type="default" @click="exportData" class="btn-reset">导出</Button>
+          <Button type="default" v-if='list.length > 0' @click="exportData" class="btn-reset">导出</Button>
         </form>
       </div>
       <Table ref='table' :columns="columns" :data="list" :loading="loading"
@@ -66,7 +66,7 @@ import { Component, Watch , Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { queryList , setList} from '@/api/account'
+import { nextList } from '@/api/dataReport'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
@@ -114,6 +114,16 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   ids: any = 0
 
+  bbb: any = [
+    {
+      exportDate: moment((new Date().getTime())).format(timeFormat),
+      query: '计划ID' + !this.query.planId ? '全部' : this.query.planId +
+      '计划名称' + !this.query.planName ? '全部' : this.query.planName +
+      '查询日期' + !this.query.beginDate ? '全部' : this.query.beginDate + '~' + this.query.endDate,
+      ...this.list[0]
+    }
+  ]
+
 
   columns = [
     { title: '广告计划ID', key: 'planId', align: 'center', width: 100 },
@@ -142,6 +152,29 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   ]
 
+  exportcolumns = [
+    { title: '导出时间', key: 'exportDate', align: 'center', width: 100 },
+    { title: '筛选条件', key: 'query', align: 'center', width: 100 },
+    { title: '广告计划ID', key: 'planId', align: 'center', width: 100 },
+    { title: '广告计划名称', key: 'planName', align: 'center' },
+    { title: '今日订单完成率', key: 'todayFinishRate', align: 'center' },
+    { title: '明日订单完成率' , key: 'tomorrowFinishRate', align: 'center' },
+    { title: '预计完成日期' , key: 'budgetFinishDate', align: 'center' },
+    { title: '预计总人次' , key: 'budgetPersonCount', align: 'center' },
+    { title: '实际累计人次' , key: 'personCount', align: 'center' },
+    { title: '预计总场次' , key: 'budgetShowCount', align: 'center' },
+    { title: '实际累计场次' , key: 'showCount', align: 'center' },
+    { title: '更新时间' , key: 'updateTime', align: 'center',
+      render: (hh: any, { row: { updateTime } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        const html = updateTime == 'updateTime' ? '-' : moment(updateTime).format(timeFormat)
+        return <span class='datetime' v-html={html}></span>
+        /* tslint:enable */
+      }
+    },
+  ]
+
   mounted() {
     this.updateQueryByParam()
 
@@ -154,15 +187,15 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   dateChange(data: any) {
      // 获取时间戳
     const ba = new Date(data[0]).getFullYear()
-    const bb = new Date(data[0]).getMonth() + 1 < 10 ? '0' + new Date(data[0]).getMonth() + 1
-    : new Date(data[0]).getMonth() + 1
+    const bb = Number(new Date(data[0]).getMonth()) + 1 < 10 ? '0' + Number(new Date(data[0]).getMonth() + 1)
+    : Number(new Date(data[0]).getMonth() + 1)
     const bc = new Date(data[0]).getDate() < 10 ? '0' + new Date(data[0]).getDate()
     : new Date(data[0]).getDate()
     // 开始时间
      !!data[0] ? (this.query.beginDate = String(ba) + String(bb) + String(bc)) : this.query.beginDate = 0
 
      const ea = new Date(data[1]).getFullYear()
-    const eb = new Date(data[1]).getMonth() + 1 < 10 ? '0' + new Date(data[1]).getMonth() + 1
+    const eb = new Date(data[1]).getMonth() + 1 < 10 ? '0' + (new Date(data[1]).getMonth() + 1)
     : new Date(data[1]).getMonth() + 1
     const ec = new Date(data[1]).getDate() < 10 ? '0' + new Date(data[1]).getDate()
     : new Date(data[1]).getDate()
@@ -178,8 +211,14 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   exportData() {
     (this.$refs.table as any).exportCsv({
         filename: '下刊监控列表',
-        columns: this.columns,
-        data: this.list
+        columns: this.exportcolumns,
+        data: ([...this.bbb, ...this.list.slice(1)]).map((it: any) => {
+          return {
+            ...it,
+            updateTime: (it.updateTime == null || it.updateTime == 'updateTime') ? ''
+            : moment(it.updateTime).format(timeFormat)
+          }
+        })
     })
   }
 
@@ -220,9 +259,15 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         sumPersonCount, // 合计累计总人次
         sumBudgetShowCount, // 合计预估总场次
         sumShowCount, // 合计累计总场次
-      } } = await queryList(query)
-      this.list = list
-      if (list.length > 0) {
+      } } = await nextList(query)
+      this.list = list == null ? [] : list.map((it: any) => {
+        return {
+          ...it,
+          todayFinishRate: new Decimal(it.todayFinishRate).div(100),
+          tomorrowFinishRate: new Decimal(it.tomorrowFinishRate).div(100)
+        }
+      })
+      if (this.list.length > 0) {
         this.list.push({
           planId: '总计',
           budgetPersonCount: sumBudgetPersonCount,
@@ -232,6 +277,17 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           updateTime: 'updateTime'
         })
       }
+      const a = !query.planId ? '计划ID : 全部' : '计划ID' + query.planId
+      const b = !query.planName ? '计划名称 : 全部' : '计划名称' + query.planName
+      const c = !query.beginDate ? '查询日期 : 全部' : '查询日期' + (query.beginDate + '~' + query.endDate)
+
+      this.bbb = [
+        {
+          exportDate: moment((new Date().getTime())).format(timeFormat),
+          query: a + ' ' + b + ' ' + c,
+          ...this.list[0]
+        }
+      ]
       this.total = total
       this.statusList = statusList
     } catch (ex) {
