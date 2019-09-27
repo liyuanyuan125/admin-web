@@ -38,8 +38,8 @@ export async function queryList(query: any = {}) {
  * @param id 要操作的ID
  * https://yapi.aiads-dev.com/project/140/interface/api/5778
  */
-export async function getBusiness(id: number, query: any = {}) {
-  const { data } = await get(`/xadvert/business-managements/${id}`, query)
+export async function getBusiness(id: number) {
+  const { data } = await get(`/xadvert/business-managements/${id}`)
   const { item } = data
   const { userId, roles, discount } = item
   return {
@@ -79,8 +79,8 @@ export async function updateStatus(id: string, status: number) {
  * @param query 查询条件，参见接口文档
  * https://yapi.aiads-dev.com/project/58/interface/api/569
  */
-export async function userList() {
-  const { data } = await get(`/auth/apps/${appId}/users`)
+export async function userList(query: any) {
+  const { data } = await get(`/auth/apps/${appId}/users`, query)
   const list = data.items.map(({ id, userName, roles }: any) => ({
     key: id,
     text: userName,

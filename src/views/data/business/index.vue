@@ -205,9 +205,9 @@ export default class BusinessPage extends ViewBase {
   }
 
   async editFetch() {
-    const list = await userList()
+    const list = await userList({ pageSize: 188 })
     const item = this.editId > 0
-      ? await getBusiness(this.editId, { pageSize: 188 })
+      ? await getBusiness(this.editId)
       : { id: 0, userId: 0, roles: [], discount: 1 }
     const result = {
       item,
