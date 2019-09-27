@@ -3,11 +3,13 @@
     <Form class="create-form form-item" :rules="rule" enctype="multipart/form-data" ref="form"
     :model="form" :label-width="120">
       <div class="modal-item">
-        <FormItem label="选择影片:" prop="movieId" >
-          <Select v-model="form.movieId" filterable clearable  placeholder="请选择资源关联的影片" v-if="!id" >
+        <FormItem label="选择影片:" prop="movieId" v-if="!id" >
+          <Select v-model="form.movieId" filterable clearable  placeholder="请选择资源关联的影片"  >
             <Option v-for="item in filmList" :key="item.id" :value="item.id">{{item.name}}</Option>
           </Select>
-          <span v-else>{{detailList.name}}</span>
+        </FormItem>
+        <FormItem label="选择影片:" v-else>
+          <span>{{detailList.name}}</span>
         </FormItem>
       </div>
       <div class="modal-item">
@@ -25,14 +27,14 @@
             <Table :columns="columns" :data="detailList.couponBatches" border stripe disabled-hover size="small" ></Table>
           </FormItem>
           <FormItem label="导入电子券：">
-            <input type="file" @change="onChange" :accept="accept" />
+            <input type="file"  @change="onChange" :accept="accept" />
           </FormItem>
           <FormItem label="资源使用说明：">
             <Input v-model="form.couponDescription" type="textarea" :rows="4" placeholder="使用说明" />
           </FormItem>
       </div>
       <div class="batch-btn text-center">
-          <Button type="primary" class="btn" @click="handleSubmit('form')"> 提交</Button>
+          <Button type="primary" class="btn" @click="handleSubmit"> 提交</Button>
           <Button :to="{name: 'resource-film-index'}"> 取消</Button>
       </div>
     </Form>
@@ -46,6 +48,7 @@ import ViewBase from '@/util/ViewBase'
 import { relevanceFilm, queryDetail } from '@/api/resourceFilm'
 import Uploader from '@/util/Uploader'
 import couponTable from './component/table.vue'
+import { info } from '@/ui/modal'
 
 @Component({
   components: {
@@ -126,12 +129,16 @@ export default class Main extends ViewBase {
   }
 
   // 提交数据
-  async handleSubmit(dataForms: string) {
-    const vali = await (this.$refs[dataForms] as any).validate()
-    // if (this.file == null) {
-      // TODO: 如果文件是必选的，提示选择文件
-      // return
-    // }
+  async handleSubmit() {
+    // 新建影片id和file文件必传验证
+    if (!this.id) {
+      const verify = await (this.$refs.form as any).validate()
+      if (!verify) {return}
+      if (!this.file) {
+        await info('请导入电子券')
+        return
+      }
+    }
 
     // TODO: 加 loading 等操作
 
