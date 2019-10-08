@@ -260,8 +260,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       this.list = list == null ? [] : list.map((it: any) => {
         return {
           ...it,
-          todayFinishRate: new Decimal(it.todayFinishRate).div(100),
-          tomorrowFinishRate: new Decimal(it.tomorrowFinishRate).div(100)
+          // todayFinishRate: new Decimal(it.todayFinishRate).div(100),
+          // tomorrowFinishRate: new Decimal(it.tomorrowFinishRate).div(100)
         }
       })
       if (this.list.length > 0) {

@@ -42,3 +42,10 @@ export async function costList(query: any) {
   return data
 }
 
+// 查看地区信息
+// https://yapi.aiads-dev.com/project/16/interface/api/113
+export async function districts(ids: any) {
+  const data = await get(`/basis/districts/${ids}`)
+  return data
+}
+
