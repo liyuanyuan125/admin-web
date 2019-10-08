@@ -20,7 +20,7 @@
               <Option
                 v-for="(item, index) in getcinemaList"
                 :key="item.id"
-                :value="item.id"
+                :value="item.id + '-' + item.officialName"
               >{{item.officialName}}</Option>
             </Select>
       </Col>
@@ -110,7 +110,7 @@ import { Component, Watch , Mixins, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { nextList , nextItem , nextCinema , cinemaOff , callCinemaOff } from '@/api/dataReport'
+import { nextList , nextItem , nextCinema , cinemaOff , callCinemaOff , districts } from '@/api/dataReport'
 import {
   queryList,
 } from '@/api/cinema'
@@ -170,6 +170,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   getcinemaList: any = []
 
   bbb: any = []
+
+  provinceIdName: any = ''
+  cityIdName: any = ''
 
   get columns() {
     const data: any = [
@@ -240,7 +243,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     (this.$refs.selection as any).exportCsv({
         filename: '影城列表',
         columns: this.exportcolumns,
-        data: this.list
+        data: [...this.bbb, ...this.list.slice(1)]
     })
   }
 
@@ -286,7 +289,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       return
     }
     this.loading = true
-    const query = clean({ ...this.dataForm})
+    // this.dataForm.cinemaId == null ? null : this.dataForm.cinemaId.split('-')[0]
+    // console.log(this.dataForm.cinemaId)
+    const query = clean({
+      ...this.dataForm,
+      cinemaId: this.dataForm.cinemaId == null ? null : this.dataForm.cinemaId.split('-')[0],
+      cinemaName: this.dataForm.cinemaId == null ? null : this.dataForm.cinemaId.split('-')[1]
+    })
     try {
         // 订单列表
       const { data: {
@@ -294,46 +303,59 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         totalCount: total,
         statusList: statusList,
         planTypeList: planTypeList,
-        todayPersonCount,
-        todayShowCount,
-        tomorrowPersonCount,
-        tomorrowShowCount,
-        personCount,
-        budgetPersonCount,
-        showCount,
-        budgetShowCount,
+        sumTodayShowCount,
+        sumTodayPersonCount,
+        sumTomorrowShowCount,
+        sumTomorrowPersonCount,
+        sumBudgetPersonCount,
+        sumPersonCount,
+        sumBudgetShowCount,
+        sumShowCount,
       } } = await nextCinema(query)
       this.list = list == null ? [] : list.map((it: any) => {
         return {
           ...it,
-          todayFinishRate: new Decimal(it.todayFinishRate).div(100),
-          tomorrowFinishRate: new Decimal(it.tomorrowFinishRate).div(100)
+          // todayFinishRate: new Decimal(it.todayFinishRate).div(100),
+          // tomorrowFinishRate: new Decimal(it.tomorrowFinishRate).div(100)
         }
       })
       if (this.list.length > 0) {
         this.list.push({
           _disabled: true,
           todayFinishRate: '总计',
-          todayPersonCount,
-          todayShowCount,
-          tomorrowPersonCount,
-          tomorrowShowCount,
-          personCount,
-          budgetPersonCount,
-          showCount,
-          budgetShowCount,
+          todayPersonCount: sumTodayPersonCount,
+          todayShowCount: sumTodayShowCount,
+          tomorrowPersonCount: sumTomorrowPersonCount,
+          tomorrowShowCount: sumTomorrowShowCount,
+          personCount: sumPersonCount  ,
+          budgetPersonCount: sumBudgetPersonCount,
+          showCount: sumShowCount,
+          budgetShowCount: sumBudgetShowCount,
         })
       }
-      // const a = !query.planId ? '计划ID : 全部' : '计划ID' + query.planId
-      // const b = !query.planName ? '计划名称 : 全部' : '计划名称' + query.planName
-      // const c = !query.beginDate ? '查询日期 : 全部' : '查询日期' + (query.beginDate + '~' + query.endDate)
-      // this.bbb = [
-      //   {
-      //     exportDate: moment((new Date().getTime())).format(timeFormat),
-      //     query: a + ' ' + b + ' ' + c,
-      //     ...this.list[0]
-      //   }
-      // ]
+      if (query.provinceId != undefined) {
+        const cityone = await districts(query.provinceId)
+        this.provinceIdName = (cityone.data || []).map((it: any) => {
+          return it.nameCn
+        })
+      }
+      if (query.cityId != undefined) {
+        const citytwo = await districts(query.cityId)
+        this.cityIdName = (citytwo.data || []).map((it: any) => {
+          return it.nameCn
+        })
+      }
+      const a = !query.provinceId ? '选择地区 : 全部' : '选择地区' + this.provinceIdName
+      const b = !query.cityId ? '' : '/' + this.cityIdName
+      const c = !query.cinemaId ? '影院名称 : 全部' : '影院名称' + query.cinemaName
+      const d = !query.pricingLevelCode ? '影城级别 : 全部' : '影城级别' + query.pricingLevelCode
+      this.bbb = [
+        {
+          exportDate: moment((new Date().getTime())).format(timeFormat),
+          query: a + ' ' + b + ' ' + c + ' ' + d,
+          ...this.list[0]
+        }
+      ]
       this.total = total
     } catch (ex) {
       this.handleError(ex)

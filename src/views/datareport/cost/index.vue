@@ -114,7 +114,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     week: null,
     pageIndex: 1,
     pageSize: 20,
-    cinemaIds: null
+    codes: null
   }
 
   loading = false
@@ -184,7 +184,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   done(outputs: any) {
     // console.log(outputs)
-    this.query.cinemaIds = outputs.join(',')
+    this.query.codes = outputs.join(',')
     this.doSearch()
   }
 
