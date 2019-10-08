@@ -1711,7 +1711,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     component: () => import('./views/datareport/cost/index.vue'),
     meta: {
       authKey: '',
-      title: '成本核算报表'
+      title: '成本核算列表'
     }
   },
   // 广告管理 - 下刊 - 列表

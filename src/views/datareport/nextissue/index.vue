@@ -57,7 +57,6 @@
           @on-page-size-change="pageSize => query.pageSize = pageSize"/>
       </div>
     </div>
-    <DlgEdit  ref="addOrUpdate"   @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/>
   </div>
 </template>
 
@@ -72,7 +71,6 @@ import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
 import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
-import DlgEdit from './dlgEdit.vue'
 import { formatNumber } from '@/util/validateRules'
 import Decimal from 'decimal.js'
 import {confirm , warning , success, toast } from '@/ui/modal'
@@ -88,7 +86,6 @@ const dataForm = {
 
 @Component({
   components: {
-    DlgEdit,
   }
 })
 export default class Main extends Mixins(ViewBase, UrlManager) {

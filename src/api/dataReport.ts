@@ -35,3 +35,10 @@ export async function callCinemaOff(id: any) {
   return res
 }
 
+// 成本核算列表
+// http://yapi.aiads-dev.com/project/253/interface/api/6390
+export async function costList(query: any) {
+  const data = await get('/bi/cost-budget-reports', query)
+  return data
+}
+
