@@ -82,26 +82,17 @@ export default class Main extends ViewBase {
     },
 
     {
-      name: 'invoiceType',
+      name: 'invoiceStatus',
       defaultValue: 0,
       select: true,
       width: 100,
-      placeholder: '发票类型',
-      enumKey: 'invoiceTypeCodeList'
-    },
-
-    {
-      name: 'invoiceContent',
-      defaultValue: '',
-      select: true,
-      width: 100,
-      placeholder: '发票内容',
-      enumKey: 'invoiceContentCodeList'
+      placeholder: '发票状态',
+      enumKey: 'invoiceStatusList'
     },
     {
       name: 'yearMonth',
       defaultValue: null,
-      type: yearMonth,
+      component: yearMonth,
       width: 108,
       placeholder: '账单月份'
     },
