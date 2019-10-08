@@ -7,8 +7,10 @@
     @on-cancel="cancel()" >
     <a style='margin-left: 40%;' href="https://aiads-file.oss-cn-beijing.aliyuncs.com/MISC/MISC/bm6t7aionakg00bh1m80.xlsx" :download='"https://aiads-file.oss-cn-beijing.aliyuncs.com/MISC/MISC/bm6t7aionakg00bh1m80.xlsx"'>模板下载.xls</a>
     <Form class="create-form form-item" enctype="multipart/form-data" ref="form" :label-width="120">批量导入
-          <input ref='input' type="file" accept=".xls, .xlsx" class='adds' />
+        <input ref='input' type="file" accept=".xls, .xlsx" @change="onChange" class='adds' />
+        <span class='viewhtml'>{{inputhtml}}</span>
     </Form>
+    
 
     <div slot="footer" class="dialog-footer">
       <Button @click="cancel()">取消</Button>
@@ -37,12 +39,13 @@ export default class ComponentMain extends ViewBase {
   companys = []
 
   outputs: any = []
+  inputhtml: any = ''
 
 
 
   init() {
     (this.$refs.input as any).addEventListener('change' , (e: any) => {
-      this.onChange(e)
+      this.readExcel(e)
     })
      this.showDlg = true
   }
@@ -52,25 +55,26 @@ export default class ComponentMain extends ViewBase {
   }
 
   dataFormSubmit() {
-    toast('操作成功')
     this.showDlg = false
-    this.$emit('done')
+    this.$emit('done' , this.outputs)
   }
 
-  // onChange() {
+  onChange() {
 
-  // }
+  }
 
-  onChange(e: any) {
+  readExcel(e: any) {
     // 表格导入
     const that = this
     const { files } = e.target
     // console.log(files)
+    // console.log(files[0].name)
     if (files.length <= 0) {
       // 如果没有文件名
       info('请查看文件导入文件是否有文件名')
       return false
     }
+    this.inputhtml = files[0].name
     if (!/\.(xls|xlsx)$/.test(files[0].name.toLowerCase())) {
       this.$Message.error('上传格式不正确，请上传xls或者xlsx格式')
       return false
@@ -103,6 +107,10 @@ export default class ComponentMain extends ViewBase {
          }
         // console.log(that.outputs)
        (this.$refs.input as any).value = null
+       this.inputhtml = ''
+        // this.$Message.success('上传成功')
+        // alert(1)
+        this.dataFormSubmit()
        } catch (e) {
           return false
        }
@@ -122,7 +130,6 @@ export default class ComponentMain extends ViewBase {
   float: left;
   margin-left: 39%;
   margin-top: 10px;
-  width: 83px;
   border-radius: 4px;
   padding: 4px 12px;
   overflow: hidden;
@@ -130,6 +137,11 @@ export default class ComponentMain extends ViewBase {
   text-decoration: none;
   text-indent: 0;
   line-height: 26px;
+}
+
+.viewhtml {
+  margin-left: 10px;
+  color: #000;
 }
 
 .adds {
