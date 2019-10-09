@@ -23,14 +23,18 @@
             </Select>
           <!-- <span style='color: red;margin-left: 5px;'>*</span> -->
           <InputNumber  v-model="query.box" :min='0' placeholder="预测票房" class="input"/>
-          <Select v-model="query.type" placeholder="投放类型选择">
+          <Select v-if='showUrl == true' v-model="query.type" placeholder="投放类型选择">
             <Option v-for="it in putInType" :key="it.key" :value="it.key"
+              :label="it.text">{{it.text}}</Option>
+          </Select>
+          <Select v-if='showUrl == false' v-model="defaultCount" placeholder="投放类型选择1111111">
+            2<Option v-for="it in putInType" :key="it.key" :value="it.key"
               :label="it.text">{{it.text}}</Option>
           </Select>
           <InputNumber :min='0' v-if='query.type == 1' v-model="query.typeCount" placeholder="天" class="input"/>
           <InputNumber :min='0' v-if='query.type == 2' v-model="query.typeCount" placeholder="人" class="input"/>
           <InputNumber :min='0' v-model="query.week" placeholder="密钥周期" class="input"/>
-          <Button type="primary" @click="doSearch" class="btn-reset">搜索</Button>
+          <Button type="primary" @click="search" class="btn-reset">搜索</Button>
           <Button type="primary" @click="viewCinema" class="btn-reset">+上传影城列表</Button>
 
           <!-- <Button type="default" @click="reset" class="btn-reset">清空</Button> -->
@@ -69,8 +73,8 @@
       <div class="page-wrap" v-if="total > 0">
         <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
           show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-          @on-change="handlepageChange"
-      @on-page-size-change="handlePageSize"/>
+          @on-change="page => query.pageIndex = page"
+          @on-page-size-change="pageSize => query.pageSize = pageSize"/>
       </div>
     </div>
     <DlgEdit ref="addOrUpdate" v-if="addOrUpdateVisible" @done="done" />
@@ -106,7 +110,7 @@ const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 })
 // export default class Main extends ViewBase {
 export default class Main extends Mixins(ViewBase, UrlManager) {
-  query: any = {
+  defQuery: any = {
     movieId: null,
     box: null,
     typeCount: null,
@@ -117,9 +121,16 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     codes: null
   }
 
+  query: any = {}
+  oldQuery: any = {}
+
+  defaultCount: any = 1
+
   loading = false
   list: any = []
   movieList: any = []
+
+  showUrl: any = false
 
   addOrUpdateVisible = false
   total = 0
@@ -173,9 +184,14 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   ]
 
   mounted() {
+    this.updateQueryByParam()
     this.query.type = 1
     this.query.week = 45
-    // this.updateQueryByParam()
+    if ( this.$route.query.box != undefined ) {
+      this.query.box = Number(this.$route.query.box)
+      this.query.typeCount = Number(this.$route.query.typeCount)
+      this.search()
+    }
   }
 
   get formatNumber() {
@@ -185,7 +201,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   done(outputs: any) {
     // console.log(outputs)
     this.query.codes = outputs.join(',')
-    this.doSearch()
+    this.search()
   }
 
     // 影片列表搜索
@@ -199,7 +215,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           name: querys,
         })
         this.movieList = items || []
-        this.movieName = items[0].name
+        if (items.length > 0) {
+          this.movieName = items[0].name
+        }
       }
       this.loading = false
     } catch (ex) {
@@ -230,21 +248,29 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     })
   }
 
-  reset() {
-    this.query = {
-      movieId: '',
-      box: null,
-      typeCount: null,
-      type: 1,
-      week: 45,
-      pageIndex: 1,
-      pageSize: 20,
-    }
-    this.list = []
+  // reset() {
+  //   this.query = {
+  //     movieId: '',
+  //     box: null,
+  //     typeCount: null,
+  //     type: 1,
+  //     week: 45,
+  //     pageIndex: 1,
+  //     pageSize: 20,
+  //   }
+  //   this.list = []
+  //   this.doSearch()
+  // }
+
+  search() {
+    this.showUrl = true
     this.doSearch()
   }
 
   async doSearch() {
+    if (this.showUrl == false) {
+      return
+    }
     if ((this.query.movieId == '' || this.query.movieId == undefined) ||
       (this.query.box == null || this.query.box == undefined)) {
       info('请输入影片名称，预测票房进行查询')
@@ -319,22 +345,22 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 
-  handlepageChange(size: any) {
-    this.query.pageIndex = size
-    this.doSearch()
-  }
-  handlePageSize(size: any) {
-    this.query.pageIndex = size
-    this.doSearch()
-  }
-
-  // @Watch('query', { deep: true })
-  // watchQuery() {
-  //   if (this.query.pageIndex == this.oldQuery.pageIndex) {
-  //     this.query.pageIndex = 1
-  //   }
-  //   this.doSearch()
+  // handlepageChange(size: any) {
+  //   this.query.pageIndex = size
+  //   this.search()
   // }
+  // handlePageSize(size: any) {
+  //   this.query.pageIndex = size
+  //   this.search()
+  // }
+
+  @Watch('query', { deep: true })
+  watchQuery() {
+    if (this.query.pageIndex == this.oldQuery.pageIndex) {
+      this.query.pageIndex = 1
+    }
+    this.doSearch()
+  }
 }
 </script>
 

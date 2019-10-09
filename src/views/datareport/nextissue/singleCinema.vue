@@ -51,12 +51,12 @@
         <div v-if='row.todayFinishRate == "总计"'>总计</div>
         <div v-else >
           <span v-if='row.todayFinishRate == null'>-</span>
-          <span v-else >{{row.todayFinishRate}}%</span>
+          <span v-else v-bind:class="{ red: row.todayFinishRate > 100 }" >{{row.todayFinishRate}}%</span>
         </div>
       </template>
       <template slot="tomorrowFinishRate" slot-scope="{row}" >
         <span v-if='row.tomorrowFinishRate== null'>-</span>
-        <span v-else >{{row.tomorrowFinishRate}}%</span>
+        <span v-else v-bind:class="{ red: row.tomorrowFinishRate > 100 }" >{{row.tomorrowFinishRate}}%</span>
       </template>
       <template slot="todayPersonCount" slot-scope="{row}" >
         <span v-if='row.todayPersonCount== null'>-</span>
@@ -92,7 +92,7 @@
       </template>
       <template slot="action" slot-scope="{row}" >
         <a v-if='row.todayFinishRate != "总计" &&  row.status == false ' @click="change( row.id)">通知下刊</a>
-        <a v-else href="javascript:;">-</a>
+        <a v-else href="javascript:;" style='cursor: default;'>-</a>
       </template>
     </Table>
     <div class="page-wrap" v-if="total > 0">
@@ -507,5 +507,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 }
 .pages {
   padding: 20px 10px 2px 10px;
+}
+.red {
+  color: red;
 }
 </style>
