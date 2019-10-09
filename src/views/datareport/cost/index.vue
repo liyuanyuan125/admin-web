@@ -23,14 +23,14 @@
             </Select>
           <!-- <span style='color: red;margin-left: 5px;'>*</span> -->
           <InputNumber  v-model="query.box" :min='0' placeholder="预测票房" class="input"/>
-          <Select v-if='showUrl == true' v-model="query.type" placeholder="投放类型选择">
+          <Select v-model="query.type" placeholder="投放类型选择">
             <Option v-for="it in putInType" :key="it.key" :value="it.key"
               :label="it.text">{{it.text}}</Option>
           </Select>
-          <Select v-if='showUrl == false' v-model="defaultCount" placeholder="投放类型选择1111111">
+          <!-- <Select v-if='showUrl == false' v-model="defaultCount" placeholder="投放类型选择1111111">
             2<Option v-for="it in putInType" :key="it.key" :value="it.key"
               :label="it.text">{{it.text}}</Option>
-          </Select>
+          </Select> -->
           <InputNumber :min='0' v-if='query.type == 1' v-model="query.typeCount" placeholder="天" class="input"/>
           <InputNumber :min='0' v-if='query.type == 2' v-model="query.typeCount" placeholder="人" class="input"/>
           <InputNumber :min='0' v-model="query.week" placeholder="密钥周期" class="input"/>
