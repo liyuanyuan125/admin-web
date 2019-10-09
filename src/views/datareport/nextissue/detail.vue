@@ -40,14 +40,16 @@
 </template>
 
 <script lang="tsx">
-import { Component, Watch } from 'vue-property-decorator'
+import { Component, Watch , Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
+import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
 import {nextItem } from '@/api/dataReport'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice , clean } from '@/fn/object'
+import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import singleCinema from './singleCinema.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
@@ -58,7 +60,7 @@ const timeFormat = 'YYYY-MM-DD HH:mm:ss'
     singleCinema
   }
 })
-export default class Main extends ViewBase {
+export default class Main extends Mixins(ViewBase, UrlManager)  {
 
   item: any = {}
 
