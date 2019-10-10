@@ -33,7 +33,7 @@
           </Select> -->
           <InputNumber :min='0' v-if='query.type == 1' v-model="query.typeCount" placeholder="天" class="input"/>
           <InputNumber :min='0' v-if='query.type == 2' v-model="query.typeCount" placeholder="人" class="input"/>
-          <InputNumber :min='0' v-model="query.week" placeholder="密钥周期" class="input"/>
+          <InputNumber :min='0' :disabled='this.query.type == 2' v-model="query.week" placeholder="密钥周期" class="input"/>
           <Button type="primary" @click="search" class="btn-reset">搜索</Button>
           <Button type="primary" @click="viewCinema" class="btn-reset">+上传影城列表</Button>
 
@@ -290,7 +290,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       info('投放天数跟人次为整数')
       return
     }
-    if (this.query.type == 2 && this.query.week == null) {
+    if (this.query.type == 2) {
       this.query.week = 45
     }
 
@@ -358,6 +358,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   watchQuery() {
     if (this.query.pageIndex == this.oldQuery.pageIndex) {
       this.query.pageIndex = 1
+    }
+    if (this.query.type == 2) {
+      this.query.week = 45
     }
     this.doSearch()
   }
