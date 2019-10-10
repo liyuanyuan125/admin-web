@@ -2,7 +2,7 @@
   <div class="page">
     <div>
       <div class="act-bar flex-box">
-        <form class="form flex-1">
+        <form class="form flex-1" @submit.prevent="searchs">
           <!-- <span style='color: red;'>*</span> -->
           <Select
              class='sels'
@@ -73,8 +73,8 @@
       <div class="page-wrap" v-if="total > 0">
         <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
           show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-          @on-change="page => query.pageIndex = page"
-          @on-page-size-change="pageSize => query.pageSize = pageSize"/>
+          @on-change="handlepageChange"
+      @on-page-size-change="handlePageSize"/>
       </div>
     </div>
     <DlgEdit ref="addOrUpdate" v-if="addOrUpdateVisible" @done="done" />
@@ -196,6 +196,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   get formatNumber() {
     return formatNumber
+  }
+
+  searchs() {
+    this.query.pageIndex = 1
   }
 
   done(outputs: any) {
@@ -345,24 +349,25 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 
-  // handlepageChange(size: any) {
-  //   this.query.pageIndex = size
-  //   this.search()
-  // }
-  // handlePageSize(size: any) {
-  //   this.query.pageIndex = size
-  //   this.search()
-  // }
+  handlepageChange(size: any) {
+    this.query.pageIndex = size
+    this.search()
+  }
+  handlePageSize(size: any) {
+    this.query.pageSize = size
+    this.search()
+  }
 
   @Watch('query', { deep: true })
   watchQuery() {
-    if (this.query.pageIndex == this.oldQuery.pageIndex) {
-      this.query.pageIndex = 1
-    }
+    // console.log(this.query.pageIndex ,this.oldQuery.pageIndex)
+    // if (this.query.pageIndex == this.oldQuery.pageIndex) {
+    //   this.query.pageIndex = 1
+    // }
     if (this.query.type == 2) {
       this.query.week = 45
     }
-    this.doSearch()
+    // this.doSearch()
   }
 }
 </script>
