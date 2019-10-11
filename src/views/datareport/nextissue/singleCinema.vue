@@ -40,6 +40,7 @@
     <Table ref="selection" :columns="columns" @on-selection-change="check" :data="list" :loading="loading"
       border stripe disabled-hover size="small" class="table">
       <template slot="offShelfDate" slot-scope="{row}" >
+        <!-- <div v-if='row.offShelfDate == "总计"'>总计</div> -->
         <span v-if='row.offShelfDate == null'>-</span>
         <span v-else >{{String(row.offShelfDate).slice(0, 4) +
         '-' +
@@ -47,7 +48,7 @@
         '-' +
         String(row.offShelfDate).slice(6, 8)}}</span>
       </template>
-      <template slot="todayFinishRate" slot-scope="{row}" >
+     <!--  <template slot="todayFinishRate" slot-scope="{row}" >
         <div v-if='row.todayFinishRate == "总计"'>总计</div>
         <div v-else >
           <span v-if='row.todayFinishRate == null'>-</span>
@@ -57,7 +58,7 @@
       <template slot="tomorrowFinishRate" slot-scope="{row}" >
         <span v-if='row.tomorrowFinishRate== null'>-</span>
         <span v-else v-bind:class="{ red: row.tomorrowFinishRate > 100 }" >{{row.tomorrowFinishRate}}%</span>
-      </template>
+      </template> -->
       <template slot="todayPersonCount" slot-scope="{row}" >
         <span v-if='row.todayPersonCount== null'>-</span>
         <span v-else >{{formatNumber(row.todayPersonCount , 2)}}</span>
@@ -90,8 +91,20 @@
         <span v-if='row.budgetShowCount== null'>-</span>
         <span v-else >{{formatNumber(row.budgetShowCount , 2)}}</span>
       </template>
+      <template slot="todayCost" slot-scope="{row}" >
+        <span v-if='row.todayCost== null'>-</span>
+        <span v-else >{{formatNumber(row.todayCost , 2)}}</span>
+      </template>
+      <template slot="tomorrowCost" slot-scope="{row}" >
+        <span v-if='row.tomorrowCost== null'>-</span>
+        <span v-else >{{formatNumber(row.tomorrowCost , 2)}}</span>
+      </template>
+      <template slot="cost" slot-scope="{row}" >
+        <span v-if='row.cost== null'>-</span>
+        <span v-else >{{formatNumber(row.cost , 2)}}</span>
+      </template>
       <template slot="action" slot-scope="{row}" >
-        <a v-if='row.todayFinishRate != "总计" &&  row.status == false ' @click="change( row.id)">通知下刊</a>
+        <a v-if=' row.status == false ' @click="change( row.id)">通知下刊</a>
         <a v-else href="javascript:;" style='cursor: default;'>-</a>
       </template>
     </Table>
@@ -182,19 +195,22 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         width: 60,
         align: 'center'
       },
-      { title: '预计今日完成率', slot: 'todayFinishRate', width: 100, align: 'center' },
-      { title: '预计明日完成率', width: 100, slot: 'tomorrowFinishRate', align: 'center' },
+      // { title: '预计今日完成率', slot: 'todayFinishRate', width: 100, align: 'center' },
+      // { title: '预计明日完成率', width: 100, slot: 'tomorrowFinishRate', align: 'center' },
       { title: '预计完成日期', width: 110, slot: 'offShelfDate', align: 'center' },
       { title: '影城名称', width: 120, key: 'cinemaName', align: 'center' },
       { title: '专资编码', width: 70, key: 'code', align: 'center' },
       { title: '当日人次', width: 110, slot: 'todayPersonCount', align: 'center' },
       { title: '当日场次', width: 110, slot: 'todayShowCount', align: 'center' },
+      { title: '当日预估花费', width: 110, slot: 'todayCost', align: 'center' },
       { title: '明日人次', width: 110, slot: 'tomorrowPersonCount', align: 'center' },
       { title: '明日场次', width: 110, slot: 'tomorrowShowCount', align: 'center' },
+      { title: '明日预估花费', width: 110, slot: 'tomorrowCost', align: 'center' },
       { title: '实际累计人次', width: 110, slot: 'personCount', align: 'center' },
-      { title: '预计总人次', width: 110, slot: 'budgetPersonCount', align: 'center' },
+      // { title: '预计总人次', width: 110, slot: 'budgetPersonCount', align: 'center' },
       { title: '实际累计场次', width: 110, slot: 'showCount', align: 'center' },
-      { title: '预计总场次', width: 110, slot: 'budgetShowCount', align: 'center' },
+      { title: '累计花费', width: 110, slot: 'cost', align: 'center' },
+      // { title: '预计总场次', width: 110, slot: 'budgetShowCount', align: 'center' },
     ]
     const opernation = [
        {
@@ -212,19 +228,22 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     const data: any = [
       { title: '导出时间', key: 'exportDate', align: 'center', width: 100 },
       { title: '筛选条件', key: 'query', align: 'center', width: 100 },
-      { title: '预计今日完成率', key: 'todayFinishRate', width: 100, align: 'center' },
-      { title: '预计明日完成率', width: 100, key: 'tomorrowFinishRate', align: 'center' },
+      // { title: '预计今日完成率', key: 'todayFinishRate', width: 100, align: 'center' },
+      // { title: '预计明日完成率', width: 100, key: 'tomorrowFinishRate', align: 'center' },
       { title: '预计完成日期', width: 110, key: 'offShelfDate', align: 'center' },
       { title: '影城名称', width: 120, key: 'cinemaName', align: 'center' },
       { title: '专资编码', width: 70, key: 'code', align: 'center' },
       { title: '当日人次', width: 110, key: 'todayPersonCount', align: 'center' },
       { title: '当日场次', width: 110, key: 'todayShowCount', align: 'center' },
+      { title: '当日预估花费', width: 110, key: 'todayCost', align: 'center' },
       { title: '明日人次', width: 110, key: 'tomorrowPersonCount', align: 'center' },
       { title: '明日场次', width: 110, key: 'tomorrowShowCount', align: 'center' },
+      { title: '明日预估花费', width: 110, key: 'tomorrowCost', align: 'center' },
       { title: '实际累计人次', width: 110, key: 'personCount', align: 'center' },
-      { title: '预计总人次', width: 110, key: 'budgetPersonCount', align: 'center' },
+      // { title: '预计总人次', width: 110, key: 'budgetPersonCount', align: 'center' },
       { title: '实际累计场次', width: 110, key: 'showCount', align: 'center' },
-      { title: '预计总场次', width: 110, key: 'budgetShowCount', align: 'center' },
+      // { title: '预计总场次', width: 110, key: 'budgetShowCount', align: 'center' },
+      { title: '总花费', width: 110, key: 'cost', align: 'center' },
     ]
     return [ ...data ]
   }
@@ -319,20 +338,20 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           // tomorrowFinishRate: new Decimal(it.tomorrowFinishRate).div(100)
         }
       })
-      if (this.list.length > 0) {
-        this.list.push({
-          _disabled: true,
-          todayFinishRate: '总计',
-          todayPersonCount: sumTodayPersonCount,
-          todayShowCount: sumTodayShowCount,
-          tomorrowPersonCount: sumTomorrowPersonCount,
-          tomorrowShowCount: sumTomorrowShowCount,
-          personCount: sumPersonCount  ,
-          budgetPersonCount: sumBudgetPersonCount,
-          showCount: sumShowCount,
-          budgetShowCount: sumBudgetShowCount,
-        })
-      }
+      // if (this.list.length > 0) {
+      //   this.list.push({
+      //     _disabled: true,
+      //     offShelfDate: '总计',
+      //     todayPersonCount: sumTodayPersonCount,
+      //     todayShowCount: sumTodayShowCount,
+      //     tomorrowPersonCount: sumTomorrowPersonCount,
+      //     tomorrowShowCount: sumTomorrowShowCount,
+      //     personCount: sumPersonCount  ,
+      //     budgetPersonCount: sumBudgetPersonCount,
+      //     showCount: sumShowCount,
+      //     budgetShowCount: sumBudgetShowCount,
+      //   })
+      // }
       if (query.provinceId != undefined) {
         const cityone = await districts(query.provinceId)
         this.provinceIdName = (cityone.data || []).map((it: any) => {

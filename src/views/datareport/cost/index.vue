@@ -317,18 +317,18 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         sumAverageShowCount,
         sumAveragePersonCount,
       } } = await costList(this.query)
-      this.list = list
-      if (this.list.length > 0) {
-        this.list.push({
-          provinceName: '总计',
-          hallCount: sumHallCount,
-          seatCount: sumSeatCount,
-          showCount: sumShowCount,
-          personCount: sumPersonCount,
-          averageShowCount: sumAverageShowCount,
-          averagePersonCount: sumAveragePersonCount,
-        })
-      }
+      this.list = list == null ? [] : list
+      // if (this.list.length > 0) {
+      //   this.list.push({
+      //     provinceName: '总计',
+      //     hallCount: sumHallCount,
+      //     seatCount: sumSeatCount,
+      //     showCount: sumShowCount,
+      //     personCount: sumPersonCount,
+      //     averageShowCount: sumAverageShowCount,
+      //     averagePersonCount: sumAveragePersonCount,
+      //   })
+      // }
       const a = this.movieName == '' ? '影片名称：全部' : '影片名称' + this.movieName
       const b = this.query.box == null ? '预测票房：全部' : '预测票房' + this.query.box
       const c = this.query.type == 1 ? '投放时长：' + this.query.typeCount :
