@@ -1,5 +1,7 @@
 <template>
-    <Select v-model="inValue" placeholder="广告主公司名称" filterable clearable class="component" ref="ui">
+    <Select v-model="inValue" placeholder="公司名称" filterable clearable class="component" remote
+             :remote-method="adsremoteMethod"
+             @on-clear="list = []" ref="ui">
         <Option v-for="it in list" :key="it.id" :value="it.name == null ? '' : it.name" :label="it.name" class="flex-box">
             <span>{{it.name}}</span>
         </Option>
@@ -17,30 +19,52 @@ export default class CompanyList extends ViewBase {
     /**
      * 值本身，可以使用 v-model 进行双向绑定
      */
-    @Prop({ type: Number, default: 0 }) value!: number
+    @Prop({ type: String, default: null }) value!: number
     @Prop({ default: '' }) typeCode!: string
     @Prop({ default: true }) type!: boolean
     /**
      * 提示文字
      */
-    @Prop({ type: String, default: '申请人公司名称' }) placeholder!: string
+    @Prop({ type: String, default: '公司名称' }) placeholder!: string
     @Prop({ type: Boolean, default: true }) clearable!: boolean
 
-    inValue: number = this.value
+    inValue: any = this.value
 
     list: any[] = []
 
+    loadings = false
+
     async mounted() {
+        // try {
+        //     const adscmy = await company({})
+        //     this.list = adscmy.data.items
+        // } catch (ex) {
+        //     this.handleError(ex)
+        // }
+    }
+
+      // 广告主公司搜索
+    async adsremoteMethod(querys: any) {
         try {
-            const adscmy = await company({ typeCode: 'ads', pageSize: 100000 })
-            this.list = adscmy.data.items
+          if (querys) {
+            this.loadings = true
+            const {
+              data: { items }
+            } = await company({
+              shortName: querys,
+              typeCodes: 'ads,agent,film'
+            })
+            this.list = items || []
+          }
+          this.loadings = false
         } catch (ex) {
-            this.handleError(ex)
+          this.handleError(ex)
+          this.loadings = false
         }
     }
 
     @Watch('value')
-    watchValue(val: number) {
+    watchValue(val: any) {
         this.inValue = val
         // 触发 form item 验证
         ;
@@ -48,7 +72,7 @@ export default class CompanyList extends ViewBase {
     }
 
     @Watch('inValue')
-    watchInValue(val: number) {
+    watchInValue(val: any) {
         this.$emit('input', val)
         const row = this.list.filter((item: any) => item.id == val)
         this.$emit('row', row)

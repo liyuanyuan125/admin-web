@@ -125,10 +125,10 @@ export default class IndexPage extends ViewBase {
 
       {
         name: 'companyName',
-        defaultValue: 0,
+        defaultValue: null,
         component: CompanyList,
         width: 120,
-        placeholder: '广告主公司名称'
+        placeholder: '公司名称'
       },
 
       {

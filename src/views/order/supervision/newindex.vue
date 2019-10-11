@@ -329,7 +329,10 @@ export default class IndexPage extends ViewBase {
             },
             { title: '商务负责人', key: 'businessDirectorName', align: 'center' },
             { title: '上传人', key: 'uploadName', align: 'center' },
-            { title: '上传时间', key: 'uploadTime', align: 'center', editor: 'dateTime' },
+            // { title: '上传时间', key: 'uploadTime', align: 'center', editor: 'dateTime' },
+        ]
+        const up: any = [
+          { title: '上传时间', key: 'uploadTime', align: 'center', editor: 'dateTime' },
         ]
         const ccc: any = [
             { title: '审核人', key: 'approvalName', align: 'center' },
@@ -340,7 +343,16 @@ export default class IndexPage extends ViewBase {
             { title: '操作', slot: 'action', maxWidth: 100 }
         ]
 
-        return this.status == '3' || this.status == '4' ? [...aaa, ...ccc, ...ddd] : [...aaa, ...ddd] as ColumnExtra[]
+        if (this.status == '1') {
+          return [...aaa, ...ddd] as ColumnExtra[]
+        } else if (this.status == '3' || this.status == '4') {
+          return [...aaa, ...up, ...ccc, ...ddd] as ColumnExtra[]
+        } else {
+          return [...aaa, ...up, ...ddd] as ColumnExtra[]
+        }
+
+        // return this.status == '3' || this.status == '4' ? [...aaa, ...ccc, ...ddd]
+        // : [...aaa, ...ddd] as ColumnExtra[]
     }
 
     get columnsData() {

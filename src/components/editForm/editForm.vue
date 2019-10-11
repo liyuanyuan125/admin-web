@@ -59,6 +59,7 @@
             html-type="submit"
             size="large"
             class="button-submit"
+            :disabled="submitDisalbed"
             v-if="!hideSubmit"
           >{{submitText}}</Button>
 
@@ -157,6 +158,8 @@ export default class EditForm extends ViewBase {
   loading = false
 
   submitLoading = true
+
+  submitDisalbed = false
 
   public item: any = null
 
@@ -342,6 +345,8 @@ export default class EditForm extends ViewBase {
       return
     }
 
+    this.submitDisalbed = true
+
     try {
       const data = dealParams(this.fields, item, {
         cleanList: [null, undefined]
@@ -363,6 +368,7 @@ export default class EditForm extends ViewBase {
       }
       this.handleError(ex)
     } finally {
+      this.submitDisalbed = false
       this.$emit('always')
     }
   }

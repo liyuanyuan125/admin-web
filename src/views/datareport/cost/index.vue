@@ -2,33 +2,82 @@
   <div class="page">
     <div>
       <div class="act-bar flex-box">
-        <form class="form flex-1" @submit.prevent="search">
+        <form class="form flex-1" @submit.prevent="searchs">
           <!-- <span style='color: red;'>*</span> -->
-          <LazyInput v-model="query.id" placeholder="影片名称" class="input"/>
+          <Select
+             class='sels'
+             v-model='query.movieId'
+             clearable
+             filterable
+             placeholder="影片名称"
+             style='width: 150px;'
+             remote
+             :remote-method="movieIdMethod"
+             @on-clear="movieList = []"
+              >
+              <Option
+                v-for="(item, index) in movieList"
+                :key="item.id"
+                :value="item.id"
+              >{{item.name}}</Option>
+            </Select>
           <!-- <span style='color: red;margin-left: 5px;'>*</span> -->
-          <LazyInput v-model="query.email" placeholder="预测票房" class="input"/>
-          <Select v-model="query.status" placeholder="启用状态" clearable>
+          <InputNumber  v-model="query.box" :min='0' placeholder="预测票房" class="input"/>
+          <Select v-model="query.type" placeholder="投放类型选择">
             <Option v-for="it in putInType" :key="it.key" :value="it.key"
               :label="it.text">{{it.text}}</Option>
           </Select>
-          <LazyInput v-if='query.status == 1' v-model="query.mobile" placeholder="天" class="input"/>
-          <LazyInput v-if='query.status == 2' v-model="query.mobile" placeholder="人" class="input"/>
-          <LazyInput v-model="query.companyName" placeholder="密钥周期" class="input"/>
-          <Button type="success" @click="search" class="btn-reset">确认</Button>
-          <Button type="default" @click="reset" class="btn-reset">清空</Button>
+          <!-- <Select v-if='showUrl == false' v-model="defaultCount" placeholder="投放类型选择1111111">
+            2<Option v-for="it in putInType" :key="it.key" :value="it.key"
+              :label="it.text">{{it.text}}</Option>
+          </Select> -->
+          <InputNumber :min='0' v-if='query.type == 1' v-model="query.typeCount" placeholder="天" class="input"/>
+          <InputNumber :min='0' v-if='query.type == 2' v-model="query.typeCount" placeholder="人" class="input"/>
+          <InputNumber :min='0' :disabled='this.query.type == 2' v-model="query.week" placeholder="密钥周期" class="input"/>
+          <Button type="primary" @click="search" class="btn-reset">搜索</Button>
+          <Button type="primary" @click="viewCinema" class="btn-reset">+上传影城列表</Button>
+
+          <!-- <Button type="default" @click="reset" class="btn-reset">清空</Button> -->
+          <Button v-if='list.length > 0' type="default" @click="exportData" class="btn-reset">导出</Button>
         </form>
       </div>
-      <Table :columns="columns" :data="list" :loading="loading"
+      <Table ref='table' :columns="columns" :data="list" :loading="loading"
         border stripe disabled-hover size="small" class="table">
-        </Table>
+        <template slot="hallCount" slot-scope="{row}" >
+          <span v-if='row.hallCount == null'>-</span>
+          <span v-else >{{formatNumber(row.hallCount , 2)}}</span>
+        </template>
+        <template slot="seatCount" slot-scope="{row}" >
+          <span v-if='row.seatCount == null'>-</span>
+          <span v-else >{{formatNumber(row.seatCount , 2)}}</span>
+        </template>
+        <template slot="showCount" slot-scope="{row}" >
+          <span v-if='row.showCount == null'>-</span>
+          <span v-else >{{formatNumber(row.showCount , 2)}}</span>
+        </template>
+        <template slot="personCount" slot-scope="{row}" >
+          <span v-if='row.personCount == null'>-</span>
+          <span v-else >{{formatNumber(row.personCount , 2)}}</span>
+        </template>
+        <template slot="averageShowCount" slot-scope="{row}" >
+          <span v-if='row.averageShowCount == null'>-</span>
+          <span v-else >{{formatNumber(row.averageShowCount , 2)}}</span>
+        </template>
+        <template slot="averagePersonCount" slot-scope="{row}" >
+          <span v-if='row.averagePersonCount == null'>-</span>
+          <span v-else >{{formatNumber(row.averagePersonCount , 2)}}</span>
+        </template>
+
+      </Table>
 
       <div class="page-wrap" v-if="total > 0">
         <Page :total="total" :current="query.pageIndex" :page-size="query.pageSize"
           show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-          @on-change="page => query.pageIndex = page"
-          @on-page-size-change="pageSize => query.pageSize = pageSize"/>
+          @on-change="handlepageChange"
+      @on-page-size-change="handlePageSize"/>
       </div>
     </div>
+    <DlgEdit ref="addOrUpdate" v-if="addOrUpdateVisible" @done="done" />
   </div>
 </template>
 
@@ -37,12 +86,15 @@ import { Component, Watch , Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { queryList , setList} from '@/api/account'
+import { costList } from '@/api/dataReport'
+import { queryList } from '@/api/film-ed'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
 import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
+import { formatNumber } from '@/util/validateRules'
+import DlgEdit from './dlgEdit.vue'
 
 import {confirm , warning , success, toast , info } from '@/ui/modal'
 
@@ -50,31 +102,39 @@ import {confirm , warning , success, toast , info } from '@/ui/modal'
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
-const dataForm = {
-  status: 1
-}
-
 
 @Component({
   components: {
+    DlgEdit
   }
 })
 // export default class Main extends ViewBase {
 export default class Main extends Mixins(ViewBase, UrlManager) {
-  defQuery = {
-    id: '',
-    email: '',
-    companyName: '',
-    status: 1,
+  defQuery: any = {
+    movieId: null,
+    box: null,
+    typeCount: null,
+    type: 1,
+    week: null,
     pageIndex: 1,
     pageSize: 20,
+    codes: null
   }
+
   query: any = {}
+  oldQuery: any = {}
+
+  defaultCount: any = 1
 
   loading = false
   list: any = []
+  movieList: any = []
+
+  showUrl: any = false
+
+  addOrUpdateVisible = false
   total = 0
-  oldQuery: any = {}
+  loadings = false
 
   // 投放类型
   putInType: any = [
@@ -88,48 +148,158 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     },
   ]
 
-  statusList = []
+  movieName: any = ''
 
 
-
-
+  bbb: any = []
 
   columns = [
-    { title: '省份', key: 'id', align: 'center', width: 100 },
-    { title: '城市', key: 'email', align: 'center' },
-    { title: '城市等级', key: 'mobile', align: 'center' },
-    { title: '影城名称', width: 300, key: 'companyName', align: 'center' },
-    { title: '影城编码', key: 'companyName', align: 'center' },
-    { title: '影厅数', key: 'id', align: 'center' },
-    { title: '座位数', key: 'id', align: 'center' },
-    { title: '总场次(场)', key: 'id', align: 'center' },
-    { title: '总人次(人)', key: 'id', align: 'center' },
-    { title: '日均场次', key: 'id', align: 'center' },
-    { title: '日均人次', key: 'id', align: 'center' },
+    { title: '省份', key: 'provinceName', align: 'center', width: 100 },
+    { title: '城市', key: 'cityName', align: 'center' },
+    { title: '城市等级', key: 'grade', align: 'center' },
+    { title: '影城名称', width: 300, key: 'cinemaName', align: 'center' },
+    { title: '影城编码', key: 'code', align: 'center' },
+    { title: '影厅数', slot: 'hallCount', align: 'center' },
+    { title: '座位数', slot: 'seatCount', align: 'center' },
+    { title: '总场次(场)', slot: 'showCount', align: 'center' },
+    { title: '总人次(人)', slot: 'personCount', align: 'center' },
+    { title: '日均场次', slot: 'averageShowCount', align: 'center' },
+    { title: '日均人次', slot: 'averagePersonCount', align: 'center' },
+  ]
+
+  exportcolumns = [
+    { title: '导出时间', key: 'exportDate', align: 'center', width: 100 },
+    { title: '筛选条件', key: 'query', align: 'center', width: 100 },
+    { title: '省份', key: 'provinceName', align: 'center', width: 100 },
+    { title: '城市', key: 'cityName', align: 'center' },
+    { title: '城市等级', key: 'grade', align: 'center' },
+    { title: '影城名称', width: 300, key: 'cinemaName', align: 'center' },
+    { title: '影城编码', key: 'code', align: 'center' },
+    { title: '影厅数', key: 'hallCount', align: 'center' },
+    { title: '座位数', key: 'seatCount', align: 'center' },
+    { title: '总场次(场)', key: 'showCount', align: 'center' },
+    { title: '总人次(人)', key: 'personCount', align: 'center' },
+    { title: '日均场次', key: 'averageShowCount', align: 'center' },
+    { title: '日均人次', key: 'averagePersonCount', align: 'center' },
   ]
 
   mounted() {
-    // info('请输入影片名称，预测票房进行查询')
-    // this.updateQueryByParam()
+    this.updateQueryByParam()
+    this.query.type = 1
+    this.query.week = 45
+    if ( this.$route.query.box != undefined ) {
+      this.query.box = Number(this.$route.query.box)
+      this.query.typeCount = Number(this.$route.query.typeCount)
+      this.search()
+    }
   }
 
-  search() {
+  get formatNumber() {
+    return formatNumber
+  }
+
+  searchs() {
     this.query.pageIndex = 1
   }
 
-  reloadSearch() {
+  done(outputs: any) {
+    // console.log(outputs)
+    this.query.codes = outputs.join(',')
+    this.search()
+  }
+
+    // 影片列表搜索
+  async movieIdMethod(querys: any) {
+    try {
+      if (querys) {
+        this.loadings = true
+        const {
+          data: { items }
+        } = await queryList({
+          name: querys,
+        })
+        this.movieList = items || []
+        if (items.length > 0) {
+          this.movieName = items[0].name
+        }
+      }
+      this.loading = false
+    } catch (ex) {
+      this.handleError(ex)
+      this.loading = false
+    }
+  }
+
+  // 下载
+  exportData() {
+    (this.$refs.table as any).exportCsv({
+        filename: '成本核算报表',
+        columns: this.exportcolumns,
+        data: ([...this.bbb, ...this.list.slice(1)]).map((it: any) => {
+          return {
+            ...it,
+          }
+        })
+    })
+  }
+
+  // 上传影城
+  viewCinema() {
+    this.addOrUpdateVisible = true
+    this.$nextTick(() => {
+      const myThis: any = this
+      myThis.$refs.addOrUpdate.init()
+    })
+  }
+
+  // reset() {
+  //   this.query = {
+  //     movieId: '',
+  //     box: null,
+  //     typeCount: null,
+  //     type: 1,
+  //     week: 45,
+  //     pageIndex: 1,
+  //     pageSize: 20,
+  //   }
+  //   this.list = []
+  //   this.doSearch()
+  // }
+
+  search() {
+    this.showUrl = true
     this.doSearch()
   }
 
-  reset() {
-    this.resetQuery()
-  }
-
   async doSearch() {
-    if (this.query.id == '' && this.query.email == '') {
+    if (this.showUrl == false) {
+      return
+    }
+    if ((this.query.movieId == '' || this.query.movieId == undefined) ||
+      (this.query.box == null || this.query.box == undefined)) {
       info('请输入影片名称，预测票房进行查询')
       return
     }
+    if (this.query.type == 1) {
+      if (this.query.typeCount == null) {
+        info('请输入投放天数')
+        return
+      }
+      if (this.query.typeCount > this.query.week) {
+        info('投放天数不可大于密钥周期')
+        return
+      }
+    }
+    if (String(this.query.typeCount).indexOf('.') == 1) {
+      info('投放天数跟人次为整数')
+      return
+    }
+    if (this.query.type == 2) {
+      this.query.week = 45
+    }
+
+    // this.query.movieId = this.query.movieId.split('.')[0]
+
     if (this.loading) {
       return
     }
@@ -140,15 +310,38 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       const { data: {
         items: list,
         totalCount: total,
-        statusList: statusList,
-      } } = await queryList(this.query)
-      this.list = list
-      this.list.push({
-        id: '总计',
-        email: 456
-      })
+        sumHallCount,
+        sumSeatCount,
+        sumShowCount,
+        sumPersonCount,
+        sumAverageShowCount,
+        sumAveragePersonCount,
+      } } = await costList(this.query)
+      this.list = list == null ? [] : list
+      // if (this.list.length > 0) {
+      //   this.list.push({
+      //     provinceName: '总计',
+      //     hallCount: sumHallCount,
+      //     seatCount: sumSeatCount,
+      //     showCount: sumShowCount,
+      //     personCount: sumPersonCount,
+      //     averageShowCount: sumAverageShowCount,
+      //     averagePersonCount: sumAveragePersonCount,
+      //   })
+      // }
+      const a = this.movieName == '' ? '影片名称：全部' : '影片名称' + this.movieName
+      const b = this.query.box == null ? '预测票房：全部' : '预测票房' + this.query.box
+      const c = this.query.type == 1 ? '投放时长：' + this.query.typeCount :
+      '投放人次：' + (this.query.typeCount == null ? '暂无' : this.query.typeCount)
+      const d = this.query.week == null ? '密钥周期：45' : '密钥周期' + this.query.week
+      this.bbb = [
+        {
+          exportDate: moment((new Date().getTime())).format(timeFormat),
+          query: a + ' ' + b + ' ' + c + ' ' + d,
+          ...this.list[0]
+        }
+      ]
       this.total = total
-      this.statusList = statusList
     } catch (ex) {
       this.handleError(ex)
     } finally {
@@ -156,12 +349,25 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
   }
 
+  handlepageChange(size: any) {
+    this.query.pageIndex = size
+    this.search()
+  }
+  handlePageSize(size: any) {
+    this.query.pageSize = size
+    this.search()
+  }
+
   @Watch('query', { deep: true })
   watchQuery() {
-    if (this.query.pageIndex == this.oldQuery.pageIndex) {
-      this.query.pageIndex = 1
+    // console.log(this.query.pageIndex ,this.oldQuery.pageIndex)
+    // if (this.query.pageIndex == this.oldQuery.pageIndex) {
+    //   this.query.pageIndex = 1
+    // }
+    if (this.query.type == 2) {
+      this.query.week = 45
     }
-    this.doSearch()
+    // this.doSearch()
   }
 }
 </script>

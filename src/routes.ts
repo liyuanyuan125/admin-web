@@ -1711,7 +1711,27 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     component: () => import('./views/datareport/cost/index.vue'),
     meta: {
       authKey: '',
-      title: '成本核算报表'
+      title: '成本核算列表'
+    }
+  },
+  // 广告管理 - 下刊 - 列表
+  {
+    path: '/datareport/nextissue',
+    name: 'datareport-nextissue',
+    component: () => import('./views/datareport/nextissue/index.vue'),
+    meta: {
+      authKey: '',
+      title: '下刊监控列表'
+    }
+  },
+  // 广告管理 - 下刊 - 列表 - 详情
+  {
+    path: '/datareport/nextissue/detail/:id',
+    name: 'datareport-nextissue-detail',
+    component: () => import('./views/datareport/nextissue/detail.vue'),
+    meta: {
+      authKey: '',
+      title: '报表详情'
     }
   },
 ] // end of mainLayoutRoutes
