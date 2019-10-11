@@ -27,12 +27,15 @@
         <Row class='bos' v-if='listitem.approvalStatus == 2 || listitem.approvalStatus == 4'>
             <Col :span='15'>
             <span v-if='listitem.fileUrl == null'>暂无监播文件</span>
-            <video ref='videoplay' v-if='listitem.fileUrl != null' :src='listitem.fileUrl' width='93%' height='60%' autobuffer controls="controls" type="video/mp4" ></video>
-                <p v-if='listitem.fileUrl != null'>选择播放速率：
+            <video ref='videoplay' :style="{'transform': 'rotate(' + roteNum + 'deg)', 'width': roteTrue != true ? '350px' : '100%' }" v-if='listitem.fileUrl != null' :src='listitem.fileUrl' width='93%' height='60%' autobuffer controls="controls" type="video/mp4" ></video>
+                <p v-if='listitem.fileUrl != null' style='margin-top: 3px;'>选择播放速率：
                     <Select v-model="videoplay.speed" placeholder="设置播放状态">
-                        <Option v-for="it in videoplayList" :key="it.key" :value="it.key"
+                      <Option v-for="it in videoplayList" :key="it.key" :value="it.key"
                           :label="it.text">{{it.text}}</Option>
-                      </Select>
+                    </Select>
+                    <Button @click='changeRote(1)' style='margin-right: 5%;' type='default' class='rote'>向左旋转</Button>
+                    <Button @click='changeRote(0)' type='default' class='rote'>恢复</Button>
+                    <Button @click='changeRote(2)' type='default' class='rote'>向右旋转</Button>
                </p>
             </Col>
             <Col :span='9'>
@@ -119,6 +122,7 @@ import {
     reset
 } from '@/api/supervision'
 import EditDialog, { Field } from '@/components/editDialog'
+import Decimal from 'decimal.js'
 
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 
@@ -138,6 +142,9 @@ export default class Main extends ViewBase {
     statusform = {
         status: 1,
     }
+
+    roteNum: any = 0
+    roteTrue: any = true
 
     videoplayList: any = [
       {
@@ -212,6 +219,36 @@ export default class Main extends ViewBase {
     // 审核取消按钮
     cancel() {
         this.statusform.status = 1
+    }
+
+    changeRote(num: any) {
+      // 角度恢复
+      if (num == 0) {
+        this.roteNum = 0
+        if (String(new Decimal(this.roteNum).div(360)).indexOf('.') == -1) {
+          this.roteTrue = true
+        } else {
+          this.roteTrue = false
+        }
+      }
+      // 向左旋转
+      if (num == 1) {
+        this.roteNum = new Decimal(this.roteNum).plus(90)
+        if (String(new Decimal(this.roteNum).div(360)).indexOf('.') == -1) {
+          this.roteTrue = true
+        } else {
+          this.roteTrue = false
+        }
+      }
+      // 向右旋转
+      if (num == 2) {
+        this.roteNum = new Decimal(this.roteNum).plus(-90)
+        if (String(new Decimal(this.roteNum).div(360)).indexOf('.') == -1) {
+          this.roteTrue = true
+        } else {
+          this.roteTrue = false
+        }
+      }
     }
 
 
@@ -422,6 +459,13 @@ export default class Main extends ViewBase {
   &&::-webkit-scrollbar {
     display: none;
   }
+}
+.rote {
+  display: inline-block;
+  text-align: center;
+  float: right;
+  margin-top: 5px;
+  margin-right: 1%;
 }
 
 /deep/ .ivu-form .ivu-form-item-label {

@@ -44,9 +44,12 @@
             <span v-if='row.showCount == null'>-</span>
             <span v-else >{{formatNumber(row.showCount , 2)}}</span>
           </template>
+          <template slot="cost" slot-scope="{row}" >
+            <span v-if='row.cost == null'>-</span>
+            <span v-else >{{formatNumber(row.cost , 2)}}</span>
+          </template>
           <template slot="spaction" slot-scope="{row}" >
-            <router-link v-if='row.planId != "总计"' style='margin-left: 10px;' :to="{ name: 'datareport-nextissue-detail', params: { id: row.id } }">详情</router-link>
-            <span v-else >-</span>
+            <router-link  style='margin-left: 10px;' :to="{ name: 'datareport-nextissue-detail', params: { id: row.id } }">详情</router-link>
         </template>
         </Table>
 
@@ -132,6 +135,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     { title: '实际累计人次' , slot: 'personCount', align: 'center' },
     { title: '预计总场次' , slot: 'budgetShowCount', align: 'center' },
     { title: '实际累计场次' , slot: 'showCount', align: 'center' },
+    { title: '花费' , slot: 'cost', align: 'center' },
     { title: '更新时间' , key: 'updateTime', align: 'center',
       render: (hh: any, { row: { updateTime } }: any) => {
         /* tslint:disable */
@@ -161,6 +165,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     { title: '实际累计人次' , key: 'personCount', align: 'center' },
     { title: '预计总场次' , key: 'budgetShowCount', align: 'center' },
     { title: '实际累计场次' , key: 'showCount', align: 'center' },
+    { title: '花费' , key: 'cost', align: 'center' },
     { title: '更新时间' , key: 'updateTime', align: 'center',
       render: (hh: any, { row: { updateTime } }: any) => {
         /* tslint:disable */
@@ -264,16 +269,16 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           // tomorrowFinishRate: new Decimal(it.tomorrowFinishRate).div(100)
         }
       })
-      if (this.list.length > 0) {
-        this.list.push({
-          planId: '总计',
-          budgetPersonCount: sumBudgetPersonCount,
-          personCount: sumPersonCount,
-          budgetShowCount: sumBudgetShowCount,
-          showCount: sumShowCount,
-          updateTime: 'updateTime'
-        })
-      }
+      // if (this.list.length > 0) {
+      //   this.list.push({
+      //     planId: '总计',
+      //     budgetPersonCount: sumBudgetPersonCount,
+      //     personCount: sumPersonCount,
+      //     budgetShowCount: sumBudgetShowCount,
+      //     showCount: sumShowCount,
+      //     updateTime: 'updateTime'
+      //   })
+      // }
       const a = !query.planId ? '计划ID : 全部' : '计划ID' + query.planId
       const b = !query.planName ? '计划名称 : 全部' : '计划名称' + query.planName
       const c = !query.beginDate ? '查询日期 : 全部' : '查询日期' + (query.beginDate + '~' + query.endDate)
