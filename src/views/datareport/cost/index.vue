@@ -187,10 +187,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     this.updateQueryByParam()
     this.query.type = 1
     this.query.week = 45
+    // console.log(this.$route)
     if ( this.$route.query.box != undefined ) {
-      this.query.box = Number(this.$route.query.box)
-      this.query.typeCount = Number(this.$route.query.typeCount)
-      this.search()
+      this.$router.push({ name: 'datareport-cost' })
+      this.query.box = null
+      this.query.typeCount = null
+      this.query.movieId = null
+      this.doSearch()
     }
   }
 
