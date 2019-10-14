@@ -33,7 +33,8 @@
       <Col style='margin-left: 15px;' span="6">
         <Button type="primary" @click="search">搜索</Button>
         <Button v-if='this.checkId.length > 0' style='margin-left: 15px;' type="primary" @click="changeAll">批量下刊</Button>
-        <Button v-if='this.list.length > 0' style='margin-left: 15px;' type="primary" @click="exportData">导出</Button>
+        <!-- <Button v-if='this.list.length > 0' style='margin-left: 15px;' type="primary" ><a :href='herf' download='导出' >导出</a></Button> -->
+        <a v-if='this.list.length > 0' class='exp' :href='herf' download='导出' >导出</a>
       </Col>
     </Row>
 
@@ -123,7 +124,13 @@ import { Component, Watch , Mixins, Prop } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { nextList , nextItem , nextCinema , cinemaOff , callCinemaOff , districts } from '@/api/dataReport'
+import { nextList ,
+         nextItem ,
+         nextCinema ,
+         cinemaOff ,
+         callCinemaOff ,
+         districts ,
+         cinemasexport } from '@/api/dataReport'
 import {
   queryList,
 } from '@/api/cinema'
@@ -181,7 +188,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   loadings: any = false
   // 影城列表
   getcinemaList: any = []
-
+  listArr: any = []
   bbb: any = []
 
   provinceIdName: any = ''
@@ -257,13 +264,76 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     this.search()
   }
 
-  // 下载
-  exportData() {
-    (this.$refs.selection as any).exportCsv({
-        filename: '影城列表',
-        columns: this.exportcolumns,
-        data: [...this.bbb, ...this.list.slice(1)]
+  // // 下载
+  // async exportData() {
+  //   const query = clean({
+  //     ...this.dataForm,
+  //     cinemaId: this.dataForm.cinemaId == null ? null : this.dataForm.cinemaId.split('-')[0],
+  //     cinemaName: this.dataForm.cinemaId == null ? null : this.dataForm.cinemaId.split('-')[1],
+  //     pageIndex: null,
+  //     pageSize: null,
+  //   })
+  //   const { data: {
+  //       items: list,
+  //       totalCount: total,
+  //       statusList: statusList,
+  //       planTypeList: planTypeList,
+  //       sumTodayShowCount,
+  //       sumTodayPersonCount,
+  //       sumTomorrowShowCount,
+  //       sumTomorrowPersonCount,
+  //       sumBudgetPersonCount,
+  //       sumPersonCount,
+  //       sumBudgetShowCount,
+  //       sumShowCount,
+  //     } } = await cinemasexport(query)
+  //     this.listArr = list == null ? [] : list.map((it: any) => {
+  //       return {
+  //         ...it,
+  //         // todayFinishRate: new Decimal(it.todayFinishRate).div(100),
+  //         // tomorrowFinishRate: new Decimal(it.tomorrowFinishRate).div(100)
+  //       }
+  //     })
+  //     // if (query.provinceId != undefined) {
+  //     //   const cityone = await districts(query.provinceId)
+  //     //   this.provinceIdName = (cityone.data || []).map((it: any) => {
+  //     //     return it.nameCn
+  //     //   })
+  //     // }
+  //     // if (query.cityId != undefined) {
+  //     //   const citytwo = await districts(query.cityId)
+  //     //   this.cityIdName = (citytwo.data || []).map((it: any) => {
+  //     //     return it.nameCn
+  //     //   })
+  //     // }
+  //     // const a = !query.provinceId ? '选择地区 : 全部' : '选择地区' + this.provinceIdName
+  //     // const b = !query.cityId ? '' : '/' + this.cityIdName
+  //     // const c = !query.cinemaId ? '影院名称 : 全部' : '影院名称' + query.cinemaName
+  //     // const d = !query.pricingLevelCode ? '影城级别 : 全部' : '影城级别' + query.pricingLevelCode
+  //     // this.bbb = [
+  //     //   {
+  //     //     exportDate: moment((new Date().getTime())).format(timeFormat),
+  //     //     query: a + ' ' + b + ' ' + c + ' ' + d,
+  //     //     ...this.list[0]
+  //     //   }
+  //     // ]
+
+  //   (this.$refs.selection as any).exportCsv({
+  //       filename: '影城列表',
+  //       columns: this.exportcolumns,
+  //       data: [...this.bbb, ...this.listArr.slice(1)]
+  //   })
+  // }
+
+  get herf() {
+    const query = clean({
+      ...this.dataForm,
+      cinemaId: this.dataForm.cinemaId == null ? null : this.dataForm.cinemaId.split('-')[0],
+      cinemaName: this.dataForm.cinemaId == null ? null : this.dataForm.cinemaId.split('-')[1]
     })
+    return `${VAR.ajaxBaseUrl}/bi/off-shelf-report/export-cinemas?planId=${query.planId}&
+    cinemaId=${query.cinemaId}&provinceId=${query.provinceId}&cityId=${query.cityId}&
+    pricingLevelCode=${query.pricingLevelCode}`
   }
 
   // 影城列表搜索
@@ -529,5 +599,30 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 }
 .red {
   color: red;
+}
+.exp {
+  display: inline-block;
+  margin-left: 1%;
+  margin-bottom: 0;
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  touch-action: manipulation;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  line-height: 1.5;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  padding: 5px 15px 6px;
+  font-size: 12px;
+  border-radius: 4px;
+  transition: color .2s linear, background-color .2s linear, border .2s linear, box-shadow .2s linear;
+  color: #515a6e;
+  background-color: #fff;
+  border-color: #dcdee2;
 }
 </style>
