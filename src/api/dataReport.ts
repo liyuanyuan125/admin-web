@@ -63,5 +63,10 @@ export async function reportsexport(query: any) {
   return data
 }
 
-
+// 批量成本核算导出列表
+// http://yapi.aiads-dev.com/project/253/interface/api/7317
+export async function budget(query: any) {
+  const data = await get(`/bi/cost-budget-reports/export` , query)
+  return data
+}
 

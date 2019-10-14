@@ -77,7 +77,7 @@ export default class Main extends ViewBase {
         defaultValue: '',
         dateRange: true,
         width: 200,
-        placeholder: '更新',
+        placeholder: '更新时间',
         dealParam(value: string) {
           const [beginUpdateTime, endUpdateTime] = value ? value.split('-') : [null, null]
           return {

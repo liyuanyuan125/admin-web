@@ -172,6 +172,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     pricingLevelCode: null,
     planId: this.planId,
   }
+  str: any = ''
   cinemaArray: any = []
   showDlg = false
   addOrUpdateVisible = false
@@ -331,9 +332,43 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       cinemaId: this.dataForm.cinemaId == null ? null : this.dataForm.cinemaId.split('-')[0],
       cinemaName: this.dataForm.cinemaId == null ? null : this.dataForm.cinemaId.split('-')[1]
     })
-    return `${VAR.ajaxBaseUrl}/bi/off-shelf-report/export-cinemas?planId=${query.planId}&
-    cinemaId=${query.cinemaId}&provinceId=${query.provinceId}&cityId=${query.cityId}&
-    pricingLevelCode=${query.pricingLevelCode}`
+    this.str = `${VAR.ajaxBaseUrl}/bi/off-shelf-report/export-cinemas`
+    if (query.planId != undefined) {
+      if (this.str.indexOf('?') == -1) {
+        this.str = this.str + `?planId=${query.planId}`
+      } else {
+        this.str = this.str + `&planId=${query.planId}`
+      }
+    }
+    if (query.cinemaId != undefined) {
+      if (this.str.indexOf('?') == -1) {
+        this.str = this.str + `?cinemaId=${query.cinemaId}`
+      } else {
+        this.str = this.str + `&cinemaId=${query.cinemaId}`
+      }
+    }
+    if (query.provinceId != undefined) {
+      if (this.str.indexOf('?') == -1) {
+        this.str = this.str + `?provinceId=${query.provinceId}`
+      } else {
+        this.str = this.str + `&provinceId=${query.provinceId}`
+      }
+    }
+    if (query.cityId != undefined) {
+      if (this.str.indexOf('?') == -1) {
+        this.str = this.str + `?cityId=${query.cityId}`
+      } else {
+        this.str = this.str + `&cityId=${query.cityId}`
+      }
+    }
+    if (query.pricingLevelCode != undefined) {
+      if (this.str.indexOf('?') == -1) {
+        this.str = this.str + `?pricingLevelCode=${query.pricingLevelCode}`
+      } else {
+        this.str = this.str + `&pricingLevelCode=${query.pricingLevelCode}`
+      }
+    }
+    return this.str
   }
 
   // 影城列表搜索
