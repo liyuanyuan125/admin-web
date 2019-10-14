@@ -1448,14 +1448,14 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: paramTypes({ id: Number, action: String })
   },
 
-  // 内容管理 - 广告计划营销活动 - 列表
+  // 内容管理 - 推荐位管理 - 列表
   {
     path: '/content/recommendPost/list',
     name: 'content-recommend-post',
     component: () => import('./views/content/recommend-post/list.vue'),
     meta: {
       authKey: '',
-      title: '推荐位管理列表'
+      title: '推荐位管理'
     }
   },
 
