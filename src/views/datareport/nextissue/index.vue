@@ -7,7 +7,9 @@
           <LazyInput v-model="query.planName" placeholder="广告计划名称" class="input"/>
           <DatePicker type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="查询日期" class="input" style="width: 200px"></DatePicker>
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
-          <Button type="default" v-if='list.length > 0' @click="exportData" class="btn-reset">导出</Button>
+          <!-- <Button type="default" class="btn-reset">...</Button> -->
+          <a v-if='this.list.length > 0' class='exp' :href='herf' download='导出' >导出</a>
+          
         </form>
       </div>
       <Table ref='table' :columns="columns" :data="list" :loading="loading"
@@ -68,7 +70,7 @@ import { Component, Watch , Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { nextList } from '@/api/dataReport'
+import { nextList , reportsexport } from '@/api/dataReport'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
@@ -209,19 +211,59 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     return formatNumber
   }
 
-  // 下载
-  exportData() {
-    (this.$refs.table as any).exportCsv({
-        filename: '下刊监控列表',
-        columns: this.exportcolumns,
-        data: ([...this.bbb, ...this.list.slice(1)]).map((it: any) => {
-          return {
-            ...it,
-            updateTime: (it.updateTime == null || it.updateTime == 'updateTime') ? ''
-            : moment(it.updateTime).format(timeFormat)
-          }
-        })
-    })
+  // // 下载
+  // async exportData() {
+  //   // this.oldQuery = { ...this.query , pageIndex: null, pageSize: null }
+  //   // const query: any = {}
+  //   // for (const [key, value] of Object.entries(this.oldQuery)) {
+  //   //   if (key != 'beginDate' && value != 0) {
+  //   //     query[key] = value
+  //   //   }
+  //   //   if (key != 'endDate' && value != 0) {
+  //   //     query[key] = value
+  //   //   }
+  //   // }
+  //   // const { data: {
+  //   //     items: list,
+  //   //     totalCount: total,
+  //   //     statusList: statusList,
+  //   //     sumBudgetPersonCount, // 合计预估总人次
+  //   //     sumPersonCount, // 合计累计总人次
+  //   //     sumBudgetShowCount, // 合计预估总场次
+  //   //     sumShowCount, // 合计累计总场次
+  //   //   } } = await reportsexport(query)
+  //   //   this.list = list == null ? [] : list.map((it: any) => {
+  //   //     return {
+  //   //       ...it,
+  //   //       // todayFinishRate: new Decimal(it.todayFinishRate).div(100),
+  //   //       // tomorrowFinishRate: new Decimal(it.tomorrowFinishRate).div(100)
+  //   //     }
+  //   //   })
+  //   (this.$refs.table as any).exportCsv({
+  //       filename: '下刊监控列表',
+  //       columns: this.exportcolumns,
+  //       data: ([...this.bbb, ...this.list.slice(1)]).map((it: any) => {
+  //         return {
+  //           ...it,
+  //           updateTime: (it.updateTime == null || it.updateTime == 'updateTime') ? ''
+  //           : moment(it.updateTime).format(timeFormat)
+  //         }
+  //       })
+  //   })
+  // }
+
+  get herf() {
+    const query: any = {}
+    for (const [key, value] of Object.entries(this.oldQuery)) {
+      if (key != 'beginDate' && value != 0) {
+        query[key] = value
+      }
+      if (key != 'endDate' && value != 0) {
+        query[key] = value
+      }
+    }
+    return `${VAR.ajaxBaseUrl}/bi/off-shelf-reports/export?planId=${query.planId}&
+    planName=${query.planName}&beginDate=${query.beginDate}&endDate=${query.endDate}`
   }
 
   search() {
@@ -393,5 +435,30 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 .red {
   color: red;
 }
-  </style>
+.exp {
+  display: inline-block;
+  margin-left: 1%;
+  margin-bottom: 0;
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  touch-action: manipulation;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  line-height: 1.5;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  padding: 5px 15px 6px;
+  font-size: 12px;
+  border-radius: 4px;
+  transition: color .2s linear, background-color .2s linear, border .2s linear, box-shadow .2s linear;
+  color: #515a6e;
+  background-color: #fff;
+  border-color: #dcdee2;
+}
+</style>
 

@@ -49,3 +49,19 @@ export async function districts(ids: any) {
   return data
 }
 
+// 批量导出下刊影院
+// http://yapi.aiads-dev.com/project/253/interface/api/7191
+export async function cinemasexport(query: any) {
+  const data = await get(`/bi/off-shelf-report/export-cinemas` , query)
+  return data
+}
+
+// 批量导出下刊列表
+// http://yapi.aiads-dev.com/project/253/interface/api/7200
+export async function reportsexport(query: any) {
+  const data = await get(`/bi/off-shelf-reports/export` , query)
+  return data
+}
+
+
+
