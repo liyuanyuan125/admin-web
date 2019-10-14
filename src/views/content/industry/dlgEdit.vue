@@ -12,7 +12,7 @@
       <FormItem label="行业ID" prop="tradeId">
         <InputNumber style="width:240px" :disabled='viewDetail' :min='0' v-model="dataForm.tradeId"></InputNumber>
       </FormItem>
-      <FormItem  label="icon图片" prop="receipt">
+      <FormItem v-if='id == 0'  label="icon图片" prop="receipt">
           <Row class="upload">
             <Col span="12">
                 <Upload v-model="dataForm.receipts" multiple :maxCount="1" accept="image/*"/>
@@ -82,13 +82,15 @@ export default class ComponentMain extends ViewBase {
     ; (this.$refs.dataForm as any).resetFields()
     if (id == 0) {
       this.title = '新建'
+      this.viewDetail = false
     }
     if (id == -1) {
       this.title = '查看'
       this.viewDetail = true
     }
-    if (id != 0) {
+    if (id > 0) {
       this.title = '编辑'
+      this.viewDetail = false
       // const data = await itemList(id)
       // this.dataForm.tradeName = data.item.tradeName
       // this.dataForm.tradeId = data.item.tradeId
