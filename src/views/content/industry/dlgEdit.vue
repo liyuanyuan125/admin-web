@@ -54,7 +54,8 @@ const dataForm: any = {
   tradeId: null,
   receipts: [],
   fileID: '',
-  iconUrl: ''
+  iconUrl: '',
+  iconId: ''
 }
 
 @Component({
@@ -78,6 +79,8 @@ export default class ComponentMain extends ViewBase {
   // 查看图片
   viewerShow = false
   viewerImage = ''
+
+  fileId: any = ''
 
   get formatNumber() {
     return formatNumber
@@ -113,6 +116,7 @@ export default class ComponentMain extends ViewBase {
         this.dataForm.tradeName = data.data.item.tradeName
         this.dataForm.tradeId = data.data.item.tradeId
         this.dataForm.iconUrl = data.data.item.iconUrl
+        this.dataForm.iconId = data.data.item.fileId
       } catch (ex) {
         this.handleError(ex)
       }
@@ -146,9 +150,19 @@ export default class ComponentMain extends ViewBase {
 
   // 表单提交
   dataFormSubmit(dataForms: any) {
-    if (this.dataForm.receipts.length == 0) {
+    if (this.id == -1) {
+      this.cancel(dataForms)
+    }
+    if (this.id == 0 && this.dataForm.receipts.length == 0) {
       info('请上传icon图片')
       return
+    }
+    if (this.id == 1 ) {
+      this.fileId = this.dataForm.iconId
+      if (this.chgimg == true && this.dataForm.receipts.length == 0) {
+        info('请上传icon图片')
+        return
+      }
     }
    const myThis: any = this
    myThis.$refs[dataForms].validate(async ( valid: any ) => {
@@ -163,7 +177,21 @@ export default class ComponentMain extends ViewBase {
             const res =  await addList (query)
           }
           if (this.id == 1) {
-            const res =  await setList (this.viewId , query)
+            if (this.chgimg == false) {
+              const querys: any = {
+                tradeName: this.dataForm.tradeName,
+                tradeId: this.dataForm.tradeId,
+                fileId: this.fileId
+              }
+              const res =  await setList (this.viewId , querys)
+            } else if  (this.chgimg == true) {
+              const querys: any = {
+                tradeName: this.dataForm.tradeName,
+                tradeId: this.dataForm.tradeId,
+                fileId: this.dataForm.receipts.length > 0 ? this.dataForm.receipts[0].fileId : ''
+              }
+              const res =  await setList (this.viewId , querys)
+            }
           }
            toast('操作成功')
            this.$emit('done')
