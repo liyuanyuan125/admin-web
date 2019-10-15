@@ -249,8 +249,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   //   })
   // }
   get herf() {
-    this.str = `${VAR.ajaxBaseUrl}/bi/cost-budget-reports/export?movieId=${this.query.movieId}&
-    box=${this.query.box}&box=${this.query.type}`
+    this.str = `${VAR.ajaxBaseUrl}/bi/cost-budget-reports/export`
+    this.str = this.str + `?movieId=${this.query.movieId}&box=${this.query.box}&type=${this.query.type}`
     if (this.query.typeCount != null) {
       if (this.str.indexOf('?') == -1) {
         this.str = this.str + `?typeCount=${this.query.typeCount}`
