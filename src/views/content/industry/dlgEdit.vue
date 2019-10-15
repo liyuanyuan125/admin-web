@@ -229,6 +229,16 @@ export default class ComponentMain extends ViewBase {
   display: inline-block;
   margin-right: 4px;
   line-height: 1;
+  font-family: '微软雅黑', serif;
+  font-size: 12px;
+  color: #ed4014;
+}
+/deep/ .ivu-form-item-required .ivu-form-item-label::before {
+  content: '*';
+  display: inline-block;
+  margin-right: 4px;
+  line-height: 1;
+  font-family: '微软雅黑', serif;
   font-size: 12px;
   color: #ed4014;
 }
