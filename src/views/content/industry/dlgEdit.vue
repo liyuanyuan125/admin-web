@@ -139,6 +139,7 @@ export default class ComponentMain extends ViewBase {
 
   cancel(dataForms: string) {
     this.dataForm.iconUrl = ''
+    this.chgimg = false
     this.showDlg = false
     ; (this.$refs.dataForm as any).resetFields()
   }
