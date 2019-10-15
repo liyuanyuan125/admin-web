@@ -7,29 +7,42 @@
     @on-cancel="cancel('dataForm')" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
       <FormItem label="行业名称" prop="tradeName">
-        <Input style="width:240px" :disabled='viewDetail' v-model="dataForm.tradeName"></Input>
+        <Input style="width:240px" :disabled='viewDetail' :maxLength='50' v-model="dataForm.tradeName"></Input>
       </FormItem>
       <FormItem label="行业ID" prop="tradeId">
         <InputNumber style="width:240px" :disabled='viewDetail' :min='0' v-model="dataForm.tradeId"></InputNumber>
       </FormItem>
-      <FormItem v-if='id == 0'  label="icon图片" prop="receipt">
-          <Row class="upload">
-            <Col span="12">
-                <Upload v-model="dataForm.receipts" multiple :maxCount="1" accept="image/*"/>
-            </Col>
-          </Row>
-        </FormItem>
+      <FormItem v-if='id == 0 || chgimg == true '  label="icon图片" prop="receipt" class='vie'>
+        <Row class="upload">
+          <Col span="12">
+              <Upload v-model="dataForm.receipts" multiple :maxCount="1" accept="image/*"/>
+          </Col>
+        </Row>
+      </FormItem>
+      <Row v-if='id != 0 && chgimg == false'>
+        <Col :span='4'>icon图片</Col>
+        <Col :span='5'>
+          <div class='imgs' @click='onView(dataForm.iconUrl)'>
+            <img :src="dataForm.iconUrl" alt="">
+          </div>
+        </Col>
+        <Col class='chg' :span='2' v-if='id == 1' @click.prevent.native='change'><span>(更换)</span></Col>
+      </Row>
     </Form>
     <div slot="footer" class="dialog-footer">
       <Button @click="cancel('dataForm')">取消</Button>
       <Button type="primary" @click="dataFormSubmit('dataForm')">确认</Button>
     </div>
+     <!-- 查看图片 -->
+    <Modal v-model="viewerShow" title="查看" width="500" height="500">
+      <img style="width: 100%;" :src="viewerImage" alt sizes srcset>
+    </Modal>
   </Modal>
 </template>
 
 <script lang="ts">
 import { Component, Prop } from 'vue-property-decorator'
-import { business } from '@/api/beforeplan'
+// import { business } from '@/api/beforeplan'
 import { slice, clean } from '@/fn/object'
 import { warning , success, toast , info } from '@/ui/modal'
 import { formatNumber } from '@/util/validateRules'
@@ -40,7 +53,8 @@ const dataForm: any = {
   tradeName: '',
   tradeId: null,
   receipts: [],
-  receipt: ''
+  fileID: '',
+  iconUrl: ''
 }
 
 @Component({
@@ -52,11 +66,18 @@ export default class ComponentMain extends ViewBase {
 
   showDlg = false
   id = 0
+  viewId: any = 0
 
   itemlist: any = {}
   viewDetail: any = false
 
   title: any = ''
+
+  chgimg: any = false
+
+  // 查看图片
+  viewerShow = false
+  viewerImage = ''
 
   get formatNumber() {
     return formatNumber
@@ -64,58 +85,90 @@ export default class ComponentMain extends ViewBase {
 
   get ruleValidate() {
     const rules = {
-      name: [
-          { required: true, message: '请输入行业名称', trigger: 'blur' }
+      tradeName: [
+          { required: true, message: '请输入行业名称', trigger: 'blur' },
+          { type: 'string', max: 50, message: '最多输入50个字符', trigger: 'blur' }
       ],
-      receipt: [
-          { required: true }
-      ]
+      // receipt: [
+      //     { required: true }
+      // ]
     }
     return rules
   }
 
   dataForm = { ...dataForm }
 
-  async init(id: number) {
+  async init(id: number , viewid: number) {
     this.showDlg = true
     this.id = id || 0
+    this.viewId = viewid || 0
     ; (this.$refs.dataForm as any).resetFields()
     if (id == 0) {
       this.title = '新建'
       this.viewDetail = false
     }
-    if (id == -1) {
-      this.title = '查看'
-      this.viewDetail = true
-    }
-    if (id > 0) {
-      this.title = '编辑'
-      this.viewDetail = false
-      // const data = await itemList(id)
-      // this.dataForm.tradeName = data.item.tradeName
-      // this.dataForm.tradeId = data.item.tradeId
-      // this.dataForm.iconUrl = data.item.iconUrl
+    if (id != 0) {
+      try {
+        const data = await itemList(viewid)
+        this.dataForm.tradeName = data.data.item.tradeName
+        this.dataForm.tradeId = data.data.item.tradeId
+        this.dataForm.iconUrl = data.data.item.iconUrl
+      } catch (ex) {
+        this.handleError(ex)
+      }
+      if (id == -1) {
+        this.title = '查看'
+        this.viewDetail = true
+      }
+      if (id == 1) {
+        this.title = '编辑'
+        this.viewDetail = false
+      }
     }
   }
 
+  change() {
+    this.chgimg = true
+  }
+
+  // 查看图片
+  onView(url: string) {
+    this.viewerImage = url
+    this.viewerShow = true
+  }
+
   cancel(dataForms: string) {
+    this.dataForm.iconUrl = ''
     this.showDlg = false
     ; (this.$refs.dataForm as any).resetFields()
   }
 
   // 表单提交
   dataFormSubmit(dataForms: any) {
+    if (this.dataForm.receipts.length == 0) {
+      info('请上传icon图片')
+      return
+    }
    const myThis: any = this
    myThis.$refs[dataForms].validate(async ( valid: any ) => {
       if (valid) {
         const query: any = {
-          discount: this.dataForm.discount,
-          depositAmount: this.dataForm.depositAmount
+          tradeName: this.dataForm.tradeName,
+          tradeId: this.dataForm.tradeId,
+          fileId: this.dataForm.receipts.length > 0 ? this.dataForm.receipts[0].fileId : ''
         }
         try {
-           const res =  await business (this.id, query)
+          if (this.id == 0) {
+            const res =  await addList (query)
+          }
+          if (this.id == 1) {
+            const res =  await setList (this.viewId , query)
+          }
            toast('操作成功')
            this.$emit('done')
+           this.dataForm.receipts = []
+           this.dataForm.iconUrl = ''
+           this.chgimg = false
            this.showDlg = false
         } catch (ex) {
            this.handleError(ex)
@@ -127,4 +180,32 @@ export default class ComponentMain extends ViewBase {
 </script>
 
 <style lang="less" scoped>
+.imgs {
+  width: 100px;
+  height: 100px;
+  border: 1px solid #ccc;
+  img {
+    width: 100%;
+    max-width: 100px;
+    min-height: 100px;
+    object-fit: contain;
+    background-color: #fff;
+  }
+}
+/deep/ .ivu-col-span-4 {
+  width: 100px;
+}
+/deep/ .ivu-col-span-4::before, .vie /deep/ .ivu-form-item-label::before {
+  content: '*';
+  display: inline-block;
+  margin-right: 4px;
+  line-height: 1;
+  font-size: 12px;
+  color: #ed4014;
+}
+.chg {
+  color: red;
+  margin-top: 85px;
+  cursor: pointer;
+}
 </style>
