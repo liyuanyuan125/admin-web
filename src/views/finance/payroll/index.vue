@@ -1,15 +1,15 @@
 <template>
   <div class="index-page">
-    <Tabs v-model="typeCode" type="card" class="tabs">
+    <Tabs v-model="typeCode" type="card" @on-click="upload" class="tabs">
       <TabPane
         v-for="it in typeList"
         :key="it.value"
         :name="it.value"
         :label="it.name"
       >
-        <Before v-if="it.value == 'before'"></Before>
-        <Audit v-if="it.value == 'audit'"></Audit>
-        <Finsh v-if="it.value == 'finish'"></Finsh>
+        <Before v-show="it.value == 'before'"></Before>
+        <Audit ref="audit" v-show="it.value == 'audit'"></Audit>
+        <Finsh ref="finsh" v-show="it.value == 'finish'"></Finsh>
       </TabPane>
     </Tabs>
 
@@ -109,6 +109,19 @@ export default class IndexPage extends ViewBase {
 
   refresh() {
     this.listPage.update()
+  }
+
+  upload(type: string) {
+    if (type == 'audit') {
+      this.$nextTick(() => {
+        (this.$refs.audit[2] as any).refresh()
+      })
+    }
+    if (type == 'finish') {
+      this.$nextTick(() => {
+        (this.$refs.finsh[2] as any).refresh()
+      })
+    }
   }
 
   @Watch('typeCode')
