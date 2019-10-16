@@ -62,6 +62,7 @@
           <Input v-model="formID.piaoshen" type="number" />
         </FormItem>
         <FormItem>
+          
           <div class="save">
             <Button type="primary" class="btn" @click="handleSubmit">保存</Button>
             <Button type="primary" :to="{name: 'data-film'}">返回</Button>
