@@ -114,12 +114,14 @@ export default class IndexPage extends ViewBase {
   upload(type: string) {
     if (type == 'audit') {
       this.$nextTick(() => {
-        (this.$refs.audit[2] as any).refresh()
+        const audit = (this.$refs.audit as any)[2]
+        audit.refresh()
       })
     }
     if (type == 'finish') {
       this.$nextTick(() => {
-        (this.$refs.finsh[2] as any).refresh()
+        const finsh = (this.$refs.finsh as any)[2]
+        finsh.refresh()
       })
     }
   }
