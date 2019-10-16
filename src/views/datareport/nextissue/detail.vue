@@ -6,26 +6,32 @@
       <div class="Inps-res">
         <Row class='row-list'>
             <Col span='3' class='hui'>广告计划ID</Col>
-            <Col span='9'>663</Col>
+            <Col span='9'>{{item.planId == null ? '暂无' : item.planId}}</Col>
             <Col span='3' class='hui'>广告计划状态</Col>
-            <!-- <Col span='9'><span v-for='it in statusList' :key='it.key' v-if='it.key == item.status'>{{it.text}}</span></Col> -->
+            <Col span='9'>
+              <span v-if='item.planStatus == null'>-</span>
+              <span v-else v-for='it in planStatusList' :key='it.key' v-if='it.key == item.planStatus'>{{it.text}}</span>
+            </Col>
         </Row>
         <Row class='row-list'>
             <Col span='3' class='hui'>广告主名称</Col>
-            <Col span='9'>北京京西文化旅游股份有限公司</Col>
+            <Col span='9'>{{item.companyName == null ? '暂无' : item.companyName}}</Col>
             <Col span='3' class='hui'>广告计划名称</Col>
-            <Col span='9'>跳舞吧大象</Col>
+            <Col span='9'>{{item.planName == null ? '暂无' : item.planName}}</Col>
         </Row>
         <Row class='row-list'>
             <Col span='3' class='hui'>投放时间</Col>
-            <Col span='9'>{{begin}} ~ {{end}} 【{{item.cycle}}天】</Col>
+            <Col span='9'>{{beginDate}} ~ {{endDate}} 【{{item.cycle}}天】</Col>
         </Row>
       </div>
-      <div class="n-main">影院列表</div>
+      <div class="n-main">
+        <span style='display: inline-block;'>影院列表</span>
+        <span style='display: inline-block;float: right'>数据更新时间：&nbsp;&nbsp; {{updateTime}}</span>
+      </div>
       <div class="Inps-res">
         <Row class='row-list pb20'>
             <Col span='24'>
-              <singleCinema  @dlgEditDone="dlgEditDone"/>
+              <singleCinema v-if='showCinema' :pricingLevelList='pricingLevelList' :planId='item.planId' @dlgEditDone="dlgEditDone"/>
             </Col>
         </Row>
       </div>
@@ -34,172 +40,99 @@
 </template>
 
 <script lang="tsx">
-import { Component, Watch } from 'vue-property-decorator'
+import { Component, Watch , Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
+import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import {queryList , queryItem } from '@/api/orderSys'
+import {nextItem } from '@/api/dataReport'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice , clean } from '@/fn/object'
+import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import singleCinema from './singleCinema.vue'
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
-const timeFormats = 'YYYY-MM-DD'
-
-
-
-const defQuery = {
-    pageIndex: 1,
-    pageSize: 10
-}
 
 @Component({
   components: {
     singleCinema
   }
 })
-export default class Main extends ViewBase {
-  // change = false
+export default class Main extends Mixins(ViewBase, UrlManager)  {
 
-  query = { ...defQuery }
-  oldQuery: any = {}
+  item: any = {}
 
-  loading = false
-  addOrUpdateVisible = false
+  planStatusList: any = []
+  pricingLevelList: any = []
+  // 默认影城
+  defaultCinema: any = []
 
-  cinemasList: any = []
-  item: any = []
-  logList: any = []
-  statusList: any = []
-  advertTypeCodeList: any = []
-  planDirectionList: any = []
+  beginDate: any = null
+  endDate: any = null
+  updateTime: any = null
+  showCinema: any = false
 
-  begin: any = ''
-  end: any = ''
-  createTime: any = ''
-  settlementTime: any = ''
-  settlementAmount: any = ''
-  movieList: any = []
+  // 默认总计数量
+  numberList: any = []
 
-  // 广告片投放位置
-  deliveryPositionList: any = []
-
-  count = 0
-  newend: any = ''
-
-  addNumber(number: any) {
-    this.newend = ''
-    this.count = 0
-    if (number.indexOf('.') == -1) {
-      for (let i = number.length - 1; i >= 0; i--) {
-        if (this.count % 3 == 0 && this.count != 0) {
-          this.newend = number.charAt(i) + ',' + this.newend
-        } else {
-          this.newend = number.charAt(i) + this.newend
-        }
-        this.count++
-      }
-      number = this.newend + '.00' // 自动补小数点后两位
-      return number
-    } else {
-      for (let i = number.indexOf('.') - 1; i >= 0; i--) {
-        if (this.count % 3 == 0 && this.count != 0) {
-          this.newend = number.charAt(i) + ',' + this.newend // 碰到3的倍数则加上“,”号
-        } else {
-          this.newend = number.charAt(i) + this.newend // 逐个字符相接起来
-        }
-        this.count++
-      }
-      number =
-        this.newend + (number + '00').substr((number + '00').indexOf('.'), 3)
-      return number
-    }
-  }
 
   mounted() {
     this.doSearch()
-    this.settlementAmount = this.addNumber(String(this.item.settlementAmount))
-  }
-
-
-
-  search() {
-    this.query.pageIndex = 1
-  }
-
-  reset() {
-    const { pageSize } = this.query
-    this.query = { ...defQuery, pageSize }
   }
 
   goback() {
-    this.$router.go(-1)
+    this.$router.push({ name: 'datareport-nextissue' })
   }
 
   async doSearch() {
-    if (this.loading) {
-      return
-    }
-    this.oldQuery = { ...this.query }
-    this.loading = true
-    const query = clean({ ...this.query })
     try {
       const { data: {
           item: item,
-          statusList,
-          advertTypeCodeList,
-          planDirectionList,
-          deliveryPositionCodeList
-      } } = await queryItem(this.$route.params.id)
+          cinemas: cinemas,
+          planStatusList,
+          pricingLevelList,
+          sumBudgetPersonCount : sumBudgetPersonCount,
+          sumBudgetShowCount : sumBudgetShowCount,
+          sumPersonCount : sumPersonCount,
+          sumShowCount : sumShowCount,
+          sumTodayPersonCount : sumTodayPersonCount,
+          sumTodayShowCount : sumTodayShowCount,
+          sumTomorrowPersonCount : sumTomorrowPersonCount,
+          sumTomorrowShowCount : sumTomorrowShowCount,
+      } } = await nextItem(this.$route.params.id)
       this.item = item
-      const a = String(this.item.beginDate)
-      const b = String(this.item.endDate)
-      this.begin = a.slice(0, 4) + '-' + a.slice(4, 6) + '-' + a.slice(6, 8)
-      this.end = b.slice(0, 4) + '-' + b.slice(4, 6) + '-' + b.slice(6, 8)
-      this.createTime = this.item.receiveTime == 0 ? '暂无接单时间' :
-      moment(this.item.receiveTime).format(timeFormat)
-      this.settlementTime = moment(this.item.settlementTime).format(timeFormat)
-      this.settlementAmount = this.addNumber(String(this.item.settlementAmount))
-      this.deliveryPositionList = deliveryPositionCodeList
-      this.movieList = this.item.targetMovies
-      this.logList = (item.logList || []).map((it: any) => {
-          return {
-              ...it,
-              createTime: moment(it.createTime).format(timeFormat)
-          }
-      })
-      this.cinemasList = item.cinemas || []
-      this.statusList = statusList
-      this.advertTypeCodeList = advertTypeCodeList
-      this.planDirectionList = planDirectionList
+      this.updateTime = item.updateTime == null ? '暂无' : moment(item.updateTime).format(timeFormat)
+      this.beginDate = item.beginDate == null ? '暂无' : String(item.beginDate).slice(0, 4) +
+      '-' + String(item.beginDate).slice(4, 6) + '-' + String(item.beginDate).slice(6, 8)
+      this.endDate = item.endDate == null ? '暂无' : String(item.endDate).slice(0, 4) +
+      '-' + String(item.endDate).slice(4, 6) + '-' + String(item.endDate).slice(6, 8)
+      this.defaultCinema = cinemas == null ? [] : cinemas
+      this.numberList = [{
+              planId: this.item.planId,
+              sumBudgetPersonCount,
+              sumBudgetShowCount,
+              sumPersonCount,
+              sumShowCount,
+              sumTodayPersonCount,
+              sumTodayShowCount,
+              sumTomorrowPersonCount,
+              sumTomorrowShowCount,
+            }]
+      this.showCinema = true
+      this.planStatusList = planStatusList
+      this.pricingLevelList = pricingLevelList
     } catch (ex) {
       this.handleError(ex)
     } finally {
-      this.loading = false
     }
-  }
-
-  edit(id: any) {
-    this.addOrUpdateVisible = true
-    this.$nextTick(() => {
-      const myThis: any = this
-      myThis.$refs.addOrUpdate.init(id)
-    })
   }
 
   dlgEditDone() {
     this.doSearch()
   }
 
-  @Watch('query', { deep: true })
-  onQueryChange() {
-    if (this.query.pageIndex == this.oldQuery.pageIndex) {
-      this.query.pageIndex = 1
-    }
-    this.doSearch()
-  }
 }
 </script>
 
@@ -222,7 +155,7 @@ export default class Main extends ViewBase {
   border: 1px solid #dcdee2;
 }
 .n-main {
-  display: inline-block;
+  // display: inline-block;
   margin: 0 0 5px 5px;
   line-height: 35px;
   font-size: 16px;

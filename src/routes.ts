@@ -1200,6 +1200,17 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: true
   },
 
+  // 财务管理 - 应收应付统计表
+  {
+    path: '/finance/accrual',
+    name: 'finance-accrual',
+    component: () => import('./views/finance/accrual/index.vue'),
+    meta: {
+      authKey: '',
+      title: '应收应付统计表'
+    }
+  },
+
   {
     path: '/plan/ggtising',
     name: 'plan-ggtising',
@@ -1446,6 +1457,28 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       }
     },
     props: paramTypes({ id: Number, action: String })
+  },
+
+  // 内容管理 - 推荐位管理 - 列表
+  {
+    path: '/content/recommendPost/list',
+    name: 'content-recommend-post',
+    component: () => import('./views/content/recommend-post/list.vue'),
+    meta: {
+      authKey: '',
+      title: '推荐位管理'
+    }
+  },
+
+  // 内容管理 - 行业分类管理 - 列表
+  {
+    path: '/content/industry',
+    name: 'content-industry',
+    component: () => import('./views/content/industry/index.vue'),
+    meta: {
+      authKey: '',
+      title: '行业管理列表'
+    }
   },
 
   {
@@ -1711,7 +1744,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     component: () => import('./views/datareport/cost/index.vue'),
     meta: {
       authKey: '',
-      title: '成本核算报表'
+      title: '成本核算列表'
     }
   },
   // 广告管理 - 下刊 - 列表
@@ -1721,7 +1754,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     component: () => import('./views/datareport/nextissue/index.vue'),
     meta: {
       authKey: '',
-      title: '报表详情'
+      title: '下刊监控列表'
     }
   },
   // 广告管理 - 下刊 - 列表 - 详情
@@ -1731,7 +1764,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     component: () => import('./views/datareport/nextissue/detail.vue'),
     meta: {
       authKey: '',
-      title: '下刊监控列表'
+      title: '报表详情'
     }
   },
 ] // end of mainLayoutRoutes
