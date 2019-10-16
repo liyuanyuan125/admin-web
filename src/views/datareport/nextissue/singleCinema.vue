@@ -330,7 +330,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     const query = clean({
       ...this.dataForm,
       cinemaId: this.dataForm.cinemaId == null ? null : this.dataForm.cinemaId.split('-')[0],
-      cinemaName: this.dataForm.cinemaId == null ? null : this.dataForm.cinemaId.split('-')[1]
+      // cinemaName: this.dataForm.cinemaId == null ? null : this.dataForm.cinemaId.split('-')[1]
     })
     this.str = `${VAR.ajaxBaseUrl}/bi/off-shelf-report/export-cinemas`
     if (query.planId != undefined) {
@@ -418,7 +418,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     const query = clean({
       ...this.dataForm,
       cinemaId: this.dataForm.cinemaId == null ? null : this.dataForm.cinemaId.split('-')[0],
-      cinemaName: this.dataForm.cinemaId == null ? null : this.dataForm.cinemaId.split('-')[1]
+      // cinemaName: this.dataForm.cinemaId == null ? null : this.dataForm.cinemaId.split('-')[1]
     })
     try {
         // 订单列表
@@ -457,29 +457,29 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       //     budgetShowCount: sumBudgetShowCount,
       //   })
       // }
-      if (query.provinceId != undefined) {
-        const cityone = await districts(query.provinceId)
-        this.provinceIdName = (cityone.data || []).map((it: any) => {
-          return it.nameCn
-        })
-      }
-      if (query.cityId != undefined) {
-        const citytwo = await districts(query.cityId)
-        this.cityIdName = (citytwo.data || []).map((it: any) => {
-          return it.nameCn
-        })
-      }
-      const a = !query.provinceId ? '选择地区 : 全部' : '选择地区' + this.provinceIdName
-      const b = !query.cityId ? '' : '/' + this.cityIdName
-      const c = !query.cinemaId ? '影院名称 : 全部' : '影院名称' + query.cinemaName
-      const d = !query.pricingLevelCode ? '影城级别 : 全部' : '影城级别' + query.pricingLevelCode
-      this.bbb = [
-        {
-          exportDate: moment((new Date().getTime())).format(timeFormat),
-          query: a + ' ' + b + ' ' + c + ' ' + d,
-          ...this.list[0]
-        }
-      ]
+      // if (query.provinceId != undefined) {
+      //   const cityone = await districts(query.provinceId)
+      //   this.provinceIdName = (cityone.data || []).map((it: any) => {
+      //     return it.nameCn
+      //   })
+      // }
+      // if (query.cityId != undefined) {
+      //   const citytwo = await districts(query.cityId)
+      //   this.cityIdName = (citytwo.data || []).map((it: any) => {
+      //     return it.nameCn
+      //   })
+      // }
+      // const a = !query.provinceId ? '选择地区 : 全部' : '选择地区' + this.provinceIdName
+      // const b = !query.cityId ? '' : '/' + this.cityIdName
+      // const c = !query.cinemaId ? '影院名称 : 全部' : '影院名称' + query.cinemaName
+      // const d = !query.pricingLevelCode ? '影城级别 : 全部' : '影城级别' + query.pricingLevelCode
+      // this.bbb = [
+      //   {
+      //     exportDate: moment((new Date().getTime())).format(timeFormat),
+      //     query: a + ' ' + b + ' ' + c + ' ' + d,
+      //     ...this.list[0]
+      //   }
+      // ]
       this.total = total
     } catch (ex) {
       this.handleError(ex)
