@@ -493,6 +493,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       await confirm('您确认要通知下刊吗？')
       const a = await callCinemaOff(id)
       toast('通知下刊成功')
+      this.search()
     } catch (ex) {
       this.handleError(ex)
     }
@@ -507,6 +508,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       await confirm('您确认要通知下刊吗？')
       const a = await cinemaOff({ids: this.checkId})
       toast('通知下刊成功')
+      this.search()
     } catch (ex) {
       this.handleError(ex)
     }
