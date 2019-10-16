@@ -5,7 +5,7 @@
       :filters="filters"
       :enums="enums"
       :columns="columns"
-      ref="listPage"
+      ref="listPage2"
     >
 
       <template slot="month" slot-scope="{ row: { billMonth } }">
@@ -50,7 +50,7 @@ import company from './data/company.vue'
 export default class IndexPage extends ViewBase {
 
   get listPage() {
-    return this.$refs.listPage as ListPage
+    return this.$refs.listPage2 as ListPage
   }
 
   get fetch() {
@@ -228,7 +228,16 @@ export default class IndexPage extends ViewBase {
   }
 
   refresh() {
-    this.listPage.update()
+    this.$nextTick(() => {
+      this.listPage.update()
+    })
+  }
+
+  @Watch('$route')
+  watch$route(val: any) {
+    if (val.params.type == 'finish') {
+      this.refresh()
+    }
   }
 
 }
