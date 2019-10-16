@@ -168,7 +168,16 @@ export default class IndexPage extends ViewBase {
   }
 
   refresh() {
-    this.listPage.update()
+    this.$nextTick(() => {
+      this.listPage.update()
+    })
+  }
+
+  @Watch('$route', {immediate: true})
+  watch$route(val: any) {
+    if (val.path == '/finance/payroll') {
+      this.refresh()
+    }
   }
 }
 </script>
