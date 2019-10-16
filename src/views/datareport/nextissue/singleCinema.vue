@@ -10,6 +10,7 @@
              class='sels'
              v-model='dataForm.cinemaId'
              clearable
+             :loading='loading'
              filterable
              placeholder="影城名称"
              style='width: 150px;'
@@ -383,10 +384,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         })
         this.getcinemaList = items || []
       }
-      this.loading = false
+      this.loadings = false
     } catch (ex) {
       this.handleError(ex)
-      this.loading = false
+      this.loadings = false
     }
   }
 

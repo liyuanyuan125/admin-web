@@ -182,11 +182,14 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   mounted() {
     this.updateQueryByParam()
-
+    const a = this.query.beginDate == 0 ? 0 : new Date(String(this.query.beginDate).slice(0, 4)
+      + '-' + String(this.query.beginDate).slice(4, 6) + '-' + String(this.query.beginDate).slice(6, 8))
+    const b = this.query.endDate == 0 ? 0 : new Date(String(this.query.endDate).slice(0, 4)
+      + '-' + String(this.query.endDate).slice(4, 6) + '-' + String(this.query.endDate).slice(6, 8))
     !!this.query.beginDate ? this.showTime[0] =
-    moment(this.query.beginDate).format(timeFormat) : this.showTime[0] = ''
+    moment(a).format(timeFormat) : this.showTime[0] = ''
     !!this.query.endDate ? this.showTime[1] =
-    moment(this.query.endDate).format(timeFormat) : this.showTime[1] = ''
+    moment(b).format(timeFormat) : this.showTime[1] = ''
   }
 
   dateChange(data: any) {
