@@ -102,6 +102,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     pageIndex: 1,
     pageSize: 20
   }
+  str: any = ''
   query: any = {}
   shows = true
   showDlg = false
@@ -262,8 +263,29 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         query[key] = value
       }
     }
-    return `${VAR.ajaxBaseUrl}/bi/off-shelf-reports/export?planId=${query.planId}&
-    planName=${query.planName}&beginDate=${query.beginDate}&endDate=${query.endDate}`
+    this.str = `${VAR.ajaxBaseUrl}/bi/off-shelf-reports/export`
+    if (query.planId != undefined) {
+      if (this.str.indexOf('?') == -1) {
+        this.str = this.str + `?planId=${query.planId}`
+      } else {
+        this.str = this.str + `&planId=${query.planId}`
+      }
+    }
+    if (query.planName != undefined) {
+      if (this.str.indexOf('?') == -1) {
+        this.str = this.str + `?planName=${query.planName}`
+      } else {
+        this.str = this.str + `&planName=${query.planName}`
+      }
+    }
+    if (query.beginDate != undefined) {
+      if (this.str.indexOf('?') == -1) {
+        this.str = this.str + `?beginDate=${query.beginDate}&endDate=${query.endDate}`
+      } else {
+        this.str = this.str + `&beginDate=${query.beginDate}&endDate=${query.endDate}`
+      }
+    }
+    return this.str
   }
 
   search() {
