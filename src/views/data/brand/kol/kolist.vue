@@ -79,7 +79,7 @@ export default class Kol extends ViewBase {
         data: { items }
       } = await kolchannel({
         channelCode: val,
-        controlStatus: 1,
+        status: 2,
         pageIndex: 1,
         pageSize: 1000,
       })
