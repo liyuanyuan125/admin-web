@@ -343,17 +343,17 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       //     updateTime: 'updateTime'
       //   })
       // }
-      const a = !query.planId ? '计划ID : 全部' : '计划ID' + query.planId
-      const b = !query.planName ? '计划名称 : 全部' : '计划名称' + query.planName
-      const c = !query.beginDate ? '查询日期 : 全部' : '查询日期' + (query.beginDate + '~' + query.endDate)
+      // const a = !query.planId ? '计划ID : 全部' : '计划ID' + query.planId
+      // const b = !query.planName ? '计划名称 : 全部' : '计划名称' + query.planName
+      // const c = !query.beginDate ? '查询日期 : 全部' : '查询日期' + (query.beginDate + '~' + query.endDate)
 
-      this.bbb = [
-        {
-          exportDate: moment((new Date().getTime())).format(timeFormat),
-          query: a + ' ' + b + ' ' + c,
-          ...this.list[0]
-        }
-      ]
+      // this.bbb = [
+      //   {
+      //     exportDate: moment((new Date().getTime())).format(timeFormat),
+      //     query: a + ' ' + b + ' ' + c,
+      //     ...this.list[0]
+      //   }
+      // ]
       this.total = total
       this.statusList = statusList
     } catch (ex) {
