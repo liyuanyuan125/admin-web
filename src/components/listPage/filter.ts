@@ -107,7 +107,16 @@ export interface Filter extends OldFilter {
   },
 
   /** 组件 DatePicker 的选项 */
-  date?: true,
+  date?: true | {
+    /**
+     * 模式，默认 date
+     * date  - 日选择模式
+     * month - 月选择模式
+     * year  - 年选择模式
+     */
+    type?: 'date' | 'month' | 'year'
+    [key: string]: any
+  },
 
   /** 组件 DateRangePicker 的选项 */
   dateRange?: true,
