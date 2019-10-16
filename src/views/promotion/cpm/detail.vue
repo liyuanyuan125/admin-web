@@ -92,6 +92,15 @@ export default class CPMDetail extends ViewBase {
       },
 
       {
+        name: 'slogan',
+        defaultValue: '',
+        input: true,
+        label: '广告语(限10个字)',
+        span: 22,
+        required: true
+      },
+
+      {
         name: 'marketDate',
         defaultValue: [0, 0],
         dateRange: true,
