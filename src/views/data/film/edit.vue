@@ -5,11 +5,11 @@
         <h2 class="title">基础和扩展信息</h2>
 
         <FormItem label="预估票房">
-          <InputNumber :min="0" style="width: 200px" v-model="form.predict" />万元
+          <InputNumber :min="0" style="width: 200px" v-model="form.predict" /> 万元
         </FormItem>
         <FormItem label="演员阵容">
           <InputNumber :max="5" :min="0" style="width: 200px" v-model="form.celebrityRating" />
-          <em>满分为5分，保留一位小数</em>
+          <em> 满分为5分，保留一位小数</em>
         </FormItem>
         <FormItem label="影片分类">
           <RadioGroup v-model="form.categoryCode">
@@ -49,10 +49,23 @@
             placeholder="请输入内容"
           ></Input>
         </FormItem>
+        <FormItem label="猫眼ID">
+          <Input v-model="formID.maoyan" type="number" />
+        </FormItem>
+        <FormItem label="淘票票ID">
+          <Input v-model="formID.taopiaopiao" type="number" />
+        </FormItem>
+        <FormItem label="豆瓣ID">
+          <Input v-model="formID.douban" type="number" />
+        </FormItem>
+        <FormItem label="票神ID">
+          <Input v-model="formID.piaoshen" type="number" />
+        </FormItem>
         <FormItem>
+          
           <div class="save">
             <Button type="primary" class="btn" @click="handleSubmit">保存</Button>
-            <Button type="primary">返回</Button>
+            <Button type="primary" :to="{name: 'data-film'}">返回</Button>
           </div>
         </FormItem>
       </div>
@@ -69,6 +82,9 @@ import { movieEdit, movieDetail } from '@/api/film-ed'
 export default class Main extends ViewBase {
   @Prop({ type: Number, default: 0 }) id!: number
   form: any = {}
+  formID: any = {}
+  dataExts: any[] = []
+
   rule = {}
   items: any = {}
 
@@ -85,6 +101,12 @@ export default class Main extends ViewBase {
       const { data } = await movieDetail(this.id)
       this.items = data || {}
       this.categoryList = data.categoryList || []
+      this.dataExts = data.dataExts || []
+
+      // 展示电影平台相关ID
+      const dataExts = (data.dataExts || []).map((obj: any) => {
+        this.formID[obj.channelCode] = obj.channelDataId
+      })
 
       this.form = {
         summary: data.summary,
@@ -108,11 +130,30 @@ export default class Main extends ViewBase {
     const formTags = this.form.tags.trim()
     const searchKeywords = formWords ? formWords.split(/,|，/) : []
     const tags = formTags ? formTags.split(/,|，/) : []
+
+    // 电影平台相关id dataExts
+    const cloneData = Object.assign(this.dataExts)
+    const maoyan = [{
+      channelCode: 'maoyan',
+      channelDataId: this.formID.maoyan
+    }]
+
+    for (const [key, value] of Object.entries(this.formID)) {
+      this.dataExts.map((item: any, index) => {
+        if (key == item.channelCode) {
+          cloneData[index].channelDataId = value
+        }
+      })
+    }
+
+    const dataExts = maoyan.concat(cloneData)
+
     try {
       const { data } = await movieEdit(this.id, {
         ...this.form,
         searchKeywords,
-        tags
+        tags,
+        dataExts
       })
       this.$router.push({ name: 'data-film' })
     } catch (ex) {
