@@ -64,7 +64,7 @@
         <FormItem>
           <div class="save">
             <Button type="primary" class="btn" @click="handleSubmit">保存</Button>
-            <Button type="primary">返回</Button>
+            <Button type="primary" :to="{name: 'data-film'}">返回</Button>
           </div>
         </FormItem>
       </div>
