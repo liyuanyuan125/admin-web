@@ -13,7 +13,7 @@
           v-for="option in channelList"
           :value="option.channelDataId"
           :key="option.channelDataId"
-        >{{option.name}}</Option>
+        >{{option.channelDataId}}</Option>
       </Select>
       <Button @click="addProvinceList">添加列表</Button>
     </div>
