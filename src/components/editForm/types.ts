@@ -418,6 +418,13 @@ export interface Field extends Param {
   },
 
   date?: true | {
+    /**
+     * 模式，默认 date
+     * date  - 日选择模式
+     * month - 月选择模式
+     * year  - 年选择模式
+     */
+    type?: 'date' | 'month' | 'year'
     [key: string]: any
   },
 
