@@ -83,6 +83,7 @@ export default class Kol extends ViewBase {
         status: 2,
         pageSize: 1000,
       })
+      // kol 状态变更
       this.channelList = items || []
     } catch (ex) {
       this.handleError(ex)
