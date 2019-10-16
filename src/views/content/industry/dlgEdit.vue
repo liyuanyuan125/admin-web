@@ -21,12 +21,13 @@
       </FormItem>
       <Row v-if='id != 0 && chgimg == false'>
         <Col :span='4'>icon图片</Col>
-        <Col :span='5'>
+        <Col :span='5' v-if='dataForm.iconUrl == null'>暂无icon图片</Col>
+        <Col :span='5' v-if='dataForm.iconUrl != null'>
           <div class='imgs' @click='onView(dataForm.iconUrl)'>
             <img :src="dataForm.iconUrl" alt="">
           </div>
         </Col>
-        <Col class='chg' :span='2' v-if='id == 1' @click.prevent.native='change'><span>(更换)</span></Col>
+        <Col class='chg' :span='2' v-if='id == 1 && dataForm.iconUrl != null' @click.prevent.native='change'><span>(更换)</span></Col>
       </Row>
     </Form>
     <div slot="footer" class="dialog-footer">
@@ -211,7 +212,7 @@ export default class ComponentMain extends ViewBase {
 <style lang="less" scoped>
 .imgs {
   width: 100px;
-  height: 100px;
+  height: 103px;
   border: 1px solid #ccc;
   img {
     width: 100%;
