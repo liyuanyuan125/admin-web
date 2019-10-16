@@ -53,12 +53,6 @@ import { formatNumber } from '@/util/validateRules'
 
 import TabNav from '@/components/tabNav'
 
-// const statusList: any = [
-//   { name: '待付款', value: '1' },
-//   { name: '已付款', value: '2' },
-// ]
-// const defaultPay: any = statusList[0].value
-
 @Component({
   components: {
     ListPage,
@@ -386,50 +380,6 @@ export default class IndexPage extends ViewBase {
       myThis.$refs.addOrUpdate.init(id, applyAmount)
     })
   }
-
-  // @Watch('status')
-  // watchstatus(pay: any) {
-  //   this.listPage.query.status = pay
-  //   this.$router.push({
-  //     name: 'finance-payment',
-  //     params: pay == defaultPay ? {} : { pay }
-  //   })
-  // }
-
-  // @Watch('pay')
-  // watchPay(pay: any) {
-  //   this.listPage.query.status = pay
-  // }
-  // @Watch('status')
-  // watchstatus(pay: any) {
-  //   // this.listPage.query = {
-  //   //   applyNo: '',
-  //   //   billMonth: null,
-  //   //   billNo: '',
-  //   //   cinemaCode: '',
-  //   //   cinemaId: 0,
-  //   //   dateRange1: '',
-  //   //   dateRange2: '',
-  //   //   dateRange3: '',
-  //   //   invoiceContent: 0,
-  //   //   invoiceType: 0,
-  //   //   no: '',
-  //   //   pageIndex: 1,
-  //   //   pageSize: 20,
-  //   //   resourceId: 0,
-  //   //   status: pay,
-  //   // }
-
-  //   this.$router.push({
-  //     name: 'finance-payment',
-  //     params: pay == defaultPay ? {} : { pay }
-  //   })
-  // }
-
-  // @Watch('pay')
-  // watchPay(pay: any) {
-  //   this.listPage.query.status = pay
-  // }
 }
 </script>
 

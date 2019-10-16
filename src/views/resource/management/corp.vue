@@ -147,6 +147,15 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         /* tslint:enable */
       }
     },
+    { title: '预告片折扣', key: 'trailerDiscount', align: 'center',
+     render: (hh: any, { row: { trailerDiscount } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        const html = trailerDiscount + '%'
+        return <span class='datetime' v-html={html}></span>
+        /* tslint:enable */
+      }
+    },
     { title: '档期', key: 'calendarName', align: 'center',
       // render: (hh: any, { row: { transFee } }: any) => {
       //   /* tslint:disable */

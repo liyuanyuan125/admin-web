@@ -9,6 +9,7 @@
             @on-enter="ev => query.email = ev.target.value" @on-blur="ev => query.email = ev.target.value"/> -->
           <LazyInput v-model="query.id" placeholder="账号ID" class="input"/>
           <LazyInput v-model="query.email" placeholder="邮箱账号" class="input"/>
+          <LazyInput v-model="query.mobile" placeholder="手机号码" class="input"/>
           <LazyInput v-model="query.companyName" placeholder="公司名称" class="input"/>
           <DatePicker type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="注册时间" class="input" style="width: 200px"></DatePicker>
           <!-- <Date-picker type="date" v-model="query.createTime" placeholder="注册时间" on-change="selectTime" class="input" style="width: 200px"></Date-picker> -->
@@ -126,8 +127,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
 
   columns = [
-    { title: '账号ID', key: 'id', align: 'center' },
+    { title: '账号ID', key: 'id', align: 'center', width: 100 },
     { title: '邮箱账号', key: 'email', align: 'center' },
+    { title: '手机号码', key: 'mobile', align: 'center' },
     { title: '公司名称', width: 400, key: 'companyName', align: 'center' },
     {
       title: '注册时间',
@@ -157,6 +159,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       title: '状态',
       key: 'statusText',
       align: 'center',
+      width: 70,
       render: (hh: any, { row: { status, statusText } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
@@ -174,6 +177,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       title: '操作',
       slot: 'spaction',
       align: 'center',
+      width: 100,
     }
   ]
   get cachedMap() {

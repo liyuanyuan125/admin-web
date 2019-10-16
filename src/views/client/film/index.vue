@@ -52,7 +52,7 @@ export default class Main extends ViewBase {
     {
       name: 'email',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 140,
       placeholder: '申请人邮箱'
     },
@@ -60,7 +60,7 @@ export default class Main extends ViewBase {
     {
       name: 'companyId',
       defaultValue: 0,
-      type: CompanyList,
+      component: CompanyList,
       width: 140,
       placeholder: '申请人公司名称'
     },
@@ -68,7 +68,7 @@ export default class Main extends ViewBase {
     {
       name: 'movieId',
       defaultValue: 0,
-      type: CompanyList,
+      component: CompanyList,
       width: 140,
       placeholder: '影片名称',
     },
@@ -76,7 +76,7 @@ export default class Main extends ViewBase {
     {
       name: 'operatorId',
       defaultValue: 0,
-      type: Director,
+      component: Director,
       width: 240,
       placeholder: '操作人'
     },
@@ -84,7 +84,7 @@ export default class Main extends ViewBase {
     {
       name: 'status',
       defaultValue: 0,
-      type: 'select',
+      select: true,
       width: 100,
       placeholder: '关联状态',
       enumKey: 'statusList'
@@ -109,12 +109,12 @@ export default class Main extends ViewBase {
     return [
       { title: '序号', key: 'id', width: 65 },
       { title: '申请人邮箱', key: 'applyEmail', width: 160 },
-      { title: '申请人公司名称', key: 'companyName', minWidth: 180 },
-      { title: '影片名称', key: 'movieName', minWidth: 180 },
-      { title: '申请人时间', key: 'applyTime', editor: 'dateTime', width: 135 },
-      { title: '状态', key: 'status', width: 60, editor: 'enum'},
-      { title: '操作人', key: 'operationEmail', width: 100 },
-      { title: '操作时间', key: 'operationTime', editor: 'dateTime', width: 135 },
+      { title: '申请人公司名称', key: 'companyName', minWidth: 150 },
+      { title: '影片名称', key: 'movieName', minWidth: 130 },
+      { title: '申请人时间', key: 'applyTime', dateTime: true, width: 135 },
+      { title: '状态', key: 'status', width: 60, enum: true},
+      { title: '操作人', key: 'operationEmail', minWidth: 130 },
+      { title: '操作时间', key: 'operationTime', dateTime: true, width: 135 },
       { title: '操作', slot: 'action', width: 55 }
     ] as ColumnExtra[]
   }

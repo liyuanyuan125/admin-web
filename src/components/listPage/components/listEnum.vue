@@ -1,49 +1,60 @@
 <template>
   <div class="list-enum">
-    <div v-if="!readonly">
-      <Poptip
-        v-model="show"
-        @on-popper-show="onShow"
-        @on-popper-hide="onHide"
-        v-if="!loading"
-      >
-        <span class="edit">
-          <span :class="enumClass">{{enumText}}</span>
-          <icon type="ios-create-outline"/>
-        </span>
-        <div slot="content">
-          <div class="flex-box">
-            <div class="flex-1">
-              <Select v-model="model" size="small">
-                <Option v-for="it in validList" :key="it.key"
-                  :value="it.key">{{it.text}}</Option>
-              </Select>
+    <div v-if="!isArray">
+      <div v-if="!readonly">
+        <Poptip
+          v-model="show"
+          @on-popper-show="onShow"
+          transfer
+          v-if="!loading"
+        >
+          <span class="edit">
+            <span :class="parts[0].classes">{{parts[0].text}}</span>
+            <icon type="ios-create-outline"/>
+          </span>
+          <div slot="content">
+            <div class="flex-box">
+              <div class="flex-1">
+                <Select v-model="selectModel" size="small">
+                  <Option v-for="it in validList" :key="it.key"
+                    :value="it.key">{{it.text}}</Option>
+                </Select>
+              </div>
+              <Button type="primary" size="small" class="btn-ok" @click="onOk">修改</Button>
             </div>
-            <Button type="primary" size="small" class="btn-ok" @click="onOk">修改</Button>
           </div>
-        </div>
-      </Poptip>
-      <span class="loading-box" v-else>
-        <Spin>
-          <Icon type="ios-loading" class="loading"></Icon>
-        </Spin>
-      </span>
+        </Poptip>
+        <span class="loading-box" v-else>
+          <Spin>
+            <Icon type="ios-loading" class="loading"></Icon>
+          </Spin>
+        </span>
+      </div>
+      <span :class="parts[0].classes" v-else>{{parts[0].text}}</span>
     </div>
-    <span :class="enumClass" v-else>{{enumText}}</span>
+    <span class="enum-list" v-else>
+      <span
+        v-for="part in parts"
+        :key="part.key"
+        :class="part.classes"
+      >{{part.text}}</span>
+    </span>
   </div>
 </template>
 
-<script lang="tsx">
+<script lang="ts">
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { filterByControlStatus } from '@/util/dealData'
 import { KeyTextControlStatus } from '@/util/types'
 import { hasPerm } from '@/store'
+import { devWarn } from '@/util/dev'
 
 @Component
 export default class ListEnum extends ViewBase {
   /** 枚举值 */
-  @Prop({ type: [Number, String], default: 0 }) value!: number | string
+  @Prop({ type: [Number, String, Array], default: 0 })
+  value!: number | string | Array<number | string>
 
   /** 枚举列表 */
   @Prop({ type: Array, default: () => [] }) enumList!: KeyTextControlStatus[]
@@ -56,57 +67,62 @@ export default class ListEnum extends ViewBase {
 
   model = this.value
 
+  selectModel = this.value
+
   show = false
 
   loading = false
 
   hasPerm = true
 
+  get isArray() {
+    return Array.isArray(this.model)
+  }
+
   get validList() {
     const list = filterByControlStatus(this.enumList)
     return list
-  }
-
-  get enumText() {
-    const text = (this.enumList.find(it => it.key == this.model) || { text: '' }).text
-    return text
   }
 
   get readonly() {
     return this.updateField == null || !this.hasPerm
   }
 
-  // 是否是废弃的
-  get isDeprecated() {
-    const found = this.validList.find(it => it.key == this.model)
-    return found == null
-  }
-
-  get enumClass() {
-    const key = this.model
-    return {
-      deprecated: this.isDeprecated,
-      [`enum-key-${key}`]: true
-    }
+  get parts() {
+    const keys = Array.isArray(this.model) ? this.model : [ this.model ]
+    const enumList = this.enumList
+    const validList = this.validList
+    const result = keys.map(key => {
+      const text = (enumList.find(it => it.key == key) || { text: '' }).text
+      const found = validList.find(it => it.key == key)
+      const deprecated = found == null
+      return {
+        key,
+        text,
+        deprecated,
+        classes: {
+          deprecated,
+          [`enum-key-${key}`]: true
+        }
+      }
+    })
+    return result
   }
 
   onShow() {
-    debugger
-  }
-
-  onHide() {
-    debugger
+    this.selectModel = this.model
   }
 
   async onOk() {
     this.show = false
-    const value = this.model
+    const value = this.selectModel
     const oldValue = this.value
     const updateField = this.updateField
     if (value != oldValue && updateField != null) {
       try {
         this.loading = true
         await updateField(value)
+        this.model = value
         this.$emit('afterUpdateField', { value })
       } catch (ex) {
         this.handleError(ex)
@@ -116,9 +132,17 @@ export default class ListEnum extends ViewBase {
     }
   }
 
+  checkValue() {
+    if (Array.isArray(this.value) && !this.readonly) {
+      devWarn('ListEnum 组件，暂时不支持对一组数据进行编辑')
+    }
+  }
+
   @Watch('value', { deep: true })
-  watchValue(value: number | string) {
+  watchValue(value: number | string | Array<number | string>) {
     this.model = value
+    this.selectModel = value
+    this.checkValue()
   }
 
   @Watch('auth', { immediate: true })
@@ -128,6 +152,11 @@ export default class ListEnum extends ViewBase {
       const has = value !== '' ? await hasPerm(value) : true
       this.hasPerm = has
     })
+  }
+
+  @Watch('readonly', { immediate: true  })
+  watchReadonly() {
+    this.checkValue()
   }
 }
 </script>
@@ -184,6 +213,12 @@ export default class ListEnum extends ViewBase {
       content: '已下架';
       color: #888;
     }
+  }
+}
+
+.enum-list {
+  & > span ~ span {
+    margin-left: 1em;
   }
 }
 </style>

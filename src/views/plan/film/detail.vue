@@ -1,7 +1,8 @@
 <template>
   <div class="page">
     <header class="header flex-box">
-      <Button icon="md-return-left" @click="back" class="btn-back">返回上一页</Button>
+      <Button icon="md-return-left" v-if='$route.params.status == 1' @click="backList" class="btn-back">返回列表</Button>
+      <Button icon="md-return-left" v-if='$route.params.status != 1' @click="back" class="btn-back">返回上一页</Button>
       <div class="flex-1">
         <em></em>
       </div>
@@ -13,13 +14,16 @@
           <Col span="2"><div>广告主公司名称</div></Col>
           <Col span="5"><span>{{detail.companyName}}</span></Col>
           <Col span="2"><div>客户类型</div></Col>
-          <Col span="5"><span>{{detail.companyName}}</span></Col>
+          <Col span="5"><span>{{detail.customerCategory}}</span></Col>
           <Col span="2"><div>所属行业</div></Col>
-          <Col span="5"><span>{{detail.companyName}}</span></Col>
+          <Col span="5"><span>{{detail.businessType}}</span></Col>
         </Row>
         <Row>
           <Col span="2"><div>营业执照</div></Col>
-          <Col span="5"><span class='ingbo' @click='onView(detail.licenseFileUrl)'><img :src="detail.licenseFileUrl" alt=""></span></Col>
+          <Col span="5">
+            <span v-if='detail.companylicenseFileUrls == null'>暂无</span>
+            <span class='ingbo' v-else v-for='(itd,index) in detail.companylicenseFileUrls'><img @click='onView(itd.fileUrl)' :src="itd.fileUrl" alt=""></span>
+          </Col>
           <Col span="2"><div>客户ID</div></Col>
           <Col span="5"><span>{{detail.customerId}}</span></Col>
           <Col span="2"><div>客户名称</div></Col>
@@ -27,18 +31,24 @@
         </Row>
         <Row>
           <Col span="2"><div>上传人</div></Col>
-          <Col span="5"><span>{{detail.applyUser}}</span></Col>
+          <Col span="5"><span>{{detail.applyUserName == null ? '暂无' : detail.applyUserName}}</span></Col>
           <Col span="2"><div>上传时间</div></Col>
           <Col span="5"><span>{{applyTime}}</span></Col>
         </Row>
       </div>
-      <div class='titop'>行业资质</div>
-      <div class="detail-header" style='padding-top: 10px; padding-bottom: 5px;'>
+      <div v-if='detail.customerCategory != "直客" ' class='titop'>行业资质</div>
+      <div v-if='detail.customerCategory != "直客" ' class="detail-header" style='padding-top: 10px; padding-bottom: 5px;'>
         <Row>
           <Col span="2"><div>主体资质</div></Col>
-          <Col span="5"><span class='ingbo' @click='onView()'> </span></Col>
+          <Col span="5">
+            <span v-if='detail.licenseFileUrl == null'>暂无</span>
+            <span class='ingbo' v-else @click='onView(detail.licenseFileUrl)'><img :src="detail.licenseFileUrl" alt=""></span>
+          </Col>
           <Col span="2"><div>可选资质</div></Col>
-          <Col span="12"><span class='ingbo' v-for='(itd,index) in detail.grantFileIds'><img @click='onView(itd.fileUrl)' :src="itd.fileUrl" alt=""></span></Col>
+          <Col span="12">
+            <span  v-if='detail.grantFileIds == null'>暂无</span>
+            <span class='ingbo' v-else v-for='(itd,index) in detail.grantFileIds'><img @click='onView(itd.fileUrl)' :src="itd.fileUrl" alt=""></span>
+          </Col>
         </Row>
       </div>
       <div class='titop'>广告片素材</div>
@@ -53,15 +63,37 @@
         </Row>
         <Row>
           <Col span="2"><div>是否已转制</div></Col>
-          <Col span="5"><span>{{detail.translated == 1 ? '已转制' : '未转制'}}</span></Col>
+          <Col span="5">
+            <span v-if='detail.translated == null'>暂无</span>
+            <span  v-else v-for='(it , index) in translatedList' v-if='it.key == detail.translated'>{{it.text}}</span>
+          </Col>
           <Col span="2"><div>转制费</div></Col>
-          <Col span="5"><span>{{detail.transFee}}</span></Col>
+          <Col span="5"><span>{{formatNumber(detail.transFee)}}</span></Col>
           <Col span="2"><div>广告片(小样)</div></Col>
-          <Col span="5"><span style='cursor: pointer;' @click='onView(detail.srcFiledAddr)'>查看</span></Col>
+          <Col span="5">
+            <span v-if='detail.srcFiledAddr != null' style='cursor: pointer;' @click='onViewVideo(detail.srcFiledAddr)'>查看</span>
+            <span v-if='detail.srcFiledAddr == null' style='cursor: pointer;'>暂无</span>
+
+          </Col>
         </Row>
         <Row>
           <Col span="2"><div>广告下载地址</div></Col>
           <Col span="10"><span>{{detail.srcFileUrl}}</span></Col>
+        </Row>
+        <Row>
+          <Col span="2"><div>活动ID</div></Col>
+          <Col span="5"><span>{{detail.promotionId}}</span></Col>
+          <Col span="2"><div>活动名称</div></Col>
+          <Col span="5"><span>{{detail.promotionName}}</span></Col>
+          <Col span="2"><div>活动类型</div></Col>
+          <Col span="5">
+            <span v-if='detail.promotionType == null'>暂无</span>
+            <span v-else v-for='(its, index) in promotionTypeList' v-if='detail.promotionType == its.key'>{{its.text}}</span>
+          </Col>
+        </Row>
+        <Row>
+          <Col span="2"><div>活动价格</div></Col>
+          <Col span="5"><span>{{formatNumber(detail.promotionPrice)}}</span></Col>
         </Row>
         <!-- <Row>
           <Col span="12">
@@ -79,7 +111,7 @@
         <Table :columns="columnsReason" :data="fixedRefuseReasonsList"
         border disabled-hover size="small" class="table">
            <template  slot="stypeSelected" slot-scope="{row}">
-             <input v-if='$route.params.status == "1"' type="checkbox"  :checked='row.stypeSelected' />
+             <input v-if='$route.params.status == "1"' type="checkbox"  :checked='row.stypeSelected' @change='addReason( $event , row.ptypeCode , row.stypeCode , row.stypeName)'/>
              <input v-if='$route.params.status == "5"' type="checkbox"  :checked='row.stypeSelected' disabled />
            </template>
         </Table>
@@ -87,7 +119,7 @@
         <Row>
           <Input style="width:240px" type='textarea' :disabled='$route.params.status == "5"' :maxlength="120" v-model="dataForm.refuseReason"></Input>
         </Row>
-        <Row> {{dataForm.refuseReason.length}} / {{120 - dataForm.refuseReason.length}}</Row>
+        <Row> {{dataForm.refuseReason != null ? dataForm.refuseReason.length : 0}} / {{120 - (dataForm.refuseReason != null ? dataForm.refuseReason.length : 0)}}</Row>
         <Row style='padding: 15px 0;'>
           <Button  type="primary" @click="dataFormSubmit">提交</Button>
           <Button style='margin-left: 15px;' type="primary" @click="nextSubmit">提交并继续审核</Button>
@@ -106,18 +138,17 @@
       </Row>
       <div v-if='showedit' class='titop'>转制</div>
       <Row v-if='showedit' >
-        <Table :columns="columns" :data="tableData"
+        <Table :columns="columns" :data="attachments"
         border disabled-hover size="small" class="table">
           <template slot="spaction" slot-scope="{row}">
+       <!--      <UploadButton v-auth="'advert.videos:upload-attachment'" style='margin-top:17px;' v-if='row.desc == null'  @success="onUploadSuccess($event, row.key)">上传</UploadButton> -->
+            <a v-if='row.ifedit' @click="edit(0 , row.key)">录入下载链接</a>
 
-            <UploadButton v-auth="'advert.videos:upload-attachment'" style='margin-top:17px;' v-if='row.desc == undefined'  @success="onUploadSuccess($event, row.key)">上传</UploadButton>
-            <a v-if='row.desc == undefined' @click="edit(0 , row.key)">录入下载链接</a>
-
-            <a v-auth="'advert.videos:modify-attachment'" style='margin-top:17px;' v-if="row.desc != undefined && row.desc.fileId == null"  @click="edit(row.desc.id, row.key , row )">编辑</a>&nbsp;&nbsp;&nbsp;
-            <a v-auth="'advert.videos:delete-attachment'" style='margin-top:17px;' v-if="row.desc != undefined && row.desc.fileId == null" @click="del( row.desc.id)">删除</a>
+            <a v-if='!row.ifedit' v-auth="'advert.videos:modify-attachment'" style='margin-top:17px;'  @click="edit(row.id, row )">编辑</a>&nbsp;&nbsp;&nbsp;
+            <a v-if='!row.ifedit' v-auth="'advert.videos:delete-attachment'" style='margin-top:17px;' @click="del( row.id)">删除</a>
  
-            <a v-if="row.desc != undefined && row.desc.fileId != null" style='margin-top:17px;' class="operation" :href="row.desc.fileUrl" :download="row.desc.fileUrl">下载</a>&nbsp;&nbsp;&nbsp;
-            <a v-auth="'advert.videos:delete-attachment'" style='margin-top:17px;' v-if="row.desc != undefined && row.desc.fileId != null"  @click="del( row.desc.id)">删除</a>
+<!--             <a v-if="row.fileId != null" style='margin-top:17px;' class="operation" :href="row.fileUrl" :download="row.fileUrl">下载</a>&nbsp;&nbsp;&nbsp;
+            <a v-auth="'advert.videos:delete-attachment'" style='margin-top:17px;' v-if="row.fileId != null"  @click="del( row.id)">删除</a> -->
         </template> 
         </Table>
       </Row>
@@ -147,7 +178,8 @@
         </div>
       </row>
     </div>
-    <DlgEdit  ref="addOrUpdate" :cinemaOnes="editOne"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" @done="dlgeditdone"/>
+    <DlgEdit  ref="addOrUpdate"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" @done="dlgeditdone"/>
+    <VideodlgEdit  ref="addOrUpdateVideo"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisibleVideo" @done="dlgeditdone"/>
     <!-- 查看图片 -->
     <Modal v-model="viewerShow" title="查看" width="500" height="500">
       <img style="width: 100%;" :src="viewerImage" alt sizes srcset>
@@ -160,14 +192,25 @@
 import { Component, Watch , Mixins  } from 'vue-property-decorator'
 import moment from 'moment'
 import ViewBase from '@/util/ViewBase'
-import { queryList , queryItem , sapproval , dataFrom , dels , addvideo , getVideoIds } from '@/api/planfilm'
+import { queryList ,
+         queryItem ,
+         sapproval ,
+         dataFrom ,
+         dels ,
+         addvideo ,
+         getVideoIds ,
+         annotation } from '@/api/planfilm'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import { slice , clean } from '@/fn/object'
-import { warning , success, toast } from '@/ui/modal'
 import UploadButton, { SuccessEvent } from '@/components/UploadButton.vue'
 import DlgEdit from './dlgEdit.vue'
+import VideodlgEdit from './videodlgEdit.vue'
+import { formatNumber } from '@/util/validateRules'
+
+
 import { findIndex } from 'lodash'
+import {confirm , warning , success, toast , info } from '@/ui/modal'
 
 
 
@@ -197,7 +240,8 @@ const getName = (ptypeCode: any, list: any[]) => {
 @Component({
   components: {
     UploadButton,
-    DlgEdit
+    DlgEdit,
+    VideodlgEdit
   }
 })
 export default class Main extends ViewBase {
@@ -220,6 +264,8 @@ export default class Main extends ViewBase {
   showStatus: any = false
   showedit: any = false
   typeList: any = []
+  promotionTypeList: any = []
+
 
   editOne: any = null
 
@@ -229,6 +275,7 @@ export default class Main extends ViewBase {
 
 
   addOrUpdateVisible = false
+  addOrUpdateVisibleVideo = false
 
   // 存储数据需要调用接口的参数列
   videoIdsList: any = {}
@@ -242,83 +289,16 @@ export default class Main extends ViewBase {
       key: '2'
     }
   ]
+  // 不通过原因列表
+  reasonName: any = []
+  objreasonName: any = []
 
-  fixedRefuseReasonsList: any = [
-    {
-      controlStatus: 1,
-      stypeName: ' 广告主红章涉嫌PS',
-      stypeSelected: true,
-      ptypeCode: 'VIDEO_INDUSTRY_QUALIFICATION',
-      stypeCode: '1',
-      ptypeName: '行业资质'
-    },
-    {
-      controlStatus: 1,
-      stypeName: '与官网查询结果不一致',
-      stypeSelected: false,
-      ptypeCode: 'VIDEO_INDUSTRY_QUALIFICATION',
-      stypeCode: '2',
-      ptypeName: '行业资质'
-    },
-    {
-      controlStatus: 1,
-      stypeName: '营业执照经营范围无法备案该行业',
-      stypeSelected: false,
-      ptypeCode: 'VIDEO_INDUSTRY_QUALIFICATION',
-      stypeCode: '3',
-      ptypeName: '行业资质'
-    },
-    {
-      controlStatus: 1,
-      stypeName: '资质截图不完整',
-      stypeSelected: false,
-      ptypeCode: 'VIDEO_INDUSTRY_QUALIFICATION',
-      stypeCode: '4',
-      ptypeName: '行业资质'
-    },
-    {
-      controlStatus: 1,
-      stypeName: '资质未注明所需文字及加盖广告主红章',
-      stypeSelected: false,
-      ptypeCode: 'VIDEO_INDUSTRY_QUALIFICATION',
-      stypeCode: '5',
-      ptypeName: '行业资质'
-    },
-    {
-      controlStatus: 1,
-      stypeName: '资质不清晰需上传原件照片对比',
-      stypeSelected: false,
-      ptypeCode: 'VIDEO_INDUSTRY_QUALIFICATION',
-      stypeCode: '6',
-      ptypeName: '行业资质'
-    },
-    {
-      controlStatus: 1,
-      stypeName: '资质截图不可出现水印',
-      stypeSelected: false,
-      ptypeCode: 'VIDEO_INDUSTRY_QUALIFICATION',
-      stypeCode: '7',
-      ptypeName: '行业资质'
-    },
-    {
-      controlStatus: 1,
-      stypeName: '资质未年检',
-      stypeSelected: false,
-      ptypeCode: 'VIDEO_INDUSTRY_QUALIFICATION',
-      stypeCode: '8',
-      ptypeName: '行业资质'
-    },
-    {
-      controlStatus: 1,
-      stypeName: '发证机关公章涉嫌PS',
-      stypeSelected: false,
-      ptypeCode: 'VIDEO_INDUSTRY_QUALIFICATION',
-      stypeCode: '9',
-      ptypeName: '行业资质'
-    },
-  ]
+  fixedRefuseReasonsList: any = []
 
   columnsReason: any = []
+
+  translatedList: any = []
+
 
 
   id = 0
@@ -329,6 +309,8 @@ export default class Main extends ViewBase {
   dataForm: any = { ...dataForm }
 
   mounted() {
+    this.reasonName = []
+    this.dataForm.fixedRefuseReasons = []
     // 审核原因列表
     this.columnsReason = [
       { title: '审核内容', key: 'ptypeName',  align: 'center' },
@@ -343,6 +325,10 @@ export default class Main extends ViewBase {
     }
     this.doSearch()
   }
+
+  get formatNumber() {
+        return formatNumber
+    }
 
 
   // 上传文件
@@ -366,32 +352,25 @@ export default class Main extends ViewBase {
       }
   }
 
-  get tableData() {
-    const typeList = (this.typeList || []).map((it: any) => {
-      return {
-        ...it,
-      }
-    })
-    return typeList
-  }
+  // get tableData() {
+  //   const typeList = (this.typeList || []).map((it: any) => {
+  //     return {
+  //       ...it,
+  //     }
+  //   })
+  //   return typeList
+  // }
 
   // 转制附件列表展示
   columns = [
     // { title: '序号', key: 'sort', width: 80 , align: 'center' },
     // { title: '格式', key: 'text', width: 130 , align: 'center' },
     { title: '附件', key: 'name',  align: 'center',
-      render: (hh: any, { row: { desc , text } }: any) => {
+      render: (hh: any, { row: { fileId , fileUrl , name } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        if (desc!=undefined) {
-          if (desc.fileId == '' || desc.fileId == null) {
-            return <span class='datetime' v-html={desc.fileUrl}></span>
-          } else {
-            return <span class='datetime' style='color:#4b9cf2' v-html={desc.name}></span>
-          }
-        } else {
-          return <span class='datetime' v-html={'-'}></span>
-        }
+        const html = fileUrl == null ? '-' : fileUrl
+        return <span class='datetime' v-html={html}></span>
         
         /* tslint:enable */
       }
@@ -401,12 +380,12 @@ export default class Main extends ViewBase {
       key: 'uploadTime',
       width: 150 ,
       align: 'center',
-      render: (hh: any, { row: { desc } }: any) => {
+      render: (hh: any, { row }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        if (desc!=undefined ) {
-          const html = moment(desc.uploadTime).format(timeFormatDate)
-          return desc.uploadTime == null ? <span class='datetime' v-html={'-'}></span> : <span class='datetime' v-html={html}></span>
+        if (row.uploadTime != null ) {
+          const html = moment(row.uploadTime).format(timeFormatDate)
+          return row.uploadTime == null ? <span class='datetime' v-html={'-'}></span> : <span class='datetime' v-html={html}></span>
         } else {
           return <span class='datetime' v-html={'-'}></span>
         }
@@ -414,20 +393,19 @@ export default class Main extends ViewBase {
       }
     },
     { title: '上传人', key: 'uploadName', align: 'center', width: 150,
-      render: (hh: any, { row: { desc } }: any) => {
+      render: (hh: any, { row: { uploadName , uploadEmail } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
-        if (desc!=undefined ) {
-          const html = '【' + desc.uploadEmail + '】' + desc.uploadName
-          if (desc.uploadEmail == null) {
-            return <span class='datetime' v-html={desc.uploadName}></span>
-          } else {
-            return <span class='datetime' v-html={html}></span>
-          }
-        } else {
+        const html = uploadEmail + '【' + uploadName + '】'
+        if (uploadEmail != null && uploadName != null) {
+          return <span class='datetime' v-html={html}></span>
+        } else if(uploadEmail == null) {
+          return <span class='datetime' v-html={uploadName}></span>
+        } else if(uploadName == null) {
+          return <span class='datetime' v-html={uploadEmail}></span>
+        } else if (uploadEmail == null && uploadName == null) {
           return <span class='datetime' v-html={'-'}></span>
         }
-        
         /* tslint:enable */
       }
     },
@@ -449,24 +427,39 @@ export default class Main extends ViewBase {
       const res = await queryItem(this.$route.params.id)
       this.detail = res.data.item
       this.applyTime = moment(this.detail.applyTime).format(timeFormatDate)
+      this.fixedRefuseReasonsList = res.data.fixedRefuseReasonsList
+      this.dataForm.refuseReason = res.data.item.refuseReason
+      this.promotionTypeList = res.data.promotionTypeList
+      this.translatedList = res.data.translatedList
+      if (res.data.item.attachments.length == 0) {
+        this.attachments = [
+          {
+            ifedit: true,
+            uploadEmail: null,
+            uploadName: null,
+          }
+        ]
+      } else {
+        this.attachments = res.data.item.attachments
+      }
        // 附件
-      this.typeList = res.data.typeList.map((it: any) => {
-        const key = it.key
-        const typecode = this.detail.attachments.map((item: any) => {
-          return item.typeCode
-        })
-        const index = typecode.indexOf(key)
-        if (index != -1) {
-          return {
-            ...it,
-            desc: this.detail.attachments[index]
-          }
-        } else {
-          return {
-            ...it
-          }
-        }
-      })
+      // this.typeList = res.data.typeList.map((it: any) => {
+      //   const key = it.key
+      //   const typecode = this.detail.attachments.map((item: any) => {
+      //     return item.typeCode
+      //   })
+      //   const index = typecode.indexOf(key)
+      //   if (index != -1) {
+      //     return {
+      //       ...it,
+      //       desc: this.detail.attachments[index]
+      //     }
+      //   } else {
+      //     return {
+      //       ...it
+      //     }
+      //   }
+      // })
 
 
       this.logList = res.data.logList.map((item: any) => {
@@ -485,17 +478,49 @@ export default class Main extends ViewBase {
     }
   }
   // 新增 / 修改 (录入下载链接/)
-  edit(id: number , key: any , row: any ) {
+  edit(id: number , row: any ) {
     this.addOrUpdateVisible = true
-    !!id ? this.editOne = row : this.editOne
+    // !!id ? this.editOne = row : this.editOne
     this.$nextTick(() => {
       const myThis: any = this
-      myThis.$refs.addOrUpdate.init(id , key)
+      myThis.$refs.addOrUpdate.init(id , row)
     })
+  }
+
+  onViewVideo(src: any) {
+    this.addOrUpdateVisibleVideo = true
+    this.$nextTick(() => {
+      const myThis: any = this
+      myThis.$refs.addOrUpdateVideo.init(src)
+    })
+  }
+
+  // 添加原因列表
+  addReason(e: any , ptypeCode: any , stypeCode: any , stypeName: any) {
+    if (e.target.checked == true) {
+      this.dataForm.fixedRefuseReasons.push({
+        pCode: ptypeCode,
+        sCode: stypeCode,
+        stypeName,
+      })
+    } else {
+      for (let i = 0; i < this.dataForm.fixedRefuseReasons.length; i++) {
+        if (this.dataForm.fixedRefuseReasons[i].stypeName == stypeName) {
+          this.dataForm.fixedRefuseReasons.splice(i, 1)
+          break
+        }
+      }
+    }
   }
 
   // 提交并继续审核
   async nextSubmit() {
+    if ((this.dataForm.fixedRefuseReasons || []).map((it: any) => {
+              return it.stypeName
+            }).indexOf('其他') != -1 && (this.dataForm.refuseReason == '' || this.dataForm.refuseReason == null)) {
+      info('请输入审核拒绝原因')
+      return
+    }
     const dataItem: any = JSON.parse((sessionStorage.getItem('info') as any))
     this.videoIdsList = {
       query: dataItem.query, // 广告片id或者名称
@@ -505,31 +530,71 @@ export default class Main extends ViewBase {
       skip: dataItem.skip, // 跳过的记录数
       maxSize: dataItem.maxSize, // 最大返回数据量
     }
+
+    const query: any = {
+      refuseReason: this.dataForm.refuseReason ,
+      agree: this.dataForm.fixedRefuseReasons.length == 0 ? true : false ,
+      fixedRefuseReasons: (this.dataForm.fixedRefuseReasons || []).map((it: any) => {
+        return {
+          pCode: it.pCode,
+          sCode: it.sCode,
+        }
+      })
+    }
+
+
     // 如果没有videoIds存储值则代表没有请求过ids列表
     if (JSON.parse((sessionStorage.getItem('videoIds') as any)) == null ) {
       try {
-        const res =  await getVideoIds (this.videoIdsList) // 请求500的存储总量
-        const videoIds = res.data.items || []
-        sessionStorage.setItem('videoIds', JSON.stringify(videoIds.slice(1))) // 存储总量-1
-        this.$router.push({ name : 'gg-film-detail' , params: {id: videoIds[0] , status: '1'} })
+        const res =  await getVideoIds (this.videoIdsList) // 请求1000的存储总量
+        const videoIds = res.data.item || []
+        if (videoIds.length > 1) {
+          sessionStorage.setItem('videoIds', JSON.stringify(videoIds.slice(1))) // 存储总量-1
+          const data =  await sapproval (this.$route.params.id, query)
+          this.$router.push({ name : 'gg-film-detail' , params: {id: videoIds[1] , status: '1'} })
+        } else {
+           const resdata =  await sapproval (this.$route.params.id, query)
+           setTimeout(() => {
+              this.backList()
+          }, 1000)
+        }
       } catch (ex) {
         this.handleError(ex)
       }
     } else { // 如果有则是详情-详情页面
       const dataItemIds: any = JSON.parse((sessionStorage.getItem('videoIds') as any))
-      if (dataItemIds.length > 0 && dataItemIds.length < 499) { // 判断剩余存储的数值是否超过存储总量
+      if (dataItemIds.length > 1 && dataItemIds.length < 980) { // 判断剩余存储的数值是否超过存储总量
         sessionStorage.removeItem('videoIds') // 先清空原存值，在存新值
         sessionStorage.setItem('videoIds', JSON.stringify(dataItemIds.slice(1))) // 存储新值
-        this.$router.push({ name : 'gg-film-detail' , params: {id: dataItemIds[0] , status: '1'} })
+         const res =  await sapproval (dataItemIds[0], query)
+        this.$router.push({ name : 'gg-film-detail' , params: {id: dataItemIds[1] , status: '1'} })
+      } else {
+        const res =  await sapproval (this.$route.params.id, query)
+        // toast('没有更多数据了')
+                setTimeout(() => {
+                        this.backList()
+                    }, 1000)
       }
     }
   }
   // 提交审核拒绝原因
   async dataFormSubmit() {
+
+    if ((this.dataForm.fixedRefuseReasons || []).map((it: any) => {
+              return it.stypeName
+            }).indexOf('其他') != -1 && (this.dataForm.refuseReason == '' || this.dataForm.refuseReason == null)) {
+      info('请输入审核拒绝原因')
+      return
+    }
     const query: any = {
       refuseReason: this.dataForm.refuseReason ,
-      agree: this.dataForm.agree,
-      fixedRefuseReasons: this.dataForm.fixedRefuseReasons
+      agree: this.dataForm.fixedRefuseReasons.length == 0 ? true : false,
+      fixedRefuseReasons: (this.dataForm.fixedRefuseReasons || []).map((it: any) => {
+        return {
+          pCode: it.pCode,
+          sCode: it.sCode,
+        }
+      })
     }
     try {
       const res =  await sapproval (this.$route.params.id, query)
@@ -542,7 +607,7 @@ export default class Main extends ViewBase {
   // 提交批注
   async beizhuSubmit() {
     try {
-      const res =  await sapproval (this.$route.params.id , {annotationInfo : this.dataForm.annotationInfo})
+      const res =  await annotation (this.$route.params.id , {annotationInfo : this.dataForm.annotationInfo})
       this.$router.push({ name : 'gg-film' })
     } catch (ex) {
       this.handleError(ex)
@@ -596,6 +661,17 @@ export default class Main extends ViewBase {
   back() {
     this.$router.go(-1)
   }
+
+  // 返回列表
+  backList() {
+      this.$router.push({ name: 'gg-film' })
+  }
+
+  @Watch('$route.parmas', { deep: true })
+
+    watchParmas(val: any) {
+        this.doSearch()
+    }
 }
 </script>
 

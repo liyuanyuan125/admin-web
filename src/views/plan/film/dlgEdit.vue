@@ -6,8 +6,8 @@
     :title="id == 0 ? '录入下载链接' : '编辑下载链接'"
     @on-cancel="cancel" >
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
-      <FormItem label="名称" prop="url">
-        <Input v-model="dataForm.url"></Input>
+      <FormItem label="下载链接" prop="url">
+        <Input v-model="dataForm.url"/>
       </FormItem>
     </Form>
     <div slot="footer" class="dialog-footer">
@@ -34,7 +34,7 @@ const dataForm = {
 
 @Component
 export default class ComponentMain extends ViewBase {
-  @Prop({ type: Object }) cinemaOnes: any
+  // @Prop({ type: Object }) cinemaOnes: any
 
   loading = false
   showDlg = false
@@ -45,16 +45,18 @@ export default class ComponentMain extends ViewBase {
       { required: true, message: '请输入下载链接', trigger: 'blur' }
     ]
   }
+  rowlist: any = {}
 
   dataForm: any = { ...dataForm }
 
-  init(id: number , key: any) {
-    this.dataForm.typeCode = key
+  init(id: number ,  row: any) {
+    // this.dataForm.typeCode = key
     this.showDlg = true
     this.id = id || 0
+    this.rowlist = row
     ; (this.$refs.dataForm as any).resetFields()
     if (this.id) {
-      this.dataForm.url = this.cinemaOnes.desc.fileUrl
+      this.dataForm.url = row.fileUrl
     }
   }
 
@@ -78,8 +80,8 @@ export default class ComponentMain extends ViewBase {
     }
     const title = !this.id ? '添加' : '编辑'
     try {
-      const res = !this.id ? await addvideo (this.$route.params.id , query)
-      : await editvideo (this.$route.params.id , this.cinemaOnes.desc.id , {url: query.url} )
+      const res = !this.id ? await addvideo (this.$route.params.id , {typeCode: '-1' , url: query.url})
+      : await editvideo (this.$route.params.id , this.rowlist.id , {url: query.url} )
       toast('操作成功')
       this.showDlg = false
       this.$emit('done')

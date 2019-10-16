@@ -41,6 +41,19 @@
                 </div>
               </Col>
             </Col>
+            <Col :span="24">
+              <Col span="2"><div>预告片折扣</div></Col>
+              <Col span="16">
+                <FormItem v-if="!$route.params.id" prop="discount" class="mt8">
+                  <InputNumber style="width: 80px" :max="100" :min="1" v-model="dataForm.trailerDiscount" placeholder=""/>  %
+                  <span class="red">当片商投放的映前广告为预告片时，自动享受本项折扣设置；如遇平台营销活动，该项折扣可叠加使用</span>
+                </FormItem>
+                <div class="detail-height" v-else>
+                  {{dataForm.trailerDiscount}}%
+                  <span class="red">当片商投放的映前广告为预告片时，自动享受本项折扣设置；如遇平台营销活动，该项折扣可叠加使用</span>
+                </div>
+              </Col>
+            </Col>
           </Col>
         </Row>
 
@@ -198,6 +211,7 @@ const timeFormat = 'YYYYMMDD'
 export default class Main extends ViewBase {
   dataForm: any = {
     cpm: 1,
+    trailerDiscount: 1,
     discount: 1,
     showTime: [],
     name: '',
@@ -302,6 +316,7 @@ export default class Main extends ViewBase {
       } = await rateCardDetail(id)
       dataForm.cpm = data.cpm
       dataForm.discount = data.discount
+      dataForm.trailerDiscount = data.trailerDiscount || 0
       const beginDate = this.autoTime(data.beginDate + '')
       const endDate = this.autoTime(data.endDate + '')
       if (data.calendarId != null) {
@@ -386,6 +401,7 @@ export default class Main extends ViewBase {
     const dataForms = this.dataForm
     const oldquery = {
       cpm: dataForms.cpm,
+      trailerDiscount: dataForms.trailerDiscount,
       discount: dataForms.discount,
       calendarId: this.dateStaus == '1' ? '' : dataForms.diaries.id,
       beginDate: this.dateStaus == '1' ?

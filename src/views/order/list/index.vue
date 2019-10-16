@@ -4,33 +4,76 @@
       <div class="act-bar flex-box">
         <form class="form flex-1" @submit.prevent="search">
           <LazyInput v-model="query.id" placeholder="订单编号" class="input"/>
-          <Select v-model="query.xadvertiserId" placeholder="广告主公司名称" style='width: 200px;'  filterable>
+          <!-- <Select v-model="query.xadvertiserId" placeholder="广告主公司名称" style='width: 150px;'  filterable>
             <Option v-for="it in adscompany" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
-dlgEditDone          </Select>
-          <Select v-model="query.planId" placeholder="广告计划名称" style='width: 200px;'  filterable>
+          </Select> -->
+          <Select
+             class='sels'
+             v-model='query.xadvertiserId'
+             clearable
+             filterable
+             placeholder="广告主公司名称"
+             style='width: 150px;'
+             remote
+             :remote-method="adsremoteMethod"
+             @on-clear="adscompany = []"
+              >
+              <Option
+                v-for="(item, index) in adscompany"
+                :key="index"
+                :value="item.id"
+              >{{item.name}}</Option>
+            </Select>
+            <Select
+             class='sels'
+             v-model='query.resourceId'
+             clearable
+             filterable
+             placeholder="资源方公司名称"
+             style='width: 150px;'
+             remote
+             :remote-method="resourceremoteMethod"
+             @on-clear="resourcescompany = []"
+              >
+              <Option
+                v-for="(item, index) in resourcescompany"
+                :key="index"
+                :value="item.id"
+              >{{item.name}}</Option>
+            </Select>
+            <Select
+             class='sels'
+             v-model='query.planId'
+             clearable
+             filterable
+             placeholder="广告计划名称"
+             style='width: 150px;'
+             remote
+             :remote-method="planremoteMethod"
+             @on-clear="planlist = []"
+              >
+              <Option
+                v-for="(item, index) in planlist"
+                :key="index"
+                :value="item.id"
+              >{{item.name}}</Option>
+            </Select>
+          <!-- <Select v-model="query.planId" placeholder="广告计划名称" style='width: 150px;'  filterable>
             <Option v-for="it in planlist" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
-          </Select>
-          <Select v-model="query.resourceId" placeholder="资源方公司名称" style='width: 200px;'  filterable>
+          </Select> -->
+<!--           <Select v-model="query.resourceId" placeholder="资源方公司名称" style='width: 150px;'  filterable>
             <Option v-for="it in resourcescompany" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
-          </Select>
-          <Select v-model="query.status" placeholder="订单状态" style='width: 200px;' clearable>
-            <Option v-for="it in statusList" v-if='it.key != 0' :key="it.key" :value="it.key"
-              :label="it.text">{{it.text}}</Option>
-          </Select>
-          <Select v-model="query.xadvertType" placeholder="广告类型" style='width: 200px;' clearable>
-            <Option v-for="it in advertTypeCodeList" v-if='it.key != 0' :key="it.key" :value="it.key"
-              :label="it.text">{{it.text}}</Option>
-          </Select>
+          </Select> -->
            <Select
              class='sels'
              v-model='query.cinemaId'
              clearable
              filterable
-             placeholder="请输入影院名称/专资编码查询"
-             style='width: 200px;'
+             placeholder="影院名称/专资编码查询"
+             style='width: 150px;'
              remote
              :remote-method="remoteMethod"
              @on-clear="movieList = []"
@@ -41,6 +84,14 @@ dlgEditDone          </Select>
                 :value="item.id"
               >【{{item.code}}】{{item.shortName}}</Option>
             </Select>
+            <Select v-model="query.status" placeholder="订单状态" style='width: 120px;' clearable>
+              <Option v-for="it in statusList" v-if='it.key != 0' :key="it.key" :value="it.key"
+                :label="it.text">{{it.text}}</Option>
+            </Select>
+            <Select v-model="query.xadvertType" placeholder="广告类型" style='width: 120px;' clearable>
+              <Option v-for="it in advertTypeCodeList" v-if='it.key != 0' :key="it.key" :value="it.key"
+                :label="it.text">{{it.text}}</Option>
+            </Select>
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
         </form>
       </div>
@@ -48,6 +99,12 @@ dlgEditDone          </Select>
         border stripe disabled-hover size="small" class="table">
         <template slot="targetCount" slot-scope="{row}">
           <span>{{row.receiveCount}} / {{row.targetCount}}</span>
+        </template>
+        <template slot="advertType" slot-scope="{row}">
+          <span v-for='(its,index) in advertTypeCodeList' v-if='row.advertType == its.key'>{{its.text}}</span>
+        </template>
+        <template slot="status" slot-scope="{row}">
+          <span v-for='(its,index) in statusList' v-if='row.status == its.key'>{{its.text}}</span>
         </template>
           <template slot="spaction" slot-scope="{row}">
           <!-- <a v-show='row.status == 3' v-auth="'advert.executeOrder:settlement'" @click="change(row.id, row)">结算</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
@@ -145,20 +202,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     { title: '广告主公司名称', key: 'advertiserName', align: 'center' },
     { title: '广告计划',  key: 'planName', align: 'center' },
     { title: '资源方公司名称', key: 'resourceName', align: 'center' },
-    { title: '广告类型', key: 'advertType', align: 'center', width: 90,
-      render: (hh: any, { row: { advertType } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        if (advertType == 1) {
-          return <span>品牌</span>
-        } else if (advertType == 2) {
-          return <span>预告片</span>
-        } else {
-          return <span>-</span>
-        }
-        /* tslint:enable */
-      }
-    },
+    { title: '广告类型', slot: 'advertType', align: 'center', width: 90 },
     { title: '接单影院/派单影院', slot: 'targetCount', align: 'center', width: 90},
     {
       title: '接单时间',
@@ -175,33 +219,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     },
     {
       title: '状态',
-      key: 'status',
+      slot: 'status',
       align: 'center',
       width: 90,
-      render: (hh: any, { row: { status } }: any) => {
-        /* tslint:disable */
-        const h = jsxReactToVue(hh)
-        if (status == 1) {
-          return <span class={`status-1`}>待接单</span>
-        } else if (status == 2) {
-          return <span class={`status-2`}>待执行</span>
-        }
-         else if (status == 3) {
-          return <span class={`status-3`}>执行中</span>
-        }
-         else if (status == 4) {
-          return <span class={`status-4`}>已拒绝</span>
-        }else if (status == 5) {
-          return <span class={`status-5`}>已失效</span>
-        }else if (status == 6) {
-          return <span class={`status-6`}>待结算</span>
-        }else if (status == 7) {
-          return <span class={`status-7`}>已完成</span>
-        }else if (status == 8) {
-          return <span class={`status-8`}>已关闭</span>
-        }
-        /* tslint:enable */
-      }
     },
     {
       title: '操作',
@@ -227,7 +247,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     return list
   }
 
-
+  // 影院搜索
   async remoteMethod(querys: any) {
     try {
       if (querys) {
@@ -245,6 +265,66 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       this.loading = false
     }
   }
+
+  // 广告主公司搜索
+  async adsremoteMethod(querys: any) {
+    try {
+      if (querys) {
+        this.loadings = true
+        const {
+          data: { items }
+        } = await company({
+          shortName: querys,
+          typeCode: 'ads'
+        })
+        this.adscompany = items || []
+      }
+      this.loading = false
+    } catch (ex) {
+      this.handleError(ex)
+      this.loading = false
+    }
+  }
+
+ // 资源方公司搜索
+  async resourceremoteMethod(querys: any) {
+    try {
+      if (querys) {
+        this.loadings = true
+        const {
+          data: { items }
+        } = await company({
+          shortName: querys,
+          typeCode: 'resource'
+        })
+        this.resourcescompany = items || []
+      }
+      this.loading = false
+    } catch (ex) {
+      this.handleError(ex)
+      this.loading = false
+    }
+  }
+
+  // 广告计划搜索
+  async planremoteMethod(querys: any) {
+    try {
+      if (querys) {
+        this.loadings = true
+        const {
+          data: { items }
+        } = await planlist({
+          name: querys,
+        })
+        this.planlist = items || []
+      }
+      this.loading = false
+    } catch (ex) {
+      this.handleError(ex)
+      this.loading = false
+    }
+  }
+
 
   mounted() {
     this.updateQueryByParam()
@@ -292,13 +372,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       this.statusList = statusList
       this.advertTypeCodeList = advertTypeCodeList
     // 广告计划列表
-    const plandata = await planlist({pageSize: 100000})
-    this.planlist = plandata.data.items
-    // 公司列表
-    const adscmy = await company({typeCode: 'ads' , pageSize: 100000})
-    const rescmy = await company({typeCode: 'resource' , pageSize: 100000})
-    this.adscompany = adscmy.data.items
-    this.resourcescompany = rescmy.data.items
+    // const plandata = await planlist({pageSize: 100000})
+    // this.planlist = plandata.data.items
+    // // 公司列表
+    // const adscmy = await company({typeCode: 'ads' , pageSize: 100000})
+    // const rescmy = await company({typeCode: 'resource' , pageSize: 100000})
+    // this.adscompany = adscmy.data.items
+    // this.resourcescompany = rescmy.data.items
     } catch (ex) {
       this.handleError(ex)
     } finally {

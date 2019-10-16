@@ -42,7 +42,7 @@
                 :is="it.component"
                 :disabled="!!it.disabled"
                 v-bind="{
-                  enumList: enumMap[it.name],
+                  enumList: newEnumMap[it.enumKey] || enumMap[it.name],
                   ...it.props
                 }"
                 v-on="it.handlers"
@@ -59,6 +59,7 @@
             html-type="submit"
             size="large"
             class="button-submit"
+            :disabled="submitDisalbed"
             v-if="!hideSubmit"
           >{{submitText}}</Button>
 
@@ -82,7 +83,13 @@
 <script lang="ts">
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
-import { MapType, AjaxResult, isAjaxResult, KeyTextControlStatus } from '@/util/types'
+import {
+  MapType,
+  AjaxResult,
+  isAjaxResult,
+  KeyTextControlStatus,
+  isKeyTextEnum
+} from '@/util/types'
 import TinyLoading from '@/components/TinyLoading.vue'
 import {
   Field,
@@ -152,11 +159,17 @@ export default class EditForm extends ViewBase {
 
   submitLoading = true
 
+  submitDisalbed = false
+
   public item: any = null
 
   defItem: any = {}
 
+  // 旧版枚举类型，慢慢优化掉
   enumMap: MapType<KeyTextControlStatus[]> = {}
+
+  // 新版的筛选枚举，旧版会被慢慢重构掉
+  newEnumMap: MapType<KeyTextControlStatus[]> = {}
 
   errorMap: MapType = {}
 
@@ -212,7 +225,7 @@ export default class EditForm extends ViewBase {
 
       this.initFields()
 
-      // TODO: 老式 enumMap ？改为自动枚举判断？
+      // TODO: 老式 enumMap，基于 enumKey 属性，将慢慢优化掉
       const enumMap = this.normalFields
         .filter(it => !!it.enumKey)
         .reduce(
@@ -223,6 +236,18 @@ export default class EditForm extends ViewBase {
           {} as MapType<KeyTextControlStatus[]>
         )
       this.enumMap = enumMap
+
+      // 新版 enumMap，自动判断，不再依赖配置中的 enumKey
+      // TODO: 可以清理对 enumKey 的提升代码
+      const enumList = Object.entries(data).filter(([key, list]) => isKeyTextEnum(list))
+      const newEnumMap = enumList.reduce(
+        (map, [name, list]) => {
+          map[name] = list
+          return map
+        },
+        {} as MapType<KeyTextControlStatus[]>
+      )
+      this.newEnumMap = newEnumMap
 
       const defItem = this.defItem
 
@@ -320,6 +345,8 @@ export default class EditForm extends ViewBase {
       return
     }
 
+    this.submitDisalbed = true
+
     try {
       const data = dealParams(this.fields, item, {
         cleanList: [null, undefined]
@@ -341,6 +368,7 @@ export default class EditForm extends ViewBase {
       }
       this.handleError(ex)
     } finally {
+      this.submitDisalbed = false
       this.$emit('always')
     }
   }
@@ -391,7 +419,8 @@ export default class EditForm extends ViewBase {
   /deep/ .form-text {
     padding: 10px 12px 10px 0;
   }
-  /deep/ .form-radio {
+  /deep/ .form-radio,
+  /deep/ .form-check {
     padding: 9px 12px 9px 0;
   }
   /deep/ .form-switch {
@@ -403,7 +432,7 @@ export default class EditForm extends ViewBase {
 }
 
 .form-group {
-  padding: 10px 12px;
+  padding: 10px 48px 10px 12px;
   border: 1px solid #e8e8e8;
   background-color: #fff;
   border-radius: 4px;

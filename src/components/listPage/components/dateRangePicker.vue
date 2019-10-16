@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator'
-import moment from 'moment'
+import { formatIntDateRange, parseIntDateRange } from '@/util/dealData'
 
 const dateFormat = 'YYYYMMDD'
 
@@ -32,26 +32,16 @@ export default class DatePickerWrap extends Vue {
     if (this.value == '' || !/\d{8}-\d{8}/.test(this.value)) {
       return [ undefined, undefined ]
     }
-    const [begin, end] = this.value.split('-')
-    const bm = moment(begin)
-    const em = moment(end)
-    const date = bm.isValid() && em.isValid()
-      ? [ bm.toDate(), em.toDate() ]
-      : [ undefined, undefined ]
-    return date
+    return parseIntDateRange(this.value, { separator: '-' })
   }
 
   set date(value: Array<Date | undefined>) {
     const [ begin = null, end = null ] = value || []
-    if (begin == null || end == null) {
-      this.model = ''
-      return
-    }
-    const bm = moment(begin)
-    const em = moment(end)
-    const date = bm.isValid() && em.isValid()
-      ? [ bm.format(dateFormat), em.format(dateFormat) ].join('-')
-      : ''
+    const date = formatIntDateRange(begin, end, {
+      separator: '-',
+      format: dateFormat,
+      blank: '',
+    })
     this.model = date
   }
 

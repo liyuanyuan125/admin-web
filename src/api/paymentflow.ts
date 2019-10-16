@@ -6,8 +6,29 @@ import { mockGet, tid, title20, typeInt, dateRange } from './mock'
  * @description https://yapi.aiads-dev.com/project/76/interface/api/5988
  */
 export async function queryList(query: any) {
-  // const res = await get('/finance/payFlows', query)
-  // return res
+  const res = await get('/finance/payFlows', query)
+  res.data.busTypeList = res.data.busTypeList ? res.data.busTypeList.filter((it: any) => {
+    return it.text !== '未知'
+  }) : []
+  res.data.payChannelList = res.data.payChannelList ? res.data.payChannelList.filter((it: any) => {
+    return it.text !== '未知'
+  }) : []
+  res.data.payStatusList = res.data.payStatusList ? res.data.payStatusList.filter((it: any) => {
+    return it.text !== '未知'
+  }) : []
+  res.data.payTypeList = res.data.payTypeList ? res.data.payTypeList.filter((it: any) => {
+    return it.text !== '未知'
+  }) : []
+  res.data.lineTypeList = res.data.lineTypeList ? res.data.lineTypeList.filter((it: any) => {
+    return it.text !== '未知'
+  }) : []
+  res.data.items = res.data.items.map((it: any) => {
+    return {
+      ...it,
+      planId: (it.planId === 0) ? null : it.planId
+    }
+  })
+  return res
   return await mockGet(query, {
     totalCount: 1,
     items: [
