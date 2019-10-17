@@ -8,6 +8,7 @@
              class='sels'
              v-model='query.movieId'
              clearable
+             :loading='loadings'
              filterable
              placeholder="影片名称"
              style='width: 150px;'
@@ -38,7 +39,9 @@
           <Button type="primary" @click="viewCinema" class="btn-reset">+上传影城列表</Button>
 
           <!-- <Button type="default" @click="reset" class="btn-reset">清空</Button> -->
-          <Button v-if='list.length > 0' type="default" @click="exportData" class="btn-reset">导出</Button>
+          <!-- <Button v-if='list.length > 0' type="default" @click="exportData" class="btn-reset">导出</Button> -->
+          <a v-if='list.length > 0' class='exp' :href='herf' download='导出' >导出</a>
+
         </form>
       </div>
       <Table ref='table' :columns="columns" :data="list" :loading="loading"
@@ -120,6 +123,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     pageSize: 20,
     codes: null
   }
+  str: any = ''
 
   query: any = {}
   oldQuery: any = {}
@@ -226,24 +230,50 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           this.movieName = items[0].name
         }
       }
-      this.loading = false
+      this.loadings = false
     } catch (ex) {
       this.handleError(ex)
-      this.loading = false
+      this.loadings = false
     }
   }
 
   // 下载
-  exportData() {
-    (this.$refs.table as any).exportCsv({
-        filename: '成本核算报表',
-        columns: this.exportcolumns,
-        data: ([...this.bbb, ...this.list.slice(1)]).map((it: any) => {
-          return {
-            ...it,
-          }
-        })
-    })
+  // exportData() {
+  //   (this.$refs.table as any).exportCsv({
+  //       filename: '成本核算报表',
+  //       columns: this.exportcolumns,
+  //       data: ([...this.bbb, ...this.list.slice(1)]).map((it: any) => {
+  //         return {
+  //           ...it,
+  //         }
+  //       })
+  //   })
+  // }
+  get herf() {
+    this.str = `${VAR.ajaxBaseUrl}/bi/cost-budget-reports/export`
+    this.str = this.str + `?movieId=${this.query.movieId}&box=${this.query.box}&type=${this.query.type}`
+    if (this.query.typeCount != null) {
+      if (this.str.indexOf('?') == -1) {
+        this.str = this.str + `?typeCount=${this.query.typeCount}`
+      } else {
+        this.str = this.str + `&typeCount=${this.query.typeCount}`
+      }
+    }
+    if (this.query.week != null) {
+      if (this.str.indexOf('?') == -1) {
+        this.str = this.str + `?week=${this.query.week}`
+      } else {
+        this.str = this.str + `&week=${this.query.week}`
+      }
+    }
+    if (this.query.codes != null) {
+      if (this.str.indexOf('?') == -1) {
+        this.str = this.str + `?codes=${this.query.codes}`
+      } else {
+        this.str = this.str + `&codes=${this.query.codes}`
+      }
+    }
+    return this.str
   }
 
   // 上传影城
@@ -332,18 +362,18 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       //     averagePersonCount: sumAveragePersonCount,
       //   })
       // }
-      const a = this.movieName == '' ? '影片名称：全部' : '影片名称' + this.movieName
-      const b = this.query.box == null ? '预测票房：全部' : '预测票房' + this.query.box
-      const c = this.query.type == 1 ? '投放时长：' + this.query.typeCount :
-      '投放人次：' + (this.query.typeCount == null ? '暂无' : this.query.typeCount)
-      const d = this.query.week == null ? '密钥周期：45' : '密钥周期' + this.query.week
-      this.bbb = [
-        {
-          exportDate: moment((new Date().getTime())).format(timeFormat),
-          query: a + ' ' + b + ' ' + c + ' ' + d,
-          ...this.list[0]
-        }
-      ]
+      // const a = this.movieName == '' ? '影片名称：全部' : '影片名称' + this.movieName
+      // const b = this.query.box == null ? '预测票房：全部' : '预测票房' + this.query.box
+      // const c = this.query.type == 1 ? '投放时长：' + this.query.typeCount :
+      // '投放人次：' + (this.query.typeCount == null ? '暂无' : this.query.typeCount)
+      // const d = this.query.week == null ? '密钥周期：45' : '密钥周期' + this.query.week
+      // this.bbb = [
+      //   {
+      //     exportDate: moment((new Date().getTime())).format(timeFormat),
+      //     query: a + ' ' + b + ' ' + c + ' ' + d,
+      //     ...this.list[0]
+      //   }
+      // ]
       this.total = total
     } catch (ex) {
       this.handleError(ex)
@@ -497,4 +527,29 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 //   margin-top: 2%;
 //   margin-left: 24%;
 // }
-  </style>
+.exp {
+  display: inline-block;
+  margin-left: 1%;
+  margin-bottom: 0;
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  touch-action: manipulation;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  line-height: 1.5;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  padding: 5px 15px 6px;
+  font-size: 12px;
+  border-radius: 4px;
+  transition: color .2s linear, background-color .2s linear, border .2s linear, box-shadow .2s linear;
+  color: #515a6e;
+  background-color: #fff;
+  border-color: #dcdee2;
+}
+</style>

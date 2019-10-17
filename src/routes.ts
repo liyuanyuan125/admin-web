@@ -1200,6 +1200,17 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: true
   },
 
+  // 财务管理 - 应收应付统计表
+  {
+    path: '/finance/accrual',
+    name: 'finance-accrual',
+    component: () => import('./views/finance/accrual/index.vue'),
+    meta: {
+      authKey: '',
+      title: '应收应付统计表'
+    }
+  },
+
   {
     path: '/plan/ggtising',
     name: 'plan-ggtising',
@@ -1510,6 +1521,17 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       }
     },
     props: paramTypes({ id: Number, action: String })
+  },
+
+  // 内容管理 - 行业分类管理 - 列表
+  {
+    path: '/content/industry',
+    name: 'content-industry',
+    component: () => import('./views/content/industry/index.vue'),
+    meta: {
+      authKey: '',
+      title: '行业管理列表'
+    }
   },
 
   {

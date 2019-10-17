@@ -8,8 +8,8 @@
         :label="it.name"
       >
         <Before v-if="it.value == 'before'"></Before>
-        <Audit v-if="it.value == 'audit'"></Audit>
-        <Finsh v-if="it.value == 'finish'"></Finsh>
+        <Audit ref="audit" v-if="it.value == 'audit'"></Audit>
+        <Finsh ref="finsh" v-if="it.value == 'finish'"></Finsh>
       </TabPane>
     </Tabs>
 

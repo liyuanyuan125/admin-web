@@ -7,7 +7,9 @@
           <LazyInput v-model="query.planName" placeholder="广告计划名称" class="input"/>
           <DatePicker type="daterange" @on-change="dateChange" v-model="showTime" placement="bottom-end" placeholder="查询日期" class="input" style="width: 200px"></DatePicker>
           <Button type="default" @click="reset" class="btn-reset">清空</Button>
-          <Button type="default" v-if='list.length > 0' @click="exportData" class="btn-reset">导出</Button>
+          <!-- <Button type="default" class="btn-reset">...</Button> -->
+          <a v-if='this.list.length > 0' class='exp' :href='herf' download='导出' >导出</a>
+          
         </form>
       </div>
       <Table ref='table' :columns="columns" :data="list" :loading="loading"
@@ -22,11 +24,11 @@
           </template>
           <template slot="todayFinishRate" slot-scope="{row}" >
             <span v-if='row.todayFinishRate== null'>-</span>
-            <span v-bind:class="{ red: row.todayFinishRate > 100 }" v-else >{{row.todayFinishRate}}%</span>
+            <span v-bind:class="{ red: (row.todayFinishRate >= 95) }" v-else >{{row.todayFinishRate}}%</span>
           </template>
           <template slot="tomorrowFinishRate" slot-scope="{row}" >
             <span v-if='row.tomorrowFinishRate== null'>-</span>
-            <span v-bind:class="{ red: row.tomorrowFinishRate > 100 }" v-else >{{row.tomorrowFinishRate}}%</span>
+            <span v-bind:class="{ red: (row.tomorrowFinishRate >= 95) }" v-else >{{row.tomorrowFinishRate}}%</span>
           </template>
           <template slot="budgetPersonCount" slot-scope="{row}" >
             <span v-if='row.budgetPersonCount== null'>-</span>
@@ -68,7 +70,7 @@ import { Component, Watch , Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { nextList } from '@/api/dataReport'
+import { nextList , reportsexport } from '@/api/dataReport'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
@@ -100,6 +102,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     pageIndex: 1,
     pageSize: 20
   }
+  str: any = ''
   query: any = {}
   shows = true
   showDlg = false
@@ -179,11 +182,14 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   mounted() {
     this.updateQueryByParam()
-
+    const a = this.query.beginDate == 0 ? 0 : new Date(String(this.query.beginDate).slice(0, 4)
+      + '-' + String(this.query.beginDate).slice(4, 6) + '-' + String(this.query.beginDate).slice(6, 8))
+    const b = this.query.endDate == 0 ? 0 : new Date(String(this.query.endDate).slice(0, 4)
+      + '-' + String(this.query.endDate).slice(4, 6) + '-' + String(this.query.endDate).slice(6, 8))
     !!this.query.beginDate ? this.showTime[0] =
-    moment(this.query.beginDate).format(timeFormat) : this.showTime[0] = ''
+    moment(a).format(timeFormat) : this.showTime[0] = ''
     !!this.query.endDate ? this.showTime[1] =
-    moment(this.query.endDate).format(timeFormat) : this.showTime[1] = ''
+    moment(b).format(timeFormat) : this.showTime[1] = ''
   }
 
   dateChange(data: any) {
@@ -209,19 +215,80 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     return formatNumber
   }
 
-  // 下载
-  exportData() {
-    (this.$refs.table as any).exportCsv({
-        filename: '下刊监控列表',
-        columns: this.exportcolumns,
-        data: ([...this.bbb, ...this.list.slice(1)]).map((it: any) => {
-          return {
-            ...it,
-            updateTime: (it.updateTime == null || it.updateTime == 'updateTime') ? ''
-            : moment(it.updateTime).format(timeFormat)
-          }
-        })
-    })
+  // // 下载
+  // async exportData() {
+  //   // this.oldQuery = { ...this.query , pageIndex: null, pageSize: null }
+  //   // const query: any = {}
+  //   // for (const [key, value] of Object.entries(this.oldQuery)) {
+  //   //   if (key != 'beginDate' && value != 0) {
+  //   //     query[key] = value
+  //   //   }
+  //   //   if (key != 'endDate' && value != 0) {
+  //   //     query[key] = value
+  //   //   }
+  //   // }
+  //   // const { data: {
+  //   //     items: list,
+  //   //     totalCount: total,
+  //   //     statusList: statusList,
+  //   //     sumBudgetPersonCount, // 合计预估总人次
+  //   //     sumPersonCount, // 合计累计总人次
+  //   //     sumBudgetShowCount, // 合计预估总场次
+  //   //     sumShowCount, // 合计累计总场次
+  //   //   } } = await reportsexport(query)
+  //   //   this.list = list == null ? [] : list.map((it: any) => {
+  //   //     return {
+  //   //       ...it,
+  //   //       // todayFinishRate: new Decimal(it.todayFinishRate).div(100),
+  //   //       // tomorrowFinishRate: new Decimal(it.tomorrowFinishRate).div(100)
+  //   //     }
+  //   //   })
+  //   (this.$refs.table as any).exportCsv({
+  //       filename: '下刊监控列表',
+  //       columns: this.exportcolumns,
+  //       data: ([...this.bbb, ...this.list.slice(1)]).map((it: any) => {
+  //         return {
+  //           ...it,
+  //           updateTime: (it.updateTime == null || it.updateTime == 'updateTime') ? ''
+  //           : moment(it.updateTime).format(timeFormat)
+  //         }
+  //       })
+  //   })
+  // }
+
+  get herf() {
+    const query: any = {}
+    for (const [key, value] of Object.entries(this.oldQuery)) {
+      if (key != 'beginDate' && value != 0) {
+        query[key] = value
+      }
+      if (key != 'endDate' && value != 0) {
+        query[key] = value
+      }
+    }
+    this.str = `${VAR.ajaxBaseUrl}/bi/off-shelf-reports/export`
+    if (query.planId != undefined) {
+      if (this.str.indexOf('?') == -1) {
+        this.str = this.str + `?planId=${query.planId}`
+      } else {
+        this.str = this.str + `&planId=${query.planId}`
+      }
+    }
+    if (query.planName != undefined) {
+      if (this.str.indexOf('?') == -1) {
+        this.str = this.str + `?planName=${query.planName}`
+      } else {
+        this.str = this.str + `&planName=${query.planName}`
+      }
+    }
+    if (query.beginDate != undefined) {
+      if (this.str.indexOf('?') == -1) {
+        this.str = this.str + `?beginDate=${query.beginDate}&endDate=${query.endDate}`
+      } else {
+        this.str = this.str + `&beginDate=${query.beginDate}&endDate=${query.endDate}`
+      }
+    }
+    return this.str
   }
 
   search() {
@@ -279,17 +346,17 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       //     updateTime: 'updateTime'
       //   })
       // }
-      const a = !query.planId ? '计划ID : 全部' : '计划ID' + query.planId
-      const b = !query.planName ? '计划名称 : 全部' : '计划名称' + query.planName
-      const c = !query.beginDate ? '查询日期 : 全部' : '查询日期' + (query.beginDate + '~' + query.endDate)
+      // const a = !query.planId ? '计划ID : 全部' : '计划ID' + query.planId
+      // const b = !query.planName ? '计划名称 : 全部' : '计划名称' + query.planName
+      // const c = !query.beginDate ? '查询日期 : 全部' : '查询日期' + (query.beginDate + '~' + query.endDate)
 
-      this.bbb = [
-        {
-          exportDate: moment((new Date().getTime())).format(timeFormat),
-          query: a + ' ' + b + ' ' + c,
-          ...this.list[0]
-        }
-      ]
+      // this.bbb = [
+      //   {
+      //     exportDate: moment((new Date().getTime())).format(timeFormat),
+      //     query: a + ' ' + b + ' ' + c,
+      //     ...this.list[0]
+      //   }
+      // ]
       this.total = total
       this.statusList = statusList
     } catch (ex) {
@@ -393,5 +460,30 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 .red {
   color: red;
 }
-  </style>
+.exp {
+  display: inline-block;
+  margin-left: 1%;
+  margin-bottom: 0;
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  touch-action: manipulation;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  line-height: 1.5;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  padding: 5px 15px 6px;
+  font-size: 12px;
+  border-radius: 4px;
+  transition: color .2s linear, background-color .2s linear, border .2s linear, box-shadow .2s linear;
+  color: #515a6e;
+  background-color: #fff;
+  border-color: #dcdee2;
+}
+</style>
 
