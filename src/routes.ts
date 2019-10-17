@@ -1470,6 +1470,59 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  // 内容管理 - 推荐位管理 - 详情 - 新建 - 编辑
+  {
+    path: '/content/recommendPost/detail/:id?/:action',
+    name: 'content-recommend-post-detail',
+    component: () => import('./views/content/recommend-post/detail.vue'),
+    meta: {
+      authKey: '',
+      title({ params: { action } }) {
+        switch (action) {
+          case 'view':
+            return '查看'
+          case 'edit':
+            return '编辑'
+          default:
+            return '新增推荐位'
+        }
+      }
+    },
+    props: paramTypes({ id: Number, action: String })
+  },
+
+  // 内容管理 - 推荐位数据 - 列表
+  {
+    path: '/content/recommendData/:postId/list',
+    name: 'content-recommend-data',
+    component: () => import('./views/content/recommend-data/list.vue'),
+    meta: {
+      authKey: '',
+      title: '推荐数据'
+    }
+  },
+
+  // 内容管理 - 推荐数据 - 详情 - 新建 - 编辑
+  {
+    path: '/content/recommendData/detail/:postId?/:id?/:action',
+    name: 'content-recommend-data-detail',
+    component: () => import('./views/content/recommend-data/detail.vue'),
+    meta: {
+      authKey: '',
+      title({ params: { action } }) {
+        switch (action) {
+          case 'view':
+            return '查看'
+          case 'edit':
+            return '编辑'
+          default:
+            return '新增推荐数据'
+        }
+      }
+    },
+    props: paramTypes({ id: Number, action: String })
+  },
+
   // 内容管理 - 行业分类管理 - 列表
   {
     path: '/content/industry',

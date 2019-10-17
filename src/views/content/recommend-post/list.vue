@@ -3,7 +3,7 @@
     <ListPage :fetch="fetch" :filters="filters" :enums="enums" :columns="columns" ref="listPage">
       <template slot="acts-2">
         <router-link :to="{
-            name: 'promotion-cpm-detail',
+            name: 'content-recommend-post-detail',
             params: {
               action: 'create'
             }
@@ -14,28 +14,27 @@
 
       <template slot="action" slot-scope="{ row: { status, id, name, enName } }">
         <div class="row-acts">
-          <router-link v-if="status === 1" :to="{
-              name: 'promotion-cpm-detail',
+          <router-link :to="{
+              name: 'content-recommend-data',
+              params: {
+                postId: id
+              }
+            }">推荐数据</router-link>
+          <router-link :to="{
+              name: 'content-recommend-post-detail',
               params: {
                 id,
                 action: 'edit'
               }
             }">编辑</router-link>
-          <router-link v-if="status === 1" :to="{
-              name: 'promotion-cpm-detail',
-              params: {
-                id,
-                action: 'audit'
-              }
-            }">审批</router-link>
           <router-link :to="{
-              name: 'promotion-cpm-detail',
+              name: 'content-recommend-post-detail',
               params: {
                 id,
                 action: 'view'
               }
             }">查看</router-link>
-          <a @click="enabledItemHandler(id, name, enName, 'disabled')" v-if="status === 2">下线</a>
+          <a @click="enabledItemHandler(id, name, enName, 'disabled')" >删除</a>
         </div>
       </template>
     </ListPage>
@@ -77,7 +76,7 @@ export default class Main extends ViewBase {
     {
       name: 'id',
       defaultValue: '',
-      label: '活动ID',
+      label: '序号',
       text: true,
       span: 21
     },
@@ -106,16 +105,24 @@ export default class Main extends ViewBase {
       },
 
       {
+        name: 'updateUser',
+        defaultValue: '',
+        input: true,
+        width: 85,
+        placeholder: '更新人'
+      },
+
+      {
         name: 'dateRange',
         defaultValue: '',
         dateRange: true,
         width: 200,
-        placeholder: '活动时间',
+        placeholder: '更新时间',
         dealParam(value: string) {
-          const [beginTime, endTime] = value ? value.split('-') : [null, null]
+          const [beginUpdateTime, endUpdateTime] = value ? value.split('-') : [null, null]
           return {
-            beginTime,
-            endTime
+            beginUpdateTime,
+            endUpdateTime
           }
         }
       },
@@ -127,17 +134,18 @@ export default class Main extends ViewBase {
 
       {
         name: 'pageSize',
-        defaultValue: 2
+        defaultValue: 20
       }
     ]
   }
 
   get columns() {
     return [
-      { title: '活动ID', key: 'id' },
+      { title: '序号', key: 'id' },
       { title: '推荐位名称', key: 'name' },
-      { title: '描述', key: 'customerType', enum: true },
-      { title: '更信人', key: 'auditor', },
+      { title: '描述', key: 'description' },
+      { title: '更新时间', key: 'modifyTime', dateTime: true },
+      { title: '更信人', key: 'modifyUser' },
       { title: '操作', key: 'keyWords', slot: 'action' }
     ] as ColumnExtra[]
   }
@@ -155,6 +163,7 @@ export default class Main extends ViewBase {
     }
     this.enabledItemVisible = true
 
+    // 推荐数据使用
     // const pageIndexI = this.filters.findIndex((it: any) => {
     //   return it.name === 'pageIndex'
     // })

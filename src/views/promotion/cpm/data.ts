@@ -27,6 +27,7 @@ const dealEditItem = (item: any) => {
     customerType: item.customerType || 0,
     adTypes: item.adTypes || [],
     type: item.type || null,
+    slogan: item.slogan || '',
     bizPricingList: item.bizPricingList || [],
     prevuePricingList: item.prevuePricingList || []
   }
