@@ -24,11 +24,11 @@
           </template>
           <template slot="todayFinishRate" slot-scope="{row}" >
             <span v-if='row.todayFinishRate== null'>-</span>
-            <span v-bind:class="{ red: row.todayFinishRate > 100 }" v-else >{{row.todayFinishRate}}%</span>
+            <span v-bind:class="{ red: (row.todayFinishRate >= 95) }" v-else >{{row.todayFinishRate}}%</span>
           </template>
           <template slot="tomorrowFinishRate" slot-scope="{row}" >
             <span v-if='row.tomorrowFinishRate== null'>-</span>
-            <span v-bind:class="{ red: row.tomorrowFinishRate > 100 }" v-else >{{row.tomorrowFinishRate}}%</span>
+            <span v-bind:class="{ red: (row.tomorrowFinishRate >= 95) }" v-else >{{row.tomorrowFinishRate}}%</span>
           </template>
           <template slot="budgetPersonCount" slot-scope="{row}" >
             <span v-if='row.budgetPersonCount== null'>-</span>
