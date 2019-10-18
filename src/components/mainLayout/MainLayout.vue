@@ -62,7 +62,7 @@ import { PermPage } from '@/util/types'
 import { getMenuList, SiderMenuItem, BreadcrumbConfig, getBreadcrumbListFromRoute } from './layout'
 import event from '@/fn/event'
 import { Route } from 'vue-router'
-import { RouteMetaBase } from '@/routes'
+import { RouteMeta } from '@/routes'
 
 let instance: any = null
 let viewName: string = 'default'
@@ -136,7 +136,7 @@ export default class MainLayout extends ViewBase {
     }
 
     // 最后的手段，使用 meta 中的配置
-    const { siderNav = null } = meta as RouteMetaBase || {}
+    const { siderNav = null } = meta as RouteMeta || {}
     return siderNav
   }
 
