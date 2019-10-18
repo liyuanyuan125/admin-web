@@ -76,7 +76,7 @@ export default class Main extends ViewBase {
     {
       name: 'id',
       defaultValue: '',
-      label: '序号',
+      label: 'ID',
       text: true,
       span: 21
     },
@@ -84,7 +84,7 @@ export default class Main extends ViewBase {
     {
       name: 'name',
       defaultValue: '',
-      label: '活动名称',
+      label: '名称',
       text: true,
       span: 21
     }
@@ -141,11 +141,11 @@ export default class Main extends ViewBase {
 
   get columns() {
     return [
-      { title: '序号', key: 'id' },
+      { title: '序号', type: 'index' },
       { title: '推荐位名称', key: 'name' },
       { title: '描述', key: 'description' },
       { title: '更新时间', key: 'modifyTime', dateTime: true },
-      { title: '更信人', key: 'modifyUser' },
+      { title: '更新人', key: 'modifyUser' },
       { title: '操作', key: 'keyWords', slot: 'action' }
     ] as ColumnExtra[]
   }
@@ -154,7 +154,7 @@ export default class Main extends ViewBase {
 
   // 下线弹层
   enabledItemHandler(id: number, name: string, enName: string, status: string) {
-    this.enabledTitleName = '活动下线'
+    this.enabledTitleName = '删除推荐位'
     this.enabledSubmitFetch = this.disabledItemSubmit
     this.enabledItemData = {
       id,

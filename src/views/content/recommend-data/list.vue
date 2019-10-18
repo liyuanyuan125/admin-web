@@ -80,7 +80,7 @@ export default class Main extends ViewBase {
     {
       name: 'id',
       defaultValue: '',
-      label: '序号',
+      label: 'ID',
       text: true,
       span: 21
     },
@@ -88,7 +88,7 @@ export default class Main extends ViewBase {
     {
       name: 'name',
       defaultValue: '',
-      label: '活动名称',
+      label: '名称',
       text: true,
       span: 21
     }
@@ -175,14 +175,14 @@ export default class Main extends ViewBase {
 
   get columns() {
     return [
-      { title: '序号', key: 'id' },
+      { title: '序号', type: 'index' },
       { title: '名称', key: 'name' },
       { title: '开始时间', key: 'beginTime', date: true },
       { title: '结束时间', key: 'endTime', date: true },
       { title: '投放渠道', key: 'channels', enum: 'channelList' },
       { title: '状态', key: 'status', enum: true },
       { title: '更新时间', key: 'modifyTime', date: true },
-      { title: '更信人', key: 'modifyUser', },
+      { title: '更新人', key: 'modifyUser', },
       { title: '操作', key: 'keyWords', slot: 'action' }
     ] as ColumnExtra[]
   }
@@ -228,8 +228,8 @@ export default class Main extends ViewBase {
       startBeginTime: query.startBeginTime || null,
       startEndTime: query.startEndTime || null,
       status: query.status || null,
-      pageIndex: query.pageIndex || null,
-      pageSize: query.pageSize || null,
+      pageIndex: parseFloat(query.pageIndex as string) || null,
+      pageSize: parseFloat(query.pageSize as string) || null,
       isUp
     }
     this.sortItemSubmit(this.postId, id, data)
