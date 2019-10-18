@@ -97,7 +97,9 @@ export interface Filter extends OldFilter {
   // --------------------------------------------------
 
   /** 组件 LazyInput 的选项 */
-  input?: true,
+  input?: true | {
+    [key: string]: any
+  },
 
   /** 组件 Select 的选项 */
   select?: true | {
