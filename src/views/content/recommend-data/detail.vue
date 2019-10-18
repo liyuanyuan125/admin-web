@@ -82,7 +82,9 @@ export default class DetailPage extends ViewBase {
       {
         name: 'name',
         defaultValue: '',
-        input: true,
+        input: {
+          maxlength: 50
+        },
         label: '名称',
         span: 22,
         required: true
@@ -131,6 +133,7 @@ export default class DetailPage extends ViewBase {
         defaultValue: false,
         switch: true,
         label: '是否广告',
+        required: true,
         span: 22,
       },
 
@@ -140,7 +143,6 @@ export default class DetailPage extends ViewBase {
         input: true,
         label: '跳转地址',
         span: 22,
-        required: true
       },
 
       {
@@ -149,7 +151,6 @@ export default class DetailPage extends ViewBase {
         input: true,
         label: '标题',
         span: 22,
-        required: true
       },
 
     ]

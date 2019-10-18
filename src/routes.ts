@@ -1490,7 +1490,11 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
           default:
             return '新增推荐位'
         }
-      }
+      },
+      breadcrumbs: [
+        'content-recommend-post'
+      ],
+      siderNav: 'content-recommend'
     },
     props: paramTypes({ id: Number, action: String })
   },
@@ -1502,7 +1506,11 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     component: () => import('./views/content/recommend-data/list.vue'),
     meta: {
       authKey: '',
-      title: '推荐数据'
+      title: '推荐数据',
+      breadcrumbs: [
+        'content-recommend-post'
+      ],
+      siderNav: 'content-recommend-post'
     }
   },
 
@@ -1522,7 +1530,12 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
           default:
             return '新增推荐数据'
         }
-      }
+      },
+      breadcrumbs: [
+        'content-recommend-post',
+        'content-recommend-data'
+      ],
+      siderNav: 'content-recommend-post'
     },
     props: paramTypes({ id: Number, action: String })
   },
