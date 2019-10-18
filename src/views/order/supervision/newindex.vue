@@ -213,6 +213,7 @@ export default class IndexPage extends ViewBase {
                 name: 'status',
                 defaultValue: this.pay,
             },
+
             {
                 name: 'companyId',
                 defaultValue: 0,
@@ -412,7 +413,15 @@ export default class IndexPage extends ViewBase {
         this.list = list
     }
 
-    async mounted() {
+    async created() {
+        // if (location.search == '') {
+        //     this.$router.push({
+        //         name: this.$router.name,
+        //         query: {
+        //             dateRange: this.deDate
+        //         }
+        //     })
+        // }
         // this.$router.push({ name: '', pa })
         // this.listPage.query.status = 2
     }
