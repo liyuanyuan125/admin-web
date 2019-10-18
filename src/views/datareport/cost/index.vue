@@ -8,6 +8,7 @@
              class='sels'
              v-model='query.movieId'
              clearable
+             :loading='loadings'
              filterable
              placeholder="影片名称"
              style='width: 150px;'
@@ -361,18 +362,18 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       //     averagePersonCount: sumAveragePersonCount,
       //   })
       // }
-      const a = this.movieName == '' ? '影片名称：全部' : '影片名称' + this.movieName
-      const b = this.query.box == null ? '预测票房：全部' : '预测票房' + this.query.box
-      const c = this.query.type == 1 ? '投放时长：' + this.query.typeCount :
-      '投放人次：' + (this.query.typeCount == null ? '暂无' : this.query.typeCount)
-      const d = this.query.week == null ? '密钥周期：45' : '密钥周期' + this.query.week
-      this.bbb = [
-        {
-          exportDate: moment((new Date().getTime())).format(timeFormat),
-          query: a + ' ' + b + ' ' + c + ' ' + d,
-          ...this.list[0]
-        }
-      ]
+      // const a = this.movieName == '' ? '影片名称：全部' : '影片名称' + this.movieName
+      // const b = this.query.box == null ? '预测票房：全部' : '预测票房' + this.query.box
+      // const c = this.query.type == 1 ? '投放时长：' + this.query.typeCount :
+      // '投放人次：' + (this.query.typeCount == null ? '暂无' : this.query.typeCount)
+      // const d = this.query.week == null ? '密钥周期：45' : '密钥周期' + this.query.week
+      // this.bbb = [
+      //   {
+      //     exportDate: moment((new Date().getTime())).format(timeFormat),
+      //     query: a + ' ' + b + ' ' + c + ' ' + d,
+      //     ...this.list[0]
+      //   }
+      // ]
       this.total = total
     } catch (ex) {
       this.handleError(ex)

@@ -23,8 +23,8 @@
                 <Col :span='12'><span class='spons'>上传渠道&nbsp;：&nbsp;</span>{{listitem.fileFrom == null ? '暂无' : listitem.fileFrom}}</Col>
             </Row>
         </div>
-        <div class='title' v-if='listitem.approvalStatus == 2 || listitem.approvalStatus == 4'>监播审核</div>
-        <Row class='bos' v-if='listitem.approvalStatus == 2 || listitem.approvalStatus == 4'>
+        <div class='title' v-if='listitem.approvalStatus == 2 || listitem.approvalStatus == 3  || listitem.approvalStatus == 4'>监播审核</div>
+        <Row class='bos' v-if='listitem.approvalStatus == 2 || listitem.approvalStatus == 3  || listitem.approvalStatus == 4'>
             <Col :span='15'>
             <span v-if='listitem.fileUrl == null'>暂无监播文件</span>
             <video ref='videoplay' :style="{'transform': 'rotate(' + roteNum + 'deg)', 'width': roteTrue != true ? '350px' : '100%' }" v-if='listitem.fileUrl != null' :src='listitem.fileUrl' width='93%' height='60%' autobuffer controls="controls" type="video/mp4" ></video>
@@ -43,11 +43,11 @@
             <Row style='margin-top: -18px;color: red;font-size: 12px;'>如未勾选，则表示该广告审核成功，正常财务结算</Row>
             <Row class='mainRow'>
                 <Form style='margin-top: -18px;padding-left: 20px;' ref="dataForm" :model="dataForm" label-position="left" :label-width="80">
-                    <Checkbox :indeterminate="indeterminate" :value="checkAll" :disabled='listitem.approvalStatus == 4' @click.prevent.native="handleCheckAll">全选</Checkbox>
+                    <Checkbox :indeterminate="indeterminate" :value="checkAll" :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3' @click.prevent.native="handleCheckAll">全选</Checkbox>
                     <!-- <Checkbox v-if='listitem.approvalStatus == 4' :indeterminate="indeterminate" :value="checkAll" disabled >全选</Checkbox> -->
                     <FormItem label="" prop="closeReason">
                         <CheckboxGroup v-model="dataForm.orderIds">
-                            <Checkbox v-for="(it,index) in listitem.videoDetails" :key="it.index" :value="it.orderId" :label="it.orderId" :disabled='listitem.approvalStatus == 4'>
+                            <Checkbox v-for="(it,index) in listitem.videoDetails" :key="it.index" :value="it.orderId" :label="it.orderId" :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3'>
                                 <em style='font-style: normal;font-right: -5px;' v-for='(its,index) in deliveryPositionList' :key='index' v-if='it.deliveryPosition != null && it.deliveryPosition == its.key'>【{{its.text}}】</em>
                               {{it.videoName}} ({{it.videoLength}})s
                             </Checkbox></br>
@@ -58,7 +58,7 @@
                     <Row>审核未通过的原因</Row>
                     <FormItem label="" prop="closeReason">
                         <CheckboxGroup v-model="dataForm.reasonOrderIds">
-                            <Checkbox v-for="(it,index) in reason" :key="it.index" :value="it.key" :label="it.key" :disabled='listitem.approvalStatus == 4'>{{it.text}} </Checkbox>
+                            <Checkbox v-for="(it,index) in reason" :key="it.index" :value="it.key" :label="it.key" :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3'>{{it.text}} </Checkbox>
                         </CheckboxGroup>
                     </FormItem>
                 </Form>

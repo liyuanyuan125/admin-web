@@ -13,15 +13,12 @@ import EditForm, { Field, Validator } from '@/components/editForm'
 import { success } from '@/ui/modal'
 import { MapType } from '@/util/types'
 import { devLog } from '@/util/dev'
-import BizPricingTable from './components/bizPricingTable.vue'
-import LogTable from './components/logTable.vue'
 
 import {
   beforeCreate,
   queryItem,
   newItem,
   editItem,
-  auditItem
 } from './data'
 
 const ratioValidator: Validator = (rule, value: Array<{ value: number }>, callback) => {
@@ -38,13 +35,7 @@ const ratioValidator: Validator = (rule, value: Array<{ value: number }>, callba
 const actionMap: MapType<any> = {
   view: null,
   edit: editItem,
-  create: newItem,
-  audit: (item: any) =>
-    auditItem({
-      id: item.id,
-      pass: item.pass,
-      refuseReason: item.pass ? '' : item.refuseReason
-    })
+  create: newItem
 }
 
 @Component({
@@ -52,7 +43,9 @@ const actionMap: MapType<any> = {
     EditForm
   }
 })
-export default class CPMDetail extends ViewBase {
+export default class DetailPage extends ViewBase {
+
+  postId: number|string|null = null
 
   get isView() {
     return this.action == 'view'
@@ -73,12 +66,16 @@ export default class CPMDetail extends ViewBase {
 
     const list: any[] = [
       {
+        name: 'postId',
+        defaultValue: this.postId,
+      },
+
+      {
         name: 'id',
         defaultValue: this.id,
-        label: '活动ID',
+        label: 'ID',
         text: true,
         span: 20,
-        group: '活动信息',
         visible: (item: any) => (this.action == 'create' ? false : true)
       },
 
@@ -86,16 +83,7 @@ export default class CPMDetail extends ViewBase {
         name: 'name',
         defaultValue: '',
         input: true,
-        label: '活动名称',
-        span: 12,
-        required: true
-      },
-
-      {
-        name: 'slogan',
-        defaultValue: '',
-        input: true,
-        label: '广告语(限10个字)',
+        label: '名称',
         span: 22,
         required: true
       },
@@ -105,10 +93,10 @@ export default class CPMDetail extends ViewBase {
         defaultValue: [0, 0],
         dateRange: true,
         width: 350,
-        span: 10,
+        span: 22,
         required: true,
-        label: '活动时间',
-        placeholder: '活动时间',
+        label: '时间',
+        placeholder: '时间',
         dealParam(value: any) {
           const [beginTime, endTime] = value
           return {
@@ -130,117 +118,73 @@ export default class CPMDetail extends ViewBase {
       },
 
       {
-        name: 'customerType',
-        defaultValue: 0,
-        radio: {
-          enumKey: 'customerTypeList',
-        },
-        label: '客户范围',
-        span: 20,
+        name: 'uploadPic',
+        defaultValue: '',
+        label: '上传图片(80*80px)',
+        span: 18,
+        image: true,
         required: true
       },
 
       {
-        name: 'adTypes',
-        defaultValue: [],
-        required: true,
-        check: {
-          enumKey: 'adTypeList'
-        },
-        label: '广告类型',
-        span: 20,
+        name: 'isAD',
+        defaultValue: false,
+        switch: true,
+        label: '是否广告',
+        span: 22,
       },
 
       {
-        name: 'type',
-        defaultValue: 0,
-        radio: {
-          enumKey: 'typeList',
-        },
-        label: '促销活动类型',
-        span: 20,
+        name: 'url',
+        defaultValue: '',
+        input: true,
+        label: '跳转地址',
+        span: 22,
         required: true
       },
 
       {
-        name: 'bizPricingList',
-        defaultValue: [],
-        label: ' ',
-        component: BizPricingTable,
-        span: 20,
-        props: {
-          title: '商业广告折扣列表'
-        },
-        rules: [
-          {
-            validator: ratioValidator
-          }
-        ],
-        visible: (item: any) => ((item.adTypes.findIndex((it: any) => it == 1) !== -1) && item.type === 1)
-        ? true
-        : false
+        name: 'title',
+        defaultValue: '',
+        input: true,
+        label: '标题',
+        span: 22,
+        required: true
       },
-
-      {
-        name: 'prevuePricingList',
-        defaultValue: [],
-        label: ' ',
-        component: BizPricingTable,
-        span: 20,
-        props: {
-          title: '预告片广告折扣列表'
-        },
-        rules: [
-          {
-            validator: ratioValidator
-          }
-        ],
-        visible: (item: any) => ((item.adTypes.findIndex((it: any) => it == 2) !== -1) && item.type === 1)
-        ? true
-        : false
-      }
 
     ]
 
     readonly && list.forEach(it => (it.disabled = true))
-    readonly && list.push(
-      {
-        name: 'audited',
-        defaultValue: false,
-      },
+    // readonly && list.push(
+    //   {
+    //     name: 'audited',
+    //     defaultValue: false,
+    //   },
 
-      {
-        name: 'pass',
-        defaultValue: true,
-        disabled: isView,
-        switch: true,
-        group: '审核意见',
-        label: '审核通过',
-        span: 6,
-        visibleCol: (item: any) => isAudit || item.pass
-      },
+    //   {
+    //     name: 'pass',
+    //     defaultValue: true,
+    //     disabled: isView,
+    //     switch: true,
+    //     group: '审核意见',
+    //     label: '审核通过',
+    //     span: 6,
+    //     visibleCol: (item: any) => isAudit || item.pass
+    //   },
 
-      {
-        name: 'refuseReason',
-        defaultValue: '',
-        disabled: isView,
-        required: true,
-        input: {
-          prepend: '审核不通过的理由'
-        },
-        span: 8,
-        visible: (item: any) => !item.pass,
-        visibleCol: (item: any) => isAudit || item.pass
-      },
-
-      {
-        name: 'logList',
-        defaultValue: [],
-        component: LogTable,
-        group: '操作日志',
-        visibleCol: () => isView
-      }
-    )
+    //   {
+    //     name: 'refuseReason',
+    //     defaultValue: '',
+    //     disabled: isView,
+    //     required: true,
+    //     input: {
+    //       prepend: '审核不通过的理由'
+    //     },
+    //     span: 8,
+    //     visible: (item: any) => !item.pass,
+    //     visibleCol: (item: any) => isAudit || item.pass
+    //   }
+    // )
 
     return list
   }
@@ -251,15 +195,14 @@ export default class CPMDetail extends ViewBase {
   item: any = null
   submit = actionMap[this.action]
 
-  bizPricingListTemp: any[] = []
-  prevuePricingListTemp: any[] = []
-
-  created() {}
+  created() {
+    this.postId = parseInt(this.$route.params.postId, 0) || null
+  }
 
   async fetch() {
     let data = null
     const beforeEditData = null
-    if (this.action === 'edit' || this.action === 'view' || this.action === 'audit') {
+    if (this.action === 'edit' || this.action === 'view' ) {
       data = await queryItem({
         id: this.id
       })
@@ -295,5 +238,8 @@ export default class CPMDetail extends ViewBase {
   .input-number {
     width: 78px;
   }
+}
+/deep/ .col-field-upload-pic {
+  padding-bottom: 20px;
 }
 </style>

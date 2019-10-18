@@ -1,4 +1,4 @@
-import { get, post, put } from '@/fn/ajax'
+import { get, post, put, del } from '@/fn/ajax'
 import { dot, intDate, readableThousands, validDate, baifen, wanfen } from '@/util/dealData'
 import { KeyText, MapType } from '@/util/types'
 import { keyBy } from 'lodash'
@@ -39,8 +39,20 @@ const dealEditItem = (item: any) => {
  * @param query 查询条件，http://yapi.aiads-dev.com/project/306/interface/api/6903
  */
 export async function queryList(query: any = {}) {
-  const data = await get(`/promotion/cpm/list`, query)
+  const data = await get(`/content/recommend-post/list`, query)
   return data
+  return await mockGet(query, {
+    'items|20': [
+      {
+        id: tid,
+        name: title20,
+        description: title20,
+        updateTime: '20190101',
+        updateUser: title20
+      },
+    ],
+    totalCount: 20
+  })
 }
 
 /**
@@ -49,7 +61,7 @@ export async function queryList(query: any = {}) {
  * @param id
  */
 export async function disabledItem(id: number) {
-  const { data } = await put(`/content/recommend-post/delete/${id}`)
+  const { data } = await del(`/content/recommend-post/delete/${id}`)
   return data
 }
 
@@ -97,21 +109,15 @@ export async function beforeCreate() {
  */
 export async function queryItem(query: any = {}) {
   const { id } = query
-  const { data } = await get(`/promotion/cpm/detail/${id}`)
-  const {
-    item: {
-      beginTime,
-      endTime
-    }
-  } = data
-  data.item.marketDate = [beginTime, endTime]
-  if ( !data.item.prevuePricingList ) {
-    data.item.prevuePricingList = data.prevuePricingList
-  }
-  if ( !data.item.bizPricingList ) {
-    data.item.bizPricingList = data.bizPricingList
-  }
+  const { data } = await get(`/content/recommend-post/detail/${id}`)
   return data
+  return await mockGet(query, {
+    item: {
+      id: tid,
+      name: title20,
+      description: title20
+    }
+  })
 }
 
 /**
@@ -120,16 +126,7 @@ export async function queryItem(query: any = {}) {
  * @param item 数据
  */
 export async function editItem(item: any) {
-  // bizPricingList
-  const hasList1 = (item.adTypes.findIndex((it: any) => it == 1) !== -1) && item.type === 1 ? true
-  : false
-  // prevuePricingList
-  const hasList2 = (item.adTypes.findIndex((it: any) => it == 2) !== -1) && item.type === 1 ? true
-  : false
-  item.bizPricingList = hasList1 ? item.bizPricingList : null
-  item.prevuePricingList = hasList2 ? item.prevuePricingList : null
-  const pdata = dealEditItem(item)
-  const { data } = await put(`/promotion/cpm/edit`, pdata)
+  const { data } = await put(`/content/recommend-post/edit`, item)
   return data
 }
 
@@ -139,10 +136,12 @@ export async function editItem(item: any) {
  * @param postData 编辑项
  */
  export async function newItem(postData: any) {
-  const keyWordsContent = postData.keyWordsContent || null
-  const imgsList = postData.imgsList || null
-  const pdata = dealEditItem(postData)
-  const { data } = await post('/promotion/cpm/create', pdata)
+  const pdata = {
+    name: postData.name,
+    description: postData.description,
+    recommendId: postData.recommendId
+  }
+  const { data } = await post('/content/recommend-post/create', pdata)
   return data
 }
 
