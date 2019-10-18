@@ -96,10 +96,8 @@ export default class DetailPage extends ViewBase {
         defaultValue: '',
         input: true,
         label: '推荐位描述',
-        span: 22,
-        required: true
+        span: 22
       },
-
     ]
 
     readonly && list.forEach(it => (it.disabled = true))
