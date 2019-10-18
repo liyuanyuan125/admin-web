@@ -228,8 +228,8 @@ export default class Main extends ViewBase {
       startBeginTime: query.startBeginTime || null,
       startEndTime: query.startEndTime || null,
       status: query.status || null,
-      pageIndex: query.pageIndex || null,
-      pageSize: query.pageSize || null,
+      pageIndex: parseFloat(query.pageIndex) || null,
+      pageSize: parseFloat(query.pageSize) || null,
       isUp
     }
     this.sortItemSubmit(this.postId, id, data)
