@@ -62,6 +62,7 @@ import { PermPage } from '@/util/types'
 import { getMenuList, SiderMenuItem, BreadcrumbConfig, getBreadcrumbListFromRoute } from './layout'
 import event from '@/fn/event'
 import { Route } from 'vue-router'
+import { RouteMetaBase } from '@/routes'
 
 let instance: any = null
 let viewName: string = 'default'
@@ -116,13 +117,8 @@ export default class MainLayout extends ViewBase {
     return result
   }
 
-  // 映射某些页面到 sider 菜单
-  siderActiveMap: any = {
-    // 'from-page-name': 'nav-name',
-  }
-
   get siderActiveName() {
-    const { name } = this.$route
+    const { name, meta } = this.$route
 
     if (name == null) {
       return
@@ -139,8 +135,9 @@ export default class MainLayout extends ViewBase {
       return remain
     }
 
-    // 最后的手段：硬编码映射关系
-    return this.siderActiveMap[name]
+    // 最后的手段，使用 meta 中的配置
+    const { siderNav = null } = meta as RouteMetaBase || {}
+    return siderNav
   }
 
   async created() {

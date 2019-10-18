@@ -52,6 +52,10 @@ interface RouteMetaBase {
    * 只需设置中间的 route name 就行，页面本身与主导航，会自动添加
    */
   breadcrumbs?: string[]
+  /**
+   * 侧栏菜单选中的菜单项，若自动判断不能起作用，可设置该项
+   */
+  siderNav?: string
   [key: string]: any
 }
 
