@@ -134,7 +134,7 @@ export default class Main extends ViewBase {
     { title: '账单生成时间', key: 'createTime', minWidth: 100, editor: 'dateTime'},
     { title: '曝光场次', key: 'showCount', minWidth: 60 },
     { title: '曝光人次/人次', key: 'personCount', minWidth: 60 },
-    { title: '广告片类型', key: 'advertType', minWidth: 100, emum: true},
+    { title: '广告片类型', key: 'advertType', minWidth: 100, enum: 'advertTypeCodeList'},
     { title: '账单金额', key: 'amount', minWidth: 100 },
     { title: '账单状态', key: 'billStatus', minWidth: 60, enum: true},
     { title: '发票状态', key: 'invoiceStatus', minWidth: 60, enum: true},
