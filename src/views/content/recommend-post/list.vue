@@ -162,23 +162,6 @@ export default class Main extends ViewBase {
       enName
     }
     this.enabledItemVisible = true
-
-    // 推荐数据使用
-    // const pageIndexI = this.filters.findIndex((it: any) => {
-    //   return it.name === 'pageIndex'
-    // })
-    // const pageSizeI = this.filters.findIndex((it: any) => {
-    //   return it.name === 'pageSize'
-    // })
-    // const query = {
-    //   ...this.$route.query
-    // }
-    // if (query.dateRange !== '' ) {
-    //   query.beginTime = (query.dateRange as string).split('-')[0]
-    //   query.endTime = (query.dateRange as string).split('-')[1]
-    // }
-    // delete query.dateRange
-    // console.log(query, 'query')
   }
 
   // 下线请求
