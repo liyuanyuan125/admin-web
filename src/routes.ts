@@ -1413,7 +1413,6 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     component: () => import('./views/promotion/cpm/detail.vue'),
     meta: {
       authKey: '',
-      siderNav: 'promotion-cpm',
       title({ params: { action } }) {
         switch (action) {
           case 'view':

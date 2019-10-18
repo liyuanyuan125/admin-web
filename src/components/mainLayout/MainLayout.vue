@@ -136,7 +136,7 @@ export default class MainLayout extends ViewBase {
     }
 
     // 最后的手段，使用 meta 中的配置
-    const { siderNav = null } = this.$route.meta as RouteMetaBase || {}
+    const { siderNav = null } = meta as RouteMetaBase || {}
     return siderNav
   }
 
