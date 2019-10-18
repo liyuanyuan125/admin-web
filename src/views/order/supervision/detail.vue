@@ -27,7 +27,7 @@
         <Row class='bos' v-if='listitem.approvalStatus == 2 || listitem.approvalStatus == 3  || listitem.approvalStatus == 4'>
             <Col :span='15'>
             <span v-if='listitem.fileUrl == null'>暂无监播文件</span>
-            <video ref='videoplay' :style="{'transform': 'rotate(' + roteNum + 'deg)', 'width': roteTrue != true ? '350px' : '100%' }" v-if='listitem.fileUrl != null' :src='listitem.fileUrl' width='93%' height='60%' autobuffer controls="controls" type="video/mp4" ></video>
+            <video ref='videoplay' :style="{'transform': 'rotate(' + roteNum + 'deg)', 'width': roteTrue != true ? '350px' : '98%' }" v-if='listitem.fileUrl != null' :src='listitem.fileUrl' width='93%' height='60%' autobuffer controls="controls" type="video/mp4" ></video>
                 <p v-if='listitem.fileUrl != null' style='margin-top: 3px;'>选择播放速率：
                     <Select v-model="videoplay.speed" placeholder="设置播放状态">
                       <Option v-for="it in videoplayList" :key="it.key" :value="it.key"

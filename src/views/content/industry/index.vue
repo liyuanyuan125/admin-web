@@ -61,7 +61,7 @@ export default class Main extends ViewBase {
         defaultValue: '',
         input: true,
         width: 85,
-        placeholder: '活动名称'
+        placeholder: '行业名称'
       },
 
       {
@@ -69,7 +69,7 @@ export default class Main extends ViewBase {
         defaultValue: '',
         input: true,
         width: 85,
-        placeholder: '活动ID'
+        placeholder: '行业ID'
       },
 
       {
@@ -102,7 +102,7 @@ export default class Main extends ViewBase {
   // 内容列表
   get columns() {
     return [
-      { title: '序号', key: 'id' },
+      { title: 'ID', key: 'id' },
       { title: '行业名称', key: 'tradeName' },
       { title: '行业ID', key: 'tradeId' },
       { title: '更新时间', slot: 'modifyTime', },
