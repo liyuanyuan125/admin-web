@@ -17,6 +17,9 @@
           <Col :span="8"><p><label>影城系统人次</label><em>{{items.resourcePersonCount || '-'}}</em></p></Col>
         </Row>
         <Row>
+          <Col :span="8"><p><label>影城金额/元</label><em>{{items.resourceAmount || '-'}}</em></p></Col>
+        </Row>
+        <Row>
           <Col :span="8"><p><label>影城系统截图</label>
           <ImagePreviewer
             v-for="(item, i) in (items.picturesUrl || [])"
