@@ -97,7 +97,7 @@ export default class Main extends ViewBase {
   get listPage() {
     return this.$refs.listPage as ListPage
   }
-  // nxd 20191014
+
   get filters() {
     return [
       {

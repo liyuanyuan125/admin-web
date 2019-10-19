@@ -6,7 +6,6 @@
 </template>
 
 <script lang="ts">
-// test gitlab
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import EditForm, { Field, Validator } from '@/components/editForm'
@@ -101,37 +100,6 @@ export default class DetailPage extends ViewBase {
     ]
 
     readonly && list.forEach(it => (it.disabled = true))
-    // readonly && list.push(
-    //   {
-    //     name: 'audited',
-    //     defaultValue: false,
-    //   },
-
-    //   {
-    //     name: 'pass',
-    //     defaultValue: true,
-    //     disabled: isView,
-    //     switch: true,
-    //     group: '审核意见',
-    //     label: '审核通过',
-    //     span: 6,
-    //     visibleCol: (item: any) => isAudit || item.pass
-    //   },
-
-    //   {
-    //     name: 'refuseReason',
-    //     defaultValue: '',
-    //     disabled: isView,
-    //     required: true,
-    //     input: {
-    //       prepend: '审核不通过的理由'
-    //     },
-    //     span: 8,
-    //     visible: (item: any) => !item.pass,
-    //     visibleCol: (item: any) => isAudit || item.pass
-    //   }
-    // )
-
     return list
   }
   @Prop({ type: Number, default: 0 }) id!: number
