@@ -108,6 +108,16 @@ export interface Filter extends OldFilter {
     [key: string]: any
   },
 
+  /**
+   * 组件 remoteSelect 的选项，若设置了该项，
+   * 则说明会用 RemoteSelect 组件渲染该项
+   */
+  remoteSelect?: true | {
+    fetch: RemoteSelectFetch,
+    backfill?: RemoteSelectBackfill
+    [key: string]: any
+  },
+
   /** 组件 DatePicker 的选项 */
   date?: true | {
     /**
@@ -121,20 +131,16 @@ export interface Filter extends OldFilter {
   },
 
   /** 组件 DateRangePicker 的选项 */
-  dateRange?: true,
-
-  /** 组件 WeekDatePicker 的选项 */
-  week?: true,
-
-  /**
-   * 组件 remoteSelect 的选项，若设置了该项，
-   * 则说明会用 RemoteSelect 组件渲染该项
-   */
-  remoteSelect?: true | {
-    fetch: RemoteSelectFetch,
-    backfill?: RemoteSelectBackfill
+  dateRange?: true | {
     [key: string]: any
   },
+
+  /** 组件 WeekDatePicker 的选项 */
+  week?: true | {
+    [key: string]: any
+  },
+
+  // TODO: company 这种业务组件，不应该放在这里，将来重构时移除
 
   /**
    * 组件 companySelect 的选项

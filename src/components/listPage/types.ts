@@ -52,30 +52,6 @@ export interface Column extends MapType<any> {
  */
 export interface ColumnExtra extends Column {
   /**
-   * 编辑器
-   */
-  editor?: Editors
-
-  /**
-   * controlStatus 字段的 key，Deprecated 组件使用
-   * 大部分情况下，都不需要传，只要字段名 fn 与 controlStatusKey 符合以下规则
-   * => controlStatusKey = fn.replace(/Name$|$/, 'ControlStatus')
-   */
-  controlStatusKey?: string
-
-  /**
-   * enumType 字段的 key，PoptipSelect 组件使用
-   * 大部分情况下，都不需要传，只要字段名 fn 与 enumKey 符合以下规则
-   * => enumKey = fn.replace(/Code$|$/, 'List')
-   */
-  enumKey?: string
-
-  /**
-   * 更新字段的函数，PoptipSelect 组件使用
-   */
-  updateField?: (id: any, value: any) => Promise<any>
-
-  /**
    * 权限配置
    */
   auth?: string
@@ -111,6 +87,35 @@ export interface ColumnExtra extends Column {
 
   /** 格式化成日期带时间 */
   dateTime?: true
+
+  // === 以下是废弃字段 ===
+
+  /**
+   * 废弃的。编辑器
+   */
+  editor?: Editors
+
+  /**
+   * 废弃的。
+   * controlStatus 字段的 key，Deprecated 组件使用
+   * 大部分情况下，都不需要传，只要字段名 fn 与 controlStatusKey 符合以下规则
+   * => controlStatusKey = fn.replace(/Name$|$/, 'ControlStatus')
+   */
+  controlStatusKey?: string
+
+  /**
+   * 废弃的。
+   * enumType 字段的 key，PoptipSelect 组件使用
+   * 大部分情况下，都不需要传，只要字段名 fn 与 enumKey 符合以下规则
+   * => enumKey = fn.replace(/Code$|$/, 'List')
+   */
+  enumKey?: string
+
+  /**
+   * 废弃的。
+   * 更新字段的函数，PoptipSelect 组件使用
+   */
+  updateField?: (id: any, value: any) => Promise<any>
 }
 
 /**
