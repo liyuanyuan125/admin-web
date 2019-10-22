@@ -315,11 +315,18 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
     if (this.query.type == 1) {
       if (this.query.typeCount == null) {
-        info('请输入投放天数')
-        return
+        this.query.typeCount = this.query.week
+        // info('请输入投放天数')
+        // return
       }
       if (this.query.typeCount > this.query.week) {
         info('投放天数不可大于密钥周期')
+        return
+      }
+    }
+    if (this.query.type == 2) {
+      if (this.query.typeCount == null) {
+        info('请输入投放人数')
         return
       }
     }
