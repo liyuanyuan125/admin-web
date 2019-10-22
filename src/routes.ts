@@ -1448,6 +1448,83 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: paramTypes({ id: Number, action: String })
   },
 
+  // 内容管理 - 推荐位管理 - 列表
+  {
+    path: '/content/recommendPost/list',
+    name: 'content-recommend-post',
+    component: () => import('./views/content/recommend-post/list.vue'),
+    meta: {
+      authKey: '',
+      title: '推荐位管理'
+    }
+  },
+
+  // 内容管理 - 推荐位管理 - 详情 - 新建 - 编辑
+  {
+    path: '/content/recommendPost/detail/:id?/:action',
+    name: 'content-recommend-post-detail',
+    component: () => import('./views/content/recommend-post/detail.vue'),
+    meta: {
+      authKey: '',
+      title({ params: { action } }) {
+        switch (action) {
+          case 'view':
+            return '查看'
+          case 'edit':
+            return '编辑'
+          default:
+            return '新增推荐位'
+        }
+      },
+      breadcrumbs: [
+        'content-recommend-post'
+      ],
+      siderNav: 'content-recommend'
+    },
+    props: paramTypes({ id: Number, action: String })
+  },
+
+  // 内容管理 - 推荐位数据 - 列表
+  {
+    path: '/content/recommendData/:postId/list',
+    name: 'content-recommend-data',
+    component: () => import('./views/content/recommend-data/list.vue'),
+    meta: {
+      authKey: '',
+      title: '推荐数据',
+      breadcrumbs: [
+        'content-recommend-post'
+      ],
+      siderNav: 'content-recommend-post'
+    }
+  },
+
+  // 内容管理 - 推荐数据 - 详情 - 新建 - 编辑
+  {
+    path: '/content/recommendData/detail/:postId?/:id?/:action',
+    name: 'content-recommend-data-detail',
+    component: () => import('./views/content/recommend-data/detail.vue'),
+    meta: {
+      authKey: '',
+      title({ params: { action } }) {
+        switch (action) {
+          case 'view':
+            return '查看'
+          case 'edit':
+            return '编辑'
+          default:
+            return '新增推荐数据'
+        }
+      },
+      breadcrumbs: [
+        'content-recommend-post',
+        'content-recommend-data'
+      ],
+      siderNav: 'content-recommend-post'
+    },
+    props: paramTypes({ id: Number, action: String })
+  },
+
   {
     path: '/system/setup',
     name: 'system-setup',
