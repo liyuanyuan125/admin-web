@@ -61,6 +61,10 @@
                             <Checkbox v-for="(it,index) in reason" :key="it.index" :value="it.key" :label="it.key" :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3'>{{it.text}} </Checkbox>
                         </CheckboxGroup>
                     </FormItem>
+                    <!-- <Row style='margin-top: -32px;' v-if='dataForm.reasonOrderIds.indexOf("7") != -1 '>审核未通过原因(勾选其他时):</Row>
+                    <FormItem label="" prop="closeReason" v-if='dataForm.reasonOrderIds.indexOf("7") != -1 '>
+                         <Input :maxlength="120" type='textarea' placeholder='勾选其他时请输入原因' v-model="dataForm.refuseReason"></Input>
+                    </FormItem> -->
                 </Form>
             </Row>
             <div v-if='listitem.approvalStatus == 2' class="dialog-footer">
@@ -132,10 +136,11 @@ const timeFormat = 'YYYY-MM-DD HH:mm:ss'
     components: {}
 })
 export default class Main extends ViewBase {
-    dataForm = {
+    dataForm: any = {
         closeReason: '',
         orderIds: [],
-        reasonOrderIds: []
+        reasonOrderIds: [],
+        // refuseReason: ''
     }
 
 
@@ -259,6 +264,12 @@ export default class Main extends ViewBase {
                 info('请选择未通过原因')
                 return
             }
+            //  else if (this.dataForm.reasonOrderIds.indexOf('7') != -1) {
+            //     if (this.dataForm.refuseReason == '') {
+            //         info('请输入拒绝原因')
+            //         return
+            //     }
+            // }
         }
         const dataItem: any = JSON.parse((sessionStorage.getItem('supinfo') as any))
         this.videoIdsList = {
@@ -325,6 +336,12 @@ export default class Main extends ViewBase {
                 info('请选择未通过原因')
                 return
             }
+            //  else if (this.dataForm.reasonOrderIds.indexOf('7') != -1) {
+            //     if (this.dataForm.refuseReason == '') {
+            //         info('请输入拒绝原因')
+            //         return
+            //     }
+            // }
         }
         const aaa = await approve(this.$route.params.id,
             { orderIds: this.dataForm.orderIds, fixRefuses: this.dataForm.reasonOrderIds })
@@ -483,5 +500,13 @@ export default class Main extends ViewBase {
 
 /deep/ .ivu-checkbox-group-item {
   width: 100%;
+}
+/deep/ textarea {
+  min-height: 80px;
+  max-height: 80px;
+}
+/deep/ .ivu-input {
+  width: 95%;
+  height: 50px;
 }
 </style>
