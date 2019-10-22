@@ -237,6 +237,14 @@ export default class IndexPage extends ViewBase {
                 placeholder: '资源方影院'
             },
 
+            // {
+            //     name: 'code',
+            //     defaultValue: '',
+            //     type: 'input',
+            //     width: 140,
+            //     placeholder: '专资编码'
+            // },
+
             {
                 name: 'movieName',
                 defaultValue: '',
@@ -247,7 +255,7 @@ export default class IndexPage extends ViewBase {
 
             {
                 name: 'dateRange',
-                defaultValue: this.deDate,
+                defaultValue: location.search == '' ? this.deDate : '',
                 week: true,
                 // type: 'dateRange',
                 width: 200,
@@ -269,6 +277,22 @@ export default class IndexPage extends ViewBase {
                 placeholder: '商务负责人'
             },
         ]
+        // const up: any = [
+        //     {
+        //         name: 'dateRang3e',
+        //         defaultValue: '',
+        //         type: 'dateRange',
+        //         width: 200,
+        //         placeholder: '上传时间',
+        //         dealParam(value: string) {
+        //             const [approvalBeginTime, approvalEndTime] = value ? value.split('-') : [null, null]
+        //             return {
+        //                 approvalBeginTime,
+        //                 approvalEndTime
+        //             }
+        //         }
+        //     },
+        // ]
         const bbb: any = [{
                 name: 'approvalUserName',
                 defaultValue: '',
@@ -303,6 +327,14 @@ export default class IndexPage extends ViewBase {
             }
         ]
 
+        // if (this.status == '1') {
+        //   return [...aaa, ...ccc] as ColumnExtra[]
+        // } else if (this.status == '3' || this.status == '4') {
+        //   return [...aaa, ...up, ...bbb, ...ccc] as ColumnExtra[]
+        // } else {
+        //   return [...aaa, ...up, ...ccc] as ColumnExtra[]
+        // }
+
         return this.status == '3' || this.status == '4' ? [...aaa, ...bbb, ...ccc] : [...aaa, ...ccc]
     }
 
@@ -310,6 +342,7 @@ export default class IndexPage extends ViewBase {
         const aaa: any = [
             { title: '资源方公司名称', key: 'resourceName', align: 'center' },
             { title: '影院名称', key: 'cinemaName', align: 'center' },
+            // { title: '专资编码', key: 'code', align: 'center' },
             { title: '影片名称', slot: 'movieName', align: 'center' },
             { title: '广告片', slot: 'video', align: 'center' },
             {
@@ -360,11 +393,15 @@ export default class IndexPage extends ViewBase {
         const aaa: any = [
             { title: '资源方公司名称', key: 'resourceName', align: 'center' },
             { title: '影院名称', key: 'cinemaName', align: 'center' },
+            // { title: '专资编码', key: 'code', align: 'center' },
             { title: '影片名称', key: 'movieName', align: 'center' },
             { title: '投放周期', key: 'scrollDate', align: 'center' },
             { title: '商务负责人', key: 'businessDirectorName', align: 'center' },
             { title: '上传人', key: 'uploadName', align: 'center' },
-            { title: '上传时间', key: 'uploadTime', align: 'center' },
+            // { title: '上传时间', key: 'uploadTime', align: 'center' },
+        ]
+        const up: any = [
+          { title: '上传时间', key: 'uploadTime', align: 'center' },
         ]
         const ccc: any = [
             { title: '审核人', key: 'approvalName', align: 'center' },
@@ -374,8 +411,15 @@ export default class IndexPage extends ViewBase {
             { title: '状态', key: 'status', editor: 'enum' },
             { title: '广告片', key: 'videoDetails', align: 'center' },
         ]
-
-        return this.status == '3' || this.status == '4' ? [...aaa, ...ccc, ...ddd] : [...aaa, ...ddd] as ColumnExtra[]
+        if (this.status == '1') {
+          return [...aaa, ...ddd] as ColumnExtra[]
+        } else if (this.status == '3' || this.status == '4') {
+          return [...aaa, ...up, ...ccc, ...ddd] as ColumnExtra[]
+        } else {
+          return [...aaa, ...up, ...ddd] as ColumnExtra[]
+        }
+        // return this.status == '3' || this.status == '4' ?
+        // [...aaa, ...ccc, ...ddd] : [...aaa, ...ddd] as ColumnExtra[]
     }
 
     changeAll() {
@@ -414,14 +458,14 @@ export default class IndexPage extends ViewBase {
     }
 
     async created() {
-        // if (location.search == '') {
-        //     this.$router.push({
-        //         name: this.$router.name,
-        //         query: {
-        //             dateRange: this.deDate
-        //         }
-        //     })
-        // }
+        if (location.search == '') {
+            this.$router.push({
+                name: this.$route.name,
+                query: {
+                    dateRange: this.deDate as string
+                }
+            })
+        }
         // this.$router.push({ name: '', pa })
         // this.listPage.query.status = 2
     }
