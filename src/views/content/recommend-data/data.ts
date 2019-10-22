@@ -75,6 +75,24 @@ export async function disabledItem(id: number) {
 }
 
 /**
+ * isAdList 接口未提供，前端临时写死
+ * @description 1=>是 2=>否
+ */
+const isADList = [
+  {
+    key: 1,
+    text: '是'
+  },
+  {
+    key: 2,
+    text: '否'
+  }
+]
+
+
+// API未提供，前端写死 isAD参数
+
+/**
  * 创建前准备数据
  * http://yapi.aiads-dev.com/project/306/interface/api/7182
  * @param id
@@ -84,12 +102,13 @@ export async function beforeCreate() {
   const {
     channelList
   } = data
-
   const result = {
     item: {
-      channelList: channelList || []
+      channelList: channelList || [],
+      isADList
     },
-    channelList: channelList || []
+    channelList: channelList || [],
+    isADList
   }
   return result
 }
@@ -103,15 +122,13 @@ export async function queryItem(query: any = {}) {
   const { id } = query
   const { data } = await get(`/content/recommend-data/detail/${id}`)
   const dealData = {
-    ...data
+    ...data,
+    isADList
   }
   if ( !data.item ) { return data }
   const beginTime = moment(data.item.beginTime).format('YYYYMMDD') || null
   const endTime = moment(data.item.endTime).format('YYYYMMDD') || null
-  // const beginTime = data.item.beginTime || null
-  // const endTime = data.item.endTime || null
   dealData.item.marketDate = [beginTime, endTime]
-  dealData.item.isAD = (dealData.item.isAD === 1) ? true : false
   return dealData
   return await mockGet(query, {
     item: {
@@ -139,7 +156,7 @@ export async function queryItem(query: any = {}) {
     uploadPic: item.uploadPic,
     url: item.url,
     title: item.title,
-    isAD: item.isAD ? 1 : 2
+    isAD: item.isAD
   }
   const { data } = await put(`/content/recommend-data/edit/${id}`, realData)
   return data
@@ -170,7 +187,7 @@ export async function newItem(postData: any) {
     uploadPic: postData.uploadPic,
     url: postData.url,
     title: postData.title,
-    isAD: postData.isAD ? 1 : 2
+    isAD: postData.isAD
   }
   const { data } = await post(`/content/recommend-data/${postId}/create`, realData)
   return data
