@@ -1552,6 +1552,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: paramTypes({ id: Number, action: String })
   },
 
+<<<<<<< HEAD
   // 内容管理 - 行业分类管理 - 列表
   {
     path: '/content/industry',
@@ -1563,6 +1564,8 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+=======
+>>>>>>> master
   {
     path: '/system/setup',
     name: 'system-setup',
