@@ -79,10 +79,15 @@ export default class Kol extends ViewBase {
         data: { items }
       } = await kolchannel({
         channelCode: val,
+<<<<<<< HEAD
         status: 2,
+=======
+>>>>>>> master
         pageIndex: 1,
+        status: 2,
         pageSize: 1000,
       })
+      // kol 状态变更
       this.channelList = items || []
     } catch (ex) {
       this.handleError(ex)

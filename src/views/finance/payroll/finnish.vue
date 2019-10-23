@@ -234,6 +234,7 @@ export default class IndexPage extends ViewBase {
   }
 
   @Watch('$route')
+  @Watch('$route', {immediate: true})
   watch$route(val: any) {
     if (val.params.type == 'finish') {
       this.refresh()
