@@ -37,7 +37,7 @@
           <span v-if="row.controlStatus == 1" @click="handleUpShelf(2, row.id)">下架</span>
           <span @click="$router.push({name: 'data-film-edit', params: {id: row.id}})">编辑</span>
           <span @click="$router.push({name: 'data-film-detail', params: {id: row.id}})">查看</span>
-          <span v-if="[1].includes(row.controlStatus)" @click="uploadCurrent(row.id)">刷新</span>
+          <span v-if="[1].includes(row.controlStatus)" @click="uploadCurrent(row)">刷新</span>
           <!-- <span v-if="row.controlStatus == 1">浏览前台</span> -->
         </div>
       </template>
@@ -185,7 +185,9 @@ export default class Main extends ViewBase {
   }
 
   // 刷新
-  async uploadCurrent(id: any) {
+  async uploadCurrent(exts: any) {
+    // 取mtime渠道的id
+    const id = (exts.dataExts || []).filter((item: any) => item.channelCode == 'mtime')[0].channelDataId
     try {
       const { data } = await fetchMovie(id)
       await info('影片信息已经刷新，10分钟后查看刷新后的信息。', { title: '刷新' })
