@@ -7,7 +7,7 @@
     >
       <template slot="acts-2">
         <a
-          :href='`${ajaxBase}/bi/export-amount-payable-months?month=${id}`'
+          :href='`${ajaxBase}/bi/export-amount-receivable-payable-months?month=${id}`'
           class="ivu-btn ivu-btn-default"
           download
         >
@@ -19,11 +19,11 @@
       <template slot="action" slot-scope="{ row: { id } }">
         <div class="row-acts">
           <a
-            :href='`${ajaxBase}/bi/export-amount-payables?id=${id}`'
+            :href='`${ajaxBase}/bi/export-amount-receivable-payables?id=${id}`'
             class="ivu-btn ivu-btn-default ivu-btn-small"
             download
           >
-            <span>导出每日应付</span>
+            <span>导出每日明细</span>
           </a>
         </div>
       </template>
@@ -35,7 +35,7 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { queryPayList } from './data'
+import { queryReceivePayList } from './data'
 
 @Component({
   components: {
@@ -47,7 +47,7 @@ export default class IndexPage extends ViewBase {
 
   ajaxBase = VAR.ajaxBaseUrl
 
-  fetch = queryPayList
+  fetch = queryReceivePayList
 
   get filters(): Filter[] {
     return [
@@ -86,6 +86,16 @@ export default class IndexPage extends ViewBase {
         width: 130,
       },
       {
+        title: '广告主公司ID',
+        key: 'companyId',
+        width: 100,
+      },
+      {
+        title: '广告主公司名称',
+        key: 'companyName',
+        minWidth: 130,
+      },
+      {
         title: '资源方公司ID',
         key: 'resourceId',
         width: 100,
@@ -111,18 +121,28 @@ export default class IndexPage extends ViewBase {
         width: 80,
       },
       {
-        title: '曝光人次',
-        key: 'exposurePerson',
-        width: 80,
-      },
-      {
         title: '曝光场次',
         key: 'exposureSession',
         width: 80,
       },
       {
+        title: '曝光人次',
+        key: 'exposurePerson',
+        width: 80,
+      },
+      {
+        title: '应收金额',
+        key: 'amountReceivableFormat',
+        width: 80,
+      },
+      {
         title: '应付金额',
         key: 'amountPayableFormat',
+        width: 80,
+      },
+      {
+        title: '应收-应付',
+        key: 'amountReceivablePayableFormat',
         width: 80,
       },
       {

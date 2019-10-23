@@ -80,7 +80,7 @@ export default class IndexPage extends ViewBase {
         title: '应收-应付',
         key: 'amountReceivablePayable',
         minWidth: 100,
-        link: ({ item }) => ({ name: '', params: {} })
+        link: ({ item }) => ({ name: 'finance-accrual-receive-pay', params: { id: item.id } })
       },
     ] as ColumnExtra[]
   }

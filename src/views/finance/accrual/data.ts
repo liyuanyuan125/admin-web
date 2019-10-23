@@ -56,3 +56,21 @@ export async function queryPayList(query: any = {}) {
   return result
 }
 
+/**
+ * 查询应付金额月列表
+ * @param query 查询条件
+ * https://yapi.aiads-dev.com/project/253/interface/api/7281
+ */
+export async function queryReceivePayList(query: any = {}) {
+  const { data } = await get('/bi/amount-receivable-payable-months', query)
+  const result = {
+    ...data,
+    items: (data.items as any[] || []).map(it => ({
+      ...it,
+      amountReceivableFormat: toMoney(it.amountReceivable),
+      amountPayableFormat: toMoney(it.amountPayable),
+      amountReceivablePayableFormat: toMoney(it.amountReceivablePayable),
+    }))
+  }
+  return result
+}
