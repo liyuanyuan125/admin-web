@@ -181,7 +181,7 @@ export default class Main extends ViewBase {
       { title: '结束时间', key: 'endTime', date: true },
       { title: '投放渠道', key: 'channels', enum: 'channelList' },
       { title: '状态', key: 'status', enum: true },
-      { title: '更新时间', key: 'modifyTime', date: true },
+      { title: '更新时间', key: 'modifyTime', dateTime: true },
       { title: '更新人', key: 'modifyUser', },
       { title: '操作', key: 'keyWords', slot: 'action' }
     ] as ColumnExtra[]
