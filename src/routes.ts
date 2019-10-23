@@ -1215,6 +1215,18 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  // 财务管理 - 应收应付统计表 - 应收金额
+  {
+    path: '/finance/accrual/receive/:id',
+    name: 'finance-accrual-receive',
+    component: () => import('./views/finance/accrual/receive.vue'),
+    meta: {
+      authKey: '',
+      title: '应收金额'
+    },
+    props: idProps
+  },
+
   {
     path: '/plan/ggtising',
     name: 'plan-ggtising',
