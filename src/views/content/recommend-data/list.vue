@@ -49,8 +49,7 @@ import jsxReactToVue from '@/util/jsxReactToVue'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import {
   queryList,
-  disabledItem,
-  sortItem
+  disabledItem
 } from './data'
 import { alert, toast } from '@/ui/modal'
 import { EditDialog, Field } from '@/components/editForm'
