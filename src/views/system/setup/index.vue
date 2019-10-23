@@ -47,6 +47,11 @@
               <Input v-model="dataForm.accountNumber" style='width: 200px;' placeholder=""/>
             </FormItem>
           </Col>
+          <Col :span='8'>
+            <FormItem label="支付宝账号" prop="alipayNumber">
+              <Input v-model="dataForm.alipayNumber" style='width: 200px;' placeholder=""/>
+            </FormItem>
+          </Col>
         </Row>
       </Row>
       <div v-auth="'finance.settings:default'" class='titop' v-if='!showbank'>充值信息
@@ -72,6 +77,8 @@
         <Row>
           <Col span="2"><div>银行账号</div></Col>
           <Col span="6"><span>{{detail.accountNumber}}</span></Col>
+          <Col span="2"><div>支付宝账号</div></Col>
+          <Col span="6"><span>{{detail.alipayNumber}}</span></Col>
         </Row>
       </div>
       <!-- 交易信息 -->
@@ -291,6 +298,7 @@ const dataForm = {
   accountBank: null,
   accountName: null,
   accountNumber: null,
+  alipayNumber: null,
   companyName: null,
   companyAddress: null,
   companyPhone: null,
@@ -469,6 +477,7 @@ export default class Main extends ViewBase {
     this.dataForm.companyAddress = this.detail.companyAddress
     this.dataForm.companyPhone = this.detail.companyPhone
     this.dataForm.taxPayerNo = this.detail.taxPayerNo
+    this.dataForm.alipayNumber = this.detail.alipayNumber
   }
 
   // 刊例价
