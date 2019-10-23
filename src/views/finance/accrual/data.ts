@@ -20,8 +20,13 @@ export async function queryList(query: any = {}) {
   return result
 }
 
-const queryReceiveListCommon = async (url: string, query: any = {}) => {
-  const { data } = await get(url, query)
+/**
+ * 查询应收金额月列表
+ * @param query 查询条件
+ * https://yapi.aiads-dev.com/project/253/interface/api/7110
+ */
+export async function queryReceiveList(query: any = {}) {
+  const { data } = await get('/bi/amount-receivable-months', query)
   const result = {
     ...data,
     items: (data.items as any[] || []).map(it => ({
@@ -35,33 +40,17 @@ const queryReceiveListCommon = async (url: string, query: any = {}) => {
 }
 
 /**
- * 查询应收金额月列表
+ * 查询应付金额月列表
  * @param query 查询条件
- * https://yapi.aiads-dev.com/project/253/interface/api/7110
+ * https://yapi.aiads-dev.com/project/253/interface/api/7254
  */
-export async function queryReceiveList(query: any = {}) {
-  return queryReceiveListCommon('/bi/amount-receivable-months', query)
-}
-
-/**
- * 应收金额月导出
- * @param month 月份
- * https://yapi.aiads-dev.com/project/253/interface/api/7236
- */
-export async function exportReceiveList(month: number) {
-  return queryReceiveListCommon('/bi/amount-receivable-months', { month })
-}
-
-/**
- * 应收金额日导出
- * @param id 月记录id
- * https://yapi.aiads-dev.com/project/253/interface/api/7245
- */
-export async function exportReceiveDayList(id: string) {
-  const { items } = await queryReceiveListCommon('/bi/export-amount-receivables', { id })
+export async function queryPayList(query: any = {}) {
+  const { data } = await get('/bi/amount-payable-months', query)
   const result = {
-    items: (items as any[]).map(it => ({
-      date: String(it.dt || '').replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3')
+    ...data,
+    items: (data.items as any[] || []).map(it => ({
+      ...it,
+      amountPayableFormat: toMoney(it.amountPayable),
     }))
   }
   return result

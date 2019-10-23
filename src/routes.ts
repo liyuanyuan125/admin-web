@@ -1227,6 +1227,18 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: idProps
   },
 
+  // 财务管理 - 应收应付统计表 - 应付金额
+  {
+    path: '/finance/accrual/pay/:id',
+    name: 'finance-accrual-pay',
+    component: () => import('./views/finance/accrual/pay.vue'),
+    meta: {
+      authKey: '',
+      title: '应付金额'
+    },
+    props: idProps
+  },
+
   {
     path: '/plan/ggtising',
     name: 'plan-ggtising',

@@ -74,7 +74,7 @@ export default class IndexPage extends ViewBase {
         title: '应付金额',
         key: 'amountPayable',
         minWidth: 100,
-        link: ({ item }) => ({ name: '', params: {} })
+        link: ({ item }) => ({ name: 'finance-accrual-pay', params: { id: item.id } })
       },
       {
         title: '应收-应付',

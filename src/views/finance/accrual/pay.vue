@@ -7,7 +7,7 @@
     >
       <template slot="acts-2">
         <a
-          :href='`${ajaxBase}/bi/export-amount-receivable-months?month=${id}`'
+          :href='`${ajaxBase}/bi/export-amount-payable-months?month=${id}`'
           class="ivu-btn ivu-btn-default"
           download
         >
@@ -19,11 +19,11 @@
       <template slot="action" slot-scope="{ row: { id } }">
         <div class="row-acts">
           <a
-            :href='`${ajaxBase}/bi/export-amount-receivables?id=${id}`'
+            :href='`${ajaxBase}/bi/export-amount-payables?id=${id}`'
             class="ivu-btn ivu-btn-default ivu-btn-small"
             download
           >
-            <span>导出每日应收</span>
+            <span>导出每日应付</span>
           </a>
         </div>
       </template>
@@ -35,7 +35,7 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { queryReceiveList } from './data'
+import { queryPayList } from './data'
 import { downloadBook, objectListToData } from '@/util/excel'
 import { alert, loading } from '@/ui/modal'
 import { cloneDeep } from 'lodash'
@@ -50,7 +50,7 @@ export default class IndexPage extends ViewBase {
 
   ajaxBase = VAR.ajaxBaseUrl
 
-  fetch = queryReceiveList
+  fetch = queryPayList
 
   get filters(): Filter[] {
     return [
@@ -89,14 +89,29 @@ export default class IndexPage extends ViewBase {
         width: 130,
       },
       {
-        title: '广告主公司ID',
-        key: 'companyId',
+        title: '资源方公司ID',
+        key: 'resourceId',
         width: 100,
       },
       {
-        title: '广告主公司名称',
-        key: 'companyName',
+        title: '资源方公司名称',
+        key: 'resourceName',
         minWidth: 130,
+      },
+      {
+        title: '影城专资码',
+        key: 'cinemaNo',
+        width: 80,
+      },
+      {
+        title: '影城名称',
+        key: 'shortName',
+        width: 80,
+      },
+      {
+        title: '订单编号',
+        key: 'advertId',
+        width: 80,
       },
       {
         title: '曝光人次',
@@ -109,18 +124,8 @@ export default class IndexPage extends ViewBase {
         width: 80,
       },
       {
-        title: '优惠前金额',
-        key: 'expendFormat',
-        width: 80,
-      },
-      {
-        title: '优惠金额',
-        key: 'discountedPriceFormat',
-        width: 80,
-      },
-      {
-        title: '应收金额',
-        key: 'payableFormat',
+        title: '应付金额',
+        key: 'amountPayableFormat',
         width: 80,
       },
       {
@@ -130,40 +135,6 @@ export default class IndexPage extends ViewBase {
       },
     ] as ColumnExtra[]
   }
-
-  // get exportCols() {
-  //   const cols = cloneDeep(this.columns)
-  //   return cols.slice(0, -1)
-  // }
-
-  // 前端导出
-  // async exportAll() {
-  //   const close = loading('导出中', { duration: 28 })
-  //   try {
-  //     const { items } = await exportReceiveList(this.id)
-  //     const data = objectListToData(items, this.exportCols as any[])
-  //     downloadBook(data, '应收金额月导出' + this.id)
-  //   } catch (ex) {
-  //     this.handleError(ex)
-  //   } finally {
-  //     close()
-  //   }
-  // }
-
-  // async exportDay(id: string) {
-  //   const close = loading('导出中', { duration: 28 })
-  //   try {
-  //     const { items } = await exportReceiveDayList(id)
-  //     const cols = [ { key: 'date', title: '日期' } ].concat(this.exportCols as any[])
-  //     const data = objectListToData(items, cols)
-  //     const dt = (items as any[])[0].dt
-  //     downloadBook(data, '应收金额日导出' + dt)
-  //   } catch (ex) {
-  //     this.handleError(ex)
-  //   } finally {
-  //     close()
-  //   }
-  // }
 }
 </script>
 
