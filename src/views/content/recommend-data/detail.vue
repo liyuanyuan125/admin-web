@@ -121,7 +121,7 @@ export default class DetailPage extends ViewBase {
       {
         name: 'uploadPic',
         defaultValue: '',
-        label: '上传图片(80*80px)',
+        label: '上传图片(670*220px)',
         span: 18,
         image: true,
         required: true
@@ -129,10 +129,11 @@ export default class DetailPage extends ViewBase {
 
       {
         name: 'isAD',
-        defaultValue: false,
-        switch: true,
+        defaultValue: 1,
+        radio: {
+          enumKey: 'isADList'
+        },
         label: '是否广告',
-        required: true,
         span: 22,
       },
 

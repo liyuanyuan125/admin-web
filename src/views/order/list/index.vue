@@ -4,6 +4,7 @@
       <div class="act-bar flex-box">
         <form class="form flex-1" @submit.prevent="search">
           <LazyInput v-model="query.id" placeholder="订单编号" class="input"/>
+          <!-- <LazyInput v-model="query.planIdNum" placeholder="广告计划ID" class="input"/> -->
           <!-- <Select v-model="query.xadvertiserId" placeholder="广告主公司名称" style='width: 150px;'  filterable>
             <Option v-for="it in adscompany" :key="it.id" :value="it.id"
               :label="it.name">{{it.name}}</Option>
@@ -200,6 +201,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   columns = [
     { title: '订单编号', key: 'id', width: 80, align: 'center' },
     { title: '广告主公司名称', key: 'advertiserName', align: 'center' },
+    // { title: '关联销售', key: 'advertiserName', align: 'center' },
+    // { title: '广告计划ID', key: 'advertiserName', align: 'center' },
     { title: '广告计划',  key: 'planName', align: 'center' },
     { title: '资源方公司名称', key: 'resourceName', align: 'center' },
     { title: '广告类型', slot: 'advertType', align: 'center', width: 90 },

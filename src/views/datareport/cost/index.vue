@@ -23,7 +23,7 @@
               >{{item.name}}</Option>
             </Select>
           <!-- <span style='color: red;margin-left: 5px;'>*</span> -->
-          <InputNumber  v-model="query.box" :min='0' placeholder="预测票房" class="input"/>
+          <InputNumber  v-model="query.box" :min='0' placeholder="预测票房(元)" class="input"/>
           <Select v-model="query.type" placeholder="投放类型选择">
             <Option v-for="it in putInType" :key="it.key" :value="it.key"
               :label="it.text">{{it.text}}</Option>
@@ -310,16 +310,23 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     }
     if ((this.query.movieId == '' || this.query.movieId == undefined) ||
       (this.query.box == null || this.query.box == undefined)) {
-      info('请输入影片名称，预测票房进行查询')
+      info('请确认影片名称，预测票房是否输入')
       return
     }
     if (this.query.type == 1) {
       if (this.query.typeCount == null) {
-        info('请输入投放天数')
-        return
+        this.query.typeCount = this.query.week
+        // info('请输入投放天数')
+        // return
       }
       if (this.query.typeCount > this.query.week) {
         info('投放天数不可大于密钥周期')
+        return
+      }
+    }
+    if (this.query.type == 2) {
+      if (this.query.typeCount == null) {
+        info('请输入投放人数')
         return
       }
     }

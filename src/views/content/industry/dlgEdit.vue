@@ -12,7 +12,7 @@
       <FormItem label="行业ID" prop="tradeId">
         <InputNumber style="width:240px" :disabled='viewDetail' :min='0' v-model="dataForm.tradeId"></InputNumber>
       </FormItem>
-      <FormItem v-if='id == 0 || chgimg == true '  label="icon图片" prop="receipt" class='vie'>
+      <FormItem v-if='id == 0 || chgimg == true '  label="icon图片(80*80px)" prop="receipt" class='vie'>
         <Row class="upload">
           <Col span="12">
               <Upload v-model="dataForm.receipts" multiple :maxCount="1" accept="image/*"/>
@@ -20,7 +20,7 @@
         </Row>
       </FormItem>
       <Row v-if='id != 0 && chgimg == false'>
-        <Col :span='4'>icon图片</Col>
+        <Col :span='4'>icon图片(80*80px)</Col>
         <Col :span='5' v-if='dataForm.iconUrl == null'>暂无icon图片</Col>
         <Col :span='5' v-if='dataForm.iconUrl != null'>
           <div class='imgs' @click='onView(dataForm.iconUrl)'>
