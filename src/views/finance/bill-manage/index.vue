@@ -3,7 +3,6 @@
      <ListPage
       :fetch="fetch"
       :filters="filters"
-      :enums="enums"
       :columns="columns"
       ref="listPage">
 
@@ -47,14 +46,14 @@ export default class Main extends ViewBase {
     {
       name: 'cinemaId',
       defaultValue: 0,
-      type: remoteselect,
+      component: remoteselect,
       width: 108,
       placeholder: '影城名称'
     },
     {
       name: 'code',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 100,
       placeholder: '影城专资码'
     },
@@ -62,7 +61,7 @@ export default class Main extends ViewBase {
     {
       name: 'resourceId',
       defaultValue: 0,
-      type: company,
+      component: company,
       width: 100,
       placeholder: '资源方公司名称'
     },
@@ -70,49 +69,48 @@ export default class Main extends ViewBase {
     {
       name: 'resourceBillNo',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 100,
       placeholder: '账单编号',
     },
     {
       name: 'billStatus',
       defaultValue: '',
-      type: 'select',
+      select: true,
       width: 100,
       placeholder: '账单状态',
     },
 
     {
-      name: 'invoiceType',
+      name: 'invoiceStatus',
       defaultValue: 0,
-      type: 'select',
+      select: true,
       width: 100,
-      placeholder: '发票类型',
-      enumKey: 'invoiceTypeCodeList'
-    },
-
-    {
-      name: 'invoiceContent',
-      defaultValue: '',
-      type: 'select',
-      width: 100,
-      placeholder: '发票内容',
-      enumKey: 'invoiceContentCodeList'
+      placeholder: '发票状态',
+      enumKey: 'invoiceStatusList'
     },
     {
       name: 'yearMonth',
       defaultValue: null,
-      type: yearMonth,
+      component: yearMonth,
       width: 108,
       placeholder: '账单月份'
     },
     {
       name: 'payStatus',
       defaultValue: '',
-      type: 'select',
+      select: true,
       width: 100,
       placeholder: '付款状态',
       enumKey: 'payStatusList'
+    },
+    {
+      name: 'advertType',
+      defaultValue: '',
+      select: true,
+      width: 100,
+      placeholder: '广告片类型',
+      enumKey: 'advertTypeCodeList'
     },
 
     {
@@ -126,15 +124,6 @@ export default class Main extends ViewBase {
     }
   ]
 
-  enums = [
-    'applyTypeList',
-    'invoiceContentCodeList',
-    'invoiceStatusList',
-    'invoiceTypeCodeList',
-    'payStatusList',
-    'billStatusList'
-  ]
-
   columns = [
     { title: '账单编号', key: 'resourceBillNo', minWidth: 65 },
     { title: '影城名称', key: 'cinemaName', minWidth: 100 },
@@ -145,10 +134,11 @@ export default class Main extends ViewBase {
     { title: '账单生成时间', key: 'createTime', minWidth: 100, editor: 'dateTime'},
     { title: '曝光场次', key: 'showCount', minWidth: 60 },
     { title: '曝光人次/人次', key: 'personCount', minWidth: 60 },
+    { title: '广告片类型', key: 'advertType', minWidth: 100, enum: 'advertTypeCodeList'},
     { title: '账单金额', key: 'amount', minWidth: 100 },
-    { title: '账单状态', key: 'billStatus', minWidth: 60, editor: 'enum'},
-    { title: '发票状态', key: 'invoiceStatus', minWidth: 60, editor: 'enum'},
-    { title: '付款状态', key: 'payStatus', minWidth: 60, editor: 'enum'},
+    { title: '账单状态', key: 'billStatus', minWidth: 60, enum: true},
+    { title: '发票状态', key: 'invoiceStatus', minWidth: 60, enum: true},
+    { title: '付款状态', key: 'payStatus', minWidth: 60, enum: true},
     { title: '操作', slot: 'operate', minWidth: 90 },
   ]
 }
