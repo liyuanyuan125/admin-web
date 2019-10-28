@@ -40,7 +40,7 @@
 
           <!-- <Button type="default" @click="reset" class="btn-reset">清空</Button> -->
           <!-- <Button v-if='list.length > 0' type="default" @click="exportData" class="btn-reset">导出</Button> -->
-          <a v-if='list.length > 0' class='exp' :href='herf' download='导出' >导出</a>
+          <a v-if='list.length > 0 && viewExport == false' class='exp' :href='herf' download='导出' >导出</a>
 
         </form>
       </div>
@@ -127,6 +127,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   query: any = {}
   oldQuery: any = {}
+
+  viewExport: any = false
 
   defaultCount: any = 1
 
@@ -305,6 +307,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
 
   async doSearch() {
+    this.viewExport = false
     if (this.showUrl == false) {
       return
     }
@@ -400,6 +403,41 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   @Watch('query', { deep: true })
   watchQuery() {
+    if ( this.$route.query.box != undefined ) {
+      if (this.query.box != this.$route.query.box ) {
+        this.viewExport = true
+        return
+      } else {
+        this.viewExport = false
+      }
+      if (this.query.movieId != this.$route.query.movieId ) {
+        this.viewExport = true
+        return
+      } else {
+        this.viewExport = false
+      }
+      if (this.query.type != this.$route.query.type ) {
+        this.viewExport = true
+        return
+      } else {
+        this.viewExport = false
+      }
+      if (this.query.typeCount != this.$route.query.typeCount ) {
+        this.viewExport = true
+        return
+      } else {
+        this.viewExport = false
+      }
+      if (this.query.week != this.$route.query.week ) {
+        this.viewExport = true
+        return
+      } else {
+        this.viewExport = false
+      }
+    }
+    // console.log(this.$route.query)
+    // console.log(this.query)
+    // console.log(this.viewExport)
     // console.log(this.query.pageIndex ,this.oldQuery.pageIndex)
     // if (this.query.pageIndex == this.oldQuery.pageIndex) {
     //   this.query.pageIndex = 1
