@@ -12,7 +12,7 @@
             <Row>
                 <Col :span='12'><span class='spons'>影片名称&nbsp;：&nbsp;</span>{{(listitem.movieName == null || listitem.movieName == '') ? '暂无影片名称' : listitem.movieName}}</Col>
                 <Col :span='12'><span class='spons'>包含广告片&nbsp;：&nbsp;</span>共计{{listitem.totalLength}}s
-                        <a style='margin-left: 5px;' v-for='(item,index) in listitem.videoDetails' :key='index'>
+                        <a style='margin-left: 5px;' v-for='(item) in listitem.videoDetails' :key='item.videoId'>
                             <em style='font-style: normal;font-right: -5px;' v-for='(its,index) in deliveryPositionList' :key='index' v-if='item.deliveryPosition != null && item.deliveryPosition == its.key'>【{{its.text}}】</em>
                             {{item.videoName}} ({{item.videoLength}})s
                         </a> 
@@ -47,7 +47,7 @@
                     <!-- <Checkbox v-if='listitem.approvalStatus == 4' :indeterminate="indeterminate" :value="checkAll" disabled >全选</Checkbox> -->
                     <FormItem label="" prop="closeReason">
                         <CheckboxGroup v-model="dataForm.orderIds">
-                            <Checkbox v-for="(it,index) in listitem.videoDetails" :key="it.index" :value="it.orderId" :label="it.orderId" :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3'>
+                            <Checkbox v-for="(it) in listitem.videoDetails" :key="it.orderId" :value="it.orderId" :label="it.orderId" :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3'>
                                 <em style='font-style: normal;font-right: -5px;' v-for='(its,index) in deliveryPositionList' :key='index' v-if='it.deliveryPosition != null && it.deliveryPosition == its.key'>【{{its.text}}】</em>
                               {{it.videoName}} ({{it.videoLength}})s
                             </Checkbox></br>
@@ -58,13 +58,13 @@
                     <Row>审核未通过的原因</Row>
                     <FormItem label="" prop="closeReason">
                         <CheckboxGroup v-model="dataForm.reasonOrderIds">
-                            <Checkbox v-for="(it,index) in reason" :key="it.index" :value="it.key" :label="it.key" :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3'>{{it.text}} </Checkbox>
+                            <Checkbox v-for="(it) in reason" :key="it.key" :value="it.key" :label="it.key" :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3'>{{it.text}} </Checkbox>
                         </CheckboxGroup>
                     </FormItem>
-                    <!-- <Row style='margin-top: -32px;' v-if='dataForm.reasonOrderIds.indexOf("7") != -1 '>审核未通过原因(勾选其他时):</Row>
-                    <FormItem label="" prop="closeReason" v-if='dataForm.reasonOrderIds.indexOf("7") != -1 '>
-                         <Input :maxlength="120" type='textarea' placeholder='勾选其他时请输入原因' v-model="dataForm.refuseReason"></Input>
-                    </FormItem> -->
+                    <Row style='margin-top: -32px;' v-if='dataForm.reasonOrderIds.indexOf("9") != -1 '>审核未通过原因(勾选其他时):</Row>
+                    <FormItem label="" prop="closeReason" v-if='dataForm.reasonOrderIds.indexOf("9") != -1 '>
+                         <Input :maxlength="120" type='textarea' :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3' placeholder='勾选其他时请输入原因' v-model="dataForm.refuseReason"></Input>
+                    </FormItem>
                 </Form>
             </Row>
             <div v-if='listitem.approvalStatus == 2' class="dialog-footer">
@@ -140,7 +140,7 @@ export default class Main extends ViewBase {
         closeReason: '',
         orderIds: [],
         reasonOrderIds: [],
-        // refuseReason: ''
+        refuseReason: ''
     }
 
 
@@ -263,13 +263,12 @@ export default class Main extends ViewBase {
             if (this.dataForm.reasonOrderIds.length == 0) {
                 info('请选择未通过原因')
                 return
+            } else if (this.dataForm.reasonOrderIds.indexOf('9') != -1) {
+                if (this.dataForm.refuseReason == '') {
+                    info('请输入拒绝原因')
+                    return
+                }
             }
-            //  else if (this.dataForm.reasonOrderIds.indexOf('7') != -1) {
-            //     if (this.dataForm.refuseReason == '') {
-            //         info('请输入拒绝原因')
-            //         return
-            //     }
-            // }
         }
         const dataItem: any = JSON.parse((sessionStorage.getItem('supinfo') as any))
         this.videoIdsList = {
@@ -280,14 +279,29 @@ export default class Main extends ViewBase {
             approvalUserName: dataItem.approvalUserName,
             cinemaId: dataItem.cinemaId,
             videoId: dataItem.videoId,
-            beginDate: dataItem.dateRange.split('-')[0],
-            endDate: dataItem.dateRange.split('-')[1],
-            approvalBeginTime: dataItem.approvalBeginTime,
-            approvalEndTime: dataItem.approvalEndTime,
+            beginDate: dataItem.dateRange ? dataItem.dateRange.split('-')[0] : null,
+            endDate: dataItem.dateRange ? dataItem.dateRange.split('-')[1] : null,
+            approvalBeginTime: dataItem.dateRang3e ? Number(new Date(String(dataItem.dateRang3e.split('-')[0])
+            .slice(0, 4) + '-' + String(dataItem.dateRang3e.split('-')[0]).slice(4, 6) + '-' +
+                        String(dataItem.dateRang3e.split('-')[0]).slice(6, 8)).getTime() -
+                        (8 * 60 * 60 * 1000)) : null,
+            approvalEndTime: dataItem.dateRang3e ? Number(new Date(String(dataItem.dateRang3e.split('-')[1])
+            .slice(0, 4) + '-' + String(dataItem.dateRang3e.split('-')[1]).slice(4, 6) + '-' +
+                        String(dataItem.dateRang3e.split('-')[1]).slice(6, 8)).getTime() +
+                        (16 * 60 * 60 * 1000 - 1)) : null,
             status: dataItem.status, // 状态
             translated: dataItem.translated, // 1：转制；2：未转制
             skip: dataItem.skip, // 跳过的记录数
             maxSize: dataItem.maxSize, // 最大返回数据量
+            code: dataItem.code,
+            uploadBeginTime: dataItem.dateRange2 ? Number(new Date(String(dataItem.dateRange2.split('-')[0])
+            .slice(0, 4) + '-' + String(dataItem.dateRange2.split('-')[0]).slice(4, 6) + '-' +
+                        String(dataItem.dateRange2.split('-')[0]).slice(6, 8)).getTime() -
+                        (8 * 60 * 60 * 1000)) : null,
+            uploadEndTime: dataItem.dateRange2 ? Number(new Date(String(dataItem.dateRange2.split('-')[1])
+            .slice(0, 4) + '-' + String(dataItem.dateRange2.split('-')[1]).slice(4, 6) + '-' +
+                        String(dataItem.dateRange2.split('-')[1]).slice(6, 8)).getTime() +
+                        (16 * 60 * 60 * 1000 - 1)) : null,
         }
         // 如果没有videoIds存储值则代表没有请求过ids列表
         if (JSON.parse((sessionStorage.getItem('videoIds') as any)) == null) {
@@ -297,11 +311,13 @@ export default class Main extends ViewBase {
                 if (videoIds.length > 1) {
                     sessionStorage.setItem('videoIds', JSON.stringify(videoIds.slice(1))) // 存储总量-1
                     const aaa = await approve(this.$route.params.id,
-                        { orderIds: this.dataForm.orderIds, fixRefuses: this.dataForm.reasonOrderIds })
+                        { orderIds: this.dataForm.orderIds, fixRefuses: this.dataForm.reasonOrderIds ,
+                          refuseReason: this.dataForm.refuseReason})
                     this.$router.push({ name: 'order-supervision-detail', params: { id: videoIds[1] } })
                 } else { // 如果ids列表没有了数据则直接返回列表
                     const aaa = await approve(this.$route.params.id,
-                        { orderIds: this.dataForm.orderIds, fixRefuses: this.dataForm.reasonOrderIds })
+                        { orderIds: this.dataForm.orderIds, fixRefuses: this.dataForm.reasonOrderIds ,
+                          refuseReason: this.dataForm.refuseReason})
                     // toast('没有更多数据了')
                     setTimeout(() => {
                         this.backList()
@@ -316,11 +332,13 @@ export default class Main extends ViewBase {
                 sessionStorage.removeItem('videoIds') // 先清空原存值，在存新值
                 sessionStorage.setItem('videoIds', JSON.stringify(dataItemIds.slice(1))) // 存储新值
                 const aaa = await approve(dataItemIds[0],
-                    { orderIds: this.dataForm.orderIds, fixRefuses: this.dataForm.reasonOrderIds })
+                    { orderIds: this.dataForm.orderIds, fixRefuses: this.dataForm.reasonOrderIds ,
+                      refuseReason: this.dataForm.refuseReason})
                 this.$router.push({ name: 'order-supervision-detail', params: { id: dataItemIds[1] } })
             } else { // 如果ids列表没有了数据则直接返回列表
                 const aaa = await approve(this.$route.params.id,
-                    { orderIds: this.dataForm.orderIds, fixRefuses: this.dataForm.reasonOrderIds })
+                    { orderIds: this.dataForm.orderIds, fixRefuses: this.dataForm.reasonOrderIds ,
+                      refuseReason: this.dataForm.refuseReason})
                 // toast('没有更多数据了')
                 setTimeout(() => {
                         this.backList()
@@ -335,16 +353,16 @@ export default class Main extends ViewBase {
             if (this.dataForm.reasonOrderIds.length == 0) {
                 info('请选择未通过原因')
                 return
+            } else if (this.dataForm.reasonOrderIds.indexOf('9') != -1) {
+                if (this.dataForm.refuseReason == '') {
+                    info('请输入拒绝原因')
+                    return
+                }
             }
-            //  else if (this.dataForm.reasonOrderIds.indexOf('7') != -1) {
-            //     if (this.dataForm.refuseReason == '') {
-            //         info('请输入拒绝原因')
-            //         return
-            //     }
-            // }
         }
         const aaa = await approve(this.$route.params.id,
-            { orderIds: this.dataForm.orderIds, fixRefuses: this.dataForm.reasonOrderIds })
+            { orderIds: this.dataForm.orderIds, fixRefuses: this.dataForm.reasonOrderIds ,
+              refuseReason: this.dataForm.refuseReason})
 
         this.back()
 
@@ -371,6 +389,7 @@ export default class Main extends ViewBase {
             })
             this.reason = data.fixRefusesList
             if (this.listitem.approvalStatus == 4) {
+              this.dataForm.refuseReason = this.listitem.refuseReason
                 this.dataForm.reasonOrderIds = this.listitem.fixRefuses
                 this.dataForm.orderIds = (this.listitem.videoDetails || []).map((it: any) => {
                     if (it.orderStatus == 2) {
