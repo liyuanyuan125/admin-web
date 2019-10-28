@@ -297,8 +297,8 @@ export default class Main extends ViewBase {
         this.kolid = item.kolid
         this.form.description = item.description
         this.form.accountCategoryCode = item.accountCategoryCode
-        this.form.customJyIndex = item.customJyIndex
-        this.form.customIndexPercent = item.customIndexPercent
+        this.form.customJyIndex = item.customJyIndex / 100
+        this.form.customIndexPercent = item.customIndexPercent / 100
         this.form.description = item.description
         this.form.customTags = (item.tags || []).join(';')
         this.customTags = (item.customTags || []).map((it: any, index: number) => {
@@ -316,7 +316,7 @@ export default class Main extends ViewBase {
           }
         })
         this.logList = logList || []
-        this.jyIndex = item.jyIndex
+        this.jyIndex = item.jyIndex / 100
         this.form.customTags = item.customTags ? item.customTags.join(';') : ''
         this.form.photo = item.photo ? [
           {
@@ -378,8 +378,8 @@ export default class Main extends ViewBase {
             brandId: it.brandId
           }
         }),
-        customIndexPercent: Number(this.form.customIndexPercent),
-        customJyIndex: Number(this.form.customJyIndex),
+        customIndexPercent: Number(this.form.customIndexPercent / 100),
+        customJyIndex: Number(this.form.customJyIndex / 100),
         photo: this.form.photo.map((it: any) => it.fileId).join(''),
         customTags: this.form.customTags ? this.form.customTags.split(';') : [],
         exts: this.form.exts.map((it: any) => {

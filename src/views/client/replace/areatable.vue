@@ -64,7 +64,7 @@ export default class ComponentMain extends ViewBase {
       const {
         data
       } = await arealist(val)
-      this.parent = data
+      this.parent = data || []
       this.parent = this.parent.map((it: any) => {
         const child = this.items.filter((its: any) => its.parentId == it.id).map((item: any) => {
           return item.nameCn
