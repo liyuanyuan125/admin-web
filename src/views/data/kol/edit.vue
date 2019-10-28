@@ -378,8 +378,8 @@ export default class Main extends ViewBase {
             brandId: it.brandId
           }
         }),
-        customIndexPercent: Number(this.form.customIndexPercent / 100),
-        customJyIndex: Number(this.form.customJyIndex / 100),
+        customIndexPercent: Number(this.form.customIndexPercent * 100),
+        customJyIndex: Number(this.form.customJyIndex * 100),
         photo: this.form.photo.map((it: any) => it.fileId).join(''),
         customTags: this.form.customTags ? this.form.customTags.split(';') : [],
         exts: this.form.exts.map((it: any) => {
