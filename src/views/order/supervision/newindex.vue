@@ -353,10 +353,10 @@ export default class IndexPage extends ViewBase {
     get columns() {
         const aaa: any = [
             { title: '资源方公司名称', key: 'resourceName', align: 'center' },
-            { title: '影院名称', key: 'cinemaName', align: 'center' },
             { title: '专资编码', key: 'cinemaCode', align: 'center' },
+            { title: '影院名称', key: 'cinemaName', align: 'center' },
             { title: '影片名称', slot: 'movieName', align: 'center' },
-            { title: '广告片', slot: 'video', align: 'center' },
+            { title: '广告片', slot: 'video', align: 'center', width: '220px' },
             {
                 title: '投放周期',
                 key: 'beginDate',
@@ -404,8 +404,8 @@ export default class IndexPage extends ViewBase {
     get columnsData() {
         const aaa: any = [
             { title: '资源方公司名称', key: 'resourceName', align: 'center' },
-            { title: '影院名称', key: 'cinemaName', align: 'center' },
             { title: '专资编码', key: 'cinemaCode', align: 'center' },
+            { title: '影院名称', key: 'cinemaName', align: 'center' },
             { title: '影片名称', key: 'movieName', align: 'center' },
             { title: '投放周期', key: 'scrollDate', align: 'center' },
             { title: '商务负责人', key: 'businessDirectorName', align: 'center' },
