@@ -3,7 +3,6 @@
     <ListPage
       :fetch="fetch"
       :filters="filters"
-      :enums="enums"
       :columns="columns"
       :selectedIds.sync="selectedIds"
       ref="listPage">
@@ -60,32 +59,30 @@ export default class Main extends ViewBase {
     {
       name: 'name',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 140,
       placeholder: '影院名称'
     },
     {
       name: 'govId',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 140,
       placeholder: '影片专资id'
     },
     {
       name: 'releaseStatus',
       defaultValue: '',
-      type: 'select',
+      select: true,
       width: 140,
       placeholder: '影片上映情况',
-      enumKey: 'releaseStatusList'
     },
     {
       name: 'status',
       defaultValue: '',
-      type: 'select',
+      select: true,
       width: 140,
       placeholder: '状态',
-      enumKey: 'statusList'
     },
     {
       name: 'pageIndex',
@@ -97,21 +94,16 @@ export default class Main extends ViewBase {
     }
   ]
 
-  enums = [
-    'releaseStatusList', // 影片上映情况
-    'statusList',
-  ]
-
   get columns() {
     return [
       {type: 'selection', width: 50},
       {title: '影片名称', key: 'name', minWidth: 150},
       {title: '影片专资id', key: 'id', minWidth: 100},
-      {title: '影片上映情况', key: 'releaseStatus', minWidth: 100, editor: 'enum'},
+      {title: '影片上映情况', key: 'releaseStatus', minWidth: 100, enum: 'releaseStatusList'},
       {title: '海报资源地址', slot: 'materialUrl', minWidth: 80},
       {title: '电子券资源总数量', slot: 'coupon', minWidth: 80},
-      {title: '创建时间', key: 'createTime', minWidth: 100, editor: 'dateTime'},
-      {title: '状态', key: 'status', minWidth: 100, editor: 'enum'},
+      {title: '创建时间', key: 'createTime', minWidth: 100, dateTime: true},
+      {title: '状态', key: 'status', minWidth: 100, enum: 'statusList'},
       {title: '操作', slot: 'operate', minWidth: 120},
     ] as ColumnExtra[]
   }
