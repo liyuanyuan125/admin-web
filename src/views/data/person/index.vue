@@ -72,7 +72,7 @@ export default class Main extends ViewBase {
     {
       name: 'nameEn',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 140,
       placeholder: '英文名'
     },
