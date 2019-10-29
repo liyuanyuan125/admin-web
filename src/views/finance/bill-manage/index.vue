@@ -142,7 +142,7 @@ export default class Main extends ViewBase {
     { title: '操作', slot: 'operate', minWidth: 90 },
   ]
 }
-</script>ß
+</script>
 <style lang='less' scoped>
 .operate-btn {
   span {
