@@ -3,7 +3,6 @@
     <ListPage
       :fetch="fetch"
       :filters="filters"
-      :enums="enums"
       :columns="columns"
       @selectionChange="selectionChange"
       ref="listPage"
@@ -20,7 +19,10 @@
       </template>
       <template slot="types" slot-scope="{row: {types}}">
         <span v-if="types.length == 0 || types[0] == null">-</span>
-        <span v-for="(item, index) in types" :key="index" v-if="item != null">{{item}}</span>
+        <span v-for="(item, index) in types" :key="index" v-if="item != null">
+          {{item}}
+          <i v-if="index < (types.length - 1)">/</i>
+        </span>
       </template>
       <template slot="countries" slot-scope="{row}">
         <span v-for="(item, index) in (row.countries || [])" :key="index">{{item}}</span>
@@ -69,21 +71,21 @@ export default class Main extends ViewBase {
     {
       name: 'ids',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 140,
       placeholder: '影片id'
     },
     {
       name: 'name',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 140,
       placeholder: '影片名称'
     },
     {
       name: 'types',
       defaultValue: '',
-      type: 'select',
+      select: true,
       width: 140,
       placeholder: '影片类型',
       enumKey: 'typeList'
@@ -91,26 +93,23 @@ export default class Main extends ViewBase {
     {
       name: 'categoryCode',
       defaultValue: '',
-      type: 'select',
+      select: true,
       width: 140,
-      placeholder: '分类',
-      enumKey: 'categoryList'
+      placeholder: '分类'
     },
     {
       name: 'releaseStatus',
       defaultValue: '',
-      type: 'select',
+      select: true,
       width: 140,
-      placeholder: '上映状态',
-      enumKey: 'releaseStatusList'
+      placeholder: '上映状态'
     },
     {
       name: 'controlStatus',
       defaultValue: '',
-      type: 'select',
+      select: true,
       width: 140,
-      placeholder: '状态',
-      enumKey: 'controlStatusList'
+      placeholder: '状态'
     },
     {
       name: 'pageIndex',
@@ -122,7 +121,7 @@ export default class Main extends ViewBase {
     }
   ]
 
-  enums = ['typeList', 'categoryList', 'releaseStatusList', 'controlStatusList']
+  // enums = ['typeList', 'categoryList', 'releaseStatusList', 'controlStatusList']
 
   // select ids
   idsList: any[] = []
@@ -140,10 +139,10 @@ export default class Main extends ViewBase {
       { title: '演员', slot: 'casts', minWidth: 85 },
       { title: '导演', slot: 'directors', minWidth: 85 },
       { title: '产地', slot: 'countries', minWidth: 85 },
-      { title: '类型', slot: 'types', minWidth: 85 },
-      { title: '分类', key: 'categoryCode', minWidth: 85, editor: 'enum' },
-      { title: '上映状态', key: 'releaseStatus', minWidth: 85, editor: 'enum' },
-      { title: '状态', key: 'controlStatus', minWidth: 85, editor: 'enum' },
+      { title: '类型', slot: 'types',  minWidth: 85},
+      { title: '分类', key: 'categoryCode', minWidth: 85, enum: 'categoryList' },
+      { title: '上映状态', key: 'releaseStatus', minWidth: 85, enum: 'releaseStatusList' },
+      { title: '状态', key: 'controlStatus', minWidth: 85, enum: 'controlStatusList' },
       { title: '操作', slot: 'operate', minWidth: 160 }
     ] as ColumnExtra[]
   }

@@ -3,7 +3,6 @@
       <ListPage
       :fetch="fetch"
       :filters="filters"
-      :enums="enums"
       :columns="columns"
       @selectionChange="selectionChange"
       ref="listPage">
@@ -58,28 +57,28 @@ export default class Main extends ViewBase {
     {
       name: 'id',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 140,
       placeholder: '影人id'
     },
     {
       name: 'name',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 140,
       placeholder: '中文名'
     },
     {
       name: 'nameEn',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 140,
       placeholder: '英文名'
     },
     {
       name: 'profession',
       defaultValue: '',
-      type: 'select',
+      select: true,
       width: 140,
       placeholder: '职业状态',
       enumKey: 'professions'
@@ -87,7 +86,7 @@ export default class Main extends ViewBase {
     {
       name: 'status',
       defaultValue: '',
-      type: 'select',
+      select: true,
       width: 140,
       placeholder: '状态',
       enumKey: 'status'
@@ -95,7 +94,7 @@ export default class Main extends ViewBase {
     {
       name: 'gender',
       defaultValue: '',
-      type: 'select',
+      select: true,
       width: 140,
       placeholder: '性别',
       enumKey: 'genders'
@@ -103,7 +102,7 @@ export default class Main extends ViewBase {
     {
       name: 'nationality',
       defaultValue: '',
-      type: Country,
+      component: Country,
       width: 140,
       placeholder: '国籍'
     },
@@ -117,12 +116,12 @@ export default class Main extends ViewBase {
     }
   ]
 
-  enums = [
-     'professions',
-     'status',
-     'genders',
-     'nationality'
-  ]
+  // enums = [
+  //    'professions',
+  //    'status',
+  //    'genders',
+  //    'nationality'
+  // ]
 
   get columns() {
      return [
@@ -130,10 +129,10 @@ export default class Main extends ViewBase {
         { key: 'id', title: '影人id', align: 'center'},
         { key: 'name', title: '中文名', align: 'center'},
         { key: 'nameEn', title: '英文名', align: 'center'},
-        { key: 'gender', title: '性别',  align: 'center', editor: 'enum', enumKey: 'genders'}, // editor: 'enum'
+        { key: 'gender', title: '性别',  align: 'center', enum: 'genders'}, // editor: 'enum'
         { key: 'nationality', title: '国籍', align: 'center'},
         { slot: 'professions', title: '主要职业', align: 'center'},
-        { key: 'status', title: '状态', align: 'center', editor: 'enum'},
+        { key: 'status', title: '状态', align: 'center', enum: 'status'},
         { slot: 'action', title: '操作', align: 'center', minWidth: 140},
      ] as ColumnExtra[]
   }
