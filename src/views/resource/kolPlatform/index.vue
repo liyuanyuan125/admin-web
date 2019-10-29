@@ -12,7 +12,6 @@
     <ListPage
       :fetch="fetch"
       :filters="filters"
-      :enums="enums"
       :columns="columns"
       selectable
       :selectedIds.sync="selectedIds"
@@ -125,7 +124,7 @@ export default class KolPlatformIndex extends ViewBase {
       {
         name: 'accountCategoryCode',
         defaultValue: 0,
-        type: 'select',
+        select: true,
         width: 128,
         placeholder: '平台账号分类'
       },
@@ -133,7 +132,7 @@ export default class KolPlatformIndex extends ViewBase {
       {
         name: 'channelDataName',
         defaultValue: '',
-        type: 'input',
+        input: true,
         width: 128,
         placeholder: '账号名称'
       },
@@ -141,14 +140,14 @@ export default class KolPlatformIndex extends ViewBase {
       {
         name: 'minFansCount',
         defaultValue: '',
-        type: 'input',
+        input: true,
         width: 100,
         placeholder: '粉丝数量下限'
       },
       {
         name: 'maxFansCount',
         defaultValue: '',
-        type: 'input',
+        input: true,
         width: 100,
         placeholder: '粉丝数量上限'
       },
@@ -156,19 +155,17 @@ export default class KolPlatformIndex extends ViewBase {
       {
         name: 'priceStatus',
         defaultValue: 0,
-        type: 'select',
+        select: true,
         width: 128,
         placeholder: '定价状态',
-        enumKey: 'priceStatusList'
       },
 
       {
         name: 'controlStatus',
         defaultValue: 0,
-        type: 'select',
+        select: true,
         width: 128,
         placeholder: '上架状态',
-        enumKey: 'controlStatusList'
       },
       {
         name: 'pageIndex',
@@ -182,18 +179,18 @@ export default class KolPlatformIndex extends ViewBase {
     ]
   }
 
-  enums = [
-    'accountCategoryList',
-    'controlStatusList',
-    'priceStatusList'
-  ]
+  // enums = [
+  //   'accountCategoryList',
+  //   'controlStatusList',
+  //   'priceStatusList'
+  // ]
 
   get columns() {
     return [
       { title: '序号', key: 'id', width: 65 },
       { title: '平台账号', key: 'channelDataId', width: 80 },
       { title: '平台账号名称', key: 'name', width: 110 },
-      { title: '平台账号分类', key: 'accountCategoryCode', width: 90, editor: 'deprecated' },
+      { title: '平台账号分类', key: 'accountCategoryCode', width: 90, enum: 'accountCategoryList' },
       { title: '粉丝数', key: 'fansCount', width: 100 },
       { title: '关联的KOL编号', key: 'kolId', minWidth: 100 },
       { title: '关联的KOL名称', key: 'kolName', minWidth: 100 },
@@ -202,8 +199,8 @@ export default class KolPlatformIndex extends ViewBase {
       { title: '成本价', slot: 'costPrices', minWidth: 140 },
       { title: '销售价', slot: 'prices', minWidth: 140 },
       // { title: '审核状态', slot: 'status', minWidth: 140 },
-      { title: '上架状态', key: 'controlStatus', width: 100, editor: 'enum'},
-      { title: '定价状态', key: 'priceStatus', width: 100, editor: 'enum'},
+      { title: '上架状态', key: 'controlStatus', width: 100, enum: 'controlStatusList'},
+      { title: '定价状态', key: 'priceStatus', width: 100, enum: 'priceStatusList'},
       { title: '操作', slot: 'action', width: 140 }
     ] as ColumnExtra[]
   }
