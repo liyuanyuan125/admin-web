@@ -1215,6 +1215,45 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     }
   },
 
+  // 财务管理 - 应收应付统计表 - 应收金额
+  {
+    path: '/finance/accrual/receive/:id',
+    name: 'finance-accrual-receive',
+    component: () => import('./views/finance/accrual/receive.vue'),
+    meta: {
+      authKey: '',
+      title: '应收金额'
+    },
+    props: idProps
+  },
+
+  // 财务管理 - 应收应付统计表 - 应付金额
+  {
+    path: '/finance/accrual/pay/:id',
+    name: 'finance-accrual-pay',
+    component: () => import('./views/finance/accrual/pay.vue'),
+    meta: {
+      authKey: '',
+      title: '应付金额'
+    },
+    props: idProps
+  },
+
+  // 财务管理 - 应收应付统计表 - 应收-应付
+  {
+    path: '/finance/accrual/receive-pay/:id',
+    name: 'finance-accrual-receive-pay',
+    component: () => import('./views/finance/accrual/receivePay.vue'),
+    meta: {
+      authKey: '',
+      title: '应收-应付',
+      breadcrumbs: [
+        'finance-accrual'
+      ]
+    },
+    props: idProps,
+  },
+
   {
     path: '/plan/ggtising',
     name: 'plan-ggtising',

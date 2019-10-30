@@ -19,36 +19,37 @@
       >
         <h3 class="group-name" v-if="group.name">{{group.name}}</h3>
         <section class="field-section">
-          <Col
-            v-for="it in group.list"
-            :key="it.name"
-            :span="it.span"
-            :offset="it.offsetLeft"
-            :class="it.colClass"
-            :style="it.style"
-            v-if="it.visibleCol(item)"
-          >
-            <FormItem
-              :label="it.label"
-              :label-width="it.labelWidth"
-              :prop="it.name"
-              :error="errorMap[it.name]"
-              :class="it.class"
-              v-auth="it.auth"
-              v-if="it.visible(item)"
+          <template v-for="it in group.list">
+            <i-col
+              :key="it.name"
+              :span="it.span"
+              :offset="it.offsetLeft"
+              :class="it.colClass"
+              :style="it.style"
+              v-if="it.visibleCol(item)"
             >
-              <component
-                v-model="item[it.name]"
-                :is="it.component"
-                :disabled="!!it.disabled"
-                v-bind="{
-                  enumList: newEnumMap[it.enumKey] || enumMap[it.name],
-                  ...it.props
-                }"
-                v-on="it.handlers"
-              />
-            </FormItem>
-          </Col>
+              <FormItem
+                :label="it.label"
+                :label-width="it.labelWidth"
+                :prop="it.name"
+                :error="errorMap[it.name]"
+                :class="it.class"
+                v-auth="it.auth"
+                v-if="it.visible(item)"
+              >
+                <component
+                  v-model="item[it.name]"
+                  :is="it.component"
+                  :disabled="!!it.disabled"
+                  v-bind="{
+                    enumList: newEnumMap[it.enumKey] || enumMap[it.name],
+                    ...it.props
+                  }"
+                  v-on="it.handlers"
+                />
+              </FormItem>
+            </i-col>
+          </template>
         </section>
       </fieldset>
 

@@ -6,7 +6,6 @@
 </template>
 
 <script lang="ts">
-// test gitlab
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import EditForm, { Field, Validator } from '@/components/editForm'

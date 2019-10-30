@@ -4,14 +4,7 @@
       :fetch="fetch"
       :filters="filters"
       :columns="columns"
-      ref="listPage"
     >
-      <template slot="action" slot-scope="{ row: { id, status } }">
-        <div class="row-acts">
-          <router-link :to="editRoute('audit', id)" v-if="status == 1">商务审核</router-link>
-          <router-link :to="editRoute('new', id)" v-if="status == 3">开票</router-link>
-        </div>
-      </template>
     </ListPage>
   </div>
 </template>
@@ -20,28 +13,20 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import { navList, querySaleList } from './data'
-import { alert, toast } from '@/ui/modal'
-import { EditDialog, Field } from '@/components/editForm'
-import { startDayTimestamp, endDayTimestamp } from '@/util/dealData'
+import { queryList } from './data'
 
 @Component({
   components: {
-    ListPage,
-    EditDialog
+    ListPage
   }
 })
 export default class IndexPage extends ViewBase {
-  get listPage() {
-    return this.$refs.listPage as ListPage
-  }
-
-  fetch = querySaleList
+  fetch = queryList
 
   get filters(): Filter[] {
     return [
       {
-        name: 'start',
+        name: 'beginDate',
         defaultValue: 0,
         date: {
           type: 'month'
@@ -51,7 +36,7 @@ export default class IndexPage extends ViewBase {
       },
 
       {
-        name: 'end',
+        name: 'endDate',
         defaultValue: 0,
         date: {
           type: 'month'
@@ -72,20 +57,30 @@ export default class IndexPage extends ViewBase {
     ]
   }
 
-  navList = navList
-
   get columns() {
     return [
       {
         title: '月份',
         key: 'month',
-        width: 65,
+        width: 80,
       },
       {
         title: '应收金额',
-        key: 'totalTaxFee',
+        key: 'amountReceivable',
         minWidth: 100,
-        link: ({ item }) => ({ name: '', params: {} })
+        link: ({ item }) => ({ name: 'finance-accrual-receive', params: { id: item.id } })
+      },
+      {
+        title: '应付金额',
+        key: 'amountPayable',
+        minWidth: 100,
+        link: ({ item }) => ({ name: 'finance-accrual-pay', params: { id: item.id } })
+      },
+      {
+        title: '应收-应付',
+        key: 'amountReceivablePayable',
+        minWidth: 100,
+        link: ({ item }) => ({ name: 'finance-accrual-receive-pay', params: { id: item.id } })
       },
     ] as ColumnExtra[]
   }
