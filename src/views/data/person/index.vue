@@ -4,6 +4,7 @@
       :fetch="fetch"
       :filters="filters"
       :columns="columns"
+      selectable
       :selectedIds.sync = "selectedIds"
       ref="listPage">
       
@@ -122,7 +123,6 @@ export default class Main extends ViewBase {
 
   get columns() {
      return [
-        {type: 'selection', width: 50},
         { key: 'id', title: '影人id', align: 'center'},
         { key: 'name', title: '中文名', align: 'center'},
         { key: 'nameEn', title: '英文名', align: 'center'},

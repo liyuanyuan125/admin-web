@@ -4,7 +4,8 @@
       :fetch="fetch"
       :filters="filters"
       :columns="columns"
-      @selectionChange="selectionChange"
+      selectable
+      :selectedIds.sync = idsList
       ref="listPage"
     >
       <template slot="acts-2">
@@ -121,15 +122,11 @@ export default class Main extends ViewBase {
     }
   ]
 
-  // enums = ['typeList', 'categoryList', 'releaseStatusList', 'controlStatusList']
-
   // select ids
   idsList: any[] = []
-  statusIds: any[] = []
 
   get columns() {
     return [
-      { type: 'selection', width: 50 },
       { title: '影片id', key: 'id', minWidth: 85 },
       // {title: '专资id', key: 'specialId', minWidth: 85},
       { title: '影片名称', key: 'name', minWidth: 85 },
@@ -150,11 +147,6 @@ export default class Main extends ViewBase {
   // 抓取票神影片
   visFilmid = {
     visible: false
-  }
-
-  selectionChange(ids: any[]) {
-    this.idsList = ids.map(item => item.id)
-    this.statusIds = ids.map(item => item.status)
   }
 
   // 上架 和 下架

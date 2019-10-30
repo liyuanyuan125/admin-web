@@ -308,7 +308,6 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
   // 全选
   selectionChange(selectedList: any[]) {
     this.$emit('selectionChange', selectedList)
-
     const idKey = this.idKey
     const pageIds = (this.list || []).map(it => it[idKey])
     const ids = (selectedList || []).map(it => it[idKey])

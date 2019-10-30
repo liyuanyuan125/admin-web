@@ -127,8 +127,8 @@ export default class Main extends ViewBase {
   columns = [
     { title: '账单编号', key: 'resourceBillNo', minWidth: 65 },
     { title: '影城名称', key: 'cinemaName', minWidth: 100 },
-    { title: '影城专资码', key: 'code', minWidth: 60 },
-    { title: '资源方名称', key: 'resourceName', minWidth: 60 },
+    { title: '影城专资码', key: 'code', minWidth: 80 },
+    { title: '资源方名称', key: 'resourceName', minWidth: 80 },
     { title: '合同编号', key: 'contractNo', minWidth: 100 },
     { title: '账单月份', slot: 'year', minWidth: 60 },
     { title: '账单生成时间', key: 'createTime', minWidth: 100, dateTime: true},
@@ -139,7 +139,7 @@ export default class Main extends ViewBase {
     { title: '账单状态', key: 'billStatus', minWidth: 60, enum: true},
     { title: '发票状态', key: 'invoiceStatus', minWidth: 60, enum: true},
     { title: '付款状态', key: 'payStatus', minWidth: 60, enum: true},
-    { title: '操作', slot: 'operate', minWidth: 90 },
+    { title: '操作', slot: 'operate', minWidth: 110 },
   ]
 }
 </script>

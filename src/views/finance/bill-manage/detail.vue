@@ -5,7 +5,6 @@
        <ListPage
         :fetch="fetch"
         :filters="filters"
-        :enums="enums"
         :columns="columns"
         ref="listPage">
       </ListPage>
@@ -107,7 +106,6 @@ export default class Main extends ViewBase {
   resourceBillLogs: any[] = []
   items: any = {}
 
-  // fetch = resourceBillDetail
   filters: Filter[] = [
     {
       name: 'id',
@@ -124,12 +122,6 @@ export default class Main extends ViewBase {
     }
   ]
 
-  enums = [
-    'statusList',
-    'movieCustomList',
-    'playMonitorStatusList'
-  ]
-
   columns = [
     { title: '广告片名称', key: 'videoName', minWidth: 90 },
     { title: '影片名称', key: 'movieName', minWidth: 90 },
@@ -140,8 +132,8 @@ export default class Main extends ViewBase {
     { title: '曝光人次/人次', key: 'personCount', minWidth: 90 },
     { title: '单价/元/人次', key: 'unitPrice', minWidth: 90 },
     { title: '金额', key: 'amount', minWidth: 90 },
-    { title: '监播文件', key: 'playMonitorStatus', minWidth: 90, editor: 'enum' },
-    { title: '是否需要结算', key: 'status', minWidth: 90, editor: 'enum' },
+    { title: '监播文件', key: 'playMonitorStatus', minWidth: 90, enum: 'playMonitorStatusList' },
+    { title: '是否需要结算', key: 'status', minWidth: 90, enum: 'statusList' },
     { title: '备注', key: 'remark', minWidth: 90 },
   ]
 
