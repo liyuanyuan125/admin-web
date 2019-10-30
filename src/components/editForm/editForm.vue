@@ -147,7 +147,7 @@ export default class EditForm extends ViewBase {
   /** 返回按钮文本 */
   @Prop({ type: String, default: '返回' }) returnText!: string
 
-  /** scrollToErrorOffsetTop */
+  /** 发生错误时，会自动滚动到错误发生的位置，该选项配置错误滚动位置向上的偏移量 */
   @Prop({ type: Number, default: -60 }) scrollToErrorOffsetTop!: number
 
   /** 内部使用，是否在 editDialog 内 */
