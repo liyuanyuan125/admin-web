@@ -469,3 +469,18 @@ export function joinAddress(
   const result = Array.from(new Set(parts)).join(separator).trim() || blank
   return result
 }
+
+/**
+ * 格式化金额
+ * @param num 金额
+ * @param options 选项
+ */
+export function toMoney(num: number, {
+  /** 前缀，注意 ¥ 后有空格 */
+  prefix = '¥ ',
+  /** 末尾保留的小数位数 */
+  tail = 2
+} = {}) {
+  const thous = toThousands(num.toFixed(tail))
+  return prefix + thous
+}

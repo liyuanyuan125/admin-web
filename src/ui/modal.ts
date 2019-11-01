@@ -216,7 +216,7 @@ export function toast(msg: string, config = {} as ToastConfig) {
   ; (Message as any).config({
     top: cfg.top || Math.floor(window.innerHeight / 3)
   })
-  ; (Message[cfg.type] || Message.success).call(Message, cfg)
+  return (Message[cfg.type] || Message.success).call(Message, cfg)
 }
 
 /**
@@ -225,5 +225,5 @@ export function toast(msg: string, config = {} as ToastConfig) {
  * @param config 配置
  */
 export function loading(msg = 'loading', config = {} as ToastConfig) {
-  toast(msg, { type: 'loading', ...config })
+  return toast(msg, { type: 'loading', ...config })
 }
