@@ -97,7 +97,9 @@ export interface Filter extends OldFilter {
   // --------------------------------------------------
 
   /** 组件 LazyInput 的选项 */
-  input?: true,
+  input?: true | {
+    [key: string]: any
+  },
 
   /** 组件 Select 的选项 */
   select?: true | {
@@ -105,15 +107,6 @@ export interface Filter extends OldFilter {
     enumList?: KeyText[]
     [key: string]: any
   },
-
-  /** 组件 DatePicker 的选项 */
-  date?: true,
-
-  /** 组件 DateRangePicker 的选项 */
-  dateRange?: true,
-
-  /** 组件 WeekDatePicker 的选项 */
-  week?: true,
 
   /**
    * 组件 remoteSelect 的选项，若设置了该项，
@@ -124,6 +117,30 @@ export interface Filter extends OldFilter {
     backfill?: RemoteSelectBackfill
     [key: string]: any
   },
+
+  /** 组件 DatePicker 的选项 */
+  date?: true | {
+    /**
+     * 模式，默认 date
+     * date  - 日选择模式
+     * month - 月选择模式
+     * year  - 年选择模式
+     */
+    type?: 'date' | 'month' | 'year'
+    [key: string]: any
+  },
+
+  /** 组件 DateRangePicker 的选项 */
+  dateRange?: true | {
+    [key: string]: any
+  },
+
+  /** 组件 WeekDatePicker 的选项 */
+  week?: true | {
+    [key: string]: any
+  },
+
+  // TODO: company 这种业务组件，不应该放在这里，将来重构时移除
 
   /**
    * 组件 companySelect 的选项
