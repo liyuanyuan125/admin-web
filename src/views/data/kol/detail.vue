@@ -286,8 +286,8 @@ export default class Main extends ViewBase {
         this.form.description = item.description
         const accountCategoryCode = makeMap(this.accountCategoryList)
         this.form.accountCategoryCode = accountCategoryCode[item.accountCategoryCode]
-        this.form.customJyIndex = item.customJyIndex
-        this.form.customIndexPercent = item.customIndexPercent
+        this.form.customJyIndex = item.customJyIndex / 100
+        this.form.customIndexPercent = item.customIndexPercent / 100
         this.form.description = item.description
         this.customTags = (item.customTags || []).map((it: any, index: number) => {
           return {
