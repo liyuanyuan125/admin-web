@@ -1575,6 +1575,17 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: paramTypes({ id: Number, action: String })
   },
 
+  // 内容管理 - 行业分类管理 - 列表
+  {
+    path: '/content/industry',
+    name: 'content-industry',
+    component: () => import('./views/content/industry/index.vue'),
+    meta: {
+      authKey: '',
+      title: '行业管理列表'
+    }
+  },
+
   {
     path: '/system/setup',
     name: 'system-setup',
