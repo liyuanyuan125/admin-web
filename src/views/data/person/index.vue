@@ -3,10 +3,10 @@
       <ListPage
       :fetch="fetch"
       :filters="filters"
-      :enums="enums"
       :columns="columns"
-      @selectionChange="selectionChange"
+      :selectedIds.sync = "selectedIds"
       ref="listPage">
+      
       <template slot="acts-2">
         <div class="table-btn">
             <Button type="primary" @click="handleGetFilm" >抓取票神影人</Button>
@@ -58,52 +58,55 @@ export default class Main extends ViewBase {
     {
       name: 'id',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 140,
       placeholder: '影人id'
     },
     {
       name: 'name',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 140,
       placeholder: '中文名'
     },
     {
       name: 'nameEn',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 140,
       placeholder: '英文名'
     },
     {
       name: 'profession',
       defaultValue: '',
-      type: 'select',
+      select: {
+        enumKey: 'professions'
+      },
       width: 140,
-      placeholder: '职业状态',
-      enumKey: 'professions'
+      placeholder: '职业状态'
     },
     {
       name: 'status',
       defaultValue: '',
-      type: 'select',
+      select: {
+        enumKey: 'status'
+      },
       width: 140,
       placeholder: '状态',
-      enumKey: 'status'
     },
     {
       name: 'gender',
       defaultValue: '',
-      type: 'select',
+      select: {
+        enumKey: 'genders'
+      },
       width: 140,
       placeholder: '性别',
-      enumKey: 'genders'
     },
     {
       name: 'nationality',
       defaultValue: '',
-      type: Country,
+      component: Country,
       width: 140,
       placeholder: '国籍'
     },
@@ -117,30 +120,21 @@ export default class Main extends ViewBase {
     }
   ]
 
-  enums = [
-     'professions',
-     'status',
-     'genders',
-     'nationality'
-  ]
-
   get columns() {
      return [
         {type: 'selection', width: 50},
         { key: 'id', title: '影人id', align: 'center'},
         { key: 'name', title: '中文名', align: 'center'},
         { key: 'nameEn', title: '英文名', align: 'center'},
-        { key: 'gender', title: '性别',  align: 'center', editor: 'enum', enumKey: 'genders'}, // editor: 'enum'
+        { key: 'gender', title: '性别',  align: 'center',  enum: 'genders'},
         { key: 'nationality', title: '国籍', align: 'center'},
         { slot: 'professions', title: '主要职业', align: 'center'},
-        { key: 'status', title: '状态', align: 'center', editor: 'enum'},
+        { key: 'status', title: '状态', align: 'center', enum: 'status'},
         { slot: 'action', title: '操作', align: 'center', minWidth: 140},
      ] as ColumnExtra[]
   }
 
-  // select ids
-  idsList: any[] = []
-  statusIds: any[] = []
+  selectedIds: any[] = []
 
   // 抓取票神
   visFilmid = {
@@ -160,22 +154,19 @@ export default class Main extends ViewBase {
       this.handleError(ex)
     }
   }
-  selectionChange(ids: any[]) {
-    this.idsList = ids.map( item => item.id)
-    this.statusIds = ids.map( item => item.status)
-  }
+
   // 上架 / 下架
   async handleUpShelf(status: number, id?: number) {
     const text = status == 2 ? '上架' : '下架'
     if (!id) {
-      if (!this.idsList.length) {
+      if (!this.selectedIds.length) {
         await alert(`请选择${text}数据`, {
           title: '提示'
         })
         return
       }
     }
-    const ids = id ? Array.of(id) : this.idsList
+    const ids = id ? Array.of(id) : this.selectedIds
     await confirm(`您选择了${ids.length}条影人进行${text }`, {
       title: `${text}操作`
     })
@@ -189,6 +180,7 @@ export default class Main extends ViewBase {
       this.handleError(ex)
     }
   }
+
   // 刷新
   async uploadCurrent(id: number) {
     // 刷新数据接口成功
@@ -221,12 +213,6 @@ export default class Main extends ViewBase {
 }
 </script>
 <style lang='less' scoped>
-// .operate-btn {
-//   span {
-//     padding: 5px 6px;
-//     cursor: pointer;
-//   }
-// }
 .table-btn {
   padding: 10px 0;
   .ivu-btn {

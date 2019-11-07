@@ -30,7 +30,6 @@
     "vue-property-decorator": "^7.3.0",
     "vue-router": "^3.0.2",
     "xlsx": "^0.15.1"
-
   },
   "devDependencies": {
     "@types/baidumap-web-sdk": "^0.0.1",

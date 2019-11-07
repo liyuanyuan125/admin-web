@@ -3,7 +3,6 @@
     <ListPage
       :fetch="fetch"
       :filters="filters"
-      :enums="enums"
       :columns="columns"
       @selectionChange="selectionChange"
       ref="listPage"
@@ -69,21 +68,21 @@ export default class Main extends ViewBase {
     {
       name: 'ids',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 140,
       placeholder: '影片id'
     },
     {
       name: 'name',
       defaultValue: '',
-      type: 'input',
+      input: true,
       width: 140,
       placeholder: '影片名称'
     },
     {
       name: 'types',
       defaultValue: '',
-      type: 'select',
+      select: true,
       width: 140,
       placeholder: '影片类型',
       enumKey: 'typeList'
@@ -91,7 +90,7 @@ export default class Main extends ViewBase {
     {
       name: 'categoryCode',
       defaultValue: '',
-      type: 'select',
+      select: true,
       width: 140,
       placeholder: '分类',
       enumKey: 'categoryList'
@@ -99,7 +98,7 @@ export default class Main extends ViewBase {
     {
       name: 'releaseStatus',
       defaultValue: '',
-      type: 'select',
+      select: true,
       width: 140,
       placeholder: '上映状态',
       enumKey: 'releaseStatusList'
@@ -107,7 +106,7 @@ export default class Main extends ViewBase {
     {
       name: 'controlStatus',
       defaultValue: '',
-      type: 'select',
+      select: true,
       width: 140,
       placeholder: '状态',
       enumKey: 'controlStatusList'
@@ -122,7 +121,7 @@ export default class Main extends ViewBase {
     }
   ]
 
-  enums = ['typeList', 'categoryList', 'releaseStatusList', 'controlStatusList']
+  // enums = ['typeList', 'categoryList', 'releaseStatusList', 'controlStatusList']
 
   // select ids
   idsList: any[] = []
@@ -141,9 +140,9 @@ export default class Main extends ViewBase {
       { title: '导演', slot: 'directors', minWidth: 85 },
       { title: '产地', slot: 'countries', minWidth: 85 },
       { title: '类型', slot: 'types', minWidth: 85 },
-      { title: '分类', key: 'categoryCode', minWidth: 85, editor: 'enum' },
-      { title: '上映状态', key: 'releaseStatus', minWidth: 85, editor: 'enum' },
-      { title: '状态', key: 'controlStatus', minWidth: 85, editor: 'enum' },
+      { title: '分类', key: 'categoryCode', minWidth: 85, enum: 'categoryList' },
+      { title: '上映状态', key: 'releaseStatus', minWidth: 85, enum: true},
+      { title: '状态', key: 'controlStatus', minWidth: 85, enum: true },
       { title: '操作', slot: 'operate', minWidth: 160 }
     ] as ColumnExtra[]
   }
