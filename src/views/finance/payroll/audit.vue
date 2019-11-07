@@ -196,7 +196,6 @@ export default class IndexPage extends ViewBase {
       this.refresh()
     }
   }
-
 }
 </script>
 

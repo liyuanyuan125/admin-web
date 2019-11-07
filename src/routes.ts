@@ -52,6 +52,10 @@ interface RouteMetaBase {
    * 只需设置中间的 route name 就行，页面本身与主导航，会自动添加
    */
   breadcrumbs?: string[]
+  /**
+   * 侧栏菜单选中的菜单项，若自动判断不能起作用，可设置该项
+   */
+  siderNav?: string
   [key: string]: any
 }
 
@@ -1849,7 +1853,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     component: () => import('./views/datareport/cost/index.vue'),
     meta: {
       authKey: '',
-      title: '成本核算报表'
+      title: '成本核算列表'
     }
   },
   // 广告管理 - 下刊 - 列表
@@ -1859,7 +1863,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     component: () => import('./views/datareport/nextissue/index.vue'),
     meta: {
       authKey: '',
-      title: '报表详情'
+      title: '下刊监控列表'
     }
   },
   // 广告管理 - 下刊 - 列表 - 详情
@@ -1869,7 +1873,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     component: () => import('./views/datareport/nextissue/detail.vue'),
     meta: {
       authKey: '',
-      title: '下刊监控列表'
+      title: '报表详情'
     }
   },
 ] // end of mainLayoutRoutes
