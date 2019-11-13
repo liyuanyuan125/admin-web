@@ -12,7 +12,7 @@
             <Row>
                 <Col :span='12'><span class='spons'>影片名称&nbsp;：&nbsp;</span>{{(listitem.movieName == null || listitem.movieName == '') ? '暂无影片名称' : listitem.movieName}}</Col>
                 <Col :span='12'><span class='spons'>包含广告片&nbsp;：&nbsp;</span>共计{{listitem.totalLength}}s
-                        <a style='margin-left: 5px;' v-for='(item) in listitem.videoDetails' :key='item.videoId'>
+                        <a style='margin-left: 5px;' v-for='(item) in listitem.videoDetails' :key='item.orderId'>
                             <em style='font-style: normal;font-right: -5px;' v-for='(its,index) in deliveryPositionList' :key='index' v-if='item.deliveryPosition != null && item.deliveryPosition == its.key'>【{{its.text}}】</em>
                             {{item.videoName}} ({{item.videoLength}})s
                         </a> 
@@ -23,12 +23,22 @@
                 <Col :span='12'><span class='spons'>上传渠道&nbsp;：&nbsp;</span>{{listitem.fileFrom == null ? '暂无' : listitem.fileFrom}}</Col>
             </Row>
         </div>
+        <div class='title'>影院联系人信息</div>
+        <div class='bos'>
+            <Row>
+                <Col :span='8'><span class='spons'>姓名&nbsp;：&nbsp;</span>{{listitem.resourceName == null ? '暂无资源方公司' : listitem.resourceName}}</Col>
+                <Col :span='8'><span class='spons'>电话&nbsp;：&nbsp;</span>【{{listitem.resourceName == null ? '暂无影院专资编码' : listitem.resourceName}}】</Col>
+                <Col :span='8'><span class='spons'>邮箱&nbsp;：&nbsp;</span>【{{listitem.resourceName == null ? '暂无影院专资编码' : listitem.resourceName}}】</Col>
+            </Row>
+        </div>
+        
         <div class='title' v-if='listitem.approvalStatus == 2 || listitem.approvalStatus == 3  || listitem.approvalStatus == 4'>监播审核</div>
         <Row class='bos' v-if='listitem.approvalStatus == 2 || listitem.approvalStatus == 3  || listitem.approvalStatus == 4'>
+          <Row>
             <Col :span='15'>
-            <span v-if='listitem.fileUrl == null'>暂无监播文件</span>
-            <video ref='videoplay' :style="{'transform': 'rotate(' + roteNum + 'deg)', 'width': roteTrue != true ? '350px' : '98%' }" v-if='listitem.fileUrl != null' :src='listitem.fileUrl' width='93%' height='60%' autobuffer controls="controls" type="video/mp4" ></video>
-                <p v-if='listitem.fileUrl != null' style='margin-top: 3px;'>选择播放速率：
+              <span v-if='listitem.fileUrl == null'>暂无监播视频文件</span>
+              <video ref='videoplay' :style="{'transform': 'rotate(' + roteNum + 'deg)', 'width': roteTrue != true ? '350px' : '98%' }" v-if='listitem.fileUrl != null' :src='listitem.fileUrl' width='93%' height='60%' autobuffer controls="controls" type="video/mp4" ></video>
+              <p v-if='listitem.fileUrl != null' style='margin-top: 3px;'>选择播放速率：
                     <Select v-model="videoplay.speed" placeholder="设置播放状态">
                       <Option v-for="it in videoplayList" :key="it.key" :value="it.key"
                           :label="it.text">{{it.text}}</Option>
@@ -36,42 +46,62 @@
                     <Button @click='changeRote(1)' style='margin-right: 5%;' type='default' class='rote'>向左旋转</Button>
                     <Button @click='changeRote(0)' type='default' class='rote'>恢复</Button>
                     <Button @click='changeRote(2)' type='default' class='rote'>向右旋转</Button>
-               </p>
+              </p>
             </Col>
             <Col :span='9'>
-            <Row style='margin-top: -14px;font-size: 12px;'>通过监播视频选择未通过审核的广告片，并选择审核未通过的原因</Row>
-            <Row style='margin-top: -18px;color: red;font-size: 12px;'>如未勾选，则表示该广告审核成功，正常财务结算</Row>
-            <Row class='mainRow'>
-                <Form style='margin-top: -18px;padding-left: 20px;' ref="dataForm" :model="dataForm" label-position="left" :label-width="80">
-                    <Checkbox :indeterminate="indeterminate" :value="checkAll" :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3' @click.prevent.native="handleCheckAll">全选</Checkbox>
-                    <!-- <Checkbox v-if='listitem.approvalStatus == 4' :indeterminate="indeterminate" :value="checkAll" disabled >全选</Checkbox> -->
-                    <FormItem label="" prop="closeReason">
-                        <CheckboxGroup v-model="dataForm.orderIds">
-                            <Checkbox v-for="(it) in listitem.videoDetails" :key="it.orderId" :value="it.orderId" :label="it.orderId" :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3'>
-                                <em style='font-style: normal;font-right: -5px;' v-for='(its,index) in deliveryPositionList' :key='index' v-if='it.deliveryPosition != null && it.deliveryPosition == its.key'>【{{its.text}}】</em>
-                              {{it.videoName}} ({{it.videoLength}})s
-                            </Checkbox></br>
-                        </CheckboxGroup>
-                    </FormItem>
-                </Form>
-                <Form style='margin-top: -27px;padding-left: 20px;background: #eee;' v-if='dataForm.orderIds.length != 0' ref="dataForm" :model="dataForm" label-position="left" :label-width="80">
-                    <Row>审核未通过的原因</Row>
-                    <FormItem label="" prop="closeReason">
-                        <CheckboxGroup v-model="dataForm.reasonOrderIds">
-                            <Checkbox v-for="(it) in reason" :key="it.key" :value="it.key" :label="it.key" :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3'>{{it.text}} </Checkbox>
-                        </CheckboxGroup>
-                    </FormItem>
-                    <Row style='margin-top: -32px;' v-if='dataForm.reasonOrderIds.indexOf("9") != -1 '>审核未通过原因(勾选其他时):</Row>
-                    <FormItem label="" prop="closeReason" v-if='dataForm.reasonOrderIds.indexOf("9") != -1 '>
-                         <Input :maxlength="120" type='textarea' :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3' placeholder='勾选其他时请输入原因' v-model="dataForm.refuseReason"></Input>
-                    </FormItem>
-                </Form>
-            </Row>
-            <div v-if='listitem.approvalStatus == 2' class="dialog-footer">
-                <Button type="primary" @click="dataFormSubmit">提交</Button>
-                <Button type="primary" style='margin-left: 20px;' @click="nextSubmit">提交并继续审核</Button>
-            </div>
+              <Row style='margin-top: -14px;font-size: 12px;'>通过监播视频选择未通过审核的广告片，并选择审核未通过的原因</Row>
+              <Row style='margin-top: -18px;color: red;font-size: 12px;'>如未勾选，则表示该广告审核成功，正常财务结算</Row>
+              <Row class='mainRow'>
+                  <Form style='margin-top: -18px;padding-left: 20px;' ref="dataForm" :model="dataForm" label-position="left" :label-width="80">
+                      <Checkbox :indeterminate="indeterminate" :value="checkAll" :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3' @click.prevent.native="handleCheckAll">全选</Checkbox>
+                      
+                      
+                      <!-- <Checkbox v-if='listitem.approvalStatus == 4' :indeterminate="indeterminate" :value="checkAll" disabled >全选</Checkbox> -->
+                      <FormItem label="" prop="closeReason">
+                          <!-- <CheckboxGroup v-model="dataForm.orderIds"> -->
+                            <CheckboxGroup @on-change='aaa'>
+                              <Checkbox v-for="(it) in videoDetails" :key="it.orderId" :value="it.orderId" :label="it.orderId"   :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3'>
+                                  <em style='font-style: normal;font-right: -5px;' v-for='(its) in deliveryPositionList' :key='its.key' v-if='it.deliveryPosition != null && it.deliveryPosition == its.key'>【{{its.text}}】</em>
+                                {{it.videoName}} ({{it.videoLength}})s &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                <Checkbox style='position: absolute' v-model="it.checks">是否免传</Checkbox>
+
+                                <Form style='padding-left: 20px;background: #eee;' v-if='dataForm.orderIds.indexOf(it.orderId) != -1' ref="dataForm" :model="dataForm" label-position="left" :label-width="80">
+                                  <Row>审核未通过的原因</Row>
+                                  <FormItem label="" prop="closeReason">
+                                      <CheckboxGroup v-model="reasonOrderList">
+                                          <Checkbox v-for="(reasonit) in reason" :key="reasonit.key" :value="it.orderId + '-' + reasonit.key" :label="it.orderId + '-' + reasonit.key" :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3'>{{reasonit.text}} </Checkbox>
+                                      </CheckboxGroup>
+                                  </FormItem>
+                                  <Row v-if='reasonOrderList.indexOf(it.orderId + "-9") != -1 '>审核未通过原因(勾选其他时):</Row>
+                                  <FormItem label="" prop="closeReason" v-if='reasonOrderList.indexOf(it.orderId + "-9") != -1 '>
+                                      <Input :maxlength="120" type='textarea' :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3' placeholder='勾选其他时请输入原因' v-model="it.onereason"></Input>
+                                  </FormItem>
+                                </Form>
+                              </Checkbox></br>
+                          </CheckboxGroup>
+                              <!-- <Checkbox v-for="(it) in videoDetails" :key="it.orderId"   v-model="it.checks">是否免传</Checkbox> -->
+                          
+                      </FormItem>
+
+
+
+                  </Form>
+              </Row>
+              <div v-if='listitem.approvalStatus == 2' class="dialog-footer">
+                  <Button type="primary" @click="dataFormSubmit">提交</Button>
+                  <Button type="primary" style='margin-left: 20px;' @click="nextSubmit">提交并继续审核</Button>
+              </div>
             </Col>
+          </Row>
+          <Row>监播图片</Row>
+          <Row class='imgs_j'>
+            <ul>
+              <li v-for='it in imgList' :key='it.key'>
+                <img @click='onView(it.img)' :src="it.img" alt="">
+              </li>
+            </ul>
+          </Row>
         </Row>
         <div v-if='listitem.approvalStatus != 2' class='title'>操作记录</div>
         <div class='bos' v-if='listitem.approvalStatus != 2 && logList.length != 0'>
@@ -82,13 +112,16 @@
         <div class='bos' v-if='listitem.approvalStatus != 2 && logList.length == 0'>
             暂无操作日志
         </div>
+        <!-- 查看图片 -->
+        <Modal v-model="viewerShow" title="查看" width="500" height="500">
+          <img style="width: 100%;" :src="viewerImage" alt sizes srcset>
+        </Modal>
     </div>
 </template>
 <script lang="tsx">
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import jsxReactToVue from '@/util/jsxReactToVue'
-import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { warning, success, toast, info } from '@/ui/modal'
@@ -96,13 +129,12 @@ import { slice, clean } from '@/fn/object'
 import {
     queryList,
     itemlist,
-    okpass,
+    // okpass,
     refuse,
     monitorsIds,
     approve,
     reset
 } from '@/api/supervision'
-import EditDialog, { Field } from '@/components/editDialog'
 import Decimal from 'decimal.js'
 
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
@@ -120,10 +152,16 @@ export default class Main extends ViewBase {
         refuseReason: ''
     }
 
+    videoDetails: any = []
 
     statusform = {
         status: 1,
     }
+
+    arraylist: any = {}
+    // 广告片拒绝原因选中列表
+    reasonOrderList: any = []
+    checkReason: any = []
 
     roteNum: any = 0
     roteTrue: any = true
@@ -177,16 +215,57 @@ export default class Main extends ViewBase {
     ]
     // 广告片位置
     deliveryPositionList: any = []
-
+    // 广告片拒绝原因列表
     reason: any = []
 
     // 存储数据需要调用接口的参数列
     videoIdsList: any = {}
 
+    // 监播图片展示列
+    imgList: any = [
+      {
+        img: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2973069531,657782944&fm=26&gp=0.jpg',
+        key: '1'
+      },
+      {
+        img: 'https://ss3.baidu.com/-rVXeDTa2gU2pMbgoY3K///it///u=3919516526,1578570869&fm=202',
+        key: '2'
+      },
+      {
+        img: 'https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3087232940,2136816654&fm=26&gp=0.jpg',
+        key: '3'
+      },
+      {
+        img: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1541112694,128645288&fm=26&gp=0.jpg',
+        key: '4'
+      },
+      {
+        img: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2431292440,177930009&fm=26&gp=0.jpg',
+        key: '5'
+      },
+      {
+        img: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3185023445,1623186821&fm=26&gp=0.jpg',
+        key: '6'
+      },
+      {
+        img: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3876734362,2775714984&fm=26&gp=0.jpg',
+        key: '7'
+      },
+    ]
+
+    // 查看图片
+    viewerShow = false
+    viewerImage = ''
+
 
 
     mounted() {
-        this.search()
+      this.search()
+    }
+
+    aaa(data: any) {
+      this.dataForm.orderIds.push(data[0])
+      // console.log(data)
     }
 
     // 返回上一页
@@ -237,16 +316,74 @@ export default class Main extends ViewBase {
     // 提交并继续审核
     async nextSubmit() {
         if (this.dataForm.orderIds.length != 0) {
-            if (this.dataForm.reasonOrderIds.length == 0) {
+            if (this.reasonOrderList.length == 0) {
                 info('请选择未通过原因')
                 return
-            } else if (this.dataForm.reasonOrderIds.indexOf('9') != -1) {
-                if (this.dataForm.refuseReason == '') {
-                    info('请输入拒绝原因')
-                    return
-                }
             }
+            //  else {
+            //   (this.videoDetails || []).find((it: any) => {
+            //     console.log(this.dataForm.orderIds)
+            //     console.log(it.orderId)
+            //     console.log(this.dataForm.orderIds.indexOf(it.orderId))
+            //     if (this.dataForm.orderIds.indexOf(it.orderId) != -1 && it.onereason == '') {
+            //       debugger
+            //       info('请确认其他原因是否输入')
+            //       return
+            //     }
+            //   })
+            // }
         }
+      const arr: any = []
+      this.reasonOrderList.forEach( ( value: any , key: any ) => {
+        const orderId = value.split('-')[0]
+        arr.push({
+          orderid: orderId,
+          orderReason: value.split('-')[1]
+        })
+      })
+      const map: any = {}
+      this.checkReason = []
+      arr.forEach( ( value: any , i: any ) => {
+        const ai = arr[i]
+          if ( !map[ai.orderid] ) {
+              this.checkReason.push({
+                  orderid: ai.orderid,
+                  data: [ai.orderReason],
+                  reason: '',
+                  ifcheck: false
+              })
+              map[ai.orderid] = ai
+          } else {
+            for (const [j, item] of this.checkReason.entries()) {
+                  const dj = this.checkReason[j]
+                  if (dj.orderid == ai.orderid) {
+                      dj.data.push(ai.orderReason)
+                      break
+                  }
+              }
+          }
+      })
+      this.checkReason.forEach((n: any, x: any) => {
+        const aas: any = []
+        this.videoDetails.forEach((m: any , y: any ) => {
+            const tt = n.orderid.toString()
+            const kk = m.orderId.toString()
+            if (tt.indexOf(kk) != -1) {
+                aas.push(m)
+                const key = 'xxdetail'
+                n[key] = aas
+                // console.log('90')
+            }
+        })
+      })
+      this.checkReason.forEach((it: any) => {
+        // console.log(it.data)
+        // console.log(it.data.indexOf('9'))
+        if (it.data.indexOf('9') != -1 && it.xxdetail[0].onereason == '') {
+          info('请确认所选广告片的其他原因是否输入')
+          return
+        }
+      })
         const dataItem: any = JSON.parse((sessionStorage.getItem('supinfo') as any))
         this.videoIdsList = {
             query: dataItem.query, // 广告片id或者名称
@@ -327,16 +464,78 @@ export default class Main extends ViewBase {
     // 提交审核拒绝原因
     async dataFormSubmit() {
         if (this.dataForm.orderIds.length != 0) {
-            if (this.dataForm.reasonOrderIds.length == 0) {
+            if (this.reasonOrderList.length == 0) {
                 info('请选择未通过原因')
                 return
-            } else if (this.dataForm.reasonOrderIds.indexOf('9') != -1) {
-                if (this.dataForm.refuseReason == '') {
-                    info('请输入拒绝原因')
-                    return
-                }
             }
+            //  else {
+            //   (this.videoDetails || []).find((it: any) => {
+            //     console.log(this.dataForm.orderIds)
+            //     console.log(it.orderId)
+            //     console.log(this.dataForm.orderIds.indexOf(it.orderId))
+            //     if (this.dataForm.orderIds.indexOf(it.orderId) != -1 && it.onereason == '') {
+            //       debugger
+            //       info('请确认其他原因是否输入')
+            //       return
+            //     }
+            //   })
+            // }
         }
+      const arr: any = []
+      this.reasonOrderList.forEach( ( value: any , key: any ) => {
+        const orderId = value.split('-')[0]
+        arr.push({
+          orderid: orderId,
+          orderReason: value.split('-')[1]
+        })
+      })
+      const map: any = {}
+      this.checkReason = []
+      arr.forEach( ( value: any , i: any ) => {
+        const ai = arr[i]
+          if ( !map[ai.orderid] ) {
+              this.checkReason.push({
+                  orderid: ai.orderid,
+                  data: [ai.orderReason],
+                  reason: '',
+                  ifcheck: false
+              })
+              map[ai.orderid] = ai
+          } else {
+            for (const [j, item] of this.checkReason.entries()) {
+                  const dj = this.checkReason[j]
+                  if (dj.orderid == ai.orderid) {
+                      dj.data.push(ai.orderReason)
+                      break
+                  }
+              }
+          }
+      })
+      this.checkReason.forEach((n: any, x: any) => {
+        const aas: any = []
+        this.videoDetails.forEach((m: any , y: any ) => {
+            const tt = n.orderid.toString()
+            const kk = m.orderId.toString()
+            if (tt.indexOf(kk) != -1) {
+                aas.push(m)
+                const key = 'xxdetail'
+                n[key] = aas
+                // console.log('90')
+            }
+        })
+      })
+      this.checkReason.forEach((it: any) => {
+        // console.log(it.data)
+        // console.log(it.data.indexOf('9'))
+        if (it.data.indexOf('9') != -1 && it.xxdetail[0].onereason == '') {
+          info('请确认所选广告片的其他原因是否输入')
+          return
+        }
+      })
+      // console.log(this.dataForm.orderIds)
+      // console.log(this.checkReason)
+      // console.log(this.videoDetails)
+      // debugger
         const aaa = await approve(this.$route.params.id,
             { orderIds: this.dataForm.orderIds, fixRefuses: this.dataForm.reasonOrderIds ,
               refuseReason: this.dataForm.refuseReason})
@@ -358,6 +557,14 @@ export default class Main extends ViewBase {
             this.end = b.slice(0, 4) + '-' + b.slice(4, 6) + '-' + b.slice(6, 8)
             this.day = ((new Date(this.end).getTime() + 16 * 60 * 60 * 1000 - 1) -
                 (new Date(this.start).getTime() + 16 * 60 * 60 * 1000 - 1)) / (24 * 60 * 60 * 1000)
+            this.videoDetails = (data.item.videoDetails || []).map((it: any) => {
+              return {
+                ...it,
+                reason: [],
+                onereason: '', // 其他输入原因
+                checks: false, // 是否免传
+              }
+            })
             this.logList = (data.logList || []).map((it: any) => {
                 return {
                     ...it,
@@ -400,11 +607,36 @@ export default class Main extends ViewBase {
         }
     }
 
+    // 查看图片
+    onView(url: string) {
+      this.viewerImage = url
+      this.viewerShow = true
+    }
+
     @Watch('$route.parmas', { deep: true })
 
     watchParmas(val: any) {
         this.search()
     }
+
+    // @Watch('videoDetails', { deep: true })
+
+    // watchvideoDetails(val: any) {
+      // (this.videoDetails || []).map((it: any) => {
+      //   if (it.reason.length == 1) {
+      //     return {
+      //       ...it,
+      //       ifcheck: true
+      //     }
+      //   } else {
+      //     return {
+      //       ...it,
+      //       ifcheck: false
+      //     }
+      //   }
+      // })
+    //     console.log(this.videoDetails)
+    // }
 
     @Watch('videoplay', { deep: true })
 
@@ -412,6 +644,12 @@ export default class Main extends ViewBase {
       // alert(val.speed)
       (this.$refs.videoplay as any).playbackRate = val.speed
     }
+
+    // @Watch('dataForm.orderIds', { deep: true })
+
+    // watchorderIds(val: any) {
+
+    // }
 }
 </script>
 <style lang="less" scoped>
@@ -479,6 +717,27 @@ export default class Main extends ViewBase {
   float: right;
   margin-top: 5px;
   margin-right: 1%;
+}
+.imgs_j {
+  ul {
+    li {
+      list-style: none;
+      border: 1px solid #ccc;
+      width: 17%;
+      margin-right: 2.7%;
+      height: 200px;
+      float: left;
+      padding: 20px;
+      margin-bottom: 35px;
+      img {
+        width: 100%;
+        // max-width: 130px;
+        // min-height: 130px;
+        height: 100%;
+        object-fit: contain;
+      }
+    }
+  }
 }
 
 /deep/ .ivu-form .ivu-form-item-label {

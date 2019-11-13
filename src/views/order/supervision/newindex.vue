@@ -43,6 +43,7 @@
                 <span v-for='(it,index) in statusList ' :key='index' v-if='row.approvalStatus == it.value'>{{it.name}}</span>
             </template>
             <template slot="action" slot-scope="{row , index}">
+                <a v-if='row.approvalStatus == 1'>允许上传图片&nbsp;&nbsp;</a>
                 <router-link v-if='row.approvalStatus == 2' @click.native="localitem( row.id , row , index )" :to="{ name: 'order-supervision-detail', params: { id: row.id} }">审核</router-link>
                 <!-- <a style='margin-right: 6px;' v-show='row.approvalStatus == 2' @click="change( row.id , row )">审核</a> -->
                 <a style='margin-right: 6px;' v-show='row.approvalStatus == 3 || row.approvalStatus == 4' @click="resetChange( row.id )">恢复</a>
@@ -237,13 +238,13 @@ export default class IndexPage extends ViewBase {
                 placeholder: '资源方影院'
             },
 
-            {
-                name: 'code',
-                defaultValue: '',
-                type: 'input',
-                width: 140,
-                placeholder: '专资编码'
-            },
+            // {
+            //     name: 'code',
+            //     defaultValue: '',
+            //     type: 'input',
+            //     width: 140,
+            //     placeholder: '专资编码'
+            // },
 
             {
                 name: 'movieName',
@@ -277,26 +278,22 @@ export default class IndexPage extends ViewBase {
                 placeholder: '商务负责人'
             },
         ]
-        const up: any = [
-            {
-                name: 'dateRange2',
-                defaultValue: '',
-                type: 'dateRange',
-                width: 200,
-                placeholder: '上传时间',
-                dealParam(value: string) {
-                    const [uploadBeginTime, uploadEndTime] = value ? value.split('-') : [null, null]
-                    return {
-                        uploadBeginTime : uploadBeginTime ? Number(new Date(String(uploadBeginTime).slice(0, 4)
-                        + '-' + String(uploadBeginTime).slice(4, 6) + '-' +
-                        String(uploadBeginTime).slice(6, 8)).getTime() - (8 * 60 * 60 * 1000)) : null,
-                        uploadEndTime : uploadEndTime ? Number(new Date(String(uploadEndTime).slice(0, 4) + '-'
-                        + String(uploadEndTime).slice(4, 6) + '-' +
-                        String(uploadEndTime).slice(6, 8)).getTime() + (16 * 60 * 60 * 1000 - 1)) : null,
-                    }
-                }
-            },
-        ]
+        // const up: any = [
+        //     {
+        //         name: 'dateRang3e',
+        //         defaultValue: '',
+        //         type: 'dateRange',
+        //         width: 200,
+        //         placeholder: '上传时间',
+        //         dealParam(value: string) {
+        //             const [approvalBeginTime, approvalEndTime] = value ? value.split('-') : [null, null]
+        //             return {
+        //                 approvalBeginTime,
+        //                 approvalEndTime
+        //             }
+        //         }
+        //     },
+        // ]
         const bbb: any = [{
                 name: 'approvalUserName',
                 defaultValue: '',
@@ -313,17 +310,9 @@ export default class IndexPage extends ViewBase {
                 placeholder: '审核时间',
                 dealParam(value: string) {
                     const [approvalBeginTime, approvalEndTime] = value ? value.split('-') : [null, null]
-                    // return {
-                    //     approvalBeginTime,
-                    //     approvalEndTime
-                    // }
                     return {
-                        approvalBeginTime : approvalBeginTime ? Number(new Date(String(approvalBeginTime).slice(0, 4)
-                        + '-' + String(approvalBeginTime).slice(4, 6) + '-' +
-                        String(approvalBeginTime).slice(6, 8)).getTime() - (8 * 60 * 60 * 1000)) : null,
-                        approvalEndTime : approvalEndTime ? Number(new Date(String(approvalEndTime).slice(0, 4) + '-'
-                        + String(approvalEndTime).slice(4, 6) + '-' +
-                        String(approvalEndTime).slice(6, 8)).getTime() + (16 * 60 * 60 * 1000 - 1)) : null,
+                        approvalBeginTime,
+                        approvalEndTime
                     }
                 }
             },
@@ -335,28 +324,28 @@ export default class IndexPage extends ViewBase {
 
             {
                 name: 'pageSize',
-                defaultValue: 20
+                defaultValue: 2
             }
         ]
 
-        if (this.status == '1') {
-          return [...aaa, ...ccc]
-        } else if (this.status == '3' || this.status == '4') {
-          return [...aaa, ...up, ...bbb, ...ccc]
-        } else {
-          return [...aaa, ...up, ...ccc]
-        }
+        // if (this.status == '1') {
+        //   return [...aaa, ...ccc] as ColumnExtra[]
+        // } else if (this.status == '3' || this.status == '4') {
+        //   return [...aaa, ...up, ...bbb, ...ccc] as ColumnExtra[]
+        // } else {
+        //   return [...aaa, ...up, ...ccc] as ColumnExtra[]
+        // }
 
-        // return this.status == '3' || this.status == '4' ? [...aaa, ...bbb, ...ccc] : [...aaa, ...ccc]
+        return this.status == '3' || this.status == '4' ? [...aaa, ...bbb, ...ccc] : [...aaa, ...ccc]
     }
 
     get columns() {
         const aaa: any = [
             { title: '资源方公司名称', key: 'resourceName', align: 'center' },
-            { title: '专资编码', key: 'cinemaCode', align: 'center' },
             { title: '影院名称', key: 'cinemaName', align: 'center' },
+            // { title: '专资编码', key: 'code', align: 'center' },
             { title: '影片名称', slot: 'movieName', align: 'center' },
-            { title: '广告片', slot: 'video', align: 'center', width: '220px' },
+            { title: '广告片', slot: 'video', align: 'center' },
             {
                 title: '投放周期',
                 key: 'beginDate',
@@ -386,7 +375,7 @@ export default class IndexPage extends ViewBase {
         ]
         const ddd: any = [
             { title: '状态', slot: 'approvalStatus', width: 100 },
-            { title: '操作', slot: 'action', maxWidth: 100 }
+            { title: '操作', slot: 'action', maxWidth: 120 }
         ]
 
         if (this.status == '1') {
@@ -404,8 +393,8 @@ export default class IndexPage extends ViewBase {
     get columnsData() {
         const aaa: any = [
             { title: '资源方公司名称', key: 'resourceName', align: 'center' },
-            { title: '专资编码', key: 'cinemaCode', align: 'center' },
             { title: '影院名称', key: 'cinemaName', align: 'center' },
+            // { title: '专资编码', key: 'code', align: 'center' },
             { title: '影片名称', key: 'movieName', align: 'center' },
             { title: '投放周期', key: 'scrollDate', align: 'center' },
             { title: '商务负责人', key: 'businessDirectorName', align: 'center' },
@@ -502,8 +491,6 @@ export default class IndexPage extends ViewBase {
                     uploadTime: it.uploadTime == 0 ? '' : moment(it.uploadTime).format(timeFormat),
                     approvalTime: it.approvalTime == 0 ? '' : moment(it.approvalTime).format(timeFormat),
                     status: getName(it.approvalStatus, this.statusList),
-                    movieName: it.movieId == -1 ? '所有影片' : it.movieName,
-                    // uploadName: " " + String(it.uploadName),
                     videoDetails: (it.videoDetails || []).map((its: any) => {
                         return its.videoName + '(' + its.videoLength + 's)'
                     })
@@ -533,16 +520,11 @@ export default class IndexPage extends ViewBase {
             dateRange: this.query.dateRange,
             beginDate: this.query.beginDate,
             endDate: this.query.endDate,
-            dateRang3e: this.query.dateRang3e,
             approvalBeginTime: this.query.approvalBeginTime,
             approvalEndTime: this.query.approvalEndTime,
             status: this.query.status,
             skip: this.jumpNum, // 跳过的记录数
             maxSize: 800, // 最大返回数据量
-            code: this.query.code,
-            dateRange2: this.query.dateRange2,
-            uploadBeginTime: this.query.uploadBeginTime,
-            uploadEndTime: this.query.uploadEndTime,
         }
         sessionStorage.setItem('supinfo', JSON.stringify(infos))
     }
