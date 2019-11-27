@@ -67,29 +67,29 @@
               </Col>
             </Row>
           </FormItem>
-
-          <Row>
-            <FormItem label="公司地址" prop="provinceId">
-              <Row>
-                <Col span="8">
+          <div>
+            <Row>
+              <Col span="8">
+                <FormItem label="公司地址" prop="provinceId">
                   <AreaSelect v-model="area" />
-                </Col>
-                <Col span="10" offset="1">
-                  <FormItem prop="addressDetail">
-                    <Input v-model="item.addressDetail" placeholder="详细地址" class="input-address" />
-                  </FormItem>
-                </Col>
-              </Row>
-            </FormItem>
-          </Row>
+                </FormItem>
+              </col>
+              <Col span="10" offset="1">
+              <FormItem>
+                  <Input v-model="item.addressDetail" placeholder="详细地址" class="input-address" />
+                </FormItem>
+              </col>
+            </Row>
+          </div>
+          <div>
           <Row>
             <Col span="5">
-              <FormItem label="联系人">
+              <FormItem label="联系人" prop="contact">
                 <Input v-model="item.contact" />
               </FormItem>
             </Col>
             <Col span="6" offset="1">
-              <FormItem label="联系电话" prop="contactPhone">
+              <FormItem label="联系电话" prop="contactTel">
                 <Input v-model="item.contactTel" />
               </FormItem>
             </Col>
@@ -99,6 +99,7 @@
               </FormItem>
             </Col>
           </Row>
+          </div>
         </div>
 
         <!-- 个人 -->
@@ -128,21 +129,23 @@
           </Row>
         </div>
         <div>
-          <Row>
-            <Col span="5">
-              <FormItem label="推荐人电话">
-                <Input v-model="item.recommendMobile" />
-              </FormItem>
-            </Col>
-            <Col span="6" offset="1">
-              <FormItem label="推荐人姓名" prop="recommendUserName">
-                <Input v-model="item.recommendUserName" />
-              </FormItem>
-            </Col>
-          </Row>
+          <div>
+            <Row>
+              <Col span="5">
+                <FormItem label="推荐人电话" >
+                  <Input v-model="item.recommendMobile" />
+                </FormItem>
+              </Col>
+              <Col span="6" offset="1">
+                <FormItem label="推荐人姓名" >
+                  <Input v-model="item.recommendUserName" />
+                </FormItem>
+              </Col>
+            </Row>
+          </div>
         </div>
         <Row v-if='item.companyType == 1'>
-          <Col span="6">
+          <Col span="5">
             <FormItem label="资质" prop="qualificationType">
               <Select v-model="item.qualificationType" clearable>
                 <Option
@@ -154,7 +157,7 @@
             </FormItem>
           </Col>
           <Col span="6" offset="1">
-            <FormItem label="资质编号" prop="qualificationCode">
+            <FormItem label="资质编号" >
               <Input v-model="item.qualificationCode" placeholder="资质编号" />
             </FormItem>
           </Col>
@@ -169,7 +172,7 @@
 
         <div v-else>
           <Row>
-            <Col span="6">
+            <Col span="5">
               <FormItem label="资质" prop="singqualificationType">
                 <Select v-model="item.singqualificationType" clearable>
                   <Option
@@ -181,7 +184,7 @@
               </FormItem>
             </Col>
             <Col span="6" offset="1">
-              <FormItem label="资质编号" prop="singqualificationCode">
+              <FormItem label="资质编号">
                 <Input v-model="item.singqualificationCode" placeholder="资质编号" />
               </FormItem>
             </Col>
@@ -278,7 +281,7 @@
               </Select>
             </FormItem>
           </Col>
-          <Col span="8" offset="1">
+          <Col span="5" offset="1">
             <FormItem label="负责商务" prop="businessDirector">
               <Select v-model="item.businessDirector" filterable clearable>
                 <Option
@@ -575,7 +578,11 @@ export default class Main extends ViewBase {
       name: [{ required: true, message: '请填写公司名称', trigger: 'blur' }],
       sing: [{ required: true, message: '请填写公司名称', trigger: 'blur' }],
       singcontact: [{ required: true, message: '请填写姓名', trigger: 'blur' }],
-      singcontactTel: [{ required: true, message: '请填写手机号', trigger: 'blur' }],
+      singcontactTel: [{ required: true, message: '请填写手机号', trigger: 'blur' },
+      {
+        pattern: /^1\d{10}$/,
+        message: '请输入正确的手机号码', trigger: 'blur'
+      }],
       singemail: [{
         pattern: /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/,
         message: '邮箱格式错误',
@@ -595,17 +602,19 @@ export default class Main extends ViewBase {
         message: '请选择所属行业',
         trigger: 'change',
         fields: {
-          0: {type: 'string', required: true},
+          0: {type: 'string', required: true, message: '请选择所属行业'},
         }
       }],
-      addressDetail: [
-        { required: true, message: '请填写公司详细地址', trigger: 'blur' }
-      ],
       approveStatus: [
         { required: true, message: '请选择审核状态', trigger: 'blur', type: 'number' }
       ],
       cinemasList: [{ validator: cinemaVali }],
-      levelCode: [{ required: true, message: '请选择客户等级', trigger: 'change' }],
+      contact: [{ required: true, message: '请填写联系人姓名', trigger: 'change' }],
+      contactTel: [{ required: true, message: '请填写联系人电话', trigger: 'change' },
+      {
+        pattern: /^1\d{10}$/,
+        message: '请输入正确的手机号码', trigger: 'blur'
+      }],
       validityPeriodDate: [
         {
           required: true,
@@ -628,16 +637,7 @@ export default class Main extends ViewBase {
       'typearr[0]': [{ validator: validateType1 }],
       'typearr[1]': [{ validator: validateType2 }],
       qualificationType: [{ required: true, message: '请选择资质', trigger: 'change' }],
-      qualificationCode: [
-        { required: true, message: '请输入资质编号', trigger: 'blur' }
-      ],
-      singqualificationType: [{ required: true, message: '请选择资质', trigger: 'change' }],
-      singqualificationCode: [
-        { required: true, message: '请输入资质编号', trigger: 'blur' }
-      ],
-      businessDirector: [
-        { required: true, message: '请选择负责商务', trigger: 'change', type: 'number' }
-      ]
+      singqualificationType: [{ required: true, message: '请选择资质', trigger: 'change' }]
     }
     return rule
   }
@@ -915,6 +915,10 @@ export default class Main extends ViewBase {
       if (valid) {
         if (this.cinematype == 1 && this.cinemas.length > 1) {
           this.showError('因资源方类型为影院，因此仅能关联一家影院')
+          return
+        }
+        if (this.imageList.length == 0) {
+          this.showError('请上传图片')
           return
         }
         const route: any = this.$route.params.id || 0
