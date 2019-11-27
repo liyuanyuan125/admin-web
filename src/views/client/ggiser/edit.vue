@@ -86,11 +86,13 @@
             <Col span="5">
               <FormItem label="联系人" prop="contact">
                 <Input v-model="item.contact" />
+                <p class="info">(内部人员必填)</p>
               </FormItem>
             </Col>
             <Col span="6" offset="1">
-              <FormItem label="联系电话" prop="contactTel">
+              <FormItem label="联系电话">
                 <Input v-model="item.contactTel" />
+                <p class="info">(内部人员必填)</p>
               </FormItem>
             </Col>
             <Col span="7" offset="1">
@@ -578,6 +580,10 @@ export default class Main extends ViewBase {
       name: [{ required: true, message: '请填写公司名称', trigger: 'blur' }],
       sing: [{ required: true, message: '请填写公司名称', trigger: 'blur' }],
       singcontact: [{ required: true, message: '请填写姓名', trigger: 'blur' }],
+      contact: [{
+        pattern: /^1\d{10}$/,
+        message: '请输入正确的手机号码', trigger: 'blur'
+      }],
       singcontactTel: [{ required: true, message: '请填写手机号', trigger: 'blur' },
       {
         pattern: /^1\d{10}$/,
@@ -609,12 +615,6 @@ export default class Main extends ViewBase {
         { required: true, message: '请选择审核状态', trigger: 'blur', type: 'number' }
       ],
       cinemasList: [{ validator: cinemaVali }],
-      contact: [{ required: true, message: '请填写联系人姓名', trigger: 'change' }],
-      contactTel: [{ required: true, message: '请填写联系人电话', trigger: 'change' },
-      {
-        pattern: /^1\d{10}$/,
-        message: '请输入正确的手机号码', trigger: 'blur'
-      }],
       validityPeriodDate: [
         {
           required: true,
@@ -1137,7 +1137,9 @@ export default class Main extends ViewBase {
 .upload {
   margin-bottom: 20px;
 }
-
+.info {
+  color: #ed4014;
+}
 .part-bind-cinema {
   width: 660px;
 }
