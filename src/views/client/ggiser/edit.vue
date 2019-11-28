@@ -84,14 +84,14 @@
           <div>
           <Row>
             <Col span="5">
-              <FormItem label="联系人" prop="contact">
+              <FormItem label="联系人">
                 <Input v-model="item.contact" />
                 <p class="info">(内部人员必填)</p>
               </FormItem>
             </Col>
             <Col span="6" offset="1">
               <FormItem label="联系电话">
-                <Input v-model="item.contactTel" />
+                <Input v-model="item.contactTel" prop="contactTel" />
                 <p class="info">(内部人员必填)</p>
               </FormItem>
             </Col>
@@ -580,7 +580,7 @@ export default class Main extends ViewBase {
       name: [{ required: true, message: '请填写公司名称', trigger: 'blur' }],
       sing: [{ required: true, message: '请填写公司名称', trigger: 'blur' }],
       singcontact: [{ required: true, message: '请填写姓名', trigger: 'blur' }],
-      contact: [{
+      contactTel: [{
         pattern: /^1\d{10}$/,
         message: '请输入正确的手机号码', trigger: 'blur'
       }],
