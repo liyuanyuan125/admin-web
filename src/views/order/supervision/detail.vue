@@ -66,7 +66,7 @@
 
                                 <Checkbox style='position: absolute' v-model="it.checks">是否免传</Checkbox>
 
-                                <Form style='padding-left: 20px;background: #eee;' v-if='dataForm.orderIds.indexOf(it.orderId) != -1' ref="dataForm" :model="dataForm" label-position="left" :label-width="80">
+                                <!-- <Form style='padding-left: 20px;background: #eee;' v-if='dataForm.orderIds.indexOf(it.orderId) != -1' ref="dataForm" :model="dataForm" label-position="left" :label-width="80">
                                   <Row>审核未通过的原因</Row>
                                   <FormItem label="" prop="closeReason">
                                       <CheckboxGroup v-model="reasonOrderList">
@@ -77,16 +77,24 @@
                                   <FormItem label="" prop="closeReason" v-if='reasonOrderList.indexOf(it.orderId + "-9") != -1 '>
                                       <Input :maxlength="120" type='textarea' :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3' placeholder='勾选其他时请输入原因' v-model="it.onereason"></Input>
                                   </FormItem>
-                                </Form>
+                                </Form> -->
                               </Checkbox></br>
                           </CheckboxGroup>
-                              <!-- <Checkbox v-for="(it) in videoDetails" :key="it.orderId"   v-model="it.checks">是否免传</Checkbox> -->
-                          
                       </FormItem>
-
-
-
                   </Form>
+                  <Form style='margin-top: -27px;padding-left: 20px;background: #eee;' v-if='dataForm.orderIds.length != 0' ref="dataForm" :model="dataForm" label-position="left" :label-width="80">
+                    <Row>审核未通过的原因</Row>
+                    <FormItem label="" prop="closeReason">
+                        <CheckboxGroup v-model="dataForm.reasonOrderIds">
+                            <Checkbox v-for="(it) in reason" :key="it.key" :value="it.key" :label="it.key" :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3'>{{it.text}} </Checkbox>
+                        </CheckboxGroup>
+                    </FormItem>
+                    <Row style='margin-top: -32px;' v-if='dataForm.reasonOrderIds.indexOf("9") != -1 '>审核未通过原因(勾选其他时):</Row>
+                    <FormItem label="" prop="closeReason" v-if='dataForm.reasonOrderIds.indexOf("9") != -1 '>
+                         <Input :maxlength="120" type='textarea' :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3' placeholder='勾选其他时请输入原因' v-model="dataForm.refuseReason"></Input>
+                    </FormItem>
+                </Form>
+
               </Row>
               <div v-if='listitem.approvalStatus == 2' class="dialog-footer">
                   <Button type="primary" @click="dataFormSubmit">提交</Button>
@@ -315,75 +323,74 @@ export default class Main extends ViewBase {
 
     // 提交并继续审核
     async nextSubmit() {
-        if (this.dataForm.orderIds.length != 0) {
-            if (this.reasonOrderList.length == 0) {
+      //   if (this.dataForm.orderIds.length != 0) {
+      //       if (this.reasonOrderList.length == 0) {
+      //           info('请选择未通过原因')
+      //           return
+      //       }
+      //   }
+      // const arr: any = []
+      // this.reasonOrderList.forEach( ( value: any , key: any ) => {
+      //   const orderId = value.split('-')[0]
+      //   arr.push({
+      //     orderid: orderId,
+      //     orderReason: value.split('-')[1]
+      //   })
+      // })
+      // const map: any = {}
+      // this.checkReason = []
+      // arr.forEach( ( value: any , i: any ) => {
+      //   const ai = arr[i]
+      //     if ( !map[ai.orderid] ) {
+      //         this.checkReason.push({
+      //             orderid: ai.orderid,
+      //             data: [ai.orderReason],
+      //             reason: '',
+      //             ifcheck: false
+      //         })
+      //         map[ai.orderid] = ai
+      //     } else {
+      //       for (const [j, item] of this.checkReason.entries()) {
+      //             const dj = this.checkReason[j]
+      //             if (dj.orderid == ai.orderid) {
+      //                 dj.data.push(ai.orderReason)
+      //                 break
+      //             }
+      //         }
+      //     }
+      // })
+      // this.checkReason.forEach((n: any, x: any) => {
+      //   const aas: any = []
+      //   this.videoDetails.forEach((m: any , y: any ) => {
+      //       const tt = n.orderid.toString()
+      //       const kk = m.orderId.toString()
+      //       if (tt.indexOf(kk) != -1) {
+      //           aas.push(m)
+      //           const key = 'xxdetail'
+      //           n[key] = aas
+      //           // console.log('90')
+      //       }
+      //   })
+      // })
+      // this.checkReason.forEach((it: any) => {
+      //   // console.log(it.data)
+      //   // console.log(it.data.indexOf('9'))
+      //   if (it.data.indexOf('9') != -1 && it.xxdetail[0].onereason == '') {
+      //     info('请确认所选广告片的其他原因是否输入')
+      //     return
+      //   }
+      // })
+      if (this.dataForm.orderIds.length != 0) {
+            if (this.dataForm.reasonOrderIds.length == 0) {
                 info('请选择未通过原因')
                 return
+            } else if (this.dataForm.reasonOrderIds.indexOf('9') != -1) {
+                if (this.dataForm.refuseReason == '') {
+                    info('请输入拒绝原因')
+                    return
+                }
             }
-            //  else {
-            //   (this.videoDetails || []).find((it: any) => {
-            //     console.log(this.dataForm.orderIds)
-            //     console.log(it.orderId)
-            //     console.log(this.dataForm.orderIds.indexOf(it.orderId))
-            //     if (this.dataForm.orderIds.indexOf(it.orderId) != -1 && it.onereason == '') {
-            //       debugger
-            //       info('请确认其他原因是否输入')
-            //       return
-            //     }
-            //   })
-            // }
         }
-      const arr: any = []
-      this.reasonOrderList.forEach( ( value: any , key: any ) => {
-        const orderId = value.split('-')[0]
-        arr.push({
-          orderid: orderId,
-          orderReason: value.split('-')[1]
-        })
-      })
-      const map: any = {}
-      this.checkReason = []
-      arr.forEach( ( value: any , i: any ) => {
-        const ai = arr[i]
-          if ( !map[ai.orderid] ) {
-              this.checkReason.push({
-                  orderid: ai.orderid,
-                  data: [ai.orderReason],
-                  reason: '',
-                  ifcheck: false
-              })
-              map[ai.orderid] = ai
-          } else {
-            for (const [j, item] of this.checkReason.entries()) {
-                  const dj = this.checkReason[j]
-                  if (dj.orderid == ai.orderid) {
-                      dj.data.push(ai.orderReason)
-                      break
-                  }
-              }
-          }
-      })
-      this.checkReason.forEach((n: any, x: any) => {
-        const aas: any = []
-        this.videoDetails.forEach((m: any , y: any ) => {
-            const tt = n.orderid.toString()
-            const kk = m.orderId.toString()
-            if (tt.indexOf(kk) != -1) {
-                aas.push(m)
-                const key = 'xxdetail'
-                n[key] = aas
-                // console.log('90')
-            }
-        })
-      })
-      this.checkReason.forEach((it: any) => {
-        // console.log(it.data)
-        // console.log(it.data.indexOf('9'))
-        if (it.data.indexOf('9') != -1 && it.xxdetail[0].onereason == '') {
-          info('请确认所选广告片的其他原因是否输入')
-          return
-        }
-      })
         const dataItem: any = JSON.parse((sessionStorage.getItem('supinfo') as any))
         this.videoIdsList = {
             query: dataItem.query, // 广告片id或者名称
@@ -463,79 +470,79 @@ export default class Main extends ViewBase {
 
     // 提交审核拒绝原因
     async dataFormSubmit() {
-        if (this.dataForm.orderIds.length != 0) {
-            if (this.reasonOrderList.length == 0) {
-                info('请选择未通过原因')
-                return
-            }
-            //  else {
-            //   (this.videoDetails || []).find((it: any) => {
-            //     console.log(this.dataForm.orderIds)
-            //     console.log(it.orderId)
-            //     console.log(this.dataForm.orderIds.indexOf(it.orderId))
-            //     if (this.dataForm.orderIds.indexOf(it.orderId) != -1 && it.onereason == '') {
-            //       debugger
-            //       info('请确认其他原因是否输入')
-            //       return
-            //     }
-            //   })
-            // }
-        }
-      const arr: any = []
-      this.reasonOrderList.forEach( ( value: any , key: any ) => {
-        const orderId = value.split('-')[0]
-        arr.push({
-          orderid: orderId,
-          orderReason: value.split('-')[1]
-        })
-      })
-      const map: any = {}
-      this.checkReason = []
-      arr.forEach( ( value: any , i: any ) => {
-        const ai = arr[i]
-          if ( !map[ai.orderid] ) {
-              this.checkReason.push({
-                  orderid: ai.orderid,
-                  data: [ai.orderReason],
-                  reason: '',
-                  ifcheck: false
-              })
-              map[ai.orderid] = ai
-          } else {
-            for (const [j, item] of this.checkReason.entries()) {
-                  const dj = this.checkReason[j]
-                  if (dj.orderid == ai.orderid) {
-                      dj.data.push(ai.orderReason)
-                      break
-                  }
-              }
-          }
-      })
-      this.checkReason.forEach((n: any, x: any) => {
-        const aas: any = []
-        this.videoDetails.forEach((m: any , y: any ) => {
-            const tt = n.orderid.toString()
-            const kk = m.orderId.toString()
-            if (tt.indexOf(kk) != -1) {
-                aas.push(m)
-                const key = 'xxdetail'
-                n[key] = aas
-                // console.log('90')
-            }
-        })
-      })
-      this.checkReason.forEach((it: any) => {
-        // console.log(it.data)
-        // console.log(it.data.indexOf('9'))
-        if (it.data.indexOf('9') != -1 && it.xxdetail[0].onereason == '') {
-          info('请确认所选广告片的其他原因是否输入')
-          return
-        }
-      })
+      // if (this.dataForm.orderIds.length != 0) {
+      //       if (this.reasonOrderList.length == 0) {
+      //           info('请选择未通过原因')
+      //           return
+      //       }
+      //   }
+      // const arr: any = []
+      // this.reasonOrderList.forEach( ( value: any , key: any ) => {
+      //   const orderId = value.split('-')[0]
+      //   arr.push({
+      //     orderid: orderId,
+      //     orderReason: value.split('-')[1]
+      //   })
+      // })
+      // const map: any = {}
+      // this.checkReason = []
+      // arr.forEach( ( value: any , i: any ) => {
+      //   const ai = arr[i]
+      //     if ( !map[ai.orderid] ) {
+      //         this.checkReason.push({
+      //             orderid: ai.orderid,
+      //             data: [ai.orderReason],
+      //             reason: '',
+      //             ifcheck: false
+      //         })
+      //         map[ai.orderid] = ai
+      //     } else {
+      //       for (const [j, item] of this.checkReason.entries()) {
+      //             const dj = this.checkReason[j]
+      //             if (dj.orderid == ai.orderid) {
+      //                 dj.data.push(ai.orderReason)
+      //                 break
+      //             }
+      //         }
+      //     }
+      // })
+      // this.checkReason.forEach((n: any, x: any) => {
+      //   const aas: any = []
+      //   this.videoDetails.forEach((m: any , y: any ) => {
+      //       const tt = n.orderid.toString()
+      //       const kk = m.orderId.toString()
+      //       if (tt.indexOf(kk) != -1) {
+      //           aas.push(m)
+      //           const key = 'xxdetail'
+      //           n[key] = aas
+      //           // console.log('90')
+      //       }
+      //   })
+      // })
+      // this.checkReason.forEach((it: any) => {
+      //   // console.log(it.data)
+      //   // console.log(it.data.indexOf('9'))
+      //   if (it.data.indexOf('9') != -1 && it.xxdetail[0].onereason == '') {
+      //     info('请确认所选广告片的其他原因是否输入')
+      //     return
+      //   }
+      // })
       // console.log(this.dataForm.orderIds)
       // console.log(this.checkReason)
       // console.log(this.videoDetails)
       // debugger
+      if (this.dataForm.orderIds.length != 0) {
+            if (this.dataForm.reasonOrderIds.length == 0) {
+                info('请选择未通过原因')
+                return
+            } else if (this.dataForm.reasonOrderIds.indexOf('9') != -1) {
+                if (this.dataForm.refuseReason == '') {
+                    info('请输入拒绝原因')
+                    return
+                }
+            }
+        }
+
         const aaa = await approve(this.$route.params.id,
             { orderIds: this.dataForm.orderIds, fixRefuses: this.dataForm.reasonOrderIds ,
               refuseReason: this.dataForm.refuseReason})
