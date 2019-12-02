@@ -349,7 +349,7 @@ export default class IndexPage extends ViewBase {
 
             {
                 name: 'pageSize',
-                defaultValue: 2
+                defaultValue: 20
             }
         ]
 

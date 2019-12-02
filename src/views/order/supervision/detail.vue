@@ -59,13 +59,12 @@
                       <!-- <Checkbox v-if='listitem.approvalStatus == 4' :indeterminate="indeterminate" :value="checkAll" disabled >全选</Checkbox> -->
                       <FormItem label="" prop="closeReason">
                           <CheckboxGroup v-model="dataForm.orderIds">
-                            <!-- <CheckboxGroup @on-change='aaa'> -->
                               <Checkbox v-for="(it) in videoDetails" :key="it.orderId" :value="it.orderId" :label="it.orderId"   :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3'>
                                   <em style='font-style: normal;font-right: -5px;' v-for='(its) in deliveryPositionList' :key='its.key' v-if='it.deliveryPosition != null && it.deliveryPosition == its.key'>【{{its.text}}】</em>
                                 {{it.videoName}} ({{it.videoLength}})s &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
                                 <!-- <Checkbox style='position: absolute' v-model="it.checks">是否免传</Checkbox> -->
-                                <input type="checkbox" :value="it.checks" @change="checkGroup(it.orderId)">
+                                <input type="checkbox" :value="it.orderStatus == 1" :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3' @change="checkGroup(it.orderId)">
 
                                 <!-- <Form style='padding-left: 20px;background: #eee;' v-if='dataForm.orderIds.indexOf(it.orderId) != -1' ref="dataForm" :model="dataForm" label-position="left" :label-width="80">
                                   <Row>审核未通过的原因</Row>
@@ -163,7 +162,8 @@ export default class Main extends ViewBase {
         orderIds: [], // 拒绝的监播orderIds
         reasonOrderIds: [], // 拒绝原因列表
         refuseReason: '', // 其他原因
-        missTag: '' // 错漏播标记
+        missTag: '', // 错漏播标记,
+        freedomOrderIds: [] // 免上传的广告单ID
     }
 
     videoDetails: any = []
@@ -277,14 +277,13 @@ export default class Main extends ViewBase {
       this.search()
     }
 
-    aaa(data: any) {
-      this.dataForm.orderIds.push(data[0])
-      // console.log(data)
-      // console.log(this.dataForm.orderIds)
-    }
-
     checkGroup(id: any) {
-      // console.log(id)
+      if (this.dataForm.freedomOrderIds.indexOf(id) == -1) {
+        this.dataForm.freedomOrderIds.push(id)
+      } else {
+        const index = this.dataForm.freedomOrderIds.indexOf(id)
+        this.dataForm.freedomOrderIds.splice(index, 1)
+      }
     }
 
     // 返回上一页
@@ -331,76 +330,34 @@ export default class Main extends ViewBase {
       }
     }
 
+   // 提交审核拒绝
+    async fun() {
+      const aaa = await approve(this.$route.params.id,
+                        { orderIds: this.dataForm.orderIds,
+                          fixRefuses: this.dataForm.reasonOrderIds,
+                          refuseReason: this.dataForm.refuseReason,
+                          missTag: this.dataForm.missTag, // 错漏播标记,
+                          freedomOrderIds: this.dataForm.freedomOrderIds
+                        })
+    }
+
 
     // 提交并继续审核
     async nextSubmit() {
-      //   if (this.dataForm.orderIds.length != 0) {
-      //       if (this.reasonOrderList.length == 0) {
-      //           info('请选择未通过原因')
-      //           return
-      //       }
-      //   }
-      // const arr: any = []
-      // this.reasonOrderList.forEach( ( value: any , key: any ) => {
-      //   const orderId = value.split('-')[0]
-      //   arr.push({
-      //     orderid: orderId,
-      //     orderReason: value.split('-')[1]
-      //   })
-      // })
-      // const map: any = {}
-      // this.checkReason = []
-      // arr.forEach( ( value: any , i: any ) => {
-      //   const ai = arr[i]
-      //     if ( !map[ai.orderid] ) {
-      //         this.checkReason.push({
-      //             orderid: ai.orderid,
-      //             data: [ai.orderReason],
-      //             reason: '',
-      //             ifcheck: false
-      //         })
-      //         map[ai.orderid] = ai
-      //     } else {
-      //       for (const [j, item] of this.checkReason.entries()) {
-      //             const dj = this.checkReason[j]
-      //             if (dj.orderid == ai.orderid) {
-      //                 dj.data.push(ai.orderReason)
-      //                 break
-      //             }
-      //         }
-      //     }
-      // })
-      // this.checkReason.forEach((n: any, x: any) => {
-      //   const aas: any = []
-      //   this.videoDetails.forEach((m: any , y: any ) => {
-      //       const tt = n.orderid.toString()
-      //       const kk = m.orderId.toString()
-      //       if (tt.indexOf(kk) != -1) {
-      //           aas.push(m)
-      //           const key = 'xxdetail'
-      //           n[key] = aas
-      //           // console.log('90')
-      //       }
-      //   })
-      // })
-      // this.checkReason.forEach((it: any) => {
-      //   // console.log(it.data)
-      //   // console.log(it.data.indexOf('9'))
-      //   if (it.data.indexOf('9') != -1 && it.xxdetail[0].onereason == '') {
-      //     info('请确认所选广告片的其他原因是否输入')
-      //     return
-      //   }
-      // })
       if (this.dataForm.orderIds.length != 0) {
             if (this.dataForm.reasonOrderIds.length == 0) {
                 info('请选择未通过原因')
                 return
-            } else if (this.dataForm.reasonOrderIds.indexOf('9') != -1) {
+            }
+
+            if (this.dataForm.reasonOrderIds.indexOf('9') != -1) {
                 if (this.dataForm.refuseReason == '') {
                     info('请输入拒绝原因')
                     return
                 }
-            } else if (this.dataForm.reasonOrderIds.indexOf('10') != -1) {
+            }
+
+            if (this.dataForm.reasonOrderIds.indexOf('10') != -1) {
                 if (this.dataForm.missTag == '') {
                     info('请输入错漏播标记原因')
                     return
@@ -447,14 +404,24 @@ export default class Main extends ViewBase {
                 const videoIds = res.data.item || []
                 if (videoIds.length > 1) {
                     sessionStorage.setItem('videoIds', JSON.stringify(videoIds.slice(1))) // 存储总量-1
-                    const aaa = await approve(this.$route.params.id,
-                        { orderIds: this.dataForm.orderIds, fixRefuses: this.dataForm.reasonOrderIds ,
-                          refuseReason: this.dataForm.refuseReason})
+                    // const aaa = await approve(this.$route.params.id,
+                    //     { orderIds: this.dataForm.orderIds,
+                    //       fixRefuses: this.dataForm.reasonOrderIds,
+                    //       refuseReason: this.dataForm.refuseReason,
+                    //       missTag: this.dataForm.missTag, // 错漏播标记,
+                    //       freedomOrderIds: this.dataForm.freedomOrderIds
+                    //     })
+                    this.fun()
                     this.$router.push({ name: 'order-supervision-detail', params: { id: videoIds[1] } })
                 } else { // 如果ids列表没有了数据则直接返回列表
-                    const aaa = await approve(this.$route.params.id,
-                        { orderIds: this.dataForm.orderIds, fixRefuses: this.dataForm.reasonOrderIds ,
-                          refuseReason: this.dataForm.refuseReason})
+                    // const aaa = await approve(this.$route.params.id,
+                    //     { orderIds: this.dataForm.orderIds,
+                    //       fixRefuses: this.dataForm.reasonOrderIds,
+                    //       refuseReason: this.dataForm.refuseReason,
+                    //       missTag: this.dataForm.missTag, // 错漏播标记,
+                    //       freedomOrderIds: this.dataForm.freedomOrderIds
+                    //     })
+                    this.fun()
                     // toast('没有更多数据了')
                     setTimeout(() => {
                         this.backList()
@@ -469,13 +436,22 @@ export default class Main extends ViewBase {
                 sessionStorage.removeItem('videoIds') // 先清空原存值，在存新值
                 sessionStorage.setItem('videoIds', JSON.stringify(dataItemIds.slice(1))) // 存储新值
                 const aaa = await approve(dataItemIds[0],
-                    { orderIds: this.dataForm.orderIds, fixRefuses: this.dataForm.reasonOrderIds ,
-                      refuseReason: this.dataForm.refuseReason})
+                    { orderIds: this.dataForm.orderIds,
+                      fixRefuses: this.dataForm.reasonOrderIds,
+                      refuseReason: this.dataForm.refuseReason,
+                      missTag: this.dataForm.missTag, // 错漏播标记,
+                      freedomOrderIds: this.dataForm.freedomOrderIds
+                    })
                 this.$router.push({ name: 'order-supervision-detail', params: { id: dataItemIds[1] } })
             } else { // 如果ids列表没有了数据则直接返回列表
-                const aaa = await approve(this.$route.params.id,
-                    { orderIds: this.dataForm.orderIds, fixRefuses: this.dataForm.reasonOrderIds ,
-                      refuseReason: this.dataForm.refuseReason})
+                // const aaa = await approve(this.$route.params.id,
+                //     { orderIds: this.dataForm.orderIds,
+                //       fixRefuses: this.dataForm.reasonOrderIds,
+                //       refuseReason: this.dataForm.refuseReason,
+                //       missTag: this.dataForm.missTag, // 错漏播标记,
+                //       freedomOrderIds: this.dataForm.freedomOrderIds
+                //     })
+                this.fun()
                 // toast('没有更多数据了')
                 setTimeout(() => {
                         this.backList()
@@ -486,77 +462,20 @@ export default class Main extends ViewBase {
 
     // 提交审核拒绝原因
     async dataFormSubmit() {
-      // if (this.dataForm.orderIds.length != 0) {
-      //       if (this.reasonOrderList.length == 0) {
-      //           info('请选择未通过原因')
-      //           return
-      //       }
-      //   }
-      // const arr: any = []
-      // this.reasonOrderList.forEach( ( value: any , key: any ) => {
-      //   const orderId = value.split('-')[0]
-      //   arr.push({
-      //     orderid: orderId,
-      //     orderReason: value.split('-')[1]
-      //   })
-      // })
-      // const map: any = {}
-      // this.checkReason = []
-      // arr.forEach( ( value: any , i: any ) => {
-      //   const ai = arr[i]
-      //     if ( !map[ai.orderid] ) {
-      //         this.checkReason.push({
-      //             orderid: ai.orderid,
-      //             data: [ai.orderReason],
-      //             reason: '',
-      //             ifcheck: false
-      //         })
-      //         map[ai.orderid] = ai
-      //     } else {
-      //       for (const [j, item] of this.checkReason.entries()) {
-      //             const dj = this.checkReason[j]
-      //             if (dj.orderid == ai.orderid) {
-      //                 dj.data.push(ai.orderReason)
-      //                 break
-      //             }
-      //         }
-      //     }
-      // })
-      // this.checkReason.forEach((n: any, x: any) => {
-      //   const aas: any = []
-      //   this.videoDetails.forEach((m: any , y: any ) => {
-      //       const tt = n.orderid.toString()
-      //       const kk = m.orderId.toString()
-      //       if (tt.indexOf(kk) != -1) {
-      //           aas.push(m)
-      //           const key = 'xxdetail'
-      //           n[key] = aas
-      //           // console.log('90')
-      //       }
-      //   })
-      // })
-      // this.checkReason.forEach((it: any) => {
-      //   // console.log(it.data)
-      //   // console.log(it.data.indexOf('9'))
-      //   if (it.data.indexOf('9') != -1 && it.xxdetail[0].onereason == '') {
-      //     info('请确认所选广告片的其他原因是否输入')
-      //     return
-      //   }
-      // })
-      // console.log(this.dataForm.orderIds)
-      // console.log(this.checkReason)
-      // console.log(this.videoDetails)
-      // debugger
-      if (this.dataForm.orderIds.length != 0) {
+        if (this.dataForm.orderIds.length != 0) {
             if (this.dataForm.reasonOrderIds.length == 0) {
                 info('请选择未通过原因')
                 return
-            } else if (this.dataForm.reasonOrderIds.indexOf('9') != -1) {
+            }
+
+            if (this.dataForm.reasonOrderIds.indexOf('9') != -1) {
                 if (this.dataForm.refuseReason == '') {
                     info('请输入拒绝原因')
                     return
                 }
-            } else if (this.dataForm.reasonOrderIds.indexOf('10') != -1) {
+            }
+
+            if (this.dataForm.reasonOrderIds.indexOf('10') != -1) {
                 if (this.dataForm.missTag == '') {
                     info('请输入错漏播标记原因')
                     return
@@ -564,12 +483,15 @@ export default class Main extends ViewBase {
             }
         }
 
-        const aaa = await approve(this.$route.params.id,
-            { orderIds: this.dataForm.orderIds, fixRefuses: this.dataForm.reasonOrderIds ,
-              refuseReason: this.dataForm.refuseReason})
-
+        // const aaa = await approve(this.$route.params.id,
+        //     { orderIds: this.dataForm.orderIds,
+        //       fixRefuses: this.dataForm.reasonOrderIds,
+        //       refuseReason: this.dataForm.refuseReason,
+        //       missTag: this.dataForm.missTag, // 错漏播标记,
+        //       reedomOrderIds: this.dataForm.freedomOrderIds
+        //     })
+        this.fun()
         this.back()
-
     }
 
     async search() {
@@ -590,7 +512,7 @@ export default class Main extends ViewBase {
                 ...it,
                 reason: [],
                 onereason: '', // 其他输入原因
-                checks: false, // 是否免传
+                // checks: false, // 是否免传
               }
             })
             this.logList = (data.logList || []).map((it: any) => {
@@ -602,12 +524,13 @@ export default class Main extends ViewBase {
             this.reason = data.fixRefusesList
             if (this.listitem.approvalStatus == 4) {
               this.dataForm.refuseReason = this.listitem.refuseReason
-                this.dataForm.reasonOrderIds = this.listitem.fixRefuses
-                this.dataForm.orderIds = (this.listitem.videoDetails || []).map((it: any) => {
-                    if (it.orderStatus == 2) {
-                        return it.orderId
-                    }
-                })
+              this.dataForm.missTag = this.listitem.missTag
+              this.dataForm.reasonOrderIds = this.listitem.fixRefuses
+              this.dataForm.orderIds = (this.listitem.videoDetails || []).map((it: any) => {
+                  if (it.orderStatus == 2) {
+                      return it.orderId
+                  }
+              })
             }
             setTimeout(() => {
                 (this.$Spin as any).hide()
@@ -772,5 +695,9 @@ export default class Main extends ViewBase {
 /deep/ .ivu-input {
   width: 95%;
   height: 50px;
+}
+/deep/ [type=checkbox] {
+  width: 14px;
+  height: 16px;
 }
 </style>
