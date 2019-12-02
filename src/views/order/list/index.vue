@@ -133,7 +133,7 @@ import { Component, Watch , Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { queryList , company , planlist , movielist} from '@/api/orderSys'
+import { queryList , company , planlist , movielist , dels , chgstatus} from '@/api/orderSys'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
@@ -403,7 +403,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   async deletes(id: any) {
     try {
       await confirm('删除订单时将同步删除该订单的监播、上刊等数据；是否确认删除？')
-      await queryList({id})
+      await dels(id)
       this.$Message.success({
         content: `删除成功`,
       })
@@ -416,7 +416,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   async waiting(id: any) {
     try {
       await confirm('设为待接单时将同步删除该订单的监播、上刊等数据；是否确认？')
-      await queryList({id})
+      await chgstatus({id})
       this.$Message.success({
         content: `修改成功`,
       })
