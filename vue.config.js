@@ -15,23 +15,23 @@ module.exports = {
     ;[
       {
         env: 'dev',
-        baseUrl: isDev ? '/' : '//admin.aiads-dev.com',
-        ajaxBaseUrl: '//mapi.aiads-dev.com'
+        baseUrl: isDev ? '/' : 'https://admin.aiads-dev.com',
+        ajaxBaseUrl: 'https://mapi.aiads-dev.com'
       },
       {
         env: 'qas',
-        baseUrl: '//admin.jydata-qas.com',
-        ajaxBaseUrl: '//mapi.jydata-qas.com'
+        baseUrl: 'https://admin.jydata-qas.com',
+        ajaxBaseUrl: 'https://mapi.jydata-qas.com'
       },
       {
         env: 'stg',
-        baseUrl: '//admin.jydata-stg.com',
-        ajaxBaseUrl: '//mapi.jydata-stg.com'
+        baseUrl: 'https://admin.jydata-stg.com',
+        ajaxBaseUrl: 'https://mapi.jydata-stg.com'
       },
       {
         env: 'prd',
-        baseUrl: '//admin.jydata.com',
-        ajaxBaseUrl: '//mapi.jydata.com'
+        baseUrl: 'https://admin.jydata.com',
+        ajaxBaseUrl: 'https://mapi.jydata.com'
       }
     ].forEach(it => {
       const { env } = it
