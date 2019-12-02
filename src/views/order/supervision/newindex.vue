@@ -43,7 +43,7 @@
                 <span v-for='(it,index) in statusList ' :key='index' v-if='row.approvalStatus == it.value'>{{it.name}}</span>
             </template>
             <template slot="action" slot-scope="{row , index}">
-                <a v-if='row.approvalStatus == 1'>允许上传图片&nbsp;&nbsp;</a>
+                <a v-if='row.approvalStatus == 1' @click='okups(row.id)'>允许上传图片&nbsp;&nbsp;</a>
                 <router-link v-if='row.approvalStatus == 2' @click.native="localitem( row.id , row , index )" :to="{ name: 'order-supervision-detail', params: { id: row.id} }">审核</router-link>
                 <!-- <a style='margin-right: 6px;' v-show='row.approvalStatus == 2' @click="change( row.id , row )">审核</a> -->
                 <a style='margin-right: 6px;' v-show='row.approvalStatus == 3 || row.approvalStatus == 4' @click="resetChange( row.id )">恢复</a>
@@ -59,7 +59,7 @@ import ViewBase from '@/util/ViewBase'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 // import { queryList, auditItem, newItem } from './data'
 import moment from 'moment'
-import { queryList, okpass, refuse , reset } from '@/api/supervision'
+import { queryList, okpass, refuse , reset , addimg } from '@/api/supervision'
 import { EditDialog, Field } from '@/components/editForm'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
@@ -141,6 +141,7 @@ export default class IndexPage extends ViewBase {
     auditVisible = false
 
     defaultDate = '20190808-20190814'
+    num = 6
 
 
     // 跳转数量
@@ -186,26 +187,50 @@ export default class IndexPage extends ViewBase {
     }
 
     get deDate() {
-        if (new Date().getDay() == 5 || new Date().getDay() == 6) {
-          this.weekDate = [
-          new Date(this.startTime + (24 * 60 * 60 * 1000 * 7)) ,
-          new Date(this.endTime + (24 * 60 * 60 * 1000 * 7))]
-          const a = moment(this.weekDate[0].getTime()).format(defaulttimeFormat)
-          const b  = moment(this.weekDate[1].getTime()).format(defaulttimeFormat)
-          return a + '-' + b
-        } else if (new Date().getDay() == 1 || new Date().getDay() == 2 || new Date().getDay() == 3 ) {
-            return this.ad + '-' + this.bd
-        }
-        if (new Date().getDay() == 4) {
+        // if (new Date().getDay() == 5 || new Date().getDay() == 6) {
+        //   this.weekDate = [
+        //   new Date(this.startTime + (24 * 60 * 60 * 1000 * 7)) ,
+        //   new Date(this.endTime + (24 * 60 * 60 * 1000 * 7))]
+        //   const a = moment(this.weekDate[0].getTime()).format(defaulttimeFormat)
+        //   const b  = moment(this.weekDate[1].getTime()).format(defaulttimeFormat)
+        //   return a + '-' + b
+        // } else if (new Date().getDay() == 1 || new Date().getDay() == 2 || new Date().getDay() == 3 ) {
+        //     return this.ad + '-' + this.bd
+        // }
+        // if (new Date().getDay() == 4) {
+        //     return this.sd + '-' + this.ed
+        // }
+        // if (new Date().getDay() == 0) {
+        //   this.weekDate = [
+        //   new Date(this.startTime + (24 * 60 * 60 * 1000 * 1)) ,
+        //   new Date(this.endTime + (24 * 60 * 60 * 1000 * 1))]
+        //   const a = moment(this.weekDate[0].getTime()).format(defaulttimeFormat)
+        //   const b  = moment(this.weekDate[1].getTime()).format(defaulttimeFormat)
+        //   return a + '-' + b
+        // }
+        if (new Date().getDay() == 4 || new Date().getDay() == 5 || new Date().getDay() == 6) {
             return this.sd + '-' + this.ed
         }
-        if (new Date().getDay() == 0) {
-          this.weekDate = [
-          new Date(this.startTime + (24 * 60 * 60 * 1000 * 1)) ,
-          new Date(this.endTime + (24 * 60 * 60 * 1000 * 1))]
-          const a = moment(this.weekDate[0].getTime()).format(defaulttimeFormat)
-          const b  = moment(this.weekDate[1].getTime()).format(defaulttimeFormat)
-          return a + '-' + b
+        if (new Date().getDay() == 1 || new Date().getDay() == 2 ||
+            new Date().getDay() == 3 || new Date().getDay() == 0 ) {
+            if (new Date().getDay() == 1) {
+                this.num = 7
+            } else if (new Date().getDay() == 2) {
+                this.num = 7
+            } else if (new Date().getDay() == 3) {
+                this.num = 7
+            } else if (new Date().getDay() == 4) {
+                this.num = 6
+            }
+            this.weekDate = [
+            new Date(this.startTime - (24 * 60 * 60 * 1000 * this.num)) ,
+            new Date(this.endTime - (24 * 60 * 60 * 1000 * this.num))]
+            const a = moment(this.weekDate[0].getTime()).format(defaulttimeFormat)
+            const b  = moment(this.weekDate[1].getTime()).format(defaulttimeFormat)
+            // this.query.beginDate = this.ad[0] + this.ad[1] + this.ad[2]
+            // this.query.endDate = this.bd[0] + this.bd[1] + this.bd[2]
+            return a + '-' + b
+
         }
     }
 
@@ -446,6 +471,19 @@ export default class IndexPage extends ViewBase {
           this.refresh()
         } catch (ex) {
           this.handleError(ex)
+        }
+    }
+
+    async okups(id: any) {
+        try {
+        await confirm('您确定允许上传图片吗')
+        await addimg(id)
+        this.$Message.success({
+            content: `操作成功`,
+        })
+        this.refresh()
+        } catch (ex) {
+        this.handleError(ex)
         }
     }
 

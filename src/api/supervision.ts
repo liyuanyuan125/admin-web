@@ -72,3 +72,9 @@ export async function reset(id: any) {
 }
 
 
+// 监播恢复
+export async function addimg(id: any) {
+  const data = await put(`/xadvert/play-monitors/${id}/set-allow-pic`)
+  return data
+}
+
