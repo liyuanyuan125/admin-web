@@ -181,7 +181,8 @@ export default class Main extends ViewBase {
         agree,
         id: this.id,
       })
-      this.$router.push({name: 'finance-billmanage'})
+      // this.$router.push({name: 'finance-billmanage'})
+      history.back()
     } catch (ex) {
       this.handleError(ex)
     }

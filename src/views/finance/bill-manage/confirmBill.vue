@@ -24,7 +24,7 @@
      </div>
 
      <div class="footer">
-       <Button type="primary" @click="handleBill" class="btn">提交</Button>
+       <Button type="primary" @click="handleBill" class="btn">提交1</Button>
        <Button @click="$router.push({name: 'finance-billmanage'})">取消</Button>
      </div>
   </div>
@@ -117,7 +117,8 @@ export default class Main extends ViewBase {
         id: this.id,
         billDetails
       })
-      this.$router.push({name: 'finance-billmanage'})
+      // this.$router.push({name: 'finance-billmanage'})
+      history.back()
     } catch (ex) {
       this.handleError(ex)
     }
