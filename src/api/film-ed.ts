@@ -16,11 +16,15 @@ export async function fetchMovie(id: any) {
     const res = get(`/movie/sync/${id}`)
     return res
 }
+
+// http://yapi.aiads-dev.com/project/156/interface/api/137
 // 查看详情
 export async function movieDetail(id: any) {
     const res = get(`/movie/${id}`)
     return res
 }
+
+// http://yapi.aiads-dev.com/project/156/interface/api/62
 // 修改影片
 export async function movieEdit(id: any, data: any) {
     const res = put(`/movie/${id}`, data)

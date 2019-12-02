@@ -52,6 +52,10 @@ interface RouteMetaBase {
    * 只需设置中间的 route name 就行，页面本身与主导航，会自动添加
    */
   breadcrumbs?: string[]
+  /**
+   * 侧栏菜单选中的菜单项，若自动判断不能起作用，可设置该项
+   */
+  siderNav?: string
   [key: string]: any
 }
 
@@ -1200,6 +1204,56 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: true
   },
 
+  // 财务管理 - 应收应付统计表
+  {
+    path: '/finance/accrual',
+    name: 'finance-accrual',
+    component: () => import('./views/finance/accrual/index.vue'),
+    meta: {
+      authKey: '',
+      title: '应收应付统计表'
+    }
+  },
+
+  // 财务管理 - 应收应付统计表 - 应收金额
+  {
+    path: '/finance/accrual/receive/:id',
+    name: 'finance-accrual-receive',
+    component: () => import('./views/finance/accrual/receive.vue'),
+    meta: {
+      authKey: '',
+      title: '应收金额'
+    },
+    props: idProps
+  },
+
+  // 财务管理 - 应收应付统计表 - 应付金额
+  {
+    path: '/finance/accrual/pay/:id',
+    name: 'finance-accrual-pay',
+    component: () => import('./views/finance/accrual/pay.vue'),
+    meta: {
+      authKey: '',
+      title: '应付金额'
+    },
+    props: idProps
+  },
+
+  // 财务管理 - 应收应付统计表 - 应收-应付
+  {
+    path: '/finance/accrual/receive-pay/:id',
+    name: 'finance-accrual-receive-pay',
+    component: () => import('./views/finance/accrual/receivePay.vue'),
+    meta: {
+      authKey: '',
+      title: '应收-应付',
+      breadcrumbs: [
+        'finance-accrual'
+      ]
+    },
+    props: idProps,
+  },
+
   {
     path: '/plan/ggtising',
     name: 'plan-ggtising',
@@ -1525,6 +1579,17 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: paramTypes({ id: Number, action: String })
   },
 
+  // 内容管理 - 行业分类管理 - 列表
+  {
+    path: '/content/industry',
+    name: 'content-industry',
+    component: () => import('./views/content/industry/index.vue'),
+    meta: {
+      authKey: '',
+      title: '行业管理列表'
+    }
+  },
+
   {
     path: '/system/setup',
     name: 'system-setup',
@@ -1788,7 +1853,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     component: () => import('./views/datareport/cost/index.vue'),
     meta: {
       authKey: '',
-      title: '成本核算报表'
+      title: '成本核算列表'
     }
   },
   // 广告管理 - 下刊 - 列表
@@ -1798,7 +1863,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     component: () => import('./views/datareport/nextissue/index.vue'),
     meta: {
       authKey: '',
-      title: '报表详情'
+      title: '下刊监控列表'
     }
   },
   // 广告管理 - 下刊 - 列表 - 详情
@@ -1808,7 +1873,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     component: () => import('./views/datareport/nextissue/detail.vue'),
     meta: {
       authKey: '',
-      title: '下刊监控列表'
+      title: '报表详情'
     }
   },
 ] // end of mainLayoutRoutes

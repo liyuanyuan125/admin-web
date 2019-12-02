@@ -139,10 +139,10 @@ export default class Main extends ViewBase {
       { title: '演员', slot: 'casts', minWidth: 85 },
       { title: '导演', slot: 'directors', minWidth: 85 },
       { title: '产地', slot: 'countries', minWidth: 85 },
-      { title: '类型', slot: 'types',  minWidth: 85},
+      { title: '类型', slot: 'types', minWidth: 85 },
       { title: '分类', key: 'categoryCode', minWidth: 85, enum: 'categoryList' },
-      { title: '上映状态', key: 'releaseStatus', minWidth: 85, enum: 'releaseStatusList' },
-      { title: '状态', key: 'controlStatus', minWidth: 85, enum: 'controlStatusList' },
+      { title: '上映状态', key: 'releaseStatus', minWidth: 85, enum: true},
+      { title: '状态', key: 'controlStatus', minWidth: 85, enum: true },
       { title: '操作', slot: 'operate', minWidth: 160 }
     ] as ColumnExtra[]
   }

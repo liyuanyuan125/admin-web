@@ -27,7 +27,6 @@ const dealEditItem = (item: any) => {
     customerType: item.customerType || 0,
     adTypes: item.adTypes || [],
     type: item.type || null,
-    slogan: item.slogan || '',
     bizPricingList: item.bizPricingList || [],
     prevuePricingList: item.prevuePricingList || []
   }
@@ -37,7 +36,7 @@ const dealEditItem = (item: any) => {
 
 /**
  * 列表
- * @param query 查询条件，http://yapi.aiads-dev.com/project/154/interface/api/3710
+ * @param query 查询条件，http://yapi.aiads-dev.com/project/306/interface/api/6903
  */
 export async function queryList(query: any = {}) {
   const data = await get(`/promotion/cpm/list`, query)
@@ -45,18 +44,18 @@ export async function queryList(query: any = {}) {
 }
 
 /**
- * 下线
- * https://yapi.aiads-dev.com/project/232/interface/api/6250
+ * 删除
+ * http://yapi.aiads-dev.com/project/306/interface/api/7056
  * @param id
  */
 export async function disabledItem(id: number) {
-  const { data } = await put(`promotion/cpm/${id}/offline`)
+  const { data } = await put(`/content/recommend-post/delete/${id}`)
   return data
 }
 
 /**
  * 创建前准备数据
- * https://yapi.aiads-dev.com/project/232/interface/api/6170
+ * http://yapi.aiads-dev.com/project/306/interface/api/7182
  * @param id
  */
 export async function beforeCreate() {
@@ -93,7 +92,7 @@ export async function beforeCreate() {
 
 /**
  * 详情
- * https://yapi.aiads-dev.com/project/232/interface/api/6206
+ * http://yapi.aiads-dev.com/project/306/interface/api/6930
  * @param query 查询条件
  */
 export async function queryItem(query: any = {}) {
@@ -117,7 +116,7 @@ export async function queryItem(query: any = {}) {
 
 /**
  * 编辑
- * https://yapi.aiads-dev.com/project/232/interface/api/6214
+ * http://yapi.aiads-dev.com/project/306/interface/api/6939
  * @param item 数据
  */
 export async function editItem(item: any) {
@@ -136,7 +135,7 @@ export async function editItem(item: any) {
 
 /**
  * 新建
- * https://yapi.aiads-dev.com/project/232/interface/api/6190
+ * http://yapi.aiads-dev.com/project/306/interface/api/6921
  * @param postData 编辑项
  */
  export async function newItem(postData: any) {
@@ -147,13 +146,3 @@ export async function editItem(item: any) {
   return data
 }
 
-/**
- * 审核
- * https://yapi.aiads-dev.com/project/232/interface/api/6218
- * @param postData 数据
- */
-export async function auditItem(postData: any) {
-  const { id, pass, refuseReason} = postData
-  const { data } = await put(`/promotion/cpm/${id}/audit`, { pass, refuseReason})
-  return data
-}

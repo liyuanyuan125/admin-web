@@ -21,12 +21,13 @@
             }"
             v-auth="it.auth"
           >
-            <Option
-              v-for="sub in enumType[it.enumKey]"
-              :key="sub.key"
-              :value="sub.key"
-              v-if="it.type == 'select'"
-            >{{sub.text}}</Option>
+            <template v-if="it.type == 'select'">
+              <Option
+                v-for="sub in enumType[it.enumKey]"
+                :key="sub.key"
+                :value="sub.key"
+              >{{sub.text}}</Option>
+            </template>
           </component>
 
           <Button type="default" @click="resetQuery()" class="btn-reset">清空</Button>
@@ -109,13 +110,13 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
   /** 查询条件 */
   @Prop({ type: Array, default: () => [] }) filters!: Filter[]
 
-  /** 查询条件或表格中要用到的枚举 Key 列表，将从 fetch 返回的 data 中提取 */
+  /** 废弃的。查询条件或表格中要用到的枚举 Key 列表，将从 fetch 返回的 data 中提取 */
   @Prop({ type: Array, default: () => [] }) enums!: string[]
 
   /** 增强的列配置，增加了一些字段，参见 ColumnExtra 类型 */
   @Prop({ type: Array, default: () => [] }) columns!: ColumnExtra[]
 
-  /** 每一项的 id 字段的名称，默认为 id */
+  /** 每一行的主键字段的名称，默认为 id */
   @Prop({ type: String, default: 'id' }) idKey!: string
 
   /**
@@ -222,7 +223,7 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
   }
 
   /**
-   * 请求列表数据，明确公开，可供外部组件调用
+   * 刷新当前页数据
    */
   public async update() {
     if (this.loading) {
