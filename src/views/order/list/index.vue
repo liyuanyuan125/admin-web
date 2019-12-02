@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <div  v-if="shows">
+    <div>
       <div class="act-bar flex-box">
         <form class="form flex-1" @submit.prevent="search">
           <LazyInput v-model="query.id" placeholder="订单编号" class="input"/>
@@ -102,14 +102,15 @@
           <span>{{row.receiveCount}} / {{row.targetCount}}</span>
         </template>
         <template slot="advertType" slot-scope="{row}">
+          <span v-if='row.advertType == null'>-</span>
           <span v-for='(its,index) in advertTypeCodeList' v-if='row.advertType == its.key'>{{its.text}}</span>
         </template>
         <template slot="status" slot-scope="{row}">
           <span v-for='(its,index) in statusList' v-if='row.status == its.key'>{{its.text}}</span>
         </template>
           <template slot="spaction" slot-scope="{row}">
-          <a href="javascript:;" v-show='row.status == 3 || row.status == 4 || row.status == 5' @click='waiting(row.id)'>设为待接单</a>
-          <a href="javascript:;" v-show='row.status == 3 || row.status == 4 || row.status == 5' @click='deletes(row.id)'>删除&nbsp;&nbsp;&nbsp;</a>
+          <a href="javascript:;" v-show='row.status == 3 || row.status == 4 || row.status == 2' @click='waiting(row.id)'>设为待接单</a>
+          <a href="javascript:;" v-show='row.status == 3 || row.status == 4 || row.status == 2' @click='deletes(row.id)'>删除&nbsp;&nbsp;&nbsp;</a>
           <!-- <a v-show='row.status == 3' v-auth="'advert.executeOrder:settlement'" @click="change(row.id, row)">结算</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
           <!-- <router-link v-show='row.status == 3' v-auth="'advert.executeOrder:info'" :to="{ name: 'order-list-detail', params: { id: row.id , status: row.status } }">详情</router-link> -->
           <router-link  v-auth="'advert.executeOrder:info'" :to="{ name: 'order-list-detail', params: { id: row.id , status: row.status } }">详情</router-link>
