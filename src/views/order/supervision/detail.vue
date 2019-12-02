@@ -26,9 +26,9 @@
         <div class='title'>影院联系人信息</div>
         <div class='bos'>
             <Row>
-                <Col :span='8'><span class='spons'>姓名&nbsp;：&nbsp;</span>{{listitem.resourceName == null ? '暂无资源方公司' : listitem.resourceName}}</Col>
-                <Col :span='8'><span class='spons'>电话&nbsp;：&nbsp;</span>【{{listitem.resourceName == null ? '暂无影院专资编码' : listitem.resourceName}}】</Col>
-                <Col :span='8'><span class='spons'>邮箱&nbsp;：&nbsp;</span>【{{listitem.resourceName == null ? '暂无影院专资编码' : listitem.resourceName}}】</Col>
+                <Col :span='8'><span class='spons'>姓名&nbsp;：&nbsp;</span>{{listitem.primaryName == null ? '暂无姓名' : listitem.primaryName}}</Col>
+                <Col :span='8'><span class='spons'>电话&nbsp;：&nbsp;</span>{{listitem.primaryMobile == null ? '暂无电话' : listitem.primaryMobile}}</Col>
+                <Col :span='8'><span class='spons'>邮箱&nbsp;：&nbsp;</span>{{listitem.primaryEmail == null ? '暂无邮箱' : listitem.primaryEmail}}</Col>
             </Row>
         </div>
         
@@ -58,13 +58,14 @@
                       
                       <!-- <Checkbox v-if='listitem.approvalStatus == 4' :indeterminate="indeterminate" :value="checkAll" disabled >全选</Checkbox> -->
                       <FormItem label="" prop="closeReason">
-                          <!-- <CheckboxGroup v-model="dataForm.orderIds"> -->
-                            <CheckboxGroup @on-change='aaa'>
+                          <CheckboxGroup v-model="dataForm.orderIds">
+                            <!-- <CheckboxGroup @on-change='aaa'> -->
                               <Checkbox v-for="(it) in videoDetails" :key="it.orderId" :value="it.orderId" :label="it.orderId"   :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3'>
                                   <em style='font-style: normal;font-right: -5px;' v-for='(its) in deliveryPositionList' :key='its.key' v-if='it.deliveryPosition != null && it.deliveryPosition == its.key'>【{{its.text}}】</em>
                                 {{it.videoName}} ({{it.videoLength}})s &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-                                <Checkbox style='position: absolute' v-model="it.checks">是否免传</Checkbox>
+                                <!-- <Checkbox style='position: absolute' v-model="it.checks">是否免传</Checkbox> -->
+                                <input type="checkbox" :value="it.checks" @change="checkGroup(it.orderId)">
 
                                 <!-- <Form style='padding-left: 20px;background: #eee;' v-if='dataForm.orderIds.indexOf(it.orderId) != -1' ref="dataForm" :model="dataForm" label-position="left" :label-width="80">
                                   <Row>审核未通过的原因</Row>
@@ -92,6 +93,10 @@
                     <Row style='margin-top: -32px;' v-if='dataForm.reasonOrderIds.indexOf("9") != -1 '>审核未通过原因(勾选其他时):</Row>
                     <FormItem label="" prop="closeReason" v-if='dataForm.reasonOrderIds.indexOf("9") != -1 '>
                          <Input :maxlength="120" type='textarea' :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3' placeholder='勾选其他时请输入原因' v-model="dataForm.refuseReason"></Input>
+                    </FormItem>
+                    <Row style='margin-top: -32px;' v-if='dataForm.reasonOrderIds.indexOf("10") != -1 '>错漏播标记原因(勾选其他时):</Row>
+                    <FormItem label="" prop="closeReason" v-if='dataForm.reasonOrderIds.indexOf("10") != -1 '>
+                         <Input :maxlength="120" type='textarea' :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3' placeholder='勾选错漏播标记时请输入原因' v-model="dataForm.missTag"></Input>
                     </FormItem>
                 </Form>
 
@@ -155,9 +160,10 @@ const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 export default class Main extends ViewBase {
     dataForm: any = {
         closeReason: '',
-        orderIds: [],
-        reasonOrderIds: [],
-        refuseReason: ''
+        orderIds: [], // 拒绝的监播orderIds
+        reasonOrderIds: [], // 拒绝原因列表
+        refuseReason: '', // 其他原因
+        missTag: '' // 错漏播标记
     }
 
     videoDetails: any = []
@@ -274,6 +280,11 @@ export default class Main extends ViewBase {
     aaa(data: any) {
       this.dataForm.orderIds.push(data[0])
       // console.log(data)
+      // console.log(this.dataForm.orderIds)
+    }
+
+    checkGroup(id: any) {
+      // console.log(id)
     }
 
     // 返回上一页
@@ -387,6 +398,11 @@ export default class Main extends ViewBase {
             } else if (this.dataForm.reasonOrderIds.indexOf('9') != -1) {
                 if (this.dataForm.refuseReason == '') {
                     info('请输入拒绝原因')
+                    return
+                }
+            } else if (this.dataForm.reasonOrderIds.indexOf('10') != -1) {
+                if (this.dataForm.missTag == '') {
+                    info('请输入错漏播标记原因')
                     return
                 }
             }
@@ -540,6 +556,11 @@ export default class Main extends ViewBase {
                     info('请输入拒绝原因')
                     return
                 }
+            } else if (this.dataForm.reasonOrderIds.indexOf('10') != -1) {
+                if (this.dataForm.missTag == '') {
+                    info('请输入错漏播标记原因')
+                    return
+                }
             }
         }
 
@@ -625,25 +646,6 @@ export default class Main extends ViewBase {
     watchParmas(val: any) {
         this.search()
     }
-
-    // @Watch('videoDetails', { deep: true })
-
-    // watchvideoDetails(val: any) {
-      // (this.videoDetails || []).map((it: any) => {
-      //   if (it.reason.length == 1) {
-      //     return {
-      //       ...it,
-      //       ifcheck: true
-      //     }
-      //   } else {
-      //     return {
-      //       ...it,
-      //       ifcheck: false
-      //     }
-      //   }
-      // })
-    //     console.log(this.videoDetails)
-    // }
 
     @Watch('videoplay', { deep: true })
 
