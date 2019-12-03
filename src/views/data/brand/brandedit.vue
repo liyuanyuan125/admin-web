@@ -378,7 +378,13 @@ export default class Main extends ViewBase {
             v: item.ages[index].v ? item.ages[index].v / 100 : '',
             k: item.ages[index].v ? item.ages[index].v / 100 : ''
           }
-        }) : []
+        }) : this.ageCodeList.map((it: any) => {
+          return {
+            ...it,
+            v: '',
+            k: ''
+          }
+        })
         this.fans.provinces = item.provinces || []
         this.fans.citys = item.citys || []
         this.form.keyWords = (item.keyWords || []).join(';')
