@@ -1,6 +1,7 @@
 import moouth from './mouth.vue'
 import remoteselect from './data/index.vue'
 import company from './data/company.vue'
+import moment from 'moment'
 
 export const beforefetch: any =  [
   {
@@ -45,11 +46,11 @@ export const beforefetch: any =  [
   },
 
   {
-    name: 'invoiceContent',
+    name: 'invoiceStatus',
     defaultValue: '',
     select: true,
     width: 100,
-    placeholder: '发票内容',
+    placeholder: '发票状态',
     enumKey: 'invoiceStatusList'
   },
 
@@ -61,7 +62,7 @@ export const beforefetch: any =  [
     placeholder: '账单月份',
     dealParam(value: string) {
       return {
-        yearMonth: value ? new Date(value).getTime() : ''
+        yearMonth: value ? value.replace(/\-/, '')  : ''
       }
     }
   },

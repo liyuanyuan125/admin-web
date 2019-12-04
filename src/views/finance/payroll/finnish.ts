@@ -1,6 +1,7 @@
 import moouth from './mouth.vue'
 import remoteselect from './data/index.vue'
 import company from './data/company.vue'
+import moment from 'moment'
 
 export const finishfetch: any =  [
   {
@@ -70,7 +71,7 @@ export const finishfetch: any =  [
     placeholder: '账单月份',
     dealParam(value: string) {
       return {
-        yearMonth: value ? new Date(value).getTime() : ''
+        yearMonth: value ? value.replace(/\-/, '')  : ''
       }
     }
   },
