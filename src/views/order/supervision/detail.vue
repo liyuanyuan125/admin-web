@@ -64,8 +64,9 @@
                                 {{it.videoName}} ({{it.videoLength}})s &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
                                 <!-- <Checkbox style='position: absolute' v-model="it.checks">是否免传</Checkbox> -->
-                                <input type="checkbox" :value="it.orderStatus == 1" :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3' @change="checkGroup(it.orderId)">
-
+                                <p>
+                                <input type="checkbox" :value="it.orderStatus == 1" :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3' @change="checkGroup(it.orderId)" />是否免传
+</p>
                                 <!-- <Form style='padding-left: 20px;background: #eee;' v-if='dataForm.orderIds.indexOf(it.orderId) != -1' ref="dataForm" :model="dataForm" label-position="left" :label-width="80">
                                   <Row>审核未通过的原因</Row>
                                   <FormItem label="" prop="closeReason">
