@@ -4,6 +4,7 @@
       :fetch="fetch"
       :filters="filters"
       :columns="columns"
+      @on-sort-change="sortChange"
       ref="listPage">
 
       <template slot="year" slot-scope="{row: {year, month}}">
@@ -109,7 +110,14 @@ export default class Main extends ViewBase {
       width: 100,
       placeholder: '广告片类型'
     },
-
+    {
+      name: 'showCountSort',
+      defaultValue: 2
+    },
+    {
+      name: 'personCountSort',
+      defaultValue: 2
+    },
     {
       name: 'pageIndex',
       defaultValue: 1
@@ -129,27 +137,18 @@ export default class Main extends ViewBase {
     { title: '合同编号', key: 'contractNo', minWidth: 100 },
     { title: '账单月份', slot: 'year', minWidth: 60 },
     { title: '账单生成时间', key: 'createTime', minWidth: 100, dateTime: true},
-    { title: '曝光场次', key: 'showCount', minWidth: 100, sortable: true },
-    { title: '曝光人次/人次', key: 'personCount', minWidth: 130, sortable: true },
+    { title: '曝光场次', key: 'showCount', minWidth: 100, sortable: 'custom' },
+    { title: '曝光人次/人次', key: 'personCount', minWidth: 130, sortable: 'custom' },
     { title: '广告片类型', key: 'advertType', minWidth: 100, enum: 'advertTypeCodeList'},
-    { title: '账单金额', key: 'amount', minWidth: 100, sortable: true },
+    { title: '账单金额', key: 'amount', minWidth: 100 },
     { title: '账单状态', key: 'billStatus', minWidth: 100, enum: true},
     { title: '发票状态', key: 'invoiceStatus', minWidth: 60, enum: true},
     { title: '付款状态', key: 'payStatus', minWidth: 60, enum: true},
     { title: '操作', slot: 'operate', minWidth: 110 },
   ]
 
-  // beforeRouteEnter(to: any, from: any, next: any) {
-  //   console.log(to)
-  //   console.log(from)
-  //   next()
-  // }
-
-  // beforeRouteLeave(to: any, from: any, next: any) {
-  //   console.log(to)
-  //   console.log(from)
-  //   next()
-  // }
+  sortChange(column: any, key: any, order: any) {
+  }
 }
 </script>
 <style lang='less' scoped>
