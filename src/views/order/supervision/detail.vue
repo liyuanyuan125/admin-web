@@ -64,9 +64,8 @@
                                 {{it.videoName}} ({{it.videoLength}})s &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
                                 <!-- <Checkbox style='position: absolute' v-model="it.checks">是否免传</Checkbox> -->
-                                <p>
+                                
                                 <input type="checkbox" :value="it.orderStatus == 1" :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3' @change="checkGroup(it.orderId)" />是否免传
-</p>
                                 <!-- <Form style='padding-left: 20px;background: #eee;' v-if='dataForm.orderIds.indexOf(it.orderId) != -1' ref="dataForm" :model="dataForm" label-position="left" :label-width="80">
                                   <Row>审核未通过的原因</Row>
                                   <FormItem label="" prop="closeReason">
@@ -108,10 +107,11 @@
             </Col>
           </Row>
           <Row>监播图片</Row>
-          <Row class='imgs_j'>
+          <Row class='imgs_j' v-if='imgList.length == 0'>暂无监播图片</Row>
+          <Row class='imgs_j' v-if='imgList.length != 0'>
             <ul>
               <li v-for='it in imgList' :key='it.key'>
-                <img @click='onView(it.img)' :src="it.img" alt="">
+                <img @click='onView(it.fileUrl)' :src="it.fileUrl" alt="">
               </li>
             </ul>
           </Row>
@@ -237,36 +237,7 @@ export default class Main extends ViewBase {
     videoIdsList: any = {}
 
     // 监播图片展示列
-    imgList: any = [
-      {
-        img: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2973069531,657782944&fm=26&gp=0.jpg',
-        key: '1'
-      },
-      {
-        img: 'https://ss3.baidu.com/-rVXeDTa2gU2pMbgoY3K///it///u=3919516526,1578570869&fm=202',
-        key: '2'
-      },
-      {
-        img: 'https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3087232940,2136816654&fm=26&gp=0.jpg',
-        key: '3'
-      },
-      {
-        img: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1541112694,128645288&fm=26&gp=0.jpg',
-        key: '4'
-      },
-      {
-        img: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2431292440,177930009&fm=26&gp=0.jpg',
-        key: '5'
-      },
-      {
-        img: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3185023445,1623186821&fm=26&gp=0.jpg',
-        key: '6'
-      },
-      {
-        img: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3876734362,2775714984&fm=26&gp=0.jpg',
-        key: '7'
-      },
-    ]
+    imgList: any = []
 
     // 查看图片
     viewerShow = false
@@ -523,6 +494,7 @@ export default class Main extends ViewBase {
                 }
             })
             this.reason = data.fixRefusesList
+            this.imgList = data.item.imgIdAndUrl == null ? [] : data.item.imgIdAndUrl
             if (this.listitem.approvalStatus == 4) {
               this.dataForm.refuseReason = this.listitem.refuseReason
               this.dataForm.missTag = this.listitem.missTag
