@@ -396,7 +396,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
             const { data } = await queryList(clean({
                 pageSize: 888888,
-                status: 1,
+                // status: 1,
                 typeCode: 'resource'
             }))
             this.reslist = data.items
@@ -405,6 +405,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
             })
 
         } catch (ex) {
+          this.handleError(ex)
         } finally {
             this.loading = false
         }
