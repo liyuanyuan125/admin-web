@@ -1,4 +1,4 @@
-import { get , post , put } from '@/fn/ajax'
+import { get , post , put , del } from '@/fn/ajax'
 
 // 订单列表
 export async function queryList(query: any) {
@@ -61,3 +61,16 @@ export async function cinemaCancel(query: any) {
   const res = await put(`/xadvert/orders/cinema-cancel`, query)
   return res
 }
+
+// 删除广告单
+export async function dels(id: any) {
+  const res = await del(`/xadvert/orders/${id}`)
+  return res
+}
+
+// 修改广告单状态
+export async function chgstatus(query: any) {
+  const res = await put(`/xadvert/orders/resumption`, query)
+  return res
+}
+
