@@ -20,7 +20,10 @@
       </template>
       <template slot="types" slot-scope="{row: {types}}">
         <span v-if="types.length == 0 || types[0] == null">-</span>
-        <span v-for="(item, index) in types" :key="index" v-if="item != null">{{item}}</span>
+        <span v-for="(item, index) in types" :key="index" v-if="item != null">
+          {{item}}
+          <i v-if="index < (types.length - 1)">/</i>
+        </span>
       </template>
       <template slot="countries" slot-scope="{row}">
         <span v-for="(item, index) in (row.countries || [])" :key="index">{{item}}</span>
@@ -93,24 +96,21 @@ export default class Main extends ViewBase {
       defaultValue: '',
       select: true,
       width: 140,
-      placeholder: '分类',
-      enumKey: 'categoryList'
+      placeholder: '分类'
     },
     {
       name: 'releaseStatus',
       defaultValue: '',
       select: true,
       width: 140,
-      placeholder: '上映状态',
-      enumKey: 'releaseStatusList'
+      placeholder: '上映状态'
     },
     {
       name: 'controlStatus',
       defaultValue: '',
       select: true,
       width: 140,
-      placeholder: '状态',
-      enumKey: 'controlStatusList'
+      placeholder: '状态'
     },
     {
       name: 'pageIndex',

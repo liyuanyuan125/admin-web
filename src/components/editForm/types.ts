@@ -25,11 +25,18 @@ import { Formatter } from './components/formatter'
 import EditForm from './editForm.vue'
 import { devLog, devError } from '@/util/dev'
 
+/**
+ * 验证器回调函数
+ * @param error 传 Error 对象表示失败，不传则表示成功
+ */
 export type ValidatorCallback = (error?: Error) => any
 
 /**
  * 验证器
- * https://github.com/yiminghe/async-validator#rules
+ * @param rule 规则本身
+ * @param value 字段值
+ * @param callback 验证回调
+ * 详情请参见：https://github.com/yiminghe/async-validator#rules
  */
 export type Validator = (rule: any, value: any, callback: ValidatorCallback) => void
 
@@ -234,19 +241,19 @@ export interface Field extends Param {
   watch?: WatchHandler | WatchOptionsWithHandler
 
   /**
-   * 占用的空间大小，从 1 ~ 24
+   * 占用的栅格大小，从 1 ~ 24，默认 1，请参见 http://v3.iviewui.com/components/grid
    */
   span?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14
     | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24
 
   /**
-   * 向左偏移量
+   * 向左偏移的栅格数
    */
   offsetLeft?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14
     | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23
 
   /**
-   * 向右偏移量
+   * 向右偏移的栅格数
    */
   offsetRight?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14
     | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23
@@ -294,6 +301,7 @@ export interface Field extends Param {
   /**
    * 默认枚举索引
    * 若设置了该项，当该字段的值为默认值时，强制选择相应枚举列表中，该索引对应项的值
+   * TODO: 该属性被废弃
    */
   defaultEnumIndex?: number
 
@@ -633,7 +641,7 @@ export function normalizeAndGroupField(list: Field[], data: any) {
 }
 
 /**
- * liet fetch 调用结果
+ * fetch 调用结果
  */
 export interface FetchResult {
   code: number

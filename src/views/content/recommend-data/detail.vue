@@ -85,7 +85,7 @@ export default class DetailPage extends ViewBase {
           maxlength: 50
         },
         label: '名称',
-        span: 22,
+        span: 15,
         required: true
       },
 
@@ -94,7 +94,7 @@ export default class DetailPage extends ViewBase {
         defaultValue: [0, 0],
         dateRange: true,
         width: 350,
-        span: 22,
+        span: 7,
         required: true,
         label: '时间',
         placeholder: '时间',

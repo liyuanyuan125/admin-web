@@ -31,7 +31,7 @@
         </FormItem>
         <!-- 公司 -->
         <div v-if='item.companyType == 1'>
-          <FormItem label="公司名称" prop="name">
+          <FormItem label="公司名称" >
             <Row>
               <Col span="8">
                 <Input v-model="item.name" placeholder="请填写公司全称，与营业执照保持一致" />
@@ -46,7 +46,7 @@
             </Row>
           </FormItem>
 
-          <FormItem label="所属行业" prop="businessParentCode">
+          <FormItem label="所属行业" >
             <Row>
               <Col span="8">
                 <Industry v-model='item.businessParentCode' :businessParentTypeList='businessParentTypeList' />
@@ -67,58 +67,61 @@
               </Col>
             </Row>
           </FormItem>
-
-          <Row>
-            <FormItem label="公司地址" prop="provinceId">
-              <Row>
-                <Col span="8">
+          <div>
+            <Row>
+              <Col span="8">
+                <FormItem label="公司地址" >
                   <AreaSelect v-model="area" />
-                </Col>
-                <Col span="10" offset="1">
-                  <FormItem prop="addressDetail">
-                    <Input v-model="item.addressDetail" placeholder="详细地址" class="input-address" />
-                  </FormItem>
-                </Col>
-              </Row>
-            </FormItem>
-          </Row>
+                </FormItem>
+              </col>
+              <Col span="10" offset="1">
+              <FormItem>
+                  <Input v-model="item.addressDetail" placeholder="详细地址" class="input-address" />
+                </FormItem>
+              </col>
+            </Row>
+          </div>
+          <div>
           <Row>
             <Col span="5">
               <FormItem label="联系人">
                 <Input v-model="item.contact" />
+                <p class="info">(内部人员必填)</p>
               </FormItem>
             </Col>
             <Col span="6" offset="1">
-              <FormItem label="联系电话" prop="contactPhone">
+              <FormItem label="联系电话">
                 <Input v-model="item.contactTel" />
+                <p class="info">(内部人员必填)</p>
               </FormItem>
             </Col>
             <Col span="7" offset="1">
-              <FormItem label="邮箱" prop="email">
+              <FormItem label="邮箱" >
                 <Input v-model="item.email" />
               </FormItem>
             </Col>
           </Row>
+          </div>
         </div>
 
         <!-- 个人 -->
         <div v-if='item.companyType != 1'>
           <Row>
-          <FormItem label="姓名" prop="singcontact">
+          <FormItem label="姓名" >
             <Row>
               <Col span="8">
                 <Input v-model="item.singcontact" placeholder="" />
               </Col>
             </Row>
           </FormItem>
-          <FormItem label="手机号" prop="singcontactTel">
+          <FormItem label="手机号" >
             <Row>
               <Col span="8">
                 <Input v-model="item.singcontactTel" placeholder="" />
               </Col>
             </Row>
           </FormItem>
-          <FormItem label="邮箱" prop="singemail">
+          <FormItem label="邮箱" >
             <Row>
               <Col span="8">
                 <Input v-model="item.singemail" placeholder="" />
@@ -128,22 +131,24 @@
           </Row>
         </div>
         <div>
-          <Row>
-            <Col span="5">
-              <FormItem label="推荐人电话">
-                <Input v-model="item.recommendMobile" />
-              </FormItem>
-            </Col>
-            <Col span="6" offset="1">
-              <FormItem label="推荐人姓名" prop="recommendUserName">
-                <Input v-model="item.recommendUserName" />
-              </FormItem>
-            </Col>
-          </Row>
+          <div>
+            <Row>
+              <Col span="5">
+                <FormItem label="推荐人电话" >
+                  <Input v-model="item.recommendMobile" />
+                </FormItem>
+              </Col>
+              <Col span="6" offset="1">
+                <FormItem label="推荐人姓名" >
+                  <Input v-model="item.recommendUserName" />
+                </FormItem>
+              </Col>
+            </Row>
+          </div>
         </div>
         <Row v-if='item.companyType == 1'>
-          <Col span="6">
-            <FormItem label="资质" prop="qualificationType">
+          <Col span="5">
+            <FormItem label="资质" >
               <Select v-model="item.qualificationType" clearable>
                 <Option
                   v-for="it in qualificationTypeList"
@@ -154,7 +159,7 @@
             </FormItem>
           </Col>
           <Col span="6" offset="1">
-            <FormItem label="资质编号" prop="qualificationCode">
+            <FormItem label="资质编号" >
               <Input v-model="item.qualificationCode" placeholder="资质编号" />
             </FormItem>
           </Col>
@@ -169,8 +174,8 @@
 
         <div v-else>
           <Row>
-            <Col span="6">
-              <FormItem label="资质" prop="singqualificationType">
+            <Col span="5">
+              <FormItem label="资质" >
                 <Select v-model="item.singqualificationType" clearable>
                   <Option
                     v-for="it in personQualificationTypeList"
@@ -181,7 +186,7 @@
               </FormItem>
             </Col>
             <Col span="6" offset="1">
-              <FormItem label="资质编号" prop="singqualificationCode">
+              <FormItem label="资质编号">
                 <Input v-model="item.singqualificationCode" placeholder="资质编号" />
               </FormItem>
             </Col>
@@ -267,7 +272,7 @@
       <Row class="cinema-footer">
         <Row>
           <Col span="5">
-            <FormItem label="客户等级" prop="levelCode">
+            <FormItem label="客户等级" >
               <Select v-model="item.levelCode" clearable>
                 <Option
                   v-if="it.controlStatus == 1"
@@ -278,8 +283,8 @@
               </Select>
             </FormItem>
           </Col>
-          <Col span="8" offset="1">
-            <FormItem label="负责商务" prop="businessDirector">
+          <Col span="5" offset="1">
+            <FormItem label="负责商务">
               <Select v-model="item.businessDirector" filterable clearable>
                 <Option
                   v-if="it.status!=2"
@@ -301,7 +306,6 @@
             <FormItem
               v-if="it.typeCode != 'agent' || it.typeCode != 'film'"
               :label="index == 0 ? '客户类型' : ''"
-              :prop="'typearr['+ index + ']'"
               :show-message="index == 0 ? show0 : true"
             >
               <span class="check-select-group">
@@ -382,7 +386,7 @@
         </div>
 
         <Row v-if="item.typearr[1] && item.companyType == 1">
-          <FormItem label="关联影院" prop="cinemasList" :show-message="!(item.cinemasList.length>0)">
+          <FormItem label="关联影院" :show-message="!(item.cinemasList.length>0)">
             <PartBindCinema
               v-if="loadingShow"
               v-model="item.cinemasList"
@@ -575,7 +579,15 @@ export default class Main extends ViewBase {
       name: [{ required: true, message: '请填写公司名称', trigger: 'blur' }],
       sing: [{ required: true, message: '请填写公司名称', trigger: 'blur' }],
       singcontact: [{ required: true, message: '请填写姓名', trigger: 'blur' }],
-      singcontactTel: [{ required: true, message: '请填写手机号', trigger: 'blur' }],
+      contactTel: [{
+        pattern: /^1\d{10}$/,
+        message: '请输入正确的手机号码', trigger: 'blur'
+      }],
+      singcontactTel: [{ required: true, message: '请填写手机号', trigger: 'blur' },
+      {
+        pattern: /^1\d{10}$/,
+        message: '请输入正确的手机号码', trigger: 'blur'
+      }],
       singemail: [{
         pattern: /^\w+((.\w+)|(-\w+))@[A-Za-z0-9]+((.|-)[A-Za-z0-9]+).[A-Za-z0-9]+$/,
         message: '邮箱格式错误',
@@ -595,17 +607,13 @@ export default class Main extends ViewBase {
         message: '请选择所属行业',
         trigger: 'change',
         fields: {
-          0: {type: 'string', required: true},
+          0: {type: 'string', required: true, message: '请选择所属行业'},
         }
       }],
-      addressDetail: [
-        { required: true, message: '请填写公司详细地址', trigger: 'blur' }
-      ],
       approveStatus: [
         { required: true, message: '请选择审核状态', trigger: 'blur', type: 'number' }
       ],
       cinemasList: [{ validator: cinemaVali }],
-      levelCode: [{ required: true, message: '请选择客户等级', trigger: 'change' }],
       validityPeriodDate: [
         {
           required: true,
@@ -628,16 +636,7 @@ export default class Main extends ViewBase {
       'typearr[0]': [{ validator: validateType1 }],
       'typearr[1]': [{ validator: validateType2 }],
       qualificationType: [{ required: true, message: '请选择资质', trigger: 'change' }],
-      qualificationCode: [
-        { required: true, message: '请输入资质编号', trigger: 'blur' }
-      ],
-      singqualificationType: [{ required: true, message: '请选择资质', trigger: 'change' }],
-      singqualificationCode: [
-        { required: true, message: '请输入资质编号', trigger: 'blur' }
-      ],
-      businessDirector: [
-        { required: true, message: '请选择负责商务', trigger: 'change', type: 'number' }
-      ]
+      singqualificationType: [{ required: true, message: '请选择资质', trigger: 'change' }]
     }
     return rule
   }
@@ -1030,43 +1029,6 @@ export default class Main extends ViewBase {
     this.item.subTypeIdList = val.map(it => (it.checked ? it.subId || 0 : 0))
   }
 
-  @Watch('item', { deep: true })
-  watchitem(val: any) {
-    const form = 'dataForms'
-    if (val.approveStatus == 3) {
-      (this.$refs[form] as any).fields.forEach((e: any) => {
-        if (e.prop == 'validityPeriodDate') {
-          e.resetField()
-        }
-      })
-    } else if (val.approveStatus == 1) {
-      (this.$refs[form] as any).fields.forEach((e: any) => {
-        if (e.prop == 'refusedReason') {
-          e.resetField()
-        }
-      })
-    }
-    if (val.typeCategoryCode0) {
-      this.item.types[0].typeCategoryCode = val.typeCategoryCode0
-    } else {
-      this.item.types[0].typeCategoryCode = ''
-    }
-    if (val.typeCategoryCode1) {
-      this.item.types[1].typeCategoryCode = val.typeCategoryCode1
-    } else {
-      this.item.types[1].typeCategoryCode = ''
-    }
-    if (val.typearr[0]) {
-      this.item.types[0].typeCode = (this.customerTypeList[0] as any).typeCode
-    } else {
-      this.item.types[0].typeCode = ''
-    }
-    if (val.typearr[1]) {
-      this.item.types[1].typeCode = (this.customerTypeList[1] as any).typeCode
-    } else {
-      this.item.types[1].typeCode = ''
-    }
-  }
 }
 </script>
 
@@ -1133,7 +1095,9 @@ export default class Main extends ViewBase {
 .upload {
   margin-bottom: 20px;
 }
-
+.info {
+  color: #ed4014;
+}
 .part-bind-cinema {
   width: 660px;
 }

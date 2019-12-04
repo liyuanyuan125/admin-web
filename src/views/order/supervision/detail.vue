@@ -73,29 +73,6 @@
             </div>
             </Col>
         </Row>
-        <!--     <div class='title' v-if='listitem.approvalStatus == 2'>审核</div>
-    <div class='bos' v-if='listitem.approvalStatus == 2'>
-       <Form ref="dataForm" :model="dataForm" label-position="left" :label-width="80">
-      <FormItem label="审核意见" prop="closeReason">
-        <RadioGroup v-model="statusform.status" >
-          <Radio v-for="it in appList" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
-        </RadioGroup>
-      </FormItem>
-      <Row v-if='statusform.status == 1' style='margin-left: 80px;'>请勾选在监播中已出现的广告，如有未出现广告，请及时与资源方联系！<span style='color: red'>(审核通过后，未勾选的广告片将不参与到结算中，请谨慎操作)</span><br><Checkbox  :indeterminate="indeterminate" :value="checkAll"  @click.prevent.native="handleCheckAll">全选</Checkbox></Row>
-      <FormItem v-if='statusform.status == 1' label="" prop="closeReason">
-        <CheckboxGroup  v-model="dataForm.orderIds" >
-          <Checkbox  v-for="(it,index) in listitem.videoDetails" :key="it.index" :value="it.orderId" :label="it.orderId">{{it.videoName}} ({{it.videoLength}})s</Checkbox >
-        </CheckboxGroup >
-      </FormItem>
-      <FormItem v-if='statusform.status == 2' label="" prop="closeReason">
-        <Input v-model='dataForm.closeReason' />
-      </FormItem>
-    </Form>
-    <div slot="footer" class="dialog-footer">
-      <Button @click="cancel">取消</Button>
-      <Button type="primary" style='margin-left: 20px;' @click="change('dataForm')">确定</Button>
-    </div>
-    </div> -->
         <div v-if='listitem.approvalStatus != 2' class='title'>操作记录</div>
         <div class='bos' v-if='listitem.approvalStatus != 2 && logList.length != 0'>
             <p style='line-height: 25px;' v-for='(logit,index) in logList' :key='index'>
