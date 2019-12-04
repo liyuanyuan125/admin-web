@@ -124,7 +124,7 @@ export default class IndexPage extends ViewBase {
       },
 
       {
-        name: 'companyName',
+        name: 'companyId',
         defaultValue: null,
         component: CompanyList,
         width: 120,
