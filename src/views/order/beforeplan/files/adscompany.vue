@@ -2,7 +2,7 @@
     <Select v-model="inValue" placeholder="公司名称" filterable clearable class="component" remote
              :remote-method="adsremoteMethod"
              @on-clear="list = []" ref="ui">
-        <Option v-for="it in list" :key="it.id" :value="it.name == null ? '' : it.name" :label="it.name" class="flex-box">
+        <Option v-for="it in list" :key="it.id" :value="it.id" :label="it.name" class="flex-box">
             <span>{{it.name}}</span>
         </Option>
     </Select>
