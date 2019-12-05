@@ -4,7 +4,7 @@
       :fetch="fetch"
       :filters="filters"
       :columns="columns"
-      @on-sort-change="sortChange"
+      @table-on-sort-change="sortChange"
       ref="listPage">
 
       <template slot="year" slot-scope="{row: {year, month}}">
@@ -112,11 +112,11 @@ export default class Main extends ViewBase {
     },
     {
       name: 'showCountSort',
-      defaultValue: 2
+      defaultValue: 0
     },
     {
       name: 'personCountSort',
-      defaultValue: 2
+      defaultValue: 0
     },
     {
       name: 'pageIndex',
@@ -138,7 +138,7 @@ export default class Main extends ViewBase {
     { title: '账单月份', slot: 'year', minWidth: 60 },
     { title: '账单生成时间', key: 'createTime', minWidth: 100, dateTime: true},
     { title: '曝光场次', key: 'showCount', minWidth: 100, sortable: 'custom' },
-    { title: '曝光人次/人次', key: 'personCount', minWidth: 130, sortable: 'custom' },
+    { title: '曝光人次/人次', key: 'personCount', minWidth: 130, sortable: 'custom', sortType: 'desc'},
     { title: '广告片类型', key: 'advertType', minWidth: 100, enum: 'advertTypeCodeList'},
     { title: '账单金额', key: 'amount', minWidth: 100 },
     { title: '账单状态', key: 'billStatus', minWidth: 100, enum: true},
@@ -147,7 +147,18 @@ export default class Main extends ViewBase {
     { title: '操作', slot: 'operate', minWidth: 110 },
   ]
 
-  sortChange(column: any, key: any, order: any) {
+  sortChange(column: any) {
+    // console.log(column)
+    // column.order: asc升， desc降，normal默认
+    // key: showCount(曝光场次), key: personCount(曝光人次/人次)
+    const queryObj = (this.$refs.listPage as any).query
+    if (column.key == 'showCount') {
+      if (column.order == 'asc') {
+        queryObj.showCountSort = 1
+      } else if (column.order == 'desc') {
+        queryObj.showCountSort = 2
+      }
+    }
   }
 }
 </script>
