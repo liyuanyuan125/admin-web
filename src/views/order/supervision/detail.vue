@@ -93,7 +93,7 @@
                     <FormItem label="" prop="closeReason" v-if='dataForm.reasonOrderIds.indexOf("9") != -1 '>
                          <Input :maxlength="120" type='textarea' :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3' placeholder='勾选其他时请输入原因' v-model="dataForm.refuseReason"></Input>
                     </FormItem>
-                    <Row style='margin-top: -32px;' v-if='dataForm.reasonOrderIds.indexOf("10") != -1 '>错漏播标记原因(勾选其他时):</Row>
+                    <Row style='margin-top: -32px;' v-if='dataForm.reasonOrderIds.indexOf("10") != -1 '>错漏播标记原因(勾选错漏播标记时):</Row>
                     <FormItem label="" prop="closeReason" v-if='dataForm.reasonOrderIds.indexOf("10") != -1 '>
                          <Input :maxlength="120" type='textarea' :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3' placeholder='勾选错漏播标记时请输入原因' v-model="dataForm.missTag"></Input>
                     </FormItem>
