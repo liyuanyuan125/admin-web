@@ -137,8 +137,8 @@ export default class Main extends ViewBase {
     { title: '合同编号', key: 'contractNo', minWidth: 100 },
     { title: '账单月份', slot: 'year', minWidth: 60 },
     { title: '账单生成时间', key: 'createTime', minWidth: 100, dateTime: true},
-    { title: '曝光场次', key: 'showCount', minWidth: 100, sortable: 'custom' },
-    { title: '曝光人次/人次', key: 'personCount', minWidth: 130, sortable: 'custom', sortType: 'desc'},
+    { title: '曝光场次', key: 'showCount', minWidth: 100, sortable: 'custom', sortType: 'normal'},
+    { title: '曝光人次/人次', key: 'personCount', minWidth: 130, sortable: 'custom', sortType: 'normal'},
     { title: '广告片类型', key: 'advertType', minWidth: 100, enum: 'advertTypeCodeList'},
     { title: '账单金额', key: 'amount', minWidth: 100 },
     { title: '账单状态', key: 'billStatus', minWidth: 100, enum: true},
@@ -148,15 +148,33 @@ export default class Main extends ViewBase {
   ]
 
   sortChange(column: any) {
-    // console.log(column)
-    // column.order: asc升， desc降，normal默认
-    // key: showCount(曝光场次), key: personCount(曝光人次/人次)
     const queryObj = (this.$refs.listPage as any).query
-    if (column.key == 'showCount') {
-      if (column.order == 'asc') {
-        queryObj.showCountSort = 1
-      } else if (column.order == 'desc') {
-        queryObj.showCountSort = 2
+    const keys = column.key // showCount, personCount
+    const obj: any = {
+      showCount: 'showCountSort',
+      personCount: 'personCountSort'
+    }
+    // asc升， desc降，normal默认
+    const sortTypes: any = {
+      asc: 'asc',
+      desc: 'desc',
+      normal: 'normal',
+    }
+
+    const options: any = {
+      asc: 1,
+      desc: 2,
+      normal: 0
+    }
+
+    if (column.key == keys) {
+      if (column.order == sortTypes[column.order]) {
+        queryObj[obj[keys]] = options[column.order]
+        this.columns.map((item: any) => {
+          if (item.key == keys) {
+            return item.sortType = sortTypes[column.order]
+          }
+        })
       }
     }
   }
