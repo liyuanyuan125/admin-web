@@ -10,6 +10,19 @@
       <template slot="acts">
         <Button
           type="success"
+          class="expert"
+        >
+          <a
+            :href='`${ajaxBase}/customer/companies/export`'
+            download
+          >
+            <i class='ivu-icon ivu-icon-ios-cloud-download'></i>
+            <span>导出</span>
+          </a>
+        </Button>
+
+        <Button
+          type="success"
           icon="md-add-circle"
           @click="editShow()"
         >广告主管理</Button>
@@ -48,6 +61,7 @@ const makeMap = (list: any[]) => toMap(list, 'typeCode', 'typeName')
 })
 export default class Main extends ViewBase {
 
+  ajaxBase = VAR.ajaxBaseUrl
   filters: Filter[] = [
     {
       name: 'companyId',
@@ -234,6 +248,12 @@ export default class Main extends ViewBase {
     cursor: pointer;
     color: #2d8cf0;
     margin: 4px 6px;
+  }
+}
+.expert {
+  margin-right: 20px;
+  a {
+    color: #fff;
   }
 }
 </style>
