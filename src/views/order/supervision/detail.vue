@@ -65,7 +65,7 @@
 
                                 <!-- <Checkbox style='position: absolute' v-model="it.checks">是否免传</Checkbox> -->
                                 
-                                <input type="checkbox" :checked="it.needUpload == 1" :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3' @change="checkGroup(it.orderId)" />是否免传
+                                <!-- <input type="checkbox" :checked="it.needUpload == 1" :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3' @change="checkGroup(it.orderId)" />是否免传 -->
                                 <!-- <Form style='padding-left: 20px;background: #eee;' v-if='dataForm.orderIds.indexOf(it.orderId) != -1' ref="dataForm" :model="dataForm" label-position="left" :label-width="80">
                                   <Row>审核未通过的原因</Row>
                                   <FormItem label="" prop="closeReason">
@@ -164,7 +164,7 @@ export default class Main extends ViewBase {
         reasonOrderIds: [], // 拒绝原因列表
         refuseReason: '', // 其他原因
         missTag: '', // 错漏播标记,
-        freedomOrderIds: [] // 免上传的广告单ID
+        // freedomOrderIds: [] // 免上传的广告单ID
     }
 
     videoDetails: any = []
@@ -249,14 +249,14 @@ export default class Main extends ViewBase {
       this.search()
     }
 
-    checkGroup(id: any) {
-      if (this.dataForm.freedomOrderIds.indexOf(id) == -1) {
-        this.dataForm.freedomOrderIds.push(id)
-      } else {
-        const index = this.dataForm.freedomOrderIds.indexOf(id)
-        this.dataForm.freedomOrderIds.splice(index, 1)
-      }
-    }
+    // checkGroup(id: any) {
+    //   if (this.dataForm.freedomOrderIds.indexOf(id) == -1) {
+    //     this.dataForm.freedomOrderIds.push(id)
+    //   } else {
+    //     const index = this.dataForm.freedomOrderIds.indexOf(id)
+    //     this.dataForm.freedomOrderIds.splice(index, 1)
+    //   }
+    // }
 
     // 返回上一页
     back() {
@@ -309,7 +309,7 @@ export default class Main extends ViewBase {
                           fixRefuses: this.dataForm.reasonOrderIds,
                           refuseReason: this.dataForm.refuseReason,
                           missTag: this.dataForm.missTag, // 错漏播标记,
-                          freedomOrderIds: this.dataForm.freedomOrderIds
+                          // freedomOrderIds: this.dataForm.freedomOrderIds
                         })
     }
 
@@ -412,7 +412,7 @@ export default class Main extends ViewBase {
                       fixRefuses: this.dataForm.reasonOrderIds,
                       refuseReason: this.dataForm.refuseReason,
                       missTag: this.dataForm.missTag, // 错漏播标记,
-                      freedomOrderIds: this.dataForm.freedomOrderIds
+                      // freedomOrderIds: this.dataForm.freedomOrderIds
                     })
                 this.$router.push({ name: 'order-supervision-detail', params: { id: dataItemIds[1] } })
             } else { // 如果ids列表没有了数据则直接返回列表
