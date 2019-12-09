@@ -7,10 +7,19 @@
       ref="listPage"
     >
       <template slot="acts">
+        <a
+          :href="`${ajaxBase}/customer/contracts/excel_download`"
+          class="ivu-btn ivu-btn-default"
+          download
+        >
+          <i class="ivu-icon ivu-icon-ios-cloud-download"></i>
+          <span>导出合同</span>
+        </a>
         <Button
           type="success"
           icon="md-add-circle"
           :to="editRoute('new')"
+          class="button-new"
         >新建合同</Button>
       </template>
 
@@ -57,6 +66,8 @@ export default class IndexPage extends ViewBase {
   get listPage() {
     return this.$refs.listPage as ListPage
   }
+
+  ajaxBase = VAR.ajaxBaseUrl
 
   fetch = queryList
 
@@ -170,5 +181,9 @@ export default class IndexPage extends ViewBase {
 // 作废
 /deep/ .enum-key-4 {
   color: #ccc;
+}
+
+.button-new {
+  margin-left: 8px;
 }
 </style>
