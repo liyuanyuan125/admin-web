@@ -31,23 +31,29 @@ import ViewBase from '@/util/ViewBase'
 import { confirm, info, alert } from '@/ui/modal.ts'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import {list} from '@/api/financeBill'
-import remoteselect from '../payroll/data/index.vue'
+import CinemaSelect from '@/components/cinemaSelect'
+import remoteSelect from '../payroll/data/index.vue'
 import company from '../payroll/data/company.vue'
 
 @Component({
   components: {
-    ListPage
+    ListPage,
+    CinemaSelect
   }
 })
 export default class Main extends ViewBase {
+  get listPage() {
+    return this.$refs.listPage as ListPage
+  }
+
   fetch = list
 
   filters: Filter[] = [
     {
       name: 'cinemaId',
       defaultValue: 0,
-      // input: true,
-      component: remoteselect,
+      component: CinemaSelect,
+      // company: true,
       width: 108,
       placeholder: '影城名称'
     },
@@ -143,7 +149,7 @@ export default class Main extends ViewBase {
     { title: '账单生成时间', key: 'createTime', minWidth: 100, dateTime: true},
     { title: '曝光场次', key: 'showCount', minWidth: 100, sortable: 'custom', sortType: 'normal'},
     { title: '曝光人次/人次', key: 'personCount', minWidth: 130, sortable: 'custom', sortType: 'normal'},
-    { title: '广告片类型', key: 'advertType', minWidth: 100},
+    { title: '广告片类型', key: 'advertType', minWidth: 100, enum: 'advertTypeCodeList'},
     { title: '账单金额', key: 'amount', minWidth: 100 },
     { title: '账单状态', key: 'billStatus', minWidth: 100, enum: true},
     { title: '发票状态', key: 'invoiceStatus', minWidth: 60, enum: true},
