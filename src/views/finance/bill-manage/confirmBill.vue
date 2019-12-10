@@ -24,7 +24,7 @@
      </div>
 
      <div class="footer">
-       <Button type="primary" @click="handleBill" class="btn">提交1</Button>
+       <Button type="primary" @click="handleBill" class="btn">提交</Button>
        <Button @click="$router.push({name: 'finance-billmanage'})">取消</Button>
      </div>
   </div>
