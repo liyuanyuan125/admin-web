@@ -11,7 +11,7 @@ interface LoginData {
  * @param data 提交数据
  */
 export async function login(data: LoginData) {
-  const res = await post('auth/login', data)
+  const res = await post('/auth/login', data)
   return res
 }
 
