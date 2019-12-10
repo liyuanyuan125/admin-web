@@ -33,7 +33,6 @@ import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import {list} from '@/api/financeBill'
 import remoteselect from '../payroll/data/index.vue'
 import company from '../payroll/data/company.vue'
-import yearMonth from '../payment/files/yearMonth.vue'
 
 @Component({
   components: {
@@ -47,6 +46,7 @@ export default class Main extends ViewBase {
     {
       name: 'cinemaId',
       defaultValue: 0,
+      // input: true,
       component: remoteselect,
       width: 108,
       placeholder: '影城名称'
@@ -76,7 +76,7 @@ export default class Main extends ViewBase {
     },
     {
       name: 'billStatus',
-      defaultValue: '',
+      defaultValue: 0,
       select: true,
       width: 100,
       placeholder: '账单状态',
@@ -91,14 +91,16 @@ export default class Main extends ViewBase {
     },
     {
       name: 'yearMonth',
-      defaultValue: null,
-      component: yearMonth,
+      defaultValue: 0,
+      date: {
+        type: 'month'
+      },
       width: 108,
       placeholder: '账单月份'
     },
     {
       name: 'payStatus',
-      defaultValue: '',
+      defaultValue: 0,
       select: true,
       width: 100,
       placeholder: '付款状态',
@@ -106,7 +108,9 @@ export default class Main extends ViewBase {
     {
       name: 'advertType',
       defaultValue: '',
-      select: true,
+      select: {
+        enumKey: 'advertTypeCodeList'
+      },
       width: 100,
       placeholder: '广告片类型'
     },
@@ -139,7 +143,7 @@ export default class Main extends ViewBase {
     { title: '账单生成时间', key: 'createTime', minWidth: 100, dateTime: true},
     { title: '曝光场次', key: 'showCount', minWidth: 100, sortable: 'custom', sortType: 'normal'},
     { title: '曝光人次/人次', key: 'personCount', minWidth: 130, sortable: 'custom', sortType: 'normal'},
-    { title: '广告片类型', key: 'advertType', minWidth: 100, enum: 'advertTypeCodeList'},
+    { title: '广告片类型', key: 'advertType', minWidth: 100},
     { title: '账单金额', key: 'amount', minWidth: 100 },
     { title: '账单状态', key: 'billStatus', minWidth: 100, enum: true},
     { title: '发票状态', key: 'invoiceStatus', minWidth: 60, enum: true},
