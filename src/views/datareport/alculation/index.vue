@@ -19,7 +19,16 @@
             </FormItem>
             <FormItem label="上刊影院" prop="cinema" class='ivu-form-item-required'>
                 <a href="//aiads-file.oss-cn-beijing.aliyuncs.com/MISC/MISC/bnmv7qg6p4fg00a11u8g.xls" :download='"//aiads-file.oss-cn-beijing.aliyuncs.com/MISC/MISC/bnmv7qg6p4fg00a11u8g.xls"'>下载影院模版列表.xls</a>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<Button type='primary' @click='upload'>上传</Button>&nbsp;&nbsp;(请按照影院模板列表格式上传)
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                
+                <Form class="create-form form-item"   enctype="multipart/form-data" ref="form"
+                   :label-width="120">
+                   上传文件
+                   <!-- <Button type='primary' @click='upload'>上传</Button> -->
+                <input type="file" class='adds' @change="onChange" />
+                </Form>
+                <span class='viewhtml'>{{inputhtml}}&nbsp;</span>
+                &nbsp;&nbsp;(请按照影院模板列表格式上传)
             </FormItem>
             <FormItem label=" " prop="">
               <Select
@@ -165,10 +174,11 @@ import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice , clean } from '@/fn/object'
 import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
-import {confirm , warning , success, toast , info } from '@/ui/modal'
+import {confirm , warning , success, toast , info , error } from '@/ui/modal'
 import { queryList , queryItem } from '@/api/cinema'
-import { filmqueryList } from '@/api/alculation'
+import { filmqueryList , getExceljson } from '@/api/alculation'
 import { formatNumber } from '@/util/validateRules'
+import Uploader from '@/util/Uploader'
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
@@ -243,6 +253,9 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
   list: any = []
   total: any = 0
 
+  file: File | any = null
+  inputhtml: any = ''
+
   chgcinemacolumns = [
     {
       type: 'selection',
@@ -304,6 +317,22 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
       ],
     }
     return rules
+  }
+
+  async onChange(ev: Event) {
+    const uploader = new Uploader({
+        filePostUrl: `/bi/cinema/excel2json`,
+        fileFieldName: 'file',
+    })
+    uploader.on('fail', (ex: any) => {
+      error(ex.msg)
+      return
+    })
+    const input = ev.target as HTMLInputElement
+    this.file = input.files && input.files[0]
+    this.inputhtml = this.file.name
+    const a = await uploader.upload(this.file)
+    // console.log(a)
   }
 
   // 添加影院列表
@@ -516,5 +545,34 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
 }
 /deep/ .ivu-form-item-content {
   margin-left: 0 !important;
+}
+.create-form {
+  position: relative;
+  display: inline-block;
+  // float: left;
+  // width: 83px;
+  background: #2d8cf0;
+  border: 1px solid #2d8cf0;
+  border-radius: 4px;
+  padding: 4px 12px;
+  // overflow: hidden;
+  color: #fff;
+  text-decoration: none;
+  text-indent: 0;
+  line-height: 20px;
+}
+.adds {
+  width: 200px;
+  position: absolute;
+  font-size: 100px;
+  left: 0;
+  top: 0;
+  opacity: 0;
+}
+.viewhtml {
+  display: inline-block;
+  height: 30px;
+  line-height: 30px;
+  margin-left: 20px;
 }
 </style>
