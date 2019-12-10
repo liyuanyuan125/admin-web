@@ -11,7 +11,7 @@ interface LoginData {
  * @param data 提交数据
  */
 export async function login(data: LoginData) {
-  const res = await post('authentication/login', data)
+  const res = await post('/authentication/login', data)
   return res
 }
 
@@ -19,7 +19,7 @@ export async function login(data: LoginData) {
  * 退出
  */
 export async function logout() {
-  const res = await post('/auth/logout')
+  const res = await post('/authentication/logout')
   return res
 }
 
