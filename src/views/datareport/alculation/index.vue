@@ -71,6 +71,18 @@
                 @on-page-size-change="pageSize => query.pageSize = pageSize"/>
             </div>
             </FormItem>
+            <FormItem label="广告类型" prop="advertType">
+                <Select v-model="dataForm.advertType" placeholder="广告类型" clearable style="width: 200px">
+                  <Option v-for="it in advertTypeCodeList" :key="it.key" :value="it.key"
+                    :label="it.text">{{it.text}}</Option>
+                </Select>
+            </FormItem>
+            <FormItem label="广告时长" prop="advertLen">
+                <Select v-model="dataForm.advertLen" placeholder="广告时长" clearable style="width: 200px">
+                  <Option v-for="it in advertLenList" :key="it.key" :value="it.key"
+                    :label="it.text">{{it.text}}</Option>
+                </Select>
+            </FormItem>
             <FormItem label="销售折扣" prop="discount">
               <InputNumber style="width: 200px" :min='0' :max="1" placeholder="输入0-1之间的折扣" v-model="dataForm.discount"></InputNumber>
             </FormItem>
@@ -194,6 +206,8 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
     beginDate: '',
     endDate: '',
     cinemaId: null,
+    advertType: null,
+    advertLen: null,
     discount: null,
     filmstatus: 1,
     filmId: null,
@@ -221,6 +235,10 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
     {
       key: 2,
       text: '单厅单调'
+    },
+    {
+      key: 3,
+      text: 'cpm'
     }
   ]
   // 贴片类型
@@ -232,6 +250,37 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
     {
       key: 2,
       text: '有贴片'
+    }
+  ]
+
+  // 广告类型
+  advertTypeCodeList: any = [
+    {
+      key: 'BRAND',
+      text: '商业广告'
+    },
+    {
+      key: 'TRAILER',
+      text: '预告片广告'
+    }
+  ]
+  // 广告时长
+  advertLenList: any = [
+    {
+      key: '15s',
+      text: '15s'
+    },
+    {
+      key: '30s',
+      text: '30s'
+    },
+    {
+      key: '45s',
+      text: '45s'
+    },
+    {
+      key: '60s',
+      text: '60s'
     }
   ]
   // 添加影院列表
@@ -314,6 +363,12 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
       ],
       film: [
         { required: true, message: '请选择售卖类型' }
+      ],
+      advertType: [
+        { required: true, message: '请选择广告类型' }
+      ],
+      advertLen: [
+        { required: true, message: '请选择广告时长' }
       ],
     }
     return rules
@@ -574,5 +629,14 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
   height: 30px;
   line-height: 30px;
   margin-left: 20px;
+}
+/deep/ .ivu-form-item-error-tip {
+  display: inline-block !important;
+  position: static;
+  // top: 100%;
+  // left: 0;
+  line-height: 1;
+  // padding-top: 6px;
+  color: #ed4014;
 }
 </style>
