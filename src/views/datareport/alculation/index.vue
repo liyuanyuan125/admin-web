@@ -28,7 +28,8 @@
                 <input type="file" class='adds' @change="onChange" />
                 </Form>
                 <span class='viewhtml'>{{inputhtml}}&nbsp;</span>
-                &nbsp;&nbsp;(请按照影院模板列表格式上传)
+                &nbsp;&nbsp;(请按照影院模板列表格式上传){{showcinemaerr}}
+                <span class='ivu-form-item-error-tip' v-if='showcinemaerr == true'>请上传或添加影院</span>
             </FormItem>
             <FormItem label=" " prop="">
               <Select
@@ -128,6 +129,10 @@
             <span v-if='row.planName== null'>-</span>
             <span v-else >{{formatNumber(row.planName)}}</span>
           </template>
+          <template slot="today" slot-scope="{row}" >
+            <span v-if='row.today == null'>-</span>
+            <span v-else >{{formatNumber(row.today)}}</span>
+          </template>
           <template slot="todayFinishRate" slot-scope="{row}" >
             <span v-if='row.todayFinishRate== null'>-</span>
             <span v-else >{{formatNumber(row.todayFinishRate)}}</span>
@@ -154,6 +159,10 @@
           <template slot="budgetShowCount" slot-scope="{row}" >
             <span v-if='row.budgetShowCount== null'>-</span>
             <span v-else >{{formatNumber(row.budgetShowCount)}}</span>
+          </template>
+          <template slot="today" slot-scope="{row}" >
+            <span v-if='row.today == null'>-</span>
+            <span v-else >{{formatNumber(row.today)}}</span>
           </template>
           <template slot="showCount" slot-scope="{row}" >
             <span v-if='row.showCount== null'>-</span>
@@ -219,6 +228,8 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
     pageIndex: 1,
     pageSize: 10,
   }
+
+  showcinemaerr: any = false
 
   loading = false
   // 添加影院
@@ -318,26 +329,44 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
     { title: '操作' , slot: 'action', align: 'center' },
   ]
 
-  cinemacolumns = [
-    { title: '整体影院平均单场价格', slot: 'planId', align: 'center'},
-    { title: '整体影院平均单厅单周价格', slot: 'planName', align: 'center' },
-    { title: '整体影院同期价格', slot: 'todayFinishRate', align: 'center' },
-    { title: '整体影院同期人次' , slot: 'tomorrowFinishRate', align: 'center' },
-    { title: '整体影院同期总场次' , slot: 'budgetFinishDate', align: 'center' },
-  ]
+  get cinemacolumns() {
+    const one = [
+      { title: '整体影院平均单场价格', slot: 'planId', align: 'center'},
+      { title: '整体影院平均单厅单周价格', slot: 'planName', align: 'center' },
+    ]
+    const cpm = [
+      { title: '整体影院cpm报价', slot: 'today', align: 'center' },
+    ]
+    const over = [
+      { title: '整体影院同期价格', slot: 'todayFinishRate', align: 'center' },
+      { title: '整体影院同期人次' , slot: 'tomorrowFinishRate', align: 'center' },
+      { title: '整体影院同期总场次' , slot: 'budgetFinishDate', align: 'center' },
+    ]
+    return this.dataForm.agree == 3 ? [...cpm , ...over] : [...one, ...over]
+  }
 
-  columns = [
-    { title: '专资编码', key: 'planId', align: 'center', width: 100 },
-    { title: '影院名称', key: 'planName', align: 'center' },
-    { title: '省份', key: 'todayFinishRate', align: 'center' },
-    { title: '城市' , key: 'tomorrowFinishRate', align: 'center' },
-    { title: '地址' , key: 'budgetFinishDate', align: 'center' },
-    { title: '开业时间' , key: 'budgetPersonCount', align: 'center' },
-    { title: '平均单场价格(元)' , slot: 'personCount', align: 'center' },
-    { title: '总价(元)' , slot: 'budgetShowCount', align: 'center' },
-    { title: '总场次' , slot: 'showCount', align: 'center' },
-    { title: '总人次' , slot: 'cost', align: 'center' }
-  ]
+  get columns() {
+    const one = [
+      { title: '专资编码', key: 'planId', align: 'center', width: 100 },
+      { title: '影院名称', key: 'planName', align: 'center' },
+      { title: '省份', key: 'todayFinishRate', align: 'center' },
+      { title: '城市' , key: 'tomorrowFinishRate', align: 'center' },
+      { title: '地址' , key: 'budgetFinishDate', align: 'center' },
+      { title: '开业时间' , key: 'budgetPersonCount', align: 'center' },
+    ]
+    const two = [
+      { title: '平均单场价格(元)' , slot: 'personCount', align: 'center' },
+      { title: '总价(元)' , slot: 'budgetShowCount', align: 'center' },
+    ]
+    const cpm = [
+      { title: '整体影院cpm报价', slot: 'today', align: 'center' },
+    ]
+    const over = [
+      { title: '总场次' , slot: 'showCount', align: 'center' },
+      { title: '总人次' , slot: 'cost', align: 'center' }
+    ]
+    return this.dataForm.agree == 3 ? [...one , ...cpm , ...over] : [...one, ...two, ...over]
+  }
 
   disabledDate(date: any) {
     return date && date.valueOf() < this.begin
@@ -428,6 +457,7 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
   }
   // 开始测算
   async search() {
+    this.showcinemaerr = false
     const valid = await (this.$refs.dataForm as any).validate()
     if (!valid) {
       return
@@ -438,6 +468,7 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
       return
     }
     if (this.chgcinema.length == 0) {
+      // this.showcinemaerr = true
       info('请添加影院')
       return
     }
