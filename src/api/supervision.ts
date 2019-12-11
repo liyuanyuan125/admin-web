@@ -72,3 +72,10 @@ export async function reset(id: any) {
 }
 
 
+// 监播图片上传
+// http://yapi.aiads-dev.com/project/140/interface/api/7501
+export async function addimg(id: any) {
+  const data = await put(`/xadvert/play-monitors/${id}/set-allow-pic`)
+  return data
+}
+
