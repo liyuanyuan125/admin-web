@@ -42,9 +42,11 @@ import company from '../payroll/data/company.vue'
   }
 })
 export default class Main extends ViewBase {
-  get listPage() {
-    return this.$refs.listPage as ListPage
-  }
+  sortList: any = [
+    {text: 'normal', key: 0},
+    {text: 'asc', key: 1},
+    {text: 'desc', key: 2},
+  ]
 
   fetch = list
 
@@ -158,34 +160,34 @@ export default class Main extends ViewBase {
   ]
 
   sortChange(column: any) {
+    // 列表查询条件query
     const queryObj = (this.$refs.listPage as any).query
     const keys = column.key // showCount, personCount
     const obj: any = {
       showCount: 'showCountSort',
       personCount: 'personCountSort'
     }
-    // asc升， desc降，normal默认
-    const sortTypes: any = {
-      asc: 'asc',
-      desc: 'desc',
-      normal: 'normal',
-    }
 
-    const options: any = {
-      asc: 1,
-      desc: 2,
-      normal: 0
-    }
-
-    if (column.key == keys) {
-      if (column.order == sortTypes[column.order]) {
-        queryObj[obj[keys]] = options[column.order]
-        this.columns.map((item: any) => {
-          if (item.key == keys) {
-            return item.sortType = sortTypes[column.order]
-          }
-        })
+    const sortKey = this.sortList.filter((it: any) => it.text == column.order)[0].key
+    queryObj[obj[keys]] = sortKey // 修改query自动触发update方法更新
+    this.columns.map((item: any) => {
+      if (item.key == keys) {
+        return item.sortType = column.order
       }
+    })
+
+  }
+
+  mounted() {
+    // 账单审核提交保留筛选条件
+    const {personCountSort, showCountSort} = this.$route.query
+    if (showCountSort) {
+      const showSort = Number(showCountSort)
+      this.columns[7].sortType = this.sortList[showSort].text
+    }
+    if (personCountSort) {
+      const personSort = Number(personCountSort)
+      this.columns[8].sortType = this.sortList[personSort].text
     }
   }
 }
