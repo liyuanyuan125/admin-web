@@ -7,26 +7,34 @@
         <span v-if='$route.params.status != "3" ' class='pos' style='top: -50px;' @click="exportData">导出影院列表</span>
         <div class='bos'>
             <Row class="shouDlg-header">
-                <Col span="5">
-                <AreaSelect v-model="area" />
+                <Col style='margin-left: 1%;' span="5">
+                  <AreaSelect v-model="area" />
                 </Col>
-                <Col span="4" offset="1">
-                <Input v-model="dataForm.query" placeholder="【专资编码】或 影院名称" />
+                <Col style='margin-left: 1%;' span="3" >
+                  <Input v-model="dataForm.query" placeholder="【专资编码】或 影院名称" />
                 </Col>
-                <Col span='4' offset="1">
-                <!-- <Select v-model="dataForm.resourceId" placeholder="资源方公司名称" style='width: 200px;'  filterable>
-            <Option v-for="it in []" :key="it.id" :value="it.id"
-              :label="it.name">{{it.name}}</Option>
-          </Select> -->
-                <compangList v-model='dataForm.resourceId' @done="dlgEditDone" />
+                <Col style='margin-left: 1%;' span='3' >
+                  <compangList v-model='dataForm.resourceId' @done="dlgEditDone" />
                 </Col>
-                <Col v-if='$route.params.status != 3' span='4' offset="1">
-                <Select v-model="dataForm.acceptStatus" placeholder="接单状态" style='width: 200px;' filterable>
+                <Col style='margin-left: 1%;' v-if='$route.params.status == "3" || $route.params.ifs == "0"' span='3' >
+                  <Select v-model="dataForm.tmsStatus" placeholder="TMS接入状态" clearable>
+                    <Option v-for="it in statusTmsList" :key="it.key" :value="it.key"
+                      :label="it.text">{{it.text}}</Option>
+                  </Select>
+                </Col>
+                <Col style='margin-left: 1%;' v-if='$route.params.status == "3" || $route.params.ifs == "0"' span='3' >
+                  <Select v-model="dataForm.tmsCode" placeholder="TMS品牌" clearable>
+                    <Option v-for="it in tmsCodeList" :key="it.key" :value="it.key"
+                      :label="it.text">{{it.text}}</Option>
+                  </Select>
+                </Col>
+                <Col style='margin-left: 1%;' v-if='$route.params.status != 3' span='3' >
+                  <Select v-model="dataForm.acceptStatus" placeholder="接单状态" filterable>
                     <Option v-for="it in acceptStatusList" :key="it.key" :value="it.key" :label="it.text">{{it.text}}</Option>
-                </Select>
+                  </Select>
                 </Col>
-                <Col span="3" offset="1">
-                <Button type="primary" @click="searchrrr">搜索</Button>
+                <Col style='margin-left: 1%;' span="2" >
+                <Button type="primary" @click="searchall">搜索</Button>
                 </Col>
             </Row>
             <Button type="primary" @click="changeAll" v-if='$route.params.ifs == 1 && ($route.params.status == 3 || $route.params.status == 10)'>批量删除</Button>
@@ -159,6 +167,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         cityId: 0,
         countyId: 0,
         acceptStatus: null,
+        tmsStatus: null,
+        tmsCode: null,
     }
     cinemaArray: any = []
     showDlg = false
@@ -194,6 +204,32 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     inputhtml: any = ''
 
     b: any = []
+    tms: any = []
+
+    statusTmsList: any = [
+      {
+        key: '1',
+        text: '已接入'
+      },
+      {
+        key: '2',
+        text: '未接入'
+      }
+    ]
+    tmsCodeList: any = [
+      {
+        key: '1',
+        text: '品牌1'
+      },
+      {
+        key: '2',
+        text: '品牌2'
+      },
+      {
+        key: '3',
+        text: '品牌3'
+      }
+    ]
 
     defaultCinemaLength: any = 0
 
@@ -209,6 +245,14 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
             { title: '联系人', width: 120, key: 'contract', align: 'center' },
             { title: '联系电话', width: 120, key: 'contractTel', align: 'center' },
         ]
+        if (this.$route.params.status == '3' || this.$route.params.ifs == '0') {
+          this.tms = [
+            { title: '是否接入TMS' , key: 'tmsStatusText', align: 'center' },
+            { title: 'TMS品牌' , key: 'tmsCodeText', align: 'center' },
+          ]
+        } else {
+          this.tms = []
+        }
         if (this.$route.params.status == '3') {
           this.b = []
         } else {
@@ -248,12 +292,14 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         }]
         return this.$route.params.ifs == '1' && (this.$route.params.status == '2' || this.$route.params.status == '3' ||
                 this.$route.params.status == '4' || this.$route.params.status == '10') ?
-            [...check, ...data, ...this.b, ...opernation] : [...data , ...this.b]
+            [...check, ...data, ...this.tms, ...this.b, ...opernation] : [...data , ...this.tms , ...this.b]
     }
 
     get columnsData() {
         const data: any = [
             { title: '影院名称', key: 'cinemaName', align: 'center' },
+            { title: '是否接入TMS', width: 120, key: 'tmsStatusText', align: 'center' },
+            { title: 'TMS品牌', width: 120, key: 'tmsCodeText', align: 'center' },
             { title: '专资编码', key: 'code', align: 'center', width: 80 },
             { title: '所在省', key: 'provinceName', align: 'center', width: 80 },
             { title: '所在市', key: 'cityName', align: 'center', width: 80 },
@@ -359,7 +405,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
                     totalCount: total,
                     statusList: statusList,
                     planTypeList: planTypeList,
-                    acceptStatusList: acceptStatusList
+                    acceptStatusList: acceptStatusList,
+                    statusTmsList: statusTmsList,
+                    tmsCodeList: tmsCodeList
                 }
             } = await cinemaList(this.$route.params.id, query)
             const aaalist: any = this.list1.map((it: any) => {
@@ -374,23 +422,13 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
                     ifchgRes: aaalist.indexOf(it.code) == -1 ? true : false
                 }
             })
-            this.list = bbblist
-            // const aaa: any = list.slice(this.defaultCinemaLength) // 增加的
-            // const bbb: any = (aaa || []).map(( it: any ) => {
-            //   return {
-            //     ...it,
-            //     ifchgRes: true
-            //   }
-            // })
-            // const ccc = (this.list || []).map((it: any) => {
-            //     return it.id
-            // })
-            // bbb.map((it: any) => {
-            //   if (ccc.indexOf(it.code) == -1) {
-            //     this.list.push(it)
-            //   }
-            // })
-            // this.list = [...list , ...bbb]
+            this.list = (bbblist || []).map((it: any) => {
+              return {
+                ...it,
+                tmsStatusText: it.tmsStatus == null ? '-' : getstatus(it.tmsStatus , statusTmsList),
+                tmsCodeText: it.tmsCode == null ? '-' : getstatus(it.tmsCode , tmsCodeList),
+              }
+            })
             this.total = total
             this.acceptStatusList = acceptStatusList
 
@@ -440,6 +478,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         this.search()
     }
 
+    // 添加影院
     onAdd() {
         this.addShow = true
         this.$nextTick(() => {
@@ -453,7 +492,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         this.search()
     }
 
-    searchrrr() {
+    // 搜索
+    searchall() {
         this.dataForm.pageIndex = 1
         this.search()
     }
@@ -468,18 +508,33 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
                     totalCount: total,
                     statusList: statusList,
                     planTypeList: planTypeList,
-                    acceptStatusList: acceptStatusList
+                    acceptStatusList: acceptStatusList,
+                    statusTmsList: statusTmsList,
+                    tmsCodeList: tmsCodeList
                 }
             } = await cinemaList(this.$route.params.id, query)
-            this.list = list
-            this.list1 = list
+            this.list = (list || []).map((it: any) => {
+              return {
+                ...it,
+                tmsStatusText: it.tmsStatus == null ? '-' : getstatus(it.tmsStatus , statusTmsList),
+                tmsCodeText: it.tmsCode == null ? '-' : getstatus(it.tmsCode , tmsCodeList),
+              }
+            })
+            this.list1 = (list || []).map((it: any) => {
+              return {
+                ...it,
+                tmsStatusText: it.tmsStatus == null ? '-' : getstatus(it.tmsStatus , statusTmsList),
+                tmsCodeText: it.tmsCode == null ? '-' : getstatus(it.tmsCode , tmsCodeList),
+              }
+            })
             this.total = total
             this.defaultCinemaLength = total
             this.acceptStatusList = acceptStatusList
 
+            // 资源方公司列表
             const { data } = await queryList(clean({
                 pageSize: 888888,
-                status: 1,
+                // status: 1,
                 typeCode: 'resource'
             }))
             this.reslist = data.items
@@ -731,6 +786,10 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 .modelactive {
   height: 450px;
   overflow-y: scroll;
+}
+
+/deep/ .component {
+  min-width: 0;
 }
 
 </style>

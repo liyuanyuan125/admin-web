@@ -73,7 +73,7 @@
         </Row>
         <Row class='row-list pb20'>
             <Col span='3' class='hui'>接单影院</Col>
-            <Col span='16'>
+            <Col span='20'>
               <singleCinema  @dlgEditDone="dlgEditDone"/>
             </Col>
         </Row>

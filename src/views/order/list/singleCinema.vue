@@ -4,13 +4,25 @@
     <div  class="pages" >
       
     <Row class="shouDlg-header">
-      <Col span="7">
+      <Col span="4">
         <AreaSelect v-model="area"/>
       </Col>
-      <Col span="5" offset="1">
+      <Col span="4" offset="1">
+         <Select v-model="dataForm.tmsStatus" placeholder="TMS接入状态" clearable>
+            <Option v-for="it in statusTmsList" :key="it.key" :value="it.key"
+              :label="it.text">{{it.text}}</Option>
+          </Select>
+      </Col>
+      <Col span="4" offset="1">
+         <Select v-model="dataForm.tmsCode" placeholder="TMS品牌" clearable>
+            <Option v-for="it in tmsCodeList" :key="it.key" :value="it.key"
+              :label="it.text">{{it.text}}</Option>
+          </Select>
+      </Col>
+      <Col span="4" offset="1">
         <Input v-model="dataForm.query" placeholder="【专资编码】或 影院名称" />
       </Col>
-      <Col span="6" offset="1">
+      <Col span="4" offset="1">
         <Button type="primary" @click="search">搜索</Button>
       </Col>
     </Row>
@@ -50,10 +62,20 @@ import AreaSelect from '@/components/areaSelect'
 import singDlg from './singDlg.vue'
 import imgModel from './imgDlg.vue'
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
+import { findIndex } from 'lodash'
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
+
 
 const dataForm = {
   status: 1
+}
+
+const getstatus = (key: number, list: any[]) => {
+    const i: number = findIndex(list, (it: any) => {
+        return key === it.key
+    })
+    const res: string = (!list[i].text || list[i].text == '') ? '-' : list[i].text
+    return res
 }
 
 @Component({
@@ -73,6 +95,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     provinceId: 0,
     cityId: 0,
     countyId: 0,
+    tmsStatus: null,
+    tmsCode: null,
   }
   cinemaArray: any = []
   showDlg = false
@@ -86,6 +110,31 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   typeList = []
   showTime: any = []
   checkId: any = []
+
+  statusTmsList: any = [
+    {
+      key: '1',
+      text: '已接入'
+    },
+    {
+      key: '2',
+      text: '未接入'
+    }
+  ]
+  tmsCodeList: any = [
+    {
+      key: '1',
+      text: '品牌1'
+    },
+    {
+      key: '2',
+      text: '品牌2'
+    },
+    {
+      key: '3',
+      text: '品牌3'
+    }
+  ]
 
   get columns() {
     const data: any = [
@@ -111,7 +160,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           return <span>{area}{province}{city}</span>
           /* tslint:enable */
         }
-      }
+      },
+      { title: '是否接入TMS', width: 120, key: 'tmsStatusText', align: 'center' },
+      { title: 'TMS品牌', width: 120, key: 'tmsCodeText', align: 'center' },
     ]
     const opernation = [
        {
@@ -169,9 +220,17 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         items: list,
         totalCount: total,
         statusList: statusList,
-        planTypeList: planTypeList
+        planTypeList: planTypeList,
+        statusTmsList: statusTmsList,
+        tmsCodeList: tmsCodeList
       } } = await cinemaList(this.$route.params.id, query)
-      this.list = list
+      this.list = (list || []).map((it: any) => {
+        return {
+          ...it,
+          tmsStatusText: it.tmsStatus == null ? '-' : getstatus(it.tmsStatus , statusTmsList),
+          tmsCodeText: it.tmsCode == null ? '-' : getstatus(it.tmsCode , tmsCodeList),
+        }
+      })
       this.total = total
     } catch (ex) {
       this.handleError(ex)
