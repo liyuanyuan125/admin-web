@@ -173,7 +173,6 @@ export default class Main extends ViewBase {
 .operate-btn {
   span {
     cursor: pointer;
-    margin: 0 6px;
   }
 }
 </style>
