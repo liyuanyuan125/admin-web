@@ -93,8 +93,8 @@
                     <FormItem label="" prop="closeReason" v-if='dataForm.reasonOrderIds.indexOf("9") != -1 '>
                          <Input :maxlength="120" type='textarea' :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3' placeholder='勾选其他时请输入原因' v-model="dataForm.refuseReason"></Input>
                     </FormItem>
-                    <Row style='margin-top: -32px;' v-if='dataForm.reasonOrderIds.indexOf("10") != -1 '>错漏播标记原因(勾选错漏播标记时):</Row>
-                    <FormItem label="" prop="closeReason" v-if='dataForm.reasonOrderIds.indexOf("10") != -1 '>
+                    <Row style='margin-top: -32px;' v-if='dataForm.reasonOrderIds.indexOf("11") != -1 '>错漏播标记原因(勾选错漏播标记时):</Row>
+                    <FormItem label="" prop="closeReason" v-if='dataForm.reasonOrderIds.indexOf("11") != -1 '>
                          <Input :maxlength="120" type='textarea' :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3' placeholder='勾选错漏播标记时请输入原因' v-model="dataForm.missTag"></Input>
                     </FormItem>
                 </Form>
@@ -331,7 +331,7 @@ export default class Main extends ViewBase {
                 }
             }
 
-            if (this.dataForm.reasonOrderIds.indexOf('10') != -1) {
+            if (this.dataForm.reasonOrderIds.indexOf('11') != -1) {
                 if (this.dataForm.missTag == '') {
                     info('请输入错漏播标记原因')
                     return
@@ -449,7 +449,7 @@ export default class Main extends ViewBase {
                 }
             }
 
-                if (this.dataForm.reasonOrderIds.indexOf('10') != -1) {
+                if (this.dataForm.reasonOrderIds.indexOf('11') != -1) {
                 if (this.dataForm.missTag == '') {
                     info('请输入错漏播标记原因')
                     return
@@ -625,6 +625,27 @@ export default class Main extends ViewBase {
   margin-top: 5px;
   margin-right: 1%;
 }
+.imgs_j {
+  ul {
+    li {
+      list-style: none;
+      border: 1px solid #ccc;
+      width: 17%;
+      margin-right: 2.7%;
+      height: 200px;
+      float: left;
+      padding: 20px;
+      margin-bottom: 35px;
+      img {
+        width: 100%;
+        // max-width: 130px;
+        // min-height: 130px;
+        height: 100%;
+        object-fit: contain;
+      }
+    }
+  }
+}
 
 /deep/ .ivu-form .ivu-form-item-label {
   font-size: 14px;
@@ -649,5 +670,9 @@ export default class Main extends ViewBase {
 /deep/ .ivu-input {
   width: 95%;
   height: 50px;
+}
+/deep/ [type=checkbox] {
+  width: 14px;
+  height: 16px;
 }
 </style>
