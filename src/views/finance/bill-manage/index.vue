@@ -4,6 +4,7 @@
       :fetch="fetch"
       :filters="filters"
       :columns="columns"
+      @table-on-sort-change="sortChange"
       ref="listPage">
 
       <template slot="year" slot-scope="{row: {year, month}}">
@@ -30,23 +31,31 @@ import ViewBase from '@/util/ViewBase'
 import { confirm, info, alert } from '@/ui/modal.ts'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import {list} from '@/api/financeBill'
-import remoteselect from '../payroll/data/index.vue'
+import CinemaSelect from '@/components/cinemaSelect'
+import remoteSelect from '../payroll/data/index.vue'
 import company from '../payroll/data/company.vue'
-import yearMonth from '../payment/files/yearMonth.vue'
 
 @Component({
   components: {
-    ListPage
+    ListPage,
+    CinemaSelect
   }
 })
 export default class Main extends ViewBase {
+  sortList: any = [
+    {text: 'normal', key: 0},
+    {text: 'asc', key: 1},
+    {text: 'desc', key: 2},
+  ]
+
   fetch = list
 
   filters: Filter[] = [
     {
       name: 'cinemaId',
       defaultValue: 0,
-      component: remoteselect,
+      component: CinemaSelect,
+      // company: true,
       width: 108,
       placeholder: '影城名称'
     },
@@ -75,7 +84,7 @@ export default class Main extends ViewBase {
     },
     {
       name: 'billStatus',
-      defaultValue: '',
+      defaultValue: 0,
       select: true,
       width: 100,
       placeholder: '账单状态',
@@ -86,33 +95,41 @@ export default class Main extends ViewBase {
       defaultValue: 0,
       select: true,
       width: 100,
-      placeholder: '发票状态',
-      enumKey: 'invoiceStatusList'
+      placeholder: '发票状态'
     },
     {
       name: 'yearMonth',
-      defaultValue: null,
-      component: yearMonth,
+      defaultValue: 0,
+      date: {
+        type: 'month'
+      },
       width: 108,
       placeholder: '账单月份'
     },
     {
       name: 'payStatus',
-      defaultValue: '',
+      defaultValue: 0,
       select: true,
       width: 100,
       placeholder: '付款状态',
-      enumKey: 'payStatusList'
     },
     {
       name: 'advertType',
       defaultValue: '',
-      select: true,
+      select: {
+        enumKey: 'advertTypeCodeList'
+      },
       width: 100,
-      placeholder: '广告片类型',
-      enumKey: 'advertTypeCodeList'
+      placeholder: '广告片类型'
     },
-
+    {
+      name: 'showCountSort',
+      defaultValue: 0
+    },
+    {
+      name: 'personCountSort',
+      defaultValue: 0
+    },
     {
       name: 'pageIndex',
       defaultValue: 1
@@ -127,20 +144,52 @@ export default class Main extends ViewBase {
   columns = [
     { title: '账单编号', key: 'resourceBillNo', minWidth: 65 },
     { title: '影城名称', key: 'cinemaName', minWidth: 100 },
-    { title: '影城专资码', key: 'code', minWidth: 60 },
-    { title: '资源方名称', key: 'resourceName', minWidth: 60 },
+    { title: '影城专资码', key: 'code', minWidth: 80 },
+    { title: '资源方名称', key: 'resourceName', minWidth: 80 },
     { title: '合同编号', key: 'contractNo', minWidth: 100 },
     { title: '账单月份', slot: 'year', minWidth: 60 },
     { title: '账单生成时间', key: 'createTime', minWidth: 100, dateTime: true},
-    { title: '曝光场次', key: 'showCount', minWidth: 60 },
-    { title: '曝光人次/人次', key: 'personCount', minWidth: 60 },
+    { title: '曝光场次', key: 'showCount', minWidth: 100, sortable: 'custom', sortType: 'normal'},
+    { title: '曝光人次/人次', key: 'personCount', minWidth: 130, sortable: 'custom', sortType: 'normal'},
     { title: '广告片类型', key: 'advertType', minWidth: 100, enum: 'advertTypeCodeList'},
     { title: '账单金额', key: 'amount', minWidth: 100 },
-    { title: '账单状态', key: 'billStatus', minWidth: 60, enum: true},
+    { title: '账单状态', key: 'billStatus', minWidth: 100, enum: true},
     { title: '发票状态', key: 'invoiceStatus', minWidth: 60, enum: true},
     { title: '付款状态', key: 'payStatus', minWidth: 60, enum: true},
-    { title: '操作', slot: 'operate', minWidth: 90 },
+    { title: '操作', slot: 'operate', minWidth: 110 },
   ]
+
+  sortChange(column: any) {
+    // 列表查询条件query
+    const queryObj = (this.$refs.listPage as any).query
+    const keys = column.key // showCount, personCount
+    const obj: any = {
+      showCount: 'showCountSort',
+      personCount: 'personCountSort'
+    }
+
+    const sortKey = this.sortList.filter((it: any) => it.text == column.order)[0].key
+    queryObj[obj[keys]] = sortKey // 修改query自动触发update方法更新
+    this.columns.map((item: any) => {
+      if (item.key == keys) {
+        return item.sortType = column.order
+      }
+    })
+
+  }
+
+  mounted() {
+    // 账单审核提交保留筛选条件
+    const {personCountSort, showCountSort} = this.$route.query
+    if (showCountSort) {
+      const showSort = Number(showCountSort)
+      this.columns[7].sortType = this.sortList[showSort].text
+    }
+    if (personCountSort) {
+      const personSort = Number(personCountSort)
+      this.columns[8].sortType = this.sortList[personSort].text
+    }
+  }
 }
 </script>
 <style lang='less' scoped>
