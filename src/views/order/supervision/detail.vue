@@ -31,14 +31,14 @@
                 <Col :span='8'><span class='spons'>邮箱&nbsp;：&nbsp;</span>{{listitem.primaryEmail == null ? '暂无邮箱' : listitem.primaryEmail}}</Col>
             </Row>
         </div>
-        
+
         <div class='title' v-if='listitem.approvalStatus == 2 || listitem.approvalStatus == 3  || listitem.approvalStatus == 4'>监播审核</div>
         <Row class='bos' v-if='listitem.approvalStatus == 2 || listitem.approvalStatus == 3  || listitem.approvalStatus == 4'>
-          <Row>
+           <Row>
             <Col :span='15'>
-              <span v-if='listitem.fileUrl == null'>暂无监播视频文件</span>
-              <video ref='videoplay' :style="{'transform': 'rotate(' + roteNum + 'deg)', 'width': roteTrue != true ? '350px' : '98%' }" v-if='listitem.fileUrl != null' :src='listitem.fileUrl' width='93%' height='60%' autobuffer controls="controls" type="video/mp4" ></video>
-              <p v-if='listitem.fileUrl != null' style='margin-top: 3px;'>选择播放速率：
+            <span v-if='listitem.fileUrl == null'>暂无监播视频文件</span>
+            <video ref='videoplay' :style="{'transform': 'rotate(' + roteNum + 'deg)', 'width': roteTrue != true ? '350px' : '98%' }" v-if='listitem.fileUrl != null' :src='listitem.fileUrl' width='93%' height='60%' autobuffer controls="controls" type="video/mp4" ></video>
+                <p v-if='listitem.fileUrl != null' style='margin-top: 3px;'>选择播放速率：
                     <Select v-model="videoplay.speed" placeholder="设置播放状态">
                       <Option v-for="it in videoplayList" :key="it.key" :value="it.key"
                           :label="it.text">{{it.text}}</Option>
@@ -46,20 +46,20 @@
                     <Button @click='changeRote(1)' style='margin-right: 5%;' type='default' class='rote'>向左旋转</Button>
                     <Button @click='changeRote(0)' type='default' class='rote'>恢复</Button>
                     <Button @click='changeRote(2)' type='default' class='rote'>向右旋转</Button>
-              </p>
+               </p>
             </Col>
             <Col :span='9'>
-              <Row style='margin-top: -14px;font-size: 12px;'>通过监播视频选择未通过审核的广告片，并选择审核未通过的原因</Row>
-              <Row style='margin-top: -18px;color: red;font-size: 12px;'>如未勾选，则表示该广告审核成功，正常财务结算</Row>
-              <Row class='mainRow'>
-                  <Form style='margin-top: -18px;padding-left: 20px;' ref="dataForm" :model="dataForm" label-position="left" :label-width="80">
-                      <Checkbox :indeterminate="indeterminate" :value="checkAll" :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3' @click.prevent.native="handleCheckAll">全选</Checkbox>
-                      
-                      
-                      <!-- <Checkbox v-if='listitem.approvalStatus == 4' :indeterminate="indeterminate" :value="checkAll" disabled >全选</Checkbox> -->
-                      <FormItem label="" prop="closeReason">
-                          <CheckboxGroup v-model="dataForm.orderIds">
-                              <Checkbox v-for="(it) in videoDetails" :key="it.orderId" :value="it.orderId" :label="it.orderId"   :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3'>
+            <Row style='margin-top: -14px;font-size: 12px;'>通过监播视频选择未通过审核的广告片，并选择审核未通过的原因</Row>
+            <Row style='margin-top: -18px;color: red;font-size: 12px;'>如未勾选，则表示该广告审核成功，正常财务结算</Row>
+            <Row class='mainRow'>
+                <Form style='margin-top: -18px;padding-left: 20px;' ref="dataForm" :model="dataForm" label-position="left" :label-width="80">
+                    <Checkbox :indeterminate="indeterminate" :value="checkAll" :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3' @click.prevent.native="handleCheckAll">全选</Checkbox>
+
+
+                    <!-- <Checkbox v-if='listitem.approvalStatus == 4' :indeterminate="indeterminate" :value="checkAll" disabled >全选</Checkbox> -->
+                    <FormItem label="" prop="closeReason">
+                        <CheckboxGroup v-model="dataForm.orderIds">
+                            <Checkbox v-for="(it) in videoDetails" :key="it.orderId" :value="it.orderId" :label="it.orderId"   :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3'>
                                   <em style='font-style: normal;font-right: -5px;' v-for='(its) in deliveryPositionList' :key='its.key' v-if='it.deliveryPosition != null && it.deliveryPosition == its.key'>【{{its.text}}】</em>
                                 {{it.videoName}} ({{it.videoLength}})s &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
@@ -78,11 +78,11 @@
                                       <Input :maxlength="120" type='textarea' :disabled='listitem.approvalStatus == 4 || listitem.approvalStatus == 3' placeholder='勾选其他时请输入原因' v-model="it.onereason"></Input>
                                   </FormItem>
                                 </Form> -->
-                              </Checkbox></br>
-                          </CheckboxGroup>
-                      </FormItem>
-                  </Form>
-                  <Form style='margin-top: -27px;padding-left: 20px;background: #eee;' v-if='dataForm.orderIds.length != 0' ref="dataForm" :model="dataForm" label-position="left" :label-width="80">
+                            </Checkbox></br>
+                        </CheckboxGroup>
+                    </FormItem>
+                </Form>
+                <Form style='margin-top: -27px;padding-left: 20px;background: #eee;' v-if='dataForm.orderIds.length != 0' ref="dataForm" :model="dataForm" label-position="left" :label-width="80">
                     <Row>审核未通过的原因</Row>
                     <FormItem label="" prop="closeReason">
                         <CheckboxGroup v-model="dataForm.reasonOrderIds">
@@ -99,14 +99,14 @@
                     </FormItem>
                 </Form>
 
-              </Row>
-              <div v-if='listitem.approvalStatus == 2' class="dialog-footer">
-                  <Button type="primary" @click="dataFormSubmit">提交</Button>
-                  <Button type="primary" style='margin-left: 20px;' @click="nextSubmit">提交并继续审核</Button>
-              </div>
+            </Row>
+            <div v-if='listitem.approvalStatus == 2' class="dialog-footer">
+                <Button type="primary" @click="dataFormSubmit">提交</Button>
+                <Button type="primary" style='margin-left: 20px;' @click="nextSubmit">提交并继续审核</Button>
+            </div>
             </Col>
-          </Row>
-          <Row>监播图片</Row>
+        </Row>
+        <Row>监播图片</Row>
           <Row class='imgs_j' v-if='imgList.length == 0'>暂无监播图片</Row>
           <Row class='imgs_j' v-if='imgList.length != 0'>
             <ul>
@@ -135,6 +135,7 @@
 import { Component, Watch } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import jsxReactToVue from '@/util/jsxReactToVue'
+import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { warning, success, toast, info } from '@/ui/modal'
@@ -142,12 +143,13 @@ import { slice, clean } from '@/fn/object'
 import {
     queryList,
     itemlist,
-    // okpass,
+    okpass,
     refuse,
     monitorsIds,
     approve,
     reset
 } from '@/api/supervision'
+import EditDialog, { Field } from '@/components/editDialog'
 import Decimal from 'decimal.js'
 
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
@@ -302,7 +304,7 @@ export default class Main extends ViewBase {
       }
     }
 
-   // 提交审核拒绝
+    // 提交审核拒绝
     async fun() {
       const aaa = await approve(this.$route.params.id,
                         { orderIds: this.dataForm.orderIds,
@@ -316,7 +318,7 @@ export default class Main extends ViewBase {
 
     // 提交并继续审核
     async nextSubmit() {
-      if (this.dataForm.orderIds.length != 0) {
+        if (this.dataForm.orderIds.length != 0) {
             if (this.dataForm.reasonOrderIds.length == 0) {
                 info('请选择未通过原因')
                 return
@@ -447,13 +449,13 @@ export default class Main extends ViewBase {
                 }
             }
 
-            if (this.dataForm.reasonOrderIds.indexOf('10') != -1) {
+                if (this.dataForm.reasonOrderIds.indexOf('10') != -1) {
                 if (this.dataForm.missTag == '') {
                     info('请输入错漏播标记原因')
                     return
                 }
             }
-        }
+          }
 
         // const aaa = await approve(this.$route.params.id,
         //     { orderIds: this.dataForm.orderIds,
@@ -479,7 +481,7 @@ export default class Main extends ViewBase {
             this.end = b.slice(0, 4) + '-' + b.slice(4, 6) + '-' + b.slice(6, 8)
             this.day = ((new Date(this.end).getTime() + 16 * 60 * 60 * 1000 - 1) -
                 (new Date(this.start).getTime() + 16 * 60 * 60 * 1000 - 1)) / (24 * 60 * 60 * 1000)
-            this.videoDetails = (data.item.videoDetails || []).map((it: any) => {
+                this.videoDetails = (data.item.videoDetails || []).map((it: any) => {
               return {
                 ...it,
                 reason: [],
@@ -498,12 +500,12 @@ export default class Main extends ViewBase {
             if (this.listitem.approvalStatus == 4) {
               this.dataForm.refuseReason = this.listitem.refuseReason
               this.dataForm.missTag = this.listitem.missTag
-              this.dataForm.reasonOrderIds = this.listitem.fixRefuses
-              this.dataForm.orderIds = (this.listitem.videoDetails || []).map((it: any) => {
-                  if (it.orderStatus == 2) {
-                      return it.orderId
-                  }
-              })
+                this.dataForm.reasonOrderIds = this.listitem.fixRefuses
+                this.dataForm.orderIds = (this.listitem.videoDetails || []).map((it: any) => {
+                    if (it.orderStatus == 2) {
+                        return it.orderId
+                    }
+                })
             }
             setTimeout(() => {
                 (this.$Spin as any).hide()
@@ -623,27 +625,6 @@ export default class Main extends ViewBase {
   margin-top: 5px;
   margin-right: 1%;
 }
-.imgs_j {
-  ul {
-    li {
-      list-style: none;
-      border: 1px solid #ccc;
-      width: 17%;
-      margin-right: 2.7%;
-      height: 200px;
-      float: left;
-      padding: 20px;
-      margin-bottom: 35px;
-      img {
-        width: 100%;
-        // max-width: 130px;
-        // min-height: 130px;
-        height: 100%;
-        object-fit: contain;
-      }
-    }
-  }
-}
 
 /deep/ .ivu-form .ivu-form-item-label {
   font-size: 14px;
@@ -668,9 +649,5 @@ export default class Main extends ViewBase {
 /deep/ .ivu-input {
   width: 95%;
   height: 50px;
-}
-/deep/ [type=checkbox] {
-  width: 14px;
-  height: 16px;
 }
 </style>
