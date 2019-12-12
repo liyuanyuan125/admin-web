@@ -28,7 +28,7 @@
                 <input type="file" class='adds' @change="onChange" />
                 </Form>
                 <span class='viewhtml'>{{inputhtml}}&nbsp;</span>
-                &nbsp;&nbsp;(请按照影院模板列表格式上传){{showcinemaerr}}
+                &nbsp;&nbsp;(请按照影院模板列表格式上传)
                 <span class='ivu-form-item-error-tip' v-if='showcinemaerr == true'>请上传或添加影院</span>
             </FormItem>
             <FormItem label=" " prop="">
@@ -460,6 +460,11 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
     this.showcinemaerr = false
     const valid = await (this.$refs.dataForm as any).validate()
     if (!valid) {
+      if (this.chgcinema.length == 0) {
+        this.showcinemaerr = true
+        // info('请添加影院')
+        // return
+      }
       return
     }
     if (this.dataForm.agree == 2 && String((new Date(this.dataForm.endDate).getTime() -
@@ -467,11 +472,11 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
       info('上刊日期和下刊日期选择时必须是周（7天）的倍数')
       return
     }
-    if (this.chgcinema.length == 0) {
-      // this.showcinemaerr = true
-      info('请添加影院')
-      return
-    }
+    // if (this.chgcinema.length == 0) {
+    //   this.showcinemaerr = true
+    //   // info('请添加影院')
+    //   return
+    // }
     if (this.dataForm.filmstatus == 2 && (this.dataForm.filmId == null || this.dataForm.filmId == undefined)) {
       info('请选择影片')
       return
@@ -485,6 +490,7 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
       info('折扣输入限制为两位小数')
       return
     }
+    alert('测算成功')
     // console.log(123
     // console.log(this.dataForm)
   }
@@ -578,6 +584,9 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
       this.query.pageIndex * this.dataForm.pageSize)
     }
     this.cinematotal = this.chgcinema.length
+    if (this.cinematotal > 0) {
+      this.showcinemaerr = false
+    }
   }
 
 
