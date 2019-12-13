@@ -4,17 +4,17 @@
       <div class="n-main">输入项</div>
       <div class="Inps-res">
         <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="100">
-            <FormItem label="售卖类型" prop="agree">
-                <RadioGroup v-model="dataForm.agree" >
+            <FormItem label="售卖类型" prop="salesType">
+                <RadioGroup v-model="dataForm.salesType" >
                 <Radio v-for="it in statuslist" :key="it.key" :value="it.key" :label="it.key">{{it.text}}</Radio>
                 </RadioGroup>
             </FormItem>
-            <FormItem label="开始日期" prop="beginDate">
-                <Date-picker type="date" v-model="dataForm.beginDate"
+            <FormItem label="开始日期" prop="upperDate">
+                <Date-picker type="date" v-model="dataForm.upperDate"
                 on-change="selectTime" placeholder="选择上刊日期" style="width: 200px"></Date-picker>
             </FormItem>
-            <FormItem label="结束日期" prop="endDate">
-                <Date-picker type="date" :options="{ disabledDate }" v-model="dataForm.endDate"
+            <FormItem label="结束日期" prop="downDate">
+                <Date-picker type="date" :options="{ disabledDate }" v-model="dataForm.downDate"
                 on-change="selectTime" placeholder="选择下刊日期" style="width: 200px"></Date-picker>
             </FormItem>
             <FormItem label="上刊影院" prop="cinema" class='ivu-form-item-required'>
@@ -121,29 +121,29 @@
         </Row>
          <Table ref='table' :columns="cinemacolumns" :data="cinemalist"
         border stripe disabled-hover size="small" class="table">
-          <template slot="planId" slot-scope="{row}" >
-            <span v-if='row.planId== null'>-</span>
-            <span v-else >{{formatNumber(row.planId)}}</span>
+          <template slot="onceAvgPrice" slot-scope="{row}" >
+            <span v-if='(row.onceAvgPrice) == null '>-</span>
+            <span v-else >{{formatNumber(row.onceAvgPrice)}}</span>
           </template>
-          <template slot="planName" slot-scope="{row}" >
-            <span v-if='row.planName== null'>-</span>
-            <span v-else >{{formatNumber(row.planName)}}</span>
+          <template slot="hallWeekPrice" slot-scope="{row}" >
+            <span v-if='(row.hallWeekPrice) == null '>-</span>
+            <span v-else >{{formatNumber(row.hallWeekPrice)}}</span>
           </template>
-          <template slot="today" slot-scope="{row}" >
-            <span v-if='row.today == null'>-</span>
-            <span v-else >{{formatNumber(row.today)}}</span>
+          <template slot="avgCpmTotalPrice" slot-scope="{row}" >
+            <span v-if='(row.avgCpmTotalPrice) == null '>-</span>
+            <span v-else >{{formatNumber(row.avgCpmTotalPrice)}}</span>
           </template>
-          <template slot="todayFinishRate" slot-scope="{row}" >
-            <span v-if='row.todayFinishRate== null'>-</span>
-            <span v-else >{{formatNumber(row.todayFinishRate)}}</span>
+          <template slot="sameTimeTotalPrice" slot-scope="{row}" >
+            <span v-if='(row.sameTimeTotalPrice) == null '>-</span>
+            <span v-else >{{formatNumber(row.sameTimeTotalPrice)}}</span>
           </template>
-          <template slot="tomorrowFinishRate" slot-scope="{row}" >
-            <span v-if='row.tomorrowFinishRate== null'>-</span>
-            <span v-else >{{formatNumber(row.tomorrowFinishRate , 2)}}</span>
+          <template slot="sameTimeShowViewCount" slot-scope="{row}" >
+            <span v-if='(row.sameTimeShowViewCount) == null '>-</span>
+            <span v-else >{{formatNumber(row.sameTimeShowViewCount , 2)}}</span>
           </template>
-          <template slot="budgetFinishDate" slot-scope="{row}" >
-            <span v-if='row.budgetFinishDate== null'>-</span>
-            <span v-else >{{formatNumber(row.budgetFinishDate , 2)}}</span>
+          <template slot="sameTimeShowTimeCount" slot-scope="{row}" >
+            <span v-if='(row.sameTimeShowTimeCount) == null '>-</span>
+            <span v-else >{{formatNumber(row.sameTimeShowTimeCount , 2)}}</span>
           </template>
         </Table>
         <Row class='title1'>
@@ -152,32 +152,28 @@
         </Row>
          <Table ref='table' :columns="columns" :data="list" :loading="loading"
         border stripe disabled-hover size="small" class="table">
-          <template slot="personCount" slot-scope="{row}" >
-            <span v-if='row.personCount== null'>-</span>
-            <span v-else >{{formatNumber(row.personCount)}}</span>
+          <template slot="onceAvgPrice" slot-scope="{row}" >
+            <span v-if='row.onceAvgPrice== null'>-</span>
+            <span v-else >{{formatNumber(row.onceAvgPrice)}}</span>
           </template>
-          <template slot="budgetShowCount" slot-scope="{row}" >
-            <span v-if='row.budgetShowCount== null'>-</span>
-            <span v-else >{{formatNumber(row.budgetShowCount)}}</span>
+          <template slot="cinemaCpmCost" slot-scope="{row}" >
+            <span v-if='row.cinemaCpmCost == null'>-</span>
+            <span v-else >{{formatNumber(row.cinemaCpmCost)}}</span>
           </template>
-          <template slot="today" slot-scope="{row}" >
-            <span v-if='row.today == null'>-</span>
-            <span v-else >{{formatNumber(row.today)}}</span>
+          <template slot="totalShowViews" slot-scope="{row}" >
+            <span v-if='row.totalShowViews== null'>-</span>
+            <span v-else >{{formatNumber(row.totalShowViews , 2)}}</span>
           </template>
-          <template slot="showCount" slot-scope="{row}" >
-            <span v-if='row.showCount== null'>-</span>
-            <span v-else >{{formatNumber(row.showCount , 2)}}</span>
-          </template>
-          <template slot="cost" slot-scope="{row}" >
-            <span v-if='row.cost== null'>-</span>
-            <span v-else >{{formatNumber(row.cost , 2)}}</span>
+          <template slot="totalShowTimes" slot-scope="{row}" >
+            <span v-if='row.totalShowTimes== null'>-</span>
+            <span v-else >{{formatNumber(row.totalShowTimes , 2)}}</span>
           </template>
         </Table>
         <div class="page-wrap" v-if="total > 0">
-          <Page :total="total" :current="dataForm.pageIndex" :page-size="dataForm.pageSize"
+          <Page :total="total" :current="cinemapage.pageIndex" :page-size="cinemapage.pageSize"
             show-total show-sizer show-elevator :page-size-opts="[10, 20, 50, 100]"
-            @on-change="page => dataForm.pageIndex = page"
-            @on-page-size-change="pageSize => dataForm.pageSize = pageSize"/>
+            @on-change="page => cinemapage.pageIndex = page"
+            @on-page-size-change="pageSize => cinemapage.pageSize = pageSize"/>
         </div>
       </div>
     </div>
@@ -197,9 +193,10 @@ import { slice , clean } from '@/fn/object'
 import { buildUrl, prettyQuery, urlParam } from '@/fn/url'
 import {confirm , warning , success, toast , info , error } from '@/ui/modal'
 import { queryList , queryItem } from '@/api/cinema'
-import { filmqueryList , getExceljson } from '@/api/alculation'
+import { filmqueryList , getExceljson , pricecalc , cinemas } from '@/api/alculation'
 import { formatNumber } from '@/util/validateRules'
 import Uploader from '@/util/Uploader'
+import { number } from '../../../api/orderSys'
 
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 const timeFormat = 'YYYY-MM-DD HH:mm:ss'
@@ -211,9 +208,9 @@ const timeFormat = 'YYYY-MM-DD HH:mm:ss'
 export default class Main extends Mixins(ViewBase, UrlManager)  {
 
   dataForm = {
-    agree: 1, // 售卖类型
-    beginDate: '',
-    endDate: '',
+    salesType: 0, // 售卖类型
+    upperDate: '',
+    downDate: '',
     cinemaId: null,
     advertType: null,
     advertLen: null,
@@ -223,9 +220,14 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
     pageIndex: 1,
     pageSize: 20,
   }
-
+  // 选择影院分页
   query: any = {
     pageIndex: 1,
+    pageSize: 10,
+  }
+
+  cinemapage: any = {
+    pageNo: 1,
     pageSize: 10,
   }
 
@@ -240,15 +242,15 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
   // 销售类型
   statuslist: any = [
     {
-      key: 1,
+      key: 0,
       text: '场次'
     },
     {
-      key: 2,
+      key: 1,
       text: '单厅单调'
     },
     {
-      key: 3,
+      key: 2,
       text: 'cpm'
     }
   ]
@@ -278,19 +280,19 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
   // 广告时长
   advertLenList: any = [
     {
-      key: '15s',
+      key: '15',
       text: '15s'
     },
     {
-      key: '30s',
+      key: '30',
       text: '30s'
     },
     {
-      key: '45s',
+      key: '45',
       text: '45s'
     },
     {
-      key: '60s',
+      key: '60',
       text: '60s'
     }
   ]
@@ -316,6 +318,8 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
   file: File | any = null
   inputhtml: any = ''
 
+  uuid: any = '' // 影院标识
+
   chgcinemacolumns = [
     {
       type: 'selection',
@@ -324,48 +328,69 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
       align: 'center'
     },
     { title: '序号', key: 'id', align: 'center'},
-    { title: '影院名称', key: 'shortName', align: 'center' },
+    { title: '影院名称', key: 'name', align: 'center' },
     { title: '专资编码', key: 'code', align: 'center' },
     { title: '操作' , slot: 'action', align: 'center' },
   ]
 
   get cinemacolumns() {
     const one = [
-      { title: '整体影院平均单场价格', slot: 'planId', align: 'center'},
-      { title: '整体影院平均单厅单周价格', slot: 'planName', align: 'center' },
+      { title: '整体影院平均单场价格', slot: 'onceAvgPrice', align: 'center'},
+      { title: '整体影院平均单厅单周价格', slot: 'hallWeekPrice', align: 'center' },
     ]
     const cpm = [
-      { title: '整体影院cpm报价', slot: 'today', align: 'center' },
+      { title: '整体影院cpm报价', slot: 'avgCpmTotalPrice', align: 'center' },
     ]
     const over = [
-      { title: '整体影院同期价格', slot: 'todayFinishRate', align: 'center' },
-      { title: '整体影院同期人次' , slot: 'tomorrowFinishRate', align: 'center' },
-      { title: '整体影院同期总场次' , slot: 'budgetFinishDate', align: 'center' },
+      { title: '整体影院同期价格', slot: 'sameTimeTotalPrice', align: 'center' },
+      { title: '整体影院同期人次' , slot: 'sameTimeShowViewCount', align: 'center' },
+      { title: '整体影院同期总场次' , slot: 'sameTimeShowTimeCount', align: 'center' },
     ]
-    return this.dataForm.agree == 3 ? [...cpm , ...over] : [...one, ...over]
+    return this.dataForm.salesType == 2 ? [...cpm , ...over] : [...one, ...over]
   }
 
   get columns() {
     const one = [
-      { title: '专资编码', key: 'planId', align: 'center', width: 100 },
-      { title: '影院名称', key: 'planName', align: 'center' },
-      { title: '省份', key: 'todayFinishRate', align: 'center' },
-      { title: '城市' , key: 'tomorrowFinishRate', align: 'center' },
-      { title: '地址' , key: 'budgetFinishDate', align: 'center' },
-      { title: '开业时间' , key: 'budgetPersonCount', align: 'center' },
+      { title: '专资编码', key: 'code', align: 'center', width: 100 },
+      { title: '影院名称', key: 'cinemaName', align: 'center' },
+      { title: '省份', key: 'provinceName', align: 'center' },
+      { title: '城市' , key: 'cityName', align: 'center' },
+      { title: '地址' , key: 'address', align: 'center' },
+      { title: '开业时间' , key: 'doBusinessTime', align: 'center' },
     ]
     const two = [
-      { title: '平均单场价格(元)' , slot: 'personCount', align: 'center' },
-      { title: '总价(元)' , slot: 'budgetShowCount', align: 'center' },
+      { title: '平均单场价格(元)' , slot: 'onceAvgPrice', align: 'center' },
     ]
     const cpm = [
-      { title: '整体影院cpm报价', slot: 'today', align: 'center' },
+      { title: '整体影院cpm报价', slot: 'cinemaCpmCost', align: 'center' },
     ]
     const over = [
-      { title: '总场次' , slot: 'showCount', align: 'center' },
-      { title: '总人次' , slot: 'cost', align: 'center' }
+      { title: '总场次' , slot: 'totalShowTimes', align: 'center' },
+      { title: '总人次' , slot: 'totalShowViews', align: 'center' }
     ]
-    return this.dataForm.agree == 3 ? [...one , ...cpm , ...over] : [...one, ...two, ...over]
+    return this.dataForm.salesType == 2 ? [...one , ...cpm , ...over] : [...one, ...two, ...over]
+  }
+
+  get exportcolumns() {
+    const one = [
+      { title: '专资编码', key: 'code', align: 'center', width: 100 },
+      { title: '影院名称', key: 'cinemaName', align: 'center' },
+      { title: '省份', key: 'provinceName', align: 'center' },
+      { title: '城市' , key: 'cityName', align: 'center' },
+      { title: '地址' , key: 'address', align: 'center' },
+      { title: '开业时间' , key: 'doBusinessTime', align: 'center' },
+    ]
+    const two = [
+      { title: '平均单场价格(元)' , key: 'onceAvgPrice', align: 'center' },
+    ]
+    const cpm = [
+      { title: '整体影院cpm报价', key: 'cinemaCpmCost', align: 'center' },
+    ]
+    const over = [
+      { title: '总场次' , key: 'totalShowTimes', align: 'center' },
+      { title: '总人次' , key: 'totalShowViews', align: 'center' }
+    ]
+    return this.dataForm.salesType == 2 ? [...one , ...cpm , ...over] : [...one, ...two, ...over]
   }
 
   disabledDate(date: any) {
@@ -378,13 +403,13 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
 
   get ruleValidate() {
     const rules = {
-      agree: [
+      salesType: [
         { required: true, message: '请选择售卖类型' }
       ],
-      beginDate: [
+      upperDate: [
         { required: true, message: '请选择上刊日期' }
       ],
-      endDate: [
+      downDate: [
         { required: true, message: '请选择下刊日期' }
       ],
       discount: [
@@ -404,6 +429,7 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
   }
 
   async onChange(ev: Event) {
+    (this.$Spin as any).show()
     const uploader = new Uploader({
         filePostUrl: `/bi/cinema/excel2json`,
         fileFieldName: 'file',
@@ -416,7 +442,14 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
     this.file = input.files && input.files[0]
     this.inputhtml = this.file.name
     const a = await uploader.upload(this.file)
-    // console.log(a)
+    const b = (a || []).map((it: any) => {
+      this.chgcinema.push({
+        ...it
+      })
+    })
+    setTimeout(() => {
+      (this.$Spin as any).hide()
+    }, 1)
   }
 
   // 添加影院列表
@@ -455,28 +488,33 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
       this.loading = false
     }
   }
+
+  // 批量选择影院
+  onselect(row: any , selection: any) {
+    this.ids = row.map((it: any) => {
+      return it.id
+    })
+  }
   // 开始测算
   async search() {
+    this.cinemalist = []
     this.showcinemaerr = false
     const valid = await (this.$refs.dataForm as any).validate()
     if (!valid) {
       if (this.chgcinema.length == 0) {
         this.showcinemaerr = true
-        // info('请添加影院')
-        // return
       }
       return
     }
-    if (this.dataForm.agree == 2 && String((new Date(this.dataForm.endDate).getTime() -
-    new Date(this.dataForm.beginDate).getTime()) / 7).indexOf('.') != -1 ) {
+    if (this.chgcinema.length == 0) {
+        this.showcinemaerr = true
+        return
+    }
+    if (this.dataForm.salesType == 1 && String((new Date(this.dataForm.downDate).getTime() -
+    new Date(this.dataForm.upperDate).getTime()) / 7).indexOf('.') != -1 ) {
       info('上刊日期和下刊日期选择时必须是周（7天）的倍数')
       return
     }
-    // if (this.chgcinema.length == 0) {
-    //   this.showcinemaerr = true
-    //   // info('请添加影院')
-    //   return
-    // }
     if (this.dataForm.filmstatus == 2 && (this.dataForm.filmId == null || this.dataForm.filmId == undefined)) {
       info('请选择影片')
       return
@@ -490,21 +528,80 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
       info('折扣输入限制为两位小数')
       return
     }
-    alert('测算成功')
-    // console.log(123
-    // console.log(this.dataForm)
+    const start = new Date(this.dataForm.upperDate)
+    const startdatetime = Number(String(start.getFullYear()) +
+    String((start.getMonth() + 1) < 10 ? '0' + (start.getMonth() + 1) : (start.getMonth() + 1)) +
+    String(start.getDate() < 10 ? '0' + start.getDate() : start.getDate()))
+    const end = new Date(this.dataForm.downDate)
+    const enddatetime = Number(String(end.getFullYear()) +
+    String((end.getMonth() + 1) < 10 ? '0' + (end.getMonth() + 1) : (end.getMonth() + 1)) +
+    String(end.getDate() < 10 ? '0' + end.getDate() : end.getDate()))
+    const query = {
+      salesType: this.dataForm.salesType,
+      upperDate: startdatetime,
+      downDate: enddatetime,
+      // cinemas: (this.chgcinema || []).map((it: any) => {
+      //   return it.id
+      // }),
+      cinemas: ['12325', '13235', '18631', '21108'],
+      discount: this.dataForm.discount,
+      movies: this.dataForm.filmstatus == 1 ? [] : ['56439'],
+      // movies: this.dataForm.filmstatus == 1 ? [] : [String(this.dataForm.filmId)],
+      type: this.dataForm.advertType,
+      SPEC: this.dataForm.advertLen,
+    }
+    try {
+      const list = await pricecalc(query)
+      this.cinemalist.push({
+        avgCpmTotalPrice: isNaN(list.data.avgCpmTotalPrice) ? null : list.data.avgCpmTotalPrice,
+        onceAvgPrice: isNaN(list.data.onceAvgPrice) ? null : list.data.onceAvgPrice,
+        hallWeekPrice: isNaN(list.data.hallWeekPrice) ? null : list.data.hallWeekPrice,
+        sameTimeTotalPrice: isNaN(list.data.sameTimeTotalPrice) ? null : list.data.sameTimeTotalPrice,
+        sameTimeShowViewCount: isNaN(list.data.sameTimeShowViewCount) ? null : list.data.sameTimeShowViewCount,
+        sameTimeShowTimeCount: isNaN(list.data.sameTimeShowTimeCount) ? null : list.data.sameTimeShowTimeCount,
+      })
+      this.uuid = list.data.uuid
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      this.getmore()
+    }
   }
 
-  // 批量选择影院
-  onselect(row: any , selection: any) {
-    this.ids = row.map((it: any) => {
-      return it.id
-    })
-  }
-
-  // 上传影院操作
-  async upload() {
-    // console.log('上传')
+  // 上刊影院数据输出
+  async getmore() {
+    this.loading = true
+    try {
+      const list = await cinemas(this.uuid, this.cinemapage)
+      this.list = (list.data.items || []).map((it: any) => {
+        return {
+          ...it,
+          onceAvgPrice: isNaN(it.onceAvgPrice) ? null : it.onceAvgPrice,
+          hallWeekPrice: isNaN(it.hallWeekPrice) ? null : it.hallWeekPrice,
+          cinemaCpmCost: isNaN(it.cinemaCpmCost) ? null : it.cinemaCpmCost,
+          totalShowViews: isNaN(it.totalShowViews) ? null : it.totalShowViews,
+          totalShowTimes: isNaN(it.totalShowTimes) ? null : it.totalShowTimes,
+        }
+      })
+      this.total = list.data.totalCount
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+      this.loading = false
+      this.dataForm = {
+        salesType: 0, // 售卖类型
+        upperDate: '',
+        downDate: '',
+        cinemaId: null,
+        advertType: null,
+        advertLen: null,
+        discount: null,
+        filmstatus: 1,
+        filmId: null,
+        pageIndex: 1,
+        pageSize: 20,
+      }
+    }
   }
 
   // 添加影院操作
@@ -524,7 +621,7 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
     const list = await queryItem({id : this.dataForm.cinemaId})
     this.chgcinema.push({
       id: list.data.item.id,
-      shortName: list.data.item.shortName,
+      name: list.data.item.shortName,
       code: list.data.item.code,
     })
     if (this.query.pageIndex == 1) {
@@ -557,12 +654,25 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
 
   // 导出上刊影院数据输出
   async exports() {
-    // console.log('导出')
+    try {
+      const list = await cinemas(this.uuid, {
+        pageNo: 1,
+        pageSize: 0,
+      })
+      ~(this.$refs.table as any).exportCsv({
+          filename: '上刊影院数据输出列表',
+          columns: this.exportcolumns,
+          data: list.data.items
+      })
+    } catch (ex) {
+      this.handleError(ex)
+    } finally {
+    }
   }
   // 设置下刊不可选时间
   @Watch('dataForm', { deep: true })
   watchDataForm() {
-    this.begin = new Date(this.dataForm.beginDate).getTime()
+    this.begin = new Date(this.dataForm.upperDate).getTime()
   }
   // 添加影院分页
   @Watch('query', { deep: true })
@@ -571,7 +681,7 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
       this.pagechgcinema = this.chgcinema.slice(((this.query.pageIndex - 1) * 10), 10)
     } else {
       this.pagechgcinema = this.chgcinema.slice(((this.query.pageIndex - 1) * 10),
-      this.query.pageIndex * this.dataForm.pageSize)
+      this.query.pageIndex * this.query.pageSize)
     }
   }
 
@@ -581,12 +691,17 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
       this.pagechgcinema = this.chgcinema.slice(((this.query.pageIndex - 1) * 10), 10)
     } else {
       this.pagechgcinema = this.chgcinema.slice(((this.query.pageIndex - 1) * 10),
-      this.query.pageIndex * this.dataForm.pageSize)
+      this.query.pageIndex * this.query.pageSize)
     }
     this.cinematotal = this.chgcinema.length
     if (this.cinematotal > 0) {
       this.showcinemaerr = false
     }
+  }
+
+  @Watch('cinemapage', { deep: true })
+  watchCinemapage() {
+    this.getmore()
   }
 
 

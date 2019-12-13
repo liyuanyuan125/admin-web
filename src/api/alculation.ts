@@ -13,5 +13,17 @@ export async function getExceljson(query: any) {
     return res
 }
 
+// 价格测算
+// http://yapi.aiads-dev.com/project/253/interface/api/8289
+export async function pricecalc(query: any) {
+    const res = await post(`/bi/pricecalc`, query)
+    return res
+}
 
+// 影院输出
+// http://yapi.aiads-dev.com/project/253/interface/api/8297
+export async function cinemas(uuid: any , query: any) {
+    const res = await get(`/bi/pricecalc/cinemas/${uuid}`, query)
+    return res
+}
 
