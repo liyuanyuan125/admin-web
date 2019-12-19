@@ -9,7 +9,7 @@
       </Col>
       <Col span="4" offset="1">
          <Select v-model="dataForm.tmsStatus" placeholder="TMS接入状态" clearable>
-            <Option v-for="it in statusTmsList" :key="it.key" :value="it.key"
+            <Option v-for="it in statusTmsList" :key="it.key" :value="it.key" v-if='it.key != 0'
               :label="it.text">{{it.text}}</Option>
           </Select>
       </Col>
@@ -95,6 +95,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     provinceId: 0,
     cityId: 0,
     countyId: 0,
+    status: 2,
     tmsStatus: null,
     tmsCode: null,
   }
@@ -111,30 +112,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   showTime: any = []
   checkId: any = []
 
-  statusTmsList: any = [
-    {
-      key: '1',
-      text: '已接入'
-    },
-    {
-      key: '2',
-      text: '未接入'
-    }
-  ]
-  tmsCodeList: any = [
-    {
-      key: '1',
-      text: '品牌1'
-    },
-    {
-      key: '2',
-      text: '品牌2'
-    },
-    {
-      key: '3',
-      text: '品牌3'
-    }
-  ]
+  statusTmsList: any = []
+  tmsCodeList: any = []
 
   get columns() {
     const data: any = [
@@ -224,6 +203,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         statusTmsList: statusTmsList,
         tmsCodeList: tmsCodeList
       } } = await cinemaList(this.$route.params.id, query)
+      this.statusTmsList = statusTmsList,
+      this.tmsCodeList = tmsCodeList
       this.list = (list || []).map((it: any) => {
         return {
           ...it,

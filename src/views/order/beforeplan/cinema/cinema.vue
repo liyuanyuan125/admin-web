@@ -18,7 +18,7 @@
                 </Col>
                 <Col style='margin-left: 1%;' v-if='$route.params.status == "3" || $route.params.ifs == "0"' span='3' >
                   <Select v-model="dataForm.tmsStatus" placeholder="TMS接入状态" clearable>
-                    <Option v-for="it in statusTmsList" :key="it.key" :value="it.key"
+                    <Option v-for="it in statusTmsList" :key="it.key" :value="it.key" v-if='it.key != 0'
                       :label="it.text">{{it.text}}</Option>
                   </Select>
                 </Col>
@@ -410,6 +410,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
                     tmsCodeList: tmsCodeList
                 }
             } = await cinemaList(this.$route.params.id, query)
+            this.statusTmsList = statusTmsList,
+            this.tmsCodeList = tmsCodeList
             const aaalist: any = this.list1.map((it: any) => {
                 return it.code
             })
@@ -513,6 +515,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
                     tmsCodeList: tmsCodeList
                 }
             } = await cinemaList(this.$route.params.id, query)
+            this.statusTmsList = statusTmsList,
+            this.tmsCodeList = tmsCodeList
             this.list = (list || []).map((it: any) => {
               return {
                 ...it,
