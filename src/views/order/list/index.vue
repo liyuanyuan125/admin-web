@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <div  v-if="shows">
+    <div>
       <div class="act-bar flex-box">
         <form class="form flex-1" @submit.prevent="search">
           <LazyInput v-model="query.id" placeholder="订单编号" class="input"/>
@@ -102,15 +102,18 @@
           <span>{{row.receiveCount}} / {{row.targetCount}}</span>
         </template>
         <template slot="advertType" slot-scope="{row}">
+          <span v-if='row.advertType == null'>-</span>
           <span v-for='(its,index) in advertTypeCodeList' v-if='row.advertType == its.key'>{{its.text}}</span>
         </template>
         <template slot="status" slot-scope="{row}">
           <span v-for='(its,index) in statusList' v-if='row.status == its.key'>{{its.text}}</span>
         </template>
           <template slot="spaction" slot-scope="{row}">
+          <a href="javascript:;" v-show='row.status == 3 || row.status == 4 || row.status == 2' @click='waiting(row.id)'>设为待接单</a>
+          <a href="javascript:;" v-show='row.status == 3 || row.status == 4 || row.status == 2' @click='deletes(row.id)'>删除&nbsp;&nbsp;&nbsp;</a>
           <!-- <a v-show='row.status == 3' v-auth="'advert.executeOrder:settlement'" @click="change(row.id, row)">结算</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
-          <router-link v-show='row.status == 3' v-auth="'advert.executeOrder:info'" :to="{ name: 'order-list-detail', params: { id: row.id , status: row.status } }">详情</router-link>
-          <router-link v-show='row.status != 3' v-auth="'advert.executeOrder:info'" :to="{ name: 'order-list-detail', params: { id: row.id , status: row.status } }">详情</router-link>
+          <!-- <router-link v-show='row.status == 3' v-auth="'advert.executeOrder:info'" :to="{ name: 'order-list-detail', params: { id: row.id , status: row.status } }">详情</router-link> -->
+          <router-link  v-auth="'advert.executeOrder:info'" :to="{ name: 'order-list-detail', params: { id: row.id , status: row.status } }">详情</router-link>
         </template>
         </Table>
 
@@ -131,7 +134,7 @@ import { Component, Watch , Mixins } from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import UrlManager from '@/util/UrlManager'
 import { get } from '@/fn/ajax'
-import { queryList , company , planlist , movielist} from '@/api/orderSys'
+import { queryList , company , planlist , movielist , dels , chgstatus} from '@/api/orderSys'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import { toMap } from '@/fn/array'
 import moment from 'moment'
@@ -396,6 +399,32 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       const myThis: any = this
       myThis.$refs.addOrUpdate.init(id)
     })
+  }
+
+  async deletes(id: any) {
+    try {
+      await confirm('删除订单时将同步删除该订单的监播、上刊等数据；是否确认删除？')
+      await dels(id)
+      this.$Message.success({
+        content: `删除成功`,
+      })
+      this.reloadSearch()
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
+  async waiting(id: any) {
+    try {
+      await confirm('设为待接单时将同步删除该订单的监播、上刊等数据；是否确认？')
+      await chgstatus({id})
+      this.$Message.success({
+        content: `修改成功`,
+      })
+      this.reloadSearch()
+    } catch (ex) {
+      this.handleError(ex)
+    }
   }
 
   dlgEditDone() {

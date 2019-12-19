@@ -68,7 +68,7 @@ export default class IndexPage extends ViewBase {
       },
 
       {
-        name: 'code',
+        name: 'cinmeaCode',
         defaultValue: '',
         input: true,
         width: 88,

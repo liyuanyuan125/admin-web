@@ -1,5 +1,11 @@
 <template>
-  <RemoteSelect v-model="model" :fetch="fetch" placeholder="输入影院名搜索" ref="ui"/>
+  <RemoteSelect
+    v-model="model"
+    :fetch="fetch"
+    :backfill="backfill"
+    placeholder="输入影院名搜索"
+    ref="ui"
+  />
 </template>
 
 <script lang="ts">
@@ -31,7 +37,7 @@ export default class CinemaSelect extends ViewBase {
       controlStatus: 1,
       pageIndex: 1,
       pageSize: 88,
-      ...this.query,
+      ...this.query
     })
     const list = await queryList(query)
     // 若现有列表中，没有找到已选择的影院，则清空
@@ -39,6 +45,11 @@ export default class CinemaSelect extends ViewBase {
     if (foundItem == null) {
       this.model = 0
     }
+    return list
+  }
+
+  async backfill(id: number) {
+    const list = await queryList({ ids: id })
     return list
   }
 

@@ -117,7 +117,8 @@ export default class Main extends ViewBase {
         id: this.id,
         billDetails
       })
-      this.$router.push({name: 'finance-billmanage'})
+      history.back()
+      // this.$router.go(-1)
     } catch (ex) {
       this.handleError(ex)
     }

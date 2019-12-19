@@ -52,6 +52,7 @@
       size="small"
       class="table"
       @on-selection-change="selectionChange"
+      v-on="tableEventHandlers"
       ref="table"
     />
 
@@ -86,7 +87,7 @@ import {
   normalizeColumns,
   ListFetchResult,
   ListFetchData,
-  listFetchDataToResult,
+  listFetchDataToResult
 } from './types'
 import { devInfo, devError } from '@/util/dev'
 import { toMap } from '@/fn/array'
@@ -156,6 +157,19 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
   // 根据 filters 中的配置，生成默认查询条件
   get defQuery() {
     const result = defaultParams(this.filters)
+    return result
+  }
+
+  get tableEventHandlers() {
+    const listeners = this.$listeners
+    const result: typeof listeners = {}
+    for (const key in listeners) {
+      if (key.startsWith('table-')) {
+        const name = key.replace(/^table-?/i, '')
+        const handler = listeners[key]
+        result[name] = handler
+      }
+    }
     return result
   }
 
@@ -309,7 +323,6 @@ export default class ListPage extends Mixins(ViewBase, UrlManager) {
   // 全选
   selectionChange(selectedList: any[]) {
     this.$emit('selectionChange', selectedList)
-
     const idKey = this.idKey
     const pageIds = (this.list || []).map(it => it[idKey])
     const ids = (selectedList || []).map(it => it[idKey])
