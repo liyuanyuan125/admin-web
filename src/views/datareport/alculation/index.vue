@@ -18,14 +18,14 @@
                 on-change="selectTime" placeholder="选择下刊日期" style="width: 200px"></Date-picker>
             </FormItem>
             <FormItem label="上刊影院" prop="cinema" class='ivu-form-item-required'>
-                <a href="//aiads-file.oss-cn-beijing.aliyuncs.com/MISC/MISC/bnmv7qg6p4fg00a11u8g.xls" :download='"//aiads-file.oss-cn-beijing.aliyuncs.com/MISC/MISC/bnmv7qg6p4fg00a11u8g.xls"'>下载影院模版列表.xls</a>
+                <a href="//aiads-file.oss-cn-beijing.aliyuncs.com/MISC/MISC/bnu3r9ldgttg008001m0.xls" :download='"//aiads-file.oss-cn-beijing.aliyuncs.com/MISC/MISC/bnu3r9ldgttg008001m0.xls"'>下载影院模版列表.xls</a>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 
                 <Form class="create-form form-item"   enctype="multipart/form-data" ref="form"
                    :label-width="120">
                    上传文件
                    <!-- <Button type='primary' @click='upload'>上传</Button> -->
-                <input type="file" class='adds' @change="onChange" />
+                <input ref='input' type="file" class='adds' @change="onChange" />
                 </Form>
                 <span class='viewhtml'>{{inputhtml}}&nbsp;</span>
                 &nbsp;&nbsp;(请按照影院模板列表格式上传)
@@ -356,7 +356,6 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
       { title: '省份', key: 'provinceName', align: 'center' },
       { title: '城市' , key: 'cityName', align: 'center' },
       { title: '地址' , key: 'address', align: 'center' },
-      { title: '开业时间' , key: 'doBusinessTime', align: 'center' },
     ]
     const two = [
       { title: '平均单场价格(元)' , slot: 'onceAvgPrice', align: 'center' },
@@ -378,7 +377,6 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
       { title: '省份', key: 'provinceName', align: 'center' },
       { title: '城市' , key: 'cityName', align: 'center' },
       { title: '地址' , key: 'address', align: 'center' },
-      { title: '开业时间' , key: 'doBusinessTime', align: 'center' },
     ]
     const two = [
       { title: '平均单场价格(元)' , key: 'onceAvgPrice', align: 'center' },
@@ -442,11 +440,15 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
     this.file = input.files && input.files[0]
     this.inputhtml = this.file.name
     const a = await uploader.upload(this.file)
-    const b = (a || []).map((it: any) => {
-      this.chgcinema.push({
-        ...it
-      })
+    const list = (this.chgcinema || []).map((it: any) => {
+      return it.id
     })
+    const b = (a || []).map((it: any) => {
+      if (list.indexOf(it.id) == -1) {
+        this.chgcinema.push(it)
+      }
+    })
+    input.value = ''
     setTimeout(() => {
       (this.$Spin as any).hide()
     }, 1)
@@ -528,6 +530,7 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
       info('折扣输入限制为两位小数')
       return
     }
+    (this.$Spin as any).show()
     const start = new Date(this.dataForm.upperDate)
     const startdatetime = Number(String(start.getFullYear()) +
     String((start.getMonth() + 1) < 10 ? '0' + (start.getMonth() + 1) : (start.getMonth() + 1)) +
@@ -540,13 +543,13 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
       salesType: this.dataForm.salesType,
       upperDate: startdatetime,
       downDate: enddatetime,
-      // cinemas: (this.chgcinema || []).map((it: any) => {
-      //   return it.id
-      // }),
-      cinemas: ['12325', '13235', '18631', '21108'],
+      cinemas: (this.chgcinema || []).map((it: any) => {
+        return String(it.id)
+      }),
+      // cinemas: ['12325', '13235', '18631', '21108'],
       discount: this.dataForm.discount,
-      movies: this.dataForm.filmstatus == 1 ? [] : ['56439'],
-      // movies: this.dataForm.filmstatus == 1 ? [] : [String(this.dataForm.filmId)],
+      // movies: this.dataForm.filmstatus == 1 ? [] : ['56439'],
+      movies: this.dataForm.filmstatus == 1 ? [] : [String(this.dataForm.filmId)],
       type: this.dataForm.advertType,
       SPEC: this.dataForm.advertLen,
     }
@@ -584,10 +587,14 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
         }
       })
       this.total = list.data.totalCount
+      setTimeout(() => {
+        (this.$Spin as any).hide()
+      }, 500)
     } catch (ex) {
       this.handleError(ex)
     } finally {
       this.loading = false
+      this.chgcinema = []
       this.dataForm = {
         salesType: 0, // 售卖类型
         upperDate: '',
