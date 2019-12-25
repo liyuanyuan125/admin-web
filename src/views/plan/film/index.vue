@@ -225,7 +225,12 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
                       promotionTypeList: promotionTypeList,
                       md5StatusList: md5StatusList
            } } = await queryList(query)
-      this.list = list
+      this.list = (list || []).map((it: any) => {
+        return {
+          ...it,
+          md5Status: it.md5Status == null ? 2 : it.md5Status
+        }
+      })
       this.total = total
       this.translatedList = translatedList
       this.promotionTypeList = promotionTypeList
