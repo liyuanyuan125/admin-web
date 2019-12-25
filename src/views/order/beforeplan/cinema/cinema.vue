@@ -205,6 +205,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
     b: any = []
     tms: any = []
+    exporttms: any = []
 
     statusTmsList: any = [
       {
@@ -298,8 +299,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     get columnsData() {
         const data: any = [
             { title: '影院名称', key: 'cinemaName', align: 'center' },
-            { title: '是否接入TMS', width: 120, key: 'tmsStatusText', align: 'center' },
-            { title: 'TMS品牌', width: 120, key: 'tmsCodeText', align: 'center' },
+            // { title: '是否接入TMS', width: 120, key: 'tmsStatusText', align: 'center' },
+            // { title: 'TMS品牌', width: 120, key: 'tmsCodeText', align: 'center' },
             { title: '专资编码', key: 'code', align: 'center', width: 80 },
             { title: '所在省', key: 'provinceName', align: 'center', width: 80 },
             { title: '所在市', key: 'cityName', align: 'center', width: 80 },
@@ -311,7 +312,15 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
         const b: any =  [
             { title: '接单状态', width: 120, key: 'acceptStatusName', align: 'center' },
         ]
-        return this.$route.params.status == '3' ? [...data] : [...data , ...b]
+        if (this.$route.params.status == '3' || this.$route.params.ifs == '0') {
+          this.exporttms = [
+            { title: '是否接入TMS' , key: 'tmsStatusText', align: 'center' },
+            { title: 'TMS品牌' , key: 'tmsCodeText', align: 'center' },
+          ]
+        } else {
+          this.exporttms = []
+        }
+        return this.$route.params.status == '3' ? [...data , ...this.exporttms] : [...data , ...this.exporttms, ...b]
     }
 
     dlgEditDone(id: any) {
@@ -338,7 +347,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
             const res: any = (b || []).map((it: any) => {
                 return {
                     ...it,
-                    resourceName: getName(it.resourceId, this.reslist)
+                    resourceName: getName(it.resourceId, this.reslist),
+                    tmsStatusText: it.tmsStatus == null ? '' : getstatus(it.tmsStatus , this.statusTmsList),
+                    tmsCodeText: it.tmsCode == null ? '' : getstatus(it.tmsCode , this.tmsCodeList),
                 }
             })
 
