@@ -119,8 +119,11 @@ const getstatus = (key: number, list: any[]) => {
     const i: number = findIndex(list, (it: any) => {
         return key === it.key
     })
-    const res: string = (!list[i].text || list[i].text == '') ? '-' : list[i].text
-    return res
+    // console.log(i)
+    if (i != -1) {
+      const res: string = (!list[i].text || list[i].text == '') ? '-' : list[i].text
+      return res
+    }
 }
 
 
