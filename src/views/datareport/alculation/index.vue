@@ -320,6 +320,18 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
 
   uuid: any = '' // 影院标识
 
+  one: any = []
+  two: any = []
+  cpm: any = []
+
+  upone: any = []
+  uptwo: any = []
+  upcpm: any = []
+
+  exportupone: any = []
+  exportuptwo: any = []
+  exportupcpm: any = []
+
   chgcinemacolumns = [
     {
       type: 'selection',
@@ -334,19 +346,33 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
   ]
 
   get cinemacolumns() {
-    const one = [
-      { title: '整体影院平均单场价格', slot: 'onceAvgPrice', align: 'center'},
-      { title: '整体影院平均单厅单周价格', slot: 'hallWeekPrice', align: 'center' },
-    ]
-    const cpm = [
-      { title: '整体影院cpm报价', slot: 'avgCpmTotalPrice', align: 'center' },
-    ]
+    if (this.dataForm.salesType == 0) {
+      this.one = [
+        { title: '整体影院平均单场价格', slot: 'onceAvgPrice', align: 'center'},
+      ]
+    } else {
+      this.one = []
+    }
+    if (this.dataForm.salesType == 1) {
+      this.two = [
+        { title: '整体影院平均单厅单周价格', slot: 'hallWeekPrice', align: 'center' },
+      ]
+    } else {
+      this.two = []
+    }
+    if (this.dataForm.salesType == 2) {
+      this.cpm = [
+        { title: '整体影院cpm报价', slot: 'avgCpmTotalPrice', align: 'center' },
+      ]
+    } else {
+      this.cpm = []
+    }
     const over = [
       { title: '整体影院同期价格', slot: 'sameTimeTotalPrice', align: 'center' },
       { title: '整体影院同期人次' , slot: 'sameTimeShowViewCount', align: 'center' },
       { title: '整体影院同期总场次' , slot: 'sameTimeShowTimeCount', align: 'center' },
     ]
-    return this.dataForm.salesType == 2 ? [...cpm , ...over] : [...one, ...over]
+    return [...this.one, ...this.two , ...this.cpm , ...over]
   }
 
   get columns() {
@@ -357,17 +383,32 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
       { title: '城市' , key: 'cityName', align: 'center' },
       { title: '地址' , key: 'address', align: 'center' },
     ]
-    const two = [
-      { title: '平均单场价格(元)' , slot: 'onceAvgPrice', align: 'center' },
-    ]
-    const cpm = [
-      { title: '整体影院cpm报价', slot: 'cinemaCpmCost', align: 'center' },
-    ]
+    if (this.dataForm.salesType == 0) {
+      this.upone = [
+        { title: '平均单场价格(元)' , slot: 'onceAvgPrice', align: 'center' },
+      ]
+    } else {
+      this.upone = []
+    }
+    if (this.dataForm.salesType == 1) {
+      this.uptwo = [
+        { title: '平均单厅单周价格', slot: 'hallWeekPrice', align: 'center' },
+      ]
+    } else {
+      this.uptwo = []
+    }
+    if (this.dataForm.salesType == 2) {
+      this.upcpm = [
+        { title: 'cpm报价', slot: 'cinemaCpmCost', align: 'center' },
+      ]
+    } else {
+      this.upcpm = []
+    }
     const over = [
       { title: '总场次' , slot: 'totalShowTimes', align: 'center' },
       { title: '总人次' , slot: 'totalShowViews', align: 'center' }
     ]
-    return this.dataForm.salesType == 2 ? [...one , ...cpm , ...over] : [...one, ...two, ...over]
+    return [...one , ...this.upone, ...this.uptwo , ...this.upcpm , ...over]
   }
 
   get exportcolumns() {
@@ -378,17 +419,32 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
       { title: '城市' , key: 'cityName', align: 'center' },
       { title: '地址' , key: 'address', align: 'center' },
     ]
-    const two = [
-      { title: '平均单场价格(元)' , key: 'onceAvgPrice', align: 'center' },
-    ]
-    const cpm = [
-      { title: '整体影院cpm报价', key: 'cinemaCpmCost', align: 'center' },
-    ]
+    if (this.dataForm.salesType == 0) {
+      this.exportupone = [
+        { title: '平均单场价格(元)' , key: 'onceAvgPrice', align: 'center' },
+      ]
+    } else {
+      this.exportupone = []
+    }
+    if (this.dataForm.salesType == 1) {
+      this.exportuptwo = [
+        { title: '平均单厅单周价格', key: 'hallWeekPrice', align: 'center' },
+      ]
+    } else {
+      this.exportuptwo = []
+    }
+    if (this.dataForm.salesType == 2) {
+      this.exportupcpm = [
+        { title: 'cpm报价', key: 'cinemaCpmCost', align: 'center' },
+      ]
+    } else {
+      this.exportupcpm = []
+    }
     const over = [
       { title: '总场次' , key: 'totalShowTimes', align: 'center' },
       { title: '总人次' , key: 'totalShowViews', align: 'center' }
     ]
-    return this.dataForm.salesType == 2 ? [...one , ...cpm , ...over] : [...one, ...two, ...over]
+    return [...one , ...this.exportupone, ...this.exportuptwo , ...this.exportupcpm , ...over]
   }
 
   disabledDate(date: any) {
