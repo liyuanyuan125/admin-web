@@ -651,6 +651,7 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
     } finally {
       this.loading = false
       this.chgcinema = []
+      this.inputhtml = ''
       this.dataForm = {
         salesType: 0, // 售卖类型
         upperDate: '',
