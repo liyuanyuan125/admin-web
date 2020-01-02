@@ -247,7 +247,7 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
     },
     {
       key: 1,
-      text: '单厅单调'
+      text: '单厅单周'
     },
     {
       key: 2,
