@@ -653,7 +653,7 @@ export default class Main extends Mixins(ViewBase, UrlManager)  {
       this.chgcinema = []
       this.inputhtml = ''
       this.dataForm = {
-        salesType: 0, // 售卖类型
+        salesType: this.dataForm.salesType,
         upperDate: '',
         downDate: '',
         cinemaId: null,
