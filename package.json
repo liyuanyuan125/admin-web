@@ -63,7 +63,8 @@
     "stylelint-processor-arbitrary-tags": "^0.1.0",
     "typescript": "^3.5.3",
     "vue-template-compiler": "^2.5.22",
-    "webpack": "^4.28.4"
+    "webpack": "^4.28.4",
+    "compression-webpack-plugin": "^3.0.1"
   },
   "gitHooks": {
     "pre-commit": "lint-staged"

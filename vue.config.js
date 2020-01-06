@@ -1,5 +1,6 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CompressionPlugin = require("compression-webpack-plugin")
 
 const resolve = dir => path.join(__dirname, 'src', dir)
 
@@ -7,6 +8,19 @@ module.exports = {
   devServer: {
     host: 'mdev.aiads-dev.com',
     disableHostCheck: true,
+  },
+
+  configureWebpack: config => {
+    // gzip压缩
+    if (process.env.NODE_ENV === 'production') {
+      return {
+        plugins: [new CompressionPlugin({
+          test: /\.js$|\.html&|\.css/,
+          threshold: 10240,
+          deleteOriginalAssets: false
+        })]
+      }
+    }
   },
 
   chainWebpack: config => {
