@@ -132,35 +132,21 @@ export default class Main extends ViewBase {
     const tags = formTags ? formTags.split(/,|，/) : []
 
     // 电影平台相关id dataExts
-    // const cloneData = Object.assign(this.dataExts)
-    const dataExts = [
-      {
-        channelCode: 'maoyan',
-        channelDataId: this.formID.maoyan
-      },
-      {
-        channelCode: 'taopiaopiao',
-        channelDataId: this.formID.taopiaopiao
-      },
-      {
-        channelCode: 'douban',
-        channelDataId: this.formID.douban
-      },
-      {
-        channelCode: 'piaoshen',
-        channelDataId: this.formID.piaoshen
-      },
-    ]
+    const cloneData = Object.assign(this.dataExts)
+    const maoyan = [{
+      channelCode: 'maoyan',
+      channelDataId: this.formID.maoyan
+    }]
 
-    // for (const [key, value] of Object.entries(this.formID)) {
-    //   this.dataExts.map((item: any, index) => {
-    //     if (key == item.channelCode) {
-    //       cloneData[index].channelDataId = value
-    //     }
-    //   })
-    // }
+    for (const [key, value] of Object.entries(this.formID)) {
+      this.dataExts.map((item: any, index) => {
+        if (key == item.channelCode) {
+          cloneData[index].channelDataId = value
+        }
+      })
+    }
 
-    // const dataExts = maoyan.concat(cloneData)
+    const dataExts = maoyan.concat(cloneData)
 
     try {
       const { data } = await movieEdit(this.id, {
