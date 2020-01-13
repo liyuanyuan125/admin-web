@@ -26,7 +26,7 @@
             <Col span='3' class='hui'>广告类型</Col>
             <Col span='9'>
               <span v-if='item.advertType == null'>暂无类型</span>
-              <span v-else v-for='it in advertTypeCodeList' :key='it.key' v-if='it.key == item.advertType'>{{it.text}}</span>
+              <span v-for='it in advertTypeCodeList' :key='it.key' v-if='it.key == item.advertType'>{{it.text}}</span>
             </Col>
         </Row>
         <Row class='row-list'>
@@ -74,7 +74,7 @@
         <Row class='row-list pb20'>
             <Col span='3' class='hui'>接单影院</Col>
             <Col span='20'>
-              <singleCinema  @dlgEditDone="dlgEditDone"/>
+              <singleCinema  @dlgEditDone="dlgEditDone" :startDate='begin'/>
             </Col>
         </Row>
       </div>

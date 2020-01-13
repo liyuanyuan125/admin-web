@@ -63,7 +63,8 @@ import singDlg from './singDlg.vue'
 import imgModel from './imgDlg.vue'
 const makeMap = (list: any[]) => toMap(list, 'id', 'name')
 import { findIndex } from 'lodash'
-const timeFormat = 'YYYY-MM-DD HH:mm:ss'
+const timeFormat = 'YYYY-MM-DD'
+
 
 
 const dataForm = {
@@ -86,7 +87,7 @@ const getstatus = (key: number, list: any[]) => {
   }
 })
 export default class Main extends Mixins(ViewBase, UrlManager) {
-  // @Prop({ type: Array, default: () => [] }) cinemas!: any[]
+  @Prop({ type: String }) startDate!: any
 
   dataForm: any = {
     pageIndex: 1,
@@ -95,7 +96,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     provinceId: 0,
     cityId: 0,
     countyId: 0,
-    status: 2,
+    // status: 2,
     tmsStatus: null,
     tmsCode: null,
   }
@@ -140,6 +141,20 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           /* tslint:enable */
         }
       },
+      {
+        title: '投放周期',
+        key: 'createTime',
+        align: 'center',
+        width: 180,
+        render: (hh: any, { row: { createTime , completeDate , completeDateText } }: any) => {
+          /* tslint:disable */
+          const h = jsxReactToVue(hh)
+          const html = this.startDate
+          const html2 = completeDate == 0 ? '~ 未结束' : '~' + completeDateText
+          return <span class='datetime'>{html}  {html2}</span>
+          /* tslint:enable */
+        }
+      },
       { title: '是否接入TMS', width: 120, key: 'tmsStatusText', align: 'center' },
       { title: 'TMS品牌', width: 120, key: 'tmsCodeText', align: 'center' },
     ]
@@ -164,9 +179,9 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
 
   async dlgEditDone(id: any) {
     this.search()
-    if ((this.total - 1) == 0) {
-      const res = await set ({id: this.$route.params.id, reasond: '无有效影院'})
-    }
+    // if ((this.total - 1) == 0) {
+    //   const res = await set ({id: this.$route.params.id, reasond: '无有效影院'})
+    // }
     this.$emit('dlgEditDone')
   }
 
@@ -210,6 +225,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
           ...it,
           tmsStatusText: it.tmsStatus == null ? '-' : getstatus(it.tmsStatus , statusTmsList),
           tmsCodeText: it.tmsCode == null ? '-' : getstatus(it.tmsCode , tmsCodeList),
+          completeDateText: it.completeDate == 0 ? '' : (String(it.completeDate).slice(0, 4) + '-' +
+          String(it.completeDate).slice(4, 6) + '-' + String(it.completeDate).slice(6, 8))
         }
       })
       this.total = total

@@ -8,8 +8,10 @@
     <p class="title">即将取消{{title}}的执行单，不影响其他影院的执行</p>
     <Form ref="dataForm" :model="dataForm" label-position="left" :rules="ruleValidate" :label-width="0">
       <FormItem prop="closeReason">
-        <inputTextarea v-model="dataForm.closeReason" :maxLength="140" type="area" />
+        <Input v-model="dataForm.closeReason" :maxlength="140" show-word-limit type="textarea" />
+        <span style='color: #ccc;'>{{dataForm.closeReason.length}} / 140</span>
       </FormItem>
+      
     </Form>
     <div slot="footer" class="dialog-footer">
       <Button @click="cancel">取消</Button>
@@ -22,7 +24,7 @@
 // doc: https://github.com/kaorun343/vue-property-decorator
 import { Component, Prop } from 'vue-property-decorator'
 import { number } from '@/api/orderSys'
-import { warning , success, toast } from '@/ui/modal'
+import { warning , success, toast , info} from '@/ui/modal'
 import { cinemaCancel , set } from '@/api/orderSys'
 import inputTextarea from '@/components/inputTextarea.vue'
 import moment from 'moment'
@@ -48,7 +50,7 @@ export default class ComponentMain extends ViewBase {
 
   ruleValidate = {
     closeReason: [
-      { required: true, message: '请输入取消原因', trigger: 'change' }
+      { required: true,  message: '请输入取消原因', trigger: 'change' }
     ],
   }
 
@@ -86,6 +88,10 @@ export default class ComponentMain extends ViewBase {
       return
     }
     try {
+      if (this.dataForm.closeReason.length > 140) {
+        info('请确认字数长度')
+        return
+      }
       if (this.ids.length == 0) {
         const res = await cinemaCancel (
           { id: this.$route.params.id ,
@@ -104,10 +110,10 @@ export default class ComponentMain extends ViewBase {
             cinemas : itemlist
           }
         )
-        // 若全部取消则关闭改订单
-        if (this.ids.length == this.length) {
-          const data = await set ({id: this.$route.params.id, reasond: '无有效影院'})
-        }
+        // // 若全部取消则关闭改订单
+        // if (this.ids.length == this.length) {
+        //   const data = await set ({id: this.$route.params.id, reasond: '无有效影院'})
+        // }
       }
 
       toast('操作成功')

@@ -109,8 +109,9 @@
           <span v-for='(its,index) in statusList' v-if='row.status == its.key'>{{its.text}}</span>
         </template>
           <template slot="spaction" slot-scope="{row}">
-          <a href="javascript:;" v-show='row.status == 3 || row.status == 4 || row.status == 2' @click='waiting(row.id)'>设为待接单</a>
-          <a href="javascript:;" v-show='row.status == 3 || row.status == 4 || row.status == 2' @click='deletes(row.id)'>删除&nbsp;&nbsp;&nbsp;</a>
+          <a href="javascript:;" v-show='row.status == 4 || row.status == 2' @click='waiting(row.id)'>设为待接单</a>
+          <!-- 待接单 、 执行中 、 已拒绝删除操作 -->
+          <a href="javascript:;" v-show='row.status == 1 || row.status == 4 || row.status == 2' @click='deletes(row.id)'>删除&nbsp;&nbsp;&nbsp;</a>
           <!-- <a v-show='row.status == 3' v-auth="'advert.executeOrder:settlement'" @click="change(row.id, row)">结算</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
           <!-- <router-link v-show='row.status == 3' v-auth="'advert.executeOrder:info'" :to="{ name: 'order-list-detail', params: { id: row.id , status: row.status } }">详情</router-link> -->
           <router-link  v-auth="'advert.executeOrder:info'" :to="{ name: 'order-list-detail', params: { id: row.id , status: row.status } }">详情</router-link>
@@ -126,6 +127,7 @@
       </div>
     </div>
     <Dlgjie  ref="addOrUpdate"   @refreshDataList="search" v-if="addOrUpdateVisible" @done="dlgEditDone"/>
+    <waitorder  ref="waitaddOrUpdate"   @refreshDataList="search" v-if="waitaddOrUpdateVisible" @done="dlgEditDone"/>
   </div>
 </template>
 
@@ -140,6 +142,7 @@ import { toMap } from '@/fn/array'
 import moment from 'moment'
 import { slice, clean } from '@/fn/object'
 import Dlgjie from './dlgjie.vue'
+import waitorder from './waitorder.vue'
 
 import {confirm , warning , success, toast } from '@/ui/modal'
 
@@ -155,6 +158,7 @@ const dataForm = {
 @Component({
   components: {
     Dlgjie,
+    waitorder
   }
 })
 export default class Main extends Mixins(ViewBase, UrlManager) {
@@ -174,6 +178,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   showDlg = false
   addOrUpdateVisible = false
   changeVisible = false
+
+  waitaddOrUpdateVisible = false
 
 
   examine = false
@@ -415,16 +421,21 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   }
 
   async waiting(id: any) {
-    try {
-      await confirm('设为待接单时将同步删除该订单的监播、上刊等数据；是否确认？')
-      await chgstatus({id})
-      this.$Message.success({
-        content: `修改成功`,
-      })
-      this.reloadSearch()
-    } catch (ex) {
-      this.handleError(ex)
-    }
+    this.waitaddOrUpdateVisible = true
+    this.$nextTick(() => {
+      const myThis: any = this
+      myThis.$refs.waitaddOrUpdate.init(id)
+    })
+    // try {
+    //   await confirm('设为待接单时将同步删除该订单的监播、上刊等数据；是否确认？')
+    //   await chgstatus({id})
+    //   this.$Message.success({
+    //     content: `修改成功`,
+    //   })
+    //   this.reloadSearch()
+    // } catch (ex) {
+    //   this.handleError(ex)
+    // }
   }
 
   dlgEditDone() {
