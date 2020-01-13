@@ -5,7 +5,7 @@
       :fetch="fetch"
       :submit="submit"
       :hideSubmit="isView"
-      :labelWidth="88"
+      :labelWidth="98"
       @done="onDone"
       ref="editForm"
     >
@@ -19,7 +19,7 @@ import ViewBase from '@/util/ViewBase'
 import EditForm, { Field, Validator } from '@/components/editForm'
 import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import { areaParam } from '@/components/areaSelect'
-import { queryItem, addItem, updateItem } from '@/api/cinema'
+import { queryItem, addItem, updateItem } from './data'
 import { alert, success } from '@/ui/modal'
 import { MapType } from '@/util/types'
 import { devLog } from '@/util/dev'
@@ -184,6 +184,27 @@ export default class EditPage extends ViewBase {
       },
 
       {
+        name: 'tmsEnableStatus',
+        label: '是否接入TMS',
+        defaultValue: false,
+        span: 6,
+        required: true,
+        select: {
+          enumKey: 'tmsEnableStatusList'
+        }
+      },
+
+      {
+        name: 'tmsCode',
+        label: 'TMS品牌',
+        defaultValue: '',
+        span: 13,
+        select: {
+          enumKey: 'tmsBrandList'
+        }
+      },
+
+      {
         name: 'status',
         defaultValue: 0,
         label: '营业状态',
@@ -268,7 +289,7 @@ export default class EditPage extends ViewBase {
   submit = actionMap[this.action]
 
   async fetch() {
-    const { data } = await queryItem({
+    const data = await queryItem({
       id: this.id
     })
 

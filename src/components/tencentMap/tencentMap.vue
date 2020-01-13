@@ -1,9 +1,9 @@
 <template>
   <div class="tencent-map">
     <div class="map-head">
-      <Input v-model="model.lng" class="lng-input" number/>
+      <Input v-model="model.lng" class="lng-input" number :disabled="disabled"/>
       <span class="separator">-</span>
-      <Input v-model="model.lat" class="lat-input" number/>
+      <Input v-model="model.lat" class="lat-input" number :disabled="disabled"/>
     </div>
     <div class="map-body" ref="map"></div>
   </div>
@@ -33,6 +33,11 @@ export default class TencentMap extends ViewBase {
    * 显示 marker 的配置，默认 null，则不显示
    */
   @Prop({ type: [ Object, Boolean ], default: null }) marker!: MapMarker | boolean
+
+  /**
+   * 禁用模式
+   */
+  @Prop({ type: Boolean, default: false }) disabled!: boolean
 
   model = this.value
 

@@ -45,12 +45,12 @@ import CinemaChainSelect from '@/components/CinemaChainSelect.vue'
 import AreaSelect, { areaParam } from '@/components/areaSelect'
 import jsxReactToVue from '@/util/jsxReactToVue'
 import {
-  queryList,
   updateStatus,
   updateControlStatus,
   updatePricingLevelCode,
   updateBoxLevelCode,
 } from '@/api/cinema'
+import { fetchList } from './data'
 import Companies from './companies.vue'
 
 @Component({
@@ -61,7 +61,7 @@ import Companies from './companies.vue'
   }
 })
 export default class Main extends ViewBase {
-  fetch = queryList
+  fetch = fetchList
 
   filters: Filter[] = [
     {
@@ -146,6 +146,22 @@ export default class Main extends ViewBase {
     },
 
     {
+      name: 'tmsEnableStatus',
+      defaultValue: 0,
+      select: true,
+      width: 120,
+      placeholder: 'TMS接入状态',
+    },
+
+    {
+      name: 'tmsBrandCode',
+      defaultValue: '',
+      select: true,
+      width: 120,
+      placeholder: 'TMS品牌',
+    },
+
+    {
       name: 'pageIndex',
       defaultValue: 1
     },
@@ -191,6 +207,18 @@ export default class Main extends ViewBase {
           updateField: updateControlStatus,
         },
         auth: 'theater.cinemas:change-control-status'
+      },
+      {
+        title: '是否接入TMS',
+        key: 'tmsEnableStatus',
+        width: 90,
+        enum: true
+      },
+      {
+        title: 'TMS品牌',
+        key: 'tmsBrand',
+        width: 90,
+        enum: true
       },
       {
         title: '定价级别',
