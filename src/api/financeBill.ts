@@ -5,9 +5,19 @@ import { get , post , put , del } from '@/fn/ajax'
  * 参数 data
  * http://yapi.aiads-dev.com/project/140/interface/api/5371
  */
-export async function list(data: any) {
-  const res = await get('/xadvert/resource-bills', data)
-  return res
+export async function list(query: any) {
+  const res = await get('/xadvert/resource-bills', query)
+  const data = {
+    ...res.data,
+    items: (res.data.items as any[] || []).map(it => {
+      return {
+        ...it,
+        _disabled: it.billStatus == 1 ? false : true
+      }
+    })
+  }
+  const result = {...res, data}
+  return result
 }
 
 /**
@@ -50,6 +60,26 @@ export async function sureAduit(data: any) {
   return res
 }
 
+
+/**
+ * 资源方账单初始状态确认
+ * 参数
+ * http://yapi.aiads-dev.com/project/140/interface/api/5491
+ */
+export async function billInit(query: any) {
+  const res = await put('/xadvert/checkplan/check-init-confirm', query)
+  return res
+}
+
+/**
+ * 批量修改账单
+ * 参数
+ * http://yapi.aiads-dev.com/project/140/interface/api/5491
+ */
+export async function changeBills(query: any) {
+  const res = await put('/xadvert/resource-bills/operate-confirm-batch', query)
+  return res
+}
 
 
 

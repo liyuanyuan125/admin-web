@@ -109,7 +109,7 @@ export default class Main extends ViewBase {
   filters: Filter[] = [
     {
       name: 'id',
-      defaultValue: 0,
+      defaultValue: this.id,
     },
     {
       name: 'pageIndex',

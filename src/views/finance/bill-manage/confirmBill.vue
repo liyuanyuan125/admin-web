@@ -9,6 +9,11 @@
         :columns="columns"
         ref="listPage">
 
+        <template slot="videoName" slot-scope="{row}">
+          <router-link :to="{name: 'finance-next-issue-detail', params: {id: row.id, status: 1}}"  
+          tag="a" target="_blank" >{{row.videoName}}</router-link>
+        </template>
+
         <template slot="status" slot-scope="{row, index}">
           <Select v-model="row.status" size="small" @on-change="handleSelect(row)" style="width:90px">
             <Option :value="2" :key="2" >是</Option>
@@ -58,7 +63,7 @@ export default class Main extends ViewBase {
   filters: Filter[] = [
     {
       name: 'id',
-      defaultValue: 0,
+      defaultValue: this.id,
     },
     {
       name: 'pageIndex',
@@ -78,7 +83,7 @@ export default class Main extends ViewBase {
   ]
 
   columns = [
-    { title: '广告片名称', key: 'videoName', minWidth: 90 },
+    { title: '广告片名称', slot: 'videoName', minWidth: 90 },
     { title: '影片名称', key: 'movieName', minWidth: 90 },
     { title: '投放时长', key: 'specification', minWidth: 90 },
     { title: '执行开始时间', key: 'beginDate', minWidth: 90 },
@@ -103,7 +108,6 @@ export default class Main extends ViewBase {
   }
 
   async handleBill() {
-    // const items = (this.dataList || []).filter((it: any) => it.status == 1)
     const billDetails = this.dataList.map((it: any) => {
       return {
         id: it.id,
@@ -117,8 +121,8 @@ export default class Main extends ViewBase {
         id: this.id,
         billDetails
       })
-      history.back()
-      // this.$router.go(-1)
+      this.$router.push({name: 'finance-billmanage'})
+      // history.back()
     } catch (ex) {
       this.handleError(ex)
     }

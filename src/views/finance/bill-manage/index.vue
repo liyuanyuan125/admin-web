@@ -4,7 +4,9 @@
       :fetch="fetch"
       :filters="filters"
       :columns="columns"
+      selectable
       @table-on-sort-change="sortChange"
+      :selectedIds.sync = "selectedIds"
       ref="listPage">
 
       <template slot="year" slot-scope="{row: {year, month}}">
@@ -14,12 +16,27 @@
       <template slot="operate" slot-scope="{row: {billStatus, id}}">
         <div class="operate-btn">
           <span @click="$router.push({name: 'finance-billmanage-detail', params: {id}})">详情</span><br />
+          
           <span v-if="billStatus == 1"
            @click="$router.push({name: 'finance-billmanage-confirmbill', params: {id}})">运营确定账单</span>
 
            <span v-if="billStatus == 3"
            @click="$router.push({name: 'finance-billmanage-detail', params: {id, audit: 2}})">运营审核账单</span>
+
+           <span v-if="billStatus == 2" @click="changInit(id)">初始化状态</span>
         </div>
+      </template>
+
+      <template slot="acts">
+        <Button type="info" >
+          <a :href= 'href' download>
+            <span class="bill-export">导出</span>
+          </a>
+        </Button>
+      </template>
+
+      <template slot="acts-2">
+        <Button type="info" @click="handleBatch" >批量确定账单</Button>
       </template>
     </ListPage>
   </div>
@@ -29,8 +46,9 @@
 import {Component} from 'vue-property-decorator'
 import ViewBase from '@/util/ViewBase'
 import { confirm, info, alert } from '@/ui/modal.ts'
+import { clean } from '@/fn/object'
 import ListPage, { Filter, ColumnExtra } from '@/components/listPage'
-import {list} from '@/api/financeBill'
+import {list, billInit, changeBills} from '@/api/financeBill'
 import CinemaSelect from '@/components/cinemaSelect'
 import remoteSelect from '../payroll/data/index.vue'
 import company from '../payroll/data/company.vue'
@@ -42,11 +60,16 @@ import company from '../payroll/data/company.vue'
   }
 })
 export default class Main extends ViewBase {
+  ajaxBase = VAR.ajaxBaseUrl
+  query: any = null
+
   sortList: any = [
     {text: 'normal', key: 0},
     {text: 'asc', key: 1},
     {text: 'desc', key: 2},
   ]
+
+  selectedIds = []
 
   fetch = list
 
@@ -55,7 +78,6 @@ export default class Main extends ViewBase {
       name: 'cinemaId',
       defaultValue: 0,
       component: CinemaSelect,
-      // company: true,
       width: 108,
       placeholder: '影城名称'
     },
@@ -159,6 +181,26 @@ export default class Main extends ViewBase {
     { title: '操作', slot: 'operate', minWidth: 110 },
   ]
 
+  get listPage() {
+    return this.$refs.listPage as ListPage
+  }
+
+  get href() {
+    this.$nextTick(() => {
+       this.query = this.listPage
+    })
+    if (this.query) {
+      let str = ''
+      /* tslint:disable */
+      for (let i in clean(this.query.query)) {
+        str += `${i}=${this.query.query[i] || ''}&`
+      }
+      return `${this.ajaxBase}/xadvert/resource-bills/export?${str.slice(0, -1)}`
+    }
+    return `${this.ajaxBase}/xadvert/resource-bills/export`
+  }
+
+
   sortChange(column: any) {
     // 列表查询条件query
     const queryObj = (this.$refs.listPage as any).query
@@ -175,10 +217,13 @@ export default class Main extends ViewBase {
         return item.sortType = column.order
       }
     })
-
   }
 
   mounted() {
+    this.sortPerson()
+  }
+
+  sortPerson() {
     // 账单审核提交保留筛选条件
     const {personCountSort, showCountSort} = this.$route.query
     if (showCountSort) {
@@ -190,6 +235,32 @@ export default class Main extends ViewBase {
       this.columns[8].sortType = this.sortList[personSort].text
     }
   }
+
+  async changInit(id: number) {
+    try {
+      const { data } = await billInit({id})
+      ; (this.$refs.listPage as any).update()
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
+
+  async handleBatch() {
+    if (this.selectedIds.length == 0) {
+      await info('请选择账单数据', {title: '提示'})
+      return
+    }
+    const ids = this.selectedIds
+    await confirm(`您选择了${ids.length}条账单进行审核`, {
+      title: '批量审核'
+    })
+    try {
+      const { data } = await changeBills({ids})
+      ; (this.$refs.listPage as any).update()
+    } catch (ex) {
+      this.handleError(ex)
+    }
+  }
 }
 </script>
 <style lang='less' scoped>
@@ -199,5 +270,8 @@ export default class Main extends ViewBase {
     color: #2d8cf0;
     margin: 4px 6px;
   }
+}
+.bill-export {
+  color: #fff;
 }
 </style>
