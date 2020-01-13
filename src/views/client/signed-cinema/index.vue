@@ -89,7 +89,8 @@ export default class Main extends ViewBase {
       { title: '影院名称', key: 'cinemaName', minWidth: 120 },
       { title: '专资编码', key: 'cinemaCode', width: 80 },
       { title: '所属影管', key: 'cinemaCompanyName', minWidth: 120 },
-      { title: '关联资源方', key: 'companyName', minWidth: 120 }
+      { title: '关联资源方', key: 'companyName', minWidth: 120 },
+      { title: '备注', key: 'remark', minWidth: 120 }
     ] as ColumnExtra[]
   }
 
