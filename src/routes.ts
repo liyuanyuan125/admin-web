@@ -1254,8 +1254,8 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: idProps,
   },
 
-  // 财务管理 - 已下刊广告计划核对
-  {
+   // 财务管理 - 已下刊广告计划核对
+   {
     path: '/finance/next/issue',
     name: 'finance-next-issue',
     component: () => import('./views/finance/next-issue/index.vue'),
@@ -1869,7 +1869,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       title: '映前广告监播详情'
     }
   },
-  // 数据管理 - 成本核算 - 列表
+  // 广告管理 - 成本核算 - 列表
   {
     path: '/datareport/cost',
     name: 'datareport-cost',
@@ -1879,7 +1879,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       title: '成本核算列表'
     }
   },
-  // 数据管理 - 下刊 - 列表
+  // 广告管理 - 下刊 - 列表
   {
     path: '/datareport/nextissue',
     name: 'datareport-nextissue',
@@ -1889,7 +1889,7 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
       title: '下刊监控列表'
     }
   },
-  // 数据管理 - 下刊 - 列表 - 详情
+  // 广告管理 - 下刊 - 列表 - 详情
   {
     path: '/datareport/nextissue/detail/:id',
     name: 'datareport-nextissue-detail',
@@ -1897,16 +1897,6 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     meta: {
       authKey: '',
       title: '报表详情'
-    }
-  },
-  // 数据管理 - 价格测算
-  {
-    path: '/datareport/alculation',
-    name: 'datareport-alculation',
-    component: () => import('./views/datareport/alculation/index.vue'),
-    meta: {
-      authKey: '',
-      title: '价格测算'
     }
   },
 ] // end of mainLayoutRoutes
