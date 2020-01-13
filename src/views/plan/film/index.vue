@@ -18,6 +18,9 @@
         <Select v-model="query.translated" style='width: 100px;' placeholder="是否转制" filterable clearable class="select-company">
           <Option v-for="it in translatedList" :key="it.key" :value="it.key">{{it.text}}</Option>
         </Select>
+        <Select v-if='this.query.status == "4"' v-model="query.md5Status" style='width: 130px;' placeholder="是否获取md5值" filterable clearable class="select-company">
+          <Option v-for="it in md5StatusList" :key="it.key" :value="it.key">{{it.text}}</Option>
+        </Select>
         <Button type="default" class="btn-reset" @click="reset">清空</Button>
       </form>
     </div>
@@ -33,11 +36,17 @@
       </template>
       <template slot="translated" slot-scope="{ row: { translated } }">
         <span v-if='translated == null'>-</span>
-        <span v-else v-for='(it , index) in translatedList' v-if='it.key == translated'>{{it.text}}</span>
+        <span v-for='(it , index) in translatedList' v-if='it.key == translated'>{{it.text}}</span>
       </template>
 
       <template slot="promotionType" slot-scope="{ row: { promotionType } }">
+        <span v-if='promotionType == null'>-</span>
         <span v-for='(it,index) in promotionTypeList' v-if='it.key == promotionType'>{{it.text}}</span>
+      </template>
+
+      <template slot="md5Status" slot-scope="{ row: { md5Status } }">
+        <span v-if='md5Status == null'>-</span>
+        <span v-for='(it,index) in md5StatusList' v-if='it.key == md5Status'>{{it.text}}</span>
       </template>
 
       <template slot="transFee" slot-scope="{ row: { transFee } }">
@@ -106,6 +115,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
     query: '',
     companyId: null,
     status: '1',
+    md5Status: null,
     pageIndex: 1,
     pageSize: 20,
     translated: null,
@@ -125,6 +135,8 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
   companys = []
   // 是否转制
   translatedList: any = []
+  // 是否获取md5
+  md5StatusList: any = []
   // 活动类型
   promotionTypeList: any = []
   // 跳转数量
@@ -149,6 +161,7 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       status in { 2: 1, 5: 1 } && { title: '审核时间', slot: 'approvalTime', width: 125 },
       status == 3 && { title: '支付时间', slot: 'payTime', width: 125 },
       status == 4 && { title: '转码时间', slot: 'transTime', width: 125 },
+      status == 4 && { title: '是否获取md5', slot: 'md5Status', width: 60 },
       status == 6 && { title: '取消时间', slot: 'cancelTime', width: 125 },
       { title: '操作', slot: 'action', width: 60 },
     ]
@@ -209,11 +222,19 @@ export default class Main extends Mixins(ViewBase, UrlManager) {
       const { data: { items: list,
                       totalCount: total ,
                       translatedList: translatedList ,
-                      promotionTypeList: promotionTypeList } } = await queryList(query)
-      this.list = list
+                      promotionTypeList: promotionTypeList,
+                      md5StatusList: md5StatusList
+           } } = await queryList(query)
+      this.list = (list || []).map((it: any) => {
+        return {
+          ...it,
+          md5Status: it.md5Status == null ? 2 : it.md5Status
+        }
+      })
       this.total = total
       this.translatedList = translatedList
       this.promotionTypeList = promotionTypeList
+      this.md5StatusList = md5StatusList
     } catch (ex) {
       this.handleError(ex)
     } finally {

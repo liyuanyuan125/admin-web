@@ -64,3 +64,15 @@ export async function annotation(id: any , query: any) {
   return res
 }
 
+// 获取MD5包名
+// http://yapi.aiads-dev.com/project/140/interface/api/8593
+export async function getmd5(query: any) {
+  const res = await post(`/xadvert/videos/md5`, query)
+  return res
+}
+
+
+
+
+
+

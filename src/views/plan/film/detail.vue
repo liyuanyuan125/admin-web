@@ -22,7 +22,7 @@
           <Col span="2"><div>营业执照</div></Col>
           <Col span="5">
             <span v-if='detail.companylicenseFileUrls == null'>暂无</span>
-            <span class='ingbo' v-else v-for='(itd,index) in detail.companylicenseFileUrls'><img @click='onView(itd.fileUrl)' :src="itd.fileUrl" alt=""></span>
+            <span class='ingbo' v-for='(itd,index) in detail.companylicenseFileUrls'><img @click='onView(itd.fileUrl)' :src="itd.fileUrl" alt=""></span>
           </Col>
           <Col span="2"><div>客户ID</div></Col>
           <Col span="5"><span>{{detail.customerId}}</span></Col>
@@ -42,12 +42,12 @@
           <Col span="2"><div>主体资质</div></Col>
           <Col span="5">
             <span v-if='detail.licenseFileUrl == null'>暂无</span>
-            <span class='ingbo' v-else @click='onView(detail.licenseFileUrl)'><img :src="detail.licenseFileUrl" alt=""></span>
+            <span class='ingbo' @click='onView(detail.licenseFileUrl)'><img :src="detail.licenseFileUrl" alt=""></span>
           </Col>
           <Col span="2"><div>可选资质</div></Col>
           <Col span="12">
             <span  v-if='detail.grantFileIds == null'>暂无</span>
-            <span class='ingbo' v-else v-for='(itd,index) in detail.grantFileIds'><img @click='onView(itd.fileUrl)' :src="itd.fileUrl" alt=""></span>
+            <span class='ingbo' v-for='(itd,index) in detail.grantFileIds'><img @click='onView(itd.fileUrl)' :src="itd.fileUrl" alt=""></span>
           </Col>
         </Row>
       </div>
@@ -65,7 +65,7 @@
           <Col span="2"><div>是否已转制</div></Col>
           <Col span="5">
             <span v-if='detail.translated == null'>暂无</span>
-            <span  v-else v-for='(it , index) in translatedList' v-if='it.key == detail.translated'>{{it.text}}</span>
+            <span v-for='(it , index) in translatedList' v-if='it.key == detail.translated'>{{it.text}}</span>
           </Col>
           <Col span="2"><div>转制费</div></Col>
           <Col span="5"><span>{{formatNumber(detail.transFee)}}</span></Col>
@@ -88,7 +88,7 @@
           <Col span="2"><div>活动类型</div></Col>
           <Col span="5">
             <span v-if='detail.promotionType == null'>暂无</span>
-            <span v-else v-for='(its, index) in promotionTypeList' v-if='detail.promotionType == its.key'>{{its.text}}</span>
+            <span  v-for='(its, index) in promotionTypeList' v-if='detail.promotionType == its.key'>{{its.text}}</span>
           </Col>
         </Row>
         <Row>
@@ -152,6 +152,15 @@
         </template> 
         </Table>
       </Row>
+      <div v-if='$route.params.status == "4"' class='titop'>获取md5值</div>
+      <Row v-if='$route.params.status == "4"' >
+        <Table :columns="md5columns" :data="md5List"
+        border disabled-hover size="small" class="table">
+          <template slot="spaction" slot-scope="{row}">
+            <a @click="getmd5()">获取md5值</a>
+        </template> 
+        </Table>
+      </Row>
       <!-- <div class='titop' v-if='showStatus'>审核</div>
       <Row class="detail-content" v-if='showStatus'>
         <div>
@@ -180,6 +189,8 @@
     </div>
     <DlgEdit  ref="addOrUpdate"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisible" @done="dlgeditdone"/>
     <VideodlgEdit  ref="addOrUpdateVideo"  @refreshDataList="reloadSearch" v-if="addOrUpdateVisibleVideo" @done="dlgeditdone"/>
+    <!-- 获取MD5包名 -->
+    <Md5DlgEdit  ref="md5addOrUpdate"  @refreshDataList="reloadSearch" v-if="md5addOrUpdateVisible" @done="dlgeditdone"/>
     <!-- 查看图片 -->
     <Modal v-model="viewerShow" title="查看" width="500" height="500">
       <img style="width: 100%;" :src="viewerImage" alt sizes srcset>
@@ -207,6 +218,7 @@ import UploadButton, { SuccessEvent } from '@/components/UploadButton.vue'
 import DlgEdit from './dlgEdit.vue'
 import VideodlgEdit from './videodlgEdit.vue'
 import { formatNumber } from '@/util/validateRules'
+import Md5DlgEdit from './md5dlgEdit.vue'
 
 
 import { findIndex } from 'lodash'
@@ -241,7 +253,8 @@ const getName = (ptypeCode: any, list: any[]) => {
   components: {
     UploadButton,
     DlgEdit,
-    VideodlgEdit
+    VideodlgEdit,
+    Md5DlgEdit
   }
 })
 export default class Main extends ViewBase {
@@ -266,6 +279,8 @@ export default class Main extends ViewBase {
   typeList: any = []
   promotionTypeList: any = []
 
+  md5List: any = []
+
 
   editOne: any = null
 
@@ -274,8 +289,9 @@ export default class Main extends ViewBase {
   viewerImage = ''
 
 
-  addOrUpdateVisible = false
-  addOrUpdateVisibleVideo = false
+  addOrUpdateVisible = false // 录入链接
+  md5addOrUpdateVisible = false // md5
+  addOrUpdateVisibleVideo = false // 视频
 
   // 存储数据需要调用接口的参数列
   videoIdsList: any = {}
@@ -392,7 +408,7 @@ export default class Main extends ViewBase {
         /* tslint:enable */
       }
     },
-    { title: '上传人', key: 'uploadName', align: 'center', width: 150,
+    { title: '上传人', key: 'uploadName', align: 'center', width: 170,
       render: (hh: any, { row: { uploadName , uploadEmail } }: any) => {
         /* tslint:disable */
         const h = jsxReactToVue(hh)
@@ -409,7 +425,53 @@ export default class Main extends ViewBase {
         /* tslint:enable */
       }
     },
-    // <uploadButton style='margin-bottom:17px;' multiple @success="onUploadSuccess">上传</uploadButton>
+    {
+      title: '操作',
+      slot: 'spaction',
+      width: 170,
+      align: 'center',
+    }
+  ]
+
+  // md5列表展示
+  md5columns = [
+    { title: 'oss地址', key: 'md5OssUrl'  , align: 'center' },
+    { title: '包名', key: 'md5FileName' , align: 'center' },
+    { title: 'md5', key: 'md5',  align: 'center' },
+    {
+      title: '获取md5时间',
+      key: 'md5CreateTime',
+      width: 150 ,
+      align: 'center',
+      render: (hh: any, { row }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        if (row.md5CreateTime != null ) {
+          const html = moment(row.md5CreateTime).format(timeFormatDate)
+          return row.md5CreateTime == null ? <span class='datetime' v-html={'-'}></span> : <span class='datetime' v-html={html}></span>
+        } else {
+          return <span class='datetime' v-html={'-'}></span>
+        }
+        /* tslint:enable */
+      }
+    },
+    { title: '获取人', key: 'md5CreateName', align: 'center', width: 170,
+      render: (hh: any, { row: { md5CreateName , md5CreateEmail } }: any) => {
+        /* tslint:disable */
+        const h = jsxReactToVue(hh)
+        const html = md5CreateEmail + '【' + md5CreateName + '】'
+        if (md5CreateEmail != null && md5CreateName != null) {
+          return <span class='datetime' v-html={html}></span>
+        } else if(md5CreateEmail == null) {
+          return <span class='datetime' v-html={md5CreateName}></span>
+        } else if(md5CreateName == null) {
+          return <span class='datetime' v-html={md5CreateEmail}></span>
+        } else if (md5CreateEmail == null && md5CreateName == null) {
+          return <span class='datetime' v-html={'-'}></span>
+        }
+        /* tslint:enable */
+      }
+    },
     {
       title: '操作',
       slot: 'spaction',
@@ -442,6 +504,31 @@ export default class Main extends ViewBase {
       } else {
         this.attachments = res.data.item.attachments
       }
+      if (res.data.item.md5 == null) {
+        this.md5List = [
+          {
+            md5OssUrl: res.data.item.md5OssUrl,
+            md5FileName: res.data.item.md5FileName,
+            md5: res.data.item.md5,
+            md5CreateUser: res.data.item.md5CreateUser,
+            md5CreateName: res.data.item.md5CreateName,
+            md5CreateEmail: res.data.item.md5CreateEmail,
+            md5CreateTime: res.data.item.md5CreateTime,
+          }
+        ]
+      } else {
+        this.md5List = [
+          {
+            md5OssUrl: res.data.item.md5OssUrl,
+            md5FileName: res.data.item.md5FileName,
+            md5: res.data.item.md5,
+            md5CreateUser: res.data.item.md5CreateUser,
+            md5CreateName: res.data.item.md5CreateName,
+            md5CreateEmail: res.data.item.md5CreateEmail,
+            md5CreateTime: res.data.item.md5CreateTime,
+          }
+        ]
+      }
        // 附件
       // this.typeList = res.data.typeList.map((it: any) => {
       //   const key = it.key
@@ -470,7 +557,7 @@ export default class Main extends ViewBase {
       })
       setTimeout(() => {
         (this.$Spin as any).hide()
-      }, 1000)
+      }, 500)
     } catch (ex) {
       (this.$Spin as any).hide()
       this.handleError(ex)
@@ -484,6 +571,15 @@ export default class Main extends ViewBase {
     this.$nextTick(() => {
       const myThis: any = this
       myThis.$refs.addOrUpdate.init(id , row)
+    })
+  }
+
+  getmd5() {
+    this.md5addOrUpdateVisible = true
+    // !!id ? this.editOne = row : this.editOne
+    this.$nextTick(() => {
+      const myThis: any = this
+      myThis.$refs.md5addOrUpdate.init()
     })
   }
 
@@ -857,5 +953,19 @@ export default class Main extends ViewBase {
   padding: 0;
   width: 20px;
   height: 15px;
+}
+.table {
+  /deep/ .ivu-table-cell {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+  /deep/ .ivu-table-cell > span:only-child:empty {
+    &::before {
+      content: '-';
+    }
+  }
+  /deep/ .row-acts > a {
+    margin: 0 4px;
+  }
 }
 </style>
