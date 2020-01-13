@@ -1254,6 +1254,29 @@ const mainLayoutRoutes: RouteConfigEnhance[] = [
     props: idProps,
   },
 
+   // 财务管理 - 已下刊广告计划核对
+   {
+    path: '/finance/next/issue',
+    name: 'finance-next-issue',
+    component: () => import('./views/finance/next-issue/index.vue'),
+    meta: {
+      authKey: ''
+    }
+  },
+
+  // 财务管理 - 已下刊广告计划核对 - 查看 修改 核对
+  {
+    path: '/finance/nextissue/detail/:id/:status/:detail?',
+    name: 'finance-next-issue-detail',
+    component: () => import('./views/finance/next-issue/detail.vue'),
+    meta: {
+      authKey: '',
+      title({ params: { status } }) {
+        return status == '1' ? '核对' : '详情'
+      }
+    },
+  },
+
   {
     path: '/plan/ggtising',
     name: 'plan-ggtising',
