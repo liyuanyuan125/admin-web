@@ -20,7 +20,7 @@
     "iview": "^3.5.1",
     "js-calendar": "^1.2.3",
     "js-cookie": "^2.2.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.21",
     "mockjs": "^1.0.1-beta3",
     "moment": "^2.23.0",
     "numeral": "^2.0.6",
